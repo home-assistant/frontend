@@ -1,13 +1,12 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -49,12 +48,7 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${computeStateDisplay(
-          this.hass!.localize,
-          stateObj,
-          this.hass.locale,
-          this.hass.entities
-        )}
+        ${this.hass.formatEntityState(stateObj)}
       </hui-generic-entity-row>
     `;
   }

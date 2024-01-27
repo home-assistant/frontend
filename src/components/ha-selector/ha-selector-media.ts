@@ -145,13 +145,13 @@ export class HaMediaSelector extends LitElement {
                         .path=${!this.value?.media_content_id
                           ? mdiPlus
                           : this.value?.metadata?.media_class
-                          ? MediaClassBrowserSettings[
-                              this.value.metadata.media_class === "directory"
-                                ? this.value.metadata.children_media_class ||
-                                  this.value.metadata.media_class
-                                : this.value.metadata.media_class
-                            ].icon
-                          : mdiPlayBox}
+                            ? MediaClassBrowserSettings[
+                                this.value.metadata.media_class === "directory"
+                                  ? this.value.metadata.children_media_class ||
+                                    this.value.metadata.media_class
+                                  : this.value.metadata.media_class
+                              ].icon
+                            : mdiPlayBox}
                       ></ha-svg-icon>
                     </div>
                   `}

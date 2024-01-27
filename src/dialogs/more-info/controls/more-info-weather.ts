@@ -1,3 +1,5 @@
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
 import {
   mdiEye,
   mdiGauge,
@@ -6,23 +8,27 @@ import {
   mdiWeatherWindy,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import {
-  getWeatherUnit,
-  getWind,
-  isForecastHourly,
+  ForecastEvent,
+  ModernForecastType,
   WeatherEntity,
+  getDefaultForecastType,
+  getForecast,
+  getSupportedForecastTypes,
+  getWind,
+  subscribeForecast,
   weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
@@ -31,7 +37,54 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: WeatherEntity;
+  @property({ attribute: false }) public stateObj?: WeatherEntity;
+
+  @state() private _forecastEvent?: ForecastEvent;
+
+  @state() private _forecastType?: ModernForecastType;
+
+  @state() private _subscribed?: Promise<() => void>;
+
+  private _unsubscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+    this._forecastEvent = undefined;
+  }
+
+  private async _subscribeForecastEvents() {
+    this._unsubscribeForecastEvents();
+    if (
+      !this.isConnected ||
+      !this.hass ||
+      !this.stateObj ||
+      !this._forecastType
+    ) {
+      return;
+    }
+
+    this._subscribed = subscribeForecast(
+      this.hass!,
+      this.stateObj!.entity_id,
+      this._forecastType,
+      (event) => {
+        this._forecastEvent = event;
+      }
+    );
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeForecastEvents();
+  }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("stateObj")) {
@@ -50,12 +103,43 @@ class MoreInfoWeather extends LitElement {
     return false;
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if ((changedProps.has("stateObj") || !this._subscribed) && this.stateObj) {
+      const oldState = changedProps.get("stateObj") as
+        | WeatherEntity
+        | undefined;
+      if (
+        oldState?.entity_id !== this.stateObj?.entity_id ||
+        !this._subscribed
+      ) {
+        this._forecastType = getDefaultForecastType(this.stateObj);
+        this._subscribeForecastEvents();
+      }
+    } else if (changedProps.has("_forecastType")) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  private _supportedForecasts = memoizeOne((stateObj: WeatherEntity) =>
+    getSupportedForecastTypes(stateObj)
+  );
+
   protected render() {
     if (!this.hass || !this.stateObj) {
       return nothing;
     }
 
-    const hourly = isForecastHourly(this.stateObj.attributes.forecast);
+    const supportedForecasts = this._supportedForecasts(this.stateObj);
+
+    const forecastData = getForecast(
+      this.stateObj.attributes,
+      this._forecastEvent
+    );
+    const forecast = forecastData?.forecast;
+    const hourly = forecastData?.type === "hourly";
+    const dayNight = forecastData?.type === "twice_daily";
 
     return html`
       ${this._showValue(this.stateObj.attributes.temperature)
@@ -66,11 +150,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.temperature")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.temperature!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "temperature"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "temperature")}
               </div>
             </div>
           `
@@ -83,11 +166,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.pressure!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "pressure"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "pressure")}
               </div>
             </div>
           `
@@ -100,11 +182,10 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.humidity!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "humidity"
                 )}
-                %
               </div>
             </div>
           `
@@ -135,21 +216,37 @@ class MoreInfoWeather extends LitElement {
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
               <div>
-                ${formatNumber(
-                  this.stateObj.attributes.visibility!,
-                  this.hass.locale
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "visibility"
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "visibility")}
               </div>
             </div>
           `
         : ""}
-      ${this.stateObj.attributes.forecast
+      ${forecast
         ? html`
             <div class="section">
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
-            ${this.stateObj.attributes.forecast.map((item) =>
+            ${supportedForecasts.length > 1
+              ? html`<mwc-tab-bar
+                  .activeIndex=${supportedForecasts.findIndex(
+                    (item) => item === this._forecastType
+                  )}
+                  @MDCTabBar:activated=${this._handleForecastTypeChanged}
+                >
+                  ${supportedForecasts.map(
+                    (forecastType) =>
+                      html`<mwc-tab
+                        .label=${this.hass!.localize(
+                          `ui.card.weather.${forecastType}`
+                        )}
+                      ></mwc-tab>`
+                  )}
+                </mwc-tab-bar>`
+              : nothing}
+            ${forecast.map((item) =>
               this._showValue(item.templow) || this._showValue(item.temperature)
                 ? html`<div class="flex">
                     ${item.condition
@@ -159,43 +256,52 @@ class MoreInfoWeather extends LitElement {
                           ></ha-svg-icon>
                         `
                       : ""}
-                    ${hourly
-                      ? html`
-                          <div class="main">
-                            ${formatTimeWeekday(
-                              new Date(item.datetime),
-                              this.hass.locale
-                            )}
-                          </div>
-                        `
-                      : html`
-                          <div class="main">
+                    <div class="main">
+                      ${dayNight
+                        ? html`
                             ${formatDateWeekdayDay(
                               new Date(item.datetime),
-                              this.hass.locale
+                              this.hass!.locale,
+                              this.hass!.config
                             )}
-                          </div>
-                        `}
+                            (${item.is_daytime !== false
+                              ? this.hass!.localize("ui.card.weather.day")
+                              : this.hass!.localize("ui.card.weather.night")})
+                          `
+                        : hourly
+                          ? html`
+                              ${formatTimeWeekday(
+                                new Date(item.datetime),
+                                this.hass!.locale,
+                                this.hass!.config
+                              )}
+                            `
+                          : html`
+                              ${formatDateWeekdayDay(
+                                new Date(item.datetime),
+                                this.hass!.locale,
+                                this.hass!.config
+                              )}
+                            `}
+                    </div>
                     <div class="templow">
                       ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
+                        ? this.hass.formatEntityAttributeValue(
                             this.stateObj!,
-                            "temperature"
-                          )}`
+                            "templow",
+                            item.templow
+                          )
                         : hourly
-                        ? ""
-                        : "—"}
+                          ? ""
+                          : "—"}
                     </div>
                     <div class="temp">
                       ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
+                        ? this.hass.formatEntityAttributeValue(
+                            this.stateObj!,
+                            "temperature",
+                            item.temperature
+                          )
                         : "—"}
                     </div>
                   </div>`
@@ -213,12 +319,25 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
+  private _handleForecastTypeChanged(ev: CustomEvent): void {
+    this._forecastType = this._supportedForecasts(this.stateObj!)[
+      ev.detail.index
+    ];
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         color: var(--paper-item-icon-color);
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
+
+      mwc-tab-bar {
+        margin-bottom: 4px;
+      }
+
       .section {
         margin: 16px 0 8px 0;
         font-size: 1.2em;
@@ -229,16 +348,22 @@ class MoreInfoWeather extends LitElement {
         height: 32px;
         align-items: center;
       }
+      .flex > div:last-child {
+        direction: ltr;
+      }
 
       .main {
         flex: 1;
         margin-left: 24px;
+        margin-inline-start: 24px;
+        margin-inline-end: initial;
       }
 
       .temp,
       .templow {
         min-width: 48px;
         text-align: right;
+        direction: ltr;
       }
 
       .templow {

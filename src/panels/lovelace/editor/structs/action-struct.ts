@@ -10,7 +10,7 @@ import {
   type,
   union,
 } from "superstruct";
-import { BaseActionConfig } from "../../../../data/lovelace";
+import { BaseActionConfig } from "../../../../data/lovelace/config/action";
 
 const actionConfigStructUser = object({
   user: string(),
@@ -48,11 +48,14 @@ const actionConfigStructService = object({
 const actionConfigStructNavigate = object({
   action: literal("navigate"),
   navigation_path: string(),
+  navigation_replace: optional(boolean()),
   confirmation: optional(actionConfigStructConfirmation),
 });
 
-const actionConfigStructCustom = type({
-  action: literal("fire-dom-event"),
+const actionConfigStructAssist = type({
+  action: literal("assist"),
+  pipeline_id: optional(string()),
+  start_listening: optional(boolean()),
 });
 
 export const actionConfigStructType = object({
@@ -63,6 +66,7 @@ export const actionConfigStructType = object({
     "call-service",
     "url",
     "navigate",
+    "assist",
   ]),
   confirmation: optional(actionConfigStructConfirmation),
 });
@@ -73,14 +77,14 @@ export const actionConfigStruct = dynamic<any>((value) => {
       case "call-service": {
         return actionConfigStructService;
       }
-      case "fire-dom-event": {
-        return actionConfigStructCustom;
-      }
       case "navigate": {
         return actionConfigStructNavigate;
       }
       case "url": {
         return actionConfigStructUrl;
+      }
+      case "assist": {
+        return actionConfigStructAssist;
       }
     }
   }

@@ -1,2 +1,3 @@
-/* eslint-disable no-undef */
-export const castContext = cast.framework.CastReceiverContext.getInstance();
+import { framework } from "./cast_framework";
+
+export const castContext = framework.CastReceiverContext.getInstance();

@@ -12,7 +12,7 @@ export class HaIntegrationOverflowMenu extends LitElement {
 
   protected render() {
     return html`
-      <ha-button-menu activatable corner="BOTTOM_START">
+      <ha-button-menu activatable>
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}

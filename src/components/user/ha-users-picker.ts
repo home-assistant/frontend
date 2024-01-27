@@ -5,8 +5,7 @@ import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fetchUsers, User } from "../../data/user";
-import type { PolymerChangedEvent } from "../../polymer-types";
-import type { HomeAssistant } from "../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./ha-user-picker";
 
@@ -14,7 +13,7 @@ import "./ha-user-picker";
 class HaUsersPickerLight extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ attribute: false }) public value?: string[];
 
   @property({ attribute: "picked-user-label" })
   public pickedUserLabel?: string;
@@ -117,7 +116,7 @@ class HaUsersPickerLight extends LitElement {
     });
   }
 
-  private _userChanged(event: PolymerChangedEvent<string>) {
+  private _userChanged(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const index = (event.currentTarget as any).index;
     const newValue = event.detail.value;
@@ -130,7 +129,7 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(newUsers);
   }
 
-  private async _addUser(event: PolymerChangedEvent<string>) {
+  private async _addUser(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
     (event.currentTarget as any).value = "";

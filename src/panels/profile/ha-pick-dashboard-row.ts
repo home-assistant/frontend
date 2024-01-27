@@ -3,7 +3,10 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
-import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
+import {
+  fetchDashboards,
+  LovelaceDashboard,
+} from "../../data/lovelace/dashboard";
 import { setDefaultPanel } from "../../data/panel";
 import { HomeAssistant } from "../../types";
 
@@ -11,7 +14,7 @@ import { HomeAssistant } from "../../types";
 class HaPickDashboardRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _dashboards?: LovelaceDashboard[];
 
@@ -37,6 +40,7 @@ class HaPickDashboardRow extends LitElement {
               .disabled=${!this._dashboards?.length}
               .value=${this.hass.defaultPanel}
               @selected=${this._dashboardChanged}
+              naturalMenuWidth
             >
               <mwc-list-item value="lovelace">
                 ${this.hass.localize(

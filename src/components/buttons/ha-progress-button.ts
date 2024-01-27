@@ -1,6 +1,13 @@
 import "@material/mwc-button";
 import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../ha-circular-progress";
 import "../ha-svg-icon";
@@ -27,21 +34,21 @@ export class HaProgressButton extends LitElement {
         <slot></slot>
       </mwc-button>
       ${!overlay
-        ? ""
+        ? nothing
         : html`
             <div class="progress">
               ${this._result === "success"
                 ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
                 : this._result === "error"
-                ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                : this.progress
-                ? html`
-                    <ha-circular-progress
-                      size="small"
-                      active
-                    ></ha-circular-progress>
-                  `
-                : ""}
+                  ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
+                  : this.progress
+                    ? html`
+                        <ha-circular-progress
+                          size="small"
+                          indeterminate
+                        ></ha-circular-progress>
+                      `
+                    : ""}
             </div>
           `}
     `;

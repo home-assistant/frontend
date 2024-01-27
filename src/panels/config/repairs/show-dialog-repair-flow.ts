@@ -27,6 +27,7 @@ export const showRepairsFlowDialog = (
       dialogClosedCallback,
     },
     {
+      flowType: "repair_flow",
       loadDevicesAndAreas: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
@@ -217,7 +218,7 @@ export const showRepairsFlowDialog = (
         return hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.menu_issues.${option}`,
+          }.fix_flow.step.${step.step_id}.menu_options.${option}`,
           step.description_placeholders
         );
       },

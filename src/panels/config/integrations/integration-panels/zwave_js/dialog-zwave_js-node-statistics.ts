@@ -364,7 +364,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
 
         const workingRoutesValueMap: [
           string,
-          WorkingRouteStatistics | null | undefined
+          WorkingRouteStatistics | null | undefined,
         ][] = [
           ["lwr", this._nodeStatistics?.lwr],
           ["nlwr", this._nodeStatistics?.nlwr],

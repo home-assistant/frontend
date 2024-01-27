@@ -1,8 +1,17 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import "../../../components/ha-assist-pipeline-picker";
+import { HaFormSchema, SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
 import "../../../components/ha-service-control";
@@ -11,10 +20,11 @@ import {
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/action";
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -24,20 +34,57 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "navigate",
   "url",
   "call-service",
+  "assist",
   "none",
 ];
 
+const NAVIGATE_SCHEMA = [
+  {
+    name: "navigation_path",
+    selector: {
+      navigation: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
+
+const ASSIST_SCHEMA = [
+  {
+    type: "grid",
+    name: "",
+    schema: [
+      {
+        name: "pipeline_id",
+        selector: {
+          assist_pipeline: {
+            include_last_used: true,
+          },
+        },
+      },
+      {
+        name: "start_listening",
+        selector: {
+          boolean: {},
+        },
+      },
+    ],
+  },
+] as const satisfies readonly HaFormSchema[];
+
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
-  @property() public config?: ActionConfig;
+  @property({ attribute: false }) public config?: ActionConfig;
 
   @property() public label?: string;
 
-  @property() public actions?: UiAction[];
+  @property({ attribute: false }) public actions?: UiAction[];
+
+  @property({ attribute: false }) public defaultAction?: UiAction;
 
   @property() public tooltipText?: string;
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @query("ha-select") private _select!: HaSelect;
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
@@ -64,6 +111,15 @@ export class HuiActionEditor extends LitElement {
     })
   );
 
+  protected updated(changedProperties: PropertyValues<typeof this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("defaultAction")) {
+      if (changedProperties.get("defaultAction") !== this.defaultAction) {
+        this._select.layoutOptions();
+      }
+    }
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -86,6 +142,11 @@ export class HuiActionEditor extends LitElement {
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
+            ${this.defaultAction
+              ? ` (${this.hass!.localize(
+                  `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+                ).toLowerCase()})`
+              : nothing}
           </mwc-list-item>
           ${actions.map(
             (action) => html`
@@ -101,20 +162,20 @@ export class HuiActionEditor extends LitElement {
           ? html`
               <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
             `
-          : ""}
+          : nothing}
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <ha-navigation-picker
+            <ha-form
               .hass=${this.hass}
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.navigation_path"
-              )}
-              .value=${this._navigation_path}
-              @value-changed=${this._navigateValueChanged}
-            ></ha-navigation-picker>
+              .schema=${NAVIGATE_SCHEMA}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            >
+            </ha-form>
           `
-        : ""}
+        : nothing}
       ${this.config?.action === "url"
         ? html`
             <ha-textfield
@@ -126,7 +187,7 @@ export class HuiActionEditor extends LitElement {
               @input=${this._valueChanged}
             ></ha-textfield>
           `
-        : ""}
+        : nothing}
       ${this.config?.action === "call-service"
         ? html`
             <ha-service-control
@@ -137,7 +198,19 @@ export class HuiActionEditor extends LitElement {
               @value-changed=${this._serviceValueChanged}
             ></ha-service-control>
           `
-        : ""}
+        : nothing}
+      ${this.config?.action === "assist"
+        ? html`
+            <ha-form
+              .hass=${this.hass}
+              .schema=${ASSIST_SCHEMA}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            >
+            </ha-form>
+          `
+        : nothing}
     `;
   }
 
@@ -182,7 +255,7 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     const target = ev.target! as EditorTarget;
-    const value = ev.target.value;
+    const value = ev.target.value ?? ev.target.checked;
     if (this[`_${target.configValue}`] === value) {
       return;
     }
@@ -191,6 +264,21 @@ export class HuiActionEditor extends LitElement {
         value: { ...this.config!, [target.configValue!]: value },
       });
     }
+  }
+
+  private _formValueChanged(ev): void {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+
+    fireEvent(this, "value-changed", {
+      value: value,
+    });
+  }
+
+  private _computeFormLabel(schema: SchemaUnion<typeof ASSIST_SCHEMA>) {
+    return this.hass?.localize(
+      `ui.panel.lovelace.editor.action-editor.${schema.name}`
+    );
   }
 
   private _serviceValueChanged(ev: CustomEvent) {
@@ -208,16 +296,6 @@ export class HuiActionEditor extends LitElement {
     if ("service_data" in value) {
       delete value.service_data;
     }
-
-    fireEvent(this, "value-changed", { value });
-  }
-
-  private _navigateValueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = {
-      ...this.config!,
-      navigation_path: ev.detail.value,
-    };
 
     fireEvent(this, "value-changed", { value });
   }
@@ -240,16 +318,24 @@ export class HuiActionEditor extends LitElement {
         width: 100%;
       }
       ha-service-control,
-      ha-navigation-picker {
+      ha-navigation-picker,
+      ha-form {
         display: block;
       }
       ha-textfield,
       ha-service-control,
-      ha-navigation-picker {
+      ha-navigation-picker,
+      ha-form {
         margin-top: 8px;
       }
       ha-service-control {
         --service-control-padding: 0;
+      }
+      ha-formfield {
+        display: flex;
+        height: 56px;
+        align-items: center;
+        --mdc-typography-body2-font-size: 1em;
       }
     `;
   }

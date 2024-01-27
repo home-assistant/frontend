@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiContentCopy } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -11,9 +12,13 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textfield";
+import "../../components/ha-icon-button";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
+import type { HaTextField } from "../../components/ha-textfield";
+import { copyToClipboard } from "../../common/util/copy-clipboard";
+import { showToast } from "../../util/toast";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
@@ -55,8 +60,15 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
               "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
             )}
             type="text"
+            iconTrailing
             readOnly
-          ></ha-textfield>
+          >
+            <ha-icon-button
+              @click=${this._copyToken}
+              slot="trailingIcon"
+              .path=${mdiContentCopy}
+            ></ha-icon-button>
+          </ha-textfield>
           <div id="qr">
             ${this._qrCode
               ? this._qrCode
@@ -69,6 +81,14 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         </div>
       </ha-dialog>
     `;
+  }
+
+  private async _copyToken(ev): Promise<void> {
+    const textField = ev.target.parentElement as HaTextField;
+    await copyToClipboard(textField.value);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private async _generateQR() {
@@ -95,8 +115,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     this._qrCode = html`<img
         alt=${this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.qr_code_image",
-          "name",
-          this._params!.name
+          { name: this._params!.name }
         )}
         src=${canvas.toDataURL()}
       ></img>`;
@@ -111,6 +130,17 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         }
         ha-textfield {
           display: block;
+          --textfield-icon-trailing-padding: 0;
+        }
+        ha-textfield > ha-icon-button {
+          position: relative;
+          right: -8px;
+          --mdc-icon-button-size: 36px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          inset-inline-start: initial;
+          inset-inline-end: -8px;
+          direction: var(--direction);
         }
       `,
     ];

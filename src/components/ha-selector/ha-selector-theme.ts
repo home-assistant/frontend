@@ -24,6 +24,7 @@ export class HaThemeSelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .includeDefault=${this.selector.theme?.include_default}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-theme-picker>

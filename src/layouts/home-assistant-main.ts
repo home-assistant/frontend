@@ -1,8 +1,4 @@
 /* eslint-disable lit/prefer-static-styles */
-import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
-import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
-import "@polymer/app-layout/app-drawer/app-drawer";
-import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
 import {
   css,
   CSSResultGroup,
@@ -15,21 +11,22 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../common/util/compute_rtl";
+import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
 
-const NON_SWIPABLE_PANELS = ["map"];
-
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-toggle-menu": undefined;
+    "hass-toggle-menu": undefined | { open?: boolean };
     "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
   interface HTMLElementEventMap {
     "hass-edit-sidebar": HASSDomEvent<EditSideBarEvent>;
+    "hass-toggle-menu": HASSDomEvent<HASSDomEvents["hass-toggle-menu"]>;
   }
 }
 
@@ -41,13 +38,15 @@ interface EditSideBarEvent {
 export class HomeAssistantMain extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _sidebarEditMode = false;
 
   @state() private _externalSidebar = false;
+
+  @state() private _drawerOpen = false;
 
   constructor() {
     super();
@@ -57,54 +56,29 @@ export class HomeAssistantMain extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const hass = this.hass;
     const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
-    const disableSwipe =
-      this._sidebarEditMode ||
-      !sidebarNarrow ||
-      NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1 ||
-      this._externalSidebar;
 
-    // Style block in render because of the mixin that is not supported
     return html`
-      <style>
-        app-drawer {
-          --app-drawer-content-container: {
-            background-color: var(--primary-background-color, #fff);
-          }
-        }
-      </style>
-      <app-drawer-layout
-        fullbleed
-        .forceNarrow=${sidebarNarrow}
-        responsive-width="0"
+      <ha-drawer
+        .type=${sidebarNarrow ? "modal" : ""}
+        .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .direction=${computeRTLDirection(this.hass)}
+        @MDCDrawer:closed=${this._drawerClosed}
       >
-        <app-drawer
-          id="drawer"
-          align="start"
-          slot="drawer"
-          .disableSwipe=${disableSwipe}
-          .swipeOpen=${!disableSwipe}
-          .persistent=${!this.narrow &&
-          this.hass.dockedSidebar !== "always_hidden"}
-          @app-drawer-transitioned=${this._drawerTransitioned}
-        >
-          <ha-sidebar
-            .hass=${hass}
-            .narrow=${sidebarNarrow}
-            .route=${this.route}
-            .editMode=${this._sidebarEditMode}
-            .alwaysExpand=${sidebarNarrow ||
-            this.hass.dockedSidebar === "docked"}
-          ></ha-sidebar>
-        </app-drawer>
-
+        <ha-sidebar
+          .hass=${this.hass}
+          .narrow=${sidebarNarrow}
+          .route=${this.route}
+          .editMode=${this._sidebarEditMode}
+          .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
+        ></ha-sidebar>
         <partial-panel-resolver
           .narrow=${this.narrow}
-          .hass=${hass}
+          .hass=${this.hass}
           .route=${this.route}
+          slot="appContent"
         ></partial-panel-resolver>
-      </app-drawer-layout>
+      </ha-drawer>
     `;
   }
 
@@ -126,18 +100,17 @@ export class HomeAssistantMain extends LitElement {
 
         if (this._sidebarEditMode) {
           if (this._sidebarNarrow) {
-            this.drawer.open();
+            this._drawerOpen = true;
           } else {
             fireEvent(this, "hass-dock-sidebar", {
               dock: "docked",
             });
-            setTimeout(() => this.appLayout.resetLayout());
           }
         }
       }
     );
 
-    this.addEventListener("hass-toggle-menu", () => {
+    this.addEventListener("hass-toggle-menu", (ev) => {
       if (this._sidebarEditMode) {
         return;
       }
@@ -148,16 +121,17 @@ export class HomeAssistantMain extends LitElement {
         return;
       }
       if (this._sidebarNarrow) {
-        if (this.drawer.opened) {
-          this.drawer.close();
-        } else {
-          this.drawer.open();
-        }
+        this._drawerOpen = ev.detail?.open ?? !this._drawerOpen;
       } else {
         fireEvent(this, "hass-dock-sidebar", {
-          dock: this.hass.dockedSidebar === "auto" ? "docked" : "auto",
+          dock: ev.detail?.open
+            ? "docked"
+            : ev.detail?.open === false
+              ? "auto"
+              : this.hass.dockedSidebar === "auto"
+                ? "docked"
+                : "auto",
         });
-        setTimeout(() => this.appLayout.resetLayout());
       }
     });
 
@@ -168,44 +142,31 @@ export class HomeAssistantMain extends LitElement {
     });
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    toggleAttribute(
-      this,
-      "expanded",
-      this.narrow || this.hass.dockedSidebar !== "auto"
-    );
-
+  public willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("route") && this._sidebarNarrow) {
-      this.drawer.close();
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    // Make app-drawer adjust to a potential LTR/RTL change
-    if (oldHass && oldHass.language !== this.hass!.language) {
-      this.drawer._resetPosition();
+      this._drawerOpen = false;
     }
   }
 
-  private _drawerTransitioned(ev: CustomEvent) {
-    const drawer = ev.currentTarget as AppDrawerElement;
-    if (!drawer.opened) {
-      this._sidebarEditMode = false;
-    }
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    toggleAttribute(this, "expanded", this.hass.dockedSidebar === "docked");
+
+    toggleAttribute(
+      this,
+      "modal",
+      this._sidebarNarrow || this._externalSidebar
+    );
   }
 
   private get _sidebarNarrow() {
     return this.narrow || this.hass.dockedSidebar === "always_hidden";
   }
 
-  private get drawer(): AppDrawerElement {
-    return this.shadowRoot!.querySelector("app-drawer")!;
-  }
-
-  private get appLayout(): AppDrawerLayoutElement {
-    return this.shadowRoot!.querySelector("app-drawer-layout")!;
+  private _drawerClosed() {
+    this._drawerOpen = false;
+    this._sidebarEditMode = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -214,10 +175,15 @@ export class HomeAssistantMain extends LitElement {
         color: var(--primary-text-color);
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        --app-drawer-width: 56px;
+        --mdc-drawer-width: 56px;
+        --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
       }
       :host([expanded]) {
-        --app-drawer-width: calc(256px + env(safe-area-inset-left));
+        --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+      }
+      :host([modal]) {
+        --mdc-drawer-width: unset;
+        --mdc-top-app-bar-width: unset;
       }
       partial-panel-resolver,
       ha-sidebar {

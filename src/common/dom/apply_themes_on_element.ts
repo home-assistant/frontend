@@ -1,5 +1,5 @@
 import { ThemeVars } from "../../data/ws-themes";
-import { darkStyles, derivedStyles } from "../../resources/styles";
+import { darkStyles, derivedStyles } from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
 import {
   hex2rgb,
@@ -41,9 +41,9 @@ export const applyThemesOnElement = (
   // If there is no explicitly desired dark mode provided, we automatically
   // use the active one from `themes`.
   const darkMode =
-    themeSettings && themeSettings?.dark !== undefined
-      ? themeSettings?.dark
-      : themes.darkMode;
+    themeSettings?.dark !== undefined
+      ? themeSettings.dark
+      : themes?.darkMode || false;
 
   let cacheKey = themeToApply;
   let themeRules: Partial<ThemeVars> = {};
@@ -93,7 +93,7 @@ export const applyThemesOnElement = (
     }
 
     // Nothing was changed
-    if (element._themes?.cacheKey === cacheKey) {
+    if (element.__themes?.cacheKey === cacheKey) {
       return;
     }
   }
@@ -119,7 +119,7 @@ export const applyThemesOnElement = (
     }
   }
 
-  if (!element._themes?.keys && !Object.keys(themeRules).length) {
+  if (!element.__themes?.keys && !Object.keys(themeRules).length) {
     // No styles to reset, and no styles to set
     return;
   }
@@ -130,15 +130,24 @@ export const applyThemesOnElement = (
       : undefined;
 
   // Add previous set keys to reset them, and new theme
-  const styles = { ...element._themes?.keys, ...newTheme?.styles };
-  element._themes = { cacheKey, keys: newTheme?.keys };
+  const styles = { ...element.__themes?.keys, ...newTheme?.styles };
+  element.__themes = { cacheKey, keys: newTheme?.keys };
 
   // Set and/or reset styles
   if (element.updateStyles) {
+    // Use updateStyles() method of Polymer elements
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
-    // Implement updateStyles() method of Polymer elements
+    // Use ShadyCSS if available
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
+  } else {
+    for (const s in styles) {
+      if (s === null) {
+        element.style.removeProperty(s);
+      } else {
+        element.style.setProperty(s, styles[s]);
+      }
+    }
   }
 };
 

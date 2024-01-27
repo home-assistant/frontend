@@ -1,20 +1,20 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
+import "../../../components/ha-attribute-value";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
@@ -71,15 +71,16 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
               capitalize
             ></hui-timestamp-display>`
           : attribute !== undefined
-          ? computeAttributeValueDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.locale,
-              this.hass.entities,
-              this._config.attribute,
-              attribute
-            )
-          : "—"}
+            ? html`
+                <ha-attribute-value
+                  .hideUnit=${this._config.suffix}
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .attribute=${this._config.attribute}
+                >
+                </ha-attribute-value>
+              `
+            : "—"}
         ${this._config.suffix}
       </hui-generic-entity-row>
     `;

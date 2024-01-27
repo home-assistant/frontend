@@ -8,7 +8,10 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
-import { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
+import {
+  DeviceConsumptionEnergyPreference,
+  energyStatisticHelpUrl,
+} from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -32,6 +35,8 @@ export class DialogEnergyDeviceSettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsDeviceDialogParams
   ): Promise<void> {
@@ -39,12 +44,16 @@ export class DialogEnergyDeviceSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._excludeList = this._params.device_consumptions.map(
+      (entry) => entry.stat_consumption
+    );
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._device = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -77,10 +86,12 @@ export class DialogEnergyDeviceSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
+          .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>

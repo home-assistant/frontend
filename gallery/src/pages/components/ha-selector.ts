@@ -53,6 +53,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
   {
     area_id: "backyard",
@@ -70,6 +71,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
   {
     area_id: null,
@@ -87,6 +89,7 @@ const DEVICES = [
     sw_version: null,
     hw_version: null,
     via_device_id: null,
+    serial_number: null,
   },
 ];
 
@@ -497,24 +500,23 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           <demo-black-white-row .title=${info.name} .value=${this.data[idx]}>
             ${["light", "dark"].map((slot) =>
               Object.entries(info.input).map(
-                ([key, value]) =>
-                  html`
-                    <ha-settings-row narrow slot=${slot}>
-                      <span slot="heading">${value?.name || key}</span>
-                      <span slot="description">${value?.description}</span>
-                      <ha-selector
-                        .hass=${this.hass}
-                        .selector=${value!.selector}
-                        .key=${key}
-                        .label=${this._label ? value!.name : undefined}
-                        .value=${data[key] ?? value!.default}
-                        .disabled=${this._disabled}
-                        .required=${this._required}
-                        @value-changed=${valueChanged}
-                        .helper=${this._helper ? "Helper text" : undefined}
-                      ></ha-selector>
-                    </ha-settings-row>
-                  `
+                ([key, value]) => html`
+                  <ha-settings-row narrow slot=${slot}>
+                    <span slot="heading">${value?.name || key}</span>
+                    <span slot="description">${value?.description}</span>
+                    <ha-selector
+                      .hass=${this.hass}
+                      .selector=${value!.selector}
+                      .key=${key}
+                      .label=${this._label ? value!.name : undefined}
+                      .value=${data[key] ?? value!.default}
+                      .disabled=${this._disabled}
+                      .required=${this._required}
+                      @value-changed=${valueChanged}
+                      .helper=${this._helper ? "Helper text" : undefined}
+                    ></ha-selector>
+                  </ha-settings-row>
+                `
               )
             )}
           </demo-black-white-row>

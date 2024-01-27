@@ -6,11 +6,9 @@ import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-energy-validation-result")
 class EnergyValidationMessage extends LitElement {
-  @property({ attribute: false })
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  public issues!: EnergyValidationIssue[];
+  @property({ attribute: false }) public issues!: EnergyValidationIssue[];
 
   public render() {
     if (this.issues.length === 0) {

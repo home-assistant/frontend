@@ -1,18 +1,20 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalStorage } from "../../../common/decorators/local-storage";
+import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import { LocalizeFunc } from "../../../common/translations/localize";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
@@ -20,34 +22,49 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { forwardHaptic } from "../../../data/haptics";
-import { ServiceAction } from "../../../data/script";
+import { Action, ServiceAction } from "../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
 } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
-import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { showToast } from "../../../util/toast";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _uiAvailable = true;
 
-  @LocalStorage("panel-dev-service-state-service-data", true, false)
+  @state() private _response?: Record<string, any>;
+
+  @state() private _error?: string;
+
+  private _yamlValid = true;
+
+  @storage({
+    key: "panel-dev-service-state-service-data",
+    state: true,
+    subscribe: false,
+  })
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
-  @LocalStorage("panel-dev-service-state-yaml-mode", true, false)
+  @storage({
+    key: "panel-dev-service-state-yaml-mode",
+    state: true,
+    subscribe: false,
+  })
   private _yamlMode = false;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected firstUpdated(params) {
     super.firstUpdated(params);
+    this.hass.loadBackendTranslation("services");
+    this.hass.loadBackendTranslation("selector");
+
     const serviceParam = extractSearchParam("service");
     if (serviceParam) {
       this._serviceData = {
@@ -83,7 +100,13 @@ class HaPanelDevService extends LitElement {
       this._serviceData?.service
     );
 
-    const isValid = this._isValid(this._serviceData, fields, target);
+    const domain = this._serviceData?.service
+      ? computeDomain(this._serviceData?.service)
+      : undefined;
+
+    const serviceName = this._serviceData?.service
+      ? computeObjectId(this._serviceData?.service)
+      : undefined;
 
     return html`
       <div class="content">
@@ -101,6 +124,7 @@ class HaPanelDevService extends LitElement {
                   @value-changed=${this._serviceChanged}
                 ></ha-service-picker>
                 <ha-yaml-editor
+                  id="yaml-editor"
                   .hass=${this.hass}
                   .defaultValue=${this._serviceData}
                   @value-changed=${this._yamlChanged}
@@ -116,6 +140,9 @@ class HaPanelDevService extends LitElement {
                   class="card-content"
                 ></ha-service-control>
               `}
+          ${this._error !== undefined
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
         </ha-card>
       </div>
       <div class="button-row">
@@ -141,18 +168,32 @@ class HaPanelDevService extends LitElement {
                 >`
               : ""}
           </div>
-          <ha-progress-button
-            .disabled=${!isValid}
-            raised
-            @click=${this._callService}
-          >
+          <ha-progress-button raised @click=${this._callService}>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
             )}
           </ha-progress-button>
         </div>
       </div>
-
+      ${this._response
+        ? html`<div class="content">
+            <ha-card
+              .header=${this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.response"
+              )}
+            >
+              <div class="card-content">
+                <ha-yaml-editor
+                  .hass=${this.hass}
+                  copyClipboard
+                  readOnly
+                  autoUpdate
+                  .value=${this._response}
+                ></ha-yaml-editor>
+              </div>
+            </ha-card>
+          </div>`
+        : nothing}
       ${(this._yamlMode ? fields : this._filterSelectorFields(fields)).length
         ? html`<div class="content">
             <ha-expansion-panel
@@ -167,7 +208,7 @@ class HaPanelDevService extends LitElement {
               .expanded=${this._yamlMode}
             >
               ${this._yamlMode
-                ? html` <div class="description">
+                ? html`<div class="description">
                     <h3>
                       ${target
                         ? html`
@@ -221,11 +262,20 @@ class HaPanelDevService extends LitElement {
                   ? fields
                   : this._filterSelectorFields(fields)
                 ).map(
-                  (field) => html` <tr>
-                    <td><pre>${field.key}</pre></td>
-                    <td>${field.description}</td>
-                    <td>${field.example}</td>
-                  </tr>`
+                  (field) =>
+                    html` <tr>
+                      <td><pre>${field.key}</pre></td>
+                      <td>
+                        ${this.hass.localize(
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`
+                        ) || field.description}
+                      </td>
+                      <td>
+                        ${this.hass.localize(
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+                        ) || field.example}
+                      </td>
+                    </tr>`
                 )}
               </table>
               ${this._yamlMode
@@ -245,14 +295,25 @@ class HaPanelDevService extends LitElement {
     fields.filter((field) => !field.selector)
   );
 
-  private _isValid = memoizeOne((serviceData, fields, target): boolean => {
+  private _validateServiceData = (
+    serviceData,
+    fields,
+    target,
+    yamlMode: boolean,
+    localize: LocalizeFunc
+  ): string | undefined => {
+    const errorCategory = yamlMode ? "yaml" : "ui";
     if (!serviceData?.service) {
-      return false;
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_service`
+      );
     }
     const domain = computeDomain(serviceData.service);
     const service = computeObjectId(serviceData.service);
     if (!domain || !service) {
-      return false;
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
+      );
     }
     if (
       target &&
@@ -261,18 +322,23 @@ class HaPanelDevService extends LitElement {
       !serviceData.data?.device_id &&
       !serviceData.data?.area_id
     ) {
-      return false;
+      return localize(
+        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
+      );
     }
     for (const field of fields) {
       if (
         field.required &&
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
-        return false;
+        return localize(
+          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
+          { key: field.key }
+        );
       }
     }
-    return true;
-  });
+    return undefined;
+  };
 
   private _fields = memoizeOne(
     (
@@ -306,13 +372,51 @@ class HaPanelDevService extends LitElement {
 
   private async _callService(ev) {
     const button = ev.currentTarget as HaProgressButton;
-    if (!this._serviceData?.service) {
+
+    if (this._yamlMode && !this._yamlValid) {
+      forwardHaptic("failure");
+      button.actionError();
+      this._error = this.hass.localize(
+        "ui.panel.developer-tools.tabs.services.errors.yaml.invalid_yaml"
+      );
       return;
     }
+
+    const { target, fields } = this._fields(
+      this.hass.services,
+      this._serviceData?.service
+    );
+
+    this._error = this._validateServiceData(
+      this._serviceData,
+      fields,
+      target,
+      this._yamlMode,
+      this.hass.localize
+    );
+
+    if (this._error !== undefined) {
+      forwardHaptic("failure");
+      button.actionError();
+      return;
+    }
+    const [domain, service] = this._serviceData!.service!.split(".", 2);
+    const script: Action[] = [];
+    if (
+      this.hass.services?.[domain]?.[service] &&
+      "response" in this.hass.services[domain][service]
+    ) {
+      script.push({
+        ...this._serviceData!,
+        response_variable: "service_result",
+      });
+      script.push({ stop: "done", response_variable: "service_result" });
+    } else {
+      script.push(this._serviceData!);
+    }
     try {
-      await callExecuteScript(this.hass, [this._serviceData]);
+      this._response = (await callExecuteScript(this.hass, script)).response;
     } catch (err: any) {
-      const [domain, service] = this._serviceData.service.split(".", 2);
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
         serviceCallWillDisconnect(domain, service)
@@ -321,14 +425,23 @@ class HaPanelDevService extends LitElement {
       }
       forwardHaptic("failure");
       button.actionError();
-      showToast(this, {
-        message:
-          this.hass.localize(
-            "ui.notification_toast.service_call_failed",
-            "service",
-            this._serviceData.service
-          ) + ` ${err.message}`,
-      });
+
+      let localizedErrorMessage: string | undefined;
+      if (err.translation_domain && err.translation_key) {
+        const lokalize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = lokalize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
+      }
+      this._error =
+        localizedErrorMessage ||
+        this.hass.localize("ui.notification_toast.service_call_failed", {
+          service: this._serviceData!.service!,
+        }) + ` ${err.message}`;
       return;
     }
     button.actionSuccess();
@@ -336,17 +449,41 @@ class HaPanelDevService extends LitElement {
 
   private _toggleYaml() {
     this._yamlMode = !this._yamlMode;
+    this._yamlValid = true;
+    this._error = undefined;
   }
 
   private _yamlChanged(ev) {
     if (!ev.detail.isValid) {
+      this._yamlValid = false;
       return;
     }
+    this._yamlValid = true;
     this._serviceDataChanged(ev);
   }
 
   private _checkUiSupported() {
-    if (this._serviceData && hasTemplate(this._serviceData)) {
+    const fields = this._fields(
+      this.hass.services,
+      this._serviceData?.service
+    ).fields;
+    if (
+      this._serviceData &&
+      (Object.entries(this._serviceData).some(
+        ([key, val]) => key !== "data" && hasTemplate(val)
+      ) ||
+        (this._serviceData.data &&
+          Object.entries(this._serviceData.data).some(([key, val]) => {
+            const field = fields.find((f) => f.key === key);
+            if (
+              field?.selector &&
+              ("template" in field.selector || "object" in field.selector)
+            ) {
+              return false;
+            }
+            return hasTemplate(val);
+          })))
+    ) {
       this._yamlMode = true;
       this._uiAvailable = false;
     } else {
@@ -355,6 +492,9 @@ class HaPanelDevService extends LitElement {
   }
 
   private _serviceDataChanged(ev) {
+    if (this._serviceData?.service !== ev.detail.value.service) {
+      this._error = undefined;
+    }
     this._serviceData = ev.detail.value;
     this._checkUiSupported();
   }
@@ -362,7 +502,10 @@ class HaPanelDevService extends LitElement {
   private _serviceChanged(ev) {
     ev.stopPropagation();
     this._serviceData = { service: ev.detail.value || "", data: {} };
+    this._response = undefined;
+    this._error = undefined;
     this._yamlEditor?.setValue(this._serviceData);
+    this._checkUiSupported();
   }
 
   private _fillExampleData() {
@@ -370,6 +513,14 @@ class HaPanelDevService extends LitElement {
       this.hass.services,
       this._serviceData?.service
     );
+    const domain = this._serviceData?.service
+      ? computeDomain(this._serviceData?.service)
+      : undefined;
+
+    const serviceName = this._serviceData?.service
+      ? computeObjectId(this._serviceData?.service)
+      : undefined;
+
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
@@ -377,13 +528,17 @@ class HaPanelDevService extends LitElement {
         try {
           value = load(field.example);
         } catch (err: any) {
-          value = field.example;
+          value =
+            this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+            ) || field.example;
         }
         example[field.key] = value;
       }
     });
     this._serviceData = { ...this._serviceData!, data: example };
     this._yamlEditor?.setValue(this._serviceData);
+    this._checkUiSupported();
   }
 
   static get styles(): CSSResultGroup {
@@ -425,6 +580,8 @@ class HaPanelDevService extends LitElement {
         }
         .switch-mode-container .error {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .attributes {
           width: 100%;

@@ -1,5 +1,12 @@
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -18,11 +25,17 @@ import { traceTabStyles } from "./trace-tab-styles";
 import { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
 
+const TRACE_PATH_TABS = [
+  "step_config",
+  "changed_variables",
+  "logbook",
+] as const;
+
 @customElement("ha-trace-path-details")
 export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public trace!: TraceExtended;
 
@@ -30,11 +43,12 @@ export class HaTracePathDetails extends LitElement {
 
   @property({ attribute: false }) public selected!: NodeInfo;
 
-  @property() public renderedNodes: Record<string, any> = {};
+  @property({ attribute: false })
+  public renderedNodes: Record<string, any> = {};
 
-  @property() public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
-  @state() private _view: "config" | "changed_variables" | "logbook" = "config";
+  @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
   protected render(): TemplateResult {
     return html`
@@ -43,27 +57,25 @@ export class HaTracePathDetails extends LitElement {
       </div>
 
       <div class="tabs top">
-        ${[
-          ["config", "Step Config"],
-          ["changed_variables", "Changed Variables"],
-          ["logbook", "Related logbook entries"],
-        ].map(
-          ([view, label]) => html`
+        ${TRACE_PATH_TABS.map(
+          (view) => html`
             <button
               .view=${view}
               class=${classMap({ active: this._view === view })}
               @click=${this._showTab}
             >
-              ${label}
+              ${this.hass!.localize(
+                `ui.panel.config.automation.trace.tabs.${view}`
+              )}
             </button>
           `
         )}
       </div>
-      ${this._view === "config"
+      ${this._view === "step_config"
         ? this._renderSelectedConfig()
         : this._view === "changed_variables"
-        ? this._renderChangedVars()
-        : this._renderLogbook()}
+          ? this._renderChangedVars()
+          : this._renderLogbook()}
     `;
   }
 
@@ -71,7 +83,9 @@ export class HaTracePathDetails extends LitElement {
     const paths = this.trace.trace;
 
     if (!this.selected?.path) {
-      return "Select a node on the left for more information.";
+      return this.hass!.localize(
+        "ui.panel.config.automation.trace.path.choose"
+      );
     }
 
     // HACK: default choice node is not part of paths. We filter them out here by checking parent.
@@ -82,12 +96,16 @@ export class HaTracePathDetails extends LitElement {
       ] as ChooseActionTraceStep[];
 
       if (parentTraceInfo && parentTraceInfo[0]?.result?.choice === "default") {
-        return "The default action was executed because no options matched.";
+        return this.hass!.localize(
+          "ui.panel.config.automation.trace.path.default_action_executed"
+        );
       }
     }
 
     if (!(this.selected.path in paths)) {
-      return "This node was not executed and so no further trace information is available.";
+      return this.hass!.localize(
+        "ui.panel.config.automation.trace.path.no_further_execution"
+      );
     }
 
     const parts: TemplateResult[][] = [];
@@ -115,28 +133,53 @@ export class HaTracePathDetails extends LitElement {
             trace as any;
 
           if (result?.enabled === false) {
-            return html`This node was disabled and skipped during execution so
-            no further trace information is available.`;
+            return html`${this.hass!.localize(
+              "ui.panel.config.automation.trace.path.disabled_step"
+            )}`;
           }
 
           return html`
             ${curPath === this.selected.path
               ? ""
-              : html`<h2>${curPath.substr(this.selected.path.length + 1)}</h2>`}
-            ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
-            Executed:
-            ${formatDateTimeWithSeconds(
-              new Date(timestamp),
-              this.hass.locale
-            )}<br />
+              : html`<h2>
+                  ${curPath.substring(this.selected.path.length + 1)}
+                </h2>`}
+            ${data.length === 1
+              ? nothing
+              : html`<h3>
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.iteration",
+                    { number: idx + 1 }
+                  )}
+                </h3>`}
+            ${this.hass!.localize(
+              "ui.panel.config.automation.trace.path.executed",
+              {
+                time: formatDateTimeWithSeconds(
+                  new Date(timestamp),
+                  this.hass.locale,
+                  this.hass.config
+                ),
+              }
+            )}
+            <br />
             ${result
-              ? html`Result:
+              ? html`${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.result"
+                  )}
                   <pre>${dump(result)}</pre>`
               : error
-              ? html`<div class="error">Error: ${error}</div>`
-              : ""}
+                ? html`<div class="error">
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.error",
+                      {
+                        error: error,
+                      }
+                    )}
+                  </div>`
+                : nothing}
             ${Object.keys(rest).length === 0
-              ? ""
+              ? nothing
               : html`<pre>${dump(rest)}</pre>`}
           `;
         })
@@ -148,30 +191,49 @@ export class HaTracePathDetails extends LitElement {
 
   private _renderSelectedConfig() {
     if (!this.selected?.path) {
-      return "";
+      return nothing;
     }
     const config = getDataFromPath(this.trace!.config, this.selected.path);
     return config
       ? html`<ha-code-editor
-          .value=${dump(config).trimRight()}
+          .value=${dump(config).trimEnd()}
           readOnly
           dir="ltr"
         ></ha-code-editor>`
-      : "Unable to find config";
+      : this.hass!.localize(
+          "ui.panel.config.automation.trace.path.unable_to_find_config"
+        );
   }
 
   private _renderChangedVars() {
     const paths = this.trace.trace;
     const data: ActionTraceStep[] = paths[this.selected.path];
 
+    if (data === undefined) {
+      return html`<div class="padded-box">
+        ${this.hass!.localize(
+          "ui.panel.config.automation.trace.path.step_not_executed"
+        )}
+      </div>`;
+    }
+
     return html`
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${idx > 0 ? html`<p>Iteration ${idx + 1}</p>` : ""}
+            ${data.length > 1
+              ? html`<p>
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.iteration",
+                    { number: idx + 1 }
+                  )}
+                </p>`
+              : ""}
             ${Object.keys(trace.changed_variables || {}).length === 0
-              ? "No variables changed"
-              : html`<pre>${dump(trace.changed_variables).trimRight()}</pre>`}
+              ? this.hass!.localize(
+                  "ui.panel.config.automation.trace.path.no_variables_changed"
+                )
+              : html`<pre>${dump(trace.changed_variables).trimEnd()}</pre>`}
           `
         )}
       </div>
@@ -185,7 +247,11 @@ export class HaTracePathDetails extends LitElement {
     const index = trackedPaths.indexOf(this.selected.path);
 
     if (index === -1) {
-      return html`<div class="padded-box">Node not tracked.</div>`;
+      return html`<div class="padded-box">
+        ${this.hass!.localize(
+          "ui.panel.config.automation.trace.path.step_not_executed"
+        )}
+      </div>`;
     }
 
     let entries: LogbookEntry[];
@@ -233,7 +299,9 @@ export class HaTracePathDetails extends LitElement {
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
-          No Logbook entries found for this step.
+          ${this.hass!.localize(
+            "ui.panel.config.automation.trace.path.no_logbook_entries"
+          )}
         </div>`;
   }
 

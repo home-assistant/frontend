@@ -9,7 +9,6 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
 import type { RepairsIssue } from "../../../data/repairs";
-import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
@@ -19,7 +18,7 @@ import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 class HaConfigRepairs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false })
   public repairsIssues?: RepairsIssue[];
@@ -61,6 +60,7 @@ class HaConfigRepairs extends LitElement {
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 .title=${domainToName(this.hass.localize, issue.domain)}
+                crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 slot="graphic"
               />

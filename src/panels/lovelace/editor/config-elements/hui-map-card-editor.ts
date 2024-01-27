@@ -9,14 +9,16 @@ import {
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { hasLocation } from "../../../../common/entity/has_location";
 import "../../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import { MapCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
@@ -24,10 +26,18 @@ import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { hasLocation } from "../../../../common/entity/has_location";
+
+export const mapEntitiesConfigStruct = union([
+  object({
+    entity: string(),
+    label_mode: optional(string()),
+    focus: optional(boolean()),
+    name: optional(string()),
+  }),
+  string(),
+]);
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,7 +46,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     default_zoom: optional(number()),
     dark_mode: optional(boolean()),
-    entities: array(entitiesConfigStruct),
+    entities: array(mapEntitiesConfigStruct),
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(string())),
     auto_fit: optional(boolean()),
@@ -50,9 +60,17 @@ const SCHEMA = [
     type: "grid",
     schema: [
       { name: "aspect_ratio", selector: { text: {} } },
-      { name: "default_zoom", selector: { number: { mode: "box", min: 0 } } },
+      {
+        name: "default_zoom",
+        default: DEFAULT_ZOOM,
+        selector: { number: { mode: "box", min: 0 } },
+      },
       { name: "dark_mode", selector: { boolean: {} } },
-      { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { mode: "box", min: 0 } },
+      },
     ],
   },
 ] as const;
@@ -125,7 +143,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
   }
 
-  private _geoSourcesChanged(ev: PolymerChangedEvent<any>): void {
+  private _geoSourcesChanged(ev: ValueChangedEvent<any>): void {
     if (!this._config || !this.hass) {
       return;
     }

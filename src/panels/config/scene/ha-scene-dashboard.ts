@@ -3,12 +3,20 @@ import {
   mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
+  mdiPalette,
   mdiPencilOff,
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { differenceInDays } from "date-fns/esm";
@@ -21,6 +29,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
@@ -47,26 +56,30 @@ import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { isUnavailableState } from "../../../data/entity";
 
+type SceneItem = SceneEntity & {
+  name: string;
+};
+
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public scenes!: SceneEntity[];
+  @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
 
   @state() private _filterValue?;
 
   private _scenes = memoizeOne(
-    (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
+    (scenes: SceneEntity[], filteredScenes?: string[] | null): SceneItem[] => {
       if (filteredScenes === null) {
         return [];
       }
@@ -83,15 +96,19 @@ class HaSceneDashboard extends LitElement {
 
   private _columns = memoizeOne(
     (_language, narrow): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
           label: this.hass.localize(
             "ui.panel.config.scene.picker.headers.state"
           ),
           type: "icon",
-          template: (_, scene) =>
-            html` <ha-state-icon .state=${scene}></ha-state-icon> `,
+          template: (scene) => html`
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${scene}
+            ></ha-state-icon>
+          `,
         },
         name: {
           title: this.hass.localize(
@@ -111,16 +128,18 @@ class HaSceneDashboard extends LitElement {
           ),
           sortable: true,
           width: "30%",
-          template: (last_activated) => {
-            const date = new Date(last_activated);
+          template: (scene) => {
+            const lastActivated = scene.state;
+            if (!lastActivated || isUnavailableState(lastActivated)) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
+            const date = new Date(scene.state);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
             return html`
-              ${last_activated && !isUnavailableState(last_activated)
-                ? dayDifference > 3
-                  ? formatShortDateTime(date, this.hass.locale)
-                  : relativeTime(date, this.hass.locale)
-                : this.hass.localize("ui.components.relative_time.never")}
+              ${dayDifference > 3
+                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
+                : relativeTime(date, this.hass.locale)}
             `;
           },
         };
@@ -128,14 +147,14 @@ class HaSceneDashboard extends LitElement {
       columns.only_editable = {
         title: "",
         width: "56px",
-        template: (_info, scene: any) =>
+        template: (scene) =>
           !scene.attributes.id
             ? html`
-                <paper-tooltip animation-delay="0" position="left">
+                <simple-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.only_editable"
                   )}
-                </paper-tooltip>
+                </simple-tooltip>
                 <ha-svg-icon
                   .path=${mdiPencilOff}
                   style="color: var(--secondary-text-color)"
@@ -147,50 +166,49 @@ class HaSceneDashboard extends LitElement {
         title: "",
         width: "72px",
         type: "overflow-menu",
-        template: (_: string, scene: any) =>
-          html`
-            <ha-icon-overflow-menu
-              .hass=${this.hass}
-              narrow
-              .items=${[
-                {
-                  path: mdiInformationOutline,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.show_info"
-                  ),
-                  action: () => this._showInfo(scene),
-                },
-                {
-                  path: mdiPlay,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.activate"
-                  ),
-                  action: () => this._activateScene(scene),
-                },
-                {
-                  divider: true,
-                },
-                {
-                  path: mdiContentDuplicate,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.duplicate"
-                  ),
-                  action: () => this._duplicate(scene),
-                  disabled: !scene.attributes.id,
-                },
-                {
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.delete"
-                  ),
-                  path: mdiDelete,
-                  action: () => this._deleteConfirm(scene),
-                  warning: scene.attributes.id,
-                  disabled: !scene.attributes.id,
-                },
-              ]}
-            >
-            </ha-icon-overflow-menu>
-          `,
+        template: (scene) => html`
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            narrow
+            .items=${[
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.scene.picker.show_info"
+                ),
+                action: () => this._showInfo(scene),
+              },
+              {
+                path: mdiPlay,
+                label: this.hass.localize(
+                  "ui.panel.config.scene.picker.activate"
+                ),
+                action: () => this._activateScene(scene),
+              },
+              {
+                divider: true,
+              },
+              {
+                path: mdiContentDuplicate,
+                label: this.hass.localize(
+                  "ui.panel.config.scene.picker.duplicate"
+                ),
+                action: () => this._duplicate(scene),
+                disabled: !scene.attributes.id,
+              },
+              {
+                label: this.hass.localize(
+                  "ui.panel.config.scene.picker.delete"
+                ),
+                path: mdiDelete,
+                action: () => this._deleteConfirm(scene),
+                warning: scene.attributes.id,
+                disabled: !scene.attributes.id,
+              },
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
       };
 
       return columns;
@@ -208,6 +226,7 @@ class HaSceneDashboard extends LitElement {
         .columns=${this._columns(this.hass.locale, this.narrow)}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}
+        .empty=${!this.scenes.length}
         .activeFilters=${this._activeFilters}
         .noDataText=${this.hass.localize(
           "ui.panel.config.scene.picker.no_scenes"
@@ -225,7 +244,6 @@ class HaSceneDashboard extends LitElement {
         ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
-          corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}
@@ -233,6 +251,28 @@ class HaSceneDashboard extends LitElement {
           @related-changed=${this._relatedFilterChanged}
         >
         </ha-button-related-filter-menu>
+        ${!this.scenes.length
+          ? html`<div class="empty" slot="empty">
+              <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
+              <h1>
+                ${this.hass.localize(
+                  "ui.panel.config.scene.picker.empty_header"
+                )}
+              </h1>
+              <p>
+                ${this.hass.localize("ui.panel.config.scene.picker.empty_text")}
+              </p>
+              <a
+                href=${documentationUrl(this.hass, "/docs/scene/editor/")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-button>
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                </ha-button>
+              </a>
+            </div>`
+          : nothing}
         <a href="/config/scene/edit/new" slot="fab">
           <ha-fab
             .label=${this.hass.localize(
@@ -344,6 +384,11 @@ class HaSceneDashboard extends LitElement {
       css`
         a {
           text-decoration: none;
+        }
+        .empty {
+          --paper-font-headline_-_font-size: 28px;
+          --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

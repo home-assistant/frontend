@@ -9,12 +9,13 @@ import "../../../components/search-input";
 import { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../../common/navigate";
 
 const logProviders: LogProvider[] = [
   {
@@ -47,17 +48,15 @@ const logProviders: LogProvider[] = [
 export class HaConfigLogs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
-
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _filter = extractSearchParam("filter") || "";
 
-  @query("system-log-card", true) private systemLog?: SystemLogCard;
+  @query("system-log-card") private systemLog?: SystemLogCard;
 
   @state() private _selectedLogProvider = "core";
 
@@ -65,16 +64,15 @@ export class HaConfigLogs extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.systemLog && this.systemLog.loaded) {
-      this.systemLog.fetchData();
+    const systemLog = this.systemLog;
+    if (systemLog && systemLog.loaded) {
+      systemLog.fetchData();
     }
   }
 
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._getInstalledAddons();
-    }
+    this._init();
   }
 
   private async _filterChanged(ev) {
@@ -112,10 +110,9 @@ export class HaConfigLogs extends LitElement {
         .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
-        ${isComponentLoaded(this.hass, "hassio") &&
-        this.hass.userData?.showAdvanced
+        ${isComponentLoaded(this.hass, "hassio")
           ? html`
-              <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+              <ha-button-menu slot="toolbar-icon">
                 <ha-button
                   slot="trigger"
                   .label=${this._logProviders.find(
@@ -170,6 +167,37 @@ export class HaConfigLogs extends LitElement {
 
   private _selectProvider(ev) {
     this._selectedLogProvider = (ev.currentTarget as any).provider;
+    navigate(`/config/logs?provider=${this._selectedLogProvider}`);
+  }
+
+  private async _init() {
+    if (isComponentLoaded(this.hass, "hassio")) {
+      await this._getInstalledAddons();
+    }
+    const providerKey = extractSearchParam("provider");
+    if (providerKey) {
+      if (
+        isComponentLoaded(this.hass, "hassio") &&
+        this._logProviders.find((p) => p.key === providerKey)
+      ) {
+        this._selectedLogProvider = providerKey;
+      } else {
+        navigate("/config/logs", { replace: true });
+        showAlertDialog(this, {
+          title:
+            this.hass.localize("ui.panel.config.logs.provider_not_found") ||
+            "Log provider not found",
+          text: this.hass.localize(
+            "ui.panel.config.logs.provider_not_available",
+            {
+              provider:
+                this._logProviders.find((p) => p.key === providerKey)?.name ||
+                providerKey,
+            }
+          ),
+        });
+      }
+    }
   }
 
   private async _getInstalledAddons() {
@@ -210,6 +238,9 @@ export class HaConfigLogs extends LitElement {
         }
         search-input.header {
           --mdc-ripple-color: transparant;
+          margin-left: -16px;
+          margin-inline-start: -16px;
+          margin-inline-end: initial;
         }
         .content {
           direction: ltr;

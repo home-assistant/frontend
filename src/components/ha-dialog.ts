@@ -7,19 +7,21 @@ import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
-const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button"];
+const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button", "ha-list-item"];
 
 export const createCloseHeading = (
-  hass: HomeAssistant,
+  hass: HomeAssistant | undefined,
   title: string | TemplateResult
 ) => html`
-  <div class="header_title">${title}</div>
-  <ha-icon-button
-    .label=${hass.localize("ui.dialogs.generic.close")}
-    .path=${mdiClose}
-    dialogAction="close"
-    class="header_button"
-  ></ha-icon-button>
+  <div class="header_title">
+    <span>${title}</span>
+    <ha-icon-button
+      .label=${hass?.localize("ui.dialogs.generic.close") ?? "Close"}
+      .path=${mdiClose}
+      dialogAction="close"
+      class="header_button"
+    ></ha-icon-button>
+  </div>
 `;
 
 @customElement("ha-dialog")
@@ -41,7 +43,9 @@ export class HaDialog extends DialogBase {
       SUPPRESS_DEFAULT_PRESS_SELECTOR,
     ].join(", ");
     this._updateScrolledAttribute();
-    this.contentElement?.addEventListener("scroll", this._onScroll);
+    this.contentElement?.addEventListener("scroll", this._onScroll, {
+      passive: true,
+    });
   }
 
   disconnectedCallback(): void {
@@ -61,12 +65,16 @@ export class HaDialog extends DialogBase {
   static override styles = [
     styles,
     css`
+      :host([scrolled]) ::slotted(ha-dialog-header) {
+        border-bottom: 1px solid
+          var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+      }
       .mdc-dialog {
         --mdc-dialog-scroll-divider-color: var(
           --dialog-scroll-divider-color,
           var(--divider-color)
         );
-        z-index: var(--dialog-z-index, 7);
+        z-index: var(--dialog-z-index, 8);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
@@ -90,11 +98,10 @@ export class HaDialog extends DialogBase {
         padding: 24px 24px 0 24px;
       }
       .mdc-dialog__actions {
-        padding: 0 24px 24px 24px;
+        padding: 12px 24px 12px 24px;
       }
       .mdc-dialog__title::before {
-        display: block;
-        height: 0px;
+        content: unset;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
@@ -117,22 +124,27 @@ export class HaDialog extends DialogBase {
         display: flex;
         flex-direction: column;
       }
-      .header_button {
-        position: absolute;
-        right: 16px;
-        top: 14px;
-        text-decoration: none;
-        color: inherit;
-      }
       .header_title {
-        margin-right: 32px;
-        margin-inline-end: 32px;
-        margin-inline-start: initial;
+        position: relative;
+        padding-right: 40px;
+        padding-inline-end: 40px;
+        padding-inline-start: initial;
         direction: var(--direction);
       }
+      .header_title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+      }
       .header_button {
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        text-decoration: none;
+        color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: 16px;
+        inset-inline-end: -8px;
         direction: var(--direction);
       }
       .dialog-actions {

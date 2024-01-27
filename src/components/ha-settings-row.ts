@@ -1,10 +1,9 @@
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-settings-row")
 export class HaSettingsRow extends LitElement {
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
@@ -13,13 +12,14 @@ export class HaSettingsRow extends LitElement {
     return html`
       <div class="prefix-wrap">
         <slot name="prefix"></slot>
-        <paper-item-body
+        <div
+          class="body"
           ?two-line=${!this.threeLine}
           ?three-line=${this.threeLine}
         >
           <slot name="heading"></slot>
-          <div secondary><slot name="description"></slot></div>
-        </paper-item-body>
+          <div class="secondary"><slot name="description"></slot></div>
+        </div>
       </div>
       <div class="content"><slot></slot></div>
     `;
@@ -34,10 +34,42 @@ export class HaSettingsRow extends LitElement {
         align-self: auto;
         align-items: center;
       }
-      paper-item-body {
-        padding: 8px 16px 8px 0;
+      .body {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 0;
+        padding-inline-start: 0;
+        padding-right: 16x;
+        padding-inline-end: 16px;
+        overflow: hidden;
+        display: var(--layout-vertical_-_display);
+        flex-direction: var(--layout-vertical_-_flex-direction);
+        justify-content: var(--layout-center-justified_-_justify-content);
+        flex: var(--layout-flex_-_flex);
+        flex-basis: var(--layout-flex_-_flex-basis);
       }
-      paper-item-body[two-line] {
+      .body[three-line] {
+        min-height: var(--paper-item-body-three-line-min-height, 88px);
+      }
+      .body > * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .body > .secondary {
+        display: block;
+        padding-top: 4px;
+        font-family: var(
+          --mdc-typography-body2-font-family,
+          var(--mdc-typography-font-family, Roboto, sans-serif)
+        );
+        -webkit-font-smoothing: antialiased;
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+        font-weight: var(--mdc-typography-body2-font-weight, 400);
+        line-height: normal;
+        color: var(--secondary-text-color);
+      }
+      .body[two-line] {
         min-height: calc(
           var(--paper-item-body-two-line-min-height, 72px) - 16px
         );
@@ -64,7 +96,7 @@ export class HaSettingsRow extends LitElement {
       ::slotted(ha-switch) {
         padding: 16px 0;
       }
-      div[secondary] {
+      .secondary {
         white-space: normal;
       }
       .prefix-wrap {

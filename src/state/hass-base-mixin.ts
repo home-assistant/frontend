@@ -38,6 +38,10 @@ export class HassBaseEl extends LitElement {
     // eslint-disable-next-line
   }
 
+  protected checkDataBaseMigration() {
+    // eslint-disable-next-line
+  }
+
   protected hassChanged(hass, _oldHass) {
     this.__provideHass.forEach((el) => {
       (el as any).hass = hass;

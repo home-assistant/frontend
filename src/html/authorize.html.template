@@ -2,72 +2,68 @@
 <html>
   <head>
     <title>Home Assistant</title>
-    <link rel="modulepreload" href="<%= latestPageJS %>" crossorigin="use-credentials" />
-    <%= renderTemplate('_header') %>
+    <%= renderTemplate("_header.html.template") %>
+    <%= renderTemplate("_style_base.html.template") %>
     <style>
-      .content {
-        padding: 20px 16px;
-        max-width: 360px;
-        margin: 0 auto;
-      }
-
-      .header {
-        font-size: 1.96em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 300;
-      }
-
-      .header img {
-        margin-right: 16px;
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
       }
       @media (prefers-color-scheme: dark) {
         html {
-          background-color: #111111;
-          color: #e1e1e1;
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
         }
+      }
+      body {
+        box-sizing: border-box;
+        padding: 32px 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .content {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 0 16px;
+        box-sizing: content-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+      }
+
+      .header img {
+        height: 56px;
+        width: 56px;
       }
     </style>
   </head>
   <body>
     <div class="content">
       <div class="header">
-        <img src="/static/icons/favicon-192x192.png" height="52" alt="" />
-        Home Assistant
+        <img src="/static/icons/favicon-192x192.png" alt="Home Assistant" />
       </div>
-      <ha-authorize><p>Initializing</p></ha-authorize>
+      <ha-authorize></ha-authorize>
     </div>
-
-    <%= renderTemplate('_js_base') %>
-    <%= renderTemplate('_preload_roboto') %>
-
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
     <script crossorigin="use-credentials">
-      if (!window.globalThis) {
-        window.globalThis = window;
-      }
       // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
       if (!isS11_12) {
-        import("<%= latestPageJS %>");
+        <% for (const entry of latestEntryJS) { %>
+          import("<%= entry %>");
+        <% } %>
         window.latestJS = true;
         window.providersPromise = fetch("/auth/providers", {
           credentials: "same-origin",
         });
       }
     </script>
-
-    <script>
-      (function() {
-        if (!window.latestJS) {
-          <% if (useRollup) { %>
-            _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5PageJS %>");
-            }
-          <% } else { %>
-            _ls("<%= es5PageJS %>");
-          <% } %>
-        }
-      })();
-    </script>
+    <%= renderTemplate("_script_load_es5.html.template") %>
   </body>
 </html>

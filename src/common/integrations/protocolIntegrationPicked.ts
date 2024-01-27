@@ -17,7 +17,7 @@ export const protocolIntegrationPicked = async (
   element: HTMLElement,
   hass: HomeAssistant,
   domain: string,
-  options?: { brand?: string; domain?: string }
+  options?: { brand?: string; domain?: string; config_entry?: string }
 ) => {
   if (options?.domain) {
     const localize = await hass.loadBackendTranslation("title", options.domain);
@@ -32,11 +32,16 @@ export const protocolIntegrationPicked = async (
   }
 
   if (domain === "zwave_js") {
-    const entries = await getConfigEntries(hass, {
-      domain,
-    });
+    const entries = options?.config_entry
+      ? undefined
+      : await getConfigEntries(hass, {
+          domain,
+        });
 
-    if (!isComponentLoaded(hass, "zwave_js") || !entries.length) {
+    if (
+      !isComponentLoaded(hass, "zwave_js") ||
+      (!options?.config_entry && !entries?.length)
+    ) {
       // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         title: hass.localize(
@@ -71,14 +76,19 @@ export const protocolIntegrationPicked = async (
     }
 
     showZWaveJSAddNodeDialog(element, {
-      entry_id: entries[0].entry_id,
+      entry_id: options?.config_entry || entries![0].entry_id,
     });
   } else if (domain === "zha") {
-    const entries = await getConfigEntries(hass, {
-      domain,
-    });
+    const entries = options?.config_entry
+      ? undefined
+      : await getConfigEntries(hass, {
+          domain,
+        });
 
-    if (!isComponentLoaded(hass, "zha") || !entries.length) {
+    if (
+      !isComponentLoaded(hass, "zha") ||
+      (!options?.config_entry && !entries?.length)
+    ) {
       // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         title: hass.localize(
@@ -117,10 +127,15 @@ export const protocolIntegrationPicked = async (
 
     navigate("/config/zha/add");
   } else if (domain === "matter") {
-    const entries = await getConfigEntries(hass, {
-      domain,
-    });
-    if (!isComponentLoaded(hass, domain) || !entries.length) {
+    const entries = options?.config_entry
+      ? undefined
+      : await getConfigEntries(hass, {
+          domain,
+        });
+    if (
+      !isComponentLoaded(hass, domain) ||
+      (!options?.config_entry && !entries?.length)
+    ) {
       // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         title: hass.localize(

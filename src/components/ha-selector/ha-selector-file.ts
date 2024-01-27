@@ -10,9 +10,9 @@ import "../ha-file-upload";
 
 @customElement("ha-selector-file")
 export class HaFileSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: FileSelector;
+  @property({ attribute: false }) public selector!: FileSelector;
 
   @property() public value?: string;
 
@@ -37,9 +37,12 @@ export class HaFileSelector extends LitElement {
         .label=${this.label}
         .required=${this.required}
         .disabled=${this.disabled}
-        .helper=${this.helper}
+        .supports=${this.helper}
         .uploading=${this._busy}
-        .value=${this.value ? this._filename?.name || "Unknown file" : ""}
+        .value=${this.value
+          ? this._filename?.name ||
+            this.hass.localize("ui.components.selectors.file.unknown_file")
+          : undefined}
         @file-picked=${this._uploadFile}
         @change=${this._removeFile}
       ></ha-file-upload>

@@ -1,0 +1,25 @@
+name: RelativeCI
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
+
+jobs:
+  upload:
+    name: Upload stats
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      matrix:
+        bundle: [frontend, supervisor]
+        build: [modern, legacy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send bundle stats and build information to RelativeCI
+        uses: relative-ci/agent-action@v2.1.10
+        with:
+          key: ${{ secrets[format('RELATIVE_CI_KEY_{0}_{1}', matrix.bundle, matrix.build)] }}
+          token: ${{ github.token }}
+          artifactName: ${{ format('{0}-bundle-stats', matrix.bundle) }}
+          webpackStatsFile: ${{ format('{0}-{1}.json', matrix.bundle, matrix.build) }}

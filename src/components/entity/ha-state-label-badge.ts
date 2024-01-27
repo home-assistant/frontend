@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
-import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
@@ -61,6 +60,8 @@ export class HaStateLabelBadge extends LitElement {
   @property() public icon?: string;
 
   @property() public image?: string;
+
+  @property({ type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 
@@ -111,9 +112,9 @@ export class HaStateLabelBadge extends LitElement {
     const image = this.icon
       ? ""
       : this.image
-      ? this.image
-      : entityState.attributes.entity_picture_local ||
-        entityState.attributes.entity_picture;
+        ? this.image
+        : entityState.attributes.entity_picture_local ||
+          entityState.attributes.entity_picture;
     const value =
       !image && !showIcon
         ? this._computeValue(domain, entityState, entry)
@@ -132,12 +133,15 @@ export class HaStateLabelBadge extends LitElement {
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.name ?? computeStateName(entityState)}
+        .description=${this.showName === false
+          ? undefined
+          : this.name ?? computeStateName(entityState)}
       >
         ${!image && showIcon
           ? html`<ha-state-icon
               .icon=${this.icon}
-              .state=${entityState}
+              .stateObj=${entityState}
+              .hass=${this.hass}
             ></ha-state-icon>`
           : ""}
         ${value && !image && !showIcon
@@ -170,7 +174,6 @@ export class HaStateLabelBadge extends LitElement {
       case "scene":
       case "sun":
       case "timer":
-      case "updater":
         return null;
       // @ts-expect-error we don't break and go to default
       case "sensor":
@@ -183,17 +186,12 @@ export class HaStateLabelBadge extends LitElement {
           entityState.state === UNAVAILABLE
           ? "—"
           : isNumericState(entityState)
-          ? formatNumber(
-              entityState.state,
-              this.hass!.locale,
-              getNumberFormatOptions(entityState, entry)
-            )
-          : computeStateDisplay(
-              this.hass!.localize,
-              entityState,
-              this.hass!.locale,
-              this.hass!.entities
-            );
+            ? formatNumber(
+                entityState.state,
+                this.hass!.locale,
+                getNumberFormatOptions(entityState, entry)
+              )
+            : this.hass!.formatEntityState(entityState);
     }
   }
 
@@ -209,7 +207,6 @@ export class HaStateLabelBadge extends LitElement {
       case "alarm_control_panel":
       case "binary_sensor":
       case "device_tracker":
-      case "updater":
       case "person":
       case "scene":
       case "sun":
@@ -280,39 +277,38 @@ export class HaStateLabelBadge extends LitElement {
         font-size: 70%;
       }
       ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
       ha-label-badge.has-unit_of_measurement {
         --ha-label-badge-label-text-transform: none;
       }
 
-      ha-label-badge.binary_sensor,
-      ha-label-badge.updater {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      ha-label-badge.binary_sensor {
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .red {
-        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        --ha-label-badge-color: var(--label-badge-red);
       }
 
       .blue {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        --ha-label-badge-color: var(--label-badge-blue);
       }
 
       .green {
-        --ha-label-badge-color: var(--label-badge-green, #0da035);
+        --ha-label-badge-color: var(--label-badge-green);
       }
 
       .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
 
       .grey {
-        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
+        --ha-label-badge-color: var(--label-badge-grey);
       }
 
       .warning {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        --ha-label-badge-color: var(--label-badge-yellow);
       }
     `;
   }

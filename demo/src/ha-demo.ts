@@ -22,7 +22,7 @@ import { mockLovelace } from "./stubs/lovelace";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
-import { mockShoppingList } from "./stubs/shopping_list";
+import { mockTodo } from "./stubs/todo";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
@@ -49,7 +49,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockTranslations(hass);
     mockHistory(hass);
     mockRecorder(hass);
-    mockShoppingList(hass);
+    mockTodo(hass);
     mockSystemLog(hass);
     mockTemplate(hass);
     mockEvents(hass);

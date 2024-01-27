@@ -1,14 +1,31 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
+import { mdiClose } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
+import "./ha-icon-button";
 
 @customElement("ha-select")
 export class HaSelect extends SelectBase {
   // @ts-ignore
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
+
+  @property({ type: Boolean, reflect: true }) public clearable = false;
+
+  protected override render() {
+    return html`
+      ${super.render()}
+      ${this.clearable && !this.required && !this.disabled && this.value
+        ? html`<ha-icon-button
+            label="clear"
+            @click=${this._clearValue}
+            .path=${mdiClose}
+          ></ha-icon-button>`
+        : nothing}
+    `;
+  }
 
   protected override renderLeadingIcon() {
     if (!this.icon) {
@@ -33,6 +50,15 @@ export class HaSelect extends SelectBase {
     );
   }
 
+  private _clearValue(): void {
+    if (this.disabled || !this.value) {
+      return;
+    }
+    this.valueSetDirectly = true;
+    this.select(-1);
+    this.mdcFoundation.handleChange();
+  }
+
   private _translationsUpdated = debounce(async () => {
     await nextRender();
     this.layoutOptions();
@@ -41,11 +67,17 @@ export class HaSelect extends SelectBase {
   static override styles = [
     styles,
     css`
+      :host([clearable]) {
+        position: relative;
+      }
       .mdc-select:not(.mdc-select--disabled) .mdc-select__icon {
         color: var(--secondary-text-color);
       }
       .mdc-select__anchor {
         width: var(--ha-select-min-width, 200px);
+      }
+      .mdc-select--filled .mdc-select__anchor {
+        height: var(--ha-select-height, 56px);
       }
       .mdc-select--filled .mdc-floating-label {
         inset-inline-start: 12px;
@@ -64,6 +96,23 @@ export class HaSelect extends SelectBase {
       }
       .mdc-select__anchor .mdc-floating-label--float-above {
         transform-origin: var(--float-start);
+      }
+      .mdc-select__selected-text-container {
+        padding-inline-end: var(--select-selected-text-padding-end, 0px);
+      }
+      :host([clearable]) .mdc-select__selected-text-container {
+        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+      }
+      ha-icon-button {
+        position: absolute;
+        top: 10px;
+        right: 28px;
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+        color: var(--secondary-text-color);
+        inset-inline-start: initial;
+        inset-inline-end: 28px;
+        direction: var(--direction);
       }
     `,
   ];

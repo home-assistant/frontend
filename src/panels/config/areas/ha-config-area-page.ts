@@ -1,7 +1,6 @@
 import "@material/mwc-button";
-import { mdiImagePlus, mdiPencil } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list";
+import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import {
   HassEntity,
   UnsubscribeFunc,
@@ -53,6 +52,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import "../../../components/ha-list-item";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -65,11 +65,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
   @property() public areaId!: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() public _areas!: AreaRegistryEntry[];
 
@@ -246,13 +246,32 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .header=${area.name}
       >
-        <ha-icon-button
-          .path=${mdiPencil}
-          .entry=${area}
-          @click=${this._showSettings}
-          slot="toolbar-icon"
-          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
-        ></ha-icon-button>
+        <ha-button-menu slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .entry=${area}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize("ui.panel.config.areas.edit_settings")}
+            <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            class="warning"
+            graphic="icon"
+            @click=${this._deleteConfirm}
+          >
+            ${this.hass.localize("ui.panel.config.areas.editor.delete")}
+            <ha-svg-icon class="warning" slot="graphic" .path=${mdiDelete}>
+            </ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
 
         <div class="container">
           <div class="column">
@@ -282,23 +301,24 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
-                ? devices.map(
-                    (device) =>
-                      html`
+                ? html`<mwc-list>
+                    ${devices.map(
+                      (device) => html`
                         <a href="/config/devices/device/${device.id}">
-                          <paper-item>
-                            <paper-item-body> ${device.name} </paper-item-body>
-                            <ha-icon-next></ha-icon-next>
-                          </paper-item>
+                          <ha-list-item hasMeta>
+                            <span>${device.name}</span>
+                            <ha-icon-next slot="meta"></ha-icon-next>
+                          </ha-list-item>
                         </a>
                       `
-                  )
+                    )}
+                  </mwc-list>`
                 : html`
-                    <paper-item class="no-link"
-                      >${this.hass.localize(
+                    <div class="no-entries">
+                      ${this.hass.localize(
                         "ui.panel.config.devices.no_devices"
-                      )}</paper-item
-                    >
+                      )}
+                    </div>
                   `}
             </ha-card>
             <ha-card
@@ -308,27 +328,30 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
               )}
             >
               ${entities.length
-                ? entities.map((entity) =>
-                    ["scene", "script", "automation"].includes(
-                      computeDomain(entity.entity_id)
-                    )
-                      ? ""
-                      : html`
-                          <paper-item
-                            @click=${this._openEntity}
-                            .entity=${entity}
-                          >
-                            <paper-item-body> ${entity.name} </paper-item-body>
-                            <ha-icon-next></ha-icon-next>
-                          </paper-item>
-                        `
-                  )
+                ? html`<mwc-list>
+                    ${entities.map((entity) =>
+                      ["scene", "script", "automation"].includes(
+                        computeDomain(entity.entity_id)
+                      )
+                        ? ""
+                        : html`
+                            <ha-list-item
+                              @click=${this._openEntity}
+                              .entity=${entity}
+                              hasMeta
+                            >
+                              <span>${entity.name}</span>
+                              <ha-icon-next slot="meta"></ha-icon-next>
+                            </ha-list-item>
+                          `
+                    )}</mwc-list
+                  >`
                 : html`
-                    <paper-item class="no-link"
-                      >${this.hass.localize(
+                    <div class="no-entries">
+                      ${this.hass.localize(
                         "ui.panel.config.areas.editor.no_linked_entities"
-                      )}</paper-item
-                    >
+                      )}
+                    </div>
                   `}
             </ha-card>
           </div>
@@ -347,12 +370,14 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.areas.assigned_to_area"
                             )}:
                           </h3>
-                          ${groupedAutomations.map((automation) =>
-                            this._renderAutomation(
-                              automation.name,
-                              automation.entity
-                            )
-                          )}`
+                          <mwc-list>
+                            ${groupedAutomations.map((automation) =>
+                              this._renderAutomation(
+                                automation.name,
+                                automation.entity
+                              )
+                            )}</mwc-list
+                          >`
                       : ""}
                     ${relatedAutomations?.length
                       ? html`<h3>
@@ -360,20 +385,22 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.areas.targeting_area"
                             )}:
                           </h3>
-                          ${relatedAutomations.map((automation) =>
-                            this._renderAutomation(
-                              automation.name,
-                              automation.entity
-                            )
-                          )}`
+                          <mwc-list>
+                            ${relatedAutomations.map((automation) =>
+                              this._renderAutomation(
+                                automation.name,
+                                automation.entity
+                              )
+                            )}</mwc-list
+                          >`
                       : ""}
                     ${!groupedAutomations?.length && !relatedAutomations?.length
                       ? html`
-                          <paper-item class="no-link"
-                            >${this.hass.localize(
+                          <div class="no-entries">
+                            ${this.hass.localize(
                               "ui.panel.config.devices.automation.no_automations"
-                            )}</paper-item
-                          >
+                            )}
+                          </div>
                         `
                       : ""}
                   </ha-card>
@@ -393,9 +420,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.areas.assigned_to_area"
                             )}:
                           </h3>
-                          ${groupedScenes.map((scene) =>
-                            this._renderScene(scene.name, scene.entity)
-                          )}`
+                          <mwc-list>
+                            ${groupedScenes.map((scene) =>
+                              this._renderScene(scene.name, scene.entity)
+                            )}</mwc-list
+                          >`
                       : ""}
                     ${relatedScenes?.length
                       ? html`<h3>
@@ -403,17 +432,19 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.areas.targeting_area"
                             )}:
                           </h3>
-                          ${relatedScenes.map((scene) =>
-                            this._renderScene(scene.name, scene.entity)
-                          )}`
+                          <mwc-list>
+                            ${relatedScenes.map((scene) =>
+                              this._renderScene(scene.name, scene.entity)
+                            )}</mwc-list
+                          >`
                       : ""}
                     ${!groupedScenes?.length && !relatedScenes?.length
                       ? html`
-                          <paper-item class="no-link"
-                            >${this.hass.localize(
+                          <div class="no-entries">
+                            ${this.hass.localize(
                               "ui.panel.config.devices.scene.no_scenes"
-                            )}</paper-item
-                          >
+                            )}
+                          </div>
                         `
                       : ""}
                   </ha-card>
@@ -449,11 +480,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                       : ""}
                     ${!groupedScripts?.length && !relatedScripts?.length
                       ? html`
-                          <paper-item class="no-link"
-                            >${this.hass.localize(
+                          <div class="no-entries">
+                            ${this.hass.localize(
                               "ui.panel.config.devices.script.no_scripts"
-                            )}</paper-item
-                          >
+                            )}
+                          </div>
                         `
                       : ""}
                   </ha-card>
@@ -546,16 +577,16 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
             : undefined
         )}
       >
-        <paper-item .disabled=${!entityState.attributes.id}>
-          <paper-item-body> ${name} </paper-item-body>
-          <ha-icon-next></ha-icon-next>
-        </paper-item>
+        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
+          <span>${name}</span>
+          <ha-icon-next slot="meta"></ha-icon-next>
+        </ha-list-item>
       </a>
       ${!entityState.attributes.id
         ? html`
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </paper-tooltip>
+            </simple-tooltip>
           `
         : ""}
     </div>`;
@@ -570,27 +601,34 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
             : undefined
         )}
       >
-        <paper-item .disabled=${!entityState.attributes.id}>
-          <paper-item-body> ${name} </paper-item-body>
-          <ha-icon-next></ha-icon-next>
-        </paper-item>
+        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
+          <span>${name}</span>
+          <ha-icon-next slot="meta"></ha-icon-next>
+        </ha-list-item>
       </a>
       ${!entityState.attributes.id
         ? html`
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </paper-tooltip>
+            </simple-tooltip>
           `
         : ""}
     </div>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
-    return html`<a href=${`/config/script/edit/${entityState.entity_id}`}>
-      <paper-item>
-        <paper-item-body> ${name} </paper-item-body>
-        <ha-icon-next></ha-icon-next>
-      </paper-item>
+    const entry = this._entities.find(
+      (e) => e.entity_id === entityState.entity_id
+    );
+    let url = `/config/script/show/${entityState.entity_id}`;
+    if (entry) {
+      url = `/config/script/edit/${entry.unique_id}`;
+    }
+    return html`<a href=${url}>
+      <ha-list-item hasMeta>
+        <span>${name}</span>
+        <ha-icon-next slot="meta"></ha-icon-next>
+      </ha-list-item>
     </a>`;
   }
 
@@ -615,31 +653,25 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       entry,
       updateEntry: async (values) =>
         updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
-      removeEntry: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.areas.delete.confirmation_title",
-              { name: entry!.name }
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.areas.delete.confirmation_text"
-            ),
-            dismissText: this.hass.localize("ui.common.cancel"),
-            confirmText: this.hass.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
-          return false;
-        }
+    });
+  }
 
-        try {
-          await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
-          afterNextRender(() => history.back());
-          return true;
-        } catch (err: any) {
-          return false;
-        }
+  private async _deleteConfirm() {
+    const area = this._area(this.areaId, this._areas);
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_title",
+        { name: area!.name }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_text"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+      confirm: async () => {
+        await deleteAreaRegistryEntry(this.hass!, area!.area_id);
+        afterNextRender(() => history.back());
       },
     });
   }
@@ -690,18 +722,9 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           margin-top: 0;
         }
 
-        paper-item {
-          cursor: pointer;
-          font-size: var(--paper-font-body1_-_font-size);
-        }
-
         a {
           text-decoration: none;
           color: var(--primary-text-color);
-        }
-
-        paper-item.no-link {
-          cursor: default;
         }
 
         ha-card > a:first-child {
@@ -737,6 +760,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         :host([narrow]) ha-logbook {
           height: 235px;
           overflow: auto;
+        }
+        .no-entries {
+          text-align: center;
+          padding: 16px;
+          color: var(--secondary-text-color);
         }
       `,
     ];

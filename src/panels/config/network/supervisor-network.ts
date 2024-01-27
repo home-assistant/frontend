@@ -4,7 +4,6 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiDotsVertical } from "@mdi/js";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -14,9 +13,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
-import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-radio";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   AccessPoints,
@@ -32,6 +29,10 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { showIPDetailDialog } from "./show-ip-detail-dialog";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/ha-radio";
+import type { HaRadio } from "../../../components/ha-radio";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -115,8 +116,7 @@ export class HassioNetwork extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.connected_to",
-                        "ssid",
-                        this._interface?.wifi?.ssid
+                        { ssid: this._interface?.wifi?.ssid }
                       )}
                     </p>`
                   : ""}
@@ -126,7 +126,7 @@ export class HassioNetwork extends LitElement {
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress active size="small">
+                    ? html`<ha-circular-progress indeterminate size="small">
                       </ha-circular-progress>`
                     : this.hass.localize(
                         "ui.panel.config.network.supervisor.scan_ap"
@@ -140,25 +140,24 @@ export class HassioNetwork extends LitElement {
                         ${this._accessPoints.accesspoints
                           .filter((ap) => ap.ssid)
                           .map(
-                            (ap) =>
-                              html`
-                                <mwc-list-item
-                                  twoline
-                                  @click=${this._selectAP}
-                                  .activated=${ap.ssid ===
-                                  this._wifiConfiguration?.ssid}
-                                  .ap=${ap}
-                                >
-                                  <span>${ap.ssid}</span>
-                                  <span slot="secondary">
-                                    ${ap.mac} -
-                                    ${this.hass.localize(
-                                      "ui.panel.config.network.supervisor.signal_strength"
-                                    )}:
-                                    ${ap.signal}
-                                  </span>
-                                </mwc-list-item>
-                              `
+                            (ap) => html`
+                              <mwc-list-item
+                                twoline
+                                @click=${this._selectAP}
+                                .activated=${ap.ssid ===
+                                this._wifiConfiguration?.ssid}
+                                .ap=${ap}
+                              >
+                                <span>${ap.ssid}</span>
+                                <span slot="secondary">
+                                  ${ap.mac} -
+                                  ${this.hass.localize(
+                                    "ui.panel.config.network.supervisor.signal_strength"
+                                  )}:
+                                  ${ap.signal}
+                                </span>
+                              </mwc-list-item>
+                            `
                           )}
                       </mwc-list>
                     `
@@ -215,18 +214,16 @@ export class HassioNetwork extends LitElement {
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <paper-input
-                              class="flex-auto"
+                            <ha-textfield
                               type="password"
                               id="psk"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
                               )}
-                              version="wifi"
-                              @value-changed=${this
-                                ._handleInputValueChangedWifi}
+                              .version=${"wifi"}
+                              @change=${this._handleInputValueChangedWifi}
                             >
-                            </paper-input>
+                            </ha-textfield>
                           `
                         : ""}
                     `
@@ -245,17 +242,21 @@ export class HassioNetwork extends LitElement {
       <div class="card-actions">
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress active size="small">
+            ? html`<ha-circular-progress indeterminate size="small">
               </ha-circular-progress>`
             : this.hass.localize("ui.common.save")}
         </mwc-button>
-        <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+        <ha-button-menu @action=${this._handleAction}>
           <ha-icon-button
             slot="trigger"
             .label=${"ui.common.menu"}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item>IP Information</mwc-list-item>
+          <mwc-list-item
+            >${this.hass.localize(
+              "ui.panel.config.network.ip_information"
+            )}</mwc-list-item
+          >
         </ha-button-menu>
       </div>`;
   }
@@ -302,7 +303,7 @@ export class HassioNetwork extends LitElement {
         <div class="radio-row">
           <ha-formfield
             .label=${this.hass.localize(
-              "ui.panel.config.network.supervisor.dhcp"
+              "ui.panel.config.network.supervisor.auto"
             )}
           >
             <ha-radio
@@ -346,39 +347,36 @@ export class HassioNetwork extends LitElement {
         </div>
         ${this._interface![version].method === "static"
           ? html`
-              <paper-input
-                class="flex-auto"
+              <ha-textfield
                 id="address"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.ip_netmask"
                 )}
                 .version=${version}
                 .value=${this._toString(this._interface![version].address)}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
-              <paper-input
-                class="flex-auto"
+              </ha-textfield>
+              <ha-textfield
                 id="gateway"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.gateway"
                 )}
                 .version=${version}
                 .value=${this._interface![version].gateway}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
-              <paper-input
-                class="flex-auto"
+              </ha-textfield>
+              <ha-textfield
                 id="nameservers"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.dns_servers"
                 )}
                 .version=${version}
                 .value=${this._toString(this._interface![version].nameservers)}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
+              </ha-textfield>
             `
           : ""}
       </ha-expansion-panel>
@@ -485,8 +483,9 @@ export class HassioNetwork extends LitElement {
     this._interface = { ...this._interfaces[ev.detail.index] };
   }
 
-  private _handleRadioValueChanged(ev: CustomEvent): void {
-    const value = (ev.target as any).value as "disabled" | "auto" | "static";
+  private _handleRadioValueChanged(ev: Event): void {
+    const source = ev.target as HaRadio;
+    const value = source.value as "disabled" | "auto" | "static";
     const version = (ev.target as any).version as "ipv4" | "ipv6";
 
     if (
@@ -502,21 +501,19 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _handleRadioValueChangedAp(ev: CustomEvent): void {
-    const value = (ev.target as any).value as string as
-      | "open"
-      | "wep"
-      | "wpa-psk";
+  private _handleRadioValueChangedAp(ev: Event): void {
+    const source = ev.target as HaRadio;
+    const value = source.value as string as "open" | "wep" | "wpa-psk";
     this._wifiConfiguration!.auth = value;
     this._dirty = true;
     this.requestUpdate("_wifiConfiguration");
   }
 
-  private _handleInputValueChanged(ev: CustomEvent): void {
-    const value: string | null | undefined = (ev.target as PaperInputElement)
-      .value;
+  private _handleInputValueChanged(ev: Event): void {
+    const source = ev.target as HaTextField;
+    const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
-    const id = (ev.target as PaperInputElement).id;
+    const id = source.id;
 
     if (
       !value ||
@@ -530,10 +527,10 @@ export class HassioNetwork extends LitElement {
     this._interface[version]![id] = value;
   }
 
-  private _handleInputValueChangedWifi(ev: CustomEvent): void {
-    const value: string | null | undefined = (ev.target as PaperInputElement)
-      .value;
-    const id = (ev.target as PaperInputElement).id;
+  private _handleInputValueChangedWifi(ev: Event): void {
+    const source = ev.target as HaTextField;
+    const value = source.value;
+    const id = source.id;
 
     if (
       !value ||
@@ -549,12 +546,6 @@ export class HassioNetwork extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-        }
-
         mwc-tab-bar {
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
@@ -572,18 +563,16 @@ export class HassioNetwork extends LitElement {
 
         mwc-button.scan {
           margin-left: 8px;
-        }
-
-        :host([rtl]) app-toolbar {
-          direction: rtl;
-          text-align: right;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;
         }
-        paper-input {
-          padding: 0 14px;
+        ha-textfield {
+          display: block;
+          margin-top: 16px;
         }
         mwc-list-item {
           --mdc-list-side-padding: 10px;

@@ -32,6 +32,9 @@ export class HaHeaderBar extends LitElement {
     return [
       unsafeCSS(topAppBarStyles),
       css`
+        .mdc-top-app-bar__row {
+          height: var(--header-height);
+        }
         .mdc-top-app-bar {
           position: static;
           color: var(--mdc-theme-on-primary, #fff);
@@ -41,6 +44,10 @@ export class HaHeaderBar extends LitElement {
         }
         .mdc-top-app-bar__section.mdc-top-app-bar__section--align-end {
           flex: none;
+        }
+        .mdc-top-app-bar__title {
+          padding-inline-start: 20px;
+          padding-inline-end: initial;
         }
       `,
     ];

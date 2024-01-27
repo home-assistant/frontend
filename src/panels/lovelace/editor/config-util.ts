@@ -1,8 +1,10 @@
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import {
-  LovelaceCardConfig,
-  LovelaceConfig,
   LovelaceViewConfig,
-} from "../../../data/lovelace";
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 
 export const addCard = (
   config: LovelaceConfig,
@@ -16,6 +18,10 @@ export const addCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot add a card in a strategy view.");
     }
 
     const cards = viewConf.cards
@@ -48,6 +54,10 @@ export const addCards = (
       return;
     }
 
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot add cards in a strategy view.");
+    }
+
     const cards = viewConf.cards
       ? [...viewConf.cards, ...cardConfigs]
       : [...cardConfigs];
@@ -78,6 +88,10 @@ export const replaceCard = (
       return;
     }
 
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot replace a card in a strategy view.");
+    }
+
     views.push({
       ...viewConf,
       cards: (viewConf.cards || []).map((origConf, ind) =>
@@ -103,6 +117,10 @@ export const deleteCard = (
     if (index !== viewIndex) {
       views.push(config.views[index]);
       return;
+    }
+
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot delete a card in a strategy view.");
     }
 
     views.push({
@@ -133,6 +151,10 @@ export const insertCard = (
       return;
     }
 
+    if (isStrategyView(viewConf)) {
+      throw new Error("You cannot insert a card in a strategy view.");
+    }
+
     const cards = viewConf.cards
       ? [
           ...viewConf.cards.slice(0, cardIndex),
@@ -158,10 +180,16 @@ export const swapCard = (
   path1: [number, number],
   path2: [number, number]
 ): LovelaceConfig => {
-  const card1 = config.views[path1[0]].cards![path1[1]];
-  const card2 = config.views[path2[0]].cards![path2[1]];
-
   const origView1 = config.views[path1[0]];
+  const origView2 = config.views[path2[0]];
+
+  if (isStrategyView(origView1) || isStrategyView(origView2)) {
+    throw new Error("You cannot move swap cards in a strategy view.");
+  }
+
+  const card1 = origView1.cards![path1[1]];
+  const card2 = origView2.cards![path2[1]];
+
   const newView1 = {
     ...origView1,
     cards: origView1.cards!.map((origCard, index) =>
@@ -169,10 +197,10 @@ export const swapCard = (
     ),
   };
 
-  const origView2 = path1[0] === path2[0] ? newView1 : config.views[path2[0]];
+  const updatedOrigView2 = path1[0] === path2[0] ? newView1 : origView2;
   const newView2 = {
-    ...origView2,
-    cards: origView2.cards!.map((origCard, index) =>
+    ...updatedOrigView2,
+    cards: updatedOrigView2.cards!.map((origCard, index) =>
       index === path2[1] ? card1 : origCard
     ),
   };
@@ -181,6 +209,39 @@ export const swapCard = (
     ...config,
     views: config.views.map((origView, index) =>
       index === path2[0] ? newView2 : index === path1[0] ? newView1 : origView
+    ),
+  };
+};
+
+export const moveCardToPosition = (
+  config: LovelaceConfig,
+  path: [number, number],
+  position: number
+): LovelaceConfig => {
+  const view = config.views[path[0]];
+
+  if (isStrategyView(view)) {
+    throw new Error("You cannot move a card in a strategy view.");
+  }
+
+  const oldIndex = path[1];
+  const newIndex = Math.max(Math.min(position - 1, view.cards!.length - 1), 0);
+
+  const newCards = [...view.cards!];
+
+  const card = newCards[oldIndex];
+  newCards.splice(oldIndex, 1);
+  newCards.splice(newIndex, 0, card);
+
+  const newView = {
+    ...view,
+    cards: newCards,
+  };
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === path[0] ? newView : origView
     ),
   };
 };
@@ -194,6 +255,16 @@ export const moveCard = (
     throw new Error("You cannot move a card to the view it is in.");
   }
   const fromView = config.views[fromPath[0]];
+  const toView = config.views[toPath[0]];
+
+  if (isStrategyView(fromView)) {
+    throw new Error("You cannot move a card from a strategy view.");
+  }
+
+  if (isStrategyView(toView)) {
+    throw new Error("You cannot move a card to a strategy view.");
+  }
+
   const card = fromView.cards![fromPath[1]];
 
   const newView1 = {
@@ -203,7 +274,6 @@ export const moveCard = (
     ),
   };
 
-  const toView = config.views[toPath[0]];
   const cards = toView.cards ? [...toView.cards, card] : [card];
 
   const newView2 = {
@@ -217,30 +287,51 @@ export const moveCard = (
       index === toPath[0]
         ? newView2
         : index === fromPath[0]
-        ? newView1
-        : origView
+          ? newView1
+          : origView
     ),
   };
 };
 
 export const addView = (
+  hass: HomeAssistant,
   config: LovelaceConfig,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => ({
-  ...config,
-  views: config.views.concat(viewConfig),
-});
+): LovelaceConfig => {
+  if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
+    throw new Error(
+      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+    );
+  }
+  return {
+    ...config,
+    views: config.views.concat(viewConfig),
+  };
+};
 
 export const replaceView = (
+  hass: HomeAssistant,
   config: LovelaceConfig,
   viewIndex: number,
   viewConfig: LovelaceViewConfig
-): LovelaceConfig => ({
-  ...config,
-  views: config.views.map((origView, index) =>
-    index === viewIndex ? viewConfig : origView
-  ),
-});
+): LovelaceConfig => {
+  if (
+    viewConfig.path &&
+    config.views.some(
+      (v, idx) => v.path === viewConfig.path && idx !== viewIndex
+    )
+  ) {
+    throw new Error(
+      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+    );
+  }
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === viewIndex ? viewConfig : origView
+    ),
+  };
+};
 
 export const swapView = (
   config: LovelaceConfig,

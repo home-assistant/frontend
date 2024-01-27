@@ -8,7 +8,6 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-navigation-list";
-import "../../../components/ha-tip";
 import { BackupContent, fetchBackupInfo } from "../../../data/backup";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
@@ -30,14 +29,13 @@ import { configSections } from "../ha-panel-config";
 class HaConfigSystemNavigation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _latestBackupDate?: string;
 
@@ -56,14 +54,12 @@ class HaConfigSystemNavigation extends LitElement {
         switch (page.translationKey) {
           case "backup":
             description = this._latestBackupDate
-              ? this.hass.localize(
-                  "ui.panel.config.backup.description",
-                  "relative_time",
-                  relativeTime(
+              ? this.hass.localize("ui.panel.config.backup.description", {
+                  relative_time: relativeTime(
                     new Date(this._latestBackupDate),
                     this.hass.locale
-                  )
-                )
+                  ),
+                })
               : this.hass.localize(
                   "ui.panel.config.backup.description_no_backup"
                 );
@@ -71,23 +67,21 @@ class HaConfigSystemNavigation extends LitElement {
           case "network":
             description = this.hass.localize(
               "ui.panel.config.network.description",
-              "state",
-              this._externalAccess
-                ? this.hass.localize("ui.panel.config.network.enabled")
-                : this.hass.localize("ui.panel.config.network.disabled")
+              {
+                state: this._externalAccess
+                  ? this.hass.localize("ui.panel.config.network.enabled")
+                  : this.hass.localize("ui.panel.config.network.disabled"),
+              }
             );
             break;
           case "storage":
             description = this._storageInfo
-              ? this.hass.localize(
-                  "ui.panel.config.storage.description",
-                  "percent_used",
-                  `${Math.round(
+              ? this.hass.localize("ui.panel.config.storage.description", {
+                  percent_used: `${Math.round(
                     (this._storageInfo.used / this._storageInfo.total) * 100
                   )}${blankBeforePercent(this.hass.locale)}%`,
-                  "free_space",
-                  `${this._storageInfo.free} GB`
-                )
+                  free_space: `${this._storageInfo.free} GB`,
+                })
               : "";
             break;
           case "hardware":
@@ -165,10 +159,10 @@ class HaConfigSystemNavigation extends LitElement {
     const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
       ? await fetchHassioBackups(this.hass)
       : isComponentLoaded(this.hass, "backup")
-      ? await fetchBackupInfo(this.hass).then(
-          (backupData) => backupData.backups
-        )
-      : [];
+        ? await fetchBackupInfo(this.hass).then(
+            (backupData) => backupData.backups
+          )
+        : [];
 
     if (backups.length > 0) {
       this._latestBackupDate = (backups as any[]).reduce((a, b) =>
@@ -269,9 +263,6 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
-        }
-        ha-tip {
-          margin-bottom: max(env(safe-area-inset-bottom), 8px);
         }
       `,
     ];

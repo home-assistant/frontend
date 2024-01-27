@@ -3,7 +3,7 @@ import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/dashboard";
 
 export interface LovelaceDashboardDetailsDialogParams {
   dashboard?: LovelaceDashboard;

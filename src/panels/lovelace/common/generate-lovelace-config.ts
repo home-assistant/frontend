@@ -7,13 +7,14 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import type { AreaFilterValue } from "../../../components/ha-area-filter";
 import {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
-import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
-import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { computeUserInitials } from "../../../data/user";
 import { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
@@ -21,11 +22,13 @@ import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
   HumidifierCardConfig,
+  PictureCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
 import { EntityConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { areaCompare } from "../../../data/area_registry";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -36,6 +39,10 @@ const HIDE_DOMAIN = new Set([
   "script",
   "sun",
   "zone",
+  "event",
+  "tts",
+  "stt",
+  "todo",
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);
@@ -126,16 +133,36 @@ export const computeCards = (
         entity: entityId,
       };
       cards.push(cardConfig);
+    } else if (domain === "image") {
+      const cardConfig: PictureCardConfig = {
+        type: "picture",
+        image_entity: entityId,
+      };
+      cards.push(cardConfig);
     } else if (domain === "climate") {
       const cardConfig: ThermostatCardConfig = {
         type: "thermostat",
         entity: entityId,
+        features:
+          (states[entityId]?.attributes?.hvac_modes?.length ?? 0) > 1
+            ? [
+                {
+                  type: "climate-hvac-modes",
+                  hvac_modes: states[entityId]?.attributes?.hvac_modes,
+                },
+              ]
+            : undefined,
       };
       cards.push(cardConfig);
     } else if (domain === "humidifier") {
       const cardConfig: HumidifierCardConfig = {
         type: "humidifier",
         entity: entityId,
+        features: [
+          {
+            type: "humidifier-toggle",
+          },
+        ],
       };
       cards.push(cardConfig);
     } else if (domain === "media_player") {
@@ -179,11 +206,6 @@ export const computeCards = (
         conf.name = name;
       }
       footerEntities.push(conf);
-    } else if (
-      domain === "sensor" &&
-      stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
-    ) {
-      // Do nothing.
     } else {
       let name: string | undefined;
       const entityConf =
@@ -440,7 +462,10 @@ export const generateDefaultViewConfig = (
   entityEntries: HomeAssistant["entities"],
   entities: HassEntities,
   localize: LocalizeFunc,
-  energyPrefs?: EnergyPreferences
+  energyPrefs?: EnergyPreferences,
+  areasPrefs?: AreaFilterValue,
+  hideEntitiesWithoutAreas?: boolean,
+  hideEnergy?: boolean
 ): LovelaceViewConfig => {
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
@@ -462,6 +487,17 @@ export const generateDefaultViewConfig = (
     entityEntries,
     states
   );
+
+  if (areasPrefs?.hidden) {
+    for (const area of areasPrefs.hidden) {
+      delete splittedByAreaDevice.areasWithEntities[area];
+    }
+  }
+
+  if (hideEntitiesWithoutAreas) {
+    splittedByAreaDevice.devicesWithEntities = {};
+    splittedByAreaDevice.otherEntities = {};
+  }
 
   const splittedByGroups = splitByGroups(splittedByAreaDevice.otherEntities);
   splittedByGroups.groups.sort(
@@ -489,15 +525,12 @@ export const generateDefaultViewConfig = (
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  const sortedAreas = Object.entries(
-    splittedByAreaDevice.areasWithEntities
-  ).sort((a, b) => {
-    const areaA = areaEntries[a[0]];
-    const areaB = areaEntries[b[0]];
-    return stringCompare(areaA.name, areaB.name);
-  });
+  const sortedAreas = Object.keys(splittedByAreaDevice.areasWithEntities).sort(
+    areaCompare(areaEntries, areasPrefs?.order)
+  );
 
-  for (const [areaId, areaEntities] of sortedAreas) {
+  for (const areaId of sortedAreas) {
+    const areaEntities = splittedByAreaDevice.areasWithEntities[areaId];
     const area = areaEntries[areaId];
     areaCards.push(
       ...computeCards(
@@ -533,13 +566,11 @@ export const generateDefaultViewConfig = (
           title:
             device.name_by_user ||
             device.name ||
-            localize(
-              "ui.panel.config.devices.unnamed_device",
-              "type",
-              localize(
+            localize("ui.panel.config.devices.unnamed_device", {
+              type: localize(
                 `ui.panel.config.devices.type.${device.entry_type || "device"}`
-              )
-            ),
+              ),
+            }),
         }
       )
     );
@@ -547,7 +578,7 @@ export const generateDefaultViewConfig = (
 
   let energyCard: LovelaceCardConfig | undefined;
 
-  if (energyPrefs) {
+  if (energyPrefs && !hideEnergy) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
       (source) => source.type === "grid"

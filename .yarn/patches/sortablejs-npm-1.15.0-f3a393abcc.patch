@@ -1,0 +1,39 @@
+diff --git a/modular/sortable.complete.esm.js b/modular/sortable.complete.esm.js
+index 02e9f2d6bebeb430fe6e7c1cc3f9c3c9df051f14..bb8268b0844a1faa4108cc92c0be2a3dbaf23f83 100644
+--- a/modular/sortable.complete.esm.js
++++ b/modular/sortable.complete.esm.js
+@@ -1657,7 +1657,7 @@ Sortable.prototype =
+           target = parent; // store last element
+         }
+         /* jshint boss:true */
+-        while (parent = parent.parentNode);
++        while (parent = parent.parentNode || parent.getRootNode().host);
+       }
+ 
+       _unhideGhostForTarget();
+diff --git a/modular/sortable.core.esm.js b/modular/sortable.core.esm.js
+index b04c8b4634f7c6b4ef1aadbb48afe6564306dea9..39a107163c8c336ebd669b5ea8a936af87e1c1e7 100644
+--- a/modular/sortable.core.esm.js
++++ b/modular/sortable.core.esm.js
+@@ -1657,7 +1657,7 @@ Sortable.prototype =
+           target = parent; // store last element
+         }
+         /* jshint boss:true */
+-        while (parent = parent.parentNode);
++        while (parent = parent.parentNode || parent.getRootNode().host);
+       }
+ 
+       _unhideGhostForTarget();
+diff --git a/modular/sortable.esm.js b/modular/sortable.esm.js
+index 6ec7ed1bb557e21c2578200161e989c65d23150b..0a05475a22904472fac6c13f524c674da76584b0 100644
+--- a/modular/sortable.esm.js
++++ b/modular/sortable.esm.js
+@@ -1657,7 +1657,7 @@ Sortable.prototype =
+           target = parent; // store last element
+         }
+         /* jshint boss:true */
+-        while (parent = parent.parentNode);
++        while (parent = parent.parentNode || parent.getRootNode().host);
+       }
+ 
+       _unhideGhostForTarget();

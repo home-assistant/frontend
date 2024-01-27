@@ -80,7 +80,7 @@ const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
 ];
 
 @customElement("demo-automation-editor-condition")
-class DemoHaAutomationEditorCondition extends LitElement {
+export class DemoAutomationEditorCondition extends LitElement {
   @state() private hass!: HomeAssistant;
 
   @state() private _disabled = false;
@@ -121,17 +121,16 @@ class DemoHaAutomationEditorCondition extends LitElement {
             .value=${this.data[sampleIdx]}
           >
             ${["light", "dark"].map(
-              (slot) =>
-                html`
-                  <ha-automation-condition
-                    slot=${slot}
-                    .hass=${this.hass}
-                    .conditions=${this.data[sampleIdx]}
-                    .sampleIdx=${sampleIdx}
-                    .disabled=${this._disabled}
-                    @value-changed=${valueChanged}
-                  ></ha-automation-condition>
-                `
+              (slot) => html`
+                <ha-automation-condition
+                  slot=${slot}
+                  .hass=${this.hass}
+                  .conditions=${this.data[sampleIdx]}
+                  .sampleIdx=${sampleIdx}
+                  .disabled=${this._disabled}
+                  @value-changed=${valueChanged}
+                ></ha-automation-condition>
+              `
             )}
           </demo-black-white-row>
         `
@@ -156,6 +155,6 @@ class DemoHaAutomationEditorCondition extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-automation-editor-condition": DemoHaAutomationEditorCondition;
+    "demo-automation-editor-condition": DemoAutomationEditorCondition;
   }
 }

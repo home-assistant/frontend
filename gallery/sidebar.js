@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     // This section has no header and so all page links are shown directly in the sidebar
     category: "concepts",
@@ -44,6 +44,10 @@ module.exports = [
     category: "user-test",
     header: "Users",
     pages: ["user-types", "configuration-menu"],
+  },
+  {
+    category: "date-time",
+    header: "Date and Time",
   },
   {
     category: "design.home-assistant.io",

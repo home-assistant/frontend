@@ -44,29 +44,31 @@ class HaDomainIntegrations extends LitElement {
               ${this.hass.localize("ui.panel.config.integrations.discovered")}
             </h3>
             ${this.flowsInProgress.map(
-              (flow) => html`<mwc-list-item
-                graphic="medium"
-                .flow=${flow}
-                @request-selected=${this._flowInProgressPicked}
-                hasMeta
-              >
-                <img
-                  alt=""
-                  slot="graphic"
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain: flow.handler,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                />
-                <span
-                  >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+              (flow) =>
+                html`<mwc-list-item
+                  graphic="medium"
+                  .flow=${flow}
+                  @request-selected=${this._flowInProgressPicked}
+                  hasMeta
                 >
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`
+                  <img
+                    alt=""
+                    slot="graphic"
+                    loading="lazy"
+                    src=${brandsUrl({
+                      domain: flow.handler,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                  />
+                  <span
+                    >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                  >
+                  <ha-icon-next slot="meta"></ha-icon-next>
+                </mwc-list-item>`
             )}
             <li divider role="separator"></li>
             ${this.integration &&
@@ -105,6 +107,7 @@ class HaDomainIntegrations extends LitElement {
                     useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <span
@@ -167,6 +170,7 @@ class HaDomainIntegrations extends LitElement {
                 useFallback: true,
                 darkOptimized: this.hass.themes?.darkMode,
               })}
+              crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
             <span

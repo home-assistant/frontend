@@ -1,11 +1,14 @@
 import { HomeAssistant } from "../types";
 
-export interface Person {
-  id: string;
+export interface BasePerson {
   name: string;
+  picture?: string;
+}
+
+export interface Person extends BasePerson {
+  id: string;
   user_id?: string;
   device_trackers?: string[];
-  picture?: string;
 }
 
 export interface PersonMutableParams {

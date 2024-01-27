@@ -1,22 +1,19 @@
-// Run demo develop mode
-const gulp = require("gulp");
-const fs = require("fs");
-const path = require("path");
-const { marked } = require("marked");
-const glob = require("glob");
-const yaml = require("js-yaml");
-
-const env = require("../env");
-const paths = require("../paths");
-
-require("./clean.js");
-require("./translations.js");
-require("./gen-icons-json.js");
-require("./gather-static.js");
-require("./webpack.js");
-require("./service-worker.js");
-require("./entry-html.js");
-require("./rollup.js");
+import fs from "fs";
+import { glob } from "glob";
+import gulp from "gulp";
+import yaml from "js-yaml";
+import { marked } from "marked";
+import path from "path";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
+import "./clean.js";
+import "./entry-html.js";
+import "./gather-static.js";
+import "./gen-icons-json.js";
+import "./rollup.js";
+import "./service-worker.js";
+import "./translations.js";
+import "./webpack.js";
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -89,9 +86,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
   // Generate sidebar
   const sidebarPath = path.resolve(paths.gallery_dir, "sidebar.js");
-  // To make watch work during development
-  delete require.cache[sidebarPath];
-  const sidebar = require(sidebarPath);
+  const sidebar = (await import(sidebarPath)).default;
 
   const pagesToProcess = {};
   for (const key of processed) {
@@ -161,7 +156,7 @@ gulp.task(
       "gather-gallery-pages"
     ),
     "copy-static-gallery",
-    "gen-index-gallery-dev",
+    "gen-pages-gallery-dev",
     gulp.parallel(
       env.useRollup()
         ? "rollup-dev-server-gallery"
@@ -195,6 +190,6 @@ gulp.task(
     ),
     "copy-static-gallery",
     env.useRollup() ? "rollup-prod-gallery" : "webpack-prod-gallery",
-    "gen-index-gallery-prod"
+    "gen-pages-gallery-prod"
   )
 );

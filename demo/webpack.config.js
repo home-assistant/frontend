@@ -1,12 +1,11 @@
-const { createDemoConfig } = require("../build-scripts/webpack.js");
-const { isProdBuild, isStatsBuild } = require("../build-scripts/env.js");
+import webpack from "../build-scripts/webpack.cjs";
+import env from "../build-scripts/env.cjs";
 
 // File just used for stats builds
-
 const latestBuild = true;
 
-module.exports = createDemoConfig({
-  isProdBuild: isProdBuild(),
-  isStatsBuild: isStatsBuild(),
+export default webpack.createDemoConfig({
+  isProdBuild: env.isProdBuild(),
+  isStatsBuild: env.isStatsBuild(),
   latestBuild,
 });

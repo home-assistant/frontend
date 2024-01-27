@@ -7,7 +7,7 @@ import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-not";
@@ -30,7 +30,7 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public yamlMode = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Array }) public path?: ItemPath;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -49,8 +49,7 @@ export default class HaAutomationConditionEditor extends LitElement {
               ? html`
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                    "condition",
-                    condition.condition
+                    { condition: condition.condition }
                   )}
                 `
               : ""}
@@ -62,14 +61,14 @@ export default class HaAutomationConditionEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <div>
+            <div @value-changed=${this._onUiChanged}>
               ${dynamicElement(
                 `ha-automation-condition-${condition.condition}`,
                 {
                   hass: this.hass,
                   condition: condition,
-                  reOrderMode: this.reOrderMode,
                   disabled: this.disabled,
+                  path: this.path,
                 }
               )}
             </div>
@@ -84,6 +83,15 @@ export default class HaAutomationConditionEditor extends LitElement {
     }
     // @ts-ignore
     fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+  }
+
+  private _onUiChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...(this.condition.alias ? { alias: this.condition.alias } : {}),
+      ...ev.detail.value,
+    };
+    fireEvent(this, "value-changed", { value });
   }
 
   static styles = haStyle;

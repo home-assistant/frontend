@@ -40,7 +40,9 @@ const triggers = [
   },
   { platform: "sun", event: "sunset" },
   { platform: "time_pattern" },
+  { platform: "time_pattern", hours: "*", minutes: "/5", seconds: "10" },
   { platform: "webhook" },
+  { platform: "persistent_notification" },
   {
     platform: "zone",
     entity_id: "person.person",
@@ -50,6 +52,11 @@ const triggers = [
   { platform: "tag" },
   { platform: "time", at: "15:32" },
   { platform: "template" },
+  { platform: "conversation", command: "Turn on the lights" },
+  {
+    platform: "conversation",
+    command: ["Turn on the lights", "Turn the lights on"],
+  },
   { platform: "event", event_type: "homeassistant_started" },
 ];
 
@@ -74,7 +81,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         <div class="trigger">
           <span>
             ${this._trigger
-              ? describeTrigger(this._trigger, this.hass)
+              ? describeTrigger(this._trigger, this.hass, [])
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -86,7 +93,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         ${triggers.map(
           (conf) => html`
             <div class="trigger">
-              <span>${describeTrigger(conf as any, this.hass)}</span>
+              <span>${describeTrigger(conf as any, this.hass, [])}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `
@@ -99,6 +106,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
     hass.addEntities(ENTITIES);
   }
 

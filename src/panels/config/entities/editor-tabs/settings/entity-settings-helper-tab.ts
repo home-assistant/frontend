@@ -3,8 +3,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -28,14 +28,15 @@ import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
 import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
-import "../../entity-registry-basic-editor";
-import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
+import "../../../voice-assistants/entity-voice-settings";
+import "../../entity-registry-settings-editor";
+import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 
 @customElement("entity-settings-helper-tab")
-export class EntityRegistrySettingsHelper extends LitElement {
+export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ExtEntityRegistryEntry;
+  @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
 
   @state() private _error?: string;
 
@@ -45,8 +46,8 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
   @state() private _componentLoaded?: boolean;
 
-  @query("ha-registry-basic-editor")
-  private _registryEditor?: HaEntityRegistryBasicEditor;
+  @query("entity-registry-settings-editor")
+  private _registryEditor?: EntityRegistrySettingsEditor;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
@@ -75,28 +76,33 @@ export class EntityRegistrySettingsHelper extends LitElement {
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
       <div class="form">
-        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         ${!this._componentLoaded
           ? this.hass.localize(
               "ui.dialogs.helper_settings.platform_not_loaded",
-              "platform",
-              this.entry.platform
+              { platform: this.entry.platform }
             )
           : this._item === null
-          ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
-          : html`
-              <span @value-changed=${this._valueChanged}>
-                ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                  hass: this.hass,
-                  item: this._item,
-                  entry: this.entry,
-                })}
-              </span>
-            `}
-        <ha-registry-basic-editor
+            ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
+            : html`
+                <span @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                  })}
+                </span>
+              `}
+        <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
-        ></ha-registry-basic-editor>
+          .disabled=${this._submitting}
+          @change=${this._entityRegistryChanged}
+          hideName
+          hideIcon
+        ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
         <mwc-button
@@ -115,6 +121,10 @@ export class EntityRegistrySettingsHelper extends LitElement {
         </mwc-button>
       </div>
     `;
+  }
+
+  private _entityRegistryChanged() {
+    this._error = undefined;
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -137,8 +147,10 @@ export class EntityRegistrySettingsHelper extends LitElement {
           this._item
         );
       }
-      await this._registryEditor?.updateEntry();
-      fireEvent(this, "close-dialog");
+      const result = await this._registryEditor!.updateEntry();
+      if (result.close) {
+        fireEvent(this, "close-dialog");
+      }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
@@ -214,6 +226,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "entity-platform-helper-tab": EntityRegistrySettingsHelper;
+    "entity-settings-helper-tab": EntitySettingsHelperTab;
   }
 }

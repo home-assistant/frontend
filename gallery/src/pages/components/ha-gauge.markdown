@@ -32,7 +32,6 @@ Error color gauge
 Gauge with background color
 <ha-gauge value="75" style="--gauge-color: var(--info-color); --primary-background-color: lightgray"></ha-gauge>
 
-
 ## CSS variables
 
 ### Gauge

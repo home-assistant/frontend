@@ -19,6 +19,7 @@ import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { HomeAssistant, Route } from "../types";
+import { haStyleScrollbar } from "../resources/styles";
 
 export interface PageNavigation {
   path: string;
@@ -44,7 +45,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
@@ -93,26 +94,25 @@ class HassTabsSubpage extends LitElement {
       }
 
       return shownTabs.map(
-        (page) =>
-          html`
-            <a href=${page.path}>
-              <ha-tab
-                .hass=${this.hass}
-                .active=${page.path === activeTab?.path}
-                .narrow=${this.narrow}
-                .name=${page.translationKey
-                  ? localizeFunc(page.translationKey)
-                  : page.name}
-              >
-                ${page.iconPath
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${page.iconPath}
-                    ></ha-svg-icon>`
-                  : ""}
-              </ha-tab>
-            </a>
-          `
+        (page) => html`
+          <a href=${page.path}>
+            <ha-tab
+              .hass=${this.hass}
+              .active=${page.path === activeTab?.path}
+              .narrow=${this.narrow}
+              .name=${page.translationKey
+                ? localizeFunc(page.translationKey)
+                : page.name}
+            >
+              ${page.iconPath
+                ? html`<ha-svg-icon
+                    slot="icon"
+                    .path=${page.iconPath}
+                  ></ha-svg-icon>`
+                : ""}
+            </ha-tab>
+          </a>
+        `
       );
     }
   );
@@ -156,19 +156,19 @@ class HassTabsSubpage extends LitElement {
               ></ha-menu-button>
             `
           : this.backPath
-          ? html`
-              <a href=${this.backPath}>
+            ? html`
+                <a href=${this.backPath}>
+                  <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
+                  ></ha-icon-button-arrow-prev>
+                </a>
+              `
+            : html`
                 <ha-icon-button-arrow-prev
                   .hass=${this.hass}
+                  @click=${this._backTapped}
                 ></ha-icon-button-arrow-prev>
-              </a>
-            `
-          : html`
-              <ha-icon-button-arrow-prev
-                .hass=${this.hass}
-                @click=${this._backTapped}
-              ></ha-icon-button-arrow-prev>
-            `}
+              `}
         ${this.narrow || !showTabs
           ? html`<div class="main-title">
               <slot name="header">${!showTabs ? tabs[0] : ""}</slot>
@@ -186,7 +186,7 @@ class HassTabsSubpage extends LitElement {
         </div>
       </div>
       <div
-        class="content ${classMap({ tabs: showTabs })}"
+        class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
         @scroll=${this._saveScrollPos}
       >
         <slot></slot>
@@ -211,138 +211,148 @@ class HassTabsSubpage extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-        background-color: var(--primary-background-color);
-      }
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+          background-color: var(--primary-background-color);
+        }
 
-      :host([narrow]) {
-        width: 100%;
-        position: fixed;
-      }
+        :host([narrow]) {
+          width: 100%;
+          position: fixed;
+        }
 
-      ha-menu-button {
-        margin-right: 24px;
-      }
+        ha-menu-button {
+          margin-right: 24px;
+        }
 
-      .toolbar {
-        display: flex;
-        align-items: center;
-        font-size: 20px;
-        height: var(--header-height);
-        background-color: var(--sidebar-background-color);
-        font-weight: 400;
-        border-bottom: 1px solid var(--divider-color);
-        padding: 0 16px;
-        box-sizing: border-box;
-      }
-      .toolbar a {
-        color: var(--sidebar-text-color);
-        text-decoration: none;
-      }
-      .bottom-bar a {
-        width: 25%;
-      }
+        .toolbar {
+          display: flex;
+          align-items: center;
+          font-size: 20px;
+          height: var(--header-height);
+          background-color: var(--sidebar-background-color);
+          font-weight: 400;
+          border-bottom: 1px solid var(--divider-color);
+          padding: 8px 12px;
+          box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 4px;
+          }
+        }
+        .toolbar a {
+          color: var(--sidebar-text-color);
+          text-decoration: none;
+        }
+        .bottom-bar a {
+          width: 25%;
+        }
 
-      #tabbar {
-        display: flex;
-        font-size: 14px;
-        overflow: hidden;
-      }
+        #tabbar {
+          display: flex;
+          font-size: 14px;
+          overflow: hidden;
+        }
 
-      #tabbar > a {
-        overflow: hidden;
-        max-width: 45%;
-      }
+        #tabbar > a {
+          overflow: hidden;
+          max-width: 45%;
+        }
 
-      #tabbar.bottom-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        padding: 0 16px;
-        box-sizing: border-box;
-        background-color: var(--sidebar-background-color);
-        border-top: 1px solid var(--divider-color);
-        justify-content: space-around;
-        z-index: 2;
-        font-size: 12px;
-        width: 100%;
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+        #tabbar.bottom-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          padding: 0 16px;
+          box-sizing: border-box;
+          background-color: var(--sidebar-background-color);
+          border-top: 1px solid var(--divider-color);
+          justify-content: space-around;
+          z-index: 2;
+          font-size: 12px;
+          width: 100%;
+          padding-bottom: env(safe-area-inset-bottom);
+        }
 
-      #tabbar:not(.bottom-bar) {
-        flex: 1;
-        justify-content: center;
-      }
+        #tabbar:not(.bottom-bar) {
+          flex: 1;
+          justify-content: center;
+        }
 
-      :host(:not([narrow])) #toolbar-icon {
-        min-width: 40px;
-      }
+        :host(:not([narrow])) #toolbar-icon {
+          min-width: 40px;
+        }
 
-      ha-menu-button,
-      ha-icon-button-arrow-prev,
-      ::slotted([slot="toolbar-icon"]) {
-        display: flex;
-        flex-shrink: 0;
-        pointer-events: auto;
-        color: var(--sidebar-icon-color);
-      }
+        ha-menu-button,
+        ha-icon-button-arrow-prev,
+        ::slotted([slot="toolbar-icon"]) {
+          display: flex;
+          flex-shrink: 0;
+          pointer-events: auto;
+          color: var(--sidebar-icon-color);
+        }
 
-      .main-title {
-        flex: 1;
-        max-height: var(--header-height);
-        line-height: 20px;
-        color: var(--sidebar-text-color);
-        margin: var(--main-title-margin, 0 0 0 24px);
-      }
+        .main-title {
+          flex: 1;
+          max-height: var(--header-height);
+          line-height: 20px;
+          color: var(--sidebar-text-color);
+          margin: var(--main-title-margin, var(--margin-title));
+        }
 
-      .content {
-        position: relative;
-        width: calc(
-          100% - env(safe-area-inset-left) - env(safe-area-inset-right)
-        );
-        margin-left: env(safe-area-inset-left);
-        margin-right: env(safe-area-inset-right);
-        height: calc(100% - 1px - var(--header-height));
-        height: calc(
-          100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
-        );
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-      }
+        .content {
+          position: relative;
+          width: calc(
+            100% - env(safe-area-inset-left) - env(safe-area-inset-right)
+          );
+          margin-left: env(safe-area-inset-left);
+          margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: env(safe-area-inset-right);
+          height: calc(100% - 1px - var(--header-height));
+          height: calc(
+            100% - 1px - var(--header-height) - env(safe-area-inset-bottom)
+          );
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
 
-      :host([narrow]) .content.tabs {
-        height: calc(100% - 2 * var(--header-height));
-        height: calc(
-          100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
-        );
-      }
+        :host([narrow]) .content.tabs {
+          height: calc(100% - 2 * var(--header-height));
+          height: calc(
+            100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+          );
+        }
 
-      #fab {
-        position: fixed;
-        right: calc(16px + env(safe-area-inset-right));
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        z-index: 1;
-      }
-      :host([narrow]) #fab.tabs {
-        bottom: calc(84px + env(safe-area-inset-bottom));
-      }
-      #fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-      :host([rtl]) #fab {
-        right: auto;
-        left: calc(16px + env(safe-area-inset-left));
-      }
-      :host([rtl][is-wide]) #fab {
-        bottom: 24px;
-        left: 24px;
-        right: auto;
-      }
-    `;
+        #fab {
+          position: fixed;
+          right: calc(16px + env(safe-area-inset-right));
+          bottom: calc(16px + env(safe-area-inset-bottom));
+          z-index: 1;
+        }
+        :host([narrow]) #fab.tabs {
+          bottom: calc(84px + env(safe-area-inset-bottom));
+        }
+        #fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
+        :host([rtl]) #fab {
+          right: auto;
+          left: calc(16px + env(safe-area-inset-left));
+        }
+        :host([rtl][is-wide]) #fab {
+          bottom: 24px;
+          left: 24px;
+          right: auto;
+        }
+      `,
+    ];
   }
 }
 

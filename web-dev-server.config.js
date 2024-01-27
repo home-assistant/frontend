@@ -1,7 +1,6 @@
-const cors = require("@koa/cors");
-const { rollupAdapter } = require("@web/dev-server-rollup");
-
-const rollup = require("./build-scripts/rollup");
+import cors from "@koa/cors";
+import { rollupAdapter } from "@web/dev-server-rollup";
+import rollup from "./build-scripts/rollup.cjs";
 
 const rollupWDSPlugins = rollup
   .createAppConfig({
@@ -13,7 +12,7 @@ const rollupWDSPlugins = rollup
   );
 
 /** @type import("@web/dev-server/src/config/DevServerConfig.ts") */
-module.exports = {
+export default {
   mimeTypes: {
     "**/*.ts": "js",
     "**/*.json": "js",

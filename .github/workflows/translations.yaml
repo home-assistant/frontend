@@ -7,19 +7,15 @@ on:
     paths:
       - src/translations/en.json
 
-env:
-  NODE_VERSION: 16
-
 jobs:
   upload:
     name: Upload
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
 
       - name: Upload Translations
         run: |
           export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
-
           ./script/translations_upload_base

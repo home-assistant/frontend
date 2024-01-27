@@ -21,6 +21,7 @@ import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -30,6 +31,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
+    logarithmic_scale: optional(boolean()),
   })
 );
 
@@ -39,8 +41,17 @@ const SCHEMA = [
     name: "",
     type: "grid",
     schema: [
-      { name: "hours_to_show", selector: { number: { min: 1, mode: "box" } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { min: 1, mode: "box" } },
+      },
     ],
+  },
+  {
+    name: "logarithmic_scale",
+    required: false,
+    selector: { boolean: {} },
   },
 ] as const;
 
@@ -95,8 +106,18 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "logarithmic_scale":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.history-graph.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static styles: CSSResultGroup = css`
     ha-form {

@@ -1,10 +1,11 @@
+import { LovelacePanelConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import {
-  fetchConfig,
-  fetchDashboards,
   LovelaceConfig,
-  LovelacePanelConfig,
+  fetchConfig,
   saveConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/types";
+import { fetchDashboards } from "../../../data/lovelace/dashboard";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
@@ -13,8 +14,8 @@ import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
   hass: HomeAssistant,
-  entities: string[],
-  cardTitle?: string
+  cardConfig: LovelaceCardConfig[],
+  entities?: string[]
 ) => {
   hass.loadFragmentTranslation("lovelace");
   const dashboards = await fetchDashboards(hass);
@@ -30,9 +31,9 @@ export const addEntitiesToLovelaceView = async (
   if (mainLovelaceMode !== "storage" && !storageDashs.length) {
     // no storage dashboards, just show the YAML config
     showSuggestCardDialog(element, {
+      cardConfig,
       entities,
       yaml: true,
-      cardTitle,
     });
     return;
   }
@@ -69,9 +70,9 @@ export const addEntitiesToLovelaceView = async (
     if (dashboards.length > storageDashs.length) {
       // all storage dashboards are generated, but we have YAML dashboards just show the YAML config
       showSuggestCardDialog(element, {
+        cardConfig,
         entities,
         yaml: true,
-        cardTitle,
       });
     } else {
       // all storage dashboards are generated
@@ -91,7 +92,7 @@ export const addEntitiesToLovelaceView = async (
 
   if (!storageDashs.length && lovelaceConfig.views.length === 1) {
     showSuggestCardDialog(element, {
-      cardTitle,
+      cardConfig,
       lovelaceConfig: lovelaceConfig!,
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
@@ -114,7 +115,7 @@ export const addEntitiesToLovelaceView = async (
     dashboards,
     viewSelectedCallback: (newUrlPath, selectedDashConfig, viewIndex) => {
       showSuggestCardDialog(element, {
-        cardTitle,
+        cardConfig,
         lovelaceConfig: selectedDashConfig,
         saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
           try {

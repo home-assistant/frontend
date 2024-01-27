@@ -20,9 +20,8 @@ export class DemoHaTip extends LitElement {
           <ha-card header="ha-tip ${mode} demo">
             <div class="card-content">
               ${tips.map(
-                (tip) => html`<ha-tip .hass=${provideHass(this)}
-                  >${tip}</ha-tip
-                >`
+                (tip) =>
+                  html`<ha-tip .hass=${provideHass(this)}>${tip}</ha-tip>`
               )}
             </div>
           </ha-card>

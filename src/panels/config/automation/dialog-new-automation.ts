@@ -2,12 +2,11 @@ import "@material/mwc-list/mwc-list";
 import {
   mdiAccount,
   mdiFile,
-  mdiHomeAssistant,
   mdiOpenInNew,
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -20,15 +19,19 @@ import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
 import {
   Blueprint,
-  Blueprints,
+  BlueprintDomain,
   BlueprintSourceType,
+  Blueprints,
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
+import { showScriptEditor } from "../../../data/script";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import type { NewAutomationDialogParams } from "./show-dialog-new-automation";
 
 const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
   local: mdiFile,
@@ -42,11 +45,15 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   @state() private _opened = false;
 
+  @state() private _mode: BlueprintDomain = "automation";
+
   @state() public blueprints?: Blueprints;
 
-  public showDialog(): void {
+  public showDialog(params: NewAutomationDialogParams): void {
     this._opened = true;
-    fetchBlueprints(this.hass!, "automation").then((blueprints) => {
+    this._mode = params?.mode || "automation";
+
+    fetchBlueprints(this.hass!, this._mode).then((blueprints) => {
       this.blueprints = blueprints;
     });
   }
@@ -92,14 +99,14 @@ class DialogNewAutomation extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.panel.config.automation.dialog_new.header")
+          this.hass.localize(`ui.panel.config.${this._mode}.dialog_new.header`)
         )}
       >
         <mwc-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel=${this.hass.localize(
-            "ui.panel.config.automation.dialog_new.header"
+            `ui.panel.config.${this._mode}.dialog_new.header`
           )}
           rootTabbable
           dialogInitialFocus
@@ -112,11 +119,11 @@ class DialogNewAutomation extends LitElement implements HassDialog {
           >
             <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
             ${this.hass.localize(
-              "ui.panel.config.automation.dialog_new.create_empty"
+              `ui.panel.config.${this._mode}.dialog_new.create_empty`
             )}
             <span slot="secondary">
               ${this.hass.localize(
-                "ui.panel.config.automation.dialog_new.create_empty_description"
+                `ui.panel.config.${this._mode}.dialog_new.create_empty_description`
               )}
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
@@ -139,11 +146,11 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                 <span slot="secondary">
                   ${blueprint.author
                     ? this.hass.localize(
-                        `ui.panel.config.automation.dialog_new.blueprint_source.author`,
+                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.author`,
                         { author: blueprint.author }
                       )
                     : this.hass.localize(
-                        `ui.panel.config.automation.dialog_new.blueprint_source.${blueprint.sourceType}`
+                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
                       )}
                 </span>
                 <ha-icon-next slot="meta"></ha-icon-next>
@@ -161,11 +168,11 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                   <ha-list-item hasmeta twoline graphic="icon">
                     <ha-svg-icon slot="graphic" .path=${mdiWeb}></ha-svg-icon>
                     ${this.hass.localize(
-                      "ui.panel.config.automation.dialog_new.create_blueprint"
+                      `ui.panel.config.${this._mode}.dialog_new.create_blueprint`
                     )}
                     <span slot="secondary">
                       ${this.hass.localize(
-                        "ui.panel.config.automation.dialog_new.create_blueprint_description"
+                        `ui.panel.config.${this._mode}.dialog_new.create_blueprint_description`
                       )}
                     </span>
                     <ha-svg-icon slot="meta" path=${mdiOpenInNew}></ha-svg-icon>
@@ -180,7 +187,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                     rel="noreferrer noopener"
                   >
                     ${this.hass.localize(
-                      "ui.panel.config.automation.dialog_new.discover_blueprint_tip"
+                      `ui.panel.config.${this._mode}.dialog_new.discover_blueprint_tip`
                     )}
                   </a>
                 </ha-tip>
@@ -196,7 +203,11 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     }
     const path = (ev.currentTarget! as any).path;
     this.closeDialog();
-    showAutomationEditor({ use_blueprint: { path } });
+    if (this._mode === "script") {
+      showScriptEditor({ use_blueprint: { path } });
+    } else {
+      showAutomationEditor({ use_blueprint: { path } });
+    }
   }
 
   private async _blank(ev) {
@@ -204,7 +215,11 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       return;
     }
     this.closeDialog();
-    showAutomationEditor();
+    if (this._mode === "script") {
+      showScriptEditor();
+    } else {
+      showAutomationEditor();
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -1,5 +1,5 @@
 import { Remote, wrap } from "comlink";
-import type { Api } from "./markdown_worker";
+import type { Api } from "./markdown-worker";
 
 type RenderMarkdownType = Api["renderMarkdown"];
 type RenderMarkdownParamTypes = Parameters<RenderMarkdownType>;
@@ -12,8 +12,12 @@ export const renderMarkdown = async (
   hassOptions?: RenderMarkdownParamTypes[2]
 ): Promise<ReturnType<RenderMarkdownType>> => {
   if (!worker) {
-    worker = wrap(new Worker(new URL("./markdown_worker", import.meta.url)));
+    worker = wrap(
+      new Worker(
+        /* webpackChunkName: "markdown-worker" */
+        new URL("./markdown-worker", import.meta.url)
+      )
+    );
   }
-
   return worker.renderMarkdown(content, markedOptions, hassOptions);
 };

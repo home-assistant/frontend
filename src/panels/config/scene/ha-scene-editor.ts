@@ -1,14 +1,11 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list";
 import {
   mdiContentDuplicate,
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { HassEvent } from "home-assistant-js-websocket";
 import {
   css,
@@ -35,6 +32,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import {
@@ -89,17 +87,17 @@ export class HaSceneEditor extends SubscribeMixin(
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public sceneId: string | null = null;
 
-  @property() public scenes!: SceneEntity[];
+  @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
@@ -228,7 +226,6 @@ export class HaSceneEditor extends SubscribeMixin(
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-button-menu
-          corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleMenuAction}
           activatable
@@ -239,7 +236,7 @@ export class HaSceneEditor extends SubscribeMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item .disabled=${!this.sceneId} graphic="icon">
+          <ha-list-item .disabled=${!this.sceneId} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.scene.picker.duplicate_scene"
             )}
@@ -247,9 +244,9 @@ export class HaSceneEditor extends SubscribeMixin(
               slot="graphic"
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             .disabled=${!this.sceneId}
             class=${classMap({ warning: Boolean(this.sceneId) })}
             graphic="icon"
@@ -261,7 +258,7 @@ export class HaSceneEditor extends SubscribeMixin(
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         <div
@@ -325,43 +322,44 @@ export class HaSceneEditor extends SubscribeMixin(
                   </div>
 
                   ${devices.map(
-                    (device) =>
-                      html`
-                        <ha-card outlined>
-                          <h1 class="card-header">
-                            ${device.name}
-                            <ha-icon-button
-                              .path=${mdiDelete}
-                              .label=${this.hass.localize(
-                                "ui.panel.config.scene.editor.devices.delete"
-                              )}
-                              .device=${device.id}
-                              @click=${this._deleteDevice}
-                            ></ha-icon-button>
-                          </h1>
+                    (device) => html`
+                      <ha-card outlined>
+                        <h1 class="card-header">
+                          ${device.name}
+                          <ha-icon-button
+                            .path=${mdiDelete}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.scene.editor.devices.delete"
+                            )}
+                            .device=${device.id}
+                            @click=${this._deleteDevice}
+                          ></ha-icon-button>
+                        </h1>
+                        <mwc-list>
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
                               return nothing;
                             }
                             return html`
-                              <paper-icon-item
+                              <ha-list-item
+                                hasMeta
+                                graphic="icon"
                                 .entityId=${entityId}
                                 @click=${this._showMoreInfo}
-                                class="device-entity"
                               >
                                 <state-badge
+                                  .hass=${this.hass}
                                   .stateObj=${entityStateObj}
-                                  slot="item-icon"
+                                  slot="graphic"
                                 ></state-badge>
-                                <paper-item-body>
-                                  ${computeStateName(entityStateObj)}
-                                </paper-item-body>
-                              </paper-icon-item>
+                                ${computeStateName(entityStateObj)}
+                              </ha-list-item>
                             `;
                           })}
-                        </ha-card>
-                      `
+                        </mwc-list>
+                      </ha-card>
+                    `
                   )}
 
                   <ha-card
@@ -404,36 +402,40 @@ export class HaSceneEditor extends SubscribeMixin(
                                   "ui.panel.config.scene.editor.entities.without_device"
                                 )}
                               >
-                                ${entities.map((entityId) => {
-                                  const entityStateObj =
-                                    this.hass.states[entityId];
-                                  if (!entityStateObj) {
-                                    return nothing;
-                                  }
-                                  return html`
-                                    <paper-icon-item
-                                      .entityId=${entityId}
-                                      @click=${this._showMoreInfo}
-                                      class="device-entity"
-                                    >
-                                      <state-badge
-                                        .stateObj=${entityStateObj}
-                                        slot="item-icon"
-                                      ></state-badge>
-                                      <paper-item-body>
-                                        ${computeStateName(entityStateObj)}
-                                      </paper-item-body>
-                                      <ha-icon-button
-                                        .path=${mdiDelete}
+                                <mwc-list>
+                                  ${entities.map((entityId) => {
+                                    const entityStateObj =
+                                      this.hass.states[entityId];
+                                    if (!entityStateObj) {
+                                      return nothing;
+                                    }
+                                    return html`
+                                      <ha-list-item
+                                        hasMeta
+                                        graphic="icon"
                                         .entityId=${entityId}
-                                        .label=${this.hass.localize(
-                                          "ui.panel.config.scene.editor.entities.delete"
-                                        )}
-                                        @click=${this._deleteEntity}
-                                      ></ha-icon-button>
-                                    </paper-icon-item>
-                                  `;
-                                })}
+                                        @click=${this._showMoreInfo}
+                                      >
+                                        <state-badge
+                                          .hass=${this.hass}
+                                          .stateObj=${entityStateObj}
+                                          slot="graphic"
+                                        ></state-badge>
+                                        ${computeStateName(entityStateObj)}
+                                        <div slot="meta">
+                                          <ha-icon-button
+                                            .path=${mdiDelete}
+                                            .entityId=${entityId}
+                                            .label=${this.hass.localize(
+                                              "ui.panel.config.scene.editor.entities.delete"
+                                            )}
+                                            @click=${this._deleteEntity}
+                                          ></ha-icon-button>
+                                        </div>
+                                      </ha-list-item>
+                                    `;
+                                  })}
+                                </mwc-list>
                               </ha-card>
                             `
                           : ""}
@@ -445,9 +447,6 @@ export class HaSceneEditor extends SubscribeMixin(
                           )}
                         >
                           <div class="card-content">
-                            ${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.device_entities"
-                            )}
                             <ha-entity-picker
                               @value-changed=${this._entityPicked}
                               .excludeDomains=${SCENE_IGNORED_DOMAINS}
@@ -516,6 +515,7 @@ export class HaSceneEditor extends SubscribeMixin(
         if (
           !entity.device_id ||
           entity.entity_category ||
+          entity.hidden_by ||
           SCENE_IGNORED_DOMAINS.includes(computeDomain(entity.entity_id))
         ) {
           continue;
@@ -592,8 +592,7 @@ export class HaSceneEditor extends SubscribeMixin(
               )
             : this.hass.localize(
                 "ui.panel.config.scene.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();
@@ -971,35 +970,6 @@ export class HaSceneEditor extends SubscribeMixin(
         ha-config-section:last-child {
           padding-bottom: 20px;
         }
-        .triggers,
-        .script {
-          margin-top: -16px;
-        }
-        .triggers ha-card,
-        .script ha-card {
-          margin-top: 16px;
-        }
-        .add-card mwc-button {
-          display: block;
-          text-align: center;
-        }
-        .card-menu {
-          position: absolute;
-          top: 0;
-          right: 0;
-          z-index: 1;
-          color: var(--primary-text-color);
-        }
-        .rtl .card-menu {
-          right: auto;
-          left: 0;
-        }
-        .card-menu paper-item {
-          cursor: pointer;
-        }
-        paper-icon-item {
-          padding: 8px 16px;
-        }
         ha-card ha-icon-button {
           color: var(--secondary-text-color);
         }
@@ -1007,9 +977,6 @@ export class HaSceneEditor extends SubscribeMixin(
           float: right;
           position: relative;
           top: -8px;
-        }
-        .device-entity {
-          cursor: pointer;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);
@@ -1033,6 +1000,11 @@ export class HaSceneEditor extends SubscribeMixin(
         }
         ha-textfield {
           display: block;
+        }
+        div[slot="meta"] {
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
       `,
     ];

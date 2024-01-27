@@ -2,6 +2,95 @@ import { BarController, BarElement } from "chart.js";
 import { TimeLineData } from "./const";
 import { TextBarProps } from "./textbar-element";
 
+function borderProps(properties) {
+  let reverse;
+  let start;
+  let end;
+  let top;
+  let bottom;
+  if (properties.horizontal) {
+    reverse = properties.base > properties.x;
+    start = "left";
+    end = "right";
+  } else {
+    reverse = properties.base < properties.y;
+    start = "bottom";
+    end = "top";
+  }
+  if (reverse) {
+    top = "end";
+    bottom = "start";
+  } else {
+    top = "start";
+    bottom = "end";
+  }
+  return { start, end, reverse, top, bottom };
+}
+
+function setBorderSkipped(properties, options, stack, index) {
+  let edge = options.borderSkipped;
+  const res = {};
+
+  if (!edge) {
+    properties.borderSkipped = res;
+    return;
+  }
+
+  if (edge === true) {
+    properties.borderSkipped = {
+      top: true,
+      right: true,
+      bottom: true,
+      left: true,
+    };
+    return;
+  }
+
+  const { start, end, reverse, top, bottom } = borderProps(properties);
+
+  if (edge === "middle" && stack) {
+    properties.enableBorderRadius = true;
+    if ((stack._top || 0) === index) {
+      edge = top;
+    } else if ((stack._bottom || 0) === index) {
+      edge = bottom;
+    } else {
+      res[parseEdge(bottom, start, end, reverse)] = true;
+      edge = top;
+    }
+  }
+
+  res[parseEdge(edge, start, end, reverse)] = true;
+  properties.borderSkipped = res;
+}
+
+function parseEdge(edge, a, b, reverse) {
+  if (reverse) {
+    edge = swap(edge, a, b);
+    edge = startEnd(edge, b, a);
+  } else {
+    edge = startEnd(edge, a, b);
+  }
+  return edge;
+}
+
+function swap(orig, v1, v2) {
+  return orig === v1 ? v2 : orig === v2 ? v1 : orig;
+}
+
+function startEnd(v, start, end) {
+  return v === "start" ? start : v === "end" ? end : v;
+}
+
+function setInflateAmount(
+  properties,
+  { inflateAmount }: { inflateAmount?: string | number },
+  ratio
+) {
+  properties.inflateAmount =
+    inflateAmount === "auto" ? (ratio === 1 ? 0.33 : 0) : inflateAmount;
+}
+
 function parseValue(entry, item, vScale, i) {
   const startValue = vScale.parse(entry.start, i);
   const endValue = vScale.parse(entry.end, i);
@@ -97,7 +186,7 @@ export class TimelineController extends BarController {
     bars: BarElement[],
     start: number,
     count: number,
-    mode: "reset" | "resize" | "none" | "hide" | "show" | "normal" | "active"
+    mode: "reset" | "resize" | "none" | "hide" | "show" | "default" | "active"
   ) {
     const vScale = this._cachedMeta.vScale!;
     const iScale = this._cachedMeta.iScale!;
@@ -114,14 +203,14 @@ export class TimelineController extends BarController {
     for (let index = start; index < start + count; index++) {
       const data = dataset.data[index] as TimeLineData;
 
-      // @ts-ignore
       const y = vScale.getPixelForValue(this.index);
 
-      // @ts-ignore
       const xStart = iScale.getPixelForValue(data.start.getTime());
-      // @ts-ignore
       const xEnd = iScale.getPixelForValue(data.end.getTime());
       const width = xEnd - xStart;
+
+      const parsed = this.getParsed(index);
+      const stack = (parsed._stacks || {})[vScale.axis];
 
       const height = 10;
 
@@ -145,7 +234,10 @@ export class TimelineController extends BarController {
           backgroundColor: data.color,
         };
       }
+      const options = properties.options || bars[index].options;
 
+      setBorderSkipped(properties, options, stack, index);
+      setInflateAmount(properties, options, 1);
       this.updateElement(bars[index], index, properties as any, mode);
     }
   }

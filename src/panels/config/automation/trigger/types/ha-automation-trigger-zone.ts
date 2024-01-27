@@ -6,8 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
 import type { ZoneTrigger } from "../../../../../data/automation";
-import type { PolymerChangedEvent } from "../../../../../polymer-types";
-import type { HomeAssistant } from "../../../../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 import type { HaRadio } from "../../../../../components/ha-radio";
 
 function zoneAndLocationFilter(stateObj) {
@@ -20,7 +19,7 @@ const includeDomains = ["zone"];
 export class HaZoneTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: ZoneTrigger;
+  @property({ attribute: false }) public trigger!: ZoneTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -94,14 +93,14 @@ export class HaZoneTrigger extends LitElement {
     `;
   }
 
-  private _entityPicked(ev: PolymerChangedEvent<string>) {
+  private _entityPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, entity_id: ev.detail.value },
     });
   }
 
-  private _zonePicked(ev: PolymerChangedEvent<string>) {
+  private _zonePicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, zone: ev.detail.value },

@@ -1,5 +1,11 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-circular-progress";
 import "../components/ha-icon-button-arrow-prev";
@@ -17,6 +23,8 @@ class HassLoadingScreen extends LitElement {
   @property({ type: Boolean }) public rootnav = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property() public message?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -38,7 +46,10 @@ class HassLoadingScreen extends LitElement {
                 `}
           </div>`}
       <div class="content">
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
+        ${this.message
+          ? html`<div id="loading-text">${this.message}</div>`
+          : nothing}
       </div>
     `;
   }
@@ -61,13 +72,18 @@ class HassLoadingScreen extends LitElement {
           align-items: center;
           font-size: 20px;
           height: var(--header-height);
-          padding: 0 16px;
+          padding: 8px 12px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 4px;
+          }
         }
         ha-menu-button,
         ha-icon-button-arrow-prev {
@@ -76,8 +92,13 @@ class HassLoadingScreen extends LitElement {
         .content {
           height: calc(100% - var(--header-height));
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+        }
+        #loading-text {
+          max-width: 350px;
+          margin-top: 16px;
         }
       `,
     ];

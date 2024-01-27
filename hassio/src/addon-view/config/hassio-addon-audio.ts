@@ -114,9 +114,6 @@ class HassioAddonAudio extends LitElement {
         ha-card {
           display: block;
         }
-        paper-item {
-          width: 450px;
-        }
         .card-actions {
           text-align: right;
         }

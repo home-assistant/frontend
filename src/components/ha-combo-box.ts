@@ -14,8 +14,9 @@ import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-icon-button";
+import "./ha-list-item";
+import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
 registerStyles(
@@ -94,14 +95,13 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
-  @property() public renderer?: ComboBoxLitRenderer<any>;
+  @property({ attribute: false }) public renderer?: ComboBoxLitRenderer<any>;
 
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "opened" })
-  public opened?: boolean;
+  @property({ type: Boolean, reflect: true }) public opened = false;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
@@ -144,6 +144,7 @@ export class HaComboBox extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      <!-- @ts-ignore Tag definition is not included in theme folder -->
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
@@ -172,14 +173,14 @@ export class HaComboBox extends LitElement {
           autocapitalize="none"
           autocomplete="off"
           autocorrect="off"
-          spellcheck="false"
+          input-spellcheck="false"
           .suffix=${html`<div
             style="width: 28px;"
             role="none presentation"
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          helper=${ifDefined(this.helper)}
+          .helper=${this.helper}
           helperPersistent
         >
           <slot name="icon" slot="leadingIcon"></slot>
@@ -310,6 +311,10 @@ export class HaComboBox extends LitElement {
 
   private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
     ev.stopPropagation();
+    if (!this.allowCustomValue) {
+      // @ts-ignore
+      this._comboBox._closeOnBlurIsPrevented = true;
+    }
     const newValue = ev.detail.value;
 
     if (newValue !== this.value) {
@@ -325,7 +330,7 @@ export class HaComboBox extends LitElement {
       }
       vaadin-combo-box-light {
         position: relative;
-        --vaadin-combo-box-overlay-max-height: calc(45vh);
+        --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
       }
       ha-textfield {
         width: 100%;

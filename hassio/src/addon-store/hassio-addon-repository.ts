@@ -49,11 +49,9 @@ export class HassioAddonRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            ${this.supervisor.localize(
-              "store.no_results_found",
-              "repository",
-              repo.name
-            )}
+            ${this.supervisor.localize("store.no_results_found", {
+              repository: repo.name,
+            })}
           </p>
         </div>
       `;
@@ -86,15 +84,15 @@ export class HassioAddonRepositoryEl extends LitElement {
                           )
                         : this.supervisor.localize("addon.state.installed")
                       : addon.available
-                      ? this.supervisor.localize("addon.state.not_installed")
-                      : this.supervisor.localize("addon.state.not_available")}
+                        ? this.supervisor.localize("addon.state.not_installed")
+                        : this.supervisor.localize("addon.state.not_available")}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"
                         : "installed"
                       : !addon.available
-                      ? "not_available"
-                      : ""}
+                        ? "not_available"
+                        : ""}
                     .iconImage=${atLeastVersion(
                       this.hass.config.version,
                       0,
@@ -108,8 +106,8 @@ export class HassioAddonRepositoryEl extends LitElement {
                         ? "update"
                         : "installed"
                       : !addon.available
-                      ? "unavailable"
-                      : ""}
+                        ? "unavailable"
+                        : ""}
                   ></hassio-card-content>
                 </div>
               </ha-card>
@@ -130,6 +128,7 @@ export class HassioAddonRepositoryEl extends LitElement {
       css`
         ha-card {
           cursor: pointer;
+          overflow: hidden;
         }
         .not_available {
           opacity: 0.6;
@@ -139,5 +138,11 @@ export class HassioAddonRepositoryEl extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-addon-repository": HassioAddonRepositoryEl;
   }
 }

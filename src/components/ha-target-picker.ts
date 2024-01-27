@@ -1,3 +1,4 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
@@ -9,10 +10,9 @@ import {
   mdiSofa,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, unsafeCSS, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
@@ -62,9 +62,11 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -224,7 +226,8 @@ export class HaTargetPicker extends LitElement {
         ${entityState
           ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
+              .hass=${this.hass}
+              .stateObj=${entityState}
             ></ha-state-icon>`
           : ""}
         <span role="gridcell">
@@ -237,8 +240,6 @@ export class HaTargetPicker extends LitElement {
           : html`<span role="gridcell">
               <ha-icon-button
                 class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                tabindex="-1"
-                role="button"
                 .label=${this.hass.localize(
                   "ui.components.target-picker.expand"
                 )}
@@ -248,17 +249,15 @@ export class HaTargetPicker extends LitElement {
                 .type=${type}
                 @click=${this._handleExpand}
               ></ha-icon-button>
-              <paper-tooltip class="expand" animation-delay="0"
+              <simple-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
-                )}</paper-tooltip
+                )}</simple-tooltip
               >
             </span>`}
         <span role="gridcell">
           <ha-icon-button
             class="mdc-chip__icon mdc-chip__icon--trailing"
-            tabindex="-1"
-            role="button"
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hideTooltip
@@ -266,10 +265,10 @@ export class HaTargetPicker extends LitElement {
             .type=${type}
             @click=${this._handleRemove}
           ></ha-icon-button>
-          <paper-tooltip animation-delay="0"
+          <simple-tooltip animation-delay="0"
             >${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
-            )}</paper-tooltip
+            )}</simple-tooltip
           >
         </span>
       </div>
@@ -283,7 +282,6 @@ export class HaTargetPicker extends LitElement {
     return html`<mwc-menu-surface
       open
       .anchor=${this._addContainer}
-      .corner=${"BOTTOM_START"}
       @closed=${this._onClosed}
       @opened=${this._onOpened}
       @opened-changed=${this._openedChanged}
@@ -308,40 +306,40 @@ export class HaTargetPicker extends LitElement {
             ></ha-area-picker>
           `
         : this._addMode === "device_id"
-        ? html`
-            <ha-device-picker
-              .hass=${this.hass}
-              id="input"
-              .type=${"device_id"}
-              .label=${this.hass.localize(
-                "ui.components.target-picker.add_device_id"
-              )}
-              .deviceFilter=${this.deviceFilter}
-              .entityFilter=${this.entityFilter}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeDomains=${this.includeDomains}
-              .excludeDevices=${ensureArray(this.value?.device_id)}
-              @value-changed=${this._targetPicked}
-              @click=${this._preventDefault}
-            ></ha-device-picker>
-          `
-        : html`
-            <ha-entity-picker
-              .hass=${this.hass}
-              id="input"
-              .type=${"entity_id"}
-              .label=${this.hass.localize(
-                "ui.components.target-picker.add_entity_id"
-              )}
-              .entityFilter=${this.entityFilter}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeDomains=${this.includeDomains}
-              .excludeEntities=${ensureArray(this.value?.entity_id)}
-              @value-changed=${this._targetPicked}
-              @click=${this._preventDefault}
-              allow-custom-entity
-            ></ha-entity-picker>
-          `}</mwc-menu-surface
+          ? html`
+              <ha-device-picker
+                .hass=${this.hass}
+                id="input"
+                .type=${"device_id"}
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.add_device_id"
+                )}
+                .deviceFilter=${this.deviceFilter}
+                .entityFilter=${this.entityFilter}
+                .includeDeviceClasses=${this.includeDeviceClasses}
+                .includeDomains=${this.includeDomains}
+                .excludeDevices=${ensureArray(this.value?.device_id)}
+                @value-changed=${this._targetPicked}
+                @click=${this._preventDefault}
+              ></ha-device-picker>
+            `
+          : html`
+              <ha-entity-picker
+                .hass=${this.hass}
+                id="input"
+                .type=${"entity_id"}
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.add_entity_id"
+                )}
+                .entityFilter=${this.entityFilter}
+                .includeDeviceClasses=${this.includeDeviceClasses}
+                .includeDomains=${this.includeDomains}
+                .excludeEntities=${ensureArray(this.value?.entity_id)}
+                @value-changed=${this._targetPicked}
+                @click=${this._preventDefault}
+                allow-custom-entity
+              ></ha-entity-picker>
+            `}</mwc-menu-surface
     >`;
   }
 
@@ -670,7 +668,7 @@ export class HaTargetPicker extends LitElement {
       .mdc-chip:hover {
         z-index: 5;
       }
-      paper-tooltip.expand {
+      simple-tooltip.expand {
         min-width: 200px;
       }
       :host([disabled]) .mdc-chip {

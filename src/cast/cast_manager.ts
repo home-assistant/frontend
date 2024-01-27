@@ -1,8 +1,5 @@
-/* eslint-disable no-undef, no-console */
-import {
-  CastStateEventData,
-  SessionStateEventData,
-} from "chromecast-caf-receiver/cast.framework";
+/* eslint-disable no-console */
+
 import { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
 import { CAST_APP_ID, CAST_DEV, CAST_NS } from "./const";
@@ -48,11 +45,11 @@ export class CastManager {
     });
     context.addEventListener(
       cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
-      (ev) => this._sessionStateChanged(ev)
+      this._sessionStateChanged
     );
     context.addEventListener(
       cast.framework.CastContextEventType.CAST_STATE_CHANGED,
-      (ev) => this._castStateChanged(ev)
+      this._castStateChanged
     );
   }
 
@@ -119,7 +116,7 @@ export class CastManager {
     }
   }
 
-  private _sessionStateChanged(ev: SessionStateEventData) {
+  private _sessionStateChanged = (ev: cast.framework.SessionStateEventData) => {
     if (__DEV__) {
       console.log("Cast session state changed", ev.sessionState);
     }
@@ -140,14 +137,14 @@ export class CastManager {
       this.status = undefined;
       this._fireEvent("connection-changed");
     }
-  }
+  };
 
-  private _castStateChanged(ev: CastStateEventData) {
+  private _castStateChanged = (ev: cast.framework.CastStateEventData) => {
     if (__DEV__) {
       console.log("Cast state changed", ev.castState);
     }
     this._fireEvent("state-changed");
-  }
+  };
 
   private _attachMessageListener() {
     const session = this.castSession;

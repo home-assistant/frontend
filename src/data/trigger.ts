@@ -4,19 +4,26 @@ import {
   mdiClockOutline,
   mdiCodeBraces,
   mdiDevices,
+  mdiDotsHorizontal,
   mdiGestureDoubleTap,
-  mdiHomeAssistant,
+  mdiMapClock,
   mdiMapMarker,
   mdiMapMarkerRadius,
+  mdiMessageAlert,
+  mdiMicrophoneMessage,
   mdiNfcVariant,
   mdiNumeric,
+  mdiShape,
   mdiStateMachine,
   mdiSwapHorizontal,
   mdiWeatherSunny,
   mdiWebhook,
 } from "@mdi/js";
 
-export const TRIGGER_TYPES = {
+import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { AutomationElementGroup } from "./automation";
+
+export const TRIGGER_ICONS = {
   calendar: mdiCalendar,
   device: mdiDevices,
   event: mdiGestureDoubleTap,
@@ -26,10 +33,35 @@ export const TRIGGER_TYPES = {
   mqtt: mdiSwapHorizontal,
   numeric_state: mdiNumeric,
   sun: mdiWeatherSunny,
+  conversation: mdiMicrophoneMessage,
   tag: mdiNfcVariant,
   template: mdiCodeBraces,
   time: mdiClockOutline,
   time_pattern: mdiAvTimer,
   webhook: mdiWebhook,
+  persistent_notification: mdiMessageAlert,
   zone: mdiMapMarkerRadius,
 };
+
+export const TRIGGER_GROUPS: AutomationElementGroup = {
+  device: {},
+  entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+  time_location: {
+    icon: mdiMapClock,
+    members: { calendar: {}, sun: {}, time: {}, time_pattern: {}, zone: {} },
+  },
+  other: {
+    icon: mdiDotsHorizontal,
+    members: {
+      event: {},
+      geo_location: {},
+      homeassistant: {},
+      mqtt: {},
+      conversation: {},
+      tag: {},
+      template: {},
+      webhook: {},
+      persistent_notification: {},
+    },
+  },
+} as const;

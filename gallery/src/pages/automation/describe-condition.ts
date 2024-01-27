@@ -63,7 +63,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
         <div class="condition">
           <span>
             ${this._condition
-              ? describeCondition(this._condition, this.hass)
+              ? describeCondition(this._condition, this.hass, [])
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -76,7 +76,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
         ${conditions.map(
           (conf) => html`
             <div class="condition">
-              <span>${describeCondition(conf as any, this.hass)}</span>
+              <span>${describeCondition(conf as any, this.hass, [])}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `
@@ -89,6 +89,7 @@ export class DemoAutomationDescribeCondition extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
     hass.addEntities(ENTITIES);
   }
 

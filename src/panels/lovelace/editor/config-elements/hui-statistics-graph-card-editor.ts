@@ -24,11 +24,7 @@ import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import {
-  ExtendedStatisticType,
-  statTypeMap,
-  supportedStatTypeMap,
-} from "../../../../components/chart/statistics-chart";
+import { supportedStatTypeMap } from "../../../../components/chart/statistics-chart";
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
@@ -38,6 +34,7 @@ import {
   isExternalStatistic,
   StatisticsMetaData,
   statisticsMetaHasType,
+  StatisticType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
@@ -45,6 +42,7 @@ import { processConfigEntities } from "../../common/process-config-entities";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 
 const statTypeStruct = union([
   literal("state"),
@@ -74,6 +72,7 @@ const cardConfigStruct = assign(
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
+    logarithmic_scale: optional(boolean()),
   })
 );
 
@@ -85,7 +84,7 @@ const stat_types = [
   "sum",
   "state",
   "change",
-] as ExtendedStatisticType[];
+] as StatisticType[];
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -172,7 +171,7 @@ export class HuiStatisticsGraphCardEditor
             },
             {
               name: "days_to_show",
-              required: true,
+              default: DEFAULT_DAYS_TO_SHOW,
               selector: { number: { min: 1, mode: "box" } },
             },
             {
@@ -189,7 +188,7 @@ export class HuiStatisticsGraphCardEditor
                     ),
                     disabled:
                       !metaDatas ||
-                      !metaDatas.every((metaData) =>
+                      !metaDatas.some((metaData) =>
                         statisticsMetaHasType(
                           metaData,
                           supportedStatTypeMap[stat_type]
@@ -210,6 +209,11 @@ export class HuiStatisticsGraphCardEditor
             },
             {
               name: "hide_legend",
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              name: "logarithmic_scale",
               required: false,
               selector: { boolean: {} },
             },
@@ -248,17 +252,14 @@ export class HuiStatisticsGraphCardEditor
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
-      : stat_types.filter(
-          (stat_type) =>
-            stat_type !== "change" &&
-            this._metaDatas?.every((metaData) =>
-              statisticsMetaHasType(metaData, statTypeMap[stat_type])
-            )
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.some((metaData) =>
+            statisticsMetaHasType(metaData, stat_type)
+          )
         );
     const data = {
       chart_type: "line",
       period: "hour",
-      days_to_show: 30,
       ...this._config,
       stat_types: configured_stat_types,
     };
@@ -323,9 +324,7 @@ export class HuiStatisticsGraphCardEditor
         : undefined;
     if (config.stat_types && config.entities.length) {
       config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
-        metadata!.every((metaData) =>
-          statisticsMetaHasType(metaData, statTypeMap[stat_type])
-        )
+        metadata!.some((metaData) => statisticsMetaHasType(metaData, stat_type))
       );
       if (!config.stat_types.length) {
         delete config.stat_types;
@@ -353,6 +352,7 @@ export class HuiStatisticsGraphCardEditor
       case "period":
       case "unit":
       case "hide_legend":
+      case "logarithmic_scale":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

@@ -8,6 +8,7 @@ import "../../../../components/ha-dialog";
 import {
   BatterySourceTypeEnergyPreference,
   emptyBatteryEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -32,6 +33,8 @@ export class DialogEnergyBatterySettings
 
   @state() private _error?: string;
 
+  private _excludeList?: string[];
+
   public async showDialog(
     params: EnergySettingsBatteryDialogParams
   ): Promise<void> {
@@ -42,12 +45,23 @@ export class DialogEnergyBatterySettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    const allSources: string[] = [];
+    this._params.battery_sources.forEach((entry) => {
+      allSources.push(entry.stat_energy_from);
+      allSources.push(entry.stat_energy_to);
+    });
+    this._excludeList = allSources.filter(
+      (id) =>
+        id !== this._source?.stat_energy_from &&
+        id !== this._source?.stat_energy_to
+    );
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
+    this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -80,22 +94,32 @@ export class DialogEnergyBatterySettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_into_battery"
           )}
+          .excludeStatistics=${[
+            ...(this._excludeList || []),
+            this._source.stat_energy_from,
+          ]}
           @value-changed=${this._statisticToChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_out_of_battery"
           )}
+          .excludeStatistics=${[
+            ...(this._excludeList || []),
+            this._source.stat_energy_to,
+          ]}
           @value-changed=${this._statisticFromChanged}
         ></ha-statistic-picker>
 

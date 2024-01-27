@@ -6,9 +6,16 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { addHours, differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -19,7 +26,7 @@ import {
   numberFormatToLocale,
 } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
-import type HaChartBase from "../../../../components/chart/ha-chart-base";
+import type { HaChartBase } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
@@ -34,6 +41,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDevicesGraphCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -69,6 +77,14 @@ export class HuiEnergyDevicesGraphCard
 
   public setConfig(config: EnergyDevicesGraphCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
@@ -130,7 +146,7 @@ export class HuiEnergyDevicesGraphCard
           },
         },
       },
-      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
+      elements: { bar: { borderWidth: 1, borderRadius: 4 } },
       plugins: {
         tooltip: {
           mode: "nearest",
@@ -164,6 +180,7 @@ export class HuiEnergyDevicesGraphCard
           // @ts-ignore
           entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
+        chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },
     })
   );
@@ -181,8 +198,6 @@ export class HuiEnergyDevicesGraphCard
     const period =
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 
-    const startMinHour = addHours(energyData.start, -1);
-
     const lengthUnit = this.hass.config.unit_system.length || "";
     const units: StatisticsUnitConfiguration = {
       energy: "kWh",
@@ -191,51 +206,26 @@ export class HuiEnergyDevicesGraphCard
 
     const data = await fetchStatistics(
       this.hass,
-      startMinHour,
+      energyData.start,
       energyData.end,
       devices,
       period,
-      units
+      units,
+      ["change"]
     );
-
-    Object.values(data).forEach((stat) => {
-      // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-      if (stat.length && new Date(stat[0].start) > startMinHour) {
-        stat.unshift({
-          ...stat[0],
-          start: startMinHour.getTime(),
-          end: startMinHour.getTime(),
-          sum: 0,
-          state: 0,
-        });
-      }
-    });
 
     let compareData: Statistics | undefined;
 
     if (energyData.startCompare && energyData.endCompare) {
-      const startCompareMinHour = addHours(energyData.startCompare, -1);
       compareData = await fetchStatistics(
         this.hass,
-        startCompareMinHour,
+        energyData.startCompare,
         energyData.endCompare,
         devices,
         period,
-        units
+        units,
+        ["change"]
       );
-
-      Object.values(compareData).forEach((stat) => {
-        // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-        if (stat.length && new Date(stat[0].start) > startMinHour) {
-          stat.unshift({
-            ...stat[0],
-            start: startCompareMinHour.getTime(),
-            end: startCompareMinHour.getTime(),
-            sum: 0,
-            state: 0,
-          });
-        }
-      });
     }
 
     const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
@@ -304,6 +294,8 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.sort((a, b) => b.x - a.x);
 
+    chartData.length = this._config?.max_devices || chartData.length;
+
     chartData.forEach((d: any) => {
       const color = getColorByIndex(d.idx);
 
@@ -319,6 +311,7 @@ export class HuiEnergyDevicesGraphCard
     });
 
     this._chartData = {
+      labels: chartData.map((d) => d.y),
       datasets,
     };
     await this.updateComplete;

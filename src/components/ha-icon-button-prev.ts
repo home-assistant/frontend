@@ -1,6 +1,7 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
@@ -12,19 +13,8 @@ export class HaIconButtonPrev extends LitElement {
 
   @property() public label?: string;
 
-  @state() private _icon = mdiChevronLeft;
-
-  public connectedCallback() {
-    super.connectedCallback();
-
-    // wait to check for direction since otherwise direction is wrong even though top level is RTL
-    setTimeout(() => {
-      this._icon =
-        window.getComputedStyle(this).direction === "ltr"
-          ? mdiChevronLeft
-          : mdiChevronRight;
-    }, 100);
-  }
+  @state() private _icon =
+    mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
 
   protected render(): TemplateResult {
     return html`

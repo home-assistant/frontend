@@ -11,7 +11,6 @@ on:
       - dev
 
 env:
-  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
@@ -22,12 +21,12 @@ jobs:
     if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.6.0
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.1
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies

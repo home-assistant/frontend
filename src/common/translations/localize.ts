@@ -1,10 +1,7 @@
-import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
-import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
+import type { HTMLTemplateResult } from "lit";
+import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
-import { getLocalLanguage } from "../../util/common-translation";
 
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
@@ -15,23 +12,18 @@ export type LocalizeKeys =
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
+  | `ui.card.lawn_mower.actions.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
+  | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
   | `ui.dialogs.unhealthy.reason.${string}`
   | `ui.dialogs.unsupported.reason.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
-  | `ui.panel.config.automation.${string}`
   | `ui.panel.config.dashboard.${string}`
-  | `ui.panel.config.devices.${string}`
-  | `ui.panel.config.energy.${string}`
-  | `ui.panel.config.info.${string}`
-  | `ui.panel.config.lovelace.${string}`
-  | `ui.panel.config.network.${string}`
-  | `ui.panel.config.scene.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`
@@ -42,16 +34,20 @@ export type LocalizeKeys =
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 export type FlattenObjectKeys<
   T extends Record<string, any>,
-  Key extends keyof T = keyof T
+  Key extends keyof T = keyof T,
 > = Key extends string
   ? T[Key] extends Record<string, unknown>
     ? `${Key}.${FlattenObjectKeys<T[Key]>}`
     : `${Key}`
   : never;
 
+// Later, don't return string when HTML is passed, and don't allow undefined
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  ...args: any[]
+  values?: Record<
+    string,
+    string | number | HTMLTemplateResult | null | undefined
+  >
 ) => string;
 
 interface FormatType {
@@ -62,36 +58,6 @@ export interface FormatsType {
   date: FormatType;
   time: FormatType;
 }
-
-const loadedPolyfillLocale = new Set();
-
-const locale = getLocalLanguage();
-
-const polyfills: Promise<any>[] = [];
-if (__BUILD__ === "latest") {
-  if (shouldPolyfillLocale()) {
-    await import("@formatjs/intl-locale/polyfill");
-  }
-  if (shouldPolyfillPluralRules(locale)) {
-    polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
-    polyfills.push(import("@formatjs/intl-pluralrules/locale-data/en"));
-  }
-  if (shouldPolyfillRelativeTime(locale)) {
-    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
-  }
-  if (shouldPolyfillDateTime(locale)) {
-    polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
-    polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
-  }
-}
-
-export const polyfillsLoaded =
-  polyfills.length === 0
-    ? undefined
-    : Promise.all(polyfills).then(() =>
-        // Load the default language
-        loadPolyfillLocales(locale)
-      );
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -120,11 +86,9 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  if (polyfillsLoaded) {
-    await polyfillsLoaded;
-  }
-
-  await loadPolyfillLocales(language);
+  await import("../../resources/intl-polyfill").then(() =>
+    polyfillLocaleData(language)
+  );
 
   // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -165,6 +129,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       argObject = args[0];
     } else {
       for (let i = 0; i < args.length; i += 2) {
+        // @ts-expect-error in some places the old format (key, value, key, value) is used
         argObject[args[i]] = args[i + 1];
       }
     }
@@ -175,48 +140,4 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       return "Translation " + err;
     }
   };
-};
-
-export const loadPolyfillLocales = async (language: string) => {
-  if (loadedPolyfillLocale.has(language)) {
-    return;
-  }
-  loadedPolyfillLocale.add(language);
-  try {
-    if (
-      Intl.NumberFormat &&
-      // @ts-ignore
-      typeof Intl.NumberFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-numberformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.NumberFormat.__addLocaleData(await result.json());
-    }
-    if (
-      Intl.RelativeTimeFormat &&
-      // @ts-ignore
-      typeof Intl.RelativeTimeFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-relativetimeformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.RelativeTimeFormat.__addLocaleData(await result.json());
-    }
-    if (
-      Intl.DateTimeFormat &&
-      // @ts-ignore
-      typeof Intl.DateTimeFormat.__addLocaleData === "function"
-    ) {
-      const result = await fetch(
-        `/static/locale-data/intl-datetimeformat/${language}.json`
-      );
-      // @ts-ignore
-      Intl.DateTimeFormat.__addLocaleData(await result.json());
-    }
-  } catch (e) {
-    // Ignore
-  }
 };

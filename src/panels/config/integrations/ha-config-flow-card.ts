@@ -1,14 +1,7 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  mdiBookshelf,
-  mdiCog,
-  mdiDotsVertical,
-  mdiEyeOff,
-  mdiOpenInNew,
-} from "@mdi/js";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ATTENTION_SOURCES,
@@ -17,41 +10,37 @@ import {
   localizeConfigFlowTitle,
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
-import { documentationUrl } from "../../../util/documentation-url";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
+import "../../../components/ha-list-item";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public flow!: DataEntryFlowProgressExtended;
+  @property({ attribute: false }) public flow!: DataEntryFlowProgressExtended;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     const attention = ATTENTION_SOURCES.includes(this.flow.context.source);
     return html`
       <ha-integration-action-card
         class=${classMap({
-          discovered: !attention,
           attention: attention,
         })}
         .hass=${this.hass}
         .manifest=${this.manifest}
-        .banner=${this.hass.localize(
-          `ui.panel.config.integrations.${
-            attention ? "attention" : "discovered"
-          }`
-        )}
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title}
       >
-        <mwc-button
+        <ha-button
           unelevated
           @click=${this._continueFlow}
           .label=${this.hass.localize(
@@ -59,73 +48,76 @@ export class HaConfigFlowCard extends LitElement {
               attention ? "reconfigure" : "configure"
             }`
           )}
-        ></mwc-button>
-        <ha-button-menu corner="BOTTOM_START">
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          ${this.flow.context.configuration_url
-            ? html`<a
-                href=${this.flow.context.configuration_url.replace(
-                  /^homeassistant:\/\//,
-                  ""
-                )}
-                rel="noreferrer"
-                target=${this.flow.context.configuration_url.startsWith(
-                  "homeassistant://"
-                )
-                  ? "_self"
-                  : "_blank"}
-              >
-                <mwc-list-item graphic="icon" hasMeta>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.open_configuration_url"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-                </mwc-list-item>
-              </a>`
-            : ""}
-          ${this.manifest
-            ? html`<a
-                href=${this.manifest.is_built_in
-                  ? documentationUrl(
-                      this.hass,
-                      `/integrations/${this.manifest.domain}`
+        ></ha-button>
+        ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
+        this.flow.context.unique_id
+          ? html`<ha-button
+              @click=${this._ignoreFlow}
+              .label=${this.hass.localize(
+                "ui.panel.config.integrations.ignore.ignore"
+              )}
+            ></ha-button>`
+          : ""}
+        ${this.flow.context.configuration_url || this.manifest
+          ? html`<ha-button-menu slot="header-button">
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+              ${this.flow.context.configuration_url
+                ? html`<a
+                    href=${this.flow.context.configuration_url.replace(
+                      /^homeassistant:\/\//,
+                      ""
+                    )}
+                    rel="noreferrer"
+                    target=${this.flow.context.configuration_url.startsWith(
+                      "homeassistant://"
                     )
-                  : this.manifest.documentation}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <mwc-list-item graphic="icon" hasMeta>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.documentation"
-                  )}
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiBookshelf}
-                  ></ha-svg-icon>
-                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-                </mwc-list-item>
-              </a>`
-            : ""}
-          ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
-          this.flow.context.unique_id
-            ? html`
-                <mwc-list-item
-                  graphic="icon"
-                  @request-selected=${this._ignoreFlow}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.ignore.ignore"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiEyeOff}></ha-svg-icon>
-                </mwc-list-item>
-              `
-            : ""}
-        </ha-button-menu>
+                      ? "_self"
+                      : "_blank"}
+                  >
+                    <ha-list-item graphic="icon" hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.open_configuration_url"
+                      )}
+                      <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </ha-list-item>
+                  </a>`
+                : ""}
+              ${this.manifest
+                ? html`<a
+                    href=${this.manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this.manifest.domain}`
+                        )
+                      : this.manifest.documentation}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <ha-list-item graphic="icon" hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.documentation"
+                      )}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiBookshelf}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </ha-list-item>
+                  </a>`
+                : ""}
+            </ha-button-menu>`
+          : ""}
       </ha-integration-action-card>
     `;
   }
@@ -139,15 +131,11 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
-  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private async _ignoreFlow() {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
-        "name",
-        localizeConfigFlowTitle(this.hass.localize, this.flow)
+        { name: localizeConfigFlowTitle(this.hass.localize, this.flow) }
       ),
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore"
@@ -174,21 +162,20 @@ export class HaConfigFlowCard extends LitElement {
   }
 
   static styles = css`
-    .attention {
-      --state-color: var(--error-color);
-      --text-on-state-color: var(--text-primary-color);
-    }
-    .discovered {
-      --state-color: var(--primary-color);
-      --text-on-state-color: var(--text-primary-color);
-    }
     a {
       text-decoration: none;
       color: var(--primary-color);
     }
+    ha-button-menu {
+      color: var(--secondary-text-color);
+    }
     ha-svg-icon[slot="meta"] {
       width: 18px;
       height: 18px;
+    }
+    .attention {
+      --mdc-theme-primary: var(--error-color);
+      --ha-card-border-color: var(--error-color);
     }
   `;
 }

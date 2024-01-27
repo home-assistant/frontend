@@ -3,6 +3,8 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
 import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";
@@ -71,6 +73,7 @@ class DialogRepairsIssue extends LitElement {
           <ha-markdown
             allowsvg
             breaks
+            @click=${this._clickHandler}
             .content=${this.hass.localize(
               `component.${this._issue.domain}.issues.${
                 this._issue.translation_key || this._issue.issue_id
@@ -98,7 +101,8 @@ class DialogRepairsIssue extends LitElement {
             ${this._issue.created
               ? formatDateNumeric(
                   new Date(this._issue.created),
-                  this.hass.locale
+                  this.hass.locale,
+                  this.hass.config
                 )
               : ""}
           </div>
@@ -110,13 +114,13 @@ class DialogRepairsIssue extends LitElement {
                   ? this._issue.learn_more_url.replace("homeassistant://", "/")
                   : this._issue.learn_more_url}
                 .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                @click=${learnMoreUrlIsHomeAssistant
+                  ? this.closeDialog
+                  : undefined}
                 slot="primaryAction"
                 rel="noopener noreferrer"
               >
                 <mwc-button
-                  @click=${learnMoreUrlIsHomeAssistant
-                    ? this.closeDialog
-                    : undefined}
                   .label=${this.hass!.localize(
                     "ui.panel.config.repairs.dialog.learn"
                   )}
@@ -138,6 +142,12 @@ class DialogRepairsIssue extends LitElement {
   private _ignoreIssue() {
     ignoreRepairsIssue(this.hass, this._issue!, !this._issue!.ignored);
     this.closeDialog();
+  }
+
+  private _clickHandler(ev: MouseEvent) {
+    if (isNavigationClick(ev, false)) {
+      this.closeDialog();
+    }
   }
 
   static styles: CSSResultGroup = [

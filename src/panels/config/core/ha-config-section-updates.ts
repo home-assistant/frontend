@@ -34,7 +34,7 @@ import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 class HaConfigSectionUpdates extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _showSkipped = false;
 
@@ -69,7 +69,7 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiUpdate}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-button-menu corner="BOTTOM_START" multi>
+          <ha-button-menu multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}

@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -5,12 +6,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
+import { fullEntitiesContext } from "../../../../../data/context";
 import {
   deviceAutomationsEqual,
   DeviceCapabilities,
   DeviceCondition,
   fetchDeviceConditionCapabilities,
 } from "../../../../../data/device_automation";
+import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
@@ -24,6 +27,10 @@ export class HaDeviceCondition extends LitElement {
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   private _origCondition?: DeviceCondition;
 
@@ -100,7 +107,7 @@ export class HaDeviceCondition extends LitElement {
     const prevCondition = changedPros.get("condition");
     if (
       prevCondition &&
-      !deviceAutomationsEqual(prevCondition, this.condition)
+      !deviceAutomationsEqual(this._entityReg, prevCondition, this.condition)
     ) {
       this._getCapabilities();
     }
@@ -129,7 +136,7 @@ export class HaDeviceCondition extends LitElement {
     let condition = ev.detail.value;
     if (
       this._origCondition &&
-      deviceAutomationsEqual(this._origCondition, condition)
+      deviceAutomationsEqual(this._entityReg, this._origCondition, condition)
     ) {
       condition = this._origCondition;
     }
@@ -161,6 +168,7 @@ export class HaDeviceCondition extends LitElement {
     }
 
     ha-form {
+      display: block;
       margin-top: 24px;
     }
   `;

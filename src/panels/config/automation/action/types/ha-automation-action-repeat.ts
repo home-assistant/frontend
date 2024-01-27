@@ -1,21 +1,23 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import {
-  Action,
-  CountRepeat,
-  RepeatAction,
-  UntilRepeat,
-  WhileRepeat,
-} from "../../../../../data/script";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { Condition } from "../../../../lovelace/common/validate-condition";
-import "../ha-automation-action";
 import "../../../../../components/ha-textfield";
+import { RepeatAction } from "../../../../../data/script";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
+import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
-const OPTIONS = ["count", "while", "until"] as const;
+import { isTemplate } from "../../../../../common/string/has-template";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-form/ha-form";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
+
+const OPTIONS = ["count", "while", "until", "for_each"] as const;
 
 const getType = (action) => OPTIONS.find((option) => option in action);
 
@@ -27,150 +29,139 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: RepeatAction;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Array }) public path?: ItemPath;
 
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
   }
 
+  private _schema = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      type: string,
+      template: boolean,
+      path?: ItemPath
+    ) =>
+      [
+        {
+          name: "type",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: OPTIONS.map((opt) => ({
+                value: opt,
+                label: localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
+                ),
+              })),
+            },
+          },
+        },
+        ...(type === "count"
+          ? ([
+              {
+                name: "count",
+                required: true,
+                selector: template
+                  ? { template: {} }
+                  : { number: { mode: "box", min: 1 } },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(type === "until" || type === "while"
+          ? ([
+              {
+                name: type,
+                selector: {
+                  condition: {
+                    path: [...(path ?? []), "repeat", type],
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(type === "for_each"
+          ? ([
+              {
+                name: "for_each",
+                required: true,
+                selector: { object: {} },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        {
+          name: "sequence",
+          selector: {
+            action: {
+              path: [...(path ?? []), "repeat", "sequence"],
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
     const action = this.action.repeat;
-
     const type = getType(action);
+    const schema = this._schema(
+      this.hass.localize,
+      type ?? "count",
+      "count" in action && typeof action.count === "string"
+        ? isTemplate(action.count)
+        : false,
+      this.path
+    );
 
-    return html`
-      <ha-select
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
-        )}
-        .value=${type}
-        .disabled=${this.disabled}
-        @selected=${this._typeChanged}
-      >
-        ${OPTIONS.map(
-          (opt) => html`
-            <mwc-list-item .value=${opt}>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
-              )}
-            </mwc-list-item>
-          `
-        )}
-      </ha-select>
-      <div>
-        ${type === "count"
-          ? html`
-              <ha-textfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
-                )}
-                name="count"
-                .value=${(action as CountRepeat).count || "0"}
-                .disabled=${this.disabled}
-                @change=${this._countChanged}
-              ></ha-textfield>
-            `
-          : type === "while"
-          ? html` <h3>
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions`
-                )}:
-              </h3>
-              <ha-automation-condition
-                nested
-                .conditions=${(action as WhileRepeat).while || []}
-                .hass=${this.hass}
-                .disabled=${this.disabled}
-                @value-changed=${this._conditionChanged}
-              ></ha-automation-condition>`
-          : type === "until"
-          ? html` <h3>
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions`
-                )}:
-              </h3>
-              <ha-automation-condition
-                nested
-                .conditions=${(action as UntilRepeat).until || []}
-                .hass=${this.hass}
-                .disabled=${this.disabled}
-                @value-changed=${this._conditionChanged}
-              ></ha-automation-condition>`
-          : ""}
-      </div>
-      <h3>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.repeat.sequence"
-        )}:
-      </h3>
-      <ha-automation-action
-        nested
-        .actions=${action.sequence}
-        .reOrderMode=${this.reOrderMode}
-        .disabled=${this.disabled}
-        @value-changed=${this._actionChanged}
-        .hass=${this.hass}
-      ></ha-automation-action>
-    `;
+    const data = { ...action, type };
+    return html`<ha-form
+      .hass=${this.hass}
+      .data=${data}
+      .schema=${schema}
+      .disabled=${this.disabled}
+      @value-changed=${this._valueChanged}
+      .computeLabel=${this._computeLabelCallback}
+    ></ha-form>`;
   }
 
-  private _typeChanged(ev) {
-    const type = ev.target.value;
+  private _valueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const newVal = ev.detail.value;
 
-    if (!type || type === getType(this.action.repeat)) {
-      return;
+    const newType = newVal.type;
+    delete newVal.type;
+    const oldType = getType(this.action.repeat);
+
+    if (newType !== oldType) {
+      if (newType === "count") {
+        newVal.count = 2;
+        delete newVal.while;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "while") {
+        newVal.while = newVal.until ?? [];
+        delete newVal.count;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "until") {
+        newVal.until = newVal.while ?? [];
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.for_each;
+      }
+      if (newType === "for_each") {
+        newVal.for_each = {};
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.until;
+      }
     }
 
-    const value = type === "count" ? 2 : [];
-
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
-        repeat: { [type]: value, sequence: this.action.repeat.sequence },
-      },
-    });
-  }
-
-  private _conditionChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = ev.detail.value as Condition[];
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        repeat: {
-          ...this.action.repeat,
-          [getType(this.action.repeat)!]: value,
-        },
-      },
-    });
-  }
-
-  private _actionChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = ev.detail.value as Action[];
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        repeat: {
-          ...this.action.repeat,
-          sequence: value,
-        },
-      },
-    });
-  }
-
-  private _countChanged(ev: CustomEvent): void {
-    const newVal = (ev.target as any).value;
-    if ((this.action.repeat as CountRepeat).count === newVal) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.action,
-        repeat: {
-          ...this.action.repeat,
-          count: newVal,
-        },
+        repeat: { ...newVal },
       },
     });
   }
@@ -185,6 +176,46 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       `,
     ];
   }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string => {
+    switch (schema.name) {
+      case "type":
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
+        );
+      case "count":
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
+        );
+      case "while":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions"
+          ) + ":"
+        );
+      case "until":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions"
+          ) + ":"
+        );
+      case "for_each":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.type.for_each.items"
+          ) + ":"
+        );
+      case "sequence":
+        return (
+          this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.repeat.sequence"
+          ) + ":"
+        );
+    }
+    return "";
+  };
 }
 
 declare global {

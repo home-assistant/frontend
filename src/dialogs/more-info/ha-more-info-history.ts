@@ -1,24 +1,28 @@
 import { startOfYesterday, subHours } from "date-fns/esm";
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
+import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
+import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
+import type { StatisticsChart } from "../../components/chart/statistics-chart";
 import {
-  computeHistory,
   HistoryResult,
+  computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../data/history";
 import {
-  fetchStatistics,
-  getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
   StatisticsTypes,
+  fetchStatistics,
+  getStatisticMetadata,
 } from "../../data/recorder";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { HomeAssistant } from "../../types";
 
 declare global {
@@ -51,12 +55,22 @@ export class MoreInfoHistory extends LitElement {
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
+  @query("statistics-chart, state-history-charts") private _chart?:
+    | StateHistoryCharts
+    | StatisticsChart;
+
+  public resize = (options?: ChartResizeOptions): void => {
+    if (this._chart) {
+      this._chart.resize(options);
+    }
+  };
+
   protected render() {
     if (!this.entityId) {
       return nothing;
     }
 
-    return html` ${isComponentLoaded(this.hass, "history")
+    return html`${isComponentLoaded(this.hass, "history")
       ? html`<div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
@@ -70,28 +84,29 @@ export class MoreInfoHistory extends LitElement {
           ${this._error
             ? html`<div class="errors">${this._error}</div>`
             : this._statistics
-            ? html`<statistics-chart
-                .hass=${this.hass}
-                .isLoadingData=${!this._statistics}
-                .statisticsData=${this._statistics}
-                .metadata=${this._metadata}
-                .statTypes=${statTypes}
-                .names=${this._statNames}
-                hideLegend
-                .showNames=${false}
-              ></statistics-chart>`
-            : html`<state-history-charts
-                up-to-now
-                .hass=${this.hass}
-                .historyData=${this._stateHistory}
-                .isLoadingData=${!this._stateHistory}
-                .showNames=${false}
-              ></state-history-charts>`}`
+              ? html`<statistics-chart
+                  .hass=${this.hass}
+                  .isLoadingData=${!this._statistics}
+                  .statisticsData=${this._statistics}
+                  .metadata=${this._metadata}
+                  .statTypes=${statTypes}
+                  .names=${this._statNames}
+                  hideLegend
+                  .showNames=${false}
+                ></statistics-chart>`
+              : html`<state-history-charts
+                  up-to-now
+                  .hass=${this.hass}
+                  .historyData=${this._stateHistory}
+                  .isLoadingData=${!this._stateHistory}
+                  .showNames=${false}
+                  .clickForMoreInfo=${false}
+                ></state-history-charts>`}`
       : ""}`;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
@@ -192,12 +207,17 @@ export class MoreInfoHistory extends LitElement {
         }
       }
     }
-    if (!isComponentLoaded(this.hass, "history") || this._subscribed) {
+
+    if (!isComponentLoaded(this.hass, "history")) {
       return;
     }
     if (this._subscribed) {
       this._unsubscribeHistory();
     }
+
+    const { numeric_device_classes: sensorNumericDeviceClasses } =
+      await getSensorNumericDeviceClasses(this.hass);
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -208,7 +228,8 @@ export class MoreInfoHistory extends LitElement {
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
-          this.hass!.localize
+          this.hass!.localize,
+          sensorNumericDeviceClasses
         );
       },
       24,

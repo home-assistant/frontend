@@ -2,6 +2,8 @@ import { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import { ConfigEntry } from "./config_entries";
 
+export type FlowType = "config_flow" | "options_flow" | "repair_flow";
+
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
   data: {
@@ -30,6 +32,7 @@ export interface DataEntryFlowStepForm {
   errors: Record<string, string>;
   description_placeholders?: Record<string, string>;
   last_step: boolean | null;
+  preview?: string;
 }
 
 export interface DataEntryFlowStepExternal {

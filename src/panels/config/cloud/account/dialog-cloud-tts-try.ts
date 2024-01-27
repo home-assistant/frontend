@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { LocalStorage } from "../../../../common/decorators/local-storage";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
@@ -31,9 +31,19 @@ export class DialogTryTts extends LitElement {
 
   @query("#message") private _messageInput?: HaTextArea;
 
-  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
+  @storage({
+    key: "cloudTtsTryMessage",
+    state: false,
+    subscribe: false,
+  })
+  private _message!: string;
 
-  @LocalStorage("cloudTtsTryTarget", false, false) private _target!: string;
+  @storage({
+    key: "cloudTtsTryTarget",
+    state: false,
+    subscribe: false,
+  })
+  private _target!: string;
 
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
@@ -68,8 +78,7 @@ export class DialogTryTts extends LitElement {
             .value=${this._message ||
             this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.example_message",
-              "name",
-              this.hass.user!.name
+              { name: this.hass.user!.name }
             )}
           >
           </ha-textarea>

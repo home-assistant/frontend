@@ -1,6 +1,6 @@
 import { mdiCheck, mdiPlus } from "@mdi/js";
-import { html, LitElement, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { LitElement, PropertyValues, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -13,11 +13,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import {
+  User,
   computeUserBadges,
   deleteUser,
   fetchUsers,
   updateUser,
-  User,
 } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -30,13 +30,13 @@ import { showUserDetailDialog } from "./show-dialog-user-detail";
 export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public _users: User[] = [];
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
-
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _users: User[] = [];
 
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
@@ -49,14 +49,14 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (name, user) =>
+          template: (user) =>
             narrow
-              ? html` ${name}<br />
+              ? html` ${user.name}<br />
                   <div class="secondary">
                     ${user.username ? `${user.username} |` : ""}
                     ${localize(`groups.${user.group_ids[0]}`)}
                   </div>`
-              : html` ${name ||
+              : html` ${user.name ||
                 this.hass!.localize(
                   "ui.panel.config.users.editor.unnamed_user"
                 )}`,
@@ -68,7 +68,7 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (username) => html`${username || "—"}`,
+          template: (user) => html`${user.username || "—"}`,
         },
         group_ids: {
           title: localize("ui.panel.config.users.picker.headers.group"),
@@ -77,8 +77,9 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (groupIds: User["group_ids"]) =>
-            html` ${localize(`groups.${groupIds[0]}`)} `,
+          template: (user) => html`
+            ${localize(`groups.${user.group_ids[0]}`)}
+          `,
         },
         is_active: {
           title: this.hass.localize(
@@ -89,8 +90,8 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (is_active) =>
-            is_active
+          template: (user) =>
+            user.is_active
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
         },
@@ -103,8 +104,8 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (generated) =>
-            generated
+          template: (user) =>
+            user.system_generated
               ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
         },
@@ -117,8 +118,10 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           hidden: narrow,
-          template: (local) =>
-            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+          template: (user) =>
+            user.local_only
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
         },
         icons: {
           title: "",
@@ -130,7 +133,7 @@ export class HaConfigUsers extends LitElement {
           filterable: false,
           width: "104px",
           hidden: !narrow,
-          template: (_, user) => {
+          template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
               ([icon, tooltip]) =>
@@ -209,8 +212,7 @@ export class HaConfigUsers extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize(
               "ui.panel.config.users.editor.confirm_user_deletion_title",
-              "name",
-              entry.name
+              { name: entry.name }
             ),
             text: this.hass!.localize(
               "ui.panel.config.users.editor.confirm_user_deletion_text"

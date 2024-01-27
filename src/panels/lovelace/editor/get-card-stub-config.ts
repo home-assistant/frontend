@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { getCardElementClass } from "../create-element/create-card-element";
 

@@ -21,6 +21,8 @@ import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { LogbookCardConfig } from "./types";
 
+export const DEFAULT_HOURS_TO_SHOW = 24;
+
 @customElement("hui-logbook-card")
 export class HuiLogbookCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -66,7 +68,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
-      hours_to_show: 24,
+      hours_to_show: DEFAULT_HOURS_TO_SHOW,
       ...config,
     };
     this._time = {
@@ -104,11 +106,9 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     if (!isComponentLoaded(this.hass, "logbook")) {
       return html`
         <hui-warning>
-          ${this.hass.localize(
-            "ui.components.logbook.not_loaded",
-            "platform",
-            "logbook"
-          )}</hui-warning
+          ${this.hass.localize("ui.components.logbook.not_loaded", {
+            platform: "logbook",
+          })}</hui-warning
         >
       `;
     }

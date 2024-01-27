@@ -17,8 +17,11 @@ class SupervisorFormfieldLabel extends LitElement {
       ${this.imageUrl
         ? html`<img loading="lazy" alt="" src=${this.imageUrl} class="icon" />`
         : this.iconPath
-        ? html`<ha-svg-icon .path=${this.iconPath} class="icon"></ha-svg-icon>`
-        : ""}
+          ? html`<ha-svg-icon
+              .path=${this.iconPath}
+              class="icon"
+            ></ha-svg-icon>`
+          : ""}
       <span class="label">${this.label}</span>
       ${this.version
         ? html`<span class="version">(${this.version})</span>`
@@ -34,6 +37,8 @@ class SupervisorFormfieldLabel extends LitElement {
       }
       .label {
         margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
       }
       .version {
         color: var(--secondary-text-color);
@@ -42,6 +47,8 @@ class SupervisorFormfieldLabel extends LitElement {
         max-height: 22px;
         max-width: 22px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
     `;
   }

@@ -1,11 +1,11 @@
 import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,14 +13,14 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
 import { LightEntity, lightSupportsBrightness } from "../../../data/light";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -114,6 +114,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <div class="content">
           <div id="controls">
             <div id="slider">
+              <!-- @ts-ignore Round-slider has no tag definition or exported type -->
               <round-slider
                 min="1"
                 max="100"
@@ -147,7 +148,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               >
                 <ha-state-icon
                   .icon=${this._config.icon}
-                  .state=${stateObj}
+                  .stateObj=${stateObj}
+                  .hass=${this.hass}
                 ></ha-state-icon>
               </ha-icon-button>
             </div>
@@ -155,16 +157,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
           <div id="info" .title=${name}>
             ${isUnavailableState(stateObj.state)
-              ? html`
-                  <div>
-                    ${computeStateDisplay(
-                      this.hass.localize,
-                      stateObj,
-                      this.hass.locale,
-                      this.hass.entities
-                    )}
-                  </div>
-                `
+              ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
               : html` <div class="brightness">%</div> `}
             ${name}
           </div>
@@ -205,9 +198,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(
-      ".brightness"
-    )!.innerHTML = `${e.detail.value} %`;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
+      `${e.detail.value} %`;
     this._showBrightness();
     this._hideBrightness();
   }
@@ -238,8 +230,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     if (stateObj.state === "off" || !stateObj.attributes.brightness) {
       return "";
     }
-    const brightness = stateObj.attributes.brightness;
-    return `brightness(${(brightness + 245) / 5}%)`;
+    return stateColorBrightness(stateObj);
   }
 
   private _computeColor(stateObj: LightEntity): string {

@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+import { framework } from "./cast_framework";
 import { CAST_NS } from "../../../src/cast/const";
 import { HassMessage } from "../../../src/cast/receiver_messages";
 import "../../../src/resources/custom-card-support";
@@ -34,14 +34,14 @@ const setTouchControlsVisibility = (visible: boolean) => {
 let timeOut: number | undefined;
 
 const playDummyMedia = (viewTitle?: string) => {
-  const loadRequestData = new cast.framework.messages.LoadRequestData();
+  const loadRequestData = new framework.messages.LoadRequestData();
   loadRequestData.autoplay = true;
-  loadRequestData.media = new cast.framework.messages.MediaInformation();
+  loadRequestData.media = new framework.messages.MediaInformation();
   loadRequestData.media.contentId =
     "https://cast.home-assistant.io/images/google-nest-hub.png";
   loadRequestData.media.contentType = "image/jpeg";
-  loadRequestData.media.streamType = cast.framework.messages.StreamType.NONE;
-  const metadata = new cast.framework.messages.GenericMediaMetadata();
+  loadRequestData.media.streamType = framework.messages.StreamType.NONE;
+  const metadata = new framework.messages.GenericMediaMetadata();
   metadata.title = viewTitle;
   loadRequestData.media.metadata = metadata;
 
@@ -86,10 +86,10 @@ const showMediaPlayer = () => {
   }
 };
 
-const options = new cast.framework.CastReceiverOptions();
+const options = new framework.CastReceiverOptions();
 options.disableIdleTimeout = true;
 options.customNamespaces = {
-  [CAST_NS]: cast.framework.system.MessageType.JSON,
+  [CAST_NS]: framework.system.MessageType.JSON,
 };
 
 castContext.addCustomMessageListener(
@@ -98,8 +98,7 @@ castContext.addCustomMessageListener(
   (ev: ReceivedMessage<HassMessage>) => {
     // We received a show Lovelace command, stop media from playing, hide media player and show Lovelace controller
     if (
-      playerManager.getPlayerState() !==
-      cast.framework.messages.PlayerState.IDLE
+      playerManager.getPlayerState() !== framework.messages.PlayerState.IDLE
     ) {
       playerManager.stop();
     } else {
@@ -114,7 +113,7 @@ castContext.addCustomMessageListener(
 const playerManager = castContext.getPlayerManager();
 
 playerManager.setMessageInterceptor(
-  cast.framework.messages.MessageType.LOAD,
+  framework.messages.MessageType.LOAD,
   (loadRequestData) => {
     if (
       loadRequestData.media.contentId ===
@@ -128,25 +127,24 @@ playerManager.setMessageInterceptor(
     // Special handling if it came from Google Assistant
     if (media.entity) {
       media.contentId = media.entity;
-      media.streamType = cast.framework.messages.StreamType.LIVE;
+      media.streamType = framework.messages.StreamType.LIVE;
       media.contentType = "application/vnd.apple.mpegurl";
       // @ts-ignore
       media.hlsVideoSegmentFormat =
-        cast.framework.messages.HlsVideoSegmentFormat.FMP4;
+        framework.messages.HlsVideoSegmentFormat.FMP4;
     }
     return loadRequestData;
   }
 );
 
 playerManager.addEventListener(
-  cast.framework.events.EventType.MEDIA_STATUS,
+  framework.events.EventType.MEDIA_STATUS,
   (event) => {
     if (
-      event.mediaStatus?.playerState ===
-        cast.framework.messages.PlayerState.IDLE &&
+      event.mediaStatus?.playerState === framework.messages.PlayerState.IDLE &&
       event.mediaStatus?.idleReason &&
       event.mediaStatus?.idleReason !==
-        cast.framework.messages.IdleReason.INTERRUPTED
+        framework.messages.IdleReason.INTERRUPTED
     ) {
       // media finished or stopped, return to default Lovelace
       showLovelaceController();

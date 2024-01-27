@@ -335,7 +335,8 @@ class ActionRenderer {
       } at
     ${formatDateTimeWithSeconds(
       new Date(triggerStep.timestamp),
-      this.hass.locale
+      this.hass.locale,
+      this.hass.config
     )}`,
       mdiCircle
     );
@@ -632,7 +633,8 @@ export class HaAutomationTracer extends LitElement {
     const renderFinishedAt = () =>
       formatDateTimeWithSeconds(
         new Date(this.trace!.timestamp.finish!),
-        this.hass.locale
+        this.hass.locale,
+        this.hass.config
       );
     const renderRuntime = () => `(runtime:
       ${(

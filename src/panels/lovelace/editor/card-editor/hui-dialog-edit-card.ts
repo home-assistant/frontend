@@ -1,12 +1,12 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -14,12 +14,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-header-bar";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type {
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -33,6 +29,13 @@ import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import {
+  getCustomCardEntry,
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../../data/lovelace_custom_cards";
 
 declare global {
   // for fire event
@@ -147,19 +150,30 @@ export class HuiDialogEditCard
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
+      let cardName: string | undefined;
+      if (isCustomType(this._cardConfig.type)) {
+        // prettier-ignore
+        cardName = getCustomCardEntry(
+          stripCustomPrefix(this._cardConfig.type)
+        )?.name;
+        // Trim names that end in " Card" so as not to redundantly duplicate it
+        if (cardName?.toLowerCase().endsWith(" card")) {
+          cardName = cardName.substring(0, cardName.length - 5);
+        }
+      } else {
+        cardName = this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+        );
+      }
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.typed_header",
-        "type",
-        this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-        )
+        { type: cardName }
       );
     } else if (!this._cardConfig) {
       heading = this._viewConfig.title
         ? this.hass!.localize(
             "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-            "name",
-            `"${this._viewConfig.title}"`
+            { name: this._viewConfig.title }
           )
         : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {
@@ -178,26 +192,30 @@ export class HuiDialogEditCard
         @opened=${this._opened}
         .heading=${heading}
       >
-        <div slot="heading">
-          <ha-header-bar>
-            <div slot="title" @click=${this._enlarge}>${heading}</div>
-            ${this._documentationURL !== undefined
-              ? html`
-                  <a
-                    slot="actionItems"
-                    class="header_button"
-                    href=${this._documentationURL}
-                    title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                    target="_blank"
-                    rel="noreferrer"
-                    dir=${computeRTLDirection(this.hass)}
-                  >
-                    <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
-                  </a>
-                `
-              : ""}
-          </ha-header-bar>
-        </div>
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title" @click=${this._enlarge}>${heading}</span>
+          ${this._documentationURL !== undefined
+            ? html`
+                <a
+                  slot="actionItems"
+                  class="header_button"
+                  href=${this._documentationURL}
+                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir=${computeRTLDirection(this.hass)}
+                >
+                  <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+                </a>
+              `
+            : nothing}
+        </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
@@ -219,8 +237,8 @@ export class HuiDialogEditCard
             ${this._error
               ? html`
                   <ha-circular-progress
-                    active
-                    alt="Can't update card"
+                    indeterminate
+                    aria-label="Can't update card"
                   ></ha-circular-progress>
                 `
               : ``}
@@ -255,8 +273,8 @@ export class HuiDialogEditCard
                   ${this._saving
                     ? html`
                         <ha-circular-progress
-                          active
-                          title="Saving"
+                          indeterminate
+                          aria-label="Saving"
                           size="small"
                         ></ha-circular-progress>
                       `
@@ -394,7 +412,7 @@ export class HuiDialogEditCard
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 5;
+          --dialog-z-index: 6;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
@@ -404,14 +422,6 @@ export class HuiDialogEditCard
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
-        }
-
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         .center {
@@ -487,6 +497,8 @@ export class HuiDialogEditCard
         }
         .gui-mode-button {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
         .header {
           display: flex;

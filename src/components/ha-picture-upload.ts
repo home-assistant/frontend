@@ -1,14 +1,15 @@
 import { mdiImagePlus } from "@mdi/js";
-import { html, LitElement, TemplateResult } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { createImage, generateImageThumbnailUrl } from "../data/image";
+import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import {
   CropOptions,
   showImageCropperDialog,
 } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { HomeAssistant } from "../types";
+import "./ha-button";
 import "./ha-circular-progress";
 import "./ha-file-upload";
 
@@ -20,6 +21,12 @@ export class HaPictureUpload extends LitElement {
 
   @property() public label?: string;
 
+  @property() public secondary?: string;
+
+  @property() public supports?: string;
+
+  @property() public currentImageAltText?: string;
+
   @property({ type: Boolean }) public crop = false;
 
   @property({ attribute: false }) public cropOptions?: CropOptions;
@@ -29,19 +36,44 @@ export class HaPictureUpload extends LitElement {
   @state() private _uploading = false;
 
   public render(): TemplateResult {
-    return html`
-      <ha-file-upload
-        .hass=${this.hass}
-        .icon=${mdiImagePlus}
-        .label=${this.label ||
-        this.hass.localize("ui.components.picture-upload.label")}
-        .uploading=${this._uploading}
-        .value=${this.value ? html`<img .src=${this.value} />` : ""}
-        @file-picked=${this._handleFilePicked}
-        @change=${this._handleFileCleared}
-        accept="image/png, image/jpeg, image/gif"
-      ></ha-file-upload>
-    `;
+    if (!this.value) {
+      return html`
+        <ha-file-upload
+          .hass=${this.hass}
+          .icon=${mdiImagePlus}
+          .label=${this.label ||
+          this.hass.localize("ui.components.picture-upload.label")}
+          .secondary=${this.secondary}
+          .supports=${this.supports ||
+          this.hass.localize("ui.components.picture-upload.supported_formats")}
+          .uploading=${this._uploading}
+          @file-picked=${this._handleFilePicked}
+          @change=${this._handleFileCleared}
+          accept="image/png, image/jpeg, image/gif"
+        ></ha-file-upload>
+      `;
+    }
+    return html`<div class="center-vertical">
+      <div class="value">
+        <img
+          .src=${this.value}
+          alt=${this.currentImageAltText ||
+          this.hass.localize("ui.components.picture-upload.current_image_alt")}
+        />
+        <ha-button
+          @click=${this._handleChangeClick}
+          .label=${this.hass.localize(
+            "ui.components.picture-upload.change_picture"
+          )}
+        >
+        </ha-button>
+      </div>
+    </div>`;
+  }
+
+  private _handleChangeClick() {
+    this.value = null;
+    fireEvent(this, "change");
   }
 
   private async _handleFilePicked(ev) {
@@ -99,6 +131,35 @@ export class HaPictureUpload extends LitElement {
     } finally {
       this._uploading = false;
     }
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        height: 240px;
+      }
+      ha-file-upload {
+        height: 100%;
+      }
+      .center-vertical {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+      .value {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      img {
+        max-width: 100%;
+        max-height: 200px;
+        margin-bottom: 4px;
+        border-radius: var(--file-upload-image-border-radius);
+      }
+    `;
   }
 }
 

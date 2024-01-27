@@ -1,66 +1,71 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
-import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
+import { customElement, property, state } from "lit/decorators";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
+import "../../hassio/src/components/hassio-upload-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-card";
 import "../components/ha-ansi-to-html";
+import "../components/ha-card";
 import { fetchInstallationType } from "../data/onboarding";
-import { makeDialogManager } from "../dialogs/make-dialog-manager";
-import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
-import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import "./onboarding-loading";
-
-declare global {
-  interface HASSDomEvents {
-    restoring: undefined;
-  }
-}
+import { onBoardingStyles } from "./styles";
+import { removeSearchParam } from "../common/url/search-params";
+import { navigate } from "../common/navigate";
 
 @customElement("onboarding-restore-backup")
-class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
-  @property() public localize!: LocalizeFunc;
+class OnboardingRestoreBackup extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property() public language!: string;
 
-  @property({ type: Boolean }) public restoring = false;
+  @state() public _restoring = false;
 
   protected render(): TemplateResult {
-    return this.restoring
-      ? html`<ha-card
-          .header=${this.localize(
-            "ui.panel.page-onboarding.restore.in_progress"
-          )}
-        >
-          <onboarding-loading></onboarding-loading>
-        </ha-card>`
-      : html`
-          <button class="link" @click=${this._uploadBackup}>
-            ${this.localize("ui.panel.page-onboarding.restore.description")}
-          </button>
-        `;
+    return html`${this._restoring
+        ? html`<h1>
+              ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
+            </h1>
+            <onboarding-loading></onboarding-loading>`
+        : html` <h1>
+              ${this.localize("ui.panel.page-onboarding.restore.header")}
+            </h1>
+            <hassio-upload-backup
+              @backup-uploaded=${this._backupUploaded}
+              .hass=${this.hass}
+            ></hassio-upload-backup>`}
+      <div class="footer">
+        <mwc-button @click=${this._back} .disabled=${this._restoring}>
+          ${this.localize("ui.panel.page-onboarding.back")}
+        </mwc-button>
+      </div> `;
   }
 
-  private _uploadBackup(): void {
-    showBackupUploadDialog(this, {
-      showBackup: (slug: string) => this._showBackupDialog(slug),
-      onboarding: true,
-    });
+  private _back(): void {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
+  }
+
+  private _backupUploaded(ev) {
+    const backup = ev.detail.backup;
+    this._showBackupDialog(backup.slug);
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    makeDialogManager(this, this.shadowRoot!);
     setInterval(() => this._checkRestoreStatus(), 1000);
   }
 
   private async _checkRestoreStatus(): Promise<void> {
-    if (this.restoring) {
+    if (this._restoring) {
       try {
         await fetchInstallationType();
       } catch (err: any) {
-        if ((err as Error).message === "unauthorized") {
+        if (
+          (err as Error).message === "unauthorized" ||
+          (err as Error).message === "not_found"
+        ) {
           window.location.replace("/");
         }
       }
@@ -72,32 +77,27 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
       slug,
       onboarding: true,
       localize: this.localize,
+      onRestoring: () => {
+        this._restoring = true;
+      },
     });
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
-        .logentry {
-          text-align: center;
+        :host {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
-        ha-card {
-          padding: 4px;
-          margin-top: 8px;
+        hassio-upload-backup {
+          width: 100%;
         }
-        ha-ansi-to-html {
-          display: block;
-          line-height: 22px;
-          padding: 0 8px;
-          white-space: pre-wrap;
-        }
-
-        @media all and (min-width: 600px) {
-          ha-card {
-            width: 600px;
-            margin-left: -100px;
-          }
+        .footer {
+          width: 100%;
+          text-align: left;
         }
       `,
     ];

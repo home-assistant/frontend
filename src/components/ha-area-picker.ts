@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
@@ -7,6 +6,10 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../common/string/filter/sequence-matching";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
@@ -21,21 +24,22 @@ import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
+import "./ha-list-item";
 import "./ha-svg-icon";
 
-const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
-  item
-) => html`<mwc-list-item
-  class=${classMap({ "add-new": item.area_id === "add_new" })}
->
-  ${item.name}
-</mwc-list-item>`;
+type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
+
+const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
+  html`<ha-list-item
+    class=${classMap({ "add-new": item.area_id === "add_new" })}
+  >
+    ${item.name}
+  </ha-list-item>`;
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
@@ -50,7 +54,7 @@ export class HaAreaPicker extends LitElement {
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
-  public noAdd?: boolean;
+  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -84,13 +88,15 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-areas" })
   public excludeAreas?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: HassEntity) => boolean;
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 
@@ -307,9 +313,12 @@ export class HaAreaPicker extends LitElement {
         this.entityFilter,
         this.noAdd,
         this.excludeAreas
-      );
-      (this.comboBox as any).items = areas;
-      (this.comboBox as any).filteredItems = areas;
+      ).map((area) => ({
+        ...area,
+        strings: [area.area_id, ...area.aliases, area.name],
+      }));
+      this.comboBox.items = areas;
+      this.comboBox.filteredItems = areas;
     }
   }
 
@@ -321,7 +330,7 @@ export class HaAreaPicker extends LitElement {
         item-value-path="area_id"
         item-id-path="area_id"
         item-label-path="name"
-        .value=${this.value}
+        .value=${this._value}
         .disabled=${this.disabled}
         .required=${this.required}
         .label=${this.label === undefined && this.hass
@@ -340,17 +349,19 @@ export class HaAreaPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const filter = ev.detail.value;
-    if (!filter) {
+    const target = ev.target as HaComboBox;
+    const filterString = ev.detail.value;
+    if (!filterString) {
       this.comboBox.filteredItems = this.comboBox.items;
       return;
     }
 
-    const filteredItems = this.comboBox.items?.filter((item) =>
-      item.name.toLowerCase().includes(filter!.toLowerCase())
+    const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
+      filterString,
+      target.items || []
     );
     if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filter;
+      this._suggestion = filterString;
       this.comboBox.filteredItems = [
         {
           area_id: "add_new_suggestion",
@@ -370,11 +381,11 @@ export class HaAreaPicker extends LitElement {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _areaChanged(ev: PolymerChangedEvent<string>) {
+  private _areaChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
@@ -410,7 +421,7 @@ export class HaAreaPicker extends LitElement {
             name,
           });
           const areas = [...Object.values(this.hass.areas), area];
-          (this.comboBox as any).filteredItems = this._getAreas(
+          this.comboBox.filteredItems = this._getAreas(
             areas,
             Object.values(this.hass.devices)!,
             Object.values(this.hass.entities)!,
@@ -437,6 +448,7 @@ export class HaAreaPicker extends LitElement {
       cancel: () => {
         this._setValue(undefined);
         this._suggestion = undefined;
+        this.comboBox.setInputValue("");
       },
     });
   }

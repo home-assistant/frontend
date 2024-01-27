@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../resources/compatibility";
 import {
   Auth,
   Connection,
@@ -14,19 +12,21 @@ import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
 import { subscribeFrontendUserData } from "../data/frontend";
-import {
-  fetchConfig,
-  fetchResources,
-  WindowWithLovelaceProm,
-} from "../data/lovelace";
+import { fetchConfig } from "../data/lovelace/config/types";
+import { fetchResources } from "../data/lovelace/resource";
+import { MAIN_WINDOW_NAME } from "../data/main_window";
+import { WindowWithPreloads } from "../data/preloads";
+import { getRecorderInfo } from "../data/recorder";
+import { subscribeRepairsIssueRegistry } from "../data/repairs";
+import { subscribeAreaRegistry } from "../data/ws-area_registry";
+import { subscribeDeviceRegistry } from "../data/ws-device_registry";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/array.flat.polyfill";
 import "../resources/safari-14-attachshadow-patch";
-import { HomeAssistant } from "../types";
-import { MAIN_WINDOW_NAME } from "../data/main_window";
 
 window.name = MAIN_WINDOW_NAME;
 (window as any).frontendVersion = __VERSION__;
@@ -65,6 +65,7 @@ const authProm = isExternal
   : () =>
       getAuth({
         hassUrl,
+        limitHassInstance: true,
         saveTokens,
         loadTokens: () => Promise.resolve(loadTokens()),
       });
@@ -94,7 +95,7 @@ const connProm = async (auth) => {
   }
 };
 
-if (__DEV__) {
+if (__DEV__ && "performance" in window) {
   // Remove adoptedStyleSheets so style inspector works on shadow DOM.
   // @ts-ignore
   delete Document.prototype.adoptedStyleSheets;
@@ -115,40 +116,25 @@ window.hassConnection.then(({ conn }) => {
     // do nothing
   };
   subscribeEntities(conn, noop);
+  subscribeEntityRegistryDisplay(conn, noop);
+  subscribeDeviceRegistry(conn, noop);
+  subscribeAreaRegistry(conn, noop);
   subscribeConfig(conn, noop);
   subscribeServices(conn, noop);
   subscribePanels(conn, noop);
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
   subscribeFrontendUserData(conn, "core", noop);
+  subscribeRepairsIssueRegistry(conn, noop);
+
+  const preloadWindow = window as WindowWithPreloads;
+  preloadWindow.recorderInfoProm = getRecorderInfo(conn);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    const llWindow = window as WindowWithLovelaceProm;
-    llWindow.llConfProm = fetchConfig(conn, null, false);
-    llWindow.llConfProm.catch(() => {
+    preloadWindow.llConfProm = fetchConfig(conn, null, false);
+    preloadWindow.llConfProm.catch(() => {
       // Ignore it, it is handled by Lovelace panel.
     });
-    llWindow.llResProm = fetchResources(conn);
-  }
-});
-
-window.addEventListener("error", (e) => {
-  if (!__DEV__ && e.message === "ResizeObserver loop limit exceeded") {
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    return;
-  }
-  const homeAssistant = document.querySelector("home-assistant") as any;
-  if (
-    homeAssistant &&
-    homeAssistant.hass &&
-    (homeAssistant.hass as HomeAssistant).callService
-  ) {
-    homeAssistant.hass.callService("system_log", "write", {
-      logger: `frontend.${
-        __DEV__ ? "js_dev" : "js"
-      }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
-      message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
-    });
+    preloadWindow.llResProm = fetchResources(conn);
   }
 });

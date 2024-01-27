@@ -18,8 +18,7 @@ import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
-import type { PolymerChangedEvent } from "../../../polymer-types";
-import type { HomeAssistant } from "../../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -291,7 +290,7 @@ class ConfigUrlForm extends LitElement {
     this._showCustomInternalUrl = !ev.currentTarget.checked;
   }
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
+  private _handleChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HaTextField;
     this[`_${target.name}`] = target.value || null;
   }

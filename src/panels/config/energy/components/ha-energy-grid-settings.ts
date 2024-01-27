@@ -221,6 +221,7 @@ export class EnergyGridSettings extends LitElement {
             ? html`<div class="row" .entry=${this._co2ConfigEntry}>
                 <img
                   alt=""
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
                     domain: "co2signal",
@@ -230,7 +231,7 @@ export class EnergyGridSettings extends LitElement {
                 />
                 <span class="content">${this._co2ConfigEntry.title}</span>
                 <a
-                  href=${`/config/integrations#config_entry=${this._co2ConfigEntry.entry_id}`}
+                  href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
                 >
                   <ha-icon-button .path=${mdiPencil}></ha-icon-button>
                 </a>
@@ -246,6 +247,7 @@ export class EnergyGridSettings extends LitElement {
                 <div class="row border-bottom">
                   <img
                     alt=""
+                    crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     src=${brandsUrl({
                       domain: "co2signal",
@@ -294,13 +296,13 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _addFromSource() {
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
-        const gridSource = this.preferences.energy_sources.find(
-          (src) => src.type === "grid"
-        ) as GridSourceTypeEnergyPreference | undefined;
-
         if (!gridSource) {
           preferences = {
             ...this.preferences,
@@ -328,13 +330,13 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _addToSource() {
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
+      grid_source: gridSource,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
-        const gridSource = this.preferences.energy_sources.find(
-          (src) => src.type === "grid"
-        ) as GridSourceTypeEnergyPreference | undefined;
-
         if (!gridSource) {
           preferences = {
             ...this.preferences,
@@ -364,8 +366,12 @@ export class EnergyGridSettings extends LitElement {
   private _editFromSource(ev) {
     const origSource: FlowFromGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowFromDialog(this, {
       source: { ...origSource },
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
@@ -392,8 +398,12 @@ export class EnergyGridSettings extends LitElement {
   private _editToSource(ev) {
     const origSource: FlowToGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
+    const gridSource = this.preferences.energy_sources.find(
+      (src) => src.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridFlowToDialog(this, {
       source: { ...origSource },
+      grid_source: gridSource,
       metadata: this.statsMetadata?.[origSource.stat_energy_to],
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;

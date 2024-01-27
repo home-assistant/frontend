@@ -1,3 +1,8 @@
+import type {
+  BarControllerChartOptions,
+  BarControllerDatasetOptions,
+} from "chart.js";
+
 export interface TimeLineData {
   start: Date;
   end: Date;

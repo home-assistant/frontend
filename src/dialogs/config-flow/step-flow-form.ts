@@ -1,15 +1,18 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import "../../components/ha-circular-progress";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
@@ -21,6 +24,7 @@ import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { haStyle } from "../../resources/styles";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -36,13 +40,18 @@ class StepFlowForm extends LitElement {
 
   @state() private _errorMsg?: string;
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeyDown);
+  }
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 
     return html`
       <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
-      <div class="content">
+      <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
@@ -60,11 +69,28 @@ class StepFlowForm extends LitElement {
           .localizeValue=${this._localizeValueCallback}
         ></ha-form>
       </div>
+      ${step.preview
+        ? html`<div class="preview" @set-flow-errors=${this._setError}>
+            <h3>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.preview"
+              )}:
+            </h3>
+            ${dynamicElement(`flow-preview-${this.step.preview}`, {
+              hass: this.hass,
+              flowType: this.flowConfig.flowType,
+              handler: step.handler,
+              stepId: step.step_id,
+              flowId: step.flow_id,
+              stepData,
+            })}
+          </div>`
+        : nothing}
       <div class="buttons">
         ${this._loading
           ? html`
               <div class="submit-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`
@@ -81,15 +107,36 @@ class StepFlowForm extends LitElement {
     `;
   }
 
+  private _setError(ev: CustomEvent) {
+    this.step = { ...this.step, errors: ev.detail };
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._submitStep();
-      }
-    });
+    this.addEventListener("keydown", this._handleKeyDown);
   }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("step") && this.step?.preview) {
+      import(`./previews/flow-preview-${this.step.preview}`);
+    }
+  }
+
+  private _clickHandler(ev: MouseEvent) {
+    if (isNavigationClick(ev, false)) {
+      fireEvent(this, "flow-update", {
+        step: undefined,
+      });
+    }
+  }
+
+  private _handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === "Enter") {
+      this._submitStep();
+    }
+  };
 
   private get _stepDataProcessed() {
     if (this._stepData !== undefined) {
@@ -183,6 +230,7 @@ class StepFlowForm extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       configFlowContentStyles,
       css`
         .error {
@@ -209,6 +257,9 @@ class StepFlowForm extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "set-flow-errors": { errors: DataEntryFlowStepForm["errors"] };
+  }
   interface HTMLElementTagNameMap {
     "step-flow-form": StepFlowForm;
   }

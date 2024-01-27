@@ -94,7 +94,9 @@ export class HaButtonToggleGroup extends LitElement {
         opacity: 0;
         pointer-events: none;
         content: "";
-        transition: opacity 15ms linear, background-color 15ms linear;
+        transition:
+          opacity 15ms linear,
+          background-color 15ms linear;
       }
       ha-icon-button[active]::before,
       mwc-button[active]::before {

@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -10,13 +10,13 @@ import "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: NumberSelector;
+  @property({ attribute: false }) public selector!: NumberSelector;
 
-  @property() public value?: number;
+  @property({ type: Number }) public value?: number;
 
-  @property() public placeholder?: number;
+  @property({ type: Number }) public placeholder?: number;
 
   @property() public label?: string;
 
@@ -26,42 +26,70 @@ export class HaNumberSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  private _valueStr = "";
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("value")) {
+      if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
+        this._valueStr =
+          this.value == null || isNaN(this.value) ? "" : this.value.toString();
+      }
+    }
+  }
+
   protected render() {
-    const isBox = this.selector.number?.mode === "box";
+    const isBox =
+      this.selector.number?.mode === "box" ||
+      this.selector.number?.min === undefined ||
+      this.selector.number?.max === undefined;
+
+    let sliderStep;
+
+    if (!isBox) {
+      sliderStep = this.selector.number!.step ?? 1;
+      if (sliderStep === "any") {
+        sliderStep = 1;
+        // divide the range of the slider by 100 steps
+        const step =
+          (this.selector.number!.max! - this.selector.number!.min!) / 100;
+        // biggest step size is 1, round the step size to a division of 1
+        while (sliderStep > step) {
+          sliderStep /= 10;
+        }
+      }
+    }
 
     return html`
       <div class="input">
         ${!isBox
           ? html`
               ${this.label
-                ? html`${this.label}${this.required ? " *" : ""}`
+                ? html`${this.label}${this.required ? "*" : ""}`
                 : ""}
               <ha-slider
-                .min=${this.selector.number?.min}
-                .max=${this.selector.number?.max}
+                labeled
+                .min=${this.selector.number!.min}
+                .max=${this.selector.number!.max}
                 .value=${this.value ?? ""}
-                .step=${this.selector.number?.step ?? 1}
+                .step=${sliderStep}
                 .disabled=${this.disabled}
                 .required=${this.required}
-                pin
-                ignore-bar-touch
                 @change=${this._handleSliderChange}
               >
               </ha-slider>
             `
           : ""}
         <ha-textfield
-          .inputMode=${(this.selector.number?.step || 1) % 1 !== 0
+          .inputMode=${this.selector.number?.step === "any" ||
+          (this.selector.number?.step ?? 1) % 1 !== 0
             ? "decimal"
             : "numeric"}
-          .label=${this.selector.number?.mode !== "box"
-            ? undefined
-            : this.label}
+          .label=${!isBox ? undefined : this.label}
           .placeholder=${this.placeholder}
-          class=${classMap({ single: this.selector.number?.mode === "box" })}
+          class=${classMap({ single: isBox })}
           .min=${this.selector.number?.min}
           .max=${this.selector.number?.max}
-          .value=${this.value ?? ""}
+          .value=${this._valueStr ?? ""}
           .step=${this.selector.number?.step ?? 1}
           helperPersistent
           .helper=${isBox ? this.helper : undefined}
@@ -70,7 +98,7 @@ export class HaNumberSelector extends LitElement {
           .suffix=${this.selector.number?.unit_of_measurement}
           type="number"
           autoValidate
-          ?no-spinner=${this.selector.number?.mode !== "box"}
+          ?no-spinner=${!isBox}
           @input=${this._handleInputChange}
         >
         </ha-textfield>
@@ -83,6 +111,7 @@ export class HaNumberSelector extends LitElement {
 
   private _handleInputChange(ev) {
     ev.stopPropagation();
+    this._valueStr = ev.target.value;
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
         ? undefined

@@ -11,10 +11,8 @@ import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { HuiCardOptions } from "../components/hui-card-options";
@@ -121,6 +119,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
+    wrapper.hidePosition = true;
     card.editMode = true;
     wrapper.appendChild(card);
     this._card = wrapper;
@@ -134,8 +133,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       }
 
       ha-fab {
-        position: sticky;
-        float: right;
+        position: fixed;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;

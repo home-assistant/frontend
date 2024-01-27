@@ -4,7 +4,7 @@ import { customElement } from "lit/decorators";
 @customElement("onboarding-loading")
 class OnboardingLoading extends LitElement {
   protected render(): TemplateResult {
-    return html` <div class="loader"></div> `;
+    return html`<div class="loader"></div>`;
   }
 
   static get styles(): CSSResultGroup {

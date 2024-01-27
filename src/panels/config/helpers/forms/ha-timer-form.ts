@@ -1,6 +1,8 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { DurationDict, Timer } from "../../../../data/timer";
@@ -11,7 +13,7 @@ import { HomeAssistant } from "../../../../types";
 class HaTimerForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: Timer;
 
@@ -50,7 +52,6 @@ class HaTimerForm extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    const nameInvalid = !this._name || this._name.trim() === "";
 
     return html`
       <div class="form">
@@ -61,10 +62,11 @@ class HaTimerForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage=${this.hass!.localize(
+          autoValidate
+          required
+          .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
-          .invalid=${nameInvalid}
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker

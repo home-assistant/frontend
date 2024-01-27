@@ -9,9 +9,7 @@ class IntegrationBadge extends LitElement {
 
   @property() public title!: string;
 
-  @property() public badgeIcon?: string;
-
-  @property({ type: Boolean }) public darkOptimizedIcon?: boolean;
+  @property({ type: Boolean }) public darkOptimizedIcon = false;
 
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
@@ -25,14 +23,9 @@ class IntegrationBadge extends LitElement {
             type: "icon",
             darkOptimized: this.darkOptimizedIcon,
           })}
+          crossorigin="anonymous"
           referrerpolicy="no-referrer"
         />
-        ${this.badgeIcon
-          ? html`<ha-svg-icon
-              class="badge"
-              .path=${this.badgeIcon}
-            ></ha-svg-icon>`
-          : ""}
       </div>
       <div class="title">${this.title}</div>
     `;
@@ -44,10 +37,6 @@ class IntegrationBadge extends LitElement {
         display: inline-flex;
         flex-direction: column;
         text-align: center;
-        color: var(--primary-text-color);
-      }
-
-      :host([clickable]) {
         color: var(--primary-text-color);
       }
 
@@ -64,18 +53,6 @@ class IntegrationBadge extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-      }
-
-      .badge {
-        position: absolute;
-        color: white;
-        bottom: -7px;
-        right: -10px;
-        background-color: var(--label-badge-green);
-        border-radius: 50%;
-        display: block;
-        --mdc-icon-size: 18px;
-        border: 2px solid white;
       }
 
       .title {

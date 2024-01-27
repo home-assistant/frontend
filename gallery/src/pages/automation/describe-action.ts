@@ -162,6 +162,7 @@ export class DemoAutomationDescribeAction extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
     hass.addEntities(ENTITIES);
   }
 

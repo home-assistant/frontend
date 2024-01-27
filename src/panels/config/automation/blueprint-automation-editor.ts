@@ -1,16 +1,16 @@
 import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
+import "../../../components/ha-alert";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
-import "../../../components/ha-alert";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
@@ -18,22 +18,23 @@ import {
   fetchBlueprints,
 } from "../../../data/blueprint";
 import { haStyle } from "../../../resources/styles";
+import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
 @customElement("blueprint-automation-editor")
-export class HaBlueprintAutomationEditor extends LitElement {
+export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public config!: BlueprintAutomationConfig;
+  @property({ attribute: false }) public config!: BlueprintAutomationConfig;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _blueprints?: Blueprints;
 
@@ -77,6 +78,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
       ${this.config.description
         ? html`<p class="description">${this.config.description}</p>`
         : ""}
+      ${this._renderReorderModeAlert()}
       <ha-card
         outlined
         class="blueprint"
@@ -102,7 +104,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
               : this.hass.localize(
                   "ui.panel.config.automation.editor.blueprint.no_blueprints"
                 )
-            : html`<ha-circular-progress active></ha-circular-progress>`}
+            : html`<ha-circular-progress indeterminate></ha-circular-progress>`}
         </div>
 
         ${this.config.use_blueprint.path
@@ -120,8 +122,23 @@ export class HaBlueprintAutomationEditor extends LitElement {
               ${blueprint?.metadata?.input &&
               Object.keys(blueprint.metadata.input).length
                 ? Object.entries(blueprint.metadata.input).map(
-                    ([key, value]) =>
-                      html`<ha-settings-row .narrow=${this.narrow}>
+                    ([key, value]) => {
+                      const selector = value?.selector ?? { text: undefined };
+                      const type = Object.keys(selector)[0];
+                      const enhancedSelector = [
+                        "action",
+                        "condition",
+                        "trigger",
+                      ].includes(type)
+                        ? {
+                            [type]: {
+                              ...selector[type],
+                              path: [key],
+                            },
+                          }
+                        : selector;
+
+                      return html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
                         <ha-markdown
                           slot="description"
@@ -129,27 +146,22 @@ export class HaBlueprintAutomationEditor extends LitElement {
                           breaks
                           .content=${value?.description}
                         ></ha-markdown>
-                        ${value?.selector
-                          ? html`<ha-selector
-                              .hass=${this.hass}
-                              .selector=${value.selector}
-                              .key=${key}
-                              .value=${(this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]) ??
-                              value?.default}
-                              .disabled=${this.disabled}
-                              @value-changed=${this._inputChanged}
-                            ></ha-selector>`
-                          : html`<ha-textfield
-                              .key=${key}
-                              required
-                              .value=${(this.config.use_blueprint.input &&
-                                this.config.use_blueprint.input[key]) ??
-                              value?.default}
-                              .disabled=${this.disabled}
-                              @input=${this._inputChanged}
-                            ></ha-textfield>`}
-                      </ha-settings-row>`
+                        ${html`<ha-selector
+                          .hass=${this.hass}
+                          .selector=${enhancedSelector}
+                          .key=${key}
+                          .disabled=${this.disabled}
+                          .required=${value?.default === undefined}
+                          .placeholder=${value?.default}
+                          .value=${this.config.use_blueprint.input &&
+                          key in this.config.use_blueprint.input
+                            ? this.config.use_blueprint.input[key]
+                            : value?.default}
+                          @value-changed=${this._inputChanged}
+                          @item-moved=${this._itemMoved}
+                        ></ha-selector>`}
+                      </ha-settings-row>`;
+                    }
                   )
                 : html`<p class="padding">
                     ${this.hass.localize(
@@ -159,6 +171,34 @@ export class HaBlueprintAutomationEditor extends LitElement {
           : ""}
       </ha-card>
     `;
+  }
+
+  private _renderReorderModeAlert() {
+    if (!this._reorderMode.active) {
+      return nothing;
+    }
+    return html`
+      <ha-alert
+        class="re-order"
+        alert-type="info"
+        .title=${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.title"
+        )}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.re_order_mode.description_all"
+        )}
+        <ha-button slot="action" @click=${this._exitReOrderMode}>
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.re_order_mode.exit"
+          )}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private async _exitReOrderMode() {
+    this._reorderMode.exit();
   }
 
   private async _getBlueprints() {
@@ -172,7 +212,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     }
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config!,
+        ...this.config,
         use_blueprint: {
           path: ev.detail.value,
         },
@@ -194,13 +234,32 @@ export class HaBlueprintAutomationEditor extends LitElement {
     }
     const input = { ...this.config.use_blueprint.input, [key]: value };
 
-    if (value === "" || value === undefined) {
-      delete input[key];
-    }
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config,
+        use_blueprint: {
+          ...this.config.use_blueprint,
+          input,
+        },
+      },
+    });
+  }
+
+  private _itemMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+
+    const input = nestedArrayMove(
+      this.config.use_blueprint.input,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.config!,
+        ...this.config,
         use_blueprint: {
           ...this.config.use_blueprint,
           input,
@@ -270,6 +329,10 @@ export class HaBlueprintAutomationEditor extends LitElement {
         ha-alert {
           margin-bottom: 16px;
           display: block;
+        }
+        ha-alert.re-order {
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];

@@ -5,6 +5,7 @@ import {
   LitElement,
   nothing,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -17,7 +18,7 @@ import "./ha-svg-icon";
 export type ControlSelectOption = {
   value: string;
   label?: string;
-  icon?: string;
+  icon?: TemplateResult;
   path?: string;
 };
 
@@ -25,9 +26,7 @@ export type ControlSelectOption = {
 export class HaControlSelect extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() public label?: string;
-
-  @property() public options?: ControlSelectOption[];
+  @property({ attribute: false }) public options?: ControlSelectOption[];
 
   @property() public value?: string;
 
@@ -100,10 +99,11 @@ export class HaControlSelect extends LitElement {
 
   private _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null || this.disabled) return;
+    const value = this.options[this._activeIndex].value;
     switch (ev.key) {
       case " ":
-        this.value = this.options[this._activeIndex].value;
-        fireEvent(this, "value-changed", { value: this.value });
+        this.value = value;
+        fireEvent(this, "value-changed", { value });
         break;
       case "ArrowUp":
       case "ArrowLeft":
@@ -132,7 +132,7 @@ export class HaControlSelect extends LitElement {
     if (this.disabled) return;
     const value = (ev.target as any).value;
     this.value = value;
-    fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "value-changed", { value });
   }
 
   private _handleOptionMouseDown(ev: MouseEvent) {
@@ -176,6 +176,7 @@ export class HaControlSelect extends LitElement {
         .value=${option.value}
         aria-selected=${this.value === option.value}
         aria-label=${ifDefined(option.label)}
+        title=${ifDefined(option.label)}
         @click=${this._handleOptionClick}
         @mousedown=${this._handleOptionMouseDown}
         @mouseup=${this._handleOptionMouseUp}
@@ -183,9 +184,7 @@ export class HaControlSelect extends LitElement {
         <div class="content">
           ${option.path
             ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
-            : option.icon
-            ? html`<ha-icon .icon=${option.icon}></ha-icon> `
-            : nothing}
+            : option.icon || nothing}
           ${option.label && !this.hideLabel
             ? html`<span>${option.label}</span>`
             : nothing}
@@ -204,8 +203,11 @@ export class HaControlSelect extends LitElement {
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;
         --control-select-thickness: 40px;
-        --control-select-border-radius: 12px;
+        --control-select-border-radius: 10px;
         --control-select-padding: 4px;
+        --control-select-button-border-radius: calc(
+          var(--control-select-border-radius) - var(--control-select-padding)
+        );
         --mdc-icon-size: 20px;
         height: var(--control-select-thickness);
         width: 100%;
@@ -214,6 +216,7 @@ export class HaControlSelect extends LitElement {
         transition: box-shadow 180ms ease-in-out;
         font-style: normal;
         font-weight: 500;
+        color: var(--primary-text-color);
         user-select: none;
         -webkit-tap-highlight-color: transparent;
       }
@@ -262,11 +265,8 @@ export class HaControlSelect extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: calc(
-          var(--control-select-border-radius) - var(--control-select-padding)
-        );
+        border-radius: var(--control-select-button-border-radius);
         overflow: hidden;
-        color: var(--primary-text-color);
         /* For safari border-radius overflow */
         z-index: 0;
       }
@@ -282,7 +282,9 @@ export class HaControlSelect extends LitElement {
         width: 100%;
         background-color: var(--control-select-color);
         opacity: 0;
-        transition: background-color ease-in-out 180ms, opacity ease-in-out 80ms;
+        transition:
+          background-color ease-in-out 180ms,
+          opacity ease-in-out 80ms;
       }
       .option.focused::before,
       .option:hover::before {
@@ -302,6 +304,16 @@ export class HaControlSelect extends LitElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        padding: 2px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .option .content span {
+        display: block;
+        width: 100%;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        hyphens: auto;
       }
       :host([vertical]) {
         width: var(--control-select-thickness);
@@ -318,6 +330,7 @@ export class HaControlSelect extends LitElement {
       :host([disabled]) {
         --control-select-color: var(--disabled-color);
         --control-select-focused-opacity: 0;
+        color: var(--disabled-color);
       }
       :host([disabled]) .option {
         cursor: not-allowed;

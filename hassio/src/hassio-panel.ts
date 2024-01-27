@@ -4,6 +4,7 @@ import {
   Supervisor,
   supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
+import "../../src/layouts/hass-loading-screen";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 
@@ -13,7 +14,7 @@ class HassioPanel extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 

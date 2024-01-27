@@ -52,6 +52,8 @@ export default class HaNumericStateCondition extends LitElement {
                 "effect_list",
                 "effect",
                 "entity_picture",
+                "event_type",
+                "event_types",
                 "fan_mode",
                 "fan_modes",
                 "fan_speed_list",
@@ -237,15 +239,19 @@ export default class HaNumericStateCondition extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    const newCondition = ev.detail.value;
 
-    this._inputAboveIsEntity = newTrigger.mode_above === "input";
-    this._inputBelowIsEntity = newTrigger.mode_below === "input";
+    this._inputAboveIsEntity = newCondition.mode_above === "input";
+    this._inputBelowIsEntity = newCondition.mode_below === "input";
 
-    delete newTrigger.mode_above;
-    delete newTrigger.mode_below;
+    delete newCondition.mode_above;
+    delete newCondition.mode_below;
 
-    fireEvent(this, "value-changed", { value: newTrigger });
+    if (newCondition.value_template === "") {
+      delete newCondition.value_template;
+    }
+
+    fireEvent(this, "value-changed", { value: newCondition });
   }
 
   private _computeLabelCallback = (

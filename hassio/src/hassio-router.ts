@@ -1,11 +1,11 @@
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import "../../src/resources/ha-style";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-panel";
@@ -18,14 +18,20 @@ class HassioRouter extends HassRouterPage {
 
   @property({ attribute: false }) public panel!: HassioPanelInfo;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
-    beforeRender: (page: string) =>
-      page === "snapshots" ? "backups" : undefined,
-    initialLoad: () => this._redirectIngress(),
+    beforeRender: (page: string) => {
+      if (page === "snapshots") {
+        return "backups";
+      }
+      if (page === "dashboard" && this.panel.config?.ingress) {
+        return "ingress";
+      }
+      return undefined;
+    },
     showLoading: true,
     routes: {
       dashboard: {
@@ -56,32 +62,28 @@ class HassioRouter extends HassRouterPage {
 
   protected updatePageEl(el) {
     // the tabs page does its own routing so needs full route.
-    const hassioPanel = el.nodeName === "HASSIO-PANEL";
-    const route = hassioPanel ? this.route : this.routeTail;
-
-    if (hassioPanel && this.panel.config?.ingress) {
-      this._redirectIngress();
-      return;
-    }
+    const hassioPanel = el.localName === "hassio-panel";
+    const ingressPanel = el.localName === "hassio-ingress-view";
+    const route = hassioPanel
+      ? this.route
+      : ingressPanel && this.panel.config?.ingress
+        ? this._ingressRoute(this.panel.config?.ingress)
+        : this.routeTail;
 
     el.hass = this.hass;
     el.narrow = this.narrow;
     el.route = route;
     el.supervisor = this.supervisor;
 
-    if (el.localName === "hassio-ingress-view") {
-      el.ingressPanel = this.panel.config && this.panel.config.ingress;
+    if (ingressPanel) {
+      el.ingressPanel = Boolean(this.panel.config?.ingress);
     }
   }
 
-  private async _redirectIngress() {
-    if (this.panel.config && this.panel.config.ingress) {
-      this.route = {
-        prefix: "/hassio",
-        path: `/ingress/${this.panel.config.ingress}`,
-      };
-    }
-  }
+  private _ingressRoute = memoizeOne((ingress: string) => ({
+    prefix: "/hassio/ingress",
+    path: `/${ingress}`,
+  }));
 }
 
 declare global {

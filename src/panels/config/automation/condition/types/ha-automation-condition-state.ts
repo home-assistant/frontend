@@ -42,6 +42,7 @@ const SCHEMA = [
           "editable",
           "effect_list",
           "entity_picture",
+          "event_types",
           "fan_modes",
           "fan_speed_list",
           "forecast",

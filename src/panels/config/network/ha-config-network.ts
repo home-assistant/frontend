@@ -40,7 +40,10 @@ class ConfigNetwork extends LitElement {
     }
 
     return html`
-      <ha-card outlined header="Network Adapter">
+      <ha-card
+        outlined
+        header=${this.hass.localize("ui.panel.config.network.network_adapter")}
+      >
         <div class="card-content">
           ${this._error
             ? html`
@@ -50,9 +53,9 @@ class ConfigNetwork extends LitElement {
               `
             : ""}
           <p>
-            Configure which network adapters integrations will use. Currently
-            this setting only affects multicast traffic. A restart is required
-            for these settings to apply.
+            ${this.hass.localize(
+              "ui.panel.config.network.network_adapter_info"
+            )}
           </p>
           <ha-network
             @network-config-changed=${this._configChanged}

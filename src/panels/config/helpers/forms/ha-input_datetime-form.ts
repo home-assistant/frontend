@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../../../types";
 class HaInputDateTimeForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: InputDateTime;
 
@@ -33,8 +33,8 @@ class HaInputDateTimeForm extends LitElement {
         item.has_time && item.has_date
           ? "datetime"
           : item.has_time
-          ? "time"
-          : "date";
+            ? "time"
+            : "date";
       this._item.has_date =
         !item.has_date && !item.has_time ? true : item.has_date;
     } else {
@@ -56,7 +56,6 @@ class HaInputDateTimeForm extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    const nameInvalid = !this._name || this._name.trim() === "";
 
     return html`
       <div class="form">
@@ -67,10 +66,11 @@ class HaInputDateTimeForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage=${this.hass!.localize(
+          autoValidate
+          required
+          .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
-          .invalid=${nameInvalid}
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker

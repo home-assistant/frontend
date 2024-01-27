@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
@@ -19,14 +19,16 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeLabel?: (
+  @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
     data?: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: HaFormSchema) => string;
+  @property({ attribute: false }) public computeHelper?: (
+    schema: HaFormSchema
+  ) => string;
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
         <div
@@ -37,8 +39,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
           ${this.schema.icon
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
             : this.schema.iconPath
-            ? html` <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon> `
-            : null}
+              ? html`
+                  <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon>
+                `
+              : nothing}
           ${this.schema.title}
         </div>
         <div class="content">
@@ -71,6 +75,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
         display: block;
         --expansion-panel-content-padding: 0;
         border-radius: 6px;
+        --ha-card-border-radius: 6px;
       }
       ha-svg-icon,
       ha-icon {

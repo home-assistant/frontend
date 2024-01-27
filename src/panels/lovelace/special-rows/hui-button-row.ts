@@ -5,12 +5,12 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-state-icon";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {
@@ -53,7 +53,11 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
 
     return html`
-      <ha-state-icon .icon=${this._config.icon} .state=${stateObj}>
+      <ha-state-icon
+        .icon=${this._config.icon}
+        .stateObj=${stateObj}
+        .hass=${this.hass}
+      >
       </ha-state-icon>
       <div class="flex">
         <div .title=${name}>${name}</div>
@@ -85,6 +89,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         flex: 1;
         overflow: hidden;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -96,6 +102,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       }
       mwc-button {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }

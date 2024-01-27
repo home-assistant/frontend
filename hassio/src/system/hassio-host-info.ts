@@ -154,14 +154,13 @@ class HassioHostInfo extends LitElement {
                 </ha-settings-row>`
               : ""}
             ${metrics.map(
-              (metric) =>
-                html`
-                  <supervisor-metric
-                    .description=${metric.description}
-                    .value=${metric.value ?? 0}
-                    .tooltip=${metric.tooltip}
-                  ></supervisor-metric>
-                `
+              (metric) => html`
+                <supervisor-metric
+                  .description=${metric.description}
+                  .value=${metric.value ?? 0}
+                  .tooltip=${metric.tooltip}
+                ></supervisor-metric>
+              `
             )}
           </div>
         </div>
@@ -184,7 +183,7 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu corner="BOTTOM_START">
+          <ha-button-menu>
             <ha-icon-button
               .label=${this.supervisor.localize("common.menu")}
               .path=${mdiDotsVertical}

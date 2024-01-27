@@ -1,39 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HistoryStates } from "../../../src/data/history";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
-interface HistoryQueryParams {
-  filter_entity_id: string;
-  end_time: string;
-}
-
-const parseQuery = <T>(queryString: string) => {
-  const query: any = {};
-  const items = queryString.split("&");
-  for (const item of items) {
-    const parts = item.split("=");
-    const key = decodeURIComponent(parts[0]);
-    const value = parts.length > 1 ? decodeURIComponent(parts[1]) : undefined;
-    query[key] = value;
-  }
-  return query as T;
-};
-
-const getTime = (minutesAgo) => {
-  const ts = new Date(Date.now() - minutesAgo * 60 * 1000);
-  return ts.toISOString();
-};
-
-const randomTimeAdjustment = (diff) => Math.random() * diff - diff / 2;
-
-const maxTime = 1440;
-
-const generateHistory = (state, deltas) => {
+const generateStateHistory = (
+  state: HassEntity,
+  deltas,
+  start_date: Date,
+  end_date: Date
+) => {
   const changes =
     typeof deltas[0] === "object"
       ? deltas
       : deltas.map((st) => ({ state: st }));
 
-  const timeDiff = 900 / changes.length;
+  const timeDiff = (end_date.getTime() - start_date.getTime()) / changes.length;
 
   return changes.map((change, index) => {
     let attributes;
@@ -47,17 +27,13 @@ const generateHistory = (state, deltas) => {
       attributes = { ...state.attributes, ...change.attributes };
     }
 
-    const time =
-      index === 0
-        ? getTime(maxTime)
-        : getTime(maxTime - index * timeDiff + randomTimeAdjustment(timeDiff));
+    const time = start_date.getTime() + timeDiff * index;
 
     return {
-      attributes,
-      entity_id: state.entity_id,
-      state: change.state || state.state,
-      last_changed: time,
-      last_updated: time,
+      a: attributes,
+      s: change.state || state.state,
+      lc: time / 1000,
+      lu: time / 1000,
     };
   });
 };
@@ -65,15 +41,29 @@ const generateHistory = (state, deltas) => {
 const incrementalUnits = ["clients", "queries", "ads"];
 
 export const mockHistory = (mockHass: MockHomeAssistant) => {
-  mockHass.mockAPI(
-    /history\/period\/.+/,
-    (hass, _method, path, _parameters) => {
-      const params = parseQuery<HistoryQueryParams>(path.split("?")[1]);
-      const entities = params.filter_entity_id.split(",");
+  mockHass.mockWS(
+    "history/stream",
+    (
+      {
+        entity_ids,
+        start_time,
+        end_time,
+      }: {
+        entity_ids: string[];
+        start_time: string;
+        end_time?: string;
+      },
+      hass,
+      onChange
+    ) => {
+      const states: HistoryStates = {};
 
-      const results: HassEntity[][] = [];
+      const start = new Date(start_time);
+      const end = end_time ? new Date(end_time) : new Date();
 
-      for (const entityId of entities) {
+      for (const entityId of entity_ids) {
+        states[entityId] = [];
+
         const state = hass.states[entityId];
 
         if (!state) {
@@ -81,7 +71,12 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         }
 
         if (!state.attributes.unit_of_measurement) {
-          results.push(generateHistory(state, [state.state]));
+          states[entityId] = generateStateHistory(
+            state,
+            [state.state],
+            start,
+            end
+          );
           continue;
         }
 
@@ -120,17 +115,23 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
             numberState - diff + Math.floor(Math.random() * 2 * diff);
         }
 
-        results.push(
-          generateHistory(
-            {
-              entity_id: state.entity_id,
-              attributes: state.attributes,
-            },
-            Array.from({ length: statesToGenerate }, genFunc)
-          )
+        states[entityId] = generateStateHistory(
+          state,
+          Array.from({ length: statesToGenerate }, genFunc),
+          start,
+          end
         );
       }
-      return results;
+
+      setTimeout(() => {
+        onChange?.({
+          states,
+          start_time: start,
+          end_time: end,
+        });
+      }, 1);
+
+      return () => {};
     }
   );
 };

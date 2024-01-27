@@ -1,7 +1,15 @@
-import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
+import {
+  mdiCodeBraces,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiDelete,
+  mdiListBoxOutline,
+  mdiPlus,
+} from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import deepClone from "deep-clone-simple";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
@@ -12,9 +20,13 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { storage } from "../../../../common/decorators/storage";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import "../../../../components/ha-icon-button-arrow-prev";
+import "../../../../components/ha-icon-button-arrow-next";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -43,6 +55,14 @@ export class HuiStackCardEditor
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
+  @storage({
+    key: "lovelaceClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
+
   @state() protected _config?: StackCardConfig;
 
   @state() protected _selectedCard = 0;
@@ -69,6 +89,8 @@ export class HuiStackCardEditor
     }
     const selected = this._selectedCard!;
     const numcards = this._config.cards.length;
+
+    const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
       <div class="card-config">
@@ -97,36 +119,50 @@ export class HuiStackCardEditor
           ${selected < numcards
             ? html`
                 <div id="card-options">
-                  <mwc-button
+                  <ha-icon-button
+                    class="gui-mode-button"
                     @click=${this._toggleMode}
                     .disabled=${!this._guiModeAvailable}
-                    class="gui-mode-button"
-                  >
-                    ${this.hass!.localize(
-                      !this._cardEditorEl || this._GUImode
+                    .label=${this.hass!.localize(
+                      isGuiMode
                         ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
-                  </mwc-button>
+                    .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
+                  ></ha-icon-button>
 
-                  <ha-icon-button
+                  <ha-icon-button-arrow-prev
                     .disabled=${selected === 0}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.move_before"
                     )}
-                    .path=${mdiArrowLeft}
                     @click=${this._handleMove}
                     .move=${-1}
+                  ></ha-icon-button-arrow-prev>
+
+                  <ha-icon-button-arrow-next
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.move_after"
+                    )}
+                    .disabled=${selected === numcards - 1}
+                    @click=${this._handleMove}
+                    .move=${1}
+                  ></ha-icon-button-arrow-next>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_card.copy"
+                    )}
+                    .path=${mdiContentCopy}
+                    @click=${this._handleCopyCard}
                   ></ha-icon-button>
 
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.move_after"
+                      "ui.panel.lovelace.editor.edit_card.cut"
                     )}
-                    .path=${mdiArrowRight}
-                    .disabled=${selected === numcards - 1}
-                    @click=${this._handleMove}
-                    .move=${1}
+                    .path=${mdiContentCut}
+                    @click=${this._handleCutCard}
                   ></ha-icon-button>
 
                   <ha-icon-button
@@ -189,6 +225,18 @@ export class HuiStackCardEditor
     const cards = [...this._config.cards, config];
     this._config = { ...this._config, cards };
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  protected _handleCopyCard() {
+    if (!this._config) {
+      return;
+    }
+    this._clipboard = deepClone(this._config.cards[this._selectedCard]);
+  }
+
+  protected _handleCutCard() {
+    this._handleCopyCard();
+    this._handleDeleteCard();
   }
 
   protected _handleDeleteCard() {

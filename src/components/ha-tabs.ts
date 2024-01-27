@@ -65,6 +65,7 @@ export class HaTabs extends PaperTabs {
     const selected = this.querySelector(".iron-selected");
     if (selected) {
       selected.scrollIntoView();
+      this._affectScroll(0); // Ensure scroll arrows match scroll position
     }
   }
 

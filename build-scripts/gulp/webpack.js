@@ -1,19 +1,20 @@
 // Tasks to run webpack.
-const fs = require("fs");
-const gulp = require("gulp");
-const webpack = require("webpack");
-const WebpackDevServer = require("webpack-dev-server");
-const log = require("fancy-log");
-const path = require("path");
-const env = require("../env");
-const paths = require("../paths");
-const {
+
+import fs from "fs";
+import path from "path";
+import log from "fancy-log";
+import gulp from "gulp";
+import webpack from "webpack";
+import WebpackDevServer from "webpack-dev-server";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
+import {
   createAppConfig,
-  createDemoConfig,
   createCastConfig,
-  createHassioConfig,
+  createDemoConfig,
   createGalleryConfig,
-} = require("../webpack");
+  createHassioConfig,
+} from "../webpack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
@@ -43,6 +44,7 @@ const runDevServer = async ({
 }) => {
   const server = new WebpackDevServer(
     {
+      hot: false,
       open: true,
       host: listenHost,
       port,

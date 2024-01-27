@@ -1,7 +1,14 @@
 import { mdiInformation } from "@mdi/js";
-import "@polymer/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
@@ -20,6 +27,11 @@ import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
+
+const FORMAT_OPTIONS = {
+  maximumFractionDigits: 0,
+};
 
 @customElement("hui-energy-carbon-consumed-gauge-card")
 class HuiEnergyCarbonGaugeCard
@@ -50,6 +62,17 @@ class HuiEnergyCarbonGaugeCard
         this._data = data;
       }),
     ];
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      (!!this._data?.co2SignalEntity &&
+        this.hass.states[this._data.co2SignalEntity] !==
+          changedProps.get("hass").states[this._data.co2SignalEntity])
+    );
   }
 
   protected render() {
@@ -118,17 +141,18 @@ class HuiEnergyCarbonGaugeCard
         ${value !== undefined
           ? html`
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <paper-tooltip animation-delay="0" for="info" position="left">
+              <simple-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                   )}
                 </span>
-              </paper-tooltip>
+              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
+                .formatOptions=${FORMAT_OPTIONS}
                 .locale=${this.hass.locale}
                 label="%"
                 style=${styleMap({
@@ -194,11 +218,11 @@ class HuiEnergyCarbonGaugeCard
         top: 4px;
         color: var(--secondary-text-color);
       }
-      paper-tooltip > span {
+      simple-tooltip > span {
         font-size: 12px;
         line-height: 12px;
       }
-      paper-tooltip {
+      simple-tooltip {
         width: 80%;
         max-width: 250px;
         top: 8px !important;

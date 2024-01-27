@@ -81,14 +81,13 @@ class HassioCoreInfo extends LitElement {
           </div>
           <div>
             ${metrics.map(
-              (metric) =>
-                html`
-                  <supervisor-metric
-                    .description=${metric.description}
-                    .value=${metric.value ?? 0}
-                    .tooltip=${metric.tooltip}
-                  ></supervisor-metric>
-                `
+              (metric) => html`
+                <supervisor-metric
+                  .description=${metric.description}
+                  .value=${metric.value ?? 0}
+                  .tooltip=${metric.tooltip}
+                ></supervisor-metric>
+              `
             )}
           </div>
         </div>
@@ -97,13 +96,11 @@ class HassioCoreInfo extends LitElement {
             slot="primaryAction"
             class="warning"
             @click=${this._coreRestart}
-            .title=${this.supervisor.localize(
-              "common.restart_name",
-              "name",
-              "Core"
-            )}
+            .title=${this.supervisor.localize("common.restart_name", {
+              name: "Core",
+            })}
           >
-            ${this.supervisor.localize("common.restart_name", "name", "Core")}
+            ${this.supervisor.localize("common.restart_name", { name: "Core" })}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -123,16 +120,12 @@ class HassioCoreInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize(
-        "confirm.restart.title",
-        "name",
-        "Home Assistant Core"
-      ),
-      text: this.supervisor.localize(
-        "confirm.restart.text",
-        "name",
-        "Home Assistant Core"
-      ),
+      title: this.supervisor.localize("confirm.restart.title", {
+        name: "Home Assistant Core",
+      }),
+      text: this.supervisor.localize("confirm.restart.text", {
+        name: "Home Assistant Core",
+      }),
       confirmText: this.supervisor.localize("common.restart"),
       dismissText: this.supervisor.localize("common.cancel"),
     });
@@ -147,11 +140,9 @@ class HassioCoreInfo extends LitElement {
     } catch (err: any) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
-          title: this.supervisor.localize(
-            "common.failed_to_restart_name",
-            "name",
-            "Home AssistantCore"
-          ),
+          title: this.supervisor.localize("common.failed_to_restart_name", {
+            name: "Home Assistant Core",
+          }),
           text: extractApiErrorMessage(err),
         });
       }

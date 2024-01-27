@@ -1,7 +1,10 @@
-import { Statistic } from "../../../data/recorder";
-import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { HaDurationData } from "../../../components/ha-duration-input";
+import { ActionConfig } from "../../../data/lovelace/config/action";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { Statistic, StatisticType } from "../../../data/recorder";
+import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
-import { Condition } from "../common/validate-condition";
+import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -10,14 +13,19 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { ExtendedStatisticType } from "../../../components/chart/statistics-chart";
-import { HaDurationData } from "../../../components/ha-duration-input";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
+
+export type AlarmPanelCardConfigState =
+  | "arm_away"
+  | "arm_home"
+  | "arm_night"
+  | "arm_vacation"
+  | "arm_custom_bypass";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  states?: readonly (keyof TranslationDict["ui"]["card"]["alarm_control_panel"])[];
+  states?: AlarmPanelCardConfigState[];
   theme?: string;
 }
 
@@ -30,7 +38,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
-  conditions: Condition[];
+  conditions: (Condition | LegacyCondition)[];
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
@@ -85,6 +93,8 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   area: string;
   navigation_path?: string;
   show_camera?: boolean;
+  camera_view?: HuiImage["cameraView"];
+  aspect_ratio?: string;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -146,6 +156,7 @@ export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
   title?: string;
   collection_key?: string;
+  max_devices?: number;
 }
 
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
@@ -156,6 +167,13 @@ export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
 
 export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-solar-consumed-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergySelfSufficiencyGaugeCardConfig
+  extends LovelaceCardConfig {
+  type: "energy-self-sufficiency-gauge";
   title?: string;
   collection_key?: string;
 }
@@ -244,6 +262,8 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  show_current_as_primary?: boolean;
+  features?: LovelaceCardFeatureConfig[];
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
@@ -276,6 +296,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   title?: string;
   aspect_ratio?: string;
   auto_fit?: boolean;
+  fit_zones?: boolean;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
@@ -302,6 +323,8 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  logarithmic_scale?: boolean;
+  split_device_classes?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
@@ -310,9 +333,10 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
-  stat_types?: ExtendedStatisticType | ExtendedStatisticType[];
+  stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
+  logarithmic_scale?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
@@ -329,6 +353,7 @@ export interface StatisticCardConfig extends LovelaceCardConfig {
 
 export interface PictureCardConfig extends LovelaceCardConfig {
   image?: string;
+  image_entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -339,6 +364,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
+  image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
@@ -410,9 +436,10 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   };
 }
 
-export interface ShoppingListCardConfig extends LovelaceCardConfig {
+export interface TodoListCardConfig extends LovelaceCardConfig {
   title?: string;
   theme?: string;
+  entity?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
@@ -429,6 +456,8 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  show_current_as_primary?: boolean;
+  features?: LovelaceCardFeatureConfig[];
 }
 
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
@@ -436,6 +465,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   name?: string;
   show_current?: boolean;
   show_forecast?: boolean;
+  forecast_type?: ForecastType;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
   theme?: string;
   tap_action?: ActionConfig;
@@ -501,11 +531,15 @@ export interface EnergyFlowCardConfig extends LovelaceCardConfig {
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  hide_state?: boolean;
+  state_content?: string | string[];
   icon?: string;
   color?: string;
   show_entity_picture?: string;
   vertical?: boolean;
   tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
-  features?: LovelaceTileFeatureConfig[];
+  features?: LovelaceCardFeatureConfig[];
 }

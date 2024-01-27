@@ -1,4 +1,11 @@
-import { CSSResultGroup, html, css, LitElement, TemplateResult } from "lit";
+import {
+  CSSResultGroup,
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tile-info")
@@ -7,13 +14,13 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string | TemplateResult<1>;
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       <div class="info">
         <span class="primary">${this.primary}</span>
         ${this.secondary
           ? html`<span class="secondary">${this.secondary}</span>`
-          : null}
+          : nothing}
       </div>
     `;
   }

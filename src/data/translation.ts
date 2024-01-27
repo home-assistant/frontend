@@ -17,6 +17,19 @@ export enum TimeFormat {
   twenty_four = "24",
 }
 
+export enum TimeZone {
+  local = "local",
+  server = "server",
+}
+
+export enum DateFormat {
+  language = "language",
+  system = "system",
+  DMY = "DMY",
+  MDY = "MDY",
+  YMD = "YMD",
+}
+
 export enum FirstWeekday {
   language = "language",
   monday = "monday",
@@ -32,7 +45,9 @@ export interface FrontendLocaleData {
   language: string;
   number_format: NumberFormat;
   time_format: TimeFormat;
+  date_format: DateFormat;
   first_weekday: FirstWeekday;
+  time_zone: TimeZone;
 }
 
 declare global {
@@ -46,16 +61,17 @@ export type TranslationCategory =
   | "state"
   | "entity"
   | "entity_component"
+  | "exceptions"
   | "config"
   | "config_panel"
   | "options"
   | "device_automation"
   | "mfa_setup"
   | "system_health"
-  | "device_class"
   | "application_credentials"
   | "issues"
-  | "selector";
+  | "selector"
+  | "services";
 
 export const fetchTranslationPreferences = (hass: HomeAssistant) =>
   fetchFrontendUserData(hass.connection, "language");

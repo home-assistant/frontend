@@ -1,9 +1,8 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { LitElement, PropertyValues, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 
@@ -38,7 +37,7 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) private _opened = false;
+  @state() private _opened = false;
 
   @query("ha-combo-box", true) private _comboBox!: HaComboBox;
 
@@ -48,15 +47,17 @@ class HaEntityAttributePicker extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("_opened") && this._opened) {
-      const state = this.entityId ? this.hass.states[this.entityId] : undefined;
-      (this._comboBox as any).items = state
-        ? Object.keys(state.attributes)
+      const entityState = this.entityId
+        ? this.hass.states[this.entityId]
+        : undefined;
+      (this._comboBox as any).items = entityState
+        ? Object.keys(entityState.attributes)
             .filter((key) => !this.hideAttributes?.includes(key))
             .map((key) => ({
               value: key,
               label: computeAttributeNameDisplay(
                 this.hass.localize,
-                state,
+                entityState,
                 this.hass.entities,
                 key
               ),
@@ -99,11 +100,11 @@ class HaEntityAttributePicker extends LitElement {
     `;
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     this.value = ev.detail.value;
   }
 }

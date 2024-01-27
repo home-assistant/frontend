@@ -39,7 +39,7 @@ import {
   formatDate,
   formatDateMonth,
   formatDateMonthYear,
-  formatDateShort,
+  formatDateVeryShort,
   formatDateWeekdayDay,
   formatDateYear,
 } from "../../common/datetime/format_date";
@@ -80,33 +80,89 @@ _adapters._date.override({
   format: function (time, fmt: keyof typeof FORMATS) {
     switch (fmt) {
       case "datetime":
-        return formatDateTime(new Date(time), this.options.locale);
+        return formatDateTime(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "datetimeseconds":
-        return formatDateTimeWithSeconds(new Date(time), this.options.locale);
+        return formatDateTimeWithSeconds(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "millisecond":
-        return formatTimeWithSeconds(new Date(time), this.options.locale);
+        return formatTimeWithSeconds(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "second":
-        return formatTimeWithSeconds(new Date(time), this.options.locale);
+        return formatTimeWithSeconds(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "minute":
-        return formatTime(new Date(time), this.options.locale);
+        return formatTime(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "hour":
-        return formatTime(new Date(time), this.options.locale);
+        return formatTime(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "weekday":
-        return formatDateWeekdayDay(new Date(time), this.options.locale);
+        return formatDateWeekdayDay(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "date":
-        return formatDate(new Date(time), this.options.locale);
+        return formatDate(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "day":
-        return formatDateShort(new Date(time), this.options.locale);
+        return formatDateVeryShort(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "week":
-        return formatDate(new Date(time), this.options.locale);
+        return formatDateVeryShort(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "month":
-        return formatDateMonth(new Date(time), this.options.locale);
+        return formatDateMonth(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "monthyear":
-        return formatDateMonthYear(new Date(time), this.options.locale);
+        return formatDateMonthYear(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "quarter":
-        return formatDate(new Date(time), this.options.locale);
+        return formatDate(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       case "year":
-        return formatDateYear(new Date(time), this.options.locale);
+        return formatDateYear(
+          new Date(time),
+          this.options.locale,
+          this.options.config
+        );
       default:
         return "";
     }

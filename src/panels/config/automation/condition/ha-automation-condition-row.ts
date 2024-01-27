@@ -1,7 +1,10 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
+  mdiContentCopy,
+  mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
@@ -11,9 +14,11 @@ import {
   mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import deepClone from "deep-clone-simple";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -21,18 +26,25 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { Condition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import { CONDITION_TYPES } from "../../../../data/condition";
+import { CONDITION_ICONS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import "./ha-automation-condition-editor";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -69,13 +81,21 @@ export const handleChangeEvent = (
 export default class HaAutomationConditionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: Condition;
+  @property({ attribute: false }) public condition!: Condition;
 
   @property({ type: Boolean }) public hideMenu = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Array }) public path?: ItemPath;
+
+  @storage({
+    key: "automationClipboard",
+    state: false,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  public _clipboard?: AutomationClipboard;
 
   @state() private _yamlMode = false;
 
@@ -85,10 +105,21 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _testingResult?: boolean;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
+
   protected render() {
     if (!this.condition) {
       return nothing;
     }
+
+    const noReorderModeAvailable = this._reorderMode === undefined;
+
     return html`
       <ha-card outlined>
         ${this.condition.enabled === false
@@ -103,10 +134,10 @@ export default class HaAutomationConditionRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"
-              .path=${CONDITION_TYPES[this.condition.condition]}
+              .path=${CONDITION_ICONS[this.condition.condition]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
-              describeCondition(this.condition, this.hass)
+              describeCondition(this.condition, this.hass, this._entityReg)
             )}
           </h3>
 
@@ -116,10 +147,9 @@ export default class HaAutomationConditionRow extends LitElement {
             : html`
                 <ha-button-menu
                   slot="icons"
-                  fixed
-                  corner="BOTTOM_START"
                   @action=${this._handleAction}
                   @click=${preventDefault}
+                  fixed
                 >
                   <ha-icon-button
                     slot="trigger"
@@ -144,12 +174,18 @@ export default class HaAutomationConditionRow extends LitElement {
                     ></ha-svg-icon>
                   </mwc-list-item>
 
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                  <mwc-list-item
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                    class=${classMap({ hidden: noReorderModeAvailable })}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.conditions.re_order"
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
                   </mwc-list-item>
+
+                  <li divider role="separator"></li>
 
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
@@ -158,6 +194,26 @@ export default class HaAutomationConditionRow extends LitElement {
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiContentDuplicate}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.copy"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.cut"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCut}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -256,7 +312,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .disabled=${this.disabled}
               .hass=${this.hass}
               .condition=${this.condition}
-              .reOrderMode=${this.reOrderMode}
+              .path=${this.path}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>
@@ -303,26 +359,40 @@ export default class HaAutomationConditionRow extends LitElement {
         await this._renameCondition();
         break;
       case 2:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enter();
         break;
       case 3:
         fireEvent(this, "duplicate");
         break;
       case 4:
+        this._setClipboard();
+        break;
+      case 5:
+        this._setClipboard();
+        fireEvent(this, "value-changed", { value: null });
+        break;
+      case 6:
         this._switchUiMode();
         this.expand();
         break;
-      case 5:
+      case 7:
         this._switchYamlMode();
         this.expand();
         break;
-      case 6:
+      case 8:
         this._onDisable();
         break;
-      case 7:
+      case 9:
         this._onDelete();
         break;
     }
+  }
+
+  private _setClipboard() {
+    this._clipboard = {
+      ...this._clipboard,
+      condition: deepClone(this.condition),
+    };
   }
 
   private _onDisable() {
@@ -425,21 +495,22 @@ export default class HaAutomationConditionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeCondition(this.condition, this.hass, true)
+        describeCondition(this.condition, this.hass, this._entityReg, true)
       ),
       defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
-
-    const value = { ...this.condition };
-    if (!alias) {
-      delete value.alias;
-    } else {
-      value.alias = alias;
+    if (alias !== null) {
+      const value = { ...this.condition };
+      if (alias === "") {
+        delete value.alias;
+      } else {
+        value.alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
     }
-    fireEvent(this, "value-changed", {
-      value,
-    });
   }
 
   public expand() {
@@ -490,6 +561,9 @@ export default class HaAutomationConditionRow extends LitElement {
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         .testing {
           position: absolute;

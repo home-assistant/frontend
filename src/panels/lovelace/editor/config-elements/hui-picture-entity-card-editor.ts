@@ -2,7 +2,6 @@ import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -15,7 +14,7 @@ import { configElementStyle } from "./config-elements-style";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(entityId()),
+    entity: optional(string()),
     image: optional(string()),
     name: optional(string()),
     camera_image: optional(string()),
@@ -26,6 +25,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
+    fit_mode: optional(string()),
   })
 );
 
@@ -62,11 +62,11 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
   {
     name: "tap_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
   {
     name: "hold_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
 ] as const;
 

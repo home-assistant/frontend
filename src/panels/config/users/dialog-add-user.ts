@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -14,6 +13,7 @@ import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { createAuthForUser } from "../../../data/auth";
 import {
   createUser,
@@ -22,10 +22,11 @@ import {
   SYSTEM_GROUP_ID_USER,
   User,
 } from "../../../data/user";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -74,7 +75,7 @@ export class DialogAddUser extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._createUser(ev);
       }
     });
@@ -98,7 +99,7 @@ export class DialogAddUser extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._allowChangeName
-            ? html` <paper-input
+            ? html`<ha-textfield
                 class="name"
                 name="name"
                 .label=${this.hass.localize(
@@ -106,15 +107,15 @@ export class DialogAddUser extends LitElement {
                 )}
                 .value=${this._name}
                 required
-                auto-validate
-                autocapitalize="on"
-                .errorMessage=${this.hass.localize("ui.common.error_required")}
-                @value-changed=${this._handleValueChanged}
+                .validationMessage=${this.hass.localize(
+                  "ui.common.error_required"
+                )}
+                @input=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
                 dialogInitialFocus
-              ></paper-input>`
+              ></ha-textfield>`
             : ""}
-          <paper-input
+          <ha-textfield
             class="username"
             name="username"
             .label=${this.hass.localize(
@@ -122,14 +123,12 @@ export class DialogAddUser extends LitElement {
             )}
             .value=${this._username}
             required
-            auto-validate
-            autocapitalize="none"
-            @value-changed=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
+            @input=${this._handleValueChanged}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
-          ></paper-input>
+          ></ha-textfield>
 
-          <paper-input
+          <ha-textfield
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
@@ -137,27 +136,26 @@ export class DialogAddUser extends LitElement {
             name="password"
             .value=${this._password}
             required
-            auto-validate
-            @value-changed=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
-          ></paper-input>
+            @input=${this._handleValueChanged}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
+          ></ha-textfield>
 
-          <paper-input
+          <ha-textfield
             label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
             )}
             name="passwordConfirm"
             .value=${this._passwordConfirm}
-            @value-changed=${this._handleValueChanged}
+            @input=${this._handleValueChanged}
             required
             type="password"
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .errorMessage=${this.hass.localize(
+            .validationMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-          ></paper-input>
+          ></ha-textfield>
           <div class="row">
             <ha-formfield
               .label=${this.hass.localize(
@@ -196,7 +194,7 @@ export class DialogAddUser extends LitElement {
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`
@@ -231,21 +229,23 @@ export class DialogAddUser extends LitElement {
     }
   }
 
-  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
+  private _handleValueChanged(ev: ValueChangedEvent<string>): void {
     this._error = undefined;
-    const name = (ev.target as any).name;
-    this[`_${name}`] = ev.detail.value;
+    const target = ev.target as HaTextField;
+    this[`_${target.name}`] = target.value;
   }
 
-  private async _adminChanged(ev): Promise<void> {
-    this._isAdmin = ev.target.checked;
+  private async _adminChanged(ev: Event): Promise<void> {
+    const target = ev.target as HaSwitch;
+    this._isAdmin = target.checked;
   }
 
-  private _localOnlyChanged(ev): void {
-    this._localOnly = ev.target.checked;
+  private _localOnlyChanged(ev: Event): void {
+    const target = ev.target as HaSwitch;
+    this._localOnly = target.checked;
   }
 
-  private async _createUser(ev) {
+  private async _createUser(ev: Event) {
     ev.preventDefault();
     if (!this._name || !this._username || !this._password) {
       return;
@@ -299,6 +299,10 @@ export class DialogAddUser extends LitElement {
         .row {
           display: flex;
           padding: 8px 0;
+        }
+        ha-textfield {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { mdiClose } from "@mdi/js";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
@@ -9,23 +8,29 @@ import {
   startOfHour,
 } from "date-fns/esm";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
+import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
 import "../../components/ha-textarea";
+import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import {
   CalendarEntityFeature,
   CalendarEventMutableParams,
+  RecurrenceRange,
   createCalendarEvent,
   deleteCalendarEvent,
-  RecurrenceRange,
   updateCalendarEvent,
 } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
@@ -63,7 +68,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
-  // Dates are manipulated and displayed in the browser timezone
+  // Dates are displayed in the timezone according to the user's profile
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
@@ -80,9 +85,10 @@ class DialogCalendarEventEditor extends LitElement {
           computeStateDomain(stateObj) === "calendar" &&
           supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
       )?.entity_id;
-    this._timeZone =
-      Intl.DateTimeFormat().resolvedOptions().timeZone ||
-      this.hass.config.time_zone;
+    this._timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
@@ -140,19 +146,12 @@ class DialogCalendarEventEditor extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${html`
-          <div class="header_title">
-            ${isCreate
-              ? this.hass.localize("ui.components.calendar.event.add")
-              : this._summary}
-          </div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            class="header_button"
-          ></ha-icon-button>
-        `}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize(
+            `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
+          )
+        )}
       >
         <div class="content">
           ${this._error
@@ -174,7 +173,7 @@ class DialogCalendarEventEditor extends LitElement {
             .value=${this._summary}
             required
             @change=${this._handleSummaryChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .validationMessage=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
           <ha-textarea
@@ -194,6 +193,7 @@ class DialogCalendarEventEditor extends LitElement {
             .value=${this._calendarId!}
             .includeDomains=${CALENDAR_DOMAINS}
             .entityFilter=${this._isEditableCalendar}
+            .disabled=${!isCreate}
             required
             @value-changed=${this._handleCalendarChanged}
           ></ha-entity-picker>
@@ -498,12 +498,22 @@ class DialogCalendarEventEditor extends LitElement {
       this._submitting = false;
       return;
     }
+    const eventData = this._calculateData();
+    if (entry.rrule && eventData.rrule && range === RecurrenceRange.THISEVENT) {
+      // Updates to a single instance of a recurring event by definition
+      // cannot change the recurrence rule and doing so would be invalid.
+      // It is difficult to detect if the user changed the recurrence rule
+      // since updating the date may change it implicitly (e.g. day of week
+      // of the event changes) so we just assume the users intent based on
+      // recurrence range and drop any other rrule changes.
+      eventData.rrule = undefined;
+    }
     try {
       await updateCalendarEvent(
         this.hass!,
         this._calendarId!,
         entry.uid!,
-        this._calculateData(),
+        eventData,
         entry.recurrence_id || "",
         range!
       );
@@ -571,6 +581,12 @@ class DialogCalendarEventEditor extends LitElement {
     return [
       haStyleDialog,
       css`
+        @media all and (min-width: 450px) and (min-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: min(600px, 95vw);
+            --mdc-dialog-max-width: min(600px, 95vw);
+          }
+        }
         state-info {
           line-height: 40px;
         }
@@ -594,6 +610,8 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-time-input {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-recurrence-rule-editor {
           display: block;
@@ -617,7 +635,7 @@ class DialogCalendarEventEditor extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 16px;
+          margin-inline-end: 8px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;

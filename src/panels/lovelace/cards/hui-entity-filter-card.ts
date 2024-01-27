@@ -1,6 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
-import { property, state } from "lit/decorators";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { customElement, property, state } from "lit/decorators";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { evaluateFilter } from "../common/evaluate-filter";
@@ -11,7 +11,11 @@ import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
 
-class EntityFilterCard extends ReactiveElement implements LovelaceCard {
+@customElement("hui-entity-filter-card")
+export class HuiEntityFilterCard
+  extends ReactiveElement
+  implements LovelaceCard
+{
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -38,9 +42,9 @@ class EntityFilterCard extends ReactiveElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isPanel = false;
+  @property({ type: Boolean }) public isPanel = false;
 
-  @property() public editMode = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _config?: EntityFilterCardConfig;
 
@@ -230,4 +234,9 @@ class EntityFilterCard extends ReactiveElement implements LovelaceCard {
     this._element = newCardEl;
   }
 }
-customElements.define("hui-entity-filter-card", EntityFilterCard);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-entity-filter-card": HuiEntityFilterCard;
+  }
+}

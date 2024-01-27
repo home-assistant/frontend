@@ -110,10 +110,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
-        label=${this._firmwareFile?.name ??
-        this.hass.localize(
+        .label=${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.upload_firmware"
         )}
+        .value=${this._firmwareFile}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
       ${this._nodeStatus.is_controller_node
@@ -215,77 +215,77 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 ${abortFirmwareUpdateButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.update_firmware.in_progress",
-                  {
-                    device: html`<strong>${this._deviceName}</strong>`,
-                    progress: (
-                      (this._updateProgressMessage.sent_fragments * 100) /
-                      this._updateProgressMessage.total_fragments
-                    ).toFixed(2),
-                  }
-                )}
-              </p>
-              <mwc-linear-progress
-                determinate
-                .progress=${this._updateProgressMessage.sent_fragments /
-                this._updateProgressMessage.total_fragments}
-              ></mwc-linear-progress>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.update_firmware.close",
-                  {
-                    device: html`<strong>${this._deviceName}</strong>`,
-                  }
-                )}
-              </p>
-              ${abortFirmwareUpdateButton}
-            `
-          : html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${this._updateFinishedMessage!.success
-                    ? mdiCheckCircle
-                    : mdiCloseCircle}
-                  .class=${status}
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      `ui.panel.config.zwave_js.update_firmware.finished_status.${status}`,
-                      {
-                        device: html`<strong>${this._deviceName}</strong>`,
-                        message: this.hass.localize(
-                          `ui.panel.config.zwave_js.update_firmware.finished_status.${
-                            this._nodeStatus.is_controller_node
-                              ? ControllerFirmwareUpdateStatus[
-                                  this._updateFinishedMessage!.status
-                                ]
-                              : NodeFirmwareUpdateStatus[
-                                  this._updateFinishedMessage!.status
-                                ]
-                          }`
-                        ),
-                      }
-                    )}
-                  </p>
-                </div>
-              </div>
-              ${this._updateFinishedMessage!.success
-                ? html`<p>
-                    ${this.hass.localize(
-                      `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
-                    )}
-                  </p>`
-                : html`<p>
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.update_firmware.in_progress",
+                    {
+                      device: html`<strong>${this._deviceName}</strong>`,
+                      progress: (
+                        (this._updateProgressMessage.sent_fragments * 100) /
+                        this._updateProgressMessage.total_fragments
+                      ).toFixed(2),
+                    }
+                  )}
+                </p>
+                <mwc-linear-progress
+                  determinate
+                  .progress=${this._updateProgressMessage.sent_fragments /
+                  this._updateProgressMessage.total_fragments}
+                ></mwc-linear-progress>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.update_firmware.close",
+                    {
+                      device: html`<strong>${this._deviceName}</strong>`,
+                    }
+                  )}
+                </p>
+                ${abortFirmwareUpdateButton}
+              `
+            : html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${this._updateFinishedMessage!.success
+                      ? mdiCheckCircle
+                      : mdiCloseCircle}
+                    .class=${status}
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
                       ${this.hass.localize(
-                        "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
+                        `ui.panel.config.zwave_js.update_firmware.finished_status.${status}`,
+                        {
+                          device: html`<strong>${this._deviceName}</strong>`,
+                          message: this.hass.localize(
+                            `ui.panel.config.zwave_js.update_firmware.finished_status.${
+                              this._nodeStatus.is_controller_node
+                                ? ControllerFirmwareUpdateStatus[
+                                    this._updateFinishedMessage!.status
+                                  ]
+                                : NodeFirmwareUpdateStatus[
+                                    this._updateFinishedMessage!.status
+                                  ]
+                            }`
+                          ),
+                        }
                       )}
                     </p>
-                    ${beginFirmwareUpdateHTML}`}
-            `}
+                  </div>
+                </div>
+                ${this._updateFinishedMessage!.success
+                  ? html`<p>
+                      ${this.hass.localize(
+                        `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
+                      )}
+                    </p>`
+                  : html`<p>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
+                        )}
+                      </p>
+                      ${beginFirmwareUpdateHTML}`}
+              `}
       </ha-dialog>
     `;
   }

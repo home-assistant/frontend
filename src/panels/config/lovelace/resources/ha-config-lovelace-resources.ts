@@ -1,5 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
@@ -7,6 +14,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
 import {
@@ -15,13 +23,15 @@ import {
   fetchResources,
   LovelaceResource,
   updateResource,
-} from "../../../../data/lovelace";
+} from "../../../../data/lovelace/resource";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceTabs } from "../ha-config-lovelace";
@@ -31,16 +41,16 @@ import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail
 export class HaConfigLovelaceRescources extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer => ({
+    (_language): DataTableColumnContainer<LovelaceResource> => ({
       url: {
         title: this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.headers.url"
@@ -58,12 +68,11 @@ export class HaConfigLovelaceRescources extends LitElement {
         sortable: true,
         filterable: true,
         width: "30%",
-        template: (type) =>
-          html`
-            ${this.hass.localize(
-              `ui.panel.config.lovelace.resources.types.${type}`
-            ) || type}
-          `,
+        template: (resource) => html`
+          ${this.hass.localize(
+            `ui.panel.config.lovelace.resources.types.${resource.type}`
+          ) || resource.type}
+        `,
       },
     })
   );
@@ -71,6 +80,36 @@ export class HaConfigLovelaceRescources extends LitElement {
   protected render(): TemplateResult {
     if (!this.hass || this._resources === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
+    }
+
+    if (this.hass.config.safe_mode) {
+      return html`
+        <hass-subpage
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          back-path="/config"
+          .header=${this.hass.localize(
+            "ui.panel.config.lovelace.resources.caption"
+          )}
+        >
+          <div class="content">
+            <ha-card outlined>
+              <div class="card-content">
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.unavailable"
+                  )}
+                </h2>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.unavailable_safe_mode"
+                  )}
+                </p>
+              </div>
+            </ha-card>
+          </div>
+        </hass-subpage>
+      `;
     }
 
     return html`
@@ -145,14 +184,14 @@ export class HaConfigLovelaceRescources extends LitElement {
         this._resources = this._resources!.concat(created).sort((res1, res2) =>
           stringCompare(res1.url, res2.url, this.hass!.locale.language)
         );
-        loadLovelaceResources([created], this.hass!.auth.data.hassUrl);
+        loadLovelaceResources([created], this.hass!);
       },
       updateResource: async (values) => {
         const updated = await updateResource(this.hass!, resource!.id, values);
         this._resources = this._resources!.map((res) =>
           res === resource ? updated : res
         );
-        loadLovelaceResources([updated], this.hass!.auth.data.hassUrl);
+        loadLovelaceResources([updated], this.hass!);
       },
       removeResource: async () => {
         if (
@@ -192,5 +231,31 @@ export class HaConfigLovelaceRescources extends LitElement {
         }
       },
     });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .content {
+          padding: 28px 20px 0;
+          max-width: 1040px;
+          margin: 0 auto;
+        }
+        h2 {
+          margin-top: 0;
+          margin-bottom: 12px;
+        }
+        p {
+          margin: 0;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-lovelace-resources": HaConfigLovelaceRescources;
   }
 }

@@ -1,28 +1,33 @@
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiCog, mdiContentCopy } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { mdiContentCopy } from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-check-list-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
-import { showToast } from "../../../../../util/toast";
 import {
-  WebhookTrigger,
   AutomationConfig,
+  WebhookTrigger,
 } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
+const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
+const DEFAULT_METHODS = ["POST", "PUT"];
 const DEFAULT_WEBHOOK_ID = "";
 
 @customElement("ha-automation-trigger-webhook")
 export class HaWebhookTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: WebhookTrigger;
+  @property({ attribute: false }) public trigger!: WebhookTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -32,6 +37,8 @@ export class HaWebhookTrigger extends LitElement {
 
   public static get defaultConfig() {
     return {
+      allowed_methods: [...DEFAULT_METHODS],
+      local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,
     };
   }
@@ -72,6 +79,12 @@ export class HaWebhookTrigger extends LitElement {
   public willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
+      if (this.trigger.allowed_methods === undefined) {
+        this.trigger.allowed_methods = [...DEFAULT_METHODS];
+      }
+      if (this.trigger.local_only === undefined) {
+        this.trigger.local_only = true;
+      }
       if (this.trigger.webhook_id === DEFAULT_WEBHOOK_ID) {
         this.trigger.webhook_id = this._generateWebhookId();
       }
@@ -79,36 +92,106 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   protected render() {
-    const { webhook_id: webhookId } = this.trigger;
+    const {
+      allowed_methods: allowedMethods,
+      local_only: localOnly,
+      webhook_id: webhookId,
+    } = this.trigger;
 
     return html`
-      <ha-textfield
-        name="webhook_id"
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
-        )}
-        .helper=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
-        )}
-        .disabled=${this.disabled}
-        iconTrailing
-        .value=${webhookId || ""}
-        @input=${this._valueChanged}
-      >
-        <ha-icon-button
-          @click=${this._copyUrl}
-          slot="trailingIcon"
+      <div class="flex">
+        <ha-textfield
+          name="webhook_id"
           .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
           )}
-          .path=${mdiContentCopy}
-        ></ha-icon-button>
-      </ha-textfield>
+          .helper=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
+          )}
+          .disabled=${this.disabled}
+          iconTrailing
+          .value=${webhookId || ""}
+          @input=${this._valueChanged}
+        >
+          <ha-icon-button
+            @click=${this._copyUrl}
+            slot="trailingIcon"
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
+            )}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+        </ha-textfield>
+        <ha-button-menu multi>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.webhook_settings"
+            )}
+            .path=${mdiCog}
+          ></ha-icon-button>
+          ${SUPPORTED_METHODS.map(
+            (method) => html`
+              <ha-check-list-item
+                left
+                .value=${method}
+                @request-selected=${this._allowedMethodsChanged}
+                .selected=${allowedMethods!.includes(method)}
+              >
+                ${method}
+              </ha-check-list-item>
+            `
+          )}
+          <li divider role="separator"></li>
+          <ha-check-list-item
+            left
+            @request-selected=${this._localOnlyChanged}
+            .selected=${localOnly!}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
+            )}
+          </ha-check-list-item>
+        </ha-button-menu>
+      </div>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  private _localOnlyChanged(ev: CustomEvent<RequestSelectedDetail>): void {
+    ev.stopPropagation();
+    if (this.trigger.local_only === ev.detail.selected) {
+      return;
+    }
+    const newTrigger = {
+      ...this.trigger,
+      local_only: ev.detail.selected,
+    };
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _allowedMethodsChanged(ev: CustomEvent<RequestSelectedDetail>): void {
+    ev.stopPropagation();
+    const method = (ev.target as any).value;
+    const selected = ev.detail.selected;
+
+    if (selected === this.trigger.allowed_methods?.includes(method)) {
+      return;
+    }
+
+    const methods = this.trigger.allowed_methods ?? [];
+    const newMethods = [...methods];
+
+    if (selected) {
+      newMethods.push(method);
+    } else {
+      newMethods.splice(newMethods.indexOf(method), 1);
+    }
+    const newTrigger = { ...this.trigger, allowed_methods: newMethods };
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
   private async _copyUrl(ev): Promise<void> {
@@ -122,13 +205,21 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   static styles = css`
+    .flex {
+      display: flex;
+    }
+
     ha-textfield {
-      display: block;
+      flex: 1;
     }
 
     ha-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
+    }
+
+    ha-button-menu {
+      padding-top: 4px;
     }
   `;
 }

@@ -4,7 +4,7 @@ import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { ActionConfig } from "../../../../data/lovelace";
+import type { ActionConfig } from "../../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
@@ -22,6 +22,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     entity: optional(string()),
     image: optional(string()),
+    image_entity: optional(string()),
     camera_image: optional(string()),
     camera_view: optional(string()),
     aspect_ratio: optional(string()),
@@ -35,6 +36,7 @@ const cardConfigStruct = assign(
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "image", selector: { text: {} } },
+  { name: "image_entity", selector: { entity: { domain: "image" } } },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
   {
     name: "",
@@ -51,11 +53,11 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
   {
     name: "tap_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
   {
     name: "hold_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
 ] as const;
 

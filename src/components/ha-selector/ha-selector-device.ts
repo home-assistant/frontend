@@ -1,8 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import {
@@ -20,9 +21,9 @@ import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: DeviceSelector;
+  @property({ attribute: false }) public selector!: DeviceSelector;
 
   @state() private _entitySources?: EntitySources;
 
@@ -51,7 +52,19 @@ export class HaDeviceSelector extends LitElement {
     );
   }
 
-  protected updated(changedProperties): void {
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("selector") && this.value !== undefined) {
+      if (this.selector.device?.multiple && !Array.isArray(this.value)) {
+        this.value = [this.value];
+        fireEvent(this, "value-changed", { value: this.value });
+      } else if (!this.selector.device?.multiple && Array.isArray(this.value)) {
+        this.value = this.value[0];
+        fireEvent(this, "value-changed", { value: this.value });
+      }
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
@@ -77,7 +90,9 @@ export class HaDeviceSelector extends LitElement {
           .label=${this.label}
           .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
-          .entityFilter=${this._filterEntities}
+          .entityFilter=${this.selector.device?.entity
+            ? this._filterEntities
+            : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity
@@ -92,7 +107,9 @@ export class HaDeviceSelector extends LitElement {
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._filterDevices}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this.selector.device?.entity
+          ? this._filterEntities
+          : undefined}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-devices-picker>
@@ -115,14 +132,10 @@ export class HaDeviceSelector extends LitElement {
     );
   };
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector.device?.entity) {
-      return true;
-    }
-    return ensureArray(this.selector.device.entity).some((filter) =>
+  private _filterEntities = (entity: HassEntity): boolean =>
+    ensureArray(this.selector.device!.entity).some((filter) =>
       filterSelectorEntities(filter, entity, this._entitySources)
     );
-  };
 }
 
 declare global {

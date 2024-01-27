@@ -247,8 +247,8 @@ export function renderRRuleAsText(hass: HomeAssistant, value: string) {
         return "";
       },
       {
-        dayNames: dayNames(hass.locale),
-        monthNames: monthNames(hass.locale),
+        dayNames: dayNames(hass.locale, hass.config),
+        monthNames: monthNames(hass.locale, hass.config),
         tokens: {},
       },
       // Format the date
@@ -263,9 +263,9 @@ export function renderRRuleAsText(hass: HomeAssistant, value: string) {
         // need to convert it back to something Date can work with. The already localized
         // months names are a must in the RRule.Language structure (an empty string[] would
         // mean we get undefined months input in this method here).
-        date.setMonth(monthNames(hass.locale).indexOf(month));
+        date.setMonth(monthNames(hass.locale, hass.config).indexOf(month));
         date.setDate(day);
-        return formatDate(date, hass.locale);
+        return formatDate(date, hass.locale, hass.config);
       }
     )
   );

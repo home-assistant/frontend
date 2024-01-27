@@ -1,15 +1,14 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-tip";
+import "../../../../components/ha-list-item";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -22,8 +21,6 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "./cloud-alexa-pref";
-import "./cloud-google-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
@@ -67,12 +64,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <paper-item-body two-line>
+                <ha-list-item twoline>
                   ${this.cloudStatus.email.replace(
                     /(\w{3})[\w.-]+@([\w.]+\w)/,
                     "$1***@$2"
                   )}
-                  <div secondary class="wrap">
+                  <span slot="secondary" class="wrap">
                     ${this._subscription
                       ? this._subscription.human_description.replace(
                           "{periodEnd}",
@@ -81,15 +78,16 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                                 new Date(
                                   this._subscription.plan_renewal_date * 1000
                                 ),
-                                this.hass.locale
+                                this.hass.locale,
+                                this.hass.config
                               )
                             : ""
                         )
                       : this.hass.localize(
                           "ui.panel.config.cloud.account.fetching_subscription"
                         )}
-                  </div>
-                </paper-item-body>
+                  </span>
+                </ha-list-item>
               </div>
 
               ${this.cloudStatus.cloud === "connecting" &&
@@ -104,24 +102,22 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <paper-item-body>
+                <ha-list-item>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.connection_status"
-                  )}
-                </paper-item-body>
-                <div class="status">
+                  )}:
                   ${this.cloudStatus.cloud === "connected"
                     ? this.hass.localize(
                         "ui.panel.config.cloud.account.connected"
                       )
                     : this.cloudStatus.cloud === "disconnected"
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.not_connected"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.connecting"
-                      )}
-                </div>
+                      ? this.hass.localize(
+                          "ui.panel.config.cloud.account.not_connected"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.connecting"
+                        )}
+                </ha-list-item>
               </div>
 
               <div class="card-actions">
@@ -185,17 +181,13 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               dir=${this._rtlDirection}
             ></cloud-tts-pref>
 
-            <cloud-alexa-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
-            ></cloud-alexa-pref>
-
-            <cloud-google-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
-            ></cloud-google-pref>
+            <ha-tip .hass=${this.hass}>
+              <a href="/config/voice-assistants">
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.tip_moved_voice_assistants"
+                )}
+              </a>
+            </ha-tip>
 
             <cloud-webhooks
               .hass=${this.hass}

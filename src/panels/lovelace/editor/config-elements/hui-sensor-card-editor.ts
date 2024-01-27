@@ -11,7 +11,6 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -19,11 +18,12 @@ import type { SensorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(entityId()),
+    entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
     graph: optional(union([literal("line"), literal("none")])),
@@ -77,6 +77,7 @@ const SCHEMA = [
       { name: "theme", selector: { theme: {} } },
       {
         name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
         selector: { number: { min: 1, mode: "box" } },
       },
     ],
@@ -103,7 +104,6 @@ export class HuiSensorCardEditor
     }
 
     const data = {
-      hours_to_show: 24,
       graph: "none",
       ...this._config,
       detail: this._config!.detail === 2,

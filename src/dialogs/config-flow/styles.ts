@@ -23,7 +23,8 @@ export const configFlowContentStyles = css`
     box-sizing: border-box;
   }
 
-  .content {
+  .content,
+  .preview {
     margin-top: 20px;
     padding: 0 24px;
   }

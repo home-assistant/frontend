@@ -1,6 +1,6 @@
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -11,11 +11,13 @@ import "./ha-icon-button";
 class HaMenuButton extends LitElement {
   @property({ type: Boolean }) public hassio = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _hasNotifications = false;
+
+  @state() private _show = false;
 
   private _alwaysVisible = false;
 
@@ -40,7 +42,10 @@ class HaMenuButton extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
+    if (!this._show) {
+      return nothing;
+    }
     const hasNotifications =
       this._hasNotifications &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden");
@@ -66,27 +71,32 @@ class HaMenuButton extends LitElement {
       (Number((window.parent as any).frontendVersion) || 0) < 20190710;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("narrow") && !changedProps.has("hass")) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const oldNarrow =
-      changedProps.get("narrow") ||
-      (oldHass && oldHass.dockedSidebar === "always_hidden");
-    const newNarrow =
+    const oldHass = changedProps.has("hass")
+      ? (changedProps.get("hass") as HomeAssistant | undefined)
+      : this.hass;
+    const oldNarrow = changedProps.has("narrow")
+      ? (changedProps.get("narrow") as boolean | undefined)
+      : this.narrow;
+
+    const oldShowButton =
+      oldNarrow || oldHass?.dockedSidebar === "always_hidden";
+    const showButton =
       this.narrow || this.hass.dockedSidebar === "always_hidden";
 
-    if (oldNarrow === newNarrow) {
+    if (this.hasUpdated && oldShowButton === showButton) {
       return;
     }
 
-    this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
+    this._show = showButton || this._alwaysVisible;
 
-    if (!newNarrow) {
+    if (!showButton) {
       if (this._unsubNotifications) {
         this._unsubNotifications();
         this._unsubNotifications = undefined;
@@ -98,6 +108,9 @@ class HaMenuButton extends LitElement {
   }
 
   private _subscribeNotifications() {
+    if (this._unsubNotifications) {
+      throw new Error("Already subscribed");
+    }
     this._unsubNotifications = subscribeNotifications(
       this.hass.connection,
       (notifications) => {

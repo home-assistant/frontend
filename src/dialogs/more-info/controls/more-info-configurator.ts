@@ -36,12 +36,13 @@ export class MoreInfoConfigurator extends LitElement {
             </ha-alert>`
           : ""}
         ${this.stateObj.attributes.fields.map(
-          (field) => html`<ha-textfield
-            .label=${field.name}
-            .name=${field.id}
-            .type=${field.type}
-            @change=${this._fieldChanged}
-          ></ha-textfield>`
+          (field) =>
+            html`<ha-textfield
+              .label=${field.name}
+              .name=${field.id}
+              .type=${field.type}
+              @change=${this._fieldChanged}
+            ></ha-textfield>`
         )}
         ${this.stateObj.attributes.submit_caption
           ? html`<p class="submit">
@@ -52,8 +53,8 @@ export class MoreInfoConfigurator extends LitElement {
               >
                 ${this._isConfiguring
                   ? html`<ha-circular-progress
-                      active
-                      alt="Configuring"
+                      indeterminate
+                      aria-label="Configuring"
                     ></ha-circular-progress>`
                   : ""}
                 ${this.stateObj.attributes.submit_caption}

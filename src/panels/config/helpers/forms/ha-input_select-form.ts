@@ -1,11 +1,14 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import { mdiDelete } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import "@material/mwc-list/mwc-list";
+import { mdiDelete, mdiDrag } from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-sortable";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import type { InputSelect } from "../../../../data/input_select";
@@ -17,7 +20,7 @@ import type { HomeAssistant } from "../../../../types";
 class HaInputSelectForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: InputSelect;
 
@@ -28,6 +31,18 @@ class HaInputSelectForm extends LitElement {
   @state() private _options: string[] = [];
 
   @query("#option_input", true) private _optionInput?: HaTextField;
+
+  private _optionMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    const options = this._options.concat();
+    const option = options.splice(oldIndex, 1)[0];
+    options.splice(newIndex, 0, option);
+
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, options },
+    });
+  }
 
   set item(item: InputSelect) {
     this._item = item;
@@ -54,20 +69,20 @@ class HaInputSelectForm extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    const nameInvalid = !this._name || this._name.trim() === "";
 
     return html`
       <div class="form">
         <ha-textfield
           dialogInitialFocus
-          .errorMessage=${this.hass!.localize(
+          autoValidate
+          required
+          .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           .value=${this._name}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .invalid=${nameInvalid}
           .configValue=${"name"}
           @input=${this._valueChanged}
         ></ha-textfield>
@@ -85,30 +100,41 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.input_select.options"
           )}:
         </div>
-        ${this._options.length
-          ? this._options.map(
-              (option, index) => html`
-                <mwc-list-item class="option" hasMeta>
-                  ${option}
-                  <ha-icon-button
-                    slot="meta"
-                    .index=${index}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_select.remove_option"
+        <ha-sortable @item-moved=${this._optionMoved} handle-selector=".handle">
+          <mwc-list class="options">
+            ${this._options.length
+              ? repeat(
+                  this._options,
+                  (option) => option,
+                  (option, index) => html`
+                    <ha-list-item class="option" hasMeta>
+                      <div class="optioncontent">
+                        <div class="handle">
+                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                        </div>
+                        ${option}
+                      </div>
+                      <ha-icon-button
+                        slot="meta"
+                        .index=${index}
+                        .label=${this.hass.localize(
+                          "ui.dialogs.helper_settings.input_select.remove_option"
+                        )}
+                        @click=${this._removeOption}
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
+                    </ha-list-item>
+                  `
+                )
+              : html`
+                  <ha-list-item noninteractive>
+                    ${this.hass!.localize(
+                      "ui.dialogs.helper_settings.input_select.no_options"
                     )}
-                    @click=${this._removeOption}
-                    .path=${mdiDelete}
-                  ></ha-icon-button>
-                </mwc-list-item>
-              `
-            )
-          : html`
-              <mwc-list-item noninteractive>
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_select.no_options"
-                )}
-              </mwc-list-item>
-            `}
+                  </ha-list-item>
+                `}
+          </mwc-list>
+        </ha-sortable>
         <div class="layout horizontal center">
           <ha-textfield
             class="flex-auto"
@@ -118,10 +144,10 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
           ></ha-textfield>
-          <mwc-button @click=${this._addOption}
+          <ha-button @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
-            )}</mwc-button
+            )}</ha-button
           >
         </div>
       </div>
@@ -130,7 +156,7 @@ class HaInputSelectForm extends LitElement {
 
   private _handleKeyAdd(ev: KeyboardEvent) {
     ev.stopPropagation();
-    if (ev.keyCode !== 13) {
+    if (ev.key !== "Enter") {
       return;
     }
     this._addOption();
@@ -198,9 +224,15 @@ class HaInputSelectForm extends LitElement {
           border-radius: 4px;
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
+          --mdc-ripple-color: transparent;
+          --mdc-list-side-padding: 16px;
+          cursor: default;
+          background-color: var(--card-background-color);
         }
         mwc-button {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;
@@ -212,6 +244,21 @@ class HaInputSelectForm extends LitElement {
         .header {
           margin-top: 8px;
           margin-bottom: 8px;
+        }
+        .handle {
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
+          padding-right: 12px;
+          padding-inline-end: 12px;
+          padding-inline-start: initial;
+        }
+        .handle ha-svg-icon {
+          pointer-events: none;
+          height: 24px;
+        }
+        .optioncontent {
+          display: flex;
+          align-items: center;
         }
       `,
     ];

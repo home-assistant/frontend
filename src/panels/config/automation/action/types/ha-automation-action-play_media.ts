@@ -51,6 +51,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         service: "media_player.play_media",
         target: { entity_id: ev.detail.value.entity_id },
         data: {

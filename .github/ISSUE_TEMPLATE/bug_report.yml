@@ -9,7 +9,7 @@ body:
 
         If you have a feature or enhancement request for the frontend, please [start an discussion][fr] instead of creating an issue.
 
-        **Please not not report issues for custom cards.**
+        **Please do not report issues for custom cards.**
 
         [fr]: https://github.com/home-assistant/frontend/discussions
         [releases]: https://github.com/home-assistant/home-assistant/releases
@@ -24,6 +24,7 @@ body:
           required: true
         - label: I have tried a different browser to see if it is related to my browser.
           required: true
+        - label: I have tried reproducing the issue in [safe mode](https://www.home-assistant.io/blog/2023/11/01/release-202311/#restarting-into-safe-mode) to rule out problems with unsupported custom resources.
   - type: markdown
     attributes:
       value: |

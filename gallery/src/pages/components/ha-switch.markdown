@@ -30,7 +30,7 @@ For the switch / toggle there are always two variables, one for the on / checked
 The track element (background rounded rectangle that the round circular handle travels on) is set to being half transparent, so the final color will also be impacted by the color behind the track.
 
 `switch-checked-color` / `switch-unchecked-color`  
-Set both the color of the round handle  and the track behind it. If you want to control them separately, use the variables below instead.
+Set both the color of the round handle and the track behind it. If you want to control them separately, use the variables below instead.
 
 `switch-checked-button-color` / `switch-unchecked-button-color`  
 Color of the round handle

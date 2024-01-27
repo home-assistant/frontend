@@ -5,7 +5,6 @@ import {
 } from "home-assistant-js-websocket";
 import durationToSeconds from "../common/datetime/duration_to_seconds";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { HomeAssistant } from "../types";
 
 export type TimerEntity = HassEntityBase & {
@@ -90,23 +89,13 @@ export const computeDisplayTimer = (
   }
 
   if (stateObj.state === "idle" || timeRemaining === 0) {
-    return computeStateDisplay(
-      hass.localize,
-      stateObj,
-      hass.locale,
-      hass.entities
-    );
+    return hass.formatEntityState(stateObj);
   }
 
   let display = secondsToDuration(timeRemaining || 0);
 
   if (stateObj.state === "paused") {
-    display = `${display} (${computeStateDisplay(
-      hass.localize,
-      stateObj,
-      hass.locale,
-      hass.entities
-    )})`;
+    display = `${display} (${hass.formatEntityState(stateObj)})`;
   }
 
   return display;

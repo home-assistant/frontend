@@ -3,6 +3,15 @@ import { DemoConfig } from "../types";
 
 export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
   convertEntities({
+    "todo.shopping_list": {
+      entity_id: "todo.shopping_list",
+      state: "2",
+      attributes: {
+        supported_features: 15,
+        friendly_name: "Shopping List",
+        icon: "mdi:cart",
+      },
+    },
     "zone.home": {
       entity_id: "zone.home",
       state: "zoning",

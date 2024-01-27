@@ -4,11 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
-import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
@@ -63,9 +63,9 @@ export class HuiDialogEditLovelace extends LitElement {
         >
           ${this._saving
             ? html`<ha-circular-progress
-                active
+                indeterminate
                 size="small"
-                title="Saving"
+                aria-label="Saving"
               ></ha-circular-progress>`
             : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button

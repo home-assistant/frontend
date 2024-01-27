@@ -4,12 +4,14 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import {
   RenderTemplateResult,
   subscribeRenderTemplate,
 } from "../../../data/ws-templates";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -37,11 +39,13 @@ For loop example getting entity values in the weather domain:
 
 @customElement("developer-tools-template")
 class HaPanelDevTemplate extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: string;
+
+  @state() private _errorLevel?: "ERROR" | "WARNING";
 
   @state() private _rendering = false;
 
@@ -61,6 +65,7 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._unsubscribeTemplate();
   }
 
@@ -142,95 +147,100 @@ class HaPanelDevTemplate extends LitElement {
               "ui.panel.developer-tools.tabs.templates.reset"
             )}
           </mwc-button>
+          <mwc-button @click=${this._clear}>
+            ${this.hass.localize("ui.common.clear")}
+          </mwc-button>
         </div>
 
         <div class="render-pane">
           ${this._rendering
             ? html`<ha-circular-progress
                 class="render-spinner"
-                active
+                indeterminate
                 size="small"
               ></ha-circular-progress>`
             : ""}
+          ${this._error
+            ? html`<ha-alert
+                alert-type=${this._errorLevel?.toLowerCase() || "error"}
+                >${this._error}</ha-alert
+              >`
+            : nothing}
           ${this._templateResult
             ? html`${this.hass.localize(
-                "ui.panel.developer-tools.tabs.templates.result_type"
-              )}:
-              ${resultType}`
-            : ""}
-          <!-- prettier-ignore -->
-          <pre
-            class="rendered ${classMap({
-            error: Boolean(this._error),
-            [resultType]: resultType,
-          })}"
-          >${this._error}${type === "object"
-            ? JSON.stringify(this._templateResult!.result, null, 2)
-            : this._templateResult?.result}</pre>
-          ${this._templateResult?.listeners.time
-            ? html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.time"
-                  )}
-                </p>
-              `
-            : ""}
-          ${!this._templateResult?.listeners
-            ? ""
-            : this._templateResult.listeners.all
-            ? html`
-                <p class="all_listeners">
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.all_listeners"
-                  )}
-                </p>
-              `
-            : this._templateResult.listeners.domains.length ||
-              this._templateResult.listeners.entities.length
-            ? html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.listeners"
-                  )}
-                </p>
-                <ul>
-                  ${this._templateResult.listeners.domains
-                    .sort()
-                    .map(
-                      (domain) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.domain"
-                              )}</b
-                            >: ${domain}
-                          </li>
+                  "ui.panel.developer-tools.tabs.templates.result_type"
+                )}:
+                ${resultType}
+                <!-- prettier-ignore -->
+                <pre class="rendered ${classMap({
+                  [resultType]: resultType,
+                })}"
+                >${type === "object"
+                  ? JSON.stringify(this._templateResult.result, null, 2)
+                  : this._templateResult.result}</pre>
+                ${this._templateResult.listeners.time
+                  ? html`
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.developer-tools.tabs.templates.time"
+                        )}
+                      </p>
+                    `
+                  : ""}
+                ${!this._templateResult.listeners
+                  ? nothing
+                  : this._templateResult.listeners.all
+                    ? html`
+                        <p class="all_listeners">
+                          ${this.hass.localize(
+                            "ui.panel.developer-tools.tabs.templates.all_listeners"
+                          )}
+                        </p>
+                      `
+                    : this._templateResult.listeners.domains.length ||
+                        this._templateResult.listeners.entities.length
+                      ? html`
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.templates.listeners"
+                            )}
+                          </p>
+                          <ul>
+                            ${this._templateResult.listeners.domains
+                              .sort()
+                              .map(
+                                (domain) => html`
+                                  <li>
+                                    <b
+                                      >${this.hass.localize(
+                                        "ui.panel.developer-tools.tabs.templates.domain"
+                                      )}</b
+                                    >: ${domain}
+                                  </li>
+                                `
+                              )}
+                            ${this._templateResult.listeners.entities
+                              .sort()
+                              .map(
+                                (entity_id) => html`
+                                  <li>
+                                    <b
+                                      >${this.hass.localize(
+                                        "ui.panel.developer-tools.tabs.templates.entity"
+                                      )}</b
+                                    >: ${entity_id}
+                                  </li>
+                                `
+                              )}
+                          </ul>
                         `
-                    )}
-                  ${this._templateResult.listeners.entities
-                    .sort()
-                    .map(
-                      (entity_id) =>
-                        html`
-                          <li>
-                            <b
-                              >${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.entity"
-                              )}</b
-                            >: ${entity_id}
-                          </li>
-                        `
-                    )}
-                </ul>
-              `
-            : !this._templateResult?.listeners.time
-            ? html` <span class="all_listeners">
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.no_listeners"
-                )}
-              </span>`
+                      : !this._templateResult.listeners.time
+                        ? html`<span class="all_listeners">
+                            ${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.templates.no_listeners"
+                            )}
+                          </span>`
+                        : nothing}`
             : nothing}
         </div>
       </div>
@@ -273,12 +283,18 @@ class HaPanelDevTemplate extends LitElement {
         .render-pane {
           position: relative;
           max-width: 50%;
+          flex: 1;
         }
 
         .render-spinner {
           position: absolute;
           top: 8px;
           right: 8px;
+        }
+
+        ha-alert {
+          margin-bottom: 8px;
+          display: block;
         }
 
         .rendered {
@@ -292,10 +308,6 @@ class HaPanelDevTemplate extends LitElement {
 
         .all_listeners {
           color: var(--warning-color);
-        }
-
-        .rendered.error {
-          color: var(--error-color);
         }
 
         @media all and (max-width: 870px) {
@@ -320,6 +332,7 @@ class HaPanelDevTemplate extends LitElement {
     this._template = ev.detail.value;
     if (this._error) {
       this._error = undefined;
+      this._errorLevel = undefined;
     }
     this._debounceRender();
   }
@@ -327,24 +340,36 @@ class HaPanelDevTemplate extends LitElement {
   private async _subscribeTemplate() {
     this._rendering = true;
     await this._unsubscribeTemplate();
+    this._error = undefined;
+    this._errorLevel = undefined;
+    this._templateResult = undefined;
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
-          this._templateResult = result;
-          this._error = undefined;
+          if ("error" in result) {
+            // We show the latest error, or a warning if there are no errors
+            if (result.level === "ERROR" || this._errorLevel !== "ERROR") {
+              this._error = result.error;
+              this._errorLevel = result.level;
+            }
+          } else {
+            this._templateResult = result;
+          }
         },
         {
           template: this._template,
           timeout: 3,
-          strict: true,
+          report_errors: true,
         }
       );
       await this._unsubRenderTemplate;
     } catch (err: any) {
       this._error = "Unknown error";
+      this._errorLevel = undefined;
       if (err.message) {
         this._error = err.message;
+        this._errorLevel = undefined;
         this._templateResult = undefined;
       }
       this._unsubRenderTemplate = undefined;
@@ -378,10 +403,41 @@ class HaPanelDevTemplate extends LitElement {
     localStorage["panel-dev-template-template"] = this._template;
   }
 
-  private _restoreDemo() {
+  private async _restoreDemo() {
+    if (
+      !(await showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.templates.confirm_reset"
+        ),
+        warning: true,
+      }))
+    ) {
+      return;
+    }
     this._template = DEMO_TEMPLATE;
     this._subscribeTemplate();
     delete localStorage["panel-dev-template-template"];
+  }
+
+  private async _clear() {
+    if (
+      !(await showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.templates.confirm_clear"
+        ),
+        warning: true,
+      }))
+    ) {
+      return;
+    }
+    this._unsubscribeTemplate();
+    this._template = "";
+    // Reset to empty result. Setting to 'undefined' results in a different visual
+    // behaviour compared to manually emptying the template input box.
+    this._templateResult = {
+      result: "",
+      listeners: { all: false, entities: [], domains: [], time: false },
+    };
   }
 }
 

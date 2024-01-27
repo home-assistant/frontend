@@ -74,13 +74,12 @@ export class EnergyGasSettings extends LitElement {
             >
           </p>
           ${gasValidation.map(
-            (result) =>
-              html`
-                <ha-energy-validation-result
-                  .hass=${this.hass}
-                  .issues=${result}
-                ></ha-energy-validation-result>
-              `
+            (result) => html`
+              <ha-energy-validation-result
+                .hass=${this.hass}
+                .issues=${result}
+              ></ha-energy-validation-result>
+            `
           )}
           <h3>
             ${this.hass.localize("ui.panel.config.energy.gas.gas_consumption")}
@@ -137,6 +136,9 @@ export class EnergyGasSettings extends LitElement {
         this.preferences,
         this.statsMetadata
       ),
+      gas_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "gas"
+      ) as GasSourceTypeEnergyPreference[],
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -158,6 +160,9 @@ export class EnergyGasSettings extends LitElement {
         origSource.stat_energy_from
       ),
       metadata: this.statsMetadata?.[origSource.stat_energy_from],
+      gas_sources: this.preferences.energy_sources.filter(
+        (src) => src.type === "gas"
+      ) as GasSourceTypeEnergyPreference[],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

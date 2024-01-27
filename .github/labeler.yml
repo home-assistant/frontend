@@ -1,0 +1,51 @@
+Build:
+  - changed-files:
+      - any-glob-to-any-file:
+          - build-scripts/**
+          - .browserslistrc
+          - gulpfile.js
+
+Cast:
+  - changed-files:
+      - any-glob-to-any-file:
+          - cast/src/**
+          - src/cast/**
+
+Demo:
+  - changed-files:
+      - any-glob-to-any-file:
+          - demo/src/**
+          - src/fake_data/**
+
+Design:
+  - changed-files:
+      - any-glob-to-any-file:
+          - gallery/src/**
+          - src/fake_data/**
+
+Dependencies:
+  - any:
+      - changed-files:
+          # Match when only these files are changed (i.e. don't match PRs that happen to add or remove packages)
+          - any-glob-to-all-files:
+              - package.json
+              - renovate.json
+              - yarn.lock
+              - .yarn/**
+              - .yarnrc.yml
+              - .nvmrc
+      # Dependabot and Renovate branches always match (i.e. compatibility tweaks by members considered minor)
+      - head-branch:
+          - "^renovate/"
+          - "^dependabot/"
+
+GitHub Actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/*.yml
+
+Supervisor:
+  - changed-files:
+      - any-glob-to-any-file:
+          - hassio/src/**

@@ -6,8 +6,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: "3.10"
-  NODE_VERSION: 16
+  PYTHON_VERSION: "3.11"
   NODE_OPTIONS: --max_old_space_size=6144
 
 permissions:
@@ -21,17 +20,17 @@ jobs:
       contents: write
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.6.0
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.1
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install dependencies
@@ -58,14 +57,14 @@ jobs:
         run: tar -czvf translations.tar.gz translations
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.2.0
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
 
       - name: Upload translations
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.2.0
         with:
           name: translations
           path: translations.tar.gz

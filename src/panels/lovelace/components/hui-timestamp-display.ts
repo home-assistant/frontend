@@ -1,3 +1,4 @@
+import { HassConfig } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
@@ -10,7 +11,11 @@ import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormat } from "./types";
 
 const FORMATS: {
-  [key: string]: (ts: Date, lang: FrontendLocaleData) => string;
+  [key: string]: (
+    ts: Date,
+    lang: FrontendLocaleData,
+    config: HassConfig
+  ) => string;
 } = {
   date: formatDate,
   datetime: formatDateTime,
@@ -22,7 +27,7 @@ const INTERVAL_FORMAT = ["relative", "total"];
 class HuiTimestampDisplay extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public ts?: Date;
+  @property({ attribute: false }) public ts?: Date;
 
   @property() public format?: TimestampRenderingFormat;
 
@@ -63,7 +68,9 @@ class HuiTimestampDisplay extends LitElement {
       return html` ${this._relative} `;
     }
     if (format in FORMATS) {
-      return html` ${FORMATS[format](this.ts, this.hass.locale)} `;
+      return html`
+        ${FORMATS[format](this.ts, this.hass.locale, this.hass.config)}
+      `;
     }
     return html`${this.hass.localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"

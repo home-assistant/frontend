@@ -1,19 +1,19 @@
-const del = import("del");
-const crypto = require("crypto");
-const path = require("path");
-const source = require("vinyl-source-stream");
-const vinylBuffer = require("vinyl-buffer");
-const gulp = require("gulp");
-const fs = require("fs");
-const flatmap = require("gulp-flatmap");
-const merge = require("gulp-merge-json");
-const rename = require("gulp-rename");
-const transform = require("gulp-json-transform");
-const { mapFiles } = require("../util");
-const env = require("../env");
-const paths = require("../paths");
-
-require("./fetch-nightly-translations");
+import { createHash } from "crypto";
+import { deleteSync } from "del";
+import { mkdirSync, readdirSync, readFileSync, renameSync } from "fs";
+import { writeFile } from "node:fs/promises";
+import gulp from "gulp";
+import flatmap from "gulp-flatmap";
+import transform from "gulp-json-transform";
+import merge from "gulp-merge-json";
+import rename from "gulp-rename";
+import path from "path";
+import vinylBuffer from "vinyl-buffer";
+import source from "vinyl-source-stream";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
+import { mapFiles } from "../util.cjs";
+import "./fetch-nightly-translations.js";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -33,7 +33,12 @@ gulp.task(
 
 // Panel translations which should be split from the core translations.
 const TRANSLATION_FRAGMENTS = Object.keys(
-  require("../../src/translations/en.json").ui.panel
+  JSON.parse(
+    readFileSync(
+      path.resolve(paths.polymer_dir, "src/translations/en.json"),
+      "utf-8"
+    )
+  ).ui.panel
 );
 
 function recursiveFlatten(prefix, data) {
@@ -120,36 +125,29 @@ function lokaliseTransform(data, original, file) {
   return output;
 }
 
-gulp.task("clean-translations", async () => (await del).deleteSync([workDir]));
+gulp.task("clean-translations", async () => deleteSync([workDir]));
 
-gulp.task("ensure-translations-build-dir", (done) => {
-  if (!fs.existsSync(workDir)) {
-    fs.mkdirSync(workDir, { recursive: true });
-  }
-  done();
+gulp.task("ensure-translations-build-dir", async () => {
+  mkdirSync(workDir, { recursive: true });
 });
 
-gulp.task("create-test-metadata", (cb) => {
-  fs.writeFile(
-    workDir + "/testMetadata.json",
-    JSON.stringify({
-      test: {
-        nativeName: "Test",
-      },
-    }),
-    cb
-  );
-});
+gulp.task("create-test-metadata", () =>
+  env.isProdBuild()
+    ? Promise.resolve()
+    : writeFile(
+        workDir + "/testMetadata.json",
+        JSON.stringify({ test: { nativeName: "Test" } })
+      )
+);
 
-gulp.task(
-  "create-test-translation",
-  gulp.series("create-test-metadata", () =>
-    gulp
-      .src(path.join(paths.translations_src, "en.json"))
-      .pipe(transform((data, _file) => recursiveEmpty(data)))
-      .pipe(rename("test.json"))
-      .pipe(gulp.dest(workDir))
-  )
+gulp.task("create-test-translation", () =>
+  env.isProdBuild()
+    ? Promise.resolve()
+    : gulp
+        .src(path.join(paths.translations_src, "en.json"))
+        .pipe(transform((data, _file) => recursiveEmpty(data)))
+        .pipe(rename("test.json"))
+        .pipe(gulp.dest(workDir))
 );
 
 /**
@@ -181,16 +179,11 @@ gulp.task("build-master-translation", () => {
 
 gulp.task("build-merged-translations", () =>
   gulp
-    .src(
-      [
-        inFrontendDir + "/*.json",
-        "!" + inFrontendDir + "/en.json",
-        workDir + "/test.json",
-      ],
-      {
-        allowEmpty: true,
-      }
-    )
+    .src([
+      inFrontendDir + "/*.json",
+      "!" + inFrontendDir + "/en.json",
+      ...(env.isProdBuild() ? [] : [workDir + "/test.json"]),
+    ])
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       flatmap((stream, file) => {
@@ -303,15 +296,14 @@ const fingerprints = {};
 
 gulp.task("build-translation-fingerprints", () => {
   // Fingerprint full file of each language
-  const files = fs.readdirSync(fullDir);
+  const files = readdirSync(fullDir);
 
   for (let i = 0; i < files.length; i++) {
     fingerprints[files[i].split(".")[0]] = {
       // In dev we create fake hashes
       hash: env.isProdBuild()
-        ? crypto
-            .createHash("md5")
-            .update(fs.readFileSync(path.join(fullDir, files[i]), "utf-8"))
+        ? createHash("md5")
+            .update(readFileSync(path.join(fullDir, files[i]), "utf-8"))
             .digest("hex")
         : "dev",
     };
@@ -327,7 +319,7 @@ gulp.task("build-translation-fingerprints", () => {
         throw new Error(`Unable to find hash for ${filename}`);
       }
 
-      fs.renameSync(
+      renameSync(
         filename,
         `${parsed.dir}/${parsed.name}-${fingerprints[parsed.name].hash}${
           parsed.ext
@@ -371,14 +363,11 @@ gulp.task("build-translation-flatten-supervisor", () =>
 
 gulp.task("build-translation-write-metadata", () =>
   gulp
-    .src(
-      [
-        path.join(paths.translations_src, "translationMetadata.json"),
-        workDir + "/testMetadata.json",
-        workDir + "/translationFingerprints.json",
-      ],
-      { allowEmpty: true }
-    )
+    .src([
+      path.join(paths.translations_src, "translationMetadata.json"),
+      ...(env.isProdBuild() ? [] : [workDir + "/testMetadata.json"]),
+      workDir + "/translationFingerprints.json",
+    ])
     .pipe(merge({}))
     .pipe(
       transform((data) => {
@@ -409,7 +398,7 @@ gulp.task("build-translation-write-metadata", () =>
 gulp.task(
   "create-translations",
   gulp.series(
-    env.isProdBuild() ? (done) => done() : "create-test-translation",
+    gulp.parallel("create-test-metadata", "create-test-translation"),
     "build-master-translation",
     "build-merged-translations",
     gulp.parallel(...splitTasks),
@@ -437,6 +426,7 @@ gulp.task(
       "fetch-nightly-translations",
       gulp.series("clean-translations", "ensure-translations-build-dir")
     ),
+    gulp.parallel("create-test-metadata", "create-test-translation"),
     "build-master-translation",
     "build-merged-translations",
     "build-translation-fragment-supervisor",

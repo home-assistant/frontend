@@ -1,7 +1,14 @@
 import { mdiInformation } from "@mdi/js";
-import "@polymer/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
@@ -18,6 +25,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [
   { level: -1, stroke: "var(--energy-grid-consumption-color)" },
@@ -53,6 +61,14 @@ class HuiEnergyGridGaugeCard
 
   public setConfig(config: EnergyGridGaugeCardConfig): void {
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
@@ -102,7 +118,7 @@ class HuiEnergyGridGaugeCard
         ${value !== undefined
           ? html`
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <paper-tooltip animation-delay="0" for="info" position="left">
+              <simple-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
@@ -112,7 +128,7 @@ class HuiEnergyGridGaugeCard
                     "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
                   )}
                 </span>
-              </paper-tooltip>
+              </simple-tooltip>
 
               <ha-gauge
                 min="-1"
@@ -179,11 +195,11 @@ class HuiEnergyGridGaugeCard
         top: 4px;
         color: var(--secondary-text-color);
       }
-      paper-tooltip > span {
+      simple-tooltip > span {
         font-size: 12px;
         line-height: 12px;
       }
-      paper-tooltip {
+      simple-tooltip {
         width: 80%;
         max-width: 250px;
         top: 8px !important;

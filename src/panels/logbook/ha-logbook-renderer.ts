@@ -35,8 +35,10 @@ import {
   haStyle,
   haStyleScrollbar,
 } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import { domainToName } from "../../data/integration";
 
 declare global {
   interface HASSDomEvents {
@@ -82,6 +84,17 @@ class HaLogbookRenderer extends LitElement {
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (
+      (!this.hasUpdated && this.virtualize) ||
+      (changedProps.has("virtualize") && this.virtualize)
+    ) {
+      this.hass.loadBackendTranslation("services");
+      this.hass.loadBackendTranslation("title");
+      loadVirtualizer();
+    }
+  }
 
   protected shouldUpdate(changedProps: PropertyValues<this>) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -182,7 +195,11 @@ class HaLogbookRenderer extends LitElement {
             new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when * 1000), this.hass.locale)}
+                ${formatDate(
+                  new Date(item.when * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )}
               </h4>
             `
           : nothing}
@@ -219,7 +236,8 @@ class HaLogbookRenderer extends LitElement {
                 <span
                   >${formatTimeWithSeconds(
                     new Date(item.when * 1000),
-                    this.hass.locale
+                    this.hass.locale,
+                    this.hass.config
                   )}</span
                 >
                 -
@@ -384,7 +402,16 @@ class HaLogbookRenderer extends LitElement {
       return html`${this.hass.localize(
         "ui.components.logbook.triggered_by_service"
       )}
-      ${item.context_domain}.${item.context_service}`;
+      ${item.context_domain && item.context_service
+        ? `${domainToName(this.hass.localize, item.context_domain)}:
+      ${
+        this.hass.localize(
+          `component.${item.context_domain}.services.${item.context_service}.name`
+        ) ||
+        this.hass.services[item.context_domain]?.[item.context_service]?.name ||
+        item.context_service
+      }`
+        : ""}`;
     }
     if (
       !item.context_message ||

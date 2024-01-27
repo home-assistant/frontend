@@ -1,15 +1,14 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { isUnavailableState } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
@@ -79,12 +78,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
                   capitalize
                 ></hui-timestamp-display>
               `
-            : computeStateDisplay(
-                this.hass!.localize,
-                stateObj,
-                this.hass.locale,
-                this.hass.entities
-              )}
+            : this.hass.formatEntityState(stateObj)}
         </div>
       </hui-generic-entity-row>
     `;

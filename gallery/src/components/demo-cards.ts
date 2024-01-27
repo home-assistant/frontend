@@ -1,4 +1,3 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
@@ -7,12 +6,13 @@ import "../../../src/components/ha-switch";
 import { HomeAssistant } from "../../../src/types";
 import "./demo-card";
 import type { DemoCardConfig } from "./demo-card";
+import "../ha-demo-options";
 
 @customElement("demo-cards")
 class DemoCards extends LitElement {
-  @property() public configs!: DemoCardConfig[];
+  @property({ attribute: false }) public configs!: DemoCardConfig[];
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _showConfig = false;
 
@@ -20,20 +20,14 @@ class DemoCards extends LitElement {
 
   render() {
     return html`
-      <app-toolbar>
-        <div class="filters">
-          <ha-formfield label="Show config">
-            <ha-switch
-              .checked=${this._showConfig}
-              @change=${this._showConfigToggled}
-            >
-            </ha-switch>
-          </ha-formfield>
-          <ha-formfield label="Dark theme">
-            <ha-switch @change=${this._darkThemeToggled}> </ha-switch>
-          </ha-formfield>
-        </div>
-      </app-toolbar>
+      <ha-demo-options>
+        <ha-formfield label="Show config">
+          <ha-switch @change=${this._showConfigToggled}> </ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Dark theme">
+          <ha-switch @change=${this._darkThemeToggled}> </ha-switch>
+        </ha-formfield>
+      </ha-demo-options>
       <div id="container">
         <div class="cards">
           ${this.configs.map(
@@ -68,12 +62,6 @@ class DemoCards extends LitElement {
     }
     demo-card {
       margin: 16px 16px 32px;
-    }
-    app-toolbar {
-      background-color: var(--light-primary-color);
-    }
-    .filters {
-      margin-left: 60px;
     }
     ha-formfield {
       margin-right: 16px;

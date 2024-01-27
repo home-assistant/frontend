@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ReactiveElement } from "lit";
+import { PropertyValueMap, ReactiveElement } from "lit";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import {
@@ -19,7 +19,7 @@ export let historyPromise: Promise<void> | undefined;
 let historyResolve: undefined | (() => void);
 
 export const urlSyncMixin = <
-  T extends Constructor<ReactiveElement & ProvideHassElement>
+  T extends Constructor<ReactiveElement & ProvideHassElement>,
 >(
   superClass: T
 ) =>
@@ -31,8 +31,11 @@ export const urlSyncMixin = <
 
         public connectedCallback(): void {
           super.connectedCallback();
-          if (history.length === 1) {
-            history.replaceState({ ...history.state, root: true }, "");
+          if (mainWindow.history.length === 1) {
+            mainWindow.history.replaceState(
+              { ...mainWindow.history.state, root: true },
+              ""
+            );
           }
           mainWindow.addEventListener("popstate", this._popstateChangeListener);
           this.addEventListener("dialog-closed", this._dialogClosedListener);
@@ -45,6 +48,15 @@ export const urlSyncMixin = <
             this._popstateChangeListener
           );
           this.removeEventListener("dialog-closed", this._dialogClosedListener);
+        }
+
+        protected firstUpdated(
+          changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+        ): void {
+          super.firstUpdated(changedProperties);
+          if (mainWindow.history.state?.dialog) {
+            this._handleDialogStateChange(mainWindow.history.state);
+          }
         }
 
         private _dialogClosedListener = (
@@ -67,7 +79,7 @@ export const urlSyncMixin = <
             if (DEBUG) {
               console.log("remove state", ev.detail.dialog);
             }
-            if (history.length) {
+            if (mainWindow.history.length) {
               this._ignoreNextPopState = true;
               historyPromise = new Promise((resolve) => {
                 historyResolve = () => {
@@ -145,12 +157,20 @@ export const urlSyncMixin = <
             }
             return;
           }
-          if (state.dialogParams !== null) {
-            showDialog(
+          let shown = false;
+          if (state.open && state.dialogParams !== null) {
+            shown = await showDialog(
               this,
               this.shadowRoot!,
               state.dialog,
               state.dialogParams
+            );
+          }
+          if (!shown) {
+            // can't open dialog, update state
+            mainWindow.history.replaceState(
+              { ...mainWindow.history.state, open: false },
+              ""
             );
           }
         }

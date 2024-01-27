@@ -1,8 +1,7 @@
-import { html, LitElement, PropertyValues, nothing } from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/ha-entity-toggle";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -66,12 +65,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <div class="text-content">
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass.locale,
-                  this.hass.entities
-                )}
+                ${this.hass.formatEntityState(stateObj)}
               </div>
             `}
       </hui-generic-entity-row>

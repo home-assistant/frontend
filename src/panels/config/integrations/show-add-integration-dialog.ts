@@ -3,6 +3,7 @@ import { IntegrationManifest } from "../../../data/integration";
 
 export interface AddIntegrationDialogParams {
   brand?: string;
+  domain?: string;
   initialFilter?: string;
 }
 

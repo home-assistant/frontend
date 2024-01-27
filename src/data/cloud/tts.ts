@@ -1,6 +1,5 @@
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
-import { translationMetadata } from "../../resources/translations-metadata";
 import { HomeAssistant } from "../../types";
 
 export interface CloudTTSInfo {
@@ -11,7 +10,7 @@ export const getCloudTTSInfo = (hass: HomeAssistant) =>
   hass.callWS<CloudTTSInfo>({ type: "cloud/tts/info" });
 
 export const getCloudTtsLanguages = (info?: CloudTTSInfo) => {
-  const languages: Array<[string, string]> = [];
+  const languages: string[] = [];
 
   if (!info) {
     return languages;
@@ -23,25 +22,9 @@ export const getCloudTtsLanguages = (info?: CloudTTSInfo) => {
       continue;
     }
     seen.add(lang);
-
-    let label = lang;
-
-    if (lang in translationMetadata.translations) {
-      label = translationMetadata.translations[lang].nativeName;
-    } else {
-      const [langFamily, dialect] = lang.split("-");
-      if (langFamily in translationMetadata.translations) {
-        label = `${translationMetadata.translations[langFamily].nativeName}`;
-
-        if (langFamily.toLowerCase() !== dialect.toLowerCase()) {
-          label += ` (${dialect})`;
-        }
-      }
-    }
-
-    languages.push([lang, label]);
+    languages.push(lang);
   }
-  return languages.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
+  return languages;
 };
 
 export const getCloudTtsSupportedGenders = (

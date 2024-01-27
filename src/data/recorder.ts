@@ -1,8 +1,18 @@
+import { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HaDurationData } from "../components/ha-duration-input";
 import { HomeAssistant } from "../types";
 
-export type StatisticType = "state" | "sum" | "min" | "max" | "mean";
+export interface RecorderInfo {
+  backlog: number | null;
+  max_backlog: number;
+  migration_in_progress: boolean;
+  migration_is_live: boolean;
+  recording: boolean;
+  thread_running: boolean;
+}
+
+export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
   [statisticId: string]: StatisticValue[];
@@ -11,6 +21,7 @@ export interface Statistics {
 export interface StatisticValue {
   start: number;
   end: number;
+  change?: number | null;
   last_reset?: number | null;
   max?: number | null;
   mean?: number | null;
@@ -91,6 +102,7 @@ export interface StatisticsUnitConfiguration {
 }
 
 const statisticTypes = [
+  "change",
   "last_reset",
   "max",
   "mean",
@@ -103,6 +115,11 @@ export type StatisticsTypes = (typeof statisticTypes)[number][];
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
+
+export const getRecorderInfo = (conn: Connection) =>
+  conn.sendMessagePromise<RecorderInfo>({
+    type: "recorder/info",
+  });
 
 export const getStatisticIds = (
   hass: HomeAssistant,
@@ -196,18 +213,24 @@ export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
 export const calculateStatisticSumGrowth = (
   values: StatisticValue[]
 ): number | null => {
-  if (!values || values.length < 2) {
+  let growth: number | null = null;
+
+  if (!values) {
     return null;
   }
-  const endSum = values[values.length - 1].sum;
-  if (endSum === null || endSum === undefined) {
-    return null;
+
+  for (const value of values) {
+    if (value.change === null || value.change === undefined) {
+      continue;
+    }
+    if (growth === null) {
+      growth = value.change;
+    } else {
+      growth += value.change;
+    }
   }
-  const startSum = values[0].sum;
-  if (startSum === null || startSum === undefined) {
-    return endSum;
-  }
-  return endSum - startSum;
+
+  return growth;
 };
 
 export const calculateStatisticsSumGrowth = (
@@ -238,10 +261,10 @@ export const calculateStatisticsSumGrowth = (
 export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
-) => stats.some((stat) => stat[type] !== null);
+) => stats.some((stat) => stat[type] !== undefined && stat[type] !== null);
 
 const mean_stat_types: readonly StatisticType[] = ["mean", "min", "max"];
-const sum_stat_types: readonly StatisticType[] = ["sum"];
+const sum_stat_types: readonly StatisticType[] = ["sum", "state", "change"];
 
 export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,

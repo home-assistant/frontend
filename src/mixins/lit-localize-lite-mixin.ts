@@ -1,5 +1,5 @@
 import { LitElement, PropertyValues } from "lit";
-import { property } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
@@ -13,14 +13,14 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
 ) => {
   class LitLocalizeLiteClass extends superClass {
     // Initialized to empty will prevent undefined errors if called before connected to DOM.
-    @property() public localize: LocalizeFunc = empty;
-
-    @property() public resources?: Resources;
+    @property({ attribute: false }) public localize: LocalizeFunc = empty;
 
     // Use browser language setup before login.
     @property() public language?: string = getLocalLanguage();
 
     @property() public translationFragment?: string;
+
+    @state() private _resources?: Resources;
 
     public connectedCallback(): void {
       super.connectedCallback();
@@ -35,22 +35,27 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       );
     }
 
-    protected updated(changedProperties: PropertyValues) {
-      super.updated(changedProperties);
+    protected willUpdate(changedProperties: PropertyValues) {
+      super.willUpdate(changedProperties);
+      if (changedProperties.get("language")) {
+        this._resources = undefined;
+        this._initializeLocalizeLite();
+      }
+
       if (changedProperties.get("translationFragment")) {
         this._initializeLocalizeLite();
       }
 
       if (
         this.language &&
-        this.resources &&
+        this._resources &&
         (changedProperties.has("language") ||
-          changedProperties.has("resources"))
+          changedProperties.has("_resources"))
       ) {
         computeLocalize(
           this.constructor.prototype,
           this.language,
-          this.resources
+          this._resources
         ).then((localize) => {
           this.localize = localize;
         });
@@ -58,7 +63,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     }
 
     protected async _initializeLocalizeLite() {
-      if (this.resources) {
+      if (this._resources) {
         return;
       }
 
@@ -68,7 +73,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         if (__DEV__) {
           setTimeout(
             () =>
-              !this.resources &&
+              !this._resources &&
               // eslint-disable-next-line
               console.error(
                 "Forgot to pass in resources or set translationFragment for",
@@ -84,7 +89,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         this.translationFragment!,
         this.language!
       );
-      this.resources = {
+      this._resources = {
         [this.language!]: data,
       };
     }

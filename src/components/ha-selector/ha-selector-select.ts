@@ -1,20 +1,24 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiClose } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { mdiDrag } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../chips/ha-chip-set";
+import "../chips/ha-input-chip";
 import "../ha-checkbox";
-import "../ha-chip";
-import "../ha-chip-set";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
+import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-input-helper-text";
+import "../ha-sortable";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -28,7 +32,8 @@ export class HaSelectSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -36,11 +41,28 @@ export class HaSelectSelector extends LitElement {
 
   @query("ha-combo-box", true) private comboBox!: HaComboBox;
 
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex!, newIndex);
+  }
+
+  private _move(index: number, newIndex: number) {
+    const value = this.value as string[];
+    const newValue = value.concat();
+    const element = newValue.splice(index, 1)[0];
+    newValue.splice(newIndex, 0, element);
+    this.value = newValue;
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
   private _filter = "";
 
   protected render() {
     const options =
-      this.selector.select?.options.map((option) =>
+      this.selector.select?.options?.map((option) =>
         typeof option === "object"
           ? (option as SelectOption)
           : ({ value: option, label: option } as SelectOption)
@@ -50,13 +72,30 @@ export class HaSelectSelector extends LitElement {
 
     if (this.localizeValue && translationKey) {
       options.forEach((option) => {
-        option.label =
-          this.localizeValue!(`${translationKey}.options.${option.value}`) ||
-          option.label;
+        const localizedLabel = this.localizeValue!(
+          `${translationKey}.options.${option.value}`
+        );
+        if (localizedLabel) {
+          option.label = localizedLabel;
+        }
       });
     }
 
-    if (!this.selector.select?.custom_value && this._mode === "list") {
+    if (this.selector.select?.sort) {
+      options.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.label,
+          b.label,
+          this.hass.locale.language
+        )
+      );
+    }
+
+    if (
+      !this.selector.select?.custom_value &&
+      !this.selector.select?.reorder &&
+      this._mode === "list"
+    ) {
       if (!this.selector.select?.multiple) {
         return html`
           <div>
@@ -77,7 +116,8 @@ export class HaSelectSelector extends LitElement {
           ${this._renderHelper()}
         `;
       }
-
+      const value =
+        !this.value || this.value === "" ? [] : ensureArray(this.value);
       return html`
         <div>
           ${this.label}
@@ -85,7 +125,7 @@ export class HaSelectSelector extends LitElement {
             (item: SelectOption) => html`
               <ha-formfield .label=${item.label}>
                 <ha-checkbox
-                  .checked=${this.value?.includes(item.value)}
+                  .checked=${value.includes(item.value)}
                   .value=${item.value}
                   .disabled=${item.disabled || this.disabled}
                   @change=${this._checkboxChanged}
@@ -100,7 +140,7 @@ export class HaSelectSelector extends LitElement {
 
     if (this.selector.select?.multiple) {
       const value =
-        !this.value || this.value === "" ? [] : (this.value as string[]);
+        !this.value || this.value === "" ? [] : ensureArray(this.value);
 
       const optionItems = options.filter(
         (option) => !option.disabled && !value?.includes(option.value)
@@ -108,24 +148,46 @@ export class HaSelectSelector extends LitElement {
 
       return html`
         ${value?.length
-          ? html`<ha-chip-set>
-              ${value.map(
-                (item, idx) =>
-                  html`
-                    <ha-chip hasTrailingIcon>
-                      ${options.find((option) => option.value === item)
-                        ?.label || item}
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiClose}
-                        .idx=${idx}
-                        @click=${this._removeItem}
-                      ></ha-svg-icon>
-                    </ha-chip>
-                  `
-              )}
-            </ha-chip-set>`
-          : ""}
+          ? html`
+              <ha-sortable
+                no-style
+                .disabled=${!this.selector.select.reorder}
+                @item-moved=${this._itemMoved}
+              >
+                <ha-chip-set>
+                  ${repeat(
+                    value,
+                    (item) => item,
+                    (item, idx) => {
+                      const label =
+                        options.find((option) => option.value === item)
+                          ?.label || item;
+                      return html`
+                        <ha-input-chip
+                          .idx=${idx}
+                          @remove=${this._removeItem}
+                          .label=${label}
+                          selected
+                        >
+                          ${this.selector.select?.reorder
+                            ? html`
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiDrag}
+                                  data-handle
+                                ></ha-svg-icon>
+                              `
+                            : nothing}
+                          ${options.find((option) => option.value === item)
+                            ?.label || item}
+                        </ha-input-chip>
+                      `;
+                    }
+                  )}
+                </ha-chip-set>
+              </ha-sortable>
+            `
+          : nothing}
 
         <ha-combo-box
           item-value-path="value"
@@ -135,7 +197,7 @@ export class HaSelectSelector extends LitElement {
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
-          .value=${this._filter}
+          .value=${""}
           .items=${optionItems}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
@@ -183,6 +245,7 @@ export class HaSelectSelector extends LitElement {
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
+        clearable
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
@@ -213,7 +276,7 @@ export class HaSelectSelector extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail?.value || ev.target.value;
-    if (this.disabled || value === undefined) {
+    if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
     }
     fireEvent(this, "value-changed", {
@@ -231,19 +294,19 @@ export class HaSelectSelector extends LitElement {
     const value: string = ev.target.value;
     const checked = ev.target.checked;
 
+    const oldValue =
+      !this.value || this.value === "" ? [] : ensureArray(this.value);
+
     if (checked) {
-      if (!this.value) {
-        newValue = [value];
-      } else if (this.value.includes(value)) {
+      if (oldValue.includes(value)) {
         return;
-      } else {
-        newValue = [...this.value, value];
       }
+      newValue = [...oldValue, value];
     } else {
-      if (!this.value?.includes(value)) {
+      if (!oldValue?.includes(value)) {
         return;
       }
-      newValue = (this.value as string[]).filter((v) => v !== value);
+      newValue = oldValue.filter((v) => v !== value);
     }
 
     fireEvent(this, "value-changed", {
@@ -252,7 +315,8 @@ export class HaSelectSelector extends LitElement {
   }
 
   private async _removeItem(ev) {
-    const value: string[] = [...(this.value! as string[])];
+    ev.stopPropagation();
+    const value: string[] = [...ensureArray(this.value!)];
     value.splice(ev.target.idx, 1);
 
     fireEvent(this, "value-changed", {
@@ -277,7 +341,10 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    if (newValue !== undefined && this.value?.includes(newValue)) {
+    const currentValue =
+      !this.value || this.value === "" ? [] : ensureArray(this.value);
+
+    if (newValue !== undefined && currentValue.includes(newValue)) {
       return;
     }
 
@@ -285,9 +352,6 @@ export class HaSelectSelector extends LitElement {
       this._filterChanged();
       this.comboBox.setInputValue("");
     }, 0);
-
-    const currentValue =
-      !this.value || this.value === "" ? [] : (this.value as string[]);
 
     fireEvent(this, "value-changed", {
       value: [...currentValue, newValue],
@@ -316,6 +380,9 @@ export class HaSelectSelector extends LitElement {
   }
 
   static styles = css`
+    :host {
+      position: relative;
+    }
     ha-select,
     mwc-formfield,
     ha-formfield {
@@ -323,6 +390,22 @@ export class HaSelectSelector extends LitElement {
     }
     mwc-list-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+    }
+    ha-chip-set {
+      padding: 8px 0;
+    }
+
+    .sortable-fallback {
+      display: none;
+      opacity: 0;
+    }
+
+    .sortable-ghost {
+      opacity: 0.4;
+    }
+
+    .sortable-drag {
+      cursor: grabbing;
     }
   `;
 }

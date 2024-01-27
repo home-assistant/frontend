@@ -1,3 +1,5 @@
+import { AutomationConfig } from "../data/automation";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -35,6 +37,10 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
+}
+
+interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
+  type: "thread/import_credentials";
 }
 
 type EMOutgoingMessageWithAnswer = {
@@ -95,19 +101,29 @@ interface EMOutgoingMessageSidebarShow extends EMMessage {
   type: "sidebar/show";
 }
 
+interface EMOutgoingMessageAssistShow extends EMMessage {
+  type: "assist/show";
+  payload?: {
+    pipeline_id: "preferred" | "last_used" | string;
+    start_listening: boolean;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageAppConfiguration
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageAssistShow
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
   | EMOutgoingMessageThemeUpdate
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMOutgoingMessageMatterCommission;
+  | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageImportThreadCredentials;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -121,9 +137,33 @@ interface EMIncomingMessageShowNotifications {
   command: "notifications/show";
 }
 
+interface EMIncomingMessageToggleSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/toggle";
+}
+
+interface EMIncomingMessageShowSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/show";
+}
+
+interface EMIncomingMessageShowAutomationEditor {
+  id: number;
+  type: "command";
+  command: "automation/editor/show";
+  payload?: {
+    config?: Partial<AutomationConfig>;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
-  | EMIncomingMessageShowNotifications;
+  | EMIncomingMessageShowNotifications
+  | EMIncomingMessageToggleSidebar
+  | EMIncomingMessageShowSidebar
+  | EMIncomingMessageShowAutomationEditor;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -138,6 +178,8 @@ export interface ExternalConfig {
   canWriteTag: boolean;
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
+  canImportThreadCredentials: boolean;
+  hasAssist: boolean;
 }
 
 export class ExternalMessaging {

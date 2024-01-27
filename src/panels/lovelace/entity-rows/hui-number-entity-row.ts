@@ -1,22 +1,21 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
 import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
@@ -49,6 +48,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     this._resizeObserver?.disconnect();
   }
 
@@ -89,24 +89,17 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
+                  labeled
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
                   .value=${Number(stateObj.state)}
-                  pin
                   @change=${this._selectedValueChanged}
-                  ignore-bar-touch
                 ></ha-slider>
                 <span class="state">
-                  ${computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.entities,
-                    stateObj.state
-                  )}
+                  ${this.hass.formatEntityState(stateObj)}
                 </span>
               </div>
             `
@@ -175,7 +168,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

@@ -1,12 +1,12 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
@@ -39,24 +39,24 @@ import { fileDownload } from "../../../util/file_download";
 class HaConfigBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _backupData?: BackupData;
 
   private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => ({
+    (narrow, _language): DataTableColumnContainer<BackupContent> => ({
       name: {
         title: this.hass.localize("ui.panel.config.backup.name"),
         main: true,
         sortable: true,
         filterable: true,
         grows: true,
-        template: (entry: string, backup: BackupContent) =>
-          html`${entry}
+        template: (backup) =>
+          html`${backup.name}
             <div class="secondary">${backup.path}</div>`,
       },
       size: {
@@ -65,7 +65,7 @@ class HaConfigBackup extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
+        template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
       },
       date: {
         title: this.hass.localize("ui.panel.config.backup.created"),
@@ -74,15 +74,15 @@ class HaConfigBackup extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: string) =>
-          relativeTime(new Date(entry), this.hass.locale),
+        template: (backup) =>
+          relativeTime(new Date(backup.date), this.hass.locale),
       },
 
       actions: {
         title: "",
         width: "15%",
         type: "overflow-menu",
-        template: (_: string, backup: BackupContent) =>
+        template: (backup) =>
           html`<ha-icon-overflow-menu
             .hass=${this.hass}
             .narrow=${this.narrow}
@@ -128,6 +128,7 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
+        hasFab
         .tabs=${[
           {
             translationKey: "ui.panel.config.backup.caption",
@@ -157,7 +158,7 @@ class HaConfigBackup extends LitElement {
           ${this._backupData.backing_up
             ? html`<ha-circular-progress
                 slot="icon"
-                active
+                indeterminate
               ></ha-circular-progress>`
             : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>

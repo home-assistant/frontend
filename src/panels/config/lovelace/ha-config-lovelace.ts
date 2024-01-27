@@ -1,3 +1,4 @@
+import { mdiViewDashboard } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import {
   HassRouterPage,
@@ -10,7 +11,7 @@ export const lovelaceTabs = [
     component: "lovelace",
     path: "/config/lovelace/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
-    icon: "hass:view-dashboard",
+    iconPath: mdiViewDashboard,
   },
 ];
 
@@ -18,9 +19,9 @@ export const lovelaceTabs = [
 class HaConfigLovelace extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboards",

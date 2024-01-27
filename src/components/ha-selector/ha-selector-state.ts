@@ -7,9 +7,9 @@ import "../entity/ha-entity-state-picker";
 
 @customElement("ha-selector-state")
 export class HaSelectorState extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: StateSelector;
+  @property({ attribute: false }) public selector!: StateSelector;
 
   @property() public value?: any;
 
@@ -21,7 +21,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: {
+  @property({ attribute: false }) public context?: {
     filter_attribute?: string;
     filter_entity?: string;
   };
@@ -34,6 +34,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         this.context?.filter_entity}
         .attribute=${this.selector.state?.attribute ||
         this.context?.filter_attribute}
+        .extraOptions=${this.selector.state?.extra_options}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

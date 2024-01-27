@@ -1,25 +1,13 @@
-import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  addDays,
-  differenceInHours,
-  endOfToday,
-  endOfWeek,
-  endOfYesterday,
-  startOfToday,
-  startOfWeek,
-  startOfYesterday,
-} from "date-fns/esm";
+import { mdiDownload, mdiFilterRemove, mdiRefresh } from "@mdi/js";
+import { differenceInHours } from "date-fns/esm";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
-import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
-import { LocalStorage } from "../../common/decorators/local-storage";
+import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -33,10 +21,11 @@ import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
+import "../../components/ha-top-app-bar-fixed";
 import {
   AreaDeviceLookup,
   AreaEntityLookup,
@@ -50,19 +39,26 @@ import {
 } from "../../data/device_registry";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
-  computeHistory,
   HistoryResult,
+  computeHistory,
   subscribeHistory,
+  HistoryStates,
+  EntityHistoryState,
+  LineChartUnit,
+  LineChartEntity,
+  computeGroupKey,
 } from "../../data/history";
-import "../../layouts/ha-app-layout";
+import { fetchStatistics, Statistics } from "../../data/recorder";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { fileDownload } from "../../util/file_download";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
 
-  @property({ reflect: true, type: Boolean }) narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow = false;
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
@@ -70,14 +66,20 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _endDate: Date;
 
-  @LocalStorage("historyPickedValue", true, false)
+  @storage({
+    key: "historyPickedValue",
+    state: true,
+    subscribe: false,
+  })
   private _targetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
 
   @state() private _stateHistory?: HistoryResult;
 
-  @state() private _ranges?: DateRangePickerRanges;
+  private _mungedStateHistory?: HistoryResult;
+
+  @state() private _statisticsHistory?: HistoryResult;
 
   @state() private _deviceEntityLookup?: DeviceEntityLookup;
 
@@ -137,40 +139,47 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <ha-app-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            ${this._showBack
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._goBack}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `}
-            <div main-title>${this.hass.localize("panel.history")}</div>
-            ${this._targetPickerValue
-              ? html`
-                  <ha-icon-button
-                    @click=${this._removeAll}
-                    .disabled=${this._isLoading}
-                    .path=${mdiFilterRemove}
-                    .label=${this.hass.localize("ui.panel.history.remove_all")}
-                  ></ha-icon-button>
-                `
-              : ""}
-            <ha-icon-button
-              @click=${this._getHistory}
-              .disabled=${this._isLoading || !this._targetPickerValue}
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.common.refresh")}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        ${this._showBack
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                @click=${this._goBack}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`
+              <ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `}
+        <div slot="title">${this.hass.localize("panel.history")}</div>
+        ${this._targetPickerValue
+          ? html`
+              <ha-icon-button
+                slot="actionItems"
+                @click=${this._removeAll}
+                .disabled=${this._isLoading}
+                .path=${mdiFilterRemove}
+                .label=${this.hass.localize("ui.panel.history.remove_all")}
+              ></ha-icon-button>
+            `
+          : ""}
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._getHistory}
+          .disabled=${this._isLoading || !this._targetPickerValue}
+          .path=${mdiRefresh}
+          .label=${this.hass.localize("ui.common.refresh")}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._downloadHistory}
+          .disabled=${this._isLoading || !this._targetPickerValue}
+          .path=${mdiDownload}
+          .label=${this.hass.localize("ui.panel.history.download_data")}
+        ></ha-icon-button>
 
         <div class="flex content">
           <div class="filters">
@@ -179,7 +188,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
-              .ranges=${this._ranges}
+              extendedPresets
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
@@ -192,52 +201,103 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           </div>
           ${this._isLoading
             ? html`<div class="progress-wrapper">
-                <ha-circular-progress
-                  active
-                  alt=${this.hass.localize("ui.common.loading")}
-                ></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : !this._targetPickerValue
-            ? html`<div class="start-search">
-                ${this.hass.localize("ui.panel.history.start_search")}
-              </div>`
-            : html`
-                <state-history-charts
-                  .hass=${this.hass}
-                  .historyData=${this._stateHistory}
-                  .endTime=${this._endDate}
-                >
-                </state-history-charts>
-              `}
+              ? html`<div class="start-search">
+                  ${this.hass.localize("ui.panel.history.start_search")}
+                </div>`
+              : html`
+                  <state-history-charts
+                    .hass=${this.hass}
+                    .historyData=${this._mungedStateHistory}
+                    .startTime=${this._startDate}
+                    .endTime=${this._endDate}
+                  >
+                  </state-history-charts>
+                `}
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
+  }
+
+  private mergeHistoryResults(
+    ltsResult: HistoryResult,
+    historyResult: HistoryResult
+  ): HistoryResult {
+    const result: HistoryResult = { ...historyResult, line: [] };
+
+    const keys = new Set(
+      historyResult.line
+        .map((i) => computeGroupKey(i.unit, i.device_class, true))
+        .concat(
+          ltsResult.line.map((i) =>
+            computeGroupKey(i.unit, i.device_class, true)
+          )
+        )
+    );
+    keys.forEach((key) => {
+      const historyItem = historyResult.line.find(
+        (i) => computeGroupKey(i.unit, i.device_class, true) === key
+      );
+      const ltsItem = ltsResult.line.find(
+        (i) => computeGroupKey(i.unit, i.device_class, true) === key
+      );
+      if (historyItem && ltsItem) {
+        const newLineItem: LineChartUnit = { ...historyItem, data: [] };
+        const entities = new Set(
+          historyItem.data
+            .map((d) => d.entity_id)
+            .concat(ltsItem.data.map((d) => d.entity_id))
+        );
+        entities.forEach((entity) => {
+          const historyDataItem = historyItem.data.find(
+            (d) => d.entity_id === entity
+          );
+          const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
+          if (historyDataItem && ltsDataItem) {
+            const newDataItem: LineChartEntity = {
+              ...historyDataItem,
+              statistics: ltsDataItem.statistics,
+            };
+            newLineItem.data.push(newDataItem);
+          } else {
+            newLineItem.data.push(historyDataItem || ltsDataItem!);
+          }
+        });
+        result.line.push(newLineItem);
+      } else {
+        // Only one result has data for this item, so just push it directly instead of merging.
+        result.line.push(historyItem || ltsItem!);
+      }
+    });
+    return result;
   }
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
+    if (
+      changedProps.has("_stateHistory") ||
+      changedProps.has("_statisticsHistory") ||
+      changedProps.has("_startDate") ||
+      changedProps.has("_endDate") ||
+      changedProps.has("_targetPickerValue")
+    ) {
+      if (this._statisticsHistory && this._stateHistory) {
+        this._mungedStateHistory = this.mergeHistoryResults(
+          this._statisticsHistory,
+          this._stateHistory
+        );
+      } else {
+        this._mungedStateHistory =
+          this._stateHistory || this._statisticsHistory;
+      }
+    }
+
     if (this.hasUpdated) {
       return;
     }
-
-    const today = new Date();
-    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
-    const weekStart = startOfWeek(today, { weekStartsOn });
-    const weekEnd = endOfWeek(today, { weekStartsOn });
-
-    this._ranges = {
-      [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-        startOfToday(),
-        endOfToday(),
-      ],
-      [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
-        [startOfYesterday(), endOfYesterday()],
-      [this.hass.localize("ui.components.date-range-picker.ranges.this_week")]:
-        [weekStart, weekEnd],
-      [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
-        [addDays(weekStart, -7), addDays(weekEnd, -7)],
-    };
 
     const searchParams = extractSearchParamsObject();
     const entityIds = searchParams.entity_id;
@@ -292,6 +352,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             changedProps.has("_areaDeviceLookup"))))
     ) {
       this._getHistory();
+      this._getStats();
     }
 
     if (!changedProps.has("hass") && !changedProps.has("_entities")) {
@@ -307,6 +368,68 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _removeAll() {
     this._targetPickerValue = undefined;
     this._updatePath();
+  }
+
+  private async _getStats() {
+    const entityIds = this._getEntityIds();
+    if (!entityIds) {
+      return;
+    }
+    this._getStatistics(entityIds);
+  }
+
+  private async _getStatistics(statisticIds: string[]): Promise<void> {
+    try {
+      const statistics = await fetchStatistics(
+        this.hass!,
+        this._startDate,
+        this._endDate,
+        statisticIds,
+        "hour",
+        undefined,
+        ["mean", "state"]
+      );
+
+      // Maintain the statistic id ordering
+      const orderedStatistics: Statistics = {};
+      statisticIds.forEach((id) => {
+        if (id in statistics) {
+          orderedStatistics[id] = statistics[id];
+        }
+      });
+
+      // Convert statistics to HistoryResult format
+      const statsHistoryStates: HistoryStates = {};
+      Object.entries(orderedStatistics).forEach(([key, value]) => {
+        const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
+          s: e.mean != null ? e.mean.toString() : e.state!.toString(),
+          lc: e.start / 1000,
+          a: {},
+          lu: e.start / 1000,
+        }));
+        statsHistoryStates[key] = entityHistoryStates;
+      });
+
+      const { numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass);
+
+      this._statisticsHistory = computeHistory(
+        this.hass,
+        statsHistoryStates,
+        this.hass.localize,
+        sensorNumericDeviceClasses,
+        true
+      );
+      // remap states array to statistics array
+      (this._statisticsHistory?.line || []).forEach((item) => {
+        item.data.forEach((data) => {
+          data.statistics = data.states;
+          data.states = [];
+        });
+      });
+    } catch (err) {
+      this._statisticsHistory = undefined;
+    }
   }
 
   private async _getHistory() {
@@ -334,6 +457,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
     const now = new Date();
 
+    const { numeric_device_classes: sensorNumericDeviceClasses } =
+      await getSensorNumericDeviceClasses(this.hass);
+
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
@@ -341,7 +467,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         this._stateHistory = computeHistory(
           this.hass,
           history,
-          this.hass.localize
+          this.hass.localize,
+          sensorNumericDeviceClasses,
+          true
         );
       },
       this._startDate,
@@ -361,15 +489,15 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     clearInterval(this._interval);
     const now = new Date();
     const end = this._endDate > now ? now : this._endDate;
-    const timespan = differenceInHours(this._startDate, end);
+    const timespan = differenceInHours(end, this._startDate);
     this._interval = window.setInterval(
       () => this._stateHistoryCharts?.requestUpdate(),
       // if timespan smaller than 1 hour, update every 10 seconds, smaller than 5 hours, redraw every minute, otherwise every 5 minutes
       timespan < 2
         ? 10000
         : timespan < 10
-        ? 60 * 1000
-        : MIN_TIME_BETWEEN_UPDATES
+          ? 60 * 1000
+          : MIN_TIME_BETWEEN_UPDATES
     );
   }
 
@@ -510,28 +638,43 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
+  private _downloadHistory() {
+    const csv: string[] = ["entity_id,state,last_changed\n"];
+    const formatDate = (number) => new Date(number).toISOString();
+
+    for (const line of this._mungedStateHistory!.line) {
+      for (const entity of line.data) {
+        const entityId = entity.entity_id;
+        for (const data of [entity.states, entity.statistics]) {
+          if (!data) {
+            continue;
+          }
+          for (const s of data) {
+            csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+          }
+        }
+      }
+    }
+    for (const timeline of this._mungedStateHistory!.timeline) {
+      const entityId = timeline.entity_id;
+      for (const s of timeline.data) {
+        csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+      }
+    }
+    const blob = new Blob(csv, {
+      type: "text/csv",
+    });
+    const url = window.URL.createObjectURL(blob);
+    fileDownload(url, "history.csv");
+  }
+
   static get styles() {
     return [
       haStyle,
       css`
         .content {
           padding: 0 16px 16px;
-        }
-
-        state-history-charts {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) state-history-charts {
-          height: calc(100vh - 198px);
-        }
-
-        .progress-wrapper {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) .progress-wrapper {
-          height: calc(100vh - 198px);
+          padding-bottom: max(env(safe-area-inset-bottom), 16px);
         }
 
         :host([virtualize]) {
@@ -540,6 +683,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         .progress-wrapper {
           position: relative;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          padding: 16px;
         }
 
         .filters {
@@ -565,13 +712,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             margin-inline-end: 0;
             width: 100%;
           }
-        }
-
-        ha-circular-progress {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
         }
 
         .start-search {

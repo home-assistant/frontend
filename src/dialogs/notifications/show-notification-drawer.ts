@@ -9,7 +9,7 @@ export const showNotificationDrawer = (
   dialogParams: NotificationDrawerParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "notification-drawer" as any, // Not in TS yet
+    dialogTag: "notification-drawer",
     dialogImport: () => import("./notification-drawer"),
     dialogParams,
   });

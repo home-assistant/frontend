@@ -34,8 +34,8 @@ class ConfigAnalytics extends LitElement {
     const error = this._error
       ? this._error
       : !isComponentLoaded(this.hass, "analytics")
-      ? "Analytics integration not loaded"
-      : undefined;
+        ? "Analytics integration not loaded"
+        : undefined;
 
     return html`
       <ha-card outlined>
@@ -45,7 +45,7 @@ class ConfigAnalytics extends LitElement {
           <ha-analytics
             translation_key_panel="config"
             @analytics-preferences-changed=${this._preferencesChanged}
-            .hass=${this.hass}
+            .localize=${this.hass.localize}
             .analytics=${this._analyticsDetails}
           ></ha-analytics>
         </div>

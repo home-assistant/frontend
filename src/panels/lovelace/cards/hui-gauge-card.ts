@@ -24,6 +24,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
 
+export const DEFAULT_MIN = 0;
+export const DEFAULT_MAX = 100;
+
 export const severityMap = {
   red: "var(--error-color)",
   green: "var(--success-color)",
@@ -76,7 +79,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid entity");
     }
 
-    this._config = { min: 0, max: 100, ...config };
+    this._config = { min: DEFAULT_MIN, max: DEFAULT_MAX, ...config };
   }
 
   protected render() {
@@ -101,8 +104,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <hui-warning
           >${this.hass.localize(
             "ui.panel.lovelace.warning.entity_unavailable",
-            "entity",
-            this._config.entity
+            { entity: this._config.entity }
           )}</hui-warning
         >
       `;
@@ -113,8 +115,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <hui-warning
           >${this.hass.localize(
             "ui.panel.lovelace.warning.entity_non_numeric",
-            "entity",
-            this._config.entity
+            { entity: this._config.entity }
           )}</hui-warning
         >
       `;

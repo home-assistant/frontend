@@ -21,9 +21,8 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
@@ -33,7 +32,6 @@ const includeDomains = ["device_tracker"];
 
 const cropOptions: CropOptions = {
   round: true,
-  type: "image/jpeg",
   quality: 0.75,
   aspectRatio: 1,
 };
@@ -123,12 +121,12 @@ class DialogPersonDetail extends LitElement {
               .value=${this._name}
               @input=${this._nameChanged}
               label=${this.hass!.localize("ui.panel.config.person.detail.name")}
-              error-message=${this.hass!.localize(
+              .validationMessage=${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
-              auto-validate
             ></ha-textfield>
+
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -308,8 +306,7 @@ class DialogPersonDetail extends LitElement {
         !(await showConfirmationDialog(this, {
           text: this.hass!.localize(
             "ui.panel.config.person.detail.confirm_delete_user",
-            "name",
-            this._name
+            { name: this._name }
           ),
           confirmText: this.hass!.localize(
             "ui.panel.config.person.detail.delete"
@@ -326,12 +323,12 @@ class DialogPersonDetail extends LitElement {
     }
   }
 
-  private _deviceTrackersChanged(ev: PolymerChangedEvent<string[]>) {
+  private _deviceTrackersChanged(ev: ValueChangedEvent<string[]>) {
     this._error = undefined;
     this._deviceTrackers = ev.detail.value;
   }
 
-  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
   }
@@ -425,7 +422,8 @@ class DialogPersonDetail extends LitElement {
           display: block;
         }
         ha-picture-upload {
-          margin-top: 16px;
+          margin-bottom: 16px;
+          --file-upload-image-border-radius: 50%;
         }
         ha-formfield {
           display: block;

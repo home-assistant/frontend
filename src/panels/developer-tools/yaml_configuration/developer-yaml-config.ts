@@ -1,11 +1,19 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import { checkCoreConfig } from "../../../data/core";
+import { CheckConfigResult, checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../resources/styles";
@@ -20,21 +28,24 @@ type ReloadableDomain = Exclude<
 export class DeveloperYamlConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _validating = false;
 
   @state() private _reloadableDomains: ReloadableDomain[] = [];
 
-  @state() private _isValid: boolean | null = null;
+  @state() private _validateResult?: CheckConfigResult;
 
-  private _validateLog = "";
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._validateResult = undefined;
+  }
 
   protected updated(changedProperties) {
     const oldHass = changedProperties.get("hass");
@@ -62,34 +73,57 @@ export class DeveloperYamlConfig extends LitElement {
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.yaml.section.validation.introduction"
             )}
-            ${!this._validateLog
-              ? html`
-                  <div class="validate-container layout vertical center-center">
-                    ${!this._validating
-                      ? html`
-                          ${this._isValid
-                            ? html`<div class="validate-result" id="result">
-                                ${this.hass.localize(
-                                  "ui.panel.developer-tools.tabs.yaml.section.validation.valid"
-                                )}
-                              </div>`
-                            : ""}
-                        `
-                      : html`
-                          <ha-circular-progress active></ha-circular-progress>
-                        `}
-                  </div>
-                `
+            ${!this._validateResult
+              ? this._validating
+                ? html`<div
+                    class="validate-container layout vertical center-center"
+                  >
+                    <ha-circular-progress indeterminate></ha-circular-progress>
+                  </div> `
+                : nothing
               : html`
-                  <div class="config-invalid">
-                    <span class="text">
-                      ${this.hass.localize(
-                        "ui.panel.developer-tools.tabs.yaml.section.validation.invalid"
-                      )}
-                    </span>
-                  </div>
-                  <div id="configLog" class="validate-log">
-                    ${this._validateLog}
+                    <div class="validate-result ${
+                      this._validateResult.result === "invalid" ? "invalid" : ""
+                    }">
+                        ${
+                          this._validateResult.result === "valid"
+                            ? this.hass.localize(
+                                "ui.panel.developer-tools.tabs.yaml.section.validation.valid"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.developer-tools.tabs.yaml.section.validation.invalid"
+                              )
+                        }
+                    </div>
+
+                    ${
+                      this._validateResult.errors
+                        ? html`<ha-alert
+                            alert-type="error"
+                            .title=${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
+                            )}
+                          >
+                            <span class="validate-log"
+                              >${this._validateResult.errors}</span
+                            >
+                          </ha-alert>`
+                        : ""
+                    }
+                    ${
+                      this._validateResult.warnings
+                        ? html`<ha-alert
+                            alert-type="warning"
+                            .title=${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
+                            )}
+                          >
+                            <span class="validate-log"
+                              >${this._validateResult.warnings}</span
+                            >
+                          </ha-alert>`
+                        : ""
+                    }
                   </div>
                 `}
           </div>
@@ -102,7 +136,7 @@ export class DeveloperYamlConfig extends LitElement {
             <mwc-button
               class="warning"
               @click=${this._restart}
-              .disabled=${!!this._validateLog}
+              .disabled=${this._validateResult?.result === "invalid"}
             >
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
@@ -142,24 +176,22 @@ export class DeveloperYamlConfig extends LitElement {
             </ha-call-service-button>
           </div>
           ${this._reloadableDomains.map(
-            (domain) =>
-              html`
-                <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    .domain=${domain}
-                    service="reload"
-                    >${this.hass.localize(
-                      `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
-                    ) ||
-                    this.hass.localize(
-                      "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                      "domain",
-                      domainToName(this.hass.localize, domain)
-                    )}
-                  </ha-call-service-button>
-                </div>
-              `
+            (domain) => html`
+              <div class="card-actions">
+                <ha-call-service-button
+                  .hass=${this.hass}
+                  .domain=${domain}
+                  service="reload"
+                  >${this.hass.localize(
+                    `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
+                  ) ||
+                  this.hass.localize(
+                    "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
+                    { domain: domainToName(this.hass.localize, domain) }
+                  )}
+                </ha-call-service-button>
+              </div>
+            `
           )}
         </ha-card>
       </div>
@@ -168,19 +200,17 @@ export class DeveloperYamlConfig extends LitElement {
 
   private async _validateConfig() {
     this._validating = true;
-    this._validateLog = "";
-    this._isValid = null;
+    this._validateResult = undefined;
 
-    const configCheck = await checkCoreConfig(this.hass);
+    this._validateResult = await checkCoreConfig(this.hass);
     this._validating = false;
-    this._isValid = configCheck.result === "valid";
-
-    if (configCheck.errors) {
-      this._validateLog = configCheck.errors;
-    }
   }
 
-  private _restart() {
+  private async _restart() {
+    await this._validateConfig();
+    if (this._validateResult?.result === "invalid") {
+      return;
+    }
     showRestartDialog(this);
   }
 
@@ -195,20 +225,16 @@ export class DeveloperYamlConfig extends LitElement {
         .validate-result {
           color: var(--success-color);
           font-weight: 500;
-        }
-
-        .config-invalid {
           margin: 1em 0;
           text-align: center;
         }
 
-        .config-invalid .text {
+        .validate-result.invalid {
           color: var(--error-color);
-          font-weight: 500;
         }
 
         .validate-log {
-          white-space: pre-line;
+          white-space: pre-wrap;
           direction: ltr;
         }
 

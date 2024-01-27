@@ -29,6 +29,7 @@ export interface BlueprintInput {
 export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
+  exists?: boolean;
   blueprint: Blueprint;
   validation_errors: string[] | null;
 }
@@ -44,7 +45,8 @@ export const saveBlueprint = (
   domain: BlueprintDomain,
   path: string,
   yaml: string,
-  source_url?: string
+  source_url?: string,
+  allow_override?: boolean
 ) =>
   hass.callWS({
     type: "blueprint/save",
@@ -52,6 +54,7 @@ export const saveBlueprint = (
     path,
     yaml,
     source_url,
+    allow_override,
   });
 
 export const deleteBlueprint = (

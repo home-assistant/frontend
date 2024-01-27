@@ -1,40 +1,44 @@
 import "@material/mwc-button";
 import { dump, load } from "js-yaml";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
+import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-alert";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
-import type {
-  LovelaceCardConfig,
-  LovelaceConfig,
-} from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import type { LovelaceGenericElementEditor } from "../types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
+import type {
+  LovelaceConfigForm,
+  LovelaceGenericElementEditor,
+} from "../types";
+import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
 
 export interface ConfigChangedEvent {
   config:
     | LovelaceCardConfig
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceTileFeatureConfig;
+    | LovelaceCardFeatureConfig
+    | LovelaceStrategyConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -53,7 +57,7 @@ export interface UIConfigChangedEvent extends Event {
       | LovelaceCardConfig
       | LovelaceRowConfig
       | LovelaceHeaderFooterConfig
-      | LovelaceTileFeatureConfig;
+      | LovelaceCardFeatureConfig;
   };
 }
 
@@ -127,14 +131,16 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       }
     }
 
-    fireEvent(this, "config-changed", {
-      config: this.value! as any,
-      error: this._errors?.join(", "),
-      guiModeAvailable: !(
-        this.hasWarning ||
-        this.hasError ||
-        this._guiSupported === false
-      ),
+    this.updateComplete.then(() => {
+      fireEvent(this, "config-changed", {
+        config: this.value! as any,
+        error: this._errors?.join(", "),
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
     });
   }
 
@@ -152,13 +158,15 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
   public set GUImode(guiMode: boolean) {
     this._guiMode = guiMode;
-    fireEvent(this as HTMLElement, "GUImode-changed", {
-      guiMode,
-      guiModeAvailable: !(
-        this.hasWarning ||
-        this.hasError ||
-        this._guiSupported === false
-      ),
+    this.updateComplete.then(() => {
+      fireEvent(this as HTMLElement, "GUImode-changed", {
+        guiMode,
+        guiModeAvailable: !(
+          this.hasWarning ||
+          this.hasError ||
+          this._guiSupported === false
+        ),
+      });
     });
   }
 
@@ -182,6 +190,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     return undefined;
   }
 
+  protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
+    return undefined;
+  }
+
   protected get configElementType(): string | undefined {
     return this.value ? (this.value as any).type : undefined;
   }
@@ -195,8 +207,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                 ${this._loading
                   ? html`
                       <ha-circular-progress
-                        active
-                        alt="Loading"
+                        indeterminate
                         class="center margin-bot"
                       ></ha-circular-progress>
                     `
@@ -222,11 +233,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
         ${this._guiSupported === false && this.configElementType
           ? html`
               <div class="info">
-                ${this.hass.localize(
-                  "ui.errors.config.editor_not_available",
-                  "type",
-                  this.configElementType
-                )}
+                ${this.hass.localize("ui.errors.config.editor_not_available", {
+                  type: this.configElementType,
+                })}
               </div>
             `
           : ""}
@@ -327,6 +336,25 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
         this._loading = true;
         configElement = await this.getConfigElement();
+
+        if (!configElement) {
+          const form = await this.getConfigForm();
+          if (form) {
+            await import("./config-elements/hui-form-editor");
+            configElement = document.createElement("hui-form-editor");
+            const { schema, assertConfig, computeLabel, computeHelper } = form;
+            (configElement as HuiFormEditor).schema = schema;
+            if (computeLabel) {
+              (configElement as HuiFormEditor).computeLabel = computeLabel;
+            }
+            if (computeHelper) {
+              (configElement as HuiFormEditor).computeHelper = computeHelper;
+            }
+            if (assertConfig) {
+              (configElement as HuiFormEditor).assertConfig = assertConfig;
+            }
+          }
+        }
 
         if (configElement) {
           configElement.hass = this.hass;

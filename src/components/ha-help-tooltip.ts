@@ -1,5 +1,5 @@
 import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
@@ -13,11 +13,11 @@ export class HaHelpTooltip extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-      <paper-tooltip
+      <simple-tooltip
         offset="4"
         .position=${this.position}
         .fitToVisibleBounds=${true}
-        >${this.label}</paper-tooltip
+        >${this.label}</simple-tooltip
       >
     `;
   }

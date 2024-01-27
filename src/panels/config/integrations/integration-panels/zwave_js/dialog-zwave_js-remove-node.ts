@@ -71,7 +71,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
                 <div class="status">
                   <p>
                     <b
@@ -125,8 +125,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.remove_node.exclusion_finished",
-                      "id",
-                      this._node!.node_id
+                      { id: this._node!.node_id }
                     )}
                   </p>
                 </div>

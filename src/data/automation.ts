@@ -99,12 +99,17 @@ export interface HassTrigger extends BaseTrigger {
 
 export interface NumericStateTrigger extends BaseTrigger {
   platform: "numeric_state";
-  entity_id: string;
+  entity_id: string | string[];
   attribute?: string;
   above?: number;
   below?: number;
   value_template?: string;
   for?: string | number | ForDict;
+}
+
+export interface ConversationTrigger extends BaseTrigger {
+  platform: "conversation";
+  command: string | string[];
 }
 
 export interface SunTrigger extends BaseTrigger {
@@ -123,6 +128,14 @@ export interface TimePatternTrigger extends BaseTrigger {
 export interface WebhookTrigger extends BaseTrigger {
   platform: "webhook";
   webhook_id: string;
+  allowed_methods?: string[];
+  local_only?: boolean;
+}
+
+export interface PersistentNotificationTrigger extends BaseTrigger {
+  platform: "persistent_notification";
+  notification_id?: string;
+  update_type?: string[];
 }
 
 export interface ZoneTrigger extends BaseTrigger {
@@ -170,8 +183,10 @@ export type Trigger =
   | HassTrigger
   | NumericStateTrigger
   | SunTrigger
+  | ConversationTrigger
   | TimePatternTrigger
   | WebhookTrigger
+  | PersistentNotificationTrigger
   | ZoneTrigger
   | TagTrigger
   | TimeTrigger
@@ -197,6 +212,7 @@ export interface StateCondition extends BaseCondition {
   attribute?: string;
   state: string | number | string[];
   for?: string | number | ForDict;
+  match?: "all" | "any";
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -222,11 +238,13 @@ export interface ZoneCondition extends BaseCondition {
   zone: string;
 }
 
+type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
+
 export interface TimeCondition extends BaseCondition {
   condition: "time";
   after?: string;
   before?: string;
-  weekday?: string | string[];
+  weekday?: Weekday | Weekday[];
 }
 
 export interface TemplateCondition extends BaseCondition {
@@ -255,6 +273,10 @@ export interface ShorthandOrCondition extends ShorthandBaseCondition {
 
 export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
+}
+
+export interface AutomationElementGroup {
+  [key: string]: { icon?: string; members?: AutomationElementGroup };
 }
 
 export type Condition =
@@ -310,7 +332,7 @@ export const triggerAutomationActions = (
 export const deleteAutomation = (hass: HomeAssistant, id: string) =>
   hass.callApi("DELETE", `config/automation/config/${id}`);
 
-let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
+let initialAutomationEditorData: Partial<AutomationConfig> | undefined;
 
 export const fetchAutomationFileConfig = (hass: HomeAssistant, id: string) =>
   hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
@@ -331,7 +353,7 @@ export const saveAutomationConfig = (
 ) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
 
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
-  inititialAutomationEditorData = data;
+  initialAutomationEditorData = data;
   navigate("/config/automation/edit/new");
 };
 
@@ -344,8 +366,8 @@ export const duplicateAutomation = (config: AutomationConfig) => {
 };
 
 export const getAutomationEditorInitData = () => {
-  const data = inititialAutomationEditorData;
-  inititialAutomationEditorData = undefined;
+  const data = initialAutomationEditorData;
+  initialAutomationEditorData = undefined;
   return data;
 };
 
@@ -376,3 +398,9 @@ export const testCondition = (
     condition,
     variables,
   });
+
+export type AutomationClipboard = {
+  trigger?: Trigger;
+  condition?: Condition;
+  action?: Action;
+};

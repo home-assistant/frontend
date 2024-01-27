@@ -35,9 +35,9 @@ const SHOW_ALL_ENTRIES_LIMIT = 6;
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormMultiSelectSchema;
+  @property({ attribute: false }) public schema!: HaFormMultiSelectSchema;
 
-  @property() public data!: HaFormMultiSelectData;
+  @property({ attribute: false }) public data!: HaFormMultiSelectData;
 
   @property() public label!: string;
 
@@ -82,7 +82,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       <ha-button-menu
         .disabled=${this.disabled}
         fixed
-        corner="BOTTOM_START"
         @opened=${this._handleOpen}
         @closed=${this._handleClose}
         multi
@@ -92,7 +91,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           slot="trigger"
           .label=${this.label}
           .value=${data
-            .map((value) => this.schema.options![value] || value)
+            .map(
+              (value) =>
+                optionLabel(options.find((v) => optionValue(v) === value)) ||
+                value
+            )
             .join(", ")}
           .disabled=${this.disabled}
           tabindex="-1"

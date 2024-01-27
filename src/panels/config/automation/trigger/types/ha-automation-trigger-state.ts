@@ -5,6 +5,7 @@ import {
   assert,
   assign,
   literal,
+  nullable,
   number,
   object,
   optional,
@@ -12,6 +13,7 @@ import {
   union,
 } from "superstruct";
 import memoizeOne from "memoize-one";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
@@ -30,11 +32,13 @@ const stateTriggerStruct = assign(
     platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
-    from: optional(string()),
-    to: optional(string()),
+    from: optional(nullable(string())),
+    to: optional(nullable(string())),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
+
+const ANY_STATE_VALUE = "__ANY_STATE_IGNORE_ATTRIBUTES__";
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
@@ -49,7 +53,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (entityId, attribute) =>
+    (localize: LocalizeFunc, entityId, attribute) =>
       [
         {
           name: "entity_id",
@@ -72,6 +76,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 "effect_list",
                 "entity_id",
                 "entity_picture",
+                "event_types",
                 "fan_modes",
                 "fan_speed_list",
                 "friendly_name",
@@ -117,6 +122,16 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           name: "from",
           selector: {
             state: {
+              extra_options: (attribute
+                ? []
+                : [
+                    {
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                      ),
+                      value: ANY_STATE_VALUE,
+                    },
+                  ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
@@ -126,6 +141,16 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           name: "to",
           selector: {
             state: {
+              extra_options: (attribute
+                ? []
+                : [
+                    {
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                      ),
+                      value: ANY_STATE_VALUE,
+                    },
+                  ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
@@ -172,7 +197,17 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
-    const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
+    if (!data.attribute && data.to === null) {
+      data.to = ANY_STATE_VALUE;
+    }
+    if (!data.attribute && data.from === null) {
+      data.from = ANY_STATE_VALUE;
+    }
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.entity_id,
+      this.trigger.attribute
+    );
 
     return html`
       <ha-form
@@ -189,6 +224,13 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
+
+    if (newTrigger.to === ANY_STATE_VALUE) {
+      newTrigger.to = newTrigger.attribute ? undefined : null;
+    }
+    if (newTrigger.from === ANY_STATE_VALUE) {
+      newTrigger.from = newTrigger.attribute ? undefined : null;
+    }
 
     Object.keys(newTrigger).forEach((key) =>
       newTrigger[key] === undefined || newTrigger[key] === ""

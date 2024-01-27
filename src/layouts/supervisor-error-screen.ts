@@ -11,7 +11,6 @@ import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../common/config/version";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import "../components/ha-card";
-import "../resources/ha-style";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./hass-subpage";

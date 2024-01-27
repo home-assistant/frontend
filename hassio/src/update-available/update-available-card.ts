@@ -42,9 +42,6 @@ import { updateCore } from "../../../src/data/supervisor/core";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-subpage";
-import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
@@ -73,8 +70,8 @@ const changelogUrl = (
     return version.includes("dev")
       ? "https://github.com/home-assistant/core/commits/dev"
       : version.includes("b")
-      ? "https://next.home-assistant.io/latest-release-notes/"
-      : "https://www.home-assistant.io/latest-release-notes/";
+        ? "https://next.home-assistant.io/latest-release-notes/"
+        : "https://www.home-assistant.io/latest-release-notes/";
   }
   if (entry === "os") {
     return version.includes("dev")
@@ -97,7 +94,7 @@ class UpdateAvailableCard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public addonSlug?: string;
 
@@ -144,44 +141,51 @@ class UpdateAvailableCard extends LitElement {
                 })}
               </p>`
             : !this._updating
-            ? html`
-                ${this._changelogContent
-                  ? html`
-                      <ha-faded>
-                        <ha-markdown .content=${this._changelogContent}>
-                        </ha-markdown>
-                      </ha-faded>
-                    `
-                  : ""}
-                <div class="versions">
-                  <p>
-                    ${this.supervisor.localize("update_available.description", {
+              ? html`
+                  ${this._changelogContent
+                    ? html`
+                        <ha-faded>
+                          <ha-markdown .content=${this._changelogContent}>
+                          </ha-markdown>
+                        </ha-faded>
+                      `
+                    : ""}
+                  <div class="versions">
+                    <p>
+                      ${this.supervisor.localize(
+                        "update_available.description",
+                        {
+                          name: this._name,
+                          version: this._version,
+                          newest_version: this._version_latest,
+                        }
+                      )}
+                    </p>
+                  </div>
+                  ${["core", "addon"].includes(this._updateType)
+                    ? html`
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "update_available.create_backup"
+                          )}
+                        >
+                          <ha-checkbox checked></ha-checkbox>
+                        </ha-formfield>
+                      `
+                    : ""}
+                `
+              : html`<ha-circular-progress
+                    aria-label="Updating"
+                    size="large"
+                    indeterminate
+                  >
+                  </ha-circular-progress>
+                  <p class="progress-text">
+                    ${this.supervisor.localize("update_available.updating", {
                       name: this._name,
-                      version: this._version,
-                      newest_version: this._version_latest,
+                      version: this._version_latest,
                     })}
-                  </p>
-                </div>
-                ${["core", "addon"].includes(this._updateType)
-                  ? html`
-                      <ha-formfield
-                        .label=${this.supervisor.localize(
-                          "update_available.create_backup"
-                        )}
-                      >
-                        <ha-checkbox checked></ha-checkbox>
-                      </ha-formfield>
-                    `
-                  : ""}
-              `
-            : html`<ha-circular-progress alt="Updating" size="large" active>
-                </ha-circular-progress>
-                <p class="progress-text">
-                  ${this.supervisor.localize("update_available.updating", {
-                    name: this._name,
-                    version: this._version_latest,
-                  })}
-                </p>`}
+                  </p>`}
         </div>
         ${this._version !== this._version_latest && !this._updating
           ? html`

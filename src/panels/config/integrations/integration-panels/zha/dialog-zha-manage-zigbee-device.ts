@@ -6,16 +6,16 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-header-bar";
+import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-header";
 import {
   fetchBindableDevices,
   fetchGroups,
@@ -99,32 +99,22 @@ class DialogZHAManageZigbeeDevice extends LitElement {
         open
         hideActions
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.zha_manage_device.heading")
-        )}
+        .heading=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
       >
-        <div slot="heading" class="heading">
-          <ha-header-bar>
-            <ha-icon-button
-              slot="navigationIcon"
-              dialogAction="cancel"
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.dismiss"
-              )}
-              .path=${mdiClose}
-            ></ha-icon-button>
-            <div
-              slot="title"
-              class="main-title"
-              .title=${this.hass.localize(
-                "ui.dialogs.zha_manage_device.heading"
-              )}
-              @click=${this._enlarge}
-            >
-              ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
-            </div>
-          </ha-header-bar>
+        <ha-dialog-header show-border slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span
+            slot="title"
+            .title=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
+            @click=${this._enlarge}
+          >
+            ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
+          </span>
           <mwc-tab-bar
             .activeIndex=${tabs.indexOf(this._currTab)}
             @MDCTabBar:activated=${this._handleTabChanged}
@@ -139,8 +129,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
               `
             )}
           </mwc-tab-bar>
-        </div>
-
+        </ha-dialog-header>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
             this._currTab === "clusters"
@@ -151,40 +140,40 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ></zha-manage-clusters>
                 `
               : this._currTab === "bindings"
-              ? html`
-                  ${this._bindableDevices.length > 0
-                    ? html`
-                        <zha-device-binding-control
-                          .hass=${this.hass}
-                          .device=${this._device}
-                          .bindableDevices=${this._bindableDevices}
-                        ></zha-device-binding-control>
-                      `
-                    : ""}
-                  ${this._device && this._groups.length > 0
-                    ? html`
-                        <zha-group-binding-control
-                          .hass=${this.hass}
-                          .device=${this._device}
-                          .groups=${this._groups}
-                        ></zha-group-binding-control>
-                      `
-                    : ""}
-                `
-              : this._currTab === "signature"
-              ? html`
-                  <zha-device-zigbee-info
-                    .hass=${this.hass}
-                    .device=${this._device}
-                  ></zha-device-zigbee-info>
-                `
-              : html`
-                  <zha-device-neighbors
-                    .hass=${this.hass}
-                    .device=${this._device}
-                    .narrow=${!this.large}
-                  ></zha-device-neighbors>
-                `
+                ? html`
+                    ${this._bindableDevices.length > 0
+                      ? html`
+                          <zha-device-binding-control
+                            .hass=${this.hass}
+                            .device=${this._device}
+                            .bindableDevices=${this._bindableDevices}
+                          ></zha-device-binding-control>
+                        `
+                      : ""}
+                    ${this._device && this._groups.length > 0
+                      ? html`
+                          <zha-group-binding-control
+                            .hass=${this.hass}
+                            .device=${this._device}
+                            .groups=${this._groups}
+                          ></zha-group-binding-control>
+                        `
+                      : ""}
+                  `
+                : this._currTab === "signature"
+                  ? html`
+                      <zha-device-zigbee-info
+                        .hass=${this.hass}
+                        .device=${this._device}
+                      ></zha-device-zigbee-info>
+                    `
+                  : html`
+                      <zha-device-neighbors
+                        .hass=${this.hass}
+                        .device=${this._device}
+                        .narrow=${!this.large}
+                      ></zha-device-neighbors>
+                    `
           )}
         </div>
       </ha-dialog>
@@ -238,26 +227,8 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           --vertical-align-dialog: flex-start;
         }
 
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          display: block;
-        }
         .content {
           outline: none;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-header-bar {
-            --mdc-theme-primary: var(--app-header-background-color);
-            --mdc-theme-on-primary: var(--app-header-text-color, white);
-            border-bottom: none;
-          }
-        }
-
-        .heading {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
@@ -266,18 +237,6 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             --mdc-dialog-max-width: 560px;
             --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
-          .main-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: default;
-          }
-
-          :host([large]) ha-dialog,
-          ha-dialog[data-domain="camera"] {
-            --mdc-dialog-min-width: 90vw;
-            --mdc-dialog-max-width: 90vw;
           }
         }
       `,

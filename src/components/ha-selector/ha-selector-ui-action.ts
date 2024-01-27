@@ -1,18 +1,18 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ActionConfig } from "../../data/lovelace/config/action";
 import { UiActionSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
 import "../../panels/lovelace/components/hui-action-editor";
-import { ActionConfig } from "../../data/lovelace";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-selector-ui-action")
+@customElement("ha-selector-ui_action")
 export class HaSelectorUiAction extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiActionSelector;
+  @property({ attribute: false }) public selector!: UiActionSelector;
 
-  @property() public value?: ActionConfig;
+  @property({ attribute: false }) public value?: ActionConfig;
 
   @property() public label?: string;
 
@@ -24,7 +24,8 @@ export class HaSelectorUiAction extends LitElement {
         .label=${this.label}
         .hass=${this.hass}
         .config=${this.value}
-        .actions=${this.selector["ui-action"]?.actions}
+        .actions=${this.selector.ui_action?.actions}
+        .defaultAction=${this.selector.ui_action?.default_action}
         .tooltipText=${this.helper}
         @value-changed=${this._valueChanged}
       ></hui-action-editor>
@@ -38,6 +39,6 @@ export class HaSelectorUiAction extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-action": HaSelectorUiAction;
+    "ha-selector-ui_action": HaSelectorUiAction;
   }
 }

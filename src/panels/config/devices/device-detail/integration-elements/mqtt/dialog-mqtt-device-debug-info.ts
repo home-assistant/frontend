@@ -59,8 +59,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         @closed=${this._close}
         .heading=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
-          "device",
-          computeDeviceName(this._params.device, this.hass)
+          { device: computeDeviceName(this._params.device, this.hass) }
         )}
       >
         <h4>
@@ -179,11 +178,10 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-rx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -203,11 +201,10 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_tx_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-tx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -250,8 +247,18 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-max-width: 95%;
-          --mdc-dialog-min-width: 640px;
+          --mdc-dialog-max-width: 95vw;
+          --mdc-dialog-min-width: min(640px, 95vw);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+            --mdc-dialog-max-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+          }
         }
         ha-switch {
           margin: 16px;

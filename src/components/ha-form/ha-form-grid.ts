@@ -26,12 +26,19 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeLabel?: (
+  @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
     data?: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: HaFormSchema) => string;
+  @property({ attribute: false }) public computeHelper?: (
+    schema: HaFormSchema
+  ) => string;
+
+  public async focus() {
+    await this.updateComplete;
+    this.renderRoot.querySelector("ha-form")?.focus();
+  }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
@@ -50,17 +57,16 @@ export class HaFormGrid extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       ${this.schema.schema.map(
-        (item) =>
-          html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this.data}
-              .schema=${[item]}
-              .disabled=${this.disabled}
-              .computeLabel=${this.computeLabel}
-              .computeHelper=${this.computeHelper}
-            ></ha-form>
-          `
+        (item) => html`
+          <ha-form
+            .hass=${this.hass}
+            .data=${this.data}
+            .schema=${[item]}
+            .disabled=${this.disabled}
+            .computeLabel=${this.computeLabel}
+            .computeHelper=${this.computeHelper}
+          ></ha-form>
+        `
       )}
     `;
   }

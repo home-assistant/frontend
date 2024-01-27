@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -34,38 +33,59 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { Helper, HelperDomain } from "./const";
-import "./forms/ha-counter-form";
-import "./forms/ha-input_boolean-form";
-import "./forms/ha-input_button-form";
-import "./forms/ha-input_datetime-form";
-import "./forms/ha-input_number-form";
-import "./forms/ha-input_select-form";
-import "./forms/ha-input_text-form";
-import "./forms/ha-schedule-form";
-import "./forms/ha-timer-form";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = {
-  [domain in HelperDomain]: (
-    hass: HomeAssistant,
-    // Not properly typed because there is currently a mismatch for this._item between:
-    // 1. Type passed to form should be Helper
-    // 2. Type received by creator should be MutableParams version
-    // The two are not compatible.
-    params: any
-  ) => Promise<Helper>;
+  [domain in HelperDomain]: {
+    create: (
+      hass: HomeAssistant,
+      // Not properly typed because there is currently a mismatch for this._item between:
+      // 1. Type passed to form should be Helper
+      // 2. Type received by creator should be MutableParams version
+      // The two are not compatible.
+      params: any
+    ) => Promise<Helper>;
+    import: () => Promise<unknown>;
+  };
 };
 
 const HELPERS: HelperCreators = {
-  input_boolean: createInputBoolean,
-  input_button: createInputButton,
-  input_text: createInputText,
-  input_number: createInputNumber,
-  input_datetime: createInputDateTime,
-  input_select: createInputSelect,
-  counter: createCounter,
-  timer: createTimer,
-  schedule: createSchedule,
+  input_boolean: {
+    create: createInputBoolean,
+    import: () => import("./forms/ha-input_boolean-form"),
+  },
+  input_button: {
+    create: createInputButton,
+    import: () => import("./forms/ha-input_button-form"),
+  },
+  input_text: {
+    create: createInputText,
+    import: () => import("./forms/ha-input_text-form"),
+  },
+  input_number: {
+    create: createInputNumber,
+    import: () => import("./forms/ha-input_number-form"),
+  },
+  input_datetime: {
+    create: createInputDateTime,
+    import: () => import("./forms/ha-input_datetime-form"),
+  },
+  input_select: {
+    create: createInputSelect,
+    import: () => import("./forms/ha-input_select-form"),
+  },
+  counter: {
+    create: createCounter,
+    import: () => import("./forms/ha-counter-form"),
+  },
+  timer: {
+    create: createTimer,
+    import: () => import("./forms/ha-timer-form"),
+  },
+  schedule: {
+    create: createSchedule,
+    import: () => import("./forms/ha-schedule-form"),
+  },
 };
 
 @customElement("dialog-helper-detail")
@@ -85,6 +105,8 @@ export class DialogHelperDetail extends LitElement {
   @query(".form") private _form?: HTMLDivElement;
 
   @state() private _helperFlows?: string[];
+
+  @state() private _loading = false;
 
   private _params?: ShowDialogHelperDetailParams;
 
@@ -141,8 +163,10 @@ export class DialogHelperDetail extends LitElement {
           ${this.hass!.localize("ui.common.back")}
         </mwc-button>
       `;
-    } else if (this._helperFlows === undefined) {
-      content = html`<ha-circular-progress active></ha-circular-progress>`;
+    } else if (this._loading || this._helperFlows === undefined) {
+      content = html`<ha-circular-progress
+        indeterminate
+      ></ha-circular-progress>`;
     } else {
       const items: [string, string][] = [];
 
@@ -185,13 +209,14 @@ export class DialogHelperDetail extends LitElement {
                 <img
                   slot="graphic"
                   loading="lazy"
+                  alt=""
                   src=${brandsUrl({
                     domain,
                     type: "icon",
                     useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
-                  aria-hidden="true"
+                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
                 <span class="item-text"> ${label} </span>
@@ -199,12 +224,11 @@ export class DialogHelperDetail extends LitElement {
               </ha-list-item>
               ${!isLoaded
                 ? html`
-                    <paper-tooltip animation-delay="0"
+                    <simple-tooltip animation-delay="0"
                       >${this.hass.localize(
                         "ui.dialogs.helper_settings.platform_not_loaded",
-                        "platform",
-                        domain
-                      )}</paper-tooltip
+                        { platform: domain }
+                      )}</simple-tooltip
                     >
                   `
                 : ""}
@@ -227,10 +251,12 @@ export class DialogHelperDetail extends LitElement {
           this._domain
             ? this.hass.localize(
                 "ui.panel.config.helpers.dialog.create_platform",
-                "platform",
-                this.hass.localize(
-                  `ui.panel.config.helpers.types.${this._domain}`
-                ) || this._domain
+                {
+                  platform:
+                    this.hass.localize(
+                      `ui.panel.config.helpers.types.${this._domain}`
+                    ) || this._domain,
+                }
               )
             : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
         )}
@@ -251,7 +277,7 @@ export class DialogHelperDetail extends LitElement {
     this._submitting = true;
     this._error = "";
     try {
-      await HELPERS[this._domain](this.hass, this._item);
+      await HELPERS[this._domain].create(this.hass, this._item);
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message || "Unknown error";
@@ -260,14 +286,22 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
-  private _domainPicked(ev: CustomEvent<RequestSelectedDetail>): void {
+  private async _domainPicked(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): Promise<void> {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
     const domain = (ev.currentTarget! as any).domain;
 
     if (domain in HELPERS) {
-      this._domain = domain;
+      this._loading = true;
+      try {
+        await HELPERS[domain].import();
+        this._domain = domain;
+      } finally {
+        this._loading = false;
+      }
       this._focusForm();
     } else {
       showConfigFlowDialog(this, {

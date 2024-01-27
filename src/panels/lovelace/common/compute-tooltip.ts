@@ -1,5 +1,5 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { HomeAssistant } from "../../../types";
 
 interface Config {
@@ -20,45 +20,39 @@ function computeActionTooltip(
     return "";
   }
 
-  let tooltip =
-    (isHold
-      ? hass.localize("ui.panel.lovelace.cards.picture-elements.hold")
-      : hass.localize("ui.panel.lovelace.cards.picture-elements.tap")) + " ";
+  let tooltip = isHold
+    ? hass.localize("ui.panel.lovelace.cards.picture-elements.hold")
+    : hass.localize("ui.panel.lovelace.cards.picture-elements.tap");
 
   switch (config.action) {
     case "navigate":
-      tooltip += `${hass.localize(
+      tooltip += ` ${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.navigate_to",
-        "location",
-        config.navigation_path
+        { location: config.navigation_path }
       )}`;
       break;
     case "url":
-      tooltip += `${hass.localize(
+      tooltip += ` ${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.url",
-        "url_path",
-        config.url_path
+        { url_path: config.url_path }
       )}`;
       break;
     case "toggle":
-      tooltip += `${hass.localize(
+      tooltip += ` ${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.toggle",
-        "name",
-        state
+        { name: state }
       )}`;
       break;
     case "call-service":
       tooltip += `${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.call_service",
-        "name",
-        config.service
+        { name: config.service }
       )}`;
       break;
     case "more-info":
       tooltip += `${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.more_info",
-        "name",
-        state
+        { name: state }
       )}`;
       break;
   }

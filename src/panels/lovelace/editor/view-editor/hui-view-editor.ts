@@ -6,13 +6,13 @@ import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LovelaceViewConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -26,7 +26,7 @@ declare global {
 export class HuiViewEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isNew!: boolean;
+  @property({ type: Boolean }) public isNew = false;
 
   @state() private _config!: LovelaceViewConfig;
 
@@ -93,7 +93,6 @@ export class HuiViewEditor extends LitElement {
     const schema = this._schema(this.hass.localize);
 
     const data = {
-      theme: "Backend-selected",
       ...this._config,
       type: this._type,
     };

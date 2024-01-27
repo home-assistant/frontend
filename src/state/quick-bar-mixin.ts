@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import tinykeys from "tinykeys";
+import { tinykeys } from "tinykeys";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import {
@@ -10,6 +10,7 @@ import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import { HassElement } from "./hass-element";
+import { extractSearchParamsObject } from "../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {
@@ -64,6 +65,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return;
       }
 
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
       showQuickBar(this, { commandMode });
     }
 
@@ -74,6 +80,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       ) {
         return;
       }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
 
       const targetPath = mainWindow.location.pathname;
       const isHassio = isComponentLoaded(this.hass, "hassio");
@@ -107,6 +118,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       )) {
         if (targetPath.startsWith(redirect.redirect)) {
           myParams.append("redirect", slug);
+          if (redirect.params) {
+            const params = extractSearchParamsObject();
+            for (const key of Object.keys(redirect.params)) {
+              if (key in params) {
+                myParams.append(key, params[key]);
+              }
+            }
+          }
           window.open(
             `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
             "_blank"

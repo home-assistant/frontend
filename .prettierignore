@@ -1,9 +1,4 @@
-build
-translations/*
-node_modules/*
-hass_frontend/*
-pip-selfcheck.json
-
-# vscode
-.vscode/*
-!.vscode/extensions.json
+CLA.md
+CODE_OF_CONDUCT.md
+LICENSE.md
+PULL_REQUEST_TEMPLATE.md

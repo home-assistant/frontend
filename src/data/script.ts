@@ -33,6 +33,7 @@ export const isMaxMode = arrayLiteralIncludes(MODES_MAX);
 
 export const baseActionStruct = object({
   alias: optional(string()),
+  continue_on_error: optional(boolean()),
   enabled: optional(boolean()),
 });
 
@@ -50,6 +51,8 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     entity_id: optional(string()),
     target: optional(targetStruct),
     data: optional(object()),
+    response_variable: optional(string()),
+    metadata: optional(object()),
   })
 );
 
@@ -91,14 +94,30 @@ export interface ManualScriptConfig {
   icon?: string;
   mode?: (typeof MODES)[number];
   max?: number;
+  fields?: Fields;
 }
 
 export interface BlueprintScriptConfig extends ManualScriptConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
 }
 
+export interface Fields {
+  [key: string]: Field;
+}
+
+export interface Field {
+  name?: string;
+  description?: string;
+  advanced?: boolean;
+  required?: boolean;
+  example?: string;
+  default?: any;
+  selector?: any;
+}
+
 interface BaseAction {
   alias?: string;
+  continue_on_error?: boolean;
   enabled?: boolean;
 }
 
@@ -114,6 +133,8 @@ export interface ServiceAction extends BaseAction {
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
+  response_variable?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface DeviceAction extends BaseAction {
@@ -219,6 +240,7 @@ export interface VariablesAction extends BaseAction {
 
 export interface StopAction extends BaseAction {
   stop: string;
+  response_variable?: string;
   error?: boolean;
 }
 
@@ -226,18 +248,18 @@ export interface ParallelAction extends BaseAction {
   parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
 
+export interface SetConversationResponseAction extends BaseAction {
+  set_conversation_response: string;
+}
+
 interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
 
-export type Action =
+export type NonConditionAction =
   | EventAction
   | DeviceAction
   | ServiceAction
-  | Condition
-  | ShorthandAndCondition
-  | ShorthandOrCondition
-  | ShorthandNotCondition
   | DelayAction
   | SceneAction
   | WaitAction
@@ -250,6 +272,13 @@ export type Action =
   | StopAction
   | ParallelAction
   | UnknownAction;
+
+export type Action =
+  | NonConditionAction
+  | Condition
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition;
 
 export interface ActionTypes {
   delay: DelayAction;
@@ -267,6 +296,7 @@ export interface ActionTypes {
   play_media: PlayMediaAction;
   stop: StopAction;
   parallel: ParallelAction;
+  set_conversation_response: SetConversationResponseAction;
   unknown: UnknownAction;
 }
 
@@ -357,6 +387,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("parallel" in action) {
     return "parallel";
+  }
+  if ("set_conversation_response" in action) {
+    return "set_conversation_response";
   }
   if ("service" in action) {
     if ("metadata" in action) {

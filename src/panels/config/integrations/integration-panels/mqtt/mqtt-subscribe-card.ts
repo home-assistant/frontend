@@ -8,7 +8,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
-import { LocalStorage } from "../../../../../common/decorators/local-storage";
+import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 
@@ -18,13 +18,25 @@ const qosLevel = ["0", "1", "2"];
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @LocalStorage("panel-dev-mqtt-topic-subscribe", true, false)
+  @storage({
+    key: "panel-dev-mqtt-topic-subscribe",
+    state: true,
+    subscribe: false,
+  })
   private _topic = "";
 
-  @LocalStorage("panel-dev-mqtt-qos-subscribe", true, false)
+  @storage({
+    key: "panel-dev-mqtt-qos-subscribe",
+    state: true,
+    subscribe: false,
+  })
   private _qos = "0";
 
-  @LocalStorage("panel-dev-mqtt-json-format", true, false)
+  @storage({
+    key: "panel-dev-mqtt-json-format",
+    state: true,
+    subscribe: false,
+  })
   private _json_format = false;
 
   @state() private _subscribed?: () => void;
@@ -98,15 +110,15 @@ class MqttSubscribeCard extends LitElement {
           ${this._messages.map(
             (msg) => html`
               <div class="event">
-                ${this.hass.localize(
-                  "ui.panel.config.mqtt.message_received",
-                  "id",
-                  msg.id,
-                  "topic",
-                  msg.message.topic,
-                  "time",
-                  formatTime(msg.time, this.hass!.locale)
-                )}
+                ${this.hass.localize("ui.panel.config.mqtt.message_received", {
+                  id: msg.id,
+                  topic: msg.message.topic,
+                  time: formatTime(
+                    msg.time,
+                    this.hass!.locale,
+                    this.hass!.config
+                  ),
+                })}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">
                   QoS: ${msg.message.qos} - Retain:
@@ -214,6 +226,8 @@ class MqttSubscribeCard extends LitElement {
         ha-select {
           margin-left: 0px;
           margin-top: 8px;
+          margin-inline-start: 0px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           flex: auto;

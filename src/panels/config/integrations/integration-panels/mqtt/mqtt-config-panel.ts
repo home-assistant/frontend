@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { LocalStorage } from "../../../../../common/decorators/local-storage";
+import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
@@ -16,24 +16,44 @@ import "./mqtt-subscribe-card";
 const qosLevel = ["0", "1", "2"];
 
 @customElement("mqtt-config-panel")
-class HaPanelDevMqtt extends LitElement {
+export class MQTTConfigPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
+  @storage({
+    key: "panel-dev-mqtt-topic-ls",
+    state: true,
+    subscribe: false,
+  })
   private _topic = "";
 
-  @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
+  @storage({
+    key: "panel-dev-mqtt-payload-ls",
+    state: true,
+    subscribe: false,
+  })
   private _payload = "";
 
-  @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
+  @storage({
+    key: "panel-dev-mqtt-qos-ls",
+    state: true,
+    subscribe: false,
+  })
   private _qos = "0";
 
-  @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
+  @storage({
+    key: "panel-dev-mqtt-retain-ls",
+    state: true,
+    subscribe: false,
+  })
   private _retain = false;
 
-  @LocalStorage("panel-dev-mqtt-allow-template-ls", true, false)
+  @storage({
+    key: "panel-dev-mqtt-allow-template-ls",
+    state: true,
+    subscribe: false,
+  })
   private _allowTemplate = false;
 
   protected render(): TemplateResult {
@@ -207,6 +227,8 @@ class HaPanelDevMqtt extends LitElement {
         @media screen and (max-width: 600px) {
           ha-select {
             margin-left: 0px;
+            margin-inline-start: 0px;
+            margin-inline-end: initial;
             margin-top: 8px;
           }
           ha-textfield {
@@ -228,6 +250,6 @@ class HaPanelDevMqtt extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-mqtt": HaPanelDevMqtt;
+    "mqtt-config-panel": MQTTConfigPanel;
   }
 }

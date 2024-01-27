@@ -30,7 +30,8 @@ export class HaDateTimeSelector extends LitElement {
   @query("ha-time-input") private _timeInput!: HaTimeInput;
 
   protected render() {
-    const values = this.value?.split(" ");
+    const values =
+      typeof this.value === "string" ? this.value.split(" ") : undefined;
 
     return html`
       <div class="input">
@@ -45,7 +46,7 @@ export class HaDateTimeSelector extends LitElement {
         </ha-date-input>
         <ha-time-input
           enable-second
-          .value=${values?.[1] || "0:00:00"}
+          .value=${values?.[1] || "00:00:00"}
           .locale=${this.hass.locale}
           .disabled=${this.disabled}
           .required=${this.required}
@@ -60,9 +61,11 @@ export class HaDateTimeSelector extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: `${this._dateInput.value} ${this._timeInput.value}`,
-    });
+    if (this._dateInput.value && this._timeInput.value) {
+      fireEvent(this, "value-changed", {
+        value: `${this._dateInput.value} ${this._timeInput.value}`,
+      });
+    }
   }
 
   static styles = css`

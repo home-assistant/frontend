@@ -1,12 +1,19 @@
-import { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
-import { FirstWeekday, NumberFormat, TimeFormat } from "../data/translation";
+import {
+  DateFormat,
+  FirstWeekday,
+  NumberFormat,
+  TimeFormat,
+  TimeZone,
+} from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
@@ -43,6 +50,13 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
   mockTheme(theme: Record<string, string> | null);
+  formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityAttributeValue(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): string;
+  formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
 export const provideHass = (
@@ -67,6 +81,7 @@ export const provideHass = (
     const lang = language || getLocalLanguage();
     const translation = await getTranslation(fragment, lang);
     await addTranslations(translation.data, lang);
+    updateFormatFunctions();
   }
 
   async function addTranslations(
@@ -95,6 +110,24 @@ export const provideHass = (
     });
   }
 
+  async function updateFormatFunctions() {
+    const {
+      formatEntityState,
+      formatEntityAttributeName,
+      formatEntityAttributeValue,
+    } = await computeFormatFunctions(
+      hass().localize,
+      hass().locale,
+      hass().config,
+      hass().entities
+    );
+    hass().updateHass({
+      formatEntityState,
+      formatEntityAttributeName,
+      formatEntityAttributeValue,
+    });
+  }
+
   function addEntities(newEntities, replace = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
@@ -109,6 +142,7 @@ export const provideHass = (
     } else {
       updateStates(states);
     }
+    updateFormatFunctions();
   }
 
   function mockAPI(path, callback) {
@@ -224,6 +258,8 @@ export const provideHass = (
       language: localLanguage,
       number_format: NumberFormat.language,
       time_format: TimeFormat.language,
+      date_format: DateFormat.language,
+      time_zone: TimeZone.local,
       first_weekday: FirstWeekday.language,
     },
     resources: null as any,
@@ -235,6 +271,7 @@ export const provideHass = (
     },
     dockedSidebar: "auto",
     vibrate: true,
+    debugConnection: false,
     suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore
@@ -310,6 +347,11 @@ export const provideHass = (
     areas: {},
     devices: {},
     entities: {},
+    formatEntityState: (stateObj, state) =>
+      (state !== null ? state : stateObj.state) ?? "",
+    formatEntityAttributeName: (_stateObj, attribute) => attribute,
+    formatEntityAttributeValue: (stateObj, attribute, value) =>
+      value !== null ? value : stateObj.attributes[attribute] ?? "",
     ...overrideData,
   };
 

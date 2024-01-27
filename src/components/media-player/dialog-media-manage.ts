@@ -18,14 +18,17 @@ import {
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-button";
 import "../ha-check-list-item";
 import "../ha-circular-progress";
 import "../ha-dialog";
-import "../ha-header-bar";
+import "../ha-dialog-header";
 import "../ha-svg-icon";
+import "../ha-tip";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -80,7 +83,7 @@ class DialogMediaManage extends LitElement {
         .heading=${this._params.currentItem.title}
         @closed=${this.closeDialog}
       >
-        <ha-header-bar slot="heading">
+        <ha-dialog-header slot="heading">
           ${this._selected.size === 0
             ? html`
                 <span slot="title">
@@ -104,14 +107,13 @@ class DialogMediaManage extends LitElement {
                         .label=${this.hass.localize("ui.dialogs.generic.close")}
                         .path=${mdiClose}
                         dialogAction="close"
-                        slot="actionItems"
-                        class="header_button"
+                        slot="navigationIcon"
                         dir=${computeRTLDirection(this.hass)}
                       ></ha-icon-button>
                     `}
               `
             : html`
-                <mwc-button
+                <ha-button
                   class="danger"
                   slot="title"
                   .disabled=${this._deleting}
@@ -124,12 +126,12 @@ class DialogMediaManage extends LitElement {
                   @click=${this._handleDelete}
                 >
                   <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
-                </mwc-button>
+                </ha-button>
 
                 ${this._deleting
                   ? ""
                   : html`
-                      <mwc-button
+                      <ha-button
                         slot="actionItems"
                         .label=${`Deselect all`}
                         @click=${this._handleDeselectAll}
@@ -138,65 +140,84 @@ class DialogMediaManage extends LitElement {
                           .path=${mdiClose}
                           slot="icon"
                         ></ha-svg-icon>
-                      </mwc-button>
+                      </ha-button>
                     `}
               `}
-        </ha-header-bar>
+        </ha-dialog-header>
         ${!this._currentItem
           ? html`
               <div class="refresh">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : !children.length
-          ? html`<div class="no-items">
-              <p>
-                ${this.hass.localize(
-                  "ui.components.media-browser.file_management.no_items"
-                )}
-              </p>
-              ${this._currentItem?.children?.length
-                ? html`<span class="folders"
-                    >${this.hass.localize(
-                      "ui.components.media-browser.file_management.folders_not_supported"
-                    )}</span
-                  >`
-                : ""}
-            </div>`
-          : html`
-              <mwc-list multi @selected=${this._handleSelected}>
-                ${repeat(
-                  children,
-                  (item) => item.media_content_id,
-                  (item) => {
-                    const icon = html`
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${MediaClassBrowserSettings[
-                          item.media_class === "directory"
-                            ? item.children_media_class || item.media_class
-                            : item.media_class
-                        ].icon}
-                      ></ha-svg-icon>
-                    `;
-                    return html`
-                      <ha-check-list-item
-                        ${animate({
-                          id: item.media_content_id,
-                          skipInitial: true,
-                        })}
-                        graphic="icon"
-                        .disabled=${this._uploading || this._deleting}
-                        .selected=${this._selected.has(fileIndex++)}
-                        .item=${item}
-                      >
-                        ${icon} ${item.title}
-                      </ha-check-list-item>
-                    `;
-                  }
-                )}
-              </mwc-list>
-            `}
+            ? html`<div class="no-items">
+                <p>
+                  ${this.hass.localize(
+                    "ui.components.media-browser.file_management.no_items"
+                  )}
+                </p>
+                ${this._currentItem?.children?.length
+                  ? html`<span class="folders"
+                      >${this.hass.localize(
+                        "ui.components.media-browser.file_management.folders_not_supported"
+                      )}</span
+                    >`
+                  : ""}
+              </div>`
+            : html`
+                <mwc-list multi @selected=${this._handleSelected}>
+                  ${repeat(
+                    children,
+                    (item) => item.media_content_id,
+                    (item) => {
+                      const icon = html`
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${MediaClassBrowserSettings[
+                            item.media_class === "directory"
+                              ? item.children_media_class || item.media_class
+                              : item.media_class
+                          ].icon}
+                        ></ha-svg-icon>
+                      `;
+                      return html`
+                        <ha-check-list-item
+                          ${animate({
+                            id: item.media_content_id,
+                            skipInitial: true,
+                          })}
+                          graphic="icon"
+                          .disabled=${this._uploading || this._deleting}
+                          .selected=${this._selected.has(fileIndex++)}
+                          .item=${item}
+                        >
+                          ${icon} ${item.title}
+                        </ha-check-list-item>
+                      `;
+                    }
+                  )}
+                </mwc-list>
+              `}
+        ${isComponentLoaded(this.hass, "hassio")
+          ? html`<ha-tip .hass=${this.hass}>
+              ${this.hass.localize(
+                "ui.components.media-browser.file_management.tip_media_storage",
+                {
+                  storage: html`<a
+                    href="/config/storage"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass
+                      .localize(
+                        "ui.components.media-browser.file_management.tip_storage_panel"
+                      )
+                      .toLowerCase()}
+                  </a>`,
+                }
+              )}
+            </ha-tip>`
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -277,7 +298,7 @@ class DialogMediaManage extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-z-index: 8;
+          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 
@@ -290,20 +311,11 @@ class DialogMediaManage extends LitElement {
           }
         }
 
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
-        }
-
-        ha-media-upload-button,
-        mwc-button {
-          --mdc-theme-primary: var(--mdc-theme-on-primary);
-        }
-
-        mwc-list {
-          direction: ltr;
+        ha-dialog-header ha-media-upload-button,
+        ha-dialog-header ha-button {
+          --mdc-theme-primary: var(--primary-text-color);
+          margin: 6px;
+          display: block;
         }
 
         .danger {
@@ -312,6 +324,10 @@ class DialogMediaManage extends LitElement {
 
         ha-svg-icon[slot="icon"] {
           vertical-align: middle;
+        }
+
+        ha-tip {
+          margin: 16px;
         }
 
         ha-svg-icon[slot="icon"] {

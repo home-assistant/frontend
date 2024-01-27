@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiDotsVertical } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
@@ -8,8 +8,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -20,12 +20,9 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -49,6 +46,12 @@ import {
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../../data/lovelace/config/view";
+import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -101,13 +104,21 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       this._cards = [];
       this._dirty = false;
-    } else {
-      const { cards, badges, ...viewConfig } =
-        this._params.lovelace!.config.views[this._params.viewIndex];
-      this._config = viewConfig;
-      this._badges = badges ? processEditorEntities(badges) : [];
-      this._cards = cards;
+      return;
     }
+    const view = this._params.lovelace!.config.views[this._params.viewIndex];
+    // Todo : add better support for strategy views
+    if (isStrategyView(view)) {
+      const { strategy, ...viewConfig } = view;
+      this._config = viewConfig;
+      this._badges = [];
+      this._cards = [];
+      return;
+    }
+    const { cards, badges, ...viewConfig } = view;
+    this._config = viewConfig;
+    this._badges = badges ? processEditorEntities(badges) : [];
+    this._cards = cards;
   }
 
   public closeDialog(): void {
@@ -127,8 +138,7 @@ export class HuiDialogEditView extends LitElement {
 
     return this.hass!.localize(
       "ui.panel.lovelace.editor.edit_view.header_name",
-      "name",
-      this._config.title
+      { name: this._config.title }
     );
   }
 
@@ -217,10 +227,16 @@ export class HuiDialogEditView extends LitElement {
           "yaml-mode": this._yamlMode,
         })}
       >
-        <div slot="heading">
-          <h2>${this._viewConfigTitle}</h2>
+        <ha-dialog-header show-border slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass!.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <h2 slot="title">${this._viewConfigTitle}</h2>
           <ha-button-menu
-            slot="icons"
+            slot="actionItems"
             fixed
             corner="BOTTOM_END"
             menuCorner="END"
@@ -282,7 +298,7 @@ export class HuiDialogEditView extends LitElement {
                 >
               </paper-tabs>`
             : ""}
-        </div>
+        </ha-dialog-header>
         ${content}
         ${this._params.viewIndex !== undefined
           ? html`
@@ -307,9 +323,9 @@ export class HuiDialogEditView extends LitElement {
         >
           ${this._saving
             ? html`<ha-circular-progress
-                active
+                indeterminate
                 size="small"
-                title="Saving"
+                aria-label="Saving"
               ></ha-circular-progress>`
             : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button
@@ -359,10 +375,10 @@ export class HuiDialogEditView extends LitElement {
         `ui.panel.lovelace.views.confirm_delete${
           this._cards?.length ? "_existing_cards" : ""
         }_text`,
-        "name",
-        this._config?.title || "Unnamed view",
-        "number",
-        this._cards?.length || 0
+        {
+          name: this._config?.title || "Unnamed view",
+          number: this._cards?.length || 0,
+        }
       ),
       confirm: () => this._delete(),
     });
@@ -397,8 +413,13 @@ export class HuiDialogEditView extends LitElement {
     try {
       await lovelace.saveConfig(
         this._creatingView
-          ? addView(lovelace.config, viewConf)
-          : replaceView(lovelace.config, this._params.viewIndex!, viewConf)
+          ? addView(this.hass!, lovelace.config, viewConf)
+          : replaceView(
+              this.hass!,
+              lovelace.config,
+              this._params.viewIndex!,
+              viewConf
+            )
       );
       if (this._params.saveCallback) {
         this._params.saveCallback(
@@ -409,7 +430,9 @@ export class HuiDialogEditView extends LitElement {
       this.closeDialog();
     } catch (err: any) {
       showAlertDialog(this, {
-        text: `Saving failed: ${err.message}`,
+        text: `${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_view.saving_failed"
+        )}: ${err.message}`,
       });
     } finally {
       this._saving = false;
@@ -473,53 +496,30 @@ export class HuiDialogEditView extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
+          --vertical-align-dialog: flex-start;
+          --dialog-surface-margin-top: 40px;
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* When in fullscreen dialog should be attached to top */
+          ha-dialog {
+            --dialog-surface-margin-top: 0px;
+          }
+        }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         h2 {
-          display: block;
-          color: var(--primary-text-color);
-          line-height: normal;
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
-          font-family: Roboto, sans-serif;
-          font-family: var(
-            --mdc-typography-headline6-font-family,
-            var(--mdc-typography-font-family, Roboto, sans-serif)
-          );
-          font-size: 1.25rem;
-          font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
-          line-height: 2rem;
-          line-height: var(--mdc-typography-headline6-line-height, 2rem);
-          font-weight: 500;
-          font-weight: var(--mdc-typography-headline6-font-weight, 500);
-          letter-spacing: 0.0125em;
-          letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          text-decoration: inherit;
-          text-decoration: var(
-            --mdc-typography-headline6-text-decoration,
-            inherit
-          );
-          text-transform: inherit;
-          text-transform: var(
-            --mdc-typography-headline6-text-transform,
-            inherit
-          );
-          position: relative;
-          flex-shrink: 0;
-          box-sizing: border-box;
           margin: 0;
-          padding: 20px 24px 9px;
-          border-bottom: 1px solid transparent;
+          font-size: inherit;
+          font-weight: inherit;
         }
         paper-tabs {
           --paper-tabs-selection-bar-color: var(--primary-color);
           color: var(--primary-text-color);
           text-transform: uppercase;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
           padding: 0 20px;
         }
         mwc-button.warning {
@@ -528,21 +528,8 @@ export class HuiDialogEditView extends LitElement {
         ha-circular-progress {
           display: none;
         }
-        ha-circular-progress[active] {
+        ha-circular-progress[indeterminate] {
           display: block;
-        }
-        ha-button-menu {
-          color: var(--secondary-text-color);
-          position: absolute;
-          right: 16px;
-          top: 14px;
-          inset-inline-end: 16px;
-          inset-inline-start: initial;
-          direction: var(--direction);
-        }
-        ha-button-menu,
-        ha-icon-button {
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
         .selected_menu_item {
           color: var(--primary-color);

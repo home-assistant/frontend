@@ -1,14 +1,15 @@
 // Task to download the latest Lokalise translations from the nightly workflow artifacts
 
-const del = import("del");
-const fs = require("fs/promises");
-const path = require("path");
-const process = require("process");
-const gulp = require("gulp");
-const jszip = require("jszip");
-const tar = require("tar");
-const { Octokit } = require("@octokit/rest");
-const { createOAuthDeviceAuth } = require("@octokit/auth-oauth-device");
+import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
+import { retry } from "@octokit/plugin-retry";
+import { Octokit } from "@octokit/rest";
+import { deleteAsync } from "del";
+import { mkdir, readFile, writeFile } from "fs/promises";
+import gulp from "gulp";
+import jszip from "jszip";
+import path from "path";
+import process from "process";
+import tar from "tar";
 
 const MAX_AGE = 24; // hours
 const OWNER = "home-assistant";
@@ -37,7 +38,7 @@ gulp.task("fetch-nightly-translations", async function () {
   // and stop if they are not old enough
   let currentArtifact;
   try {
-    currentArtifact = JSON.parse(await fs.readFile(ARTIFACT_FILE, "utf-8"));
+    currentArtifact = JSON.parse(await readFile(ARTIFACT_FILE, "utf-8"));
     const currentAge =
       (Date.now() - Date.parse(currentArtifact.created_at)) / 3600000;
     if (currentAge < MAX_AGE) {
@@ -52,7 +53,7 @@ gulp.task("fetch-nightly-translations", async function () {
   }
 
   // To store file writing promises
-  const createExtractDir = fs.mkdir(EXTRACT_DIR, { recursive: true });
+  const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
   const writings = [];
 
   // Authenticate to GitHub using GitHub action token if it exists,
@@ -62,7 +63,7 @@ gulp.task("fetch-nightly-translations", async function () {
     tokenAuth = { token: process.env.GITHUB_TOKEN };
   } else {
     try {
-      tokenAuth = JSON.parse(await fs.readFile(TOKEN_FILE, "utf-8"));
+      tokenAuth = JSON.parse(await readFile(TOKEN_FILE, "utf-8"));
     } catch {
       if (!allowTokenSetup) {
         console.log("No token found so  build wil continue with English only");
@@ -87,7 +88,7 @@ gulp.task("fetch-nightly-translations", async function () {
       tokenAuth = await auth({ type: "oauth" });
       writings.push(
         createExtractDir.then(
-          fs.writeFile(TOKEN_FILE, JSON.stringify(tokenAuth, null, 2))
+          writeFile(TOKEN_FILE, JSON.stringify(tokenAuth, null, 2))
         )
       );
     }
@@ -95,7 +96,7 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // Authenticate with token and request workflow runs from GitHub
   console.log("Fetching new translations...");
-  const octokit = new Octokit({
+  const octokit = new (Octokit.plugin(retry))({
     userAgent: "Fetch Nightly Translations",
     auth: tokenAuth.token,
   });
@@ -131,17 +132,13 @@ gulp.task("fetch-nightly-translations", async function () {
   }
   writings.push(
     createExtractDir.then(
-      fs.writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2))
+      writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2))
     )
   );
 
   // Remove the current translations
   const deleteCurrent = Promise.all(writings).then(
-    (await del).deleteAsync([
-      `${EXTRACT_DIR}/*`,
-      `!${ARTIFACT_FILE}`,
-      `!${TOKEN_FILE}`,
-    ])
+    deleteAsync([`${EXTRACT_DIR}/*`, `!${ARTIFACT_FILE}`, `!${TOKEN_FILE}`])
   );
 
   // Get the download URL and follow the redirect to download (stored as ArrayBuffer)

@@ -2,6 +2,7 @@ import { customIconsets } from "./custom_iconsets";
 
 export interface CustomIcon {
   path: string;
+  secondaryPath?: string;
   viewBox?: string;
 }
 
@@ -36,5 +37,4 @@ export const customIcons = new Proxy(customIconsWindow.customIcons!, {
           getIcon: customIconsets[prop],
         }
       : undefined),
-  has: (obj, prop: string) => prop in obj || prop in customIconsets,
 });

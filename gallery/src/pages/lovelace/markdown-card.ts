@@ -9,7 +9,7 @@ const CONFIGS = [
     heading: "markdown-it demo",
     config: `
 - type: markdown
-  content: >-
+  content: |
     # h1 Heading 8-)
 
     ## h2 Heading
@@ -65,6 +65,23 @@ const CONFIGS = [
     >> ...by using additional greater-than signs right next to each other...
     > > > ...or with spaces between arrows.
 
+    > [!NOTE]
+    > This is a GitHub note alert
+
+    > [!TIP]
+    > This is a GitHub tip alert
+
+    > [!IMPORTANT]
+    > This is a GitHub important alert
+
+    > [!WARNING]
+    > This is a GitHub warning alert
+
+    > [!CAUTION]
+    > This is a GitHub caution alert
+
+    > [!TIP]
+    > - This is a list entry in GitHub tip alert
 
     ## Lists
 

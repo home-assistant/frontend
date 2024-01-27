@@ -4,11 +4,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,13 +16,13 @@ import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
+import { TimeZone } from "../../../../data/translation";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { installResizeObserver } from "../../../lovelace/common/install-resize-observer";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -44,7 +44,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
 class HaScheduleForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   @state() private _name!: string;
 
@@ -67,8 +67,6 @@ class HaScheduleForm extends LitElement {
   @state() private calendar?: Calendar;
 
   private _item?: Schedule;
-
-  private _resizeObserver?: ResizeObserver;
 
   set item(item: Schedule) {
     this._item = item;
@@ -95,6 +93,20 @@ class HaScheduleForm extends LitElement {
     }
   }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.calendar?.destroy();
+    this.calendar = undefined;
+    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated && !this.calendar) {
+      this.setupCalendar();
+    }
+  }
+
   public focus() {
     this.updateComplete.then(() =>
       (
@@ -103,45 +115,10 @@ class HaScheduleForm extends LitElement {
     );
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
-  }
-
-  public disconnectedCallback(): void {
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-    }
-  }
-
-  private _measureForm() {
-    const form = this.shadowRoot!.querySelector(".form");
-    if (!form) {
-      return;
-    }
-
-    this.calendar?.updateSize();
-  }
-
-  private async _attachObserver(): Promise<void> {
-    if (!this._resizeObserver) {
-      await installResizeObserver();
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureForm(), 250, false)
-      );
-    }
-    const form = this.shadowRoot!.querySelector(".form");
-    if (!form) {
-      return;
-    }
-    this._resizeObserver.observe(form);
-  }
-
   protected render() {
     if (!this.hass) {
       return nothing;
     }
-    const nameInvalid = !this._name || this._name.trim() === "";
 
     return html`
       <div class="form">
@@ -152,10 +129,11 @@ class HaScheduleForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage=${this.hass!.localize(
+          autoValidate
+          required
+          .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
-          .invalid=${nameInvalid}
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker
@@ -200,6 +178,10 @@ class HaScheduleForm extends LitElement {
   }
 
   protected firstUpdated(): void {
+    this.setupCalendar();
+  }
+
+  private setupCalendar(): void {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
@@ -229,13 +211,6 @@ class HaScheduleForm extends LitElement {
     );
 
     this.calendar!.render();
-
-    // Update size after fully rendered to avoid a bad render in the more info
-    this.updateComplete.then(() =>
-      window.setTimeout(() => {
-        this.calendar!.updateSize();
-      }, 500)
-    );
   }
 
   private get _events() {
@@ -286,9 +261,18 @@ class HaScheduleForm extends LitElement {
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    // Schedule is timezone unaware, we need to format it in local time
+    const endFormatted = formatTime24h(
+      end,
+      { ...this.hass.locale, time_zone: TimeZone.local },
+      this.hass.config
+    );
     value.push({
-      from: formatTime24h(start),
+      from: formatTime24h(
+        start,
+        { ...this.hass.locale, time_zone: TimeZone.local },
+        this.hass.config
+      ),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
@@ -313,7 +297,7 @@ class HaScheduleForm extends LitElement {
     const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     newValue[day][index] = {
       from: value.from,
       to:
@@ -327,6 +311,7 @@ class HaScheduleForm extends LitElement {
     });
 
     if (!isSameDay(start, end)) {
+      this.requestUpdate(`_${day}`);
       info.revert();
     }
   }
@@ -338,9 +323,9 @@ class HaScheduleForm extends LitElement {
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
-    const endFormatted = formatTime24h(end);
+    const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     const event = {
-      from: formatTime24h(start),
+      from: formatTime24h(start, this.hass.locale, this.hass.config),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
@@ -361,11 +346,24 @@ class HaScheduleForm extends LitElement {
     });
 
     if (!isSameDay(start, end)) {
+      this.requestUpdate(`_${day}`);
       info.revert();
     }
   }
 
-  private _handleEventClick(info: any) {
+  private async _handleEventClick(info: any) {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.dialogs.helper_settings.schedule.delete"),
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.schedule.confirm_delete"
+        ),
+        destructive: true,
+        confirmText: this.hass.localize("ui.common.delete"),
+      }))
+    ) {
+      return;
+    }
     const [day, index] = info.event.id.split("-");
     const value = [...this[`_${day}`]];
 

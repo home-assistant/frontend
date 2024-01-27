@@ -1,20 +1,15 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { EntityCardConfig } from "../../cards/types";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import { HaFormSchema } from "../../../../components/ha-form/types";
+import { EntityCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
-import type { LovelaceCardEditor } from "../../types";
+import { LovelaceConfigForm } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = assign(
+const struct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(entityId()),
+    entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
     attribute: optional(string()),
@@ -55,67 +50,19 @@ const SCHEMA = [
       { name: "state_color", selector: { boolean: {} } },
     ],
   },
-] as const;
+] as HaFormSchema[];
 
-@customElement("hui-entity-card-editor")
-export class HuiEntityCardEditor
-  extends LitElement
-  implements LovelaceCardEditor
-{
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @state() private _config?: EntityCardConfig;
-
-  public setConfig(config: EntityCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
-  }
-
-  protected render() {
-    if (!this.hass || !this._config) {
-      return nothing;
-    }
-
-    return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${this._config}
-        .schema=${SCHEMA}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
-    `;
-  }
-
-  private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
-    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
-    fireEvent(this, "config-changed", { config });
-  }
-
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "entity") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
-      );
-    }
-
+const entityCardConfigForm: LovelaceConfigForm = {
+  schema: SCHEMA,
+  assertConfig: (config: EntityCardConfig) => assert(config, struct),
+  computeLabel: (schema: HaFormSchema, localize: LocalizeFunc) => {
     if (schema.name === "theme") {
-      return `${this.hass!.localize(
+      return `${localize(
         "ui.panel.lovelace.editor.card.generic.theme"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.optional"
-      )})`;
+      )} (${localize("ui.panel.lovelace.editor.card.config.optional")})`;
     }
+    return localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  },
+};
 
-    return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
-    );
-  };
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "hui-entity-card-editor": HuiEntityCardEditor;
-  }
-}
+export default entityCardConfigForm;

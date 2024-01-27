@@ -3,12 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
-import type {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import {
   createErrorBadgeConfig,
@@ -26,16 +21,23 @@ import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { confDeleteCard } from "../editor/delete-card";
+import { deleteCard } from "../editor/config-util";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "ll-create-card": undefined;
     "ll-edit-card": { path: [number] | [number, number] };
-    "ll-delete-card": { path: [number] | [number, number] };
+    "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
   }
 }
 
@@ -45,7 +47,7 @@ export class HUIView extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Number }) public index!: number;
 
@@ -187,14 +189,12 @@ export class HUIView extends ReactiveElement {
     let viewConfig = this.lovelace.config.views[this.index];
     let isStrategy = false;
 
-    if (viewConfig.strategy) {
+    if (isStrategyView(viewConfig)) {
       isStrategy = true;
-      viewConfig = await generateLovelaceViewStrategy({
-        hass: this.hass,
-        config: this.lovelace.config,
-        narrow: this.narrow,
-        view: viewConfig,
-      });
+      viewConfig = await generateLovelaceViewStrategy(
+        viewConfig.strategy,
+        this.hass!
+      );
     }
 
     viewConfig = {
@@ -251,7 +251,12 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
-      confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      if (ev.detail.confirm) {
+        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+      } else {
+        const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
+        this.lovelace.saveConfig(newLovelace);
+      }
     });
   }
 

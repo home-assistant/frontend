@@ -1,7 +1,7 @@
 import { customElement } from "lit/decorators";
-import type { LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { getCardElementClass } from "../../create-element/create-card-element";
-import type { LovelaceCardEditor } from "../../types";
+import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-card-element-editor")
@@ -12,6 +12,17 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
       return elClass.getConfigElement();
+    }
+
+    return undefined;
+  }
+
+  protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
+    const elClass = await getCardElementClass(this.configElementType!);
+
+    // Check if a schema exists
+    if (elClass && elClass.getConfigForm) {
+      return elClass.getConfigForm();
     }
 
     return undefined;

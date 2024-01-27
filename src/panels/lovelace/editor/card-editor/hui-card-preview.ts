@@ -1,7 +1,7 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import { computeRTL } from "../../../../common/util/compute_rtl";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../../types";
 import { createCardElement } from "../../create-element/create-card-element";
 import { createErrorCardConfig } from "../../create-element/create-element-base";
@@ -10,7 +10,7 @@ import { LovelaceCard } from "../../types";
 export class HuiCardPreview extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public config?: LovelaceCardConfig;
+  @property({ attribute: false }) public config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -86,6 +86,8 @@ export class HuiCardPreview extends ReactiveElement {
   private _createCard(configValue: LovelaceCardConfig): void {
     this._cleanup();
     this._element = createCardElement(configValue);
+
+    this._element.editMode = true;
 
     if (this.hass) {
       this._element!.hass = this.hass;

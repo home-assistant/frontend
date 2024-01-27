@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
   html,
   LitElement,
@@ -15,7 +14,9 @@ import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
 import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
-import { PolymerChangedEvent } from "../polymer-types";
+import { ValueChangedEvent } from "../types";
+import { onBoardingStyles } from "./styles";
+import { debounce } from "../common/util/debounce";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   {
@@ -42,7 +43,7 @@ const CREATE_USER_SCHEMA: HaFormSchema[] = [
 
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property() public language!: string;
 
@@ -58,7 +59,7 @@ class OnboardingCreateUser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
+      <h1>${this.localize("ui.panel.page-onboarding.user.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.user.intro")}</p>
 
       ${this._errorMsg
@@ -67,25 +68,27 @@ class OnboardingCreateUser extends LitElement {
 
       <ha-form
         .computeLabel=${this._computeLabel(this.localize)}
+        .computeHelper=${this._computeHelper(this.localize)}
         .data=${this._newUser}
         .disabled=${this._loading}
         .error=${this._formError}
         .schema=${CREATE_USER_SCHEMA}
         @value-changed=${this._handleValueChanged}
       ></ha-form>
-
-      <mwc-button
-        raised
-        @click=${this._submitForm}
-        .disabled=${this._loading ||
-        !this._newUser.name ||
-        !this._newUser.username ||
-        !this._newUser.password ||
-        !this._newUser.password_confirm ||
-        this._newUser.password !== this._newUser.password_confirm}
-      >
-        ${this.localize("ui.panel.page-onboarding.user.create_account")}
-      </mwc-button>
+      <div class="footer">
+        <mwc-button
+          unelevated
+          @click=${this._submitForm}
+          .disabled=${this._loading ||
+          !this._newUser.name ||
+          !this._newUser.username ||
+          !this._newUser.password ||
+          !this._newUser.password_confirm ||
+          this._newUser.password !== this._newUser.password_confirm}
+        >
+          ${this.localize("ui.panel.page-onboarding.user.create_account")}
+        </mwc-button>
+      </div>
     `;
   }
 
@@ -94,7 +97,7 @@ class OnboardingCreateUser extends LitElement {
     setTimeout(() => this._form?.focus(), 100);
     this.addEventListener("keypress", (ev) => {
       if (
-        ev.keyCode === 13 &&
+        ev.key === "Enter" &&
         this._newUser.name &&
         this._newUser.username &&
         this._newUser.password &&
@@ -111,20 +114,48 @@ class OnboardingCreateUser extends LitElement {
       localize(`ui.panel.page-onboarding.user.data.${schema.name}`);
   }
 
+  private _computeHelper(localize) {
+    return (schema: HaFormSchema) =>
+      localize(`ui.panel.page-onboarding.user.helper.${schema.name}`);
+  }
+
   private _handleValueChanged(
-    ev: PolymerChangedEvent<HaFormDataContainer>
+    ev: ValueChangedEvent<HaFormDataContainer>
   ): void {
     const nameChanged = ev.detail.value.name !== this._newUser.name;
+    const passwordChanged =
+      ev.detail.value.password !== this._newUser.password ||
+      ev.detail.value.password_confirm !== this._newUser.password_confirm;
     this._newUser = ev.detail.value;
     if (nameChanged) {
       this._maybePopulateUsername();
     }
+    if (passwordChanged) {
+      if (this._formError.password_confirm) {
+        this._checkPasswordMatch();
+      } else {
+        this._debouncedCheckPasswordMatch();
+      }
+    }
+  }
+
+  private _debouncedCheckPasswordMatch = debounce(
+    () => this._checkPasswordMatch(),
+    500
+  );
+
+  private _checkPasswordMatch(): void {
+    const old = this._formError.password_confirm;
     this._formError.password_confirm =
+      this._newUser.password_confirm &&
       this._newUser.password !== this._newUser.password_confirm
         ? this.localize(
             "ui.panel.page-onboarding.user.error.password_not_match"
           )
         : "";
+    if (old !== this._formError.password_confirm) {
+      this.requestUpdate("_formError");
+    }
   }
 
   private _maybePopulateUsername(): void {
@@ -167,14 +198,7 @@ class OnboardingCreateUser extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        margin: 32px 0 0;
-        text-align: center;
-        display: block;
-        text-align: right;
-      }
-    `;
+    return onBoardingStyles;
   }
 }
 

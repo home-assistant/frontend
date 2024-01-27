@@ -26,7 +26,7 @@ import { showSystemInformationDialog } from "./show-system-information-dialog";
 class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _repairsIssues: RepairsIssue[] = [];
 
@@ -79,7 +79,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu corner="BOTTOM_START" multi>
+          <ha-button-menu multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}

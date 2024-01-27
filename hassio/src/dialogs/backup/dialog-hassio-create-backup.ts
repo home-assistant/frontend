@@ -57,7 +57,7 @@ class HassioCreateBackupDialog extends LitElement {
         )}
       >
         ${this._creatingBackup
-          ? html`<ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
           : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
@@ -89,8 +89,7 @@ class HassioCreateBackupDialog extends LitElement {
         ),
         text: this._dialogParams!.supervisor.localize(
           "backup.create_blocked_not_running",
-          "state",
-          this._dialogParams!.supervisor.info.state
+          { state: this._dialogParams!.supervisor.info.state }
         ),
       });
       return;
@@ -139,6 +138,9 @@ class HassioCreateBackupDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        :host {
+          direction: var(--direction);
+        }
         ha-circular-progress {
           display: block;
           text-align: center;

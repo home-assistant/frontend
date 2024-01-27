@@ -3,6 +3,8 @@ import {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import { supportsFeature } from "../common/entity/supports-feature";
+import { ClimateEntityFeature } from "../data/climate";
 
 const now = () => new Date().toISOString();
 const randomTime = () =>
@@ -313,6 +315,65 @@ class ClimateEntity extends Entity {
       super.handleService(domain, service, data);
     }
   }
+
+  public toState() {
+    const state = super.toState();
+
+    state.attributes.hvac_action = undefined;
+
+    if (
+      supportsFeature(
+        state as HassEntity,
+        ClimateEntityFeature.TARGET_TEMPERATURE
+      )
+    ) {
+      const current = state.attributes.current_temperature;
+      const target = state.attributes.temperature;
+      if (state.state === "heat") {
+        state.attributes.hvac_action = target >= current ? "heating" : "idle";
+      }
+      if (state.state === "cool") {
+        state.attributes.hvac_action = target <= current ? "cooling" : "idle";
+      }
+    }
+    if (
+      supportsFeature(
+        state as HassEntity,
+        ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+      )
+    ) {
+      const current = state.attributes.current_temperature;
+      const lowTarget = state.attributes.target_temp_low;
+      const highTarget = state.attributes.target_temp_high;
+      state.attributes.hvac_action =
+        lowTarget >= current
+          ? "heating"
+          : highTarget <= current
+            ? "cooling"
+            : "idle";
+    }
+    return state;
+  }
+}
+
+class WaterHeaterEntity extends Entity {
+  public async handleService(domain, service, data) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "set_operation_mode") {
+      this.update(data.operation_mode, this.attributes);
+    } else if (["set_temperature"].includes(service)) {
+      const { entity_id, ...toSet } = data;
+      this.update(this.state, {
+        ...this.attributes,
+        ...toSet,
+      });
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
 }
 
 class GroupEntity extends Entity {
@@ -345,6 +406,7 @@ const TYPES = {
   lock: LockEntity,
   media_player: MediaPlayerEntity,
   switch: ToggleEntity,
+  water_heater: WaterHeaterEntity,
 };
 
 export const getEntity = (

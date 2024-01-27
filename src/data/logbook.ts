@@ -5,8 +5,8 @@ import {
   DOMAINS_WITH_DYNAMIC_PICTURE,
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
@@ -60,81 +60,12 @@ const triggerPhrases = {
   "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
 };
 
-const DATA_CACHE: {
-  [cacheKey: string]: {
-    [entityId: string]: Promise<LogbookEntry[]> | undefined;
-  };
-} = {};
-
 export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
   contextId?: string
-): Promise<LogbookEntry[]> => {
-  await hass.loadBackendTranslation("device_class");
-  return getLogbookDataFromServer(
-    hass,
-    startDate,
-    undefined,
-    undefined,
-    contextId
-  );
-};
-
-export const getLogbookData = async (
-  hass: HomeAssistant,
-  startDate: string,
-  endDate: string,
-  entityIds?: string[],
-  deviceIds?: string[]
-): Promise<LogbookEntry[]> => {
-  await hass.loadBackendTranslation("device_class");
-  return deviceIds?.length
-    ? getLogbookDataFromServer(
-        hass,
-        startDate,
-        endDate,
-        entityIds,
-        undefined,
-        deviceIds
-      )
-    : getLogbookDataCache(hass, startDate, endDate, entityIds);
-};
-
-const getLogbookDataCache = async (
-  hass: HomeAssistant,
-  startDate: string,
-  endDate: string,
-  entityId?: string[]
-) => {
-  const ALL_ENTITIES = "*";
-
-  const entityIdKey = entityId ? entityId.toString() : ALL_ENTITIES;
-  const cacheKey = `${startDate}${endDate}`;
-
-  if (!DATA_CACHE[cacheKey]) {
-    DATA_CACHE[cacheKey] = {};
-  }
-
-  if (entityIdKey in DATA_CACHE[cacheKey]) {
-    return DATA_CACHE[cacheKey][entityIdKey]!;
-  }
-
-  if (entityId && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
-    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES]!;
-    return entities.filter(
-      (entity) => entity.entity_id && entityId.includes(entity.entity_id)
-    );
-  }
-
-  DATA_CACHE[cacheKey][entityIdKey] = getLogbookDataFromServer(
-    hass,
-    startDate,
-    endDate,
-    entityId
-  );
-  return DATA_CACHE[cacheKey][entityIdKey]!;
-};
+): Promise<LogbookEntry[]> =>
+  getLogbookDataFromServer(hass, startDate, undefined, undefined, contextId);
 
 const getLogbookDataFromServer = (
   hass: HomeAssistant,
@@ -205,10 +136,6 @@ export const subscribeLogbook = (
   );
 };
 
-export const clearLogbookCache = (startDate: string, endDate: string) => {
-  DATA_CACHE[`${startDate}${endDate}`] = {};
-};
-
 export const createHistoricState = (
   currentStateObj: HassEntity,
   state?: string
@@ -267,7 +194,7 @@ export const localizeStateMessage = (
       if (state === "home") {
         return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
       }
-      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, "state", state);
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, { state });
 
     case "sun":
       return state === "above_horizon"
@@ -359,15 +286,21 @@ export const localizeStateMessage = (
         case "vibration":
           if (isOn) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
-              device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+              device_class: autoCaseNoun(
+                localize(
+                  `component.binary_sensor.entity_component.${device_class}.name`
+                ),
+                hass.language
               ),
             });
           }
           if (isOff) {
             return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
-              device_class: localize(
-                `component.binary_sensor.device_class.${device_class}`
+              device_class: autoCaseNoun(
+                localize(
+                  `component.binary_sensor.entity_component.${device_class}.name`
+                ),
+                hass.language
               ),
             });
           }
@@ -398,6 +331,24 @@ export const localizeStateMessage = (
           return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
       }
       break;
+
+    case "event": {
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
+
+      // TODO: This is not working yet, as we don't get historic attribute values
+
+      const event_type = hass
+        .formatEntityAttributeValue(stateObj, "event_type")
+        ?.toString();
+
+      if (!event_type) {
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
+      }
+
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event`, {
+        event_type: autoCaseNoun(event_type, hass.language),
+      });
+    }
 
     case "lock":
       switch (state) {
@@ -431,19 +382,9 @@ export const localizeStateMessage = (
     return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
-  return hass.localize(
-    `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
-    "state",
-    stateObj
-      ? computeStateDisplay(
-          localize,
-          stateObj,
-          hass.locale,
-          hass.entities,
-          state
-        )
-      : state
-  );
+  return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.changed_to_state`, {
+    state: stateObj ? hass.formatEntityState(stateObj, state) : state,
+  });
 };
 
 export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (

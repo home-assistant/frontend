@@ -1,25 +1,23 @@
-    <script>
-      function _ls(src) {
-        var doc = document.documentElement;
-        var script = doc.insertBefore(
-          document.createElement("script"),
-          doc.lastChild
-        );
-        script.defer = true;
-        script.src = src;
-        return script;
-      }
-      window.Polymer = {
-        lazyRegister: true,
-        useNativeCSSProperties: true,
-        dom: "shadow",
-        suppressTemplateNotifications: true,
-        suppressBindingNotifications: true,
-      };
-      window.polymerSkipLoadingFontRoboto = true;
-      if (!("customElements" in window &&
-            "content" in document.createElement("template"))) {
-        document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
-      }
-      var isS11_12 = /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(navigator.userAgent);
-    </script>
+<script>
+  function _ls(src, notCustom) {
+    var script = document.createElement("script");
+    if (notCustom) {
+      script.crossOrigin = "use-credentials";
+    }
+    script.src = src;
+    return document.head.appendChild(script);
+  }
+  window.polymerSkipLoadingFontRoboto = true;
+  if (
+    !(
+      "customElements" in window &&
+      "content" in document.createElement("template")
+    )
+  ) {
+    _ls("/static/polyfills/webcomponents-bundle.js", true);
+  }
+  var isS11_12 =
+    /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(
+      navigator.userAgent
+    );
+</script>

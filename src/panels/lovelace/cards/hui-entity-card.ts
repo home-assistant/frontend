@@ -4,18 +4,20 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
+import {
+  stateColorBrightness,
+  stateColorCss,
+} from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
   formatNumber,
@@ -23,33 +25,23 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
+import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
-import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
-import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceHeaderFooter,
-} from "../types";
+import { LovelaceCard, LovelaceHeaderFooter } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
-  public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-entity-card-editor");
-    return document.createElement("hui-entity-card-editor");
-  }
-
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -68,6 +60,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return {
       entity: foundEntities[0] || "",
     };
+  }
+
+  public static async getConfigForm() {
+    return (await import("../editor/config-elements/hui-entity-card-editor"))
+      .default;
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -142,12 +139,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-state-icon
               .icon=${this._config.icon}
-              .state=${stateObj}
+              .stateObj=${stateObj}
+              .hass=${this.hass}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
-                filter: colored ? this._computeBrightness(stateObj) : undefined,
+                filter: colored ? stateColorBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -159,29 +157,26 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? computeAttributeValueDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.locale,
-                    this.hass.entities,
-                    this._config.attribute!
-                  )
+                ? html`
+                    <ha-attribute-value
+                      hide-unit
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      .attribute=${this._config.attribute!}
+                    >
+                    </ha-attribute-value>
+                  `
                 : this.hass.localize("state.default.unknown")
               : isNumericState(stateObj) || this._config.unit
-              ? formatNumber(
-                  stateObj.state,
-                  this.hass.locale,
-                  getNumberFormatOptions(
-                    stateObj,
-                    this.hass.entities[this._config.entity]
+                ? formatNumber(
+                    stateObj.state,
+                    this.hass.locale,
+                    getNumberFormatOptions(
+                      stateObj,
+                      this.hass.entities[this._config.entity]
+                    )
                   )
-                )
-              : computeStateDisplay(
-                  this.hass.localize,
-                  stateObj,
-                  this.hass.locale,
-                  this.hass.entities
-                )}</span
+                : this.hass.formatEntityState(stateObj)}</span
           >${showUnit
             ? html`
                 <span class="measurement"
@@ -201,8 +196,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (hvacAction in HVAC_ACTION_TO_MODE) {
-        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
+      if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {
+        return stateColorCss(stateObj, CLIMATE_HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;
     }
@@ -214,14 +209,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       return iconColor;
     }
     return undefined;
-  }
-
-  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (stateObj.attributes.brightness) {
-      const brightness = stateObj.attributes.brightness;
-      return `brightness(${(brightness + 245) / 5}%)`;
-    }
-    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

@@ -2,7 +2,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-theme-picker";
 import { HomeAssistant } from "../../../../types";
@@ -14,7 +13,7 @@ import { EditorTarget, EntitiesEditorEvent } from "../types";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(entityId()),
+    entity: optional(string()),
     theme: optional(string()),
   })
 );

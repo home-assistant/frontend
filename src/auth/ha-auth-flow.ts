@@ -1,32 +1,31 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
-import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
-import "../components/ha-markdown";
-import { AuthProvider, autocompleteLoginFields } from "../data/auth";
+import {
+  AuthProvider,
+  autocompleteLoginFields,
+  createLoginFlow,
+  deleteLoginFlow,
+  redirectWithAuthCode,
+  submitLoginFlow,
+} from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import "./ha-password-manager-polyfill";
+import "./ha-auth-form";
 
 type State = "loading" | "error" | "step";
 
 @customElement("ha-auth-flow")
-export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
+export class HaAuthFlow extends LitElement {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
@@ -35,55 +34,89 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
+  @property({ attribute: false }) public localize!: LocalizeFunc;
+
+  @property({ attribute: false }) public step?: DataEntryFlowStep;
+
+  @property({ type: Boolean }) public initStoreToken = false;
+
+  @state() private _storeToken = false;
+
   @state() private _state: State = "loading";
 
   @state() private _stepData?: Record<string, any>;
-
-  @state() private _step?: DataEntryFlowStep;
 
   @state() private _errorMessage?: string;
 
   @state() private _submitting = false;
 
-  @state() private _storeToken = false;
+  createRenderRoot() {
+    return this;
+  }
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("_step")) {
+    if (!this.hasUpdated) {
+      this._storeToken = this.initStoreToken;
+    }
+
+    if (!changedProps.has("step")) {
       return;
     }
 
-    if (!this._step) {
+    if (!this.step) {
       this._stepData = undefined;
       return;
     }
 
-    const oldStep = changedProps.get("_step") as HaAuthFlow["_step"];
+    this._state = "step";
+
+    const oldStep = changedProps.get("step") as HaAuthFlow["step"];
 
     if (
       !oldStep ||
-      this._step.flow_id !== oldStep.flow_id ||
-      (this._step.type === "form" &&
+      this.step.flow_id !== oldStep.flow_id ||
+      (this.step.type === "form" &&
         oldStep.type === "form" &&
-        this._step.step_id !== oldStep.step_id)
+        this.step.step_id !== oldStep.step_id)
     ) {
       this._stepData =
-        this._step.type === "form"
-          ? computeInitialHaFormData(this._step.data_schema)
+        this.step.type === "form"
+          ? computeInitialHaFormData(this.step.data_schema)
           : undefined;
     }
   }
 
   protected render() {
     return html`
+      <style>
+        ha-auth-flow .store-token {
+          margin-left: -16px;
+          margin-inline-start: -16px;
+          margin-inline-end: initial;
+        }
+        a.forgot-password {
+          color: var(--primary-color);
+          text-decoration: none;
+          font-size: 0.875rem;
+        }
+        .space-between {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        form {
+          text-align: center;
+          max-width: 336px;
+          width: 100%;
+        }
+        ha-auth-form {
+          display: block;
+          margin-top: 16px;
+        }
+      </style>
       <form>${this._renderForm()}</form>
-      <ha-password-manager-polyfill
-        .step=${this._step}
-        .stepData=${this._stepData}
-        @form-submitted=${this._handleSubmit}
-        @value-changed=${this._stepDataChanged}
-      ></ha-password-manager-polyfill>
     `;
   }
 
@@ -103,7 +136,7 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
 
     this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
+      if (ev.key === "Enter") {
         this._handleSubmit(ev);
       }
     });
@@ -115,7 +148,7 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       this._providerChanged(this.authProvider);
     }
 
-    if (!changedProps.has("_step") || this._step?.type !== "form") {
+    if (!changedProps.has("step") || this.step?.type !== "form") {
       return;
     }
 
@@ -126,29 +159,24 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         (form as any).focus();
       }
     }, 100);
-
-    setTimeout(() => {
-      this.renderRoot.querySelector(
-        "ha-password-manager-polyfill"
-      )!.boundingRect = this.getBoundingClientRect();
-    }, 500);
   }
 
   private _renderForm() {
     switch (this._state) {
       case "step":
-        if (this._step == null) {
+        if (this.step == null) {
           return nothing;
         }
+
         return html`
-          ${this._renderStep(this._step)}
+          ${this._renderStep(this.step)}
           <div class="action">
             <mwc-button
               raised
               @click=${this._handleSubmit}
               .disabled=${this._submitting}
             >
-              ${this._step.type === "form"
+              ${this.step.type === "form"
                 ? this.localize("ui.panel.page-authorize.form.next")
                 : this.localize("ui.panel.page-authorize.form.start_over")}
             </mwc-button>
@@ -157,11 +185,9 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       case "error":
         return html`
           <ha-alert alert-type="error">
-            ${this.localize(
-              "ui.panel.page-authorize.form.error",
-              "error",
-              this._errorMessage
-            )}
+            ${this.localize("ui.panel.page-authorize.form.error", {
+              error: this._errorMessage,
+            })}
           </ha-alert>
           <div class="action">
             <mwc-button raised @click=${this._startOver}>
@@ -185,45 +211,53 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       case "abort":
         return html`
           ${this.localize("ui.panel.page-authorize.abort_intro")}:
-          <ha-markdown
-            allowsvg
-            breaks
-            .content=${this.localize(
-              `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
-            )}
-          ></ha-markdown>
+          ${this.localize(
+            `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
+          )}
         `;
       case "form":
         return html`
-          ${this._computeStepDescription(step)
-            ? html`
-                <ha-markdown
-                  breaks
-                  .content=${this._computeStepDescription(step)}
-                ></ha-markdown>
-              `
-            : nothing}
-          <ha-form
-            .data=${this._stepData}
+          <h1>
+            ${!["select_mfa_module", "mfa"].includes(step.step_id)
+              ? this.localize("ui.panel.page-authorize.welcome_home")
+              : this.localize("ui.panel.page-authorize.just_checking")}
+          </h1>
+          ${this._computeStepDescription(step)}
+          <ha-auth-form
+            .localize=${this.localize}
+            .data=${this._stepData!}
             .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}
             .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
-          ></ha-form>
+          ></ha-auth-form>
           ${this.clientId === genClientId() &&
           !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`
-                <ha-formfield
-                  class="store-token"
-                  .label=${this.localize("ui.panel.page-authorize.store_token")}
-                >
-                  <ha-checkbox
-                    .checked=${this._storeToken}
-                    @change=${this._storeTokenChanged}
-                  ></ha-checkbox>
-                </ha-formfield>
+                <div class="space-between">
+                  <ha-formfield
+                    class="store-token"
+                    .label=${this.localize(
+                      "ui.panel.page-authorize.store_token"
+                    )}
+                  >
+                    <ha-checkbox
+                      .checked=${this._storeToken}
+                      @change=${this._storeTokenChanged}
+                    ></ha-checkbox>
+                  </ha-formfield>
+                  <a
+                    class="forgot-password"
+                    href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    >${this.localize(
+                      "ui.panel.page-authorize.forgot_password"
+                    )}</a
+                  >
+                </div>
               `
             : ""}
         `;
@@ -237,11 +271,8 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
-    if (this._step && this._step.type === "form") {
-      fetch(`/auth/login_flow/${this._step.flow_id}`, {
-        method: "DELETE",
-        credentials: "same-origin",
-      }).catch((err) => {
+    if (this.step && this.step.type === "form") {
+      deleteLoginFlow(this.step.flow_id).catch((err) => {
         // eslint-disable-next-line no-console
         console.error("Error delete obsoleted auth flow", err);
       });
@@ -256,26 +287,26 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
 
     try {
-      const response = await fetch("/auth/login_flow", {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify({
-          client_id: this.clientId,
-          handler: [newProvider.type, newProvider.id],
-          redirect_uri: this.redirectUri,
-        }),
-      });
+      const response = await createLoginFlow(this.clientId, this.redirectUri, [
+        newProvider.type,
+        newProvider.id,
+      ]);
 
       const data = await response.json();
 
       if (response.ok) {
         // allow auth provider bypass the login form
         if (data.type === "create_entry") {
-          this._redirect(data.result);
+          redirectWithAuthCode(
+            this.redirectUri!,
+            data.result,
+            this.oauth2State,
+            this._storeToken
+          );
           return;
         }
 
-        this._step = data;
+        this.step = data;
         this._state = "step";
       } else {
         this._state = "error";
@@ -289,27 +320,6 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private _redirect(authCode: string) {
-    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-    let url = this.redirectUri!;
-    if (!url.includes("?")) {
-      url += "?";
-    } else if (!url.endsWith("&")) {
-      url += "&";
-    }
-
-    url += `code=${encodeURIComponent(authCode)}`;
-
-    if (this.oauth2State) {
-      url += `&state=${encodeURIComponent(this.oauth2State)}`;
-    }
-    if (this._storeToken) {
-      url += `&storeToken=true`;
-    }
-
-    document.location.assign(url);
-  }
-
   private _stepDataChanged(ev: CustomEvent) {
     this._stepData = ev.detail.value;
   }
@@ -317,13 +327,7 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   private _computeStepDescription(step: DataEntryFlowStepForm) {
     const resourceKey =
       `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
-    const args: string[] = [];
-    const placeholders = step.description_placeholders || {};
-    Object.keys(placeholders).forEach((key) => {
-      args.push(key);
-      args.push(placeholders[key]);
-    });
-    return this.localize(resourceKey, ...args);
+    return this.localize(resourceKey, step.description_placeholders);
   }
 
   private _computeLabelCallback(step: DataEntryFlowStepForm) {
@@ -352,10 +356,10 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   private async _handleSubmit(ev: Event) {
     ev.preventDefault();
-    if (this._step == null) {
+    if (this.step == null) {
       return;
     }
-    if (this._step.type !== "form") {
+    if (this.step.type !== "form") {
       this._providerChanged(this.authProvider);
       return;
     }
@@ -364,11 +368,7 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     const postData = { ...this._stepData, client_id: this.clientId };
 
     try {
-      const response = await fetch(`/auth/login_flow/${this._step.flow_id}`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify(postData),
-      });
+      const response = await submitLoginFlow(this.step.flow_id, postData);
 
       const newStep = await response.json();
 
@@ -379,10 +379,15 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       }
 
       if (newStep.type === "create_entry") {
-        this._redirect(newStep.result);
+        redirectWithAuthCode(
+          this.redirectUri!,
+          newStep.result,
+          this.oauth2State,
+          this._storeToken
+        );
         return;
       }
-      this._step = newStep;
+      this.step = newStep;
       this._state = "step";
     } catch (err: any) {
       // eslint-disable-next-line no-console
@@ -392,20 +397,6 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     } finally {
       this._submitting = false;
     }
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .action {
-        margin: 24px 0 8px;
-        text-align: center;
-      }
-      /* Align with the rest of the form. */
-      .store-token {
-        margin-top: 10px;
-        margin-left: -16px;
-      }
-    `;
   }
 }
 

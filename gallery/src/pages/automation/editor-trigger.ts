@@ -19,11 +19,13 @@ import { HaTemplateTrigger } from "../../../../src/panels/config/automation/trig
 import { HaTimeTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-time";
 import { HaTimePatternTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-time_pattern";
 import { HaWebhookTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-webhook";
+import { HaPersistentNotificationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-persistent_notification";
 import { HaZoneTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-zone";
 import { HaDeviceTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-device";
 import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-state";
 import { HaMQTTTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-mqtt";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
+import { HaConversationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-conversation";
 
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
@@ -73,6 +75,16 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   },
 
   {
+    name: "Persistent Notification",
+    triggers: [
+      {
+        platform: "persistent_notification",
+        ...HaPersistentNotificationTrigger.defaultConfig,
+      },
+    ],
+  },
+
+  {
     name: "Zone",
     triggers: [{ platform: "zone", ...HaZoneTrigger.defaultConfig }],
   },
@@ -101,10 +113,20 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
     name: "Device Trigger",
     triggers: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
   },
+  {
+    name: "Sentence",
+    triggers: [
+      { platform: "conversation", ...HaConversationTrigger.defaultConfig },
+      {
+        platform: "conversation",
+        command: ["Turn on the lights", "Turn the lights on"],
+      },
+    ],
+  },
 ];
 
 @customElement("demo-automation-editor-trigger")
-class DemoHaAutomationEditorTrigger extends LitElement {
+export class DemoAutomationEditorTrigger extends LitElement {
   @state() private hass!: HomeAssistant;
 
   @state() private _disabled = false;
@@ -145,17 +167,16 @@ class DemoHaAutomationEditorTrigger extends LitElement {
             .value=${this.data[sampleIdx]}
           >
             ${["light", "dark"].map(
-              (slot) =>
-                html`
-                  <ha-automation-trigger
-                    slot=${slot}
-                    .hass=${this.hass}
-                    .triggers=${this.data[sampleIdx]}
-                    .sampleIdx=${sampleIdx}
-                    .disabled=${this._disabled}
-                    @value-changed=${valueChanged}
-                  ></ha-automation-trigger>
-                `
+              (slot) => html`
+                <ha-automation-trigger
+                  slot=${slot}
+                  .hass=${this.hass}
+                  .triggers=${this.data[sampleIdx]}
+                  .sampleIdx=${sampleIdx}
+                  .disabled=${this._disabled}
+                  @value-changed=${valueChanged}
+                ></ha-automation-trigger>
+              `
             )}
           </demo-black-white-row>
         `
@@ -180,6 +201,6 @@ class DemoHaAutomationEditorTrigger extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-automation-editor-trigger": DemoHaAutomationEditorTrigger;
+    "demo-automation-editor-trigger": DemoAutomationEditorTrigger;
   }
 }

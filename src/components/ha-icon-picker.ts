@@ -1,15 +1,15 @@
+import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import {
   ComboBoxDataProviderCallback,
   ComboBoxDataProviderParams,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import "./ha-icon";
 
@@ -74,7 +74,7 @@ const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string;
 
@@ -83,8 +83,6 @@ export class HaIconPicker extends LitElement {
   @property() public helper?: string;
 
   @property() public placeholder?: string;
-
-  @property() public fallbackPath?: string;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
@@ -120,12 +118,7 @@ export class HaIconPicker extends LitElement {
               <ha-icon .icon=${this._value || this.placeholder} slot="icon">
               </ha-icon>
             `
-          : this.fallbackPath
-          ? html`<ha-svg-icon
-              .path=${this.fallbackPath}
-              slot="icon"
-            ></ha-svg-icon>`
-          : ""}
+          : html`<slot name="fallback"></slot>`}
       </ha-combo-box>
     `;
   }
@@ -173,7 +166,7 @@ export class HaIconPicker extends LitElement {
     callback(filteredItems.slice(iStart, iEnd), filteredItems.length);
   };
 
-  private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _openedChanged(ev: ValueChangedEvent<boolean>) {
     const opened = ev.detail.value;
     if (opened && !ICONS_LOADED) {
       await loadIcons();
@@ -181,7 +174,7 @@ export class HaIconPicker extends LitElement {
     }
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     this._setValue(ev.detail.value);
   }

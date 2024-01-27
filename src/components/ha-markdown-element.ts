@@ -3,6 +3,15 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
+const _legacyGitHubBlockQuoteToAlert = { Note: "info", Warning: "warning" };
+const _gitHubBlockQuoteToAlert = {
+  "[!NOTE]": "info",
+  "[!TIP]": "success",
+  "[!IMPORTANT]": "info",
+  "[!WARNING]": "warning",
+  "[!CAUTION]": "error",
+};
+
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
@@ -10,6 +19,9 @@ class HaMarkdownElement extends ReactiveElement {
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
+
+  @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
+    false;
 
   protected createRenderRoot() {
     return this;
@@ -58,12 +70,62 @@ class HaMarkdownElement extends ReactiveElement {
 
         // Fire a resize event when images loaded to notify content resized
       } else if (node instanceof HTMLImageElement) {
+        if (this.lazyImages) {
+          node.loading = "lazy";
+        }
         node.addEventListener("load", this._resize);
+      } else if (node instanceof HTMLQuoteElement) {
+        // Map GitHub blockquote elements to our ha-alert element
+        const firstElementChild = node.firstElementChild;
+        const quoteTitleElement = firstElementChild?.firstElementChild;
+        const blockQuoteType =
+          firstElementChild?.firstChild?.textContent &&
+          _gitHubBlockQuoteToAlert[firstElementChild.firstChild.textContent];
+        const legacyBlockQuoteType =
+          !blockQuoteType &&
+          quoteTitleElement?.textContent &&
+          _legacyGitHubBlockQuoteToAlert[quoteTitleElement.textContent];
+
+        if (
+          blockQuoteType ||
+          (quoteTitleElement?.nodeName === "STRONG" && legacyBlockQuoteType)
+        ) {
+          const alertNote = document.createElement("ha-alert");
+          alertNote.alertType = blockQuoteType || legacyBlockQuoteType;
+          alertNote.title = blockQuoteType
+            ? ""
+            : (firstElementChild!.childNodes[1].nodeName === "#text" &&
+                firstElementChild!.childNodes[1].textContent?.trimStart()) ||
+              "";
+
+          const childNodes = Array.from(node.childNodes)
+            .map((child) => Array.from(child.childNodes))
+            .reduce((acc, val) => acc.concat(val), [])
+            .filter(
+              (childNode) =>
+                childNode.textContent &&
+                !(childNode.textContent in _gitHubBlockQuoteToAlert) &&
+                !(childNode.textContent in _legacyGitHubBlockQuoteToAlert)
+            );
+          for (const child of childNodes) {
+            alertNote.appendChild(child);
+          }
+          node.firstElementChild!.replaceWith(alertNote);
+        }
+      } else if (
+        node instanceof HTMLElement &&
+        ["ha-alert", "ha-qr-code", "ha-icon", "ha-svg-icon"].includes(
+          node.localName
+        )
+      ) {
+        import(
+          /* webpackInclude: /(ha-alert)|(ha-qr-code)|(ha-icon)|(ha-svg-icon)/ */ `./${node.localName}`
+        );
       }
     }
   }
 
-  private _resize = () => fireEvent(this, "iron-resize");
+  private _resize = () => fireEvent(this, "content-resize");
 }
 
 declare global {

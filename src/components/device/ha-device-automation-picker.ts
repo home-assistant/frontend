@@ -1,12 +1,15 @@
+import { consume } from "@lit-labs/context";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { fullEntitiesContext } from "../../data/context";
 import {
   DeviceAutomation,
   deviceAutomationsEqual,
   sortDeviceAutomations,
 } from "../../data/device_automation";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { HomeAssistant } from "../../types";
 import "../ha-select";
 
@@ -14,7 +17,7 @@ const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
 
 export abstract class HaDeviceAutomationPicker<
-  T extends DeviceAutomation
+  T extends DeviceAutomation,
 > extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -22,13 +25,17 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public deviceId?: string;
 
-  @property() public value?: T;
+  @property({ type: Object }) public value?: T;
 
   @state() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
   @state() private _renderEmpty = false;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(
@@ -44,6 +51,7 @@ export abstract class HaDeviceAutomationPicker<
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,
+    entityRegistry: EntityRegistryEntry[],
     automation: T
   ) => string;
 
@@ -75,7 +83,7 @@ export abstract class HaDeviceAutomationPicker<
     }
 
     const idx = this._automations.findIndex((automation) =>
-      deviceAutomationsEqual(automation, this.value!)
+      deviceAutomationsEqual(this._entityReg, automation, this.value!)
     );
 
     if (idx === -1) {
@@ -110,7 +118,11 @@ export abstract class HaDeviceAutomationPicker<
         ${this._automations.map(
           (automation, idx) => html`
             <mwc-list-item .value=${`${automation.device_id}_${idx}`}>
-              ${this._localizeDeviceAutomation(this.hass, automation)}
+              ${this._localizeDeviceAutomation(
+                this.hass,
+                this._entityReg,
+                automation
+              )}
             </mwc-list-item>
           `
         )}
@@ -161,7 +173,10 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private _setValue(automation: T) {
-    if (this.value && deviceAutomationsEqual(automation, this.value)) {
+    if (
+      this.value &&
+      deviceAutomationsEqual(this._entityReg, automation, this.value)
+    ) {
       return;
     }
     const value = { ...automation };

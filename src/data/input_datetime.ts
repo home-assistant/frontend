@@ -38,7 +38,7 @@ export const setInputDateTimeValue = (
   date: string | undefined = undefined
 ) => {
   const param = { entity_id: entityId, time, date };
-  hass.callService(entityId.split(".", 1)[0], "set_datetime", param);
+  hass.callService("input_datetime", "set_datetime", param);
 };
 
 export const fetchInputDateTime = (hass: HomeAssistant) =>

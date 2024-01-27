@@ -7,22 +7,25 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("ha-formfield")
 export class HaFormfield extends FormfieldBase {
   protected _labelClick() {
-    const input = this.input;
-    if (input) {
-      input.focus();
-      switch (input.tagName) {
-        case "HA-CHECKBOX":
-        case "HA-RADIO":
-          if ((input as any).disabled) {
-            break;
-          }
-          (input as any).checked = !(input as any).checked;
-          fireEvent(input, "change");
-          break;
-        default:
-          input.click();
-          break;
-      }
+    const input = this.input as HTMLInputElement | undefined;
+    if (!input) return;
+
+    input.focus();
+    if (input.disabled) {
+      return;
+    }
+    switch (input.tagName) {
+      case "HA-CHECKBOX":
+        input.checked = !input.checked;
+        fireEvent(input, "change");
+        break;
+      case "HA-RADIO":
+        input.checked = true;
+        fireEvent(input, "change");
+        break;
+      default:
+        input.click();
+        break;
     }
   }
 

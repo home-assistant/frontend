@@ -22,37 +22,32 @@ class MoreInfoInputDatetime extends LitElement {
     }
 
     return html`
-        ${
-          this.stateObj.attributes.has_date
-            ? html`
-                <ha-date-input
-                  .locale=${this.hass.locale}
-                  .value=${stateToIsoDateString(this.stateObj)}
-                  .disabled=${isUnavailableState(this.stateObj.state)}
-                  @value-changed=${this._dateChanged}
-                >
-                </ha-date-input>
-              `
-            : ``
-        }
-        ${
-          this.stateObj.attributes.has_time
-            ? html`
-                <ha-time-input
-                  .value=${this.stateObj.state === UNKNOWN
-                    ? ""
-                    : this.stateObj.attributes.has_date
-                    ? this.stateObj.state.split(" ")[1]
-                    : this.stateObj.state}
-                  .locale=${this.hass.locale}
-                  .disabled=${isUnavailableState(this.stateObj.state)}
-                  @value-changed=${this._timeChanged}
-                  @click=${this._stopEventPropagation}
-                ></ha-time-input>
-              `
-            : ``
-        }
-      </hui-generic-entity-row>
+      ${this.stateObj.attributes.has_date
+        ? html`
+            <ha-date-input
+              .locale=${this.hass.locale}
+              .value=${stateToIsoDateString(this.stateObj)}
+              .disabled=${isUnavailableState(this.stateObj.state)}
+              @value-changed=${this._dateChanged}
+            >
+            </ha-date-input>
+          `
+        : ``}
+      ${this.stateObj.attributes.has_time
+        ? html`
+            <ha-time-input
+              .value=${this.stateObj.state === UNKNOWN
+                ? ""
+                : this.stateObj.attributes.has_date
+                  ? this.stateObj.state.split(" ")[1]
+                  : this.stateObj.state}
+              .locale=${this.hass.locale}
+              .disabled=${isUnavailableState(this.stateObj.state)}
+              @value-changed=${this._timeChanged}
+              @click=${this._stopEventPropagation}
+            ></ha-time-input>
+          `
+        : ``}
     `;
   }
 
@@ -91,6 +86,8 @@ class MoreInfoInputDatetime extends LitElement {
       }
       ha-date-input + ha-time-input {
         margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
       }
     `;
   }

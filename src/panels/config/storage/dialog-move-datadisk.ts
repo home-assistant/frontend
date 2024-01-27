@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-markdown";
 import "../../../components/ha-select";
 import {
   extractApiErrorMessage,
@@ -22,6 +21,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { bytesToString } from "../../../util/bytes-to-string";
 import { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
@@ -39,7 +39,7 @@ class MoveDatadiskDialog extends LitElement {
 
   @state() private _selectedDevice?: string;
 
-  @state() private _devices?: DatadiskList["devices"];
+  @state() private _disks?: DatadiskList["disks"];
 
   @state() private _osInfo?: HassioHassOSInfo;
 
@@ -55,7 +55,7 @@ class MoveDatadiskDialog extends LitElement {
 
       const data = await listDatadisks(this.hass);
       if (data.devices.length > 0) {
-        this._devices = data.devices;
+        this._disks = data.disks;
       } else {
         this.closeDialog();
         await showAlertDialog(this, {
@@ -80,7 +80,7 @@ class MoveDatadiskDialog extends LitElement {
 
   public closeDialog(): void {
     this._selectedDevice = undefined;
-    this._devices = undefined;
+    this._disks = undefined;
     this._moving = false;
     this._hostInfo = undefined;
     this._osInfo = undefined;
@@ -88,7 +88,7 @@ class MoveDatadiskDialog extends LitElement {
   }
 
   protected render() {
-    if (!this._hostInfo || !this._osInfo || !this._devices) {
+    if (!this._hostInfo || !this._osInfo || !this._disks) {
       return nothing;
     }
 
@@ -105,7 +105,11 @@ class MoveDatadiskDialog extends LitElement {
       >
         ${this._moving
           ? html`
-              <ha-circular-progress alt="Moving" size="large" active>
+              <ha-circular-progress
+                aria-label="Moving"
+                size="large"
+                indeterminate
+              >
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.hass.localize(
@@ -132,10 +136,19 @@ class MoveDatadiskDialog extends LitElement {
                 dialogInitialFocus
                 fixedMenuPosition
               >
-                ${this._devices.map(
-                  (device) =>
-                    html`<mwc-list-item .value=${device}>
-                      ${device}
+                ${this._disks.map(
+                  (disk) =>
+                    html`<mwc-list-item twoline .value=${disk.id}>
+                      <span>${disk.vendor} ${disk.model}</span>
+                      <span slot="secondary">
+                        ${this.hass.localize(
+                          "ui.panel.config.storage.datadisk.extra_information",
+                          {
+                            size: bytesToString(disk.size),
+                            serial: disk.serial,
+                          }
+                        )}
+                      </span>
                     </mwc-list-item>`
                 )}
               </ha-select>

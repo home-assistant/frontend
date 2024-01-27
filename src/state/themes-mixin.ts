@@ -71,7 +71,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       let themeSettings: Partial<HomeAssistant["selectedTheme"]> =
-        this.hass!.selectedTheme;
+        this.hass.config.recovery_mode || this.hass.config.safe_mode
+          ? {
+              ...this.hass.selectedTheme,
+              theme: "default",
+              primaryColor: this.hass.config.recovery_mode
+                ? "#db4437"
+                : "#e48629",
+              accentColor: this.hass.config.recovery_mode
+                ? "#ffca28"
+                : "#db4437",
+            }
+          : this.hass.selectedTheme;
 
       const themeName =
         themeSettings?.theme ||
@@ -80,7 +91,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           : this.hass.themes.default_theme);
 
       let darkMode =
-        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings.dark;
 
       const selectedTheme = themeName
         ? this.hass.themes.themes[themeName]
@@ -90,7 +101,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         darkMode = false;
       }
 
-      themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
+      themeSettings = { ...themeSettings, dark: darkMode };
       this._updateHass({
         themes: { ...this.hass.themes!, theme: themeName },
       });

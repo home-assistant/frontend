@@ -5,8 +5,17 @@ on:
     branches:
       - dev
 
+permissions:
+  contents: read
+
 jobs:
   update_release_draft:
+    permissions:
+      # write permission for contents is required to create a github release
+      contents: write
+      # write permission for pull-requests is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - uses: release-drafter/release-drafter@v5

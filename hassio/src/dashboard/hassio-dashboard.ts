@@ -1,4 +1,4 @@
-import { mdiStorePlus } from "@mdi/js";
+import { mdiStorePlus, mdiUpdate } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -9,8 +9,11 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addons";
-import "./hassio-update";
 import "../../../src/layouts/hass-subpage";
+import { reloadHassioAddons } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {
@@ -18,9 +21,15 @@ class HassioDashboard extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  firstUpdated() {
+    if (!atLeastVersion(this.hass.config.version, 2022, 5)) {
+      import("./hassio-update");
+    }
+  }
 
   protected render(): TemplateResult {
     if (atLeastVersion(this.hass.config.version, 2022, 5)) {
@@ -31,9 +40,16 @@ class HassioDashboard extends LitElement {
         back-path="/config"
         .header=${this.supervisor.localize("panel.addons")}
       >
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._handleCheckUpdates}
+          .path=${mdiUpdate}
+          .label=${this.supervisor.localize("store.check_updates")}
+        ></ha-icon-button>
         <hassio-addons
           .hass=${this.hass}
           .supervisor=${this.supervisor}
+          .narrow=${this.narrow}
         ></hassio-addons>
         <a href="/hassio/store">
           <ha-fab
@@ -44,7 +60,7 @@ class HassioDashboard extends LitElement {
             <ha-svg-icon
               slot="icon"
               .path=${mdiStorePlus}
-            ></ha-svg-icon> </ha-fab
+            ></ha-svg-icon></ha-fab
         ></a>
       </hass-subpage>`;
     }
@@ -94,6 +110,18 @@ class HassioDashboard extends LitElement {
     `;
   }
 
+  private async _handleCheckUpdates() {
+    try {
+      await reloadHassioAddons(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        text: extractApiErrorMessage(err),
+      });
+    } finally {
+      fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -105,6 +133,8 @@ class HassioDashboard extends LitElement {
           position: fixed;
           right: calc(16px + env(safe-area-inset-right));
           bottom: calc(16px + env(safe-area-inset-bottom));
+          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          inset-inline-start: initial;
           z-index: 1;
         }
       `,

@@ -148,7 +148,9 @@ export class CloudRegister extends LitElement {
                 <ha-textfield
                   id="password"
                   name="password"
-                  label="Password"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.cloud.register.password"
+                  )}
                   .value=${this._password}
                   type="password"
                   autocomplete="new-password"

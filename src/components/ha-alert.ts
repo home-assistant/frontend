@@ -117,7 +117,6 @@ class HaAlert extends LitElement {
       margin-right: 0;
       margin-inline-start: 8px;
       margin-inline-end: 0;
-      direction: var(--direction);
     }
     .title {
       margin-top: 2px;

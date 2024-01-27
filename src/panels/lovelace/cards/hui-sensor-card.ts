@@ -1,3 +1,4 @@
+import { css, CSSResultGroup } from "lit";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -9,6 +10,8 @@ import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
+
+export const DEFAULT_HOURS_TO_SHOW = 24;
 
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {
@@ -59,7 +62,7 @@ class HuiSensorCard extends HuiEntityCard {
         type: "graph",
         entity: config.entity,
         detail: detail || 1,
-        hours_to_show: hours_to_show || 24,
+        hours_to_show: hours_to_show || DEFAULT_HOURS_TO_SHOW,
         limits: config.limits!,
       };
 
@@ -67,6 +70,21 @@ class HuiSensorCard extends HuiEntityCard {
     }
 
     super.setConfig(entityCardConfig);
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      HuiEntityCard.styles,
+      css`
+        ha-card {
+          overflow: hidden;
+        }
+        .info {
+          direction: ltr;
+          text-align: var(--float-start);
+        }
+      `,
+    ];
   }
 }
 

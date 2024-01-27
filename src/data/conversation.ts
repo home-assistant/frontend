@@ -1,3 +1,4 @@
+import { ensureArray } from "../common/array/ensure-array";
 import { HomeAssistant } from "../types";
 
 interface IntentTarget {
@@ -52,8 +53,28 @@ export interface ConversationResult {
     | IntentResultError;
 }
 
-export interface AgentInfo {
-  attribution?: { name: string; url: string };
+export interface Agent {
+  id: string;
+  name: string;
+  supported_languages: "*" | string[];
+}
+
+export interface AssitDebugResult {
+  intent: {
+    name: string;
+  };
+  entities: Record<
+    string,
+    {
+      name: string;
+      value: string;
+      text: string;
+    }
+  >;
+}
+
+export interface AssistDebugResponse {
+  results: (AssitDebugResult | null)[];
 }
 
 export const processConversationInput = (
@@ -70,9 +91,15 @@ export const processConversationInput = (
     language,
   });
 
-export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
+export const listAgents = (
+  hass: HomeAssistant,
+  language?: string,
+  country?: string
+): Promise<{ agents: Agent[] }> =>
   hass.callWS({
-    type: "conversation/agent/info",
+    type: "conversation/agent/list",
+    language,
+    country,
   });
 
 export const prepareConversation = (
@@ -82,4 +109,17 @@ export const prepareConversation = (
   hass.callWS({
     type: "conversation/prepare",
     language,
+  });
+
+export const debugAgent = (
+  hass: HomeAssistant,
+  sentences: string[] | string,
+  language: string,
+  device_id?: string
+): Promise<AssistDebugResponse> =>
+  hass.callWS({
+    type: "conversation/agent/homeassistant/debug",
+    sentences: ensureArray(sentences),
+    language,
+    device_id,
   });

@@ -4,7 +4,7 @@ import {
   FlattenObjectKeys,
   LocalizeFunc,
 } from "../../common/translations/localize";
-import { HomeAssistant, TranslationDict } from "../../types";
+import { TranslationDict } from "../../types";
 import { HassioAddonsInfo } from "../hassio/addon";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import { NetworkInfo } from "../hassio/network";
@@ -95,7 +95,7 @@ async function processEvent(
     const data = await supervisorApiWsRequest<any>(conn, {
       endpoint: supervisorCollection[key],
     });
-    store.setState(data);
+    store.setState(data, true);
     return;
   }
 
@@ -104,10 +104,7 @@ async function processEvent(
     return;
   }
 
-  store.setState({
-    ...state,
-    ...event.data,
-  });
+  store.setState(event.data);
 }
 
 const subscribeSupervisorEventUpdates = (
@@ -130,17 +127,11 @@ export const getSupervisorEventCollection = (
   getCollection(
     conn,
     `_supervisor${key}Event`,
-    () => supervisorApiWsRequest(conn, { endpoint }),
+    (conn2) => supervisorApiWsRequest(conn2, { endpoint }),
     (connection, store) =>
-      subscribeSupervisorEventUpdates(connection, store, key)
+      subscribeSupervisorEventUpdates(connection, store, key),
+    { unsubGrace: false }
   );
 
-export const subscribeSupervisorEvents = (
-  hass: HomeAssistant,
-  onChange: (event) => void,
-  key: string,
-  endpoint: string
-) =>
-  getSupervisorEventCollection(hass.connection, key, endpoint).subscribe(
-    onChange
-  );
+export const cleanupSupervisorCollection = (conn: Connection, key: string) =>
+  delete conn[`_supervisor${key}Event`];

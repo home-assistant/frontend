@@ -135,6 +135,14 @@ const ENTITIES = [
   getEntity("text", "unavailable", "unavailable", {
     friendly_name: "Message",
   }),
+  getEntity("event", "unavailable", "unavailable", {
+    friendly_name: "Empty remote",
+  }),
+  getEntity("event", "doorbell", "2023-07-17T21:26:11.615+00:00", {
+    friendly_name: "Doorbell",
+    device_class: "doorbell",
+    event_type: "Ding-Dong",
+  }),
 ];
 
 const CONFIGS = [
@@ -154,6 +162,7 @@ const CONFIGS = [
     - input_number.number
     - sensor.humidity
     - text.message
+    - event.doorbell
     `,
   },
   {
@@ -246,6 +255,7 @@ const CONFIGS = [
     - input_number.unavailable
     - input_select.unavailable
     - text.unavailable
+    - event.unavailable
     `,
   },
   {

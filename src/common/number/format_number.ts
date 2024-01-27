@@ -108,7 +108,7 @@ export const formatNumber = (
  * @returns An `Intl.NumberFormatOptions` object with `maximumFractionDigits` set to 0, or `undefined`
  */
 export const getNumberFormatOptions = (
-  entityState: HassEntity,
+  entityState?: HassEntity,
   entity?: EntityRegistryDisplayEntry
 ): Intl.NumberFormatOptions | undefined => {
   const precision = entity?.display_precision;
@@ -119,8 +119,8 @@ export const getNumberFormatOptions = (
     };
   }
   if (
-    Number.isInteger(Number(entityState.attributes?.step)) &&
-    Number.isInteger(Number(entityState.state))
+    Number.isInteger(Number(entityState?.attributes?.step)) &&
+    Number.isInteger(Number(entityState?.state))
   ) {
     return { maximumFractionDigits: 0 };
   }

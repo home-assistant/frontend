@@ -1,4 +1,3 @@
-import { PolymerElement } from "@polymer/polymer";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
@@ -34,8 +33,7 @@ const COMPONENTS = {
   map: () => import("../panels/map/ha-panel-map"),
   my: () => import("../panels/my/ha-panel-my"),
   profile: () => import("../panels/profile/ha-panel-profile"),
-  "shopping-list": () =>
-    import("../panels/shopping-list/ha-panel-shopping-list"),
+  todo: () => import("../panels/todo/ha-panel-todo"),
   "media-browser": () =>
     import("../panels/media-browser/ha-panel-media-browser"),
 };
@@ -100,20 +98,10 @@ class PartialPanelResolver extends HassRouterPage {
   protected updatePageEl(el) {
     const hass = this.hass;
 
-    if ("setProperties" in el) {
-      // As long as we have Polymer panels
-      (el as PolymerElement).setProperties({
-        hass: this.hass,
-        narrow: this.narrow,
-        route: this.routeTail,
-        panel: hass.panels[this._currentPage],
-      });
-    } else {
-      el.hass = hass;
-      el.narrow = this.narrow;
-      el.route = this.routeTail;
-      el.panel = hass.panels[this._currentPage];
-    }
+    el.hass = hass;
+    el.narrow = this.narrow;
+    el.route = this.routeTail;
+    el.panel = hass.panels[this._currentPage];
   }
 
   private _checkVisibility() {

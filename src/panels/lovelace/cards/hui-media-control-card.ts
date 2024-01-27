@@ -17,6 +17,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
+import { stateActive } from "../../../common/entity/state_active";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -37,7 +38,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { installResizeObserver } from "../common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -100,6 +101,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    this.updateComplete.then(() => this._measureCard());
   }
 
   public connectedCallback(): void {
@@ -129,6 +132,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
@@ -169,10 +173,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const entityState = stateObj.state;
 
-    const isOffState = entityState === "off";
+    const isOffState =
+      !stateActive(stateObj) && !isUnavailableState(entityState);
     const isUnavailable =
       isUnavailableState(entityState) ||
-      (entityState === "off" &&
+      (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj, false);
@@ -229,7 +234,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-state-icon class="icon" .state=${stateObj}></ha-state-icon>
+              <ha-state-icon
+                class="icon"
+                .stateObj=${stateObj}
+                .hass=${this.hass}
+              ></ha-state-icon>
               <div>
                 ${this._config!.name ||
                 computeStateName(this.hass!.states[this._config!.entity])}
@@ -327,19 +336,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected firstUpdated(): void {
     this._attachObserver();
+    this._measureCard();
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this._measureCard();
-    }
 
     if (
       !this._config ||
@@ -461,6 +471,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card");
+
     if (!card) {
       return;
     }
@@ -471,7 +482,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );
@@ -607,7 +618,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         right: 0;
 
         opacity: 1;
-        transition: width 0.8s, opacity 0.8s linear 0.8s;
+        transition:
+          width 0.8s,
+          opacity 0.8s linear 0.8s;
       }
 
       .image {
@@ -619,8 +632,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         right: 0;
         height: 100%;
         opacity: 1;
-        transition: width 0.8s, background-image 0.8s, background-color 0.8s,
-          background-size 0.8s, opacity 0.8s linear 0.8s;
+        transition:
+          width 0.8s,
+          background-image 0.8s,
+          background-color 0.8s,
+          background-size 0.8s,
+          opacity 0.8s linear 0.8s;
       }
 
       .no-image .image {
@@ -638,13 +655,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 100%;
         background-image: url("/static/images/card_media_player_bg.png");
         width: 50%;
-        transition: opacity 0.8s, background-color 0.8s;
+        transition:
+          opacity 0.8s,
+          background-color 0.8s;
       }
 
       .off .image,
       .off .color-gradient {
         opacity: 0;
-        transition: opacity 0s, width 0.8s;
+        transition:
+          opacity 0s,
+          width 0.8s;
         width: 0;
       }
 

@@ -152,13 +152,13 @@ class DialogZoneDetail extends LitElement {
             {
               name: "latitude",
               required: true,
-              selector: { text: {} },
+              selector: { number: {} },
             },
             {
               name: "longitude",
               required: true,
 
-              selector: { text: {} },
+              selector: { number: {} },
             },
           ],
         },
@@ -183,7 +183,7 @@ class DialogZoneDetail extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
-    const value = ev.detail.value;
+    const value = { ...ev.detail.value };
     if (
       value.location.latitude !== this._data!.latitude ||
       value.location.longitude !== this._data!.longitude ||
@@ -236,7 +236,7 @@ class DialogZoneDetail extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-min-width: 600px;
+          --mdc-dialog-min-width: min(600px, 95vw);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {

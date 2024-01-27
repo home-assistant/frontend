@@ -192,7 +192,7 @@ export interface ZWaveJSController {
   supported_function_types: number[];
   suc_node_id: number;
   supports_timers: boolean;
-  is_heal_network_active: boolean;
+  is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
   nodes: ZWaveJSNodeStatus[];
 }
@@ -219,8 +219,9 @@ export interface ZwaveJSNodeMetadata {
   device_database_url: string;
 }
 
-export interface ZwaveJSNodeComments {
+export interface ZwaveJSNodeAlerts {
   comments: ZWaveJSNodeComment[];
+  is_embedded: boolean | null;
 }
 
 export interface ZWaveJSNodeConfigParams {
@@ -234,6 +235,8 @@ export interface ZWaveJSNodeComment {
 
 export interface ZWaveJSNodeConfigParam {
   property: number;
+  property_key: number | null;
+  endpoint: number;
   value: any;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
@@ -255,6 +258,7 @@ export interface ZWaveJSSetConfigParamData {
   type: string;
   device_id: string;
   property: number;
+  endpoint: number;
   property_key?: number;
   value: string | number;
 }
@@ -275,9 +279,9 @@ export interface ZWaveJSRefreshNodeStatusMessage {
   stage?: string;
 }
 
-export interface ZWaveJSHealNetworkStatusMessage {
+export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  heal_node_status: { [key: number]: string };
+  rebuild_routes_status: { [key: number]: string };
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
@@ -400,8 +404,6 @@ export interface RequestedGrant {
   /** Whether client side authentication is requested or to be granted */
   clientSideAuth: boolean;
 }
-
-export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
@@ -600,12 +602,12 @@ export const fetchZwaveNodeMetadata = (
     device_id,
   });
 
-export const fetchZwaveNodeComments = (
+export const fetchZwaveNodeAlerts = (
   hass: HomeAssistant,
   device_id: string
-): Promise<ZwaveJSNodeComments> =>
+): Promise<ZwaveJSNodeAlerts> =>
   hass.callWS({
-    type: "zwave_js/node_comments",
+    type: "zwave_js/node_alerts",
     device_id,
   });
 
@@ -622,6 +624,7 @@ export const setZwaveNodeConfigParameter = (
   hass: HomeAssistant,
   device_id: string,
   property: number,
+  endpoint: number,
   value: number,
   property_key?: number
 ): Promise<ZWaveJSSetConfigParamResult> => {
@@ -629,6 +632,7 @@ export const setZwaveNodeConfigParameter = (
     type: "zwave_js/set_config_parameter",
     device_id,
     property,
+    endpoint,
     value,
     property_key,
   };
@@ -648,12 +652,12 @@ export const reinterviewZwaveNode = (
     }
   );
 
-export const healZwaveNode = (
+export const rebuildZwaveNodeRoutes = (
   hass: HomeAssistant,
   device_id: string
 ): Promise<boolean> =>
   hass.callWS({
-    type: "zwave_js/heal_node",
+    type: "zwave_js/rebuild_node_routes",
     device_id,
   });
 
@@ -670,33 +674,33 @@ export const removeFailedZwaveNode = (
     }
   );
 
-export const healZwaveNetwork = (
+export const rebuildZwaveNetworkRoutes = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
-    type: "zwave_js/begin_healing_network",
+    type: "zwave_js/begin_rebuilding_routes",
     entry_id,
   });
 
-export const stopHealZwaveNetwork = (
+export const stopRebuildingZwaveNetworkRoutes = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
-    type: "zwave_js/stop_healing_network",
+    type: "zwave_js/stop_rebuilding_routes",
     entry_id,
   });
 
-export const subscribeHealZwaveNetworkProgress = (
+export const subscribeRebuildZwaveNetworkRoutesProgress = (
   hass: HomeAssistant,
   entry_id: string,
-  callbackFunction: (message: ZWaveJSHealNetworkStatusMessage) => void
+  callbackFunction: (message: ZWaveJSRebuildRoutesStatusMessage) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
     {
-      type: "zwave_js/subscribe_heal_network_progress",
+      type: "zwave_js/subscribe_rebuild_routes_progress",
       entry_id,
     }
   );
@@ -752,6 +756,15 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
   hass.callWS({
     type: "zwave_js/get_node_firmware_update_capabilities",
     device_id,
+  });
+
+export const hardResetController = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<string> =>
+  hass.callWS({
+    type: "zwave_js/hard_reset_controller",
+    entry_id,
   });
 
 export const uploadFirmwareAndBeginUpdate = async (

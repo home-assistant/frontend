@@ -1,89 +1,184 @@
-import { css, CSSResult, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import { mdiMenu, mdiSwapVertical } from "@mdi/js";
 import {
-  FeatureClassNames,
-  featureClassNames,
-} from "../../../common/entity/feature_class_names";
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
-import "../../../components/ha-cover-tilt-controls";
-import "../../../components/ha-labeled-slider";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import {
   CoverEntity,
   CoverEntityFeature,
-  isTiltOnly,
+  computeCoverPositionStateDisplay,
 } from "../../../data/cover";
-import { HomeAssistant } from "../../../types";
+import "../../../state-control/cover/ha-state-control-cover-buttons";
+import "../../../state-control/cover/ha-state-control-cover-position";
+import "../../../state-control/cover/ha-state-control-cover-tilt-position";
+import "../../../state-control/cover/ha-state-control-cover-toggle";
+import type { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-state-header";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
-export const FEATURE_CLASS_NAMES: FeatureClassNames<CoverEntityFeature> = {
-  [CoverEntityFeature.SET_POSITION]: "has-set_position",
-  [CoverEntityFeature.OPEN_TILT]: "has-open_tilt",
-  [CoverEntityFeature.CLOSE_TILT]: "has-close_tilt",
-  [CoverEntityFeature.STOP_TILT]: "has-stop_tilt",
-  [CoverEntityFeature.SET_TILT_POSITION]: "has-set_tilt_position",
-};
+type Mode = "position" | "button";
 
 @customElement("more-info-cover")
 class MoreInfoCover extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: CoverEntity;
+  @property({ attribute: false }) public stateObj?: CoverEntity;
+
+  @state() private _mode?: Mode;
+
+  private _setMode(ev) {
+    this._mode = ev.currentTarget.mode;
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("stateObj") && this.stateObj) {
+      const entityId = this.stateObj.entity_id;
+      const oldEntityId = changedProps.get("stateObj")?.entity_id;
+      if (!this._mode || entityId !== oldEntityId) {
+        this._mode =
+          supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
+          supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
+            ? "position"
+            : "button";
+      }
+    }
+  }
+
+  private get _stateOverride() {
+    const stateDisplay = this.hass.formatEntityState(this.stateObj!);
+
+    const positionStateDisplay = computeCoverPositionStateDisplay(
+      this.stateObj!,
+      this.hass
+    );
+
+    if (positionStateDisplay) {
+      return `${stateDisplay} ⸱ ${positionStateDisplay}`;
+    }
+    return stateDisplay;
+  }
 
   protected render() {
-    if (!this.stateObj) {
+    if (!this.hass || !this.stateObj) {
       return nothing;
     }
 
-    const _isTiltOnly = isTiltOnly(this.stateObj);
+    const supportsPosition = supportsFeature(
+      this.stateObj,
+      CoverEntityFeature.SET_POSITION
+    );
+
+    const supportsTiltPosition = supportsFeature(
+      this.stateObj,
+      CoverEntityFeature.SET_TILT_POSITION
+    );
+
+    const supportsOpenClose =
+      supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
+      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) ||
+      supportsFeature(this.stateObj, CoverEntityFeature.STOP);
+
+    const supportsTilt =
+      supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) ||
+      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) ||
+      supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT);
+
+    const supportsOpenCloseWithoutStop =
+      supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
+      supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.STOP) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT);
 
     return html`
-      <div class=${this._computeClassNames(this.stateObj)}>
-        <div class="current_position">
-          <ha-labeled-slider
-            .caption=${this.hass.localize("ui.card.cover.position")}
-            pin=""
-            .value=${this.stateObj.attributes.current_position}
-            .disabled=${!supportsFeature(
-              this.stateObj,
-              CoverEntityFeature.SET_POSITION
-            )}
-            @change=${this._coverPositionSliderChanged}
-          ></ha-labeled-slider>
-        </div>
-
-        <div class="tilt">
-          ${supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
-            ? // Either render the labeled slider and put the tilt buttons into its slot
-              // or (if tilt position is not supported and therefore no slider is shown)
-              // render a title <div> (same style as for a labeled slider) and directly put
-              // the tilt controls on the more-info.
-              html` <ha-labeled-slider
-                .caption=${this.hass.localize("ui.card.cover.tilt_position")}
-                pin=""
-                extra=""
-                .value=${this.stateObj.attributes.current_tilt_position}
-                @change=${this._coverTiltPositionSliderChanged}
-              >
-                ${!_isTiltOnly
-                  ? html`<ha-cover-tilt-controls
-                      .hass=${this.hass}
-                      slot="extra"
-                      .stateObj=${this.stateObj}
-                    ></ha-cover-tilt-controls> `
-                  : nothing}
-              </ha-labeled-slider>`
-            : !_isTiltOnly
-            ? html`
-                <div class="title">
-                  ${this.hass.localize("ui.card.cover.tilt_position")}
-                </div>
-                <ha-cover-tilt-controls
-                  .hass=${this.hass}
-                  .stateObj=${this.stateObj}
-                ></ha-cover-tilt-controls>
-              `
-            : nothing}
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .stateOverride=${this._stateOverride}
+      ></ha-more-info-state-header>
+      <div class="controls">
+        <div class="main-control">
+          ${
+            this._mode === "position"
+              ? html`
+                  ${supportsPosition
+                    ? html`
+                        <ha-state-control-cover-position
+                          .stateObj=${this.stateObj}
+                          .hass=${this.hass}
+                        ></ha-state-control-cover-position>
+                      `
+                    : nothing}
+                  ${supportsTiltPosition
+                    ? html`
+                        <ha-state-control-cover-tilt-position
+                          .stateObj=${this.stateObj}
+                          .hass=${this.hass}
+                        ></ha-state-control-cover-tilt-position>
+                      `
+                    : nothing}
+                `
+              : nothing
+          }
+          ${
+            this._mode === "button"
+              ? html`
+                  ${supportsOpenCloseWithoutStop
+                    ? html`
+                        <ha-state-control-cover-toggle
+                          .stateObj=${this.stateObj}
+                          .hass=${this.hass}
+                        ></ha-state-control-cover-toggle>
+                      `
+                    : supportsOpenClose || supportsTilt
+                      ? html`
+                          <ha-state-control-cover-buttons
+                            .stateObj=${this.stateObj}
+                            .hass=${this.hass}
+                          ></ha-state-control-cover-buttons>
+                        `
+                      : nothing}
+                `
+              : nothing
+          }
+            </div>
+          ${
+            (supportsPosition || supportsTiltPosition) &&
+            (supportsOpenClose || supportsTilt)
+              ? html`
+                  <ha-icon-button-group>
+                    <ha-icon-button-toggle
+                      .label=${this.hass.localize(
+                        `ui.dialogs.more_info_control.cover.switch_mode.position`
+                      )}
+                      .selected=${this._mode === "position"}
+                      .path=${mdiMenu}
+                      .mode=${"position"}
+                      @click=${this._setMode}
+                    ></ha-icon-button-toggle>
+                    <ha-icon-button-toggle
+                      .label=${this.hass.localize(
+                        `ui.dialogs.more_info_control.cover.switch_mode.button`
+                      )}
+                      .selected=${this._mode === "button"}
+                      .path=${mdiSwapVertical}
+                      .mode=${"button"}
+                      @click=${this._setMode}
+                    ></ha-icon-button-toggle>
+                  </ha-icon-button-group>
+                `
+              : nothing
+          }
         </div>
       </div>
       <ha-attributes
@@ -94,55 +189,20 @@ class MoreInfoCover extends LitElement {
     `;
   }
 
-  private _computeClassNames(stateObj) {
-    const classes = [
-      attributeClassNames(stateObj, [
-        "current_position",
-        "current_tilt_position",
-      ]),
-      featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+  static get styles(): CSSResultGroup {
+    return [
+      moreInfoControlStyle,
+      css`
+        .main-control {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+        .main-control > * {
+          margin: 0 8px;
+        }
+      `,
     ];
-    return classes.join(" ");
-  }
-
-  private _coverPositionSliderChanged(ev) {
-    this.hass.callService("cover", "set_cover_position", {
-      entity_id: this.stateObj.entity_id,
-      position: ev.target.value,
-    });
-  }
-
-  private _coverTiltPositionSliderChanged(ev) {
-    this.hass.callService("cover", "set_cover_tilt_position", {
-      entity_id: this.stateObj.entity_id,
-      tilt_position: ev.target.value,
-    });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      .current_position,
-      .tilt {
-        max-height: 0px;
-        overflow: hidden;
-      }
-
-      .has-set_position .current_position,
-      .has-current_position .current_position,
-      .has-open_tilt .tilt,
-      .has-close_tilt .tilt,
-      .has-stop_tilt .tilt,
-      .has-set_tilt_position .tilt,
-      .has-current_tilt_position .tilt {
-        max-height: 208px;
-      }
-
-      /* from ha-labeled-slider for consistent look */
-      .title {
-        margin: 5px 0 8px;
-        color: var(--primary-text-color);
-      }
-    `;
   }
 }
 

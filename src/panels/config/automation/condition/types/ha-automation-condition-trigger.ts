@@ -2,8 +2,11 @@ import "@material/mwc-list/mwc-list-item";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-select";
 import type {
   AutomationConfig,
@@ -30,6 +33,22 @@ export class HaTriggerCondition extends LitElement {
     };
   }
 
+  private _schema = memoizeOne(
+    (triggers: Trigger[]) =>
+      [
+        {
+          name: "id",
+          selector: {
+            select: {
+              multiple: true,
+              options: triggers.map((trigger) => trigger.id!),
+            },
+          },
+          required: true,
+        },
+      ] as const
+  );
+
   connectedCallback() {
     super.connectedCallback();
     const details = { callback: (config) => this._automationUpdated(config) };
@@ -45,29 +64,32 @@ export class HaTriggerCondition extends LitElement {
   }
 
   protected render() {
-    const { id } = this.condition;
-
     if (!this._triggers.length) {
       return this.hass.localize(
         "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
       );
     }
-    return html`<ha-select
-      .label=${this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.type.trigger.id"
-      )}
-      .value=${id}
-      .disabled=${this.disabled}
-      @selected=${this._triggerPicked}
-    >
-      ${this._triggers.map(
-        (trigger) =>
-          html`
-            <mwc-list-item .value=${trigger.id}> ${trigger.id} </mwc-list-item>
-          `
-      )}
-    </ha-select>`;
+
+    const schema = this._schema(this._triggers);
+
+    return html`
+      <ha-form
+        .schema=${schema}
+        .data=${this.condition}
+        .hass=${this.hass}
+        .disabled=${this.disabled}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
   }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.trigger.${schema.name}`
+    );
 
   private _automationUpdated(config?: AutomationConfig) {
     const seenIds = new Set();
@@ -78,18 +100,24 @@ export class HaTriggerCondition extends LitElement {
       : [];
   }
 
-  private _triggerPicked(ev) {
+  private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    if (!ev.target.value) {
-      return;
+    const newValue = ev.detail.value;
+
+    if (typeof newValue.id === "string") {
+      if (!this._triggers.some((trigger) => trigger.id === newValue.id)) {
+        newValue.id = "";
+      }
+    } else if (Array.isArray(newValue.id)) {
+      newValue.id = newValue.id.filter((id) =>
+        this._triggers.some((trigger) => trigger.id === id)
+      );
+      if (!newValue.id.length) {
+        newValue.id = "";
+      }
     }
-    const newTrigger = ev.target.value;
-    if (this.condition.id === newTrigger) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: { ...this.condition, id: newTrigger },
-    });
+
+    fireEvent(this, "value-changed", { value: newValue });
   }
 }
 

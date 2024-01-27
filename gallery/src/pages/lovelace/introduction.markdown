@@ -1,6 +1,7 @@
 ---
 title: Introduction
 ---
+
 Dashboards have many different cards. Each card allows the user to tell
 a different story about what is going on in their house. These cards
 are very customizable, as no household is the same.

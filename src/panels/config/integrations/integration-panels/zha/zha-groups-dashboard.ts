@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -18,7 +18,7 @@ import {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
-import { fetchGroups, ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import { fetchGroups, ZHAGroup } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
@@ -34,13 +34,13 @@ export interface GroupRowData extends ZHAGroup {
 export class ZHAGroupsDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public _groups: ZHAGroup[] = [];
+  @state() private _groups: ZHAGroup[] = [];
 
   private _firstUpdatedCalled = false;
 
@@ -71,7 +71,7 @@ export class ZHAGroupsDashboard extends LitElement {
   });
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
+    (narrow: boolean): DataTableColumnContainer<GroupRowData> =>
       narrow
         ? {
             name: {
@@ -94,15 +94,14 @@ export class ZHAGroupsDashboard extends LitElement {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
               type: "numeric",
               width: "15%",
-              template: (groupId: number) =>
-                html` ${formatAsPaddedHex(groupId)} `,
+              template: (group) => html` ${formatAsPaddedHex(group.group_id)} `,
               sortable: true,
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
               type: "numeric",
               width: "15%",
-              template: (members: ZHADevice[]) => html` ${members.length} `,
+              template: (group) => html` ${group.members.length} `,
               sortable: true,
             },
           }
@@ -119,6 +118,7 @@ export class ZHAGroupsDashboard extends LitElement {
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
         clickable
+        hasFab
       >
         <a href="/config/zha/group-add" slot="fab">
           <ha-fab

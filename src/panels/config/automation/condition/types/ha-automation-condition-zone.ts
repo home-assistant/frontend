@@ -5,8 +5,7 @@ import { computeStateDomain } from "../../../../../common/entity/compute_state_d
 import { hasLocation } from "../../../../../common/entity/has_location";
 import "../../../../../components/entity/ha-entity-picker";
 import { ZoneCondition } from "../../../../../data/automation";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
-import { HomeAssistant } from "../../../../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
@@ -54,22 +53,17 @@ export class HaZoneCondition extends LitElement {
         allow-custom-entity
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
-      <label id="eventlabel">
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.zone.event"
-        )}
-      </label>
     `;
   }
 
-  private _entityPicked(ev: PolymerChangedEvent<string>) {
+  private _entityPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.condition, entity_id: ev.detail.value },
     });
   }
 
-  private _zonePicked(ev: PolymerChangedEvent<string>) {
+  private _zonePicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.condition, zone: ev.detail.value },

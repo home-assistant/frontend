@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../types";
 class NumberFormatRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     return html`
@@ -31,6 +31,7 @@ class NumberFormatRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.number_format}
           @selected=${this._handleFormatSelection}
+          naturalMenuWidth
         >
           ${Object.values(NumberFormat).map((format) => {
             const formattedNumber = formatNumber(1234567.89, {

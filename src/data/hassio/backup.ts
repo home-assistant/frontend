@@ -23,6 +23,7 @@ export interface HassioBackup {
   size: number;
   type: "full" | "partial";
   protected: boolean;
+  location: string | null;
   content: BackupContent;
 }
 

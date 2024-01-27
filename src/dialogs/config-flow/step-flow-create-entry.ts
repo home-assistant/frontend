@@ -48,26 +48,25 @@ class StepFlowCreateEntry extends LitElement {
               </p>
               <div class="devices">
                 ${this.devices.map(
-                  (device) =>
-                    html`
-                      <div class="device">
-                        <div>
-                          <b>${computeDeviceName(device, this.hass)}</b><br />
-                          ${!device.model && !device.manufacturer
-                            ? html`&nbsp;`
-                            : html`${device.model}
-                              ${device.manufacturer
-                                ? html`(${device.manufacturer})`
-                                : ""}`}
-                        </div>
-                        <ha-area-picker
-                          .hass=${this.hass}
-                          .device=${device.id}
-                          .value=${device.area_id ?? undefined}
-                          @value-changed=${this._areaPicked}
-                        ></ha-area-picker>
+                  (device) => html`
+                    <div class="device">
+                      <div>
+                        <b>${computeDeviceName(device, this.hass)}</b><br />
+                        ${!device.model && !device.manufacturer
+                          ? html`&nbsp;`
+                          : html`${device.model}
+                            ${device.manufacturer
+                              ? html`(${device.manufacturer})`
+                              : ""}`}
                       </div>
-                    `
+                      <ha-area-picker
+                        .hass=${this.hass}
+                        .device=${device.id}
+                        .value=${device.area_id ?? undefined}
+                        @value-changed=${this._areaPicked}
+                      ></ha-area-picker>
+                    </div>
+                  `
                 )}
               </div>
             `}
@@ -99,8 +98,7 @@ class StepFlowCreateEntry extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",
-          "error",
-          err.message
+          { error: err.message }
         ),
       });
       picker.value = null;
@@ -128,6 +126,8 @@ class StepFlowCreateEntry extends LitElement {
         }
         .buttons > *:last-child {
           margin-left: auto;
+          margin-inline-start: auto;
+          margin-inline-end: initial;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .device {

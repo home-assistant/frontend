@@ -7,7 +7,7 @@ import "../ha-input-helper-text";
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: string;
 
@@ -21,9 +21,7 @@ export class HaTemplateSelector extends LitElement {
 
   protected render() {
     return html`
-      ${this.label
-        ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
-        : ""}
+      ${this.label ? html`<p>${this.label}${this.required ? "*" : ""}</p>` : ""}
       <ha-code-editor
         mode="jinja2"
         .hass=${this.hass}

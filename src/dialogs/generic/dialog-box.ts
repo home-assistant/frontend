@@ -74,13 +74,15 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   value=${ifDefined(this._params.defaultValue)}
-                  .placeholder=${ifDefined(this._params.placeholder)}
+                  .placeholder=${this._params.placeholder}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
+                  .min=${this._params.inputMin}
+                  .max=${this._params.inputMax}
                 ></ha-textfield>
               `
             : ""}
@@ -161,8 +163,6 @@ class DialogBox extends LitElement {
         --mdc-theme-primary: var(--error-color);
       }
       ha-dialog {
-        --mdc-dialog-heading-ink-color: var(--primary-text-color);
-        --mdc-dialog-content-ink-color: var(--primary-text-color);
         /* Place above other dialogs */
         --dialog-z-index: 104;
       }

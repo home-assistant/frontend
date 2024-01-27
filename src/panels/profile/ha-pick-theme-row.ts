@@ -19,15 +19,18 @@ import "../../components/ha-textfield";
 import {
   DEFAULT_ACCENT_COLOR,
   DEFAULT_PRIMARY_COLOR,
-} from "../../resources/ha-style";
+} from "../../resources/styles-data";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+
+const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
+const HOME_ASSISTANT_THEME = "default";
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() _themeNames: string[] = [];
 
@@ -37,8 +40,8 @@ export class HaPickThemeRow extends LitElement {
     const curTheme = this.hass.selectedTheme?.theme
       ? this.hass.selectedTheme?.theme
       : this.hass.themes.darkMode
-      ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
-      : this.hass.themes.default_theme;
+        ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
+        : this.hass.themes.default_theme;
 
     const themeSettings = this.hass.selectedTheme;
 
@@ -65,16 +68,25 @@ export class HaPickThemeRow extends LitElement {
         <ha-select
           .label=${this.hass.localize("ui.panel.profile.themes.dropdown_label")}
           .disabled=${!hasThemes}
-          .value=${this.hass.selectedTheme?.theme || "Backend-selected"}
+          .value=${this.hass.selectedTheme?.theme || USE_DEFAULT_THEME}
           @selected=${this._handleThemeSelection}
+          naturalMenuWidth
         >
+          <mwc-list-item .value=${USE_DEFAULT_THEME}>
+            ${this.hass.localize("ui.panel.profile.themes.use_default")}
+          </mwc-list-item>
+          <mwc-list-item .value=${HOME_ASSISTANT_THEME}>
+            Home Assistant
+          </mwc-list-item>
           ${this._themeNames.map(
-            (theme) =>
-              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
+            (theme) => html`
+              <mwc-list-item .value=${theme}>${theme}</mwc-list-item>
+            `
           )}
         </ha-select>
       </ha-settings-row>
-      ${curTheme === "default" || this._supportsModeSelection(curTheme)
+      ${curTheme === HOME_ASSISTANT_THEME ||
+      this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">
             <ha-formfield
               .label=${this.hass.localize(
@@ -114,7 +126,7 @@ export class HaPickThemeRow extends LitElement {
               >
               </ha-radio>
             </ha-formfield>
-            ${curTheme === "default"
+            ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-textfield
                     .value=${themeSettings?.primaryColor ||
@@ -154,9 +166,7 @@ export class HaPickThemeRow extends LitElement {
       (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
 
     if (themesChanged) {
-      this._themeNames = ["Backend-selected", "default"].concat(
-        Object.keys(this.hass.themes.themes).sort()
-      );
+      this._themeNames = Object.keys(this.hass.themes.themes).sort();
     }
   }
 
@@ -198,7 +208,7 @@ export class HaPickThemeRow extends LitElement {
       return;
     }
 
-    if (theme === "Backend-selected") {
+    if (theme === USE_DEFAULT_THEME) {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",

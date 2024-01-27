@@ -13,7 +13,7 @@ interface InvalidConfig {
 type ValidKeys = "trigger" | "action" | "condition";
 
 export const validateConfig = <
-  T extends Partial<{ [key in ValidKeys]: unknown }>
+  T extends Partial<{ [key in ValidKeys]: unknown }>,
 >(
   hass: HomeAssistant,
   config: T

@@ -1,40 +1,40 @@
 import "@material/mwc-list/mwc-list-item";
-import timezones from "google-timezones-json";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import { getCountryOptions } from "../../../components/country-datalist";
-import { getCurrencyOptions } from "../../../components/currency-datalist";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-country-picker";
+import "../../../components/ha-currency-picker";
 import "../../../components/ha-formfield";
+import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/ha-timezone-picker";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
-import { SYMBOL_TO_ISO } from "../../../data/currency";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-alert";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HaCheckbox } from "../../../components/ha-checkbox";
-import "../../../components/ha-checkbox";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _submitting = false;
 
@@ -53,8 +53,6 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _timeZone?: string;
 
   @state() private _location?: [number, number];
-
-  @state() private _languages?: { value: string; label: string }[];
 
   @state() private _error?: string;
 
@@ -96,25 +94,16 @@ class HaConfigSectionGeneral extends LitElement {
                 .value=${this._name}
                 @change=${this._handleChange}
               ></ha-textfield>
-              <ha-select
+              <ha-timezone-picker
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.time_zone"
                 )}
                 name="timeZone"
-                fixedMenuPosition
-                naturalMenuWidth
                 .disabled=${disabled}
                 .value=${this._timeZone}
-                @closed=${stopPropagation}
-                @change=${this._handleChange}
+                @value-changed=${this._handleValueChanged}
               >
-                ${Object.keys(timezones).map(
-                  (tz) =>
-                    html`<mwc-list-item value=${tz}
-                      >${timezones[tz]}</mwc-list-item
-                    >`
-                )}
-              </ha-select>
+              </ha-timezone-picker>
               <ha-textfield
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.elevation"
@@ -207,25 +196,17 @@ class HaConfigSectionGeneral extends LitElement {
                   : ""}
               </div>
               <div>
-                <ha-select
+                <ha-currency-picker
+                  .language=${this.hass.locale.language}
                   .label=${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.currency"
                   )}
                   name="currency"
-                  fixedMenuPosition
-                  naturalMenuWidth
                   .disabled=${disabled}
                   .value=${this._currency}
-                  @closed=${stopPropagation}
-                  @change=${this._handleChange}
+                  @value-changed=${this._handleValueChanged}
                 >
-                  ${getCurrencyOptions(this.hass.locale.language).map(
-                    ({ value, label }) =>
-                      html`<mwc-list-item .value=${value}>
-                        ${label}
-                      </mwc-list-item>`
-                  )}</ha-select
-                >
+                </ha-currency-picker>
                 <a
                   href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
                   target="_blank"
@@ -236,44 +217,30 @@ class HaConfigSectionGeneral extends LitElement {
                   )}</a
                 >
               </div>
-              <ha-select
+              <ha-country-picker
+                .hass=${this.hass}
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.country"
                 )}
                 name="country"
-                fixedMenuPosition
-                naturalMenuWidth
                 .disabled=${disabled}
                 .value=${this._country}
                 @closed=${stopPropagation}
-                @change=${this._handleChange}
-              >
-                ${getCountryOptions(this.hass.locale.language).map(
-                  ({ value, label }) =>
-                    html`<mwc-list-item .value=${value}>
-                      ${label}
-                    </mwc-list-item>`
-                )}</ha-select
-              >
-              <ha-select
+                @value-changed=${this._handleValueChanged}
+              ></ha-country-picker>
+              <ha-language-picker
+                .hass=${this.hass}
+                nativeName
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.language"
                 )}
                 name="language"
-                fixedMenuPosition
-                naturalMenuWidth
-                .disabled=${disabled}
                 .value=${this._language}
+                .disabled=${disabled}
                 @closed=${stopPropagation}
-                @change=${this._handleChange}
+                @value-changed=${this._handleValueChanged}
               >
-                ${this._languages?.map(
-                  ({ value, label }) =>
-                    html`<mwc-list-item .value=${value}
-                      >${label}</mwc-list-item
-                    >`
-                )}</ha-select
-              >
+              </ha-language-picker>
             </div>
             ${this.narrow
               ? html`
@@ -330,38 +297,16 @@ class HaConfigSectionGeneral extends LitElement {
     this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
-    this._computeLanguages();
   }
 
-  private _computeLanguages() {
-    if (!this.hass.translationMetadata?.translations) {
-      return;
-    }
-    this._languages = Object.entries(this.hass.translationMetadata.translations)
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a[1].nativeName,
-          b[1].nativeName,
-          this.hass.locale.language
-        )
-      )
-      .map(([value, metaData]) => ({
-        value,
-        label: metaData.nativeName,
-      }));
+  private _handleValueChanged(ev: ValueChangedEvent<string>) {
+    const target = ev.currentTarget as HTMLElement;
+    this[`_${target.getAttribute("name")}`] = ev.detail.value;
   }
 
-  private _handleChange(ev) {
-    const target = ev.currentTarget;
-    let value = target.value;
-
-    if (target.name === "currency" && value) {
-      if (value in SYMBOL_TO_ISO) {
-        value = SYMBOL_TO_ISO[value];
-      }
-    }
-
-    this[`_${target.name}`] = value;
+  private _handleChange(ev: Event) {
+    const target = ev.currentTarget as HaTextField;
+    this[`_${target.name}`] = target.value;
   }
 
   private _unitSystemChanged(ev: CustomEvent) {

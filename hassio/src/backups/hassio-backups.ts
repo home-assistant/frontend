@@ -3,11 +3,11 @@ import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -26,9 +26,9 @@ import "../../../src/components/ha-fab";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
 import {
+  HassioBackup,
   fetchHassioBackups,
   friendlyFolderName,
-  HassioBackup,
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
@@ -43,10 +43,15 @@ import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subp
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupLocationDialog } from "../dialogs/backup/show-dialog-hassio-backu-location";
 import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
+
+type BackupItem = HassioBackup & {
+  secondary: string;
+};
 
 @customElement("hassio-backups")
 export class HassioBackups extends LitElement {
@@ -54,11 +59,11 @@ export class HassioBackups extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 
@@ -116,15 +121,15 @@ export class HassioBackups extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => ({
+    (narrow: boolean): DataTableColumnContainer<BackupItem> => ({
       name: {
         title: this.supervisor.localize("backup.name"),
         main: true,
         sortable: true,
         filterable: true,
         grows: true,
-        template: (entry: string, backup: any) =>
-          html`${entry || backup.slug}
+        template: (backup) =>
+          html`${backup.name || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
       size: {
@@ -133,7 +138,16 @@ export class HassioBackups extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
+        template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
+      },
+      location: {
+        title: this.supervisor.localize("backup.location"),
+        width: "15%",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (backup) =>
+          backup.location || this.supervisor.localize("backup.data_disk"),
       },
       date: {
         title: this.supervisor.localize("backup.created"),
@@ -142,8 +156,8 @@ export class HassioBackups extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: string) =>
-          relativeTime(new Date(entry), this.hass.locale),
+        template: (backup) =>
+          relativeTime(new Date(backup.date), this.hass.locale),
       },
       secondary: {
         title: "",
@@ -153,7 +167,7 @@ export class HassioBackups extends LitElement {
     })
   );
 
-  private _backupData = memoizeOne((backups: HassioBackup[]) =>
+  private _backupData = memoizeOne((backups: HassioBackup[]): BackupItem[] =>
     backups.map((backup) => ({
       ...backup,
       secondary: this._computeBackupContent(backup),
@@ -195,11 +209,7 @@ export class HassioBackups extends LitElement {
           : "/config"}
         supervisor
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleAction}
-        >
+        <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
           <ha-icon-button
             .label=${this.supervisor?.localize("common.menu")}
             .path=${mdiDotsVertical}
@@ -207,6 +217,9 @@ export class HassioBackups extends LitElement {
           ></ha-icon-button>
           <mwc-list-item>
             ${this.supervisor.localize("common.reload")}
+          </mwc-list-item>
+          <mwc-list-item>
+            ${this.supervisor.localize("dialog.backup_location.title")}
           </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
@@ -248,9 +261,9 @@ export class HassioBackups extends LitElement {
                         class="warning"
                         @click=${this._deleteSelected}
                       ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" for="delete-btn">
+                      <simple-tooltip animation-delay="0" for="delete-btn">
                         ${this.supervisor.localize("backup.delete_selected")}
-                      </paper-tooltip>
+                      </simple-tooltip>
                     `}
               </div>
             </div> `
@@ -274,6 +287,9 @@ export class HassioBackups extends LitElement {
         this.refreshData();
         break;
       case 1:
+        showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
+        break;
+      case 2:
         this._showUploadBackupDialog();
         break;
     }
@@ -344,11 +360,9 @@ export class HassioBackups extends LitElement {
     if (this.supervisor!.info.state !== "running") {
       showAlertDialog(this, {
         title: this.supervisor!.localize("backup.could_not_create"),
-        text: this.supervisor!.localize(
-          "backup.create_blocked_not_running",
-          "state",
-          this.supervisor!.info.state
-        ),
+        text: this.supervisor!.localize("backup.create_blocked_not_running", {
+          state: this.supervisor!.info.state,
+        }),
       });
       return;
     }
@@ -381,6 +395,8 @@ export class HassioBackups extends LitElement {
         .selected-txt {
           font-weight: bold;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
           color: var(--primary-text-color);
         }
         .table-header .selected-txt {
@@ -391,6 +407,8 @@ export class HassioBackups extends LitElement {
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
+          margin-inline-end: -12px;
+          margin-inline-start: initial;
         }
         .header-btns > mwc-button,
         .header-btns > ha-icon-button {

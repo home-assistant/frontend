@@ -1,53 +1,67 @@
-import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
+import {
+  LovelaceConfig,
+  LovelaceRawConfig,
+  isStrategyDashboard,
+} from "../../../data/lovelace/config/types";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
+import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
+import {
+  LovelaceDashboardStrategy,
+  LovelaceStrategy,
+  LovelaceViewStrategy,
+} from "./types";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
 
-export interface LovelaceDashboardStrategy {
-  generateDashboard(info: {
-    config?: LovelaceConfig;
-    hass: HomeAssistant;
-    narrow: boolean | undefined;
-  }): Promise<LovelaceConfig>;
-}
-
-export interface LovelaceViewStrategy {
-  generateView(info: {
-    view: LovelaceViewConfig;
-    config: LovelaceConfig;
-    hass: HomeAssistant;
-    narrow: boolean | undefined;
-  }): Promise<LovelaceViewConfig>;
-}
-
-const strategies: Record<
-  string,
-  () => Promise<LovelaceDashboardStrategy | LovelaceViewStrategy>
-> = {
-  "original-states": async () =>
-    (await import("./original-states-strategy")).OriginalStatesStrategy,
-  energy: async () =>
-    (await import("../../energy/strategies/energy-strategy")).EnergyStrategy,
+const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
+  dashboard: {
+    "original-states": () => import("./original-states-dashboard-strategy"),
+  },
+  view: {
+    "original-states": () => import("./original-states-view-strategy"),
+    energy: () => import("../../energy/strategies/energy-view-strategy"),
+  },
 };
 
-const getLovelaceStrategy = async <
-  T extends LovelaceDashboardStrategy | LovelaceViewStrategy
->(
+export type LovelaceStrategyConfigType = "dashboard" | "view";
+
+type Strategies = {
+  dashboard: LovelaceDashboardStrategy;
+  view: LovelaceViewStrategy;
+};
+
+type StrategyConfig<T extends LovelaceStrategyConfigType> = AsyncReturnType<
+  Strategies[T]["generate"]
+>;
+
+export const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
+  configType: T,
   strategyType: string
-): Promise<T> => {
-  if (strategyType in strategies) {
-    return (await strategies[strategyType]()) as T;
+): Promise<LovelaceStrategy> => {
+  if (strategyType in STRATEGIES[configType]) {
+    await STRATEGIES[configType][strategyType]();
+    const tag = `${strategyType}-${configType}-strategy`;
+    return customElements.get(tag) as unknown as Strategies[T];
   }
 
   if (!strategyType.startsWith(CUSTOM_PREFIX)) {
     throw new Error("Unknown strategy");
   }
 
-  const tag = `ll-strategy-${strategyType.substr(CUSTOM_PREFIX.length)}`;
+  const legacyTag = `ll-strategy-${strategyType.slice(CUSTOM_PREFIX.length)}`;
+  const tag = `ll-strategy-${configType}-${strategyType.slice(
+    CUSTOM_PREFIX.length
+  )}`;
 
   if (
     (await Promise.race([
+      customElements.whenDefined(legacyTag),
       customElements.whenDefined(tag),
       new Promise((resolve) => {
         setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD);
@@ -59,29 +73,45 @@ const getLovelaceStrategy = async <
     );
   }
 
-  return customElements.get(tag) as unknown as T;
+  return (customElements.get(tag) ??
+    customElements.get(legacyTag)) as unknown as Strategies[T];
 };
 
-interface GenerateMethods {
-  generateDashboard: LovelaceDashboardStrategy["generateDashboard"];
-  generateView: LovelaceViewStrategy["generateView"];
-}
-
-const generateStrategy = async <T extends keyof GenerateMethods>(
-  generateMethod: T,
-  renderError: (err: string | Error) => AsyncReturnType<GenerateMethods[T]>,
-  info: Parameters<GenerateMethods[T]>[0],
-  strategyType: string | undefined
-): Promise<ReturnType<GenerateMethods[T]>> => {
+const generateStrategy = async <T extends LovelaceStrategyConfigType>(
+  configType: T,
+  renderError: (err: string | Error) => StrategyConfig<T>,
+  strategyConfig: LovelaceStrategyConfig,
+  hass: HomeAssistant
+): Promise<StrategyConfig<T>> => {
+  const strategyType = strategyConfig.type;
   if (!strategyType) {
     // @ts-ignore
     return renderError("No strategy type found");
   }
 
   try {
-    const strategy = (await getLovelaceStrategy(strategyType)) as any;
-    // eslint-disable-next-line @typescript-eslint/return-await
-    return await strategy[generateMethod](info);
+    const strategy = await getLovelaceStrategy<T>(configType, strategyType);
+
+    // Backward compatibility for custom strategies for loading old strategies format
+    if (isLegacyStrategy(strategy)) {
+      if (configType === "dashboard" && "generateDashboard" in strategy) {
+        return (await strategy.generateDashboard({
+          config: { strategy: strategyConfig, views: [] },
+          hass,
+        })) as StrategyConfig<T>;
+      }
+      if (configType === "view" && "generateView" in strategy) {
+        return (await strategy.generateView({
+          config: { views: [] },
+          view: { strategy: strategyConfig },
+          hass,
+        })) as StrategyConfig<T>;
+      }
+    }
+
+    const config = cleanLegacyStrategyConfig(strategyConfig);
+
+    return await strategy.generate(config, hass);
   } catch (err: any) {
     if (err.message !== "timeout") {
       // eslint-disable-next-line
@@ -93,11 +123,11 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
 };
 
 export const generateLovelaceDashboardStrategy = async (
-  info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0],
-  strategyType?: string
-): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> =>
+  strategyConfig: LovelaceStrategyConfig,
+  hass: HomeAssistant
+): Promise<LovelaceConfig> =>
   generateStrategy(
-    "generateDashboard",
+    "dashboard",
     (err) => ({
       views: [
         {
@@ -111,16 +141,16 @@ export const generateLovelaceDashboardStrategy = async (
         },
       ],
     }),
-    info,
-    strategyType || info.config?.strategy?.type
+    strategyConfig,
+    hass
   );
 
 export const generateLovelaceViewStrategy = async (
-  info: Parameters<LovelaceViewStrategy["generateView"]>[0],
-  strategyType?: string
-): ReturnType<LovelaceViewStrategy["generateView"]> =>
+  strategyConfig: LovelaceStrategyConfig,
+  hass: HomeAssistant
+): Promise<LovelaceViewConfig> =>
   generateStrategy(
-    "generateView",
+    "view",
     (err) => ({
       cards: [
         {
@@ -129,34 +159,28 @@ export const generateLovelaceViewStrategy = async (
         },
       ],
     }),
-    info,
-    strategyType || info.view?.strategy?.type
+    strategyConfig,
+    hass
   );
 
 /**
  * Find all references to strategies and replaces them with the generated output
  */
 export const expandLovelaceConfigStrategies = async (
-  info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0] & {
-    config: LovelaceConfig;
-  }
+  config: LovelaceRawConfig,
+  hass: HomeAssistant
 ): Promise<LovelaceConfig> => {
-  const config = info.config.strategy
-    ? await generateLovelaceDashboardStrategy(info)
-    : { ...info.config };
+  const newConfig = isStrategyDashboard(config)
+    ? await generateLovelaceDashboardStrategy(config.strategy, hass)
+    : { ...config };
 
-  config.views = await Promise.all(
-    config.views.map((view) =>
-      view.strategy
-        ? generateLovelaceViewStrategy({
-            hass: info.hass,
-            narrow: info.narrow,
-            config,
-            view,
-          })
+  newConfig.views = await Promise.all(
+    newConfig.views.map((view) =>
+      isStrategyView(view)
+        ? generateLovelaceViewStrategy(view.strategy, hass)
         : view
     )
   );
 
-  return config;
+  return newConfig;
 };

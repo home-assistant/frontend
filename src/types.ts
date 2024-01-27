@@ -3,6 +3,7 @@ import {
   Connection,
   HassConfig,
   HassEntities,
+  HassEntity,
   HassServices,
   HassServiceTarget,
   MessageBase,
@@ -40,18 +41,31 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+
   // for fire event
   interface HASSDomEvents {
     "value-changed": {
       value: unknown;
     };
     change: undefined;
+    "hass-logout": undefined;
+    "config-refresh": undefined;
+    "hass-api-called": {
+      success: boolean;
+      response: unknown;
+    };
   }
 
   // For loading workers in webpack
   interface ImportMeta {
     url: string;
   }
+}
+
+export interface ValueChangedEvent<T> extends CustomEvent {
+  detail: {
+    value: T;
+  };
 }
 
 export type Constructor<T = any> = new (...args: any[]) => T;
@@ -106,6 +120,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   icon: string | null;
   title: string | null;
   url_path: string;
+  config_panel_domain?: string;
 }
 
 export interface Panels {
@@ -214,6 +229,7 @@ export interface HomeAssistant {
   suspendWhenHidden: boolean;
   enableShortcuts: boolean;
   vibrate: boolean;
+  debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   defaultPanel: string;
   moreInfoEntityId: string | null;
@@ -224,7 +240,8 @@ export interface HomeAssistant {
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
-    target?: ServiceCallRequest["target"]
+    target?: ServiceCallRequest["target"],
+    notifyOnError?: boolean
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
@@ -237,10 +254,17 @@ export interface HomeAssistant {
   callWS<T>(msg: MessageBase): Promise<T>;
   loadBackendTranslation(
     category: Parameters<typeof getHassTranslations>[2],
-    integration?: Parameters<typeof getHassTranslations>[3],
+    integrations?: Parameters<typeof getHassTranslations>[3],
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
+  formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityAttributeValue(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): string;
+  formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
 export interface Route {
@@ -266,5 +290,9 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
 ) => Promise<infer U>
   ? U
   : T extends (...args: any) => infer U
-  ? U
-  : never;
+    ? U
+    : never;
+
+export type Entries<T> = [keyof T, T[keyof T]][];
+
+export type ItemPath = (number | string)[];
