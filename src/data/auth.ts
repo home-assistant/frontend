@@ -139,7 +139,7 @@ export const adminChangePassword = (
 
 export const deleteAllRefreshTokens = (
   hass: HomeAssistant,
-  token_type?: string,
+  token_type?: RefreshTokenType,
   delete_current_token?: boolean
 ) =>
   hass.callWS({
