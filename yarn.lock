@@ -6390,16 +6390,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:5.0.0":
-  version: 5.0.0
-  resolution: "chai@npm:5.0.0"
+"chai@npm:5.0.3":
+  version: 5.0.3
+  resolution: "chai@npm:5.0.3"
   dependencies:
     assertion-error: "npm:^2.0.1"
     check-error: "npm:^2.0.0"
     deep-eql: "npm:^5.0.1"
-    loupe: "npm:^3.0.0"
+    loupe: "npm:^3.1.0"
     pathval: "npm:^2.0.0"
-  checksum: c23d1bb3912cc36d12861d7e4010bb992aabf923a8d393bc71e776218c39f5f40778ab9f398ff962dd26857edee07ce732c9ad28a678feb1b76f99384d2e4a90
+  checksum: d9b2bb0e4591b4a73ea98bb7a6423c4e50dd35f43ce4404be26126796af970d844269bb0b07b21866620c542f07957003b34c5cf60095e5a84878af6b120cc2d
   languageName: node
   linkType: hard
 
@@ -9576,7 +9576,7 @@ __metadata:
     app-datepicker: "npm:5.1.1"
     babel-loader: "npm:9.1.3"
     babel-plugin-template-html-minifier: "npm:4.1.0"
-    chai: "npm:5.0.0"
+    chai: "npm:5.0.3"
     chart.js: "npm:4.4.1"
     comlink: "npm:4.4.1"
     core-js: "npm:3.35.1"
@@ -11469,7 +11469,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loupe@npm:^3.0.0":
+"loupe@npm:^3.1.0":
   version: 3.1.0
   resolution: "loupe@npm:3.1.0"
   dependencies:
