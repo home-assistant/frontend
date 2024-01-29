@@ -85,6 +85,7 @@ export class HaSortable extends LitElement {
           background: rgba(var(--rgb-primary-color), 0.25);
           border-radius: 4px;
           opacity: 0.4;
+          pointer-events: none;
         }
 
         .sortable-drag {
