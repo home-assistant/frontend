@@ -300,6 +300,8 @@ export class StateHistoryCharts extends LitElement {
       :host([virtualize]) .entry-container {
         padding-left: 1px;
         padding-right: 1px;
+        padding-inline-start: 1px;
+        padding-inline-end: 1px;
       }
 
       .entry-container:not(:first-child) {

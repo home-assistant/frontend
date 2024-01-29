@@ -49,6 +49,8 @@ class EnergyValidationMessage extends LitElement {
   static styles = css`
     ul {
       padding-left: 24px;
+      padding-inline-start: 24px
+      padding-inline-end: initial;
       margin: 4px 0;
     }
     a {

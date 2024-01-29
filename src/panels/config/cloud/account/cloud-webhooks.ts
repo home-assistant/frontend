@@ -223,6 +223,8 @@ export class CloudWebhooks extends LitElement {
         }
         .progress {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           display: flex;
           flex-direction: column;
           justify-content: center;

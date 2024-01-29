@@ -566,6 +566,8 @@ export class HuiAreaCard
         white-space: nowrap;
         float: left;
         margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
       }
 
       .alerts {
@@ -577,6 +579,8 @@ export class HuiAreaCard
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         border-radius: 50%;
       }
 
