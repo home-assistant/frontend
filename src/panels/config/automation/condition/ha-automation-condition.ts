@@ -1,5 +1,5 @@
+import { mdiDrag, mdiPlus } from "@mdi/js";
 import { consume } from "@lit-labs/context";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -121,42 +121,24 @@ export default class HaAutomationCondition extends LitElement {
               <ha-automation-condition-row
                 .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
+                .first=${idx === 0}
+                .last=${idx === this.conditions.length - 1}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
-                .hideMenu=${Boolean(this._reorderMode?.active)}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateCondition}
-                @move-condition=${this._move}
+                @move-down=${this._moveDown}
+                @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
               >
                 ${this._reorderMode?.active
                   ? html`
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_up"
-                        )}
-                        .path=${mdiArrowUp}
-                        @click=${this._moveUp}
-                        .disabled=${idx === 0}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_down"
-                        )}
-                        .path=${mdiArrowDown}
-                        @click=${this._moveDown}
-                        .disabled=${idx === this.conditions.length - 1}
-                      ></ha-icon-button>
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
-                  : ""}
+                  : nothing}
               </ha-automation-condition-row>
             `
           )}
@@ -315,7 +297,7 @@ export default class HaAutomationCondition extends LitElement {
         overflow: hidden;
       }
       .handle {
-        padding: 12px;
+        padding: 12px 4px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }

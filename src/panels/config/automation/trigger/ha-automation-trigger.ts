@@ -1,7 +1,14 @@
 import { consume } from "@lit-labs/context";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -71,40 +78,23 @@ export default class HaAutomationTrigger extends LitElement {
               <ha-automation-trigger-row
                 .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
+                .first=${idx === 0}
+                .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
-                .hideMenu=${Boolean(this._reorderMode?.active)}
                 @duplicate=${this._duplicateTrigger}
+                @move-down=${this._moveDown}
+                @move-up=${this._moveUp}
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
               >
                 ${this._reorderMode?.active
                   ? html`
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_up"
-                        )}
-                        .path=${mdiArrowUp}
-                        @click=${this._moveUp}
-                        .disabled=${idx === 0}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_down"
-                        )}
-                        .path=${mdiArrowDown}
-                        @click=${this._moveDown}
-                        .disabled=${idx === this.triggers.length - 1}
-                      ></ha-icon-button>
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
-                  : ""}
+                  : nothing}
               </ha-automation-trigger-row>
             `
           )}
@@ -256,7 +246,7 @@ export default class HaAutomationTrigger extends LitElement {
         overflow: hidden;
       }
       .handle {
-        padding: 12px;
+        padding: 12px 4px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }
