@@ -155,8 +155,8 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode ?? false;
-    const forcedDark = this.darkMode ?? false;
+    const darkMode = this.darkMode || this.hass.themes.darkMode || false;
+    const forcedDark = this.darkMode || false;
     const map = this.shadowRoot!.getElementById("map");
     map!.classList.toggle("dark", darkMode);
     map!.classList.toggle("forced-dark", forcedDark);
@@ -360,7 +360,7 @@ export class HaMap extends ReactiveElement {
     );
 
     const className =
-      this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light";
+      this.darkMode || this.hass.themes.darkMode ? "dark" : "light";
 
     for (const entity of this.entities) {
       const stateObj = hass.states[getEntityId(entity)];

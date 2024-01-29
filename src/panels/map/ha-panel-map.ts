@@ -38,7 +38,6 @@ class HaPanelMap extends LitElement {
         <ha-map
           .hass=${this.hass}
           .entities=${this._entities}
-          .darkMode=${undefined}
           autoFit
           interactiveZones
         ></ha-map>
