@@ -13,6 +13,8 @@ export class HaDomainIcon extends LitElement {
 
   @property() public domain?: string;
 
+  @property() public deviceClass?: string;
+
   @property() public icon?: string;
 
   @property({ type: Boolean }) public brandFallback?: boolean;
@@ -30,12 +32,14 @@ export class HaDomainIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = domainIcon(this.hass, this.domain).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
+    const icon = domainIcon(this.hass, this.domain, this.deviceClass).then(
+      (icn) => {
+        if (icn) {
+          return html`<ha-icon .icon=${icn}></ha-icon>`;
+        }
+        return this._renderFallback();
       }
-      return this._renderFallback();
-    });
+    );
 
     return html`${until(icon)}`;
   }

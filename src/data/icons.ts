@@ -248,11 +248,15 @@ export const serviceIcon = async (
 
 export const domainIcon = async (
   hass: HomeAssistant,
-  domain: string
+  domain: string,
+  deviceClass?: string
 ): Promise<string | undefined> => {
   const entityComponentIcons = await getComponentIcons(hass, domain);
   if (entityComponentIcons) {
-    return entityComponentIcons._?.default;
+    const translations =
+      (deviceClass && entityComponentIcons[deviceClass]) ||
+      entityComponentIcons._;
+    return translations?.default;
   }
   return undefined;
 };
