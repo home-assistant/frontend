@@ -43,7 +43,7 @@ const CREATE_USER_SCHEMA: HaFormSchema[] = [
 
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property() public language!: string;
 

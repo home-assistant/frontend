@@ -61,6 +61,7 @@ export type TranslationCategory =
   | "state"
   | "entity"
   | "entity_component"
+  | "exceptions"
   | "config"
   | "config_panel"
   | "options"

@@ -1,11 +1,21 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
+import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { FrontendLocaleData } from "../data/translation";
-import { fireEvent } from "../common/dom/fire_event";
+import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",
@@ -34,10 +44,19 @@ export class HaControlNumberButton extends LitElement {
 
   @property({ type: Number }) public max?: number;
 
-  @property({ attribute: "false" })
+  @property() public unit?: string;
+
+  @property({ attribute: false })
   public formatOptions: Intl.NumberFormatOptions = {};
 
   @query("#input") _input!: HTMLDivElement;
+
+  private _hideUnit = new ResizeController(this, {
+    callback: (entries) => {
+      const width = entries[0]?.contentRect.width;
+      return width < 100;
+    },
+  });
 
   private boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
@@ -114,26 +133,33 @@ export class HaControlNumberButton extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const displayedValue =
+    const value =
       this.value != null
         ? formatNumber(this.value, this.locale, this.formatOptions)
         : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
+      : "";
 
     return html`
       <div class="container">
         <div
           id="input"
           class="value"
-          role="number-button"
-          .tabIndex=${this.disabled ? "-1" : "0"}
-          aria-valuenow=${this.value}
-          aria-valuemin=${this.min}
-          aria-valuemax=${this.max}
+          role="spinbutton"
+          tabindex=${this.disabled ? "-1" : "0"}
+          aria-valuenow=${ifDefined(this.value)}
+          aria-valuetext=${`${value}${unit}`}
+          aria-valuemin=${ifDefined(this.min)}
+          aria-valuemax=${ifDefined(this.max)}
           aria-label=${ifDefined(this.label)}
           ?disabled=${this.disabled}
           @keydown=${this._handleKeyDown}
         >
-          ${displayedValue}
+          ${value}
+          ${unit && !this._hideUnit.value
+            ? html`<span class="unit">${unit}</span>`
+            : nothing}
         </div>
         <button
           class="button minus"
@@ -144,7 +170,7 @@ export class HaControlNumberButton extends LitElement {
           .disabled=${this.disabled ||
           (this.min != null && this._value <= this.min)}
         >
-          <ha-svg-icon aria-hidden .path=${mdiMinus}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </button>
         <button
           class="button plus"
@@ -155,7 +181,7 @@ export class HaControlNumberButton extends LitElement {
           .disabled=${this.disabled ||
           (this.max != null && this._value >= this.max)}
         >
-          <ha-svg-icon aria-hidden .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
         </button>
       </div>
     `;
@@ -185,6 +211,8 @@ export class HaControlNumberButton extends LitElement {
         position: relative;
         width: 100%;
         height: 100%;
+        container-type: inline-size;
+        container-name: container;
       }
       .value {
         display: flex;
@@ -248,6 +276,14 @@ export class HaControlNumberButton extends LitElement {
       }
       .button.plus {
         right: 0;
+      }
+      .unit {
+        white-space: pre;
+      }
+      @container container (max-width: 100px) {
+        .unit {
+          display: none;
+        }
       }
     `;
   }

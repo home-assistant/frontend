@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "configMigration": true,
   "extends": [
     ":ignoreModulesAndTests",
     ":label(Dependencies)",
@@ -10,7 +11,7 @@
     "group:recommended",
     "npm:unpublishSafe"
   ],
-  "enabledManagers": ["npm"],
+  "enabledManagers": ["npm", "nvm"],
   "postUpdateOptions": ["yarnDedupeHighest"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
@@ -29,10 +30,21 @@
       "allowedVersions": "< 3"
     },
     {
+      "description": "Group MDI packages",
+      "groupName": "Material Design Icons",
+      "matchPackageNames": ["@mdi/js", "@mdi/svg"]
+    },
+    {
       "description": "Group tsparticles engine and presets",
       "groupName": "tsparticles",
       "matchPackageNames": ["tsparticles-engine"],
       "matchPackagePrefixes": ["tsparticles-preset-"]
+    },
+    {
+      "description": "Group and temporarily disable WDS packages",
+      "groupName": "Web Dev Server",
+      "matchPackagePrefixes": ["@web/dev-server"],
+      "enabled": false
     }
   ]
 }

@@ -49,17 +49,21 @@ import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hass
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
+type BackupItem = HassioBackup & {
+  secondary: string;
+};
+
 @customElement("hassio-backups")
 export class HassioBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 
@@ -117,15 +121,15 @@ export class HassioBackups extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => ({
+    (narrow: boolean): DataTableColumnContainer<BackupItem> => ({
       name: {
         title: this.supervisor.localize("backup.name"),
         main: true,
         sortable: true,
         filterable: true,
         grows: true,
-        template: (entry: string, backup: any) =>
-          html`${entry || backup.slug}
+        template: (backup) =>
+          html`${backup.name || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
       size: {
@@ -134,7 +138,7 @@ export class HassioBackups extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
+        template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
       },
       location: {
         title: this.supervisor.localize("backup.location"),
@@ -142,8 +146,8 @@ export class HassioBackups extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: string | null) =>
-          entry || this.supervisor.localize("backup.data_disk"),
+        template: (backup) =>
+          backup.location || this.supervisor.localize("backup.data_disk"),
       },
       date: {
         title: this.supervisor.localize("backup.created"),
@@ -152,8 +156,8 @@ export class HassioBackups extends LitElement {
         hidden: narrow,
         filterable: true,
         sortable: true,
-        template: (entry: string) =>
-          relativeTime(new Date(entry), this.hass.locale),
+        template: (backup) =>
+          relativeTime(new Date(backup.date), this.hass.locale),
       },
       secondary: {
         title: "",
@@ -163,7 +167,7 @@ export class HassioBackups extends LitElement {
     })
   );
 
-  private _backupData = memoizeOne((backups: HassioBackup[]) =>
+  private _backupData = memoizeOne((backups: HassioBackup[]): BackupItem[] =>
     backups.map((backup) => ({
       ...backup,
       secondary: this._computeBackupContent(backup),
@@ -356,11 +360,9 @@ export class HassioBackups extends LitElement {
     if (this.supervisor!.info.state !== "running") {
       showAlertDialog(this, {
         title: this.supervisor!.localize("backup.could_not_create"),
-        text: this.supervisor!.localize(
-          "backup.create_blocked_not_running",
-          "state",
-          this.supervisor!.info.state
-        ),
+        text: this.supervisor!.localize("backup.create_blocked_not_running", {
+          state: this.supervisor!.info.state,
+        }),
       });
       return;
     }
@@ -393,6 +395,8 @@ export class HassioBackups extends LitElement {
         .selected-txt {
           font-weight: bold;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
           color: var(--primary-text-color);
         }
         .table-header .selected-txt {
@@ -403,6 +407,8 @@ export class HassioBackups extends LitElement {
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
+          margin-inline-end: -12px;
+          margin-inline-start: initial;
         }
         .header-btns > mwc-button,
         .header-btns > ha-icon-button {

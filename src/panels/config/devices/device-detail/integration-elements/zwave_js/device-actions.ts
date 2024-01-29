@@ -15,12 +15,13 @@ import {
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
-import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
+import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
-import { showZWaveJUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
+import { showZWaveJSUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
+import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 
 export const getZwaveDeviceActions = async (
   el: HTMLElement,
@@ -69,10 +70,12 @@ export const getZwaveDeviceActions = async (
           }),
       },
       {
-        label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.rebuild_routes"
+        ),
         icon: mdiHospitalBox,
         action: () =>
-          showZWaveJSHealNodeDialog(el, {
+          showZWaveJSRebuildNodeRoutesDialog(el, {
             device,
           }),
       },
@@ -134,10 +137,24 @@ export const getZwaveDeviceActions = async (
             confirmText: hass.localize("ui.common.yes"),
           }))
         ) {
-          showZWaveJUpdateFirmwareNodeDialog(el, {
+          showZWaveJSUpdateFirmwareNodeDialog(el, {
             device,
           });
         }
+      },
+    });
+  }
+
+  if (nodeStatus.is_controller_node) {
+    actions.push({
+      label: hass.localize(
+        "ui.panel.config.zwave_js.device_info.hard_reset_controller"
+      ),
+      icon: mdiDeleteForever,
+      action: async () => {
+        showZWaveJSHardResetControllerDialog(el, {
+          entryId,
+        });
       },
     });
   }

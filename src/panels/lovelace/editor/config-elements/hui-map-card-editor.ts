@@ -9,6 +9,7 @@ import {
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { hasLocation } from "../../../../common/entity/has_location";
@@ -25,9 +26,18 @@ import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+
+export const mapEntitiesConfigStruct = union([
+  object({
+    entity: string(),
+    label_mode: optional(string()),
+    focus: optional(boolean()),
+    name: optional(string()),
+  }),
+  string(),
+]);
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,7 +46,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     default_zoom: optional(number()),
     dark_mode: optional(boolean()),
-    entities: array(entitiesConfigStruct),
+    entities: array(mapEntitiesConfigStruct),
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(string())),
     auto_fit: optional(boolean()),

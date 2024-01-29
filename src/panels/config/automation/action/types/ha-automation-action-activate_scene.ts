@@ -14,7 +14,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: SceneAction;
+  @property({ attribute: false }) public action!: SceneAction;
 
   public static get defaultConfig(): SceneAction {
     return {
@@ -54,6 +54,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         service: "scene.turn_on",
         target: {
           entity_id: ev.detail.value,

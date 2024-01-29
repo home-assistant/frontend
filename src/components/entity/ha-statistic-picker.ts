@@ -44,7 +44,7 @@ export class HaStatisticPicker extends LitElement {
 
   @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
   /**
    * Show only statistics natively stored with these units of measurements.
@@ -87,6 +87,8 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-statistics" })
   public excludeStatistics?: string[];
 
+  @property() public helpMissingEntityUrl = "/more-info/statistics/";
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -103,6 +105,7 @@ export class HaStatisticPicker extends LitElement {
         ? html`<state-badge
             slot="graphic"
             .stateObj=${item.state}
+            .hass=${this.hass}
           ></state-badge>`
         : ""}
       <span>${item.name}</span>
@@ -111,7 +114,7 @@ export class HaStatisticPicker extends LitElement {
           ? html`<a
               target="_blank"
               rel="noopener noreferrer"
-              href=${documentationUrl(this.hass, "/more-info/statistics/")}
+              href=${documentationUrl(this.hass, this.helpMissingEntityUrl)}
               >${this.hass.localize(
                 "ui.components.statistic-picker.learn_more"
               )}</a
@@ -127,7 +130,8 @@ export class HaStatisticPicker extends LitElement {
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
       entitiesOnly?: boolean,
-      excludeStatistics?: string[]
+      excludeStatistics?: string[],
+      value?: string
     ): StatisticItem[] => {
       if (!statisticIds.length) {
         return [
@@ -174,6 +178,7 @@ export class HaStatisticPicker extends LitElement {
       statisticIds.forEach((meta) => {
         if (
           excludeStatistics &&
+          meta.statistic_id !== value &&
           excludeStatistics.includes(meta.statistic_id)
         ) {
           return;
@@ -256,7 +261,8 @@ export class HaStatisticPicker extends LitElement {
           this.includeUnitClass,
           this.includeDeviceClass,
           this.entitiesOnly,
-          this.excludeStatistics
+          this.excludeStatistics,
+          this.value
         );
       } else {
         this.updateComplete.then(() => {
@@ -266,7 +272,8 @@ export class HaStatisticPicker extends LitElement {
             this.includeUnitClass,
             this.includeDeviceClass,
             this.entitiesOnly,
-            this.excludeStatistics
+            this.excludeStatistics,
+            this.value
           );
         });
       }

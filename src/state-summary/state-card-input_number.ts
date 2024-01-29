@@ -15,7 +15,7 @@ import { HomeAssistant } from "../types";
 class StateCardInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
 
@@ -57,15 +57,14 @@ class StateCardInputNumber extends LitElement {
         ? html`
             <div class="flex">
               <ha-slider
-                .disabled=${isUnavailableState(this.stateObj.state)}
+                labeled
                 .dir=${computeRTLDirection(this.hass)}
+                .disabled=${isUnavailableState(this.stateObj.state)}
                 .step=${Number(this.stateObj.attributes.step)}
                 .min=${Number(this.stateObj.attributes.min)}
                 .max=${Number(this.stateObj.attributes.max)}
                 .value=${this.stateObj.state}
-                pin
                 @change=${this._selectedValueChanged}
-                ignore-bar-touch
               ></ha-slider>
               <span class="state">
                 ${this.hass.formatEntityState(this.stateObj)}

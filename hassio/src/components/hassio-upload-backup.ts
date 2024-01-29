@@ -33,7 +33,6 @@ export class HassioUploadBackup extends LitElement {
         label="Upload backup"
         supports="Supports .TAR files"
         @file-picked=${this._uploadFile}
-        auto-open-file-dialog
       ></ha-file-upload>
     `;
   }

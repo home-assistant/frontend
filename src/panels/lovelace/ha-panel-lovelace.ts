@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-import { html, LitElement, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -8,15 +9,22 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
+import { subscribeLovelaceUpdates } from "../../data/lovelace";
 import {
   deleteConfig,
   fetchConfig,
-  fetchResources,
+  isStrategyDashboard,
   LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+  LovelaceRawConfig,
   saveConfig,
-  subscribeLovelaceUpdates,
-  WindowWithLovelaceProm,
-} from "../../data/lovelace";
+} from "../../data/lovelace/config/types";
+import {
+  isStrategyView,
+  LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
+import { fetchResources } from "../../data/lovelace/resource";
+import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
@@ -29,7 +37,11 @@ import { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
-const DEFAULT_STRATEGY = "original-states";
+const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
+  strategy: {
+    type: "original-states",
+  },
+};
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -40,16 +52,15 @@ let resourcesLoaded = false;
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
-  @property() public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
-  @property()
-  private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =
+  @state() private _panelState: "loading" | "loaded" | "error" | "yaml-editor" =
     "loading";
 
   @state() private _errorMsg?: string;
@@ -60,12 +71,7 @@ export class LovelacePanel extends LitElement {
 
   private _fetchConfigOnConnect = false;
 
-  private _unsubUpdates?;
-
-  constructor() {
-    super();
-    this._closeEditor = this._closeEditor.bind(this);
-  }
+  private _unsubUpdates?: Promise<UnsubscribeFunc>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -89,18 +95,25 @@ export class LovelacePanel extends LitElement {
       // Config was changed when we were not at the lovelace panel
       this._fetchConfig(false);
     }
+    window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     // On the main dashboard we want to stay subscribed as that one is cached.
     if (this.urlPath !== null && this._unsubUpdates) {
-      this._unsubUpdates();
+      this._unsubUpdates.then((unsub) => unsub());
+      this._unsubUpdates = undefined;
     }
+    // reload lovelace on reconnect so we are sure we have the latest config
+    window.removeEventListener(
+      "connection-status",
+      this._handleConnectionStatus
+    );
   }
 
   protected render(): TemplateResult | void {
-    const panelState = this._panelState!;
+    const panelState = this._panelState;
 
     if (panelState === "loaded") {
       return html`
@@ -147,44 +160,47 @@ export class LovelacePanel extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.lovelace && this._panelState !== "error") {
+      this._fetchConfig(false);
+    }
+  }
 
-    this._fetchConfig(false);
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
     }
-    // reload lovelace on reconnect so we are sure we have the latest config
-    window.addEventListener("connection-status", (ev) => {
-      if (ev.detail === "connected") {
-        this._fetchConfig(false);
-      }
-    });
   }
+
+  private _handleConnectionStatus = (ev) => {
+    // reload lovelace on reconnect so we are sure we have the latest config
+    if (ev.detail === "connected") {
+      this._fetchConfig(false);
+    }
+  };
 
   private async _regenerateConfig() {
     const conf = await generateLovelaceDashboardStrategy(
-      {
-        hass: this.hass!,
-        narrow: this.narrow,
-      },
-      DEFAULT_STRATEGY
+      DEFAULT_CONFIG.strategy,
+      this.hass!
     );
-    this._setLovelaceConfig(conf, undefined, "generated");
+    this._setLovelaceConfig(conf, DEFAULT_CONFIG, "generated");
     this._panelState = "loaded";
   }
 
   private async _subscribeUpdates() {
-    this._unsubUpdates = await subscribeLovelaceUpdates(
+    this._unsubUpdates = subscribeLovelaceUpdates(
       this.hass!.connection,
       this.urlPath,
       () => this._lovelaceChanged()
     );
   }
 
-  private _closeEditor() {
+  private _closeEditor = () => {
     this._panelState = "loaded";
-  }
+  };
 
   private _lovelaceChanged() {
     if (this._ignoreNextUpdateEvent) {
@@ -218,21 +234,20 @@ export class LovelacePanel extends LitElement {
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
-    let rawConf: LovelaceConfig | undefined;
+    let rawConf: LovelaceRawConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
-    let confProm: Promise<LovelaceConfig> | undefined;
-    const llWindow = window as WindowWithLovelaceProm;
+    let confProm: Promise<LovelaceRawConfig> | undefined;
+    const preloadWindow = window as WindowWithPreloads;
 
     // On first load, we speed up loading page by having LL promise ready
-    if (llWindow.llConfProm) {
-      confProm = llWindow.llConfProm;
-      llWindow.llConfProm = undefined;
+    if (preloadWindow.llConfProm) {
+      confProm = preloadWindow.llConfProm;
+      preloadWindow.llConfProm = undefined;
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (llWindow.llConfProm || fetchResources(this.hass!.connection)).then(
-        (resources) =>
-          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      (preloadWindow.llResProm || fetchResources(this.hass!.connection)).then(
+        (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
 
@@ -255,12 +270,15 @@ export class LovelacePanel extends LitElement {
       rawConf = await confProm!;
 
       // If strategy defined, apply it here.
-      if (rawConf.strategy) {
-        conf = await generateLovelaceDashboardStrategy({
-          config: rawConf,
-          hass: this.hass!,
-          narrow: this.narrow,
-        });
+      if (isStrategyDashboard(rawConf)) {
+        if (!this.hass?.entities || !this.hass.devices || !this.hass.areas) {
+          // We need these to generate a dashboard, wait for them
+          return;
+        }
+        conf = await generateLovelaceDashboardStrategy(
+          rawConf.strategy,
+          this.hass!
+        );
       } else {
         conf = rawConf;
       }
@@ -272,13 +290,15 @@ export class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
+      if (!this.hass?.entities || !this.hass.devices || !this.hass.areas) {
+        // We need these to generate a dashboard, wait for them
+        return;
+      }
       conf = await generateLovelaceDashboardStrategy(
-        {
-          hass: this.hass!,
-          narrow: this.narrow,
-        },
-        DEFAULT_STRATEGY
+        DEFAULT_CONFIG.strategy,
+        this.hass!
       );
+      rawConf = DEFAULT_CONFIG;
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -294,17 +314,24 @@ export class LovelacePanel extends LitElement {
     this._setLovelaceConfig(conf, rawConf, confMode);
   }
 
-  private _checkLovelaceConfig(config: LovelaceConfig) {
+  private _checkLovelaceConfig(config: LovelaceRawConfig) {
     // Somehow there can be badges with value null, we remove those
+    if (isStrategyDashboard(config)) {
+      return config;
+    }
     let checkedConfig = !Object.isFrozen(config) ? config : undefined;
     config.views.forEach((view, index) => {
+      if (isStrategyView(view)) {
+        return;
+      }
       if (view.badges && !view.badges.every(Boolean)) {
         checkedConfig = checkedConfig || {
           ...config,
           views: [...config.views],
         };
-        checkedConfig.views[index] = { ...view };
-        checkedConfig.views[index].badges = view.badges.filter(Boolean);
+        const updatedView = { ...view } as LovelaceViewConfig;
+        updatedView.badges = view.badges.filter(Boolean);
+        checkedConfig.views[index] = updatedView;
       }
     });
     return checkedConfig ? deepFreeze(checkedConfig) : config;
@@ -312,7 +339,7 @@ export class LovelacePanel extends LitElement {
 
   private _setLovelaceConfig(
     config: LovelaceConfig,
-    rawConfig: LovelaceConfig | undefined,
+    rawConfig: LovelaceRawConfig,
     mode: Lovelace["mode"]
   ) {
     config = this._checkLovelaceConfig(config);
@@ -332,28 +359,27 @@ export class LovelacePanel extends LitElement {
         this._panelState = "yaml-editor";
       },
       setEditMode: (editMode: boolean) => {
+        // If the dashboard is generated (default dashboard)
+        // Propose to take control of it
+        if (this.lovelace!.mode === "generated" && editMode) {
+          showSaveDialog(this, {
+            lovelace: this.lovelace!,
+            mode: this.panel!.config.mode,
+            narrow: this.narrow!,
+          });
+          return;
+        }
+
         // If we use a strategy for dashboard, we cannot show the edit UI
         // So go straight to the YAML editor
-        if (
-          this.lovelace!.rawConfig &&
-          this.lovelace!.rawConfig !== this.lovelace!.config
-        ) {
+        if (isStrategyDashboard(this.lovelace!.rawConfig) && editMode) {
           this.lovelace!.enableFullEditMode();
           return;
         }
 
-        if (!editMode || this.lovelace!.mode !== "generated") {
-          this._updateLovelace({ editMode });
-          return;
-        }
-
-        showSaveDialog(this, {
-          lovelace: this.lovelace!,
-          mode: this.panel!.config.mode,
-          narrow: this.narrow!,
-        });
+        this._updateLovelace({ editMode });
       },
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+      saveConfig: async (newConfig: LovelaceRawConfig): Promise<void> => {
         const {
           config: previousConfig,
           rawConfig: previousRawConfig,
@@ -362,12 +388,11 @@ export class LovelacePanel extends LitElement {
         newConfig = this._checkLovelaceConfig(newConfig);
         let conf: LovelaceConfig;
         // If strategy defined, apply it here.
-        if (newConfig.strategy) {
-          conf = await generateLovelaceDashboardStrategy({
-            config: newConfig,
-            hass: this.hass!,
-            narrow: this.narrow,
-          });
+        if (isStrategyDashboard(newConfig)) {
+          conf = await generateLovelaceDashboardStrategy(
+            newConfig.strategy,
+            this.hass!
+          );
         } else {
           conf = newConfig;
         }
@@ -401,15 +426,12 @@ export class LovelacePanel extends LitElement {
         try {
           // Optimistic update
           const generatedConf = await generateLovelaceDashboardStrategy(
-            {
-              hass: this.hass!,
-              narrow: this.narrow,
-            },
-            DEFAULT_STRATEGY
+            DEFAULT_CONFIG.strategy,
+            this.hass!
           );
           this._updateLovelace({
             config: generatedConf,
-            rawConfig: undefined,
+            rawConfig: DEFAULT_CONFIG,
             mode: "generated",
             editMode: false,
           });
@@ -447,5 +469,11 @@ export class LovelacePanel extends LitElement {
         )
       );
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-lovelace": LovelacePanel;
   }
 }

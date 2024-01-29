@@ -60,11 +60,9 @@ class HaMfaModulesCard extends LitElement {
     const mfamodule = ev.currentTarget.module;
     if (
       !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.profile.mfa.confirm_disable",
-          "name",
-          mfamodule.name
-        ),
+        text: this.hass.localize("ui.panel.profile.mfa.confirm_disable", {
+          name: mfamodule.name,
+        }),
       }))
     ) {
       return;

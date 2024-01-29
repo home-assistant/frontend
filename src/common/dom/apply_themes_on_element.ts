@@ -1,5 +1,5 @@
 import { ThemeVars } from "../../data/ws-themes";
-import { darkStyles, derivedStyles } from "../../resources/styles";
+import { darkStyles, derivedStyles } from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
 import {
   hex2rgb,
@@ -41,9 +41,9 @@ export const applyThemesOnElement = (
   // If there is no explicitly desired dark mode provided, we automatically
   // use the active one from `themes`.
   const darkMode =
-    themeSettings && themeSettings?.dark !== undefined
-      ? themeSettings?.dark
-      : themes.darkMode;
+    themeSettings?.dark !== undefined
+      ? themeSettings.dark
+      : themes?.darkMode || false;
 
   let cacheKey = themeToApply;
   let themeRules: Partial<ThemeVars> = {};
@@ -135,10 +135,19 @@ export const applyThemesOnElement = (
 
   // Set and/or reset styles
   if (element.updateStyles) {
+    // Use updateStyles() method of Polymer elements
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
-    // Implement updateStyles() method of Polymer elements
+    // Use ShadyCSS if available
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
+  } else {
+    for (const s in styles) {
+      if (s === null) {
+        element.style.removeProperty(s);
+      } else {
+        element.style.setProperty(s, styles[s]);
+      }
+    }
   }
 };
 

@@ -13,6 +13,7 @@ import "../../../../components/ha-textfield";
 import {
   emptyWaterEnergyPreference,
   WaterSourceTypeEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
@@ -61,10 +62,10 @@ export class DialogEnergyWaterSettings
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
-      ? "number"
-      : this._source.stat_cost
-      ? "statistic"
-      : "no-costs";
+        ? "number"
+        : this._source.stat_cost
+          ? "statistic"
+          : "no-costs";
     this._water_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "water")
     ).units;
@@ -128,6 +129,7 @@ export class DialogEnergyWaterSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           include-unit-class="volume"
           include-device-class="water"
           .value=${this._source.stat_energy_from}

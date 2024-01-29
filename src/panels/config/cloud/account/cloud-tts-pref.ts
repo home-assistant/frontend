@@ -24,7 +24,7 @@ import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 export class CloudTTSPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private savingPreferences = false;
 
@@ -49,11 +49,9 @@ export class CloudTTSPref extends LitElement {
         header=${this.hass.localize("ui.panel.config.cloud.account.tts.title")}
       >
         <div class="card-content">
-          ${this.hass.localize(
-            "ui.panel.config.cloud.account.tts.info",
-            "service",
-            '"tts.cloud_say"'
-          )}
+          ${this.hass.localize("ui.panel.config.cloud.account.tts.info", {
+            service: '"tts.cloud_say"',
+          })}
           <br /><br />
           <div class="row">
             <ha-language-picker
@@ -193,9 +191,13 @@ export class CloudTTSPref extends LitElement {
       }
       .row > *:first-child {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .row > *:last-child {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .card-actions {
         display: flex;

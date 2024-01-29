@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import "../cards/hui-button-card";
 import "../cards/hui-calendar-card";
 import "../cards/hui-entities-card";
@@ -9,8 +9,8 @@ import "../cards/hui-grid-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
-import "../cards/hui-weather-forecast-card";
 import "../cards/hui-tile-card";
+import "../cards/hui-weather-forecast-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -77,7 +77,8 @@ const LAZY_LOAD_TYPES = {
   "picture-glance": () => import("../cards/hui-picture-glance-card"),
   picture: () => import("../cards/hui-picture-card"),
   "plant-status": () => import("../cards/hui-plant-status-card"),
-  "safe-mode": () => import("../cards/hui-safe-mode-card"),
+  "recovery-mode": () => import("../cards/hui-recovery-mode-card"),
+  "todo-list": () => import("../cards/hui-todo-list-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),

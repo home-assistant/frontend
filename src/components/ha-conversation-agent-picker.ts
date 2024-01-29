@@ -155,11 +155,12 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._configEntry) {
       return;
     }
-    showOptionsFlowDialog(
-      this,
-      this._configEntry,
-      await fetchIntegrationManifest(this.hass, this._configEntry.domain)
-    );
+    showOptionsFlowDialog(this, this._configEntry, {
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this._configEntry.domain
+      ),
+    });
   }
 
   static get styles(): CSSResultGroup {

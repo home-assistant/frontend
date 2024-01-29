@@ -58,6 +58,7 @@ export class HaIntegrationListItem extends ListItemBase {
           darkOptimized: this.hass.themes?.darkMode,
           brand: this.brand,
         })}
+        crossorigin="anonymous"
         referrerpolicy="no-referrer"
       />
     </span>`;

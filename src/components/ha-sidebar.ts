@@ -2,9 +2,9 @@ import "@material/mwc-button/mwc-button";
 import {
   mdiBell,
   mdiCalendar,
-  mdiCart,
   mdiCellphoneCog,
   mdiChartBox,
+  mdiClipboardList,
   mdiClose,
   mdiCog,
   mdiFormatListBulletedType,
@@ -33,7 +33,6 @@ import {
 } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
@@ -41,7 +40,7 @@ import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
-import { ActionHandlerDetail } from "../data/lovelace";
+import { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import {
   PersistentNotification,
   subscribeNotifications,
@@ -50,12 +49,12 @@ import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { UpdateEntity, updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
-import { SortableInstance, loadSortable } from "../resources/sortable.ondemand";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-menu-button";
+import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
@@ -81,7 +80,7 @@ const PANEL_ICONS = {
   lovelace: mdiViewDashboard,
   map: mdiTooltipAccount,
   "media-browser": mdiPlayBoxMultiple,
-  "shopping-list": mdiCart,
+  todo: mdiClipboardList,
 };
 
 const panelSorter = (
@@ -190,9 +189,9 @@ const computePanels = memoizeOne(
 class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
@@ -204,15 +203,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _issuesCount = 0;
 
-  @state() private _renderEmptySortable = false;
-
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
 
-  private sortableStyleLoaded = false;
+  private _editStyleLoaded = false;
 
   @storage({
     key: "sidebarPanelOrder",
@@ -227,8 +224,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     subscribe: true,
   })
   private _hiddenPanels: string[] = [];
-
-  private _sortable?: SortableInstance;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return this.hass.user?.is_admin
@@ -264,14 +259,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("expanded") ||
       changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
+      changedProps.has("editMode") ||
       changedProps.has("_externalConfig") ||
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
-      changedProps.has("editMode") ||
-      changedProps.has("_renderEmptySortable") ||
       changedProps.has("_hiddenPanels") ||
-      (changedProps.has("_panelOrder") && !this.editMode)
+      changedProps.has("_panelOrder")
     ) {
       return true;
     }
@@ -306,12 +300,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
     }
-    if (changedProps.has("editMode")) {
-      if (this.editMode) {
-        this._activateEditMode();
-      } else {
-        this._deactivateEditMode();
-      }
+    if (changedProps.has("editMode") && this.editMode) {
+      this._editModeActivated();
     }
     if (!changedProps.has("hass")) {
       return;
@@ -425,8 +415,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         panel.url_path === this.hass.defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
-          ? PANEL_ICONS[panel.url_path]
-          : undefined
+            ? PANEL_ICONS[panel.url_path]
+            : undefined
       )
     );
   }
@@ -470,15 +460,36 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         `;
   }
 
+  private _panelMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+
+    const [beforeSpacer] = computePanels(
+      this.hass.panels,
+      this.hass.defaultPanel,
+      this._panelOrder,
+      this._hiddenPanels,
+      this.hass.locale
+    );
+
+    const panelOrder = beforeSpacer.map((panel) => panel.url_path);
+    const panel = panelOrder.splice(oldIndex, 1)[0];
+    panelOrder.splice(newIndex, 0, panel);
+
+    this._panelOrder = panelOrder;
+  }
+
   private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
-    // prettier-ignore
-    return html`<div id="sortable">
-        ${guard([this._hiddenPanels, this._renderEmptySortable], () =>
-          this._renderEmptySortable ? "" : this._renderPanels(beforeSpacer)
-        )}
-      </div>
-      ${this._renderSpacer()}
-      ${this._renderHiddenPanels()} `;
+    return html`
+      <ha-sortable
+        handle-selector="paper-icon-item"
+        .disabled=${!this.editMode}
+        @item-moved=${this._panelMoved}
+      >
+        <div class="reorder-list">${this._renderPanels(beforeSpacer)}</div>
+      </ha-sortable>
+      ${this._renderSpacer()}${this._renderHiddenPanels()}
+    `;
   }
 
   private _renderHiddenPanels() {
@@ -499,11 +510,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
                   .path=${PANEL_ICONS.lovelace}
                 ></ha-svg-icon>`
               : panel.url_path in PANEL_ICONS
-              ? html`<ha-svg-icon
-                  slot="item-icon"
-                  .path=${PANEL_ICONS[panel.url_path]}
-                ></ha-svg-icon>`
-              : html`<ha-icon slot="item-icon" .icon=${panel.icon}></ha-icon>`}
+                ? html`<ha-svg-icon
+                    slot="item-icon"
+                    .path=${PANEL_ICONS[panel.url_path]}
+                  ></ha-svg-icon>`
+                : html`<ha-icon
+                    slot="item-icon"
+                    .icon=${panel.icon}
+                  ></ha-icon>`}
             <span class="item-text"
               >${panel.url_path === this.hass.defaultPanel
                 ? this.hass.localize("panel.states")
@@ -671,42 +685,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
-  private async _activateEditMode() {
-    await Promise.all([this._loadSortableStyle(), this._createSortable()]);
+  private async _editModeActivated() {
+    await this._loadEditStyle();
   }
 
-  private async _loadSortableStyle() {
-    if (this.sortableStyleLoaded) return;
+  private async _loadEditStyle() {
+    if (this._editStyleLoaded) return;
 
-    const sortStylesImport = await import("../resources/ha-sortable-style");
+    const editStylesImport = await import("../resources/ha-sidebar-edit-style");
 
     const style = document.createElement("style");
-    style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
+    style.innerHTML = (editStylesImport.sidebarEditStyle as CSSResult).cssText;
     this.shadowRoot!.appendChild(style);
 
-    this.sortableStyleLoaded = true;
     await this.updateComplete;
-  }
-
-  private async _createSortable() {
-    const Sortable = await loadSortable();
-    this._sortable = new Sortable(
-      this.shadowRoot!.getElementById("sortable")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        dataIdAttr: "data-panel",
-        handle: "paper-icon-item",
-        onSort: async () => {
-          this._panelOrder = this._sortable!.toArray();
-        },
-      }
-    );
-  }
-
-  private _deactivateEditMode() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
   }
 
   private _closeEditMode() {
@@ -721,13 +713,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
     // Make a copy for Memoize
     this._hiddenPanels = [...this._hiddenPanels, panel];
-    this._renderEmptySortable = true;
-    await this.updateComplete;
-    const container = this.shadowRoot!.getElementById("sortable")!;
-    while (container.lastElementChild) {
-      container.removeChild(container.lastElementChild);
-    }
-    this._renderEmptySortable = false;
+    // Remove it from the panel order
+    this._panelOrder = this._panelOrder.filter((order) => order !== panel);
   }
 
   private async _unhidePanel(ev: Event) {
@@ -736,13 +723,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._hiddenPanels = this._hiddenPanels.filter(
       (hidden) => hidden !== panel
     );
-    this._renderEmptySortable = true;
-    await this.updateComplete;
-    const container = this.shadowRoot!.getElementById("sortable")!;
-    while (container.lastElementChild) {
-      container.removeChild(container.lastElementChild);
-    }
-    this._renderEmptySortable = false;
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
@@ -907,7 +887,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu mwc-button {
           width: 100%;
         }
-        #sortable,
+        .reorder-list,
         .hidden-panel {
           display: none;
         }

@@ -1,9 +1,14 @@
+import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-button-menu";
+import "../../components/ha-icon-button";
+import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -12,9 +17,9 @@ import "./developer-tools-router";
 class PanelDeveloperTools extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -34,6 +39,16 @@ class PanelDeveloperTools extends LitElement {
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
+          <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-list-item>
+              ${this.hass.localize("ui.panel.developer-tools.tabs.debug.title")}
+            </ha-list-item>
+          </ha-button-menu>
         </div>
         <paper-tabs
           scrollable
@@ -85,6 +100,14 @@ class PanelDeveloperTools extends LitElement {
     }
   }
 
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        navigate(`/developer-tools/debug`);
+        break;
+    }
+  }
+
   private get _page() {
     return this.route.path.substr(1);
   }
@@ -124,7 +147,7 @@ class PanelDeveloperTools extends LitElement {
           }
         }
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
@@ -140,6 +163,8 @@ class PanelDeveloperTools extends LitElement {
         paper-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
+          margin-inline-start: max(env(safe-area-inset-left), 24px);
+          margin-inline-end: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(
             --app-header-selection-bar-color,
             var(--app-header-text-color, #fff)

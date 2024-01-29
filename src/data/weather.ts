@@ -36,7 +36,9 @@ export const enum WeatherEntityFeature {
   FORECAST_TWICE_DAILY = 4,
 }
 
-export type ForecastType = "legacy" | "hourly" | "daily" | "twice_daily";
+export type ModernForecastType = "hourly" | "daily" | "twice_daily";
+
+export type ForecastType = ModernForecastType | "legacy";
 
 interface ForecastAttribute {
   temperature: number;
@@ -381,13 +383,13 @@ const getWeatherStateSVG = (
           />
         `
       : state === "partlycloudy"
-      ? svg`
+        ? svg`
           <path
             class="sun"
             d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
           />
         `
-      : ""
+        : ""
   }
   ${
     cloudyStates.has(state)
@@ -522,8 +524,8 @@ export const weatherIcon = (state?: string, nightTime?: boolean): string =>
   !state
     ? undefined
     : nightTime && state === "partlycloudy"
-    ? mdiWeatherNightPartlyCloudy
-    : weatherIcons[state];
+      ? mdiWeatherNightPartlyCloudy
+      : weatherIcons[state];
 
 const EIGHT_HOURS = 28800000;
 const DAY_IN_MILLISECONDS = 86400000;
@@ -636,7 +638,7 @@ export const getForecast = (
 export const subscribeForecast = (
   hass: HomeAssistant,
   entity_id: string,
-  forecast_type: "daily" | "hourly" | "twice_daily",
+  forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
   hass.connection.subscribeMessage<ForecastEvent>(callback, {
@@ -644,6 +646,22 @@ export const subscribeForecast = (
     forecast_type,
     entity_id,
   });
+
+export const getSupportedForecastTypes = (
+  stateObj: HassEntityBase
+): ModernForecastType[] => {
+  const supported: ModernForecastType[] = [];
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {
+    supported.push("daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_TWICE_DAILY)) {
+    supported.push("twice_daily");
+  }
+  if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_HOURLY)) {
+    supported.push("hourly");
+  }
+  return supported;
+};
 
 export const getDefaultForecastType = (stateObj: HassEntityBase) => {
   if (supportsFeature(stateObj, WeatherEntityFeature.FORECAST_DAILY)) {

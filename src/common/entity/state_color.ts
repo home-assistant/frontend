@@ -37,6 +37,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "timer",
   "update",
   "vacuum",
+  "valve",
   "water_heater",
 ]);
 

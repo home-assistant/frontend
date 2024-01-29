@@ -4,7 +4,7 @@ import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { ActionConfig } from "../../../../data/lovelace";
+import type { ActionConfig } from "../../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";

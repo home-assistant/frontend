@@ -25,6 +25,7 @@ import "./assist-pipeline-detail/assist-pipeline-detail-config";
 import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
+import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
 
@@ -192,6 +193,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
+          <assist-pipeline-detail-wakeword
+            .hass=${this.hass}
+            .data=${this._data}
+            keys="wake_word_entity,wake_word_id"
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-wakeword>
         </div>
         ${this._params.pipeline?.id
           ? html`
@@ -249,6 +256,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         tts_engine: data.tts_engine ?? null,
         tts_language: data.tts_language ?? null,
         tts_voice: data.tts_voice ?? null,
+        wake_word_entity: data.wake_word_entity ?? null,
+        wake_word_id: data.wake_word_id ?? null,
       };
       if (this._params!.pipeline?.id) {
         await this._params!.updatePipeline(values);
@@ -298,9 +307,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        assist-pipeline-detail-config,
-        assist-pipeline-detail-conversation,
-        assist-pipeline-detail-stt {
+        .content > *:not(:last-child) {
           margin-bottom: 16px;
           display: block;
         }

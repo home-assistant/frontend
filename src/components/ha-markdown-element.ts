@@ -3,7 +3,14 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
-const _blockQuoteToAlert = { Note: "info", Warning: "warning" };
+const _legacyGitHubBlockQuoteToAlert = { Note: "info", Warning: "warning" };
+const _gitHubBlockQuoteToAlert = {
+  "[!NOTE]": "info",
+  "[!TIP]": "success",
+  "[!IMPORTANT]": "info",
+  "[!WARNING]": "warning",
+  "[!CAUTION]": "error",
+};
 
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
@@ -71,35 +78,54 @@ class HaMarkdownElement extends ReactiveElement {
         // Map GitHub blockquote elements to our ha-alert element
         const firstElementChild = node.firstElementChild;
         const quoteTitleElement = firstElementChild?.firstElementChild;
-        const quoteType =
+        const blockQuoteType =
+          firstElementChild?.firstChild?.textContent &&
+          _gitHubBlockQuoteToAlert[firstElementChild.firstChild.textContent];
+        const legacyBlockQuoteType =
+          !blockQuoteType &&
           quoteTitleElement?.textContent &&
-          _blockQuoteToAlert[quoteTitleElement.textContent];
+          _legacyGitHubBlockQuoteToAlert[quoteTitleElement.textContent];
 
-        // GitHub is strict on how these are defined, we need to make sure we know what we have before starting to replace it
-        if (quoteTitleElement?.nodeName === "STRONG" && quoteType) {
+        if (
+          blockQuoteType ||
+          (quoteTitleElement?.nodeName === "STRONG" && legacyBlockQuoteType)
+        ) {
           const alertNote = document.createElement("ha-alert");
-          alertNote.alertType = quoteType;
-          alertNote.title =
-            (firstElementChild!.childNodes[1].nodeName === "#text" &&
-              firstElementChild!.childNodes[1].textContent?.trimStart()) ||
-            "";
+          alertNote.alertType = blockQuoteType || legacyBlockQuoteType;
+          alertNote.title = blockQuoteType
+            ? ""
+            : (firstElementChild!.childNodes[1].nodeName === "#text" &&
+                firstElementChild!.childNodes[1].textContent?.trimStart()) ||
+              "";
 
-          const childNodes = Array.from(firstElementChild!.childNodes);
-          for (const child of childNodes.slice(
-            childNodes.findIndex(
-              // There is always a line break between the title and the content, we want to skip that
-              (childNode) => childNode instanceof HTMLBRElement
-            ) + 1
-          )) {
+          const childNodes = Array.from(node.childNodes)
+            .map((child) => Array.from(child.childNodes))
+            .reduce((acc, val) => acc.concat(val), [])
+            .filter(
+              (childNode) =>
+                childNode.textContent &&
+                !(childNode.textContent in _gitHubBlockQuoteToAlert) &&
+                !(childNode.textContent in _legacyGitHubBlockQuoteToAlert)
+            );
+          for (const child of childNodes) {
             alertNote.appendChild(child);
           }
           node.firstElementChild!.replaceWith(alertNote);
         }
+      } else if (
+        node instanceof HTMLElement &&
+        ["ha-alert", "ha-qr-code", "ha-icon", "ha-svg-icon"].includes(
+          node.localName
+        )
+      ) {
+        import(
+          /* webpackInclude: /(ha-alert)|(ha-qr-code)|(ha-icon)|(ha-svg-icon)/ */ `./${node.localName}`
+        );
       }
     }
   }
 
-  private _resize = () => fireEvent(this, "iron-resize");
+  private _resize = () => fireEvent(this, "content-resize");
 }
 
 declare global {

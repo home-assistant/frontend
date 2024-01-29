@@ -22,7 +22,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 export class CloudRemotePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   protected render() {
     if (!this.cloudStatus) {
@@ -52,16 +52,16 @@ export class CloudRemotePref extends LitElement {
                   "ui.panel.config.cloud.account.remote.cerificate_error"
                 )
               : remote_certificate_status === "loading"
-              ? this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.cerificate_loading"
-                )
-              : remote_certificate_status === "loaded"
-              ? this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.cerificate_loaded"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.access_is_being_prepared"
-                )}
+                ? this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.cerificate_loading"
+                  )
+                : remote_certificate_status === "loaded"
+                  ? this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.cerificate_loaded"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.access_is_being_prepared"
+                    )}
           </div>
         </ha-card>
       `;

@@ -10,12 +10,15 @@ import {
   state,
 } from "lit/decorators";
 import "../components/ha-card";
+import "../components/ha-svg-icon";
 
 @customElement("onboarding-welcome-link")
 class OnboardingWelcomeLink extends LitElement {
   @property() public label!: string;
 
   @property() public iconPath!: string;
+
+  @property({ type: Boolean }) public noninteractive = false;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -24,6 +27,7 @@ class OnboardingWelcomeLink extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
+        .tabIndex=${this.noninteractive ? "-1" : "0"}
         @focus=${this.handleRippleFocus}
         @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
@@ -33,12 +37,19 @@ class OnboardingWelcomeLink extends LitElement {
         @touchstart=${this.handleRippleActivate}
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
+        @keydown=${this._handleKeyDown}
       >
         <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
         ${this.label}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </ha-card>
     `;
+  }
+
+  private _handleKeyDown(ev: KeyboardEvent): void {
+    if (ev.key === "Enter" || ev.key === " ") {
+      (ev.target as HTMLElement).click();
+    }
   }
 
   private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
@@ -84,6 +95,7 @@ class OnboardingWelcomeLink extends LitElement {
         text-align: center;
         font-weight: 500;
         padding: 32px 16px;
+        height: 100%;
       }
       ha-svg-icon {
         color: var(--text-primary-color);

@@ -31,6 +31,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
+    logarithmic_scale: optional(boolean()),
   })
 );
 
@@ -46,6 +47,11 @@ const SCHEMA = [
         selector: { number: { min: 1, mode: "box" } },
       },
     ],
+  },
+  {
+    name: "logarithmic_scale",
+    required: false,
+    selector: { boolean: {} },
   },
 ] as const;
 
@@ -100,8 +106,18 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "logarithmic_scale":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.history-graph.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static styles: CSSResultGroup = css`
     ha-form {

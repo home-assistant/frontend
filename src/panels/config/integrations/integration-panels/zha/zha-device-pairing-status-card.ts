@@ -1,10 +1,6 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../../components/buttons/ha-call-service-button";
-import "../../../../../components/entity/state-badge";
-import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import {
   CONFIGURED,
@@ -22,9 +18,9 @@ import "./zha-device-card";
 class ZHADevicePairingStatusCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _showHelp = false;
 
@@ -58,11 +54,9 @@ class ZHADevicePairingStatusCard extends LitElement {
             ? html`
                 <div class="model">${this.device.model}</div>
                 <div class="manuf">
-                  ${this.hass.localize(
-                    "ui.dialogs.zha_device_info.manuf",
-                    "manufacturer",
-                    this.device.manufacturer
-                  )}
+                  ${this.hass.localize("ui.dialogs.zha_device_info.manuf", {
+                    manufacturer: this.device.manufacturer,
+                  })}
                 </div>
               `
             : nothing}

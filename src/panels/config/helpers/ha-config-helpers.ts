@@ -1,12 +1,15 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiAlertCircle, mdiPencilOff, mdiPlus } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import {
   DataTableColumnContainer,
@@ -16,7 +19,10 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  ConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import {
   EntityRegistryEntry,
@@ -24,6 +30,7 @@ import {
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -35,9 +42,19 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { HelperDomain, isHelperDomain } from "./const";
+import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+
+type HelperItem = {
+  id: string;
+  name: string;
+  icon?: string;
+  entity_id: string;
+  editable?: boolean;
+  type: string;
+  configEntry?: ConfigEntry;
+  entity?: HassEntity;
+};
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -64,11 +81,11 @@ const getConfigEntry = (
 export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _stateItems: HassEntity[] = [];
 
@@ -76,18 +93,48 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
+  public hassSubscribe() {
+    return [
+      subscribeConfigEntries(
+        this.hass,
+        async (messages) => {
+          const newEntries = this._configEntries
+            ? { ...this._configEntries }
+            : {};
+          messages.forEach((message) => {
+            if (message.type === null || message.type === "added") {
+              newEntries[message.entry.entry_id] = message.entry;
+            } else if (message.type === "removed") {
+              delete newEntries[message.entry.entry_id];
+            } else if (message.type === "updated") {
+              newEntries[message.entry.entry_id] = message.entry;
+            }
+          });
+          this._configEntries = newEntries;
+        },
+        { type: ["helper"] }
+      ),
+      subscribeEntityRegistry(this.hass.connection!, (entries) => {
+        this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
+      }),
+    ];
+  }
+
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<HelperItem> = {
         icon: {
           title: "",
           label: localize("ui.panel.config.helpers.picker.headers.icon"),
           type: "icon",
-          template: (icon, helper: any) =>
+          template: (helper) =>
             helper.entity
-              ? html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`
+              ? html`<ha-state-icon
+                  .hass=${this.hass}
+                  .stateObj=${helper.entity}
+                ></ha-state-icon>`
               : html`<ha-svg-icon
-                  .path=${icon}
+                  .path=${helper.icon}
                   style="color: var(--error-color)"
                 ></ha-svg-icon>`,
         },
@@ -98,10 +145,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           filterable: true,
           grows: true,
           direction: "asc",
-          template: (name, item: any) => html`
-            ${name}
+          template: (helper) => html`
+            ${helper.name}
             ${narrow
-              ? html`<div class="secondary">${item.entity_id}</div> `
+              ? html`<div class="secondary">${helper.entity_id}</div> `
               : ""}
           `,
         },
@@ -114,17 +161,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           width: "25%",
         };
       }
-      columns.type = {
+      columns.localized_type = {
         title: localize("ui.panel.config.helpers.picker.headers.type"),
         sortable: true,
         width: "25%",
         filterable: true,
-        template: (type: HelperDomain, row) =>
-          row.configEntry
-            ? domainToName(localize, type)
-            : html`
-                ${localize(`ui.panel.config.helpers.types.${type}`) || type}
-              `,
       };
       columns.editable = {
         title: "",
@@ -132,8 +173,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           "ui.panel.config.helpers.picker.headers.editable"
         ),
         type: "icon",
-        template: (editable) => html`
-          ${!editable
+        template: (helper) => html`
+          ${!helper.editable
             ? html`
                 <div
                   tabindex="0"
@@ -156,10 +197,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _getItems = memoizeOne(
     (
+      localize: LocalizeFunc,
       stateItems: HassEntity[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>
-    ) => {
+    ): HelperItem[] => {
       const configEntriesCopy = { ...configEntries };
 
       const states = stateItems.map((entityState) => {
@@ -187,10 +229,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      if (!Object.keys(configEntriesCopy).length) {
-        return states;
-      }
-
       const entries = Object.values(configEntriesCopy).map((configEntry) => ({
         id: configEntry.entry_id,
         entity_id: "",
@@ -202,7 +240,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         entity: undefined,
       }));
 
-      return [...states, ...entries];
+      return [...states, ...entries].map((item) => ({
+        ...item,
+        localized_type: item.configEntry
+          ? domainToName(localize, item.type)
+          : localize(
+              `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
+            ) || item.type,
+      }));
     }
   );
 
@@ -225,6 +270,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .tabs=${configSections.devices}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._getItems(
+          this.hass.localize,
           this._stateItems,
           this._entityEntries,
           this._configEntries
@@ -256,7 +302,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._getConfigEntries();
     if (this.route.path === "/add") {
       this._handleAdd();
     }
@@ -313,9 +358,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
     showConfigFlowDialog(this, {
-      dialogClosedCallback: () => {
-        this._getConfigEntries();
-      },
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
     });
@@ -366,21 +408,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entries) => {
-        this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
-      }),
-    ];
-  }
-
-  private async _getConfigEntries() {
-    this._configEntries = groupByOne(
-      await getConfigEntries(this.hass, { type: ["helper"] }),
-      (entry) => entry.entry_id
-    );
-  }
-
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const id = (ev.detail as RowClickedEvent).id;
     if (id.includes(".")) {
@@ -391,12 +418,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _createHelpler() {
-    showHelperDetailDialog(this, {
-      dialogClosedCallback: (params) => {
-        if (params.flowFinished) {
-          this._getConfigEntries();
-        }
-      },
-    });
+    showHelperDetailDialog(this, {});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-helpers": HaConfigHelpers;
   }
 }

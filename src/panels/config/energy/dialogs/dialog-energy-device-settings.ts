@@ -8,7 +8,10 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
-import { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
+import {
+  DeviceConsumptionEnergyPreference,
+  energyStatisticHelpUrl,
+} from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -83,6 +86,7 @@ export class DialogEnergyDeviceSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"

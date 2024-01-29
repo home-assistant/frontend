@@ -1,7 +1,5 @@
-import {
-  LovelaceViewConfig,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import { LovelaceViewElement } from "../../../data/lovelace";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import "../views/hui-masonry-view";
 import { createLovelaceElement } from "./create-element-base";

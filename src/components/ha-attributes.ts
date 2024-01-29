@@ -19,7 +19,7 @@ import "./ha-expansion-panel";
 class HaAttributes extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: "extra-filters" }) public extraFilters?: string;
 
@@ -124,13 +124,6 @@ class HaAttributes extends LitElement {
           color: var(--secondary-text-color);
           text-align: center;
           margin-top: 16px;
-        }
-        pre {
-          font-family: inherit;
-          font-size: inherit;
-          margin: 0px;
-          overflow-wrap: break-word;
-          white-space: pre-line;
         }
         hr {
           border-color: var(--divider-color);

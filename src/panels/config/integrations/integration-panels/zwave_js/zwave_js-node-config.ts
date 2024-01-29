@@ -71,16 +71,15 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId?: string;
 
   @property() public deviceId!: string;
 
-  @property({ type: Array })
-  private _deviceRegistryEntries?: DeviceRegistryEntry[];
+  @state() private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
@@ -160,16 +159,17 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               <em>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.attribution",
-                  "device_database",
-                  html`<a
-                    rel="noreferrer noopener"
-                    href=${this._nodeMetadata?.device_database_url ||
-                    "https://devices.zwave-js.io"}
-                    target="_blank"
-                    >${this.hass.localize(
-                      "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
-                    )}</a
-                  >`
+                  {
+                    device_database: html`<a
+                      rel="noreferrer noopener"
+                      href=${this._nodeMetadata?.device_database_url ||
+                      "https://devices.zwave-js.io"}
+                      target="_blank"
+                      >${this.hass.localize(
+                        "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
+                      )}</a
+                    >`,
+                  }
                 )}
               </em>
             </p>
@@ -184,8 +184,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 <h3>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.node_config.endpoint",
-                    "endpoint",
-                    endpoint
+                    { endpoint }
                   )}
                 </h3>
                 <ha-card>

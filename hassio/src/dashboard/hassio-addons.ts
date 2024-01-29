@@ -20,7 +20,7 @@ class HassioAddons extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _filter?: string;
 
@@ -68,17 +68,19 @@ class HassioAddons extends LitElement {
                         .iconTitle=${addon.state !== "started"
                           ? this.supervisor.localize("dashboard.addon_stopped")
                           : addon.update_available!
-                          ? this.supervisor.localize(
-                              "dashboard.addon_new_version"
-                            )
-                          : this.supervisor.localize("dashboard.addon_running")}
+                            ? this.supervisor.localize(
+                                "dashboard.addon_new_version"
+                              )
+                            : this.supervisor.localize(
+                                "dashboard.addon_running"
+                              )}
                         .iconClass=${addon.update_available
                           ? addon.state === "started"
                             ? "update"
                             : "update stopped"
                           : addon.state === "started"
-                          ? "running"
-                          : "stopped"}
+                            ? "running"
+                            : "stopped"}
                         .iconImage=${atLeastVersion(
                           this.hass.config.version,
                           0,
@@ -126,6 +128,7 @@ class HassioAddons extends LitElement {
         ha-card {
           cursor: pointer;
           overflow: hidden;
+          direction: ltr;
         }
         .search {
           position: sticky;

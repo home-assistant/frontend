@@ -14,6 +14,7 @@ import {
   emptyFlowToGridSourceEnergyPreference,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
@@ -58,17 +59,17 @@ export class DialogEnergyGridFlowSettings
     this._source = params.source
       ? { ...params.source }
       : params.direction === "from"
-      ? emptyFlowFromGridSourceEnergyPreference()
-      : emptyFlowToGridSourceEnergyPreference();
+        ? emptyFlowFromGridSourceEnergyPreference()
+        : emptyFlowToGridSourceEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
-      ? "number"
-      : this._source[
-          params.direction === "from" ? "stat_cost" : "stat_compensation"
-        ]
-      ? "statistic"
-      : "no-costs";
+        ? "number"
+        : this._source[
+              params.direction === "from" ? "stat_cost" : "stat_compensation"
+            ]
+          ? "statistic"
+          : "no-costs";
 
     const initialSourceId =
       this._source[
@@ -161,6 +162,7 @@ export class DialogEnergyGridFlowSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source[
             this._params.direction === "from"

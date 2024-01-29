@@ -25,7 +25,7 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public deviceId?: string;
 
-  @property() public value?: T;
+  @property({ type: Object }) public value?: T;
 
   @state() private _automations: T[] = [];
 

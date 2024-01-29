@@ -1,6 +1,4 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import {
   css,
   CSSResultGroup,
@@ -10,17 +8,17 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-list-item";
 import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../../data/entity_registry";
+import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
@@ -29,6 +27,7 @@ import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities
 import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import { computeCards } from "../../../lovelace/common/generate-lovelace-config";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -38,9 +37,9 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: EntityRegistryStateEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
-  @property() public showHidden = false;
+  @property({ type: Boolean }) public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,
@@ -91,11 +90,13 @@ export class HaDeviceEntitiesCard extends LitElement {
     return html`
       <ha-card outlined .header=${this.header}>
         <div id="entities">
-          ${shownEntities.map((entry) =>
-            this.hass.states[entry.entity_id]
-              ? this._renderEntity(entry)
-              : this._renderEntry(entry)
-          )}
+          <mwc-list>
+            ${shownEntities.map((entry) =>
+              this.hass.states[entry.entity_id]
+                ? this._renderEntity(entry)
+                : this._renderEntry(entry)
+            )}
+          </mwc-list>
         </div>
         ${hiddenEntities.length
           ? !this.showHidden
@@ -103,16 +104,17 @@ export class HaDeviceEntitiesCard extends LitElement {
                 <button class="show-more" @click=${this._toggleShowHidden}>
                   ${this.hass.localize(
                     "ui.panel.config.devices.entities.hidden_entities",
-                    "count",
-                    hiddenEntities.length
+                    { count: hiddenEntities.length }
                   )}
                 </button>
               `
             : html`
-                ${hiddenEntities.map((entry) => this._renderEntry(entry))}
+                <mwc-list>
+                  ${hiddenEntities.map((entry) => this._renderEntry(entry))}
+                </mwc-list>
                 <button class="show-more" @click=${this._toggleShowHidden}>
                   ${this.hass.localize(
-                    "ui.panel.config.devices.entities.hide_disabled"
+                    "ui.panel.config.devices.entities.show_less"
                   )}
                 </button>
               `
@@ -167,11 +169,11 @@ export class HaDeviceEntitiesCard extends LitElement {
       let name = entry.name
         ? stripPrefixFromEntityName(entry.name, this.deviceName.toLowerCase())
         : entry.has_entity_name
-        ? entry.original_name || this.deviceName
-        : stripPrefixFromEntityName(
-            computeStateName(stateObj),
-            this.deviceName.toLowerCase()
-          );
+          ? entry.original_name || this.deviceName
+          : stripPrefixFromEntityName(
+              computeStateName(stateObj),
+              this.deviceName.toLowerCase()
+            );
 
       if (!name) {
         name = computeStateName(stateObj);
@@ -197,27 +199,23 @@ export class HaDeviceEntitiesCard extends LitElement {
       entry.name ||
       (entry as ExtEntityRegistryEntry).original_name;
 
+    const icon = until(entryIcon(this.hass, entry));
+
     return html`
-      <paper-icon-item
+      <ha-list-item
+        graphic="icon"
         class="disabled-entry"
         .entry=${entry}
         @click=${this._openEditEntry}
       >
-        <ha-svg-icon
-          slot="item-icon"
-          .path=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-svg-icon>
-        <paper-item-body>
-          <div class="name">
-            ${name
-              ? stripPrefixFromEntityName(
-                  name,
-                  this.deviceName.toLowerCase()
-                ) || name
-              : entry.entity_id}
-          </div>
-        </paper-item-body>
-      </paper-icon-item>
+        <ha-icon slot="graphic" .icon=${icon}></ha-icon>
+        <div class="name">
+          ${name
+            ? stripPrefixFromEntityName(name, this.deviceName.toLowerCase()) ||
+              name
+            : entry.entity_id}
+        </div>
+      </ha-list-item>
     `;
   }
 
@@ -227,13 +225,17 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _addToLovelaceView(): void {
+    const entities = this.entities
+      .filter((entity) => !entity.disabled_by)
+      .map((entity) => entity.entity_id);
+
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      this.entities
-        .filter((entity) => !entity.disabled_by)
-        .map((entity) => entity.entity_id),
-      this.deviceName
+      computeCards(this.hass.states, entities, {
+        title: this.deviceName,
+      }),
+      entities
     );
   }
 
@@ -244,6 +246,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-icon {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .entity-id {
         color: var(--secondary-text-color);

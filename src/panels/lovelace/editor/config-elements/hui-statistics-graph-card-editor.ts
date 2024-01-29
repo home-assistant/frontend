@@ -72,6 +72,7 @@ const cardConfigStruct = assign(
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
+    logarithmic_scale: optional(boolean()),
   })
 );
 
@@ -211,6 +212,11 @@ export class HuiStatisticsGraphCardEditor
               required: false,
               selector: { boolean: {} },
             },
+            {
+              name: "logarithmic_scale",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
         },
       ];
@@ -246,11 +252,10 @@ export class HuiStatisticsGraphCardEditor
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
-      : stat_types.filter(
-          (stat_type) =>
-            this._metaDatas?.some((metaData) =>
-              statisticsMetaHasType(metaData, stat_type)
-            )
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.some((metaData) =>
+            statisticsMetaHasType(metaData, stat_type)
+          )
         );
     const data = {
       chart_type: "line",
@@ -347,6 +352,7 @@ export class HuiStatisticsGraphCardEditor
       case "period":
       case "unit":
       case "hide_legend":
+      case "logarithmic_scale":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

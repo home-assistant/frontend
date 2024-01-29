@@ -1,22 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { HomeAssistant } from "../types";
 import { formatNumber } from "../common/number/format_number";
-
-let jsYamlPromise: Promise<typeof import("../resources/js-yaml-dump")>;
+import { HomeAssistant } from "../types";
 
 @customElement("ha-attribute-value")
 class HaAttributeValue extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public attribute!: string;
 
-  @property({ type: Boolean, attribute: "hide-unit" })
-  public hideUnit?: boolean;
+  @property({ type: Boolean, attribute: "hide-unit" }) public hideUnit = false;
 
   protected render() {
     if (!this.stateObj) {
@@ -44,7 +41,7 @@ class HaAttributeValue extends LitElement {
                 ${attributeValue}
               </a>
             `;
-        } catch (_) {
+        } catch {
           // Nothing to do here
         }
       }
@@ -55,15 +52,22 @@ class HaAttributeValue extends LitElement {
         attributeValue.some((val) => val instanceof Object)) ||
       (!Array.isArray(attributeValue) && attributeValue instanceof Object)
     ) {
-      if (!jsYamlPromise) {
-        jsYamlPromise = import("../resources/js-yaml-dump");
-      }
-      const yaml = jsYamlPromise.then((jsYaml) => jsYaml.dump(attributeValue));
+      const yaml = import("js-yaml").then(({ dump }) => dump(attributeValue));
       return html`<pre>${until(yaml, "")}</pre>`;
     }
 
     return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
   }
+
+  static styles = css`
+    pre {
+      font-family: inherit;
+      font-size: inherit;
+      margin: 0;
+      overflow-wrap: break-word;
+      white-space: pre-line;
+    }
+  `;
 }
 
 declare global {

@@ -14,7 +14,7 @@ const filterExtraAttributes = "activity_list,current_activity";
 class MoreInfoRemote extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: RemoteEntity;
+  @property({ attribute: false }) public stateObj?: RemoteEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {

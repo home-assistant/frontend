@@ -1,7 +1,5 @@
 import { EntityFilter } from "../common/entity/entity_filter";
-import { PlaceholderContainer } from "../panels/config/automation/thingtalk/dialog-thingtalk";
 import { HomeAssistant } from "../types";
-import { AutomationConfig } from "./automation";
 
 interface CloudStatusNotLoggedIn {
   logged_in: false;
@@ -13,6 +11,7 @@ export interface CertificateInformation {
   common_name: string;
   expire_date: string;
   fingerprint: string;
+  alternative_names: string[];
 }
 
 export interface CloudPreferences {
@@ -64,11 +63,6 @@ export interface CloudWebhook {
   cloudhook_id: string;
   cloudhook_url: string;
   managed?: boolean;
-}
-
-export interface ThingTalkConversion {
-  config: Partial<AutomationConfig>;
-  placeholders: PlaceholderContainer;
 }
 
 export const cloudLogin = (
@@ -135,9 +129,6 @@ export const disconnectCloudRemote = (hass: HomeAssistant) =>
 
 export const fetchCloudSubscriptionInfo = (hass: HomeAssistant) =>
   hass.callWS<SubscriptionInfo>({ type: "cloud/subscription" });
-
-export const convertThingTalk = (hass: HomeAssistant, query: string) =>
-  hass.callWS<ThingTalkConversion>({ type: "cloud/thingtalk/convert", query });
 
 export const updateCloudPref = (
   hass: HomeAssistant,

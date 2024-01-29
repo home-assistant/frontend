@@ -60,6 +60,8 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
+  @property() public fitMode?: "cover" | "contain" | "fill";
+
   @state() private _imageVisible? = false;
 
   @state() private _loadState?: LoadState;
@@ -198,8 +200,8 @@ export class HuiImage extends LitElement {
           paddingBottom: useRatio
             ? `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`
             : this._lastImageHeight === undefined
-            ? "56.25%"
-            : undefined,
+              ? "56.25%"
+              : undefined,
           backgroundImage:
             useRatio && this._loadedImageSrc
               ? `url("${this._loadedImageSrc}")`
@@ -211,6 +213,8 @@ export class HuiImage extends LitElement {
         })}
         class="container ${classMap({
           ratio: useRatio || this._lastImageHeight === undefined,
+          contain: this.fitMode === "contain",
+          fill: this.fitMode === "fill",
         })}"
       >
         ${this.cameraImage && this.cameraView === "live"
@@ -223,21 +227,21 @@ export class HuiImage extends LitElement {
               ></ha-camera-stream>
             `
           : imageSrc === undefined
-          ? nothing
-          : html`
-              <img
-                id="image"
-                src=${imageSrc}
-                @error=${this._onImageError}
-                @load=${this._onImageLoad}
-                style=${styleMap({
-                  display:
-                    useRatio || this._loadState === LoadState.Loaded
-                      ? "block"
-                      : "none",
-                })}
-              />
-            `}
+            ? nothing
+            : html`
+                <img
+                  id="image"
+                  src=${imageSrc}
+                  @error=${this._onImageError}
+                  @load=${this._onImageLoad}
+                  style=${styleMap({
+                    display:
+                      useRatio || this._loadState === LoadState.Loaded
+                        ? "block"
+                        : "none",
+                  })}
+                />
+              `}
         ${this._loadState === LoadState.Error
           ? html`<div
               id="brokenImage"
@@ -248,22 +252,22 @@ export class HuiImage extends LitElement {
               })}
             ></div>`
           : this.cameraView !== "live" &&
-            (imageSrc === undefined || this._loadState === LoadState.Loading)
-          ? html`<div
-              class="progress-container"
-              style=${styleMap({
-                height: !useRatio
-                  ? `${this._lastImageHeight}px` || "100%"
-                  : undefined,
-              })}
-            >
-              <ha-circular-progress
-                class="render-spinner"
-                active
-                size="small"
-              ></ha-circular-progress>
-            </div>`
-          : ""}
+              (imageSrc === undefined || this._loadState === LoadState.Loading)
+            ? html`<div
+                class="progress-container"
+                style=${styleMap({
+                  height: !useRatio
+                    ? `${this._lastImageHeight}px` || "100%"
+                    : undefined,
+                })}
+              >
+                <ha-circular-progress
+                  class="render-spinner"
+                  indeterminate
+                  size="small"
+                ></ha-circular-progress>
+              </div>`
+            : ""}
       </div>
     `;
   }
@@ -396,12 +400,14 @@ export class HuiImage extends LitElement {
 
       .container {
         transition: filter 0.2s linear;
+        height: 100%;
       }
 
       img {
         display: block;
-        height: auto;
+        height: 100%;
         width: 100%;
+        object-fit: cover;
       }
 
       .progress-container {
@@ -416,6 +422,19 @@ export class HuiImage extends LitElement {
         height: 0;
         background-position: center;
         background-size: cover;
+      }
+      .ratio.fill {
+        background-size: 100% 100%;
+      }
+      .ratio.contain {
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      .fill img {
+        object-fit: fill;
+      }
+      .contain img {
+        object-fit: contain;
       }
 
       .ratio img,

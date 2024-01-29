@@ -28,10 +28,12 @@ import {
   mdiLockAlert,
   mdiLockClock,
   mdiLockOpen,
+  mdiMeterGas,
   mdiMotionSensor,
   mdiPackage,
   mdiPackageDown,
   mdiPackageUp,
+  mdiPipeValve,
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
@@ -100,8 +102,8 @@ export const domainIconWithoutDefault = (
       return compareState === "unavailable"
         ? mdiRobotConfused
         : compareState === "off"
-        ? mdiRobotOff
-        : mdiRobot;
+          ? mdiRobotOff
+          : mdiRobot;
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
@@ -273,6 +275,16 @@ export const domainIconWithoutDefault = (
           ? mdiPackageDown
           : mdiPackageUp
         : mdiPackage;
+
+    case "valve":
+      switch (stateObj?.attributes.device_class) {
+        case "water":
+          return mdiPipeValve;
+        case "gas":
+          return mdiMeterGas;
+        default:
+          return mdiPipeValve;
+      }
 
     case "water_heater":
       return compareState === "off" ? mdiWaterBoilerOff : mdiWaterBoiler;

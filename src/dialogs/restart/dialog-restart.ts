@@ -1,6 +1,12 @@
 import "@material/mwc-list/mwc-list";
-import { mdiAutoFix, mdiPower, mdiPowerCycle, mdiRefresh } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  mdiAutoFix,
+  mdiLifebuoy,
+  mdiPower,
+  mdiPowerCycle,
+  mdiRefresh,
+} from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -14,8 +20,8 @@ import {
   ignoreSupervisorError,
 } from "../../data/hassio/common";
 import {
-  fetchHassioHostInfo,
   HassioHostInfo,
+  fetchHassioHostInfo,
   rebootHost,
   shutdownHost,
 } from "../../data/hassio/host";
@@ -54,18 +60,6 @@ class DialogRestart extends LitElement {
         this._loadingHostInfo = false;
       }
     }
-
-    const showReload = this.hass.userData?.showAdvanced;
-    const showRebootShutdown = !!this._hostInfo;
-
-    // Present restart core dialog if no host actions and not advanced mode as it's the only option
-    if (!showReload && !showRebootShutdown) {
-      this._open = false;
-      this._showRestartDialog().then(() => this.closeDialog());
-      return;
-    }
-
-    await this.updateComplete;
   }
 
   public closeDialog(): void {
@@ -97,7 +91,7 @@ class DialogRestart extends LitElement {
         ${this._loadingHostInfo
           ? html`
               <div class="loader">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`
@@ -145,15 +139,14 @@ class DialogRestart extends LitElement {
                   </span>
                 </ha-list-item>
               </mwc-list>
-
-              ${showRebootShutdown
-                ? html`
-                    <ha-expansion-panel
-                      .header=${this.hass.localize(
-                        "ui.dialogs.restart.advanced_options"
-                      )}
-                    >
-                      <mwc-list>
+              <ha-expansion-panel
+                .header=${this.hass.localize(
+                  "ui.dialogs.restart.advanced_options"
+                )}
+              >
+                <mwc-list>
+                  ${showRebootShutdown
+                    ? html`
                         <ha-list-item
                           graphic="avatar"
                           twoline
@@ -196,10 +189,34 @@ class DialogRestart extends LitElement {
                             )}
                           </span>
                         </ha-list-item>
-                      </mwc-list>
-                    </ha-expansion-panel>
-                  `
-                : nothing}
+                      `
+                    : nothing}
+                  <ha-list-item
+                    graphic="avatar"
+                    twoline
+                    multiline-secondary
+                    hasMeta
+                    @request-selected=${this._restartSafeMode}
+                  >
+                    <div
+                      slot="graphic"
+                      class="icon-background restart-safe-mode"
+                    >
+                      <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
+                    </div>
+                    <span>
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.restart-safe-mode.title"
+                      )}
+                    </span>
+                    <span slot="secondary">
+                      ${this.hass.localize(
+                        "ui.dialogs.restart.restart-safe-mode.description"
+                      )}
+                    </span>
+                  </ha-list-item>
+                </mwc-list>
+              </ha-expansion-panel>
             `}
       </ha-dialog>
     `;
@@ -257,6 +274,47 @@ class DialogRestart extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.dialogs.restart.restart.failed"),
+        text: err.message,
+      });
+    }
+  }
+
+  private async _restartSafeMode(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showRestartSafeModeDialog();
+  }
+
+  private async _showRestartSafeModeDialog() {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.dialogs.restart.restart-safe-mode.confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.dialogs.restart.restart-safe-mode.confirm_description"
+      ),
+      confirmText: this.hass.localize(
+        "ui.dialogs.restart.restart-safe-mode.confirm_action"
+      ),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.closeDialog();
+
+    try {
+      await this.hass.callService("homeassistant", "restart", {
+        safe_mode: true,
+      });
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.dialogs.restart.restart-safe-mode.failed"
+        ),
         text: err.message,
       });
     }
@@ -366,6 +424,7 @@ class DialogRestart extends LitElement {
         .icon-background {
           border-radius: 50%;
           color: #fff;
+          display: flex;
         }
         .reload {
           background-color: #5f8a49;
@@ -380,6 +439,10 @@ class DialogRestart extends LitElement {
         }
         .shutdown {
           background-color: #0b1d29;
+          color: #fff;
+        }
+        .restart-safe-mode {
+          background-color: #e48629;
           color: #fff;
         }
         .divider {

@@ -2,7 +2,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { HomeAssistant } from "../../../types";
@@ -74,15 +74,14 @@ export const handleAction = async (
       !(await showConfirmationDialog(node, {
         text:
           actionConfig.confirmation.text ||
-          hass.localize(
-            "ui.panel.lovelace.cards.actions.action_confirmation",
-            "action",
-            serviceName ||
+          hass.localize("ui.panel.lovelace.cards.actions.action_confirmation", {
+            action:
+              serviceName ||
               hass.localize(
                 `ui.panel.lovelace.editor.action-editor.actions.${actionConfig.action}`
               ) ||
-              actionConfig.action
-          ),
+              actionConfig.action,
+          }),
       }))
     ) {
       return;
@@ -109,7 +108,9 @@ export const handleAction = async (
     }
     case "navigate":
       if (actionConfig.navigation_path) {
-        navigate(actionConfig.navigation_path);
+        navigate(actionConfig.navigation_path, {
+          replace: actionConfig.navigation_replace,
+        });
       } else {
         showToast(node, {
           message: hass.localize(

@@ -16,7 +16,6 @@ import {
   DataTableColumnContainer,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
@@ -42,11 +41,11 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _selected: string[] = [];
 
@@ -62,17 +61,16 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           direction: "asc",
           grows: true,
-          template: (_, entry: ApplicationCredential) => html`${entry.name}`,
+          template: (entry) => html`${entry.name}`,
         },
-        clientId: {
+        client_id: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.client_id"
           ),
           width: "30%",
           direction: "asc",
           hidden: narrow,
-          template: (_, entry: ApplicationCredential) =>
-            html`${entry.client_id}`,
+          template: (entry) => html`${entry.client_id}`,
         },
         application: {
           title: localize(
@@ -81,7 +79,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           sortable: true,
           width: "30%",
           direction: "asc",
-          template: (_, entry) => html`${domainToName(localize, entry.domain)}`,
+          template: (entry) => html`${domainToName(localize, entry.domain)}`,
         },
       };
 
@@ -121,8 +119,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.selected",
-                    "number",
-                    this._selected.length
+                    { number: this._selected.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -179,8 +176,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.application_credentials.picker.remove_selected.confirm_title`,
-        "number",
-        this._selected.length
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
@@ -279,6 +275,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       }
       ha-button-menu {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
     `;
   }

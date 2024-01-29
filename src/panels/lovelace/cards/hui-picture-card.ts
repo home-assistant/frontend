@@ -6,13 +6,13 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import { computeImageUrl, ImageEntity } from "../../../data/image";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -38,7 +38,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected _config?: PictureCardConfig;
+  @state() private _config?: PictureCardConfig;
 
   public getCardSize(hScale?: number): number {
     return 5 * (hScale || 1);

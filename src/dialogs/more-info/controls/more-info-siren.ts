@@ -1,12 +1,12 @@
 import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
+import "../../../state-control/ha-state-control-toggle";
 import type { HomeAssistant } from "../../../types";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/ha-more-info-toggle";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-siren")
 class MoreInfoSiren extends LitElement {
@@ -25,12 +25,12 @@ class MoreInfoSiren extends LitElement {
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
       <div class="controls">
-        <ha-more-info-toggle
+        <ha-state-control-toggle
           .stateObj=${this.stateObj}
           .hass=${this.hass}
           .iconPathOn=${mdiVolumeHigh}
           .iconPathOff=${mdiVolumeOff}
-        ></ha-more-info-toggle>
+        ></ha-state-control-toggle>
       </div>
       <ha-attributes
         .hass=${this.hass}

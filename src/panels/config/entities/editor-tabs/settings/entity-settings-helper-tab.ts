@@ -33,10 +33,10 @@ import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 
 @customElement("entity-settings-helper-tab")
-export class EntityRegistrySettingsHelper extends LitElement {
+export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ExtEntityRegistryEntry;
+  @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
 
   @state() private _error?: string;
 
@@ -82,20 +82,19 @@ export class EntityRegistrySettingsHelper extends LitElement {
         ${!this._componentLoaded
           ? this.hass.localize(
               "ui.dialogs.helper_settings.platform_not_loaded",
-              "platform",
-              this.entry.platform
+              { platform: this.entry.platform }
             )
           : this._item === null
-          ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
-          : html`
-              <span @value-changed=${this._valueChanged}>
-                ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                  hass: this.hass,
-                  item: this._item,
-                  entry: this.entry,
-                })}
-              </span>
-            `}
+            ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
+            : html`
+                <span @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                  })}
+                </span>
+              `}
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
@@ -227,6 +226,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "entity-platform-helper-tab": EntityRegistrySettingsHelper;
+    "entity-settings-helper-tab": EntitySettingsHelperTab;
   }
 }

@@ -1,5 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -13,10 +20,11 @@ import {
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
-} from "../../../data/lovelace";
+} from "../../../data/lovelace/config/action";
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -29,6 +37,15 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "assist",
   "none",
 ];
+
+const NAVIGATE_SCHEMA = [
+  {
+    name: "navigation_path",
+    selector: {
+      navigation: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 const ASSIST_SCHEMA = [
   {
@@ -55,15 +72,19 @@ const ASSIST_SCHEMA = [
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
-  @property() public config?: ActionConfig;
+  @property({ attribute: false }) public config?: ActionConfig;
 
   @property() public label?: string;
 
-  @property() public actions?: UiAction[];
+  @property({ attribute: false }) public actions?: UiAction[];
+
+  @property({ attribute: false }) public defaultAction?: UiAction;
 
   @property() public tooltipText?: string;
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @query("ha-select") private _select!: HaSelect;
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
@@ -90,6 +111,15 @@ export class HuiActionEditor extends LitElement {
     })
   );
 
+  protected updated(changedProperties: PropertyValues<typeof this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("defaultAction")) {
+      if (changedProperties.get("defaultAction") !== this.defaultAction) {
+        this._select.layoutOptions();
+      }
+    }
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -112,6 +142,11 @@ export class HuiActionEditor extends LitElement {
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
+            ${this.defaultAction
+              ? ` (${this.hass!.localize(
+                  `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+                ).toLowerCase()})`
+              : nothing}
           </mwc-list-item>
           ${actions.map(
             (action) => html`
@@ -131,14 +166,14 @@ export class HuiActionEditor extends LitElement {
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <ha-navigation-picker
+            <ha-form
               .hass=${this.hass}
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.navigation_path"
-              )}
-              .value=${this._navigation_path}
-              @value-changed=${this._navigateValueChanged}
-            ></ha-navigation-picker>
+              .schema=${NAVIGATE_SCHEMA}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            >
+            </ha-form>
           `
         : nothing}
       ${this.config?.action === "url"
@@ -261,16 +296,6 @@ export class HuiActionEditor extends LitElement {
     if ("service_data" in value) {
       delete value.service_data;
     }
-
-    fireEvent(this, "value-changed", { value });
-  }
-
-  private _navigateValueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const value = {
-      ...this.config!,
-      navigation_path: ev.detail.value,
-    };
 
     fireEvent(this, "value-changed", { value });
   }

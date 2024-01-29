@@ -74,7 +74,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
-  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
+  template?: (row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -300,7 +300,7 @@ export class HaDataTable extends LitElement {
               };
               return html`
                 <div
-                  aria-label=${column.label}
+                  aria-label=${ifDefined(column.label)}
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({
@@ -431,7 +431,7 @@ export class HaDataTable extends LitElement {
                   })
                 : ""}
             >
-              ${column.template ? column.template(row[key], row) : row[key]}
+              ${column.template ? column.template(row) : row[key]}
             </div>
           `;
         })}

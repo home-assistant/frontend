@@ -1,7 +1,14 @@
 import { mdiInformation } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
@@ -20,6 +27,7 @@ import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,
@@ -54,6 +62,17 @@ class HuiEnergyCarbonGaugeCard
         this._data = data;
       }),
     ];
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      (!!this._data?.co2SignalEntity &&
+        this.hass.states[this._data.co2SignalEntity] !==
+          changedProps.get("hass").states[this._data.co2SignalEntity])
+    );
   }
 
   protected render() {

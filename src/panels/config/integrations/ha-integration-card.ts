@@ -52,7 +52,7 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
-  @property() public logInfo?: IntegrationLogInfo;
+  @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -105,10 +105,10 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.state.${entryState}`
                 )
               : debugLoggingEnabled
-              ? this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-                )
-              : undefined}
+                ? this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                  )
+                : undefined}
             .manifest=${this.manifest}
           >
           </ha-integration-header>
@@ -140,32 +140,29 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
                   }`,
-                  "count",
-                  devices.length
+                  { count: devices.length }
                 )}
               </ha-button>
             </a>`
           : entities.length > 0
-          ? html`<a
-              href=${`/config/entities?historyBack=1&domain=${this.domain}`}
-            >
-              <ha-button>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entities`,
-                  "count",
-                  entities.length
-                )}
-              </ha-button>
-            </a>`
-          : html`<a href=${`/config/integrations/integration/${this.domain}`}>
-              <ha-button>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entries`,
-                  "count",
-                  this.items.length
-                )}
-              </ha-button>
-            </a>`}
+            ? html`<a
+                href=${`/config/entities?historyBack=1&domain=${this.domain}`}
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entities`,
+                    { count: entities.length }
+                  )}
+                </ha-button>
+              </a>`
+            : html`<a href=${`/config/integrations/integration/${this.domain}`}>
+                <ha-button>
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entries`,
+                    { count: this.items.length }
+                  )}
+                </ha-button>
+              </a>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
             ? html`<span class="icon custom">
@@ -344,6 +341,8 @@ export class HaIntegrationCard extends LitElement {
           color: var(--text-primary-color);
           padding: 4px;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .icon.cloud {
           background: var(--info-color);

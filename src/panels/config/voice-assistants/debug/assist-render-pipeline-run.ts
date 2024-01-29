@@ -15,6 +15,9 @@ const RUN_DATA = {
   pipeline: "Pipeline",
   language: "Language",
 };
+const WAKE_WORD_DATA = {
+  engine: "Engine",
+};
 
 const STT_DATA = {
   engine: "Engine",
@@ -35,11 +38,12 @@ const TTS_DATA = {
 
 const STAGES: Record<PipelineRun["stage"], number> = {
   ready: 0,
-  stt: 1,
-  intent: 2,
-  tts: 3,
-  done: 4,
-  error: 5,
+  wake_word: 1,
+  stt: 2,
+  intent: 3,
+  tts: 4,
+  done: 5,
+  error: 6,
 };
 
 const hasStage = (run: PipelineRun, stage: PipelineRun["stage"]) =>
@@ -53,7 +57,7 @@ const maybeRenderError = (
   stage: string,
   lastRunStage: string
 ) => {
-  if (run.stage !== "error" || lastRunStage !== stage) {
+  if (!("error" in run) || lastRunStage !== stage) {
     return "";
   }
 
@@ -67,10 +71,11 @@ const maybeRenderError = (
 const renderProgress = (
   hass: HomeAssistant,
   pipelineRun: PipelineRun,
-  stage: PipelineRun["stage"]
+  stage: PipelineRun["stage"],
+  start_suffix: string = "-start"
 ) => {
   const startEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}-start`
+    (ev) => ev.type === `${stage}` + start_suffix
   );
   const finishEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}-end`
@@ -80,13 +85,12 @@ const renderProgress = (
     return "";
   }
 
-  if (pipelineRun.stage === "error") {
-    return html`❌`;
-  }
-
   if (!finishEvent) {
+    if ("error" in pipelineRun) {
+      return html`❌`;
+    }
     return html`
-      <ha-circular-progress size="tiny" active></ha-circular-progress>
+      <ha-circular-progress size="small" indeterminate></ha-circular-progress>
     `;
   }
 
@@ -134,12 +138,13 @@ const dataMinusKeysRender = (
 export class AssistPipelineDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public pipelineRun!: PipelineRun;
+  @property({ attribute: false }) public pipelineRun!: PipelineRun;
 
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
-      ? ["tts", "intent", "stt"].find((stage) => stage in this.pipelineRun) ||
-        "ready"
+      ? ["tts", "intent", "stt", "wake_word"].find(
+          (stage) => stage in this.pipelineRun
+        ) || "ready"
       : "ready";
 
     const messages: Array<{ from: string; text: string }> = [];
@@ -194,13 +199,58 @@ export class AssistPipelineDebug extends LitElement {
       </ha-card>
 
       ${maybeRenderError(this.pipelineRun, "ready", lastRunStage)}
+      ${hasStage(this.pipelineRun, "wake_word")
+        ? html`
+            <ha-card>
+              <div class="card-content">
+                <div class="row heading">
+                  <span>Wake word</span>
+                  ${renderProgress(this.hass, this.pipelineRun, "wake_word")}
+                </div>
+                ${this.pipelineRun.wake_word
+                  ? html`
+                      <div class="card-content">
+                        ${renderData(this.pipelineRun.wake_word, STT_DATA)}
+                        ${this.pipelineRun.wake_word.wake_word_output
+                          ? html`<div class="row">
+                                <div>Model</div>
+                                <div>
+                                  ${this.pipelineRun.wake_word.wake_word_output
+                                    .ww_id}
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div>Timestamp</div>
+                                <div>
+                                  ${this.pipelineRun.wake_word.wake_word_output
+                                    .timestamp}
+                                </div>
+                              </div>`
+                          : ""}
+                        ${dataMinusKeysRender(
+                          this.pipelineRun.wake_word,
+                          WAKE_WORD_DATA
+                        )}
+                      </div>
+                    `
+                  : ""}
+              </div>
+            </ha-card>
+          `
+        : ""}
+      ${maybeRenderError(this.pipelineRun, "wake_word", lastRunStage)}
       ${hasStage(this.pipelineRun, "stt")
         ? html`
             <ha-card>
               <div class="card-content">
                 <div class="row heading">
                   <span>Speech-to-text</span>
-                  ${renderProgress(this.hass, this.pipelineRun, "stt")}
+                  ${renderProgress(
+                    this.hass,
+                    this.pipelineRun,
+                    "stt",
+                    "-vad-end"
+                  )}
                 </div>
                 ${this.pipelineRun.stt
                   ? html`
@@ -334,6 +384,9 @@ export class AssistPipelineDebug extends LitElement {
     .row {
       display: flex;
       justify-content: space-between;
+    }
+    .row > div:last-child {
+      text-align: right;
     }
     ha-expansion-panel {
       padding-left: 8px;

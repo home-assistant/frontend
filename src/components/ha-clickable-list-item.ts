@@ -41,8 +41,6 @@ export class HaClickableListItem extends HaListItem {
           height: 100%;
           display: flex;
           align-items: center;
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
           overflow: hidden;
         }
       `,

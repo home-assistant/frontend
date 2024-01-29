@@ -116,8 +116,7 @@ export class HassioNetwork extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.connected_to",
-                        "ssid",
-                        this._interface?.wifi?.ssid
+                        { ssid: this._interface?.wifi?.ssid }
                       )}
                     </p>`
                   : ""}
@@ -127,7 +126,7 @@ export class HassioNetwork extends LitElement {
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress active size="small">
+                    ? html`<ha-circular-progress indeterminate size="small">
                       </ha-circular-progress>`
                     : this.hass.localize(
                         "ui.panel.config.network.supervisor.scan_ap"
@@ -221,7 +220,7 @@ export class HassioNetwork extends LitElement {
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
                               )}
-                              .version="wifi"
+                              .version=${"wifi"}
                               @change=${this._handleInputValueChangedWifi}
                             >
                             </ha-textfield>
@@ -243,7 +242,7 @@ export class HassioNetwork extends LitElement {
       <div class="card-actions">
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress active size="small">
+            ? html`<ha-circular-progress indeterminate size="small">
               </ha-circular-progress>`
             : this.hass.localize("ui.common.save")}
         </mwc-button>
@@ -564,6 +563,8 @@ export class HassioNetwork extends LitElement {
 
         mwc-button.scan {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 16px;

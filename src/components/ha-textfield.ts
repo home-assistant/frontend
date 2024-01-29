@@ -2,18 +2,19 @@ import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
 import { TemplateResult, html, PropertyValues, css } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextFieldBase {
-  @property({ type: Boolean }) public invalid?: boolean;
+  @property({ type: Boolean }) public invalid = false;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   // @ts-ignore
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
-  @property({ type: Boolean }) public iconTrailing?: boolean;
+  @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 
@@ -136,6 +137,11 @@ export class HaTextField extends TextFieldBase {
         text-align: var(--text-field-text-align, start);
       }
 
+      /* Edge, hide reveal password icon */
+      ::-ms-reveal {
+        display: none;
+      }
+
       /* Chrome, Safari, Edge, Opera */
       :host([no-spinner]) input::-webkit-outer-spin-button,
       :host([no-spinner]) input::-webkit-inner-spin-button {
@@ -189,7 +195,7 @@ export class HaTextField extends TextFieldBase {
       }
     `,
     // safari workaround - must be explicit
-    document.dir === "rtl"
+    mainWindow.document.dir === "rtl"
       ? css`
           .mdc-text-field__affix--suffix,
           .mdc-text-field--with-leading-icon,

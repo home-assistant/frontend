@@ -1,3 +1,6 @@
+import { formatDuration } from "../common/datetime/duration";
+import { FrontendLocaleData } from "./translation";
+
 export const STATE_ATTRIBUTES = [
   "entity_id",
   "assumed_state",
@@ -28,12 +31,13 @@ export const TEMPERATURE_ATTRIBUTES = new Set([
   "target_temperature",
   "target_temp_temp",
   "target_temp_high",
+  "target_temp_low",
   "target_temp_step",
   "min_temp",
   "max_temp",
 ]);
 
-export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
+export const DOMAIN_ATTRIBUTES_UNITS = {
   climate: {
     humidity: "%",
     current_humidity: "%",
@@ -63,11 +67,36 @@ export const DOMAIN_ATTRIBUTES_UNITS: Record<string, Record<string, string>> = {
     color_temp_kelvin: "K",
     min_color_temp_kelvin: "K",
     max_color_temp_kelvin: "K",
+    brightness: "%",
   },
   sun: {
     elevation: "°",
   },
   vacuum: {
     battery_level: "%",
+  },
+  valve: {
+    current_position: "%",
+  },
+  sensor: {
+    battery_level: "%",
+  },
+  media_player: {
+    volume_level: "%",
+  },
+} as const satisfies Record<string, Record<string, string>>;
+
+type Formatter = (value: number, locale: FrontendLocaleData) => string;
+
+export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
+  string,
+  Record<string, Formatter>
+> = {
+  light: {
+    brightness: (value) => Math.round((value / 255) * 100).toString(),
+  },
+  media_player: {
+    volume_level: (value) => Math.round(value * 100).toString(),
+    media_duration: (value) => formatDuration(value.toString(), "s"),
   },
 };

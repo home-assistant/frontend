@@ -4,11 +4,14 @@ import {
   addMilliseconds,
   addMonths,
   differenceInDays,
+  differenceInMonths,
   endOfDay,
   startOfDay,
+  isFirstDayOfMonth,
+  isLastDayOfMonth,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate } from "../common/datetime/calc_date";
+import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -416,11 +419,42 @@ const getEnergyData = async (
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
-    if (dayDifference > 27 && dayDifference < 32) {
-      // When comparing a month, we want to start at the begining of the month
-      startCompare = addMonths(start, -1);
+    if (
+      (calcDateProperty(
+        start,
+        isFirstDayOfMonth,
+        hass.locale,
+        hass.config
+      ) as boolean) &&
+      (calcDateProperty(
+        end || new Date(),
+        isLastDayOfMonth,
+        hass.locale,
+        hass.config
+      ) as boolean)
+    ) {
+      // When comparing a month (or multiple), we want to start at the begining of the month
+      startCompare = calcDate(
+        start,
+        addMonths,
+        hass.locale,
+        hass.config,
+        -(calcDateProperty(
+          end || new Date(),
+          differenceInMonths,
+          hass.locale,
+          hass.config,
+          start
+        ) as number) - 1
+      );
     } else {
-      startCompare = addDays(start, (dayDifference + 1) * -1);
+      startCompare = calcDate(
+        start,
+        addDays,
+        hass.locale,
+        hass.config,
+        (dayDifference + 1) * -1
+      );
     }
     endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
@@ -547,6 +581,28 @@ const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   });
 };
 
+const scheduleHourlyRefresh = (collection: EnergyCollection) => {
+  if (collection._refreshTimeout) {
+    clearTimeout(collection._refreshTimeout);
+  }
+
+  if (collection._active && (!collection.end || collection.end > new Date())) {
+    // The stats are created every hour
+    // Schedule a refresh for 20 minutes past the hour
+    // If the end is larger than the current time.
+    const nextFetch = new Date();
+    if (nextFetch.getMinutes() >= 20) {
+      nextFetch.setHours(nextFetch.getHours() + 1);
+    }
+    nextFetch.setMinutes(20, 0, 0);
+
+    collection._refreshTimeout = window.setTimeout(
+      () => collection.refresh(),
+      nextFetch.getTime() - Date.now()
+    );
+  }
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
   options: { prefs?: EnergyPreferences; key?: string } = {}
@@ -575,28 +631,7 @@ export const getEnergyDataCollection = (
         collection.prefs = await getEnergyPreferences(hass);
       }
 
-      if (collection._refreshTimeout) {
-        clearTimeout(collection._refreshTimeout);
-      }
-
-      if (
-        collection._active &&
-        (!collection.end || collection.end > new Date())
-      ) {
-        // The stats are created every hour
-        // Schedule a refresh for 20 minutes past the hour
-        // If the end is larger than the current time.
-        const nextFetch = new Date();
-        if (nextFetch.getMinutes() >= 20) {
-          nextFetch.setHours(nextFetch.getHours() + 1);
-        }
-        nextFetch.setMinutes(20, 0, 0);
-
-        collection._refreshTimeout = window.setTimeout(
-          () => collection.refresh(),
-          nextFetch.getTime() - Date.now()
-        );
-      }
+      scheduleHourlyRefresh(collection);
 
       return getEnergyData(
         hass,
@@ -613,6 +648,11 @@ export const getEnergyDataCollection = (
   collection.subscribe = (subscriber: (data: EnergyData) => void) => {
     const unsub = origSubscribe(subscriber);
     collection._active++;
+
+    if (collection._refreshTimeout === undefined) {
+      scheduleHourlyRefresh(collection);
+    }
+
     return () => {
       collection._active--;
       if (collection._active < 1) {
@@ -733,9 +773,12 @@ export const getEnergyGasUnit = (
   return unitClass === "energy"
     ? "kWh"
     : hass.config.unit_system.length === "km"
-    ? "m³"
-    : "ft³";
+      ? "m³"
+      : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
+
+export const energyStatisticHelpUrl =
+  "/docs/energy/faq/#troubleshooting-missing-entities";

@@ -139,11 +139,12 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
-        !isUnavailableState(hass.states[eid].state)
+        !isUnavailableState(hass.states[eid].state) &&
+        hass.entities[eid]?.hidden !== true
     )
     .sort()
     .map((eid, idx) => ({
-      entity_id: eid,
+      ...hass.states[eid],
       name: computeStateName(hass.states[eid]),
       backgroundColor: getColorByIndex(idx),
     }));

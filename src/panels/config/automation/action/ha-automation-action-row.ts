@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
@@ -25,7 +26,6 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -34,12 +34,14 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-service-icon";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { ACTION_TYPES, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
+import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   Action,
@@ -54,7 +56,11 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import {
+  ReorderMode,
+  reorderModeContext,
+} from "../../../../state/reorder-mode-mixin";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -70,19 +76,21 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { fullEntitiesContext } from "../../../../data/context";
+import "./types/ha-automation-action-set_conversation_response";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
   if ("service" in action || "scene" in action) {
-    return getActionType(action);
+    return getActionType(action) as "activate_scene" | "service" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
-    return "condition";
+    return "condition" as const;
   }
-  return Object.keys(ACTION_TYPES).find((option) => option in action);
+  return Object.keys(ACTION_ICONS).find(
+    (option) => option in action
+  ) as keyof typeof ACTION_ICONS;
 };
 
 export interface ActionElement extends LitElement {
@@ -117,7 +125,7 @@ const preventDefault = (ev) => ev.preventDefault();
 export default class HaAutomationActionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public action!: Action;
+  @property({ attribute: false }) public action!: Action;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -125,7 +133,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public hideMenu = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Array }) public path?: ItemPath;
 
   @storage({
     key: "automationClipboard",
@@ -138,6 +146,10 @@ export default class HaAutomationActionRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: reorderModeContext, subscribe: true })
+  private _reorderMode?: ReorderMode;
 
   @state() private _warnings?: string[];
 
@@ -172,8 +184,12 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   protected render() {
+    if (!this.action) return nothing;
+
     const type = getType(this.action);
     const yamlMode = this._yamlMode;
+
+    const noReorderModeAvailable = this._reorderMode === undefined;
 
     return html`
       <ha-card outlined>
@@ -186,10 +202,18 @@ export default class HaAutomationActionRow extends LitElement {
           : ""}
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
-            <ha-svg-icon
-              class="action-icon"
-              .path=${ACTION_TYPES[type!]}
-            ></ha-svg-icon>
+            ${type === "service" &&
+            "service" in this.action &&
+            this.action.service
+              ? html`<ha-service-icon
+                  class="action-icon"
+                  .hass=${this.hass}
+                  .service=${this.action.service}
+                ></ha-service-icon>`
+              : html`<ha-svg-icon
+                  class="action-icon"
+                  .path=${ACTION_ICONS[type!]}
+                ></ha-svg-icon>`}
             ${capitalizeFirstLetter(
               describeAction(this.hass, this._entityReg, this.action)
             )}
@@ -237,7 +261,11 @@ export default class HaAutomationActionRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                  <mwc-list-item
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                    class=${classMap({ hidden: noReorderModeAvailable })}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.re_order"
                     )}
@@ -375,9 +403,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ${type === undefined
                     ? html`
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.unsupported_action",
-                          "action",
-                          type
+                          "ui.panel.config.automation.editor.actions.unsupported_action"
                         )}
                       `
                     : ""}
@@ -389,13 +415,16 @@ export default class HaAutomationActionRow extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
+                  <div
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    @value-changed=${this._onUiChanged}
+                  >
                     ${dynamicElement(`ha-automation-action-${type}`, {
                       hass: this.hass,
                       action: this.action,
                       narrow: this.narrow,
-                      reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
+                      path: this.path,
                     })}
                   </div>
                 `}
@@ -424,7 +453,7 @@ export default class HaAutomationActionRow extends LitElement {
         await this._renameAction();
         break;
       case 2:
-        fireEvent(this, "re-order");
+        this._reorderMode?.enter();
         break;
       case 3:
         fireEvent(this, "duplicate");
@@ -528,6 +557,15 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
+  private _onUiChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...(this.action.alias ? { alias: this.action.alias } : {}),
+      ...ev.detail.value,
+    };
+    fireEvent(this, "value-changed", { value });
+  }
+
   private _switchUiMode() {
     this._warnings = undefined;
     this._yamlMode = false;
@@ -619,6 +657,9 @@ export default class HaAutomationActionRow extends LitElement {
 
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         .warning ul {
           margin: 4px 0;

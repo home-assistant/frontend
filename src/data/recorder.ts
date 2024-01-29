@@ -1,3 +1,4 @@
+import { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HaDurationData } from "../components/ha-duration-input";
 import { HomeAssistant } from "../types";
@@ -115,8 +116,8 @@ export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
 
-export const getRecorderInfo = (hass: HomeAssistant) =>
-  hass.callWS<RecorderInfo>({
+export const getRecorderInfo = (conn: Connection) =>
+  conn.sendMessagePromise<RecorderInfo>({
     type: "recorder/info",
   });
 

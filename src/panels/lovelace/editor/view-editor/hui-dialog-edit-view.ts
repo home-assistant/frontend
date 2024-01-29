@@ -23,11 +23,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type {
-  LovelaceBadgeConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -51,6 +46,12 @@ import {
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../../data/lovelace/config/view";
+import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -103,13 +104,21 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       this._cards = [];
       this._dirty = false;
-    } else {
-      const { cards, badges, ...viewConfig } =
-        this._params.lovelace!.config.views[this._params.viewIndex];
-      this._config = viewConfig;
-      this._badges = badges ? processEditorEntities(badges) : [];
-      this._cards = cards;
+      return;
     }
+    const view = this._params.lovelace!.config.views[this._params.viewIndex];
+    // Todo : add better support for strategy views
+    if (isStrategyView(view)) {
+      const { strategy, ...viewConfig } = view;
+      this._config = viewConfig;
+      this._badges = [];
+      this._cards = [];
+      return;
+    }
+    const { cards, badges, ...viewConfig } = view;
+    this._config = viewConfig;
+    this._badges = badges ? processEditorEntities(badges) : [];
+    this._cards = cards;
   }
 
   public closeDialog(): void {
@@ -129,8 +138,7 @@ export class HuiDialogEditView extends LitElement {
 
     return this.hass!.localize(
       "ui.panel.lovelace.editor.edit_view.header_name",
-      "name",
-      this._config.title
+      { name: this._config.title }
     );
   }
 
@@ -315,9 +323,9 @@ export class HuiDialogEditView extends LitElement {
         >
           ${this._saving
             ? html`<ha-circular-progress
-                active
+                indeterminate
                 size="small"
-                title="Saving"
+                aria-label="Saving"
               ></ha-circular-progress>`
             : ""}
           ${this.hass!.localize("ui.common.save")}</mwc-button
@@ -367,10 +375,10 @@ export class HuiDialogEditView extends LitElement {
         `ui.panel.lovelace.views.confirm_delete${
           this._cards?.length ? "_existing_cards" : ""
         }_text`,
-        "name",
-        this._config?.title || "Unnamed view",
-        "number",
-        this._cards?.length || 0
+        {
+          name: this._config?.title || "Unnamed view",
+          number: this._cards?.length || 0,
+        }
       ),
       confirm: () => this._delete(),
     });
@@ -405,8 +413,13 @@ export class HuiDialogEditView extends LitElement {
     try {
       await lovelace.saveConfig(
         this._creatingView
-          ? addView(lovelace.config, viewConf)
-          : replaceView(lovelace.config, this._params.viewIndex!, viewConf)
+          ? addView(this.hass!, lovelace.config, viewConf)
+          : replaceView(
+              this.hass!,
+              lovelace.config,
+              this._params.viewIndex!,
+              viewConf
+            )
       );
       if (this._params.saveCallback) {
         this._params.saveCallback(
@@ -417,7 +430,9 @@ export class HuiDialogEditView extends LitElement {
       this.closeDialog();
     } catch (err: any) {
       showAlertDialog(this, {
-        text: `Saving failed: ${err.message}`,
+        text: `${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_view.saving_failed"
+        )}: ${err.message}`,
       });
     } finally {
       this._saving = false;
@@ -513,7 +528,7 @@ export class HuiDialogEditView extends LitElement {
         ha-circular-progress {
           display: none;
         }
-        ha-circular-progress[active] {
+        ha-circular-progress[indeterminate] {
           display: block;
         }
         .selected_menu_item {

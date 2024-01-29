@@ -105,7 +105,7 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (this.hass?.config.safe_mode || this.show) {
+    if (this.hass?.config.recovery_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
       this._refreshLogs();
     }
@@ -179,10 +179,7 @@ class ErrorLogCard extends LitElement {
       } catch (err: any) {
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
-          "provider",
-          this.provider,
-          "error",
-          extractApiErrorMessage(err)
+          { provider: this.provider, error: extractApiErrorMessage(err) }
         );
         return;
       }

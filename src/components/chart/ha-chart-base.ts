@@ -12,6 +12,7 @@ import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
+import { debounce } from "../../common/util/debounce";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -52,14 +53,21 @@ export class HaChartBase extends LitElement {
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
+  private _paddingUpdateCount = 0;
+
+  private _paddingUpdateLock = false;
+
+  private _paddingYAxisInternal = 0;
+
   public disconnectedCallback() {
-    this._releaseCanvas();
     super.disconnectedCallback();
+    this._releaseCanvas();
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
+      this._releaseCanvas();
       this._setupChart();
     }
   }
@@ -103,14 +111,49 @@ export class HaChartBase extends LitElement {
     });
   }
 
+  public shouldUpdate(changedProps: PropertyValues): boolean {
+    if (
+      this._paddingUpdateLock &&
+      changedProps.size === 1 &&
+      changedProps.has("paddingYAxis")
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  private _debouncedClearUpdates = debounce(
+    () => {
+      this._paddingUpdateCount = 0;
+    },
+    2000,
+    false
+  );
+
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this._paddingUpdateLock) {
+      this._paddingYAxisInternal = this.paddingYAxis;
+      if (changedProps.size === 1 && changedProps.has("paddingYAxis")) {
+        this._paddingUpdateCount++;
+        if (this._paddingUpdateCount > 300) {
+          this._paddingUpdateLock = true;
+          // eslint-disable-next-line
+          console.error(
+            "Detected excessive chart padding updates, possibly an infinite loop. Disabling axis padding."
+          );
+        } else {
+          this._debouncedClearUpdates();
+        }
+      }
+    }
 
     if (!this.hasUpdated || !this.chart) {
       return;
     }
     if (changedProps.has("plugins") || changedProps.has("chartType")) {
-      this.chart.destroy();
+      this._releaseCanvas();
       this._setupChart();
       return;
     }
@@ -170,10 +213,10 @@ export class HaChartBase extends LitElement {
               this.height ?? this._chartHeight ?? this.clientWidth / 2
             }px`,
             "padding-left": `${
-              computeRTL(this.hass) ? 0 : this.paddingYAxis
+              computeRTL(this.hass) ? 0 : this._paddingYAxisInternal
             }px`,
             "padding-right": `${
-              computeRTL(this.hass) ? this.paddingYAxis : 0
+              computeRTL(this.hass) ? this._paddingYAxisInternal : 0
             }px`,
           })}
         >
@@ -323,7 +366,7 @@ export class HaChartBase extends LitElement {
         clamp(
           context.tooltip.caretX,
           100,
-          this.clientWidth - 100 - this.paddingYAxis
+          this.clientWidth - 100 - this._paddingYAxisInternal
         ) -
         100 +
         "px",
@@ -348,9 +391,6 @@ export class HaChartBase extends LitElement {
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .chartContainer {
-        position: relative;
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
@@ -429,6 +469,7 @@ export class HaChartBase extends LitElement {
       .chartTooltip li {
         display: flex;
         white-space: pre-line;
+        word-break: break-word;
         align-items: center;
         line-height: 16px;
         padding: 4px 0;
@@ -436,6 +477,7 @@ export class HaChartBase extends LitElement {
       .chartTooltip .title {
         text-align: center;
         font-weight: 500;
+        word-break: break-word;
         direction: ltr;
       }
       .chartTooltip .footer {

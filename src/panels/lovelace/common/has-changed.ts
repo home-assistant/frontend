@@ -12,6 +12,10 @@ export function hasConfigChanged(
     return true;
   }
 
+  if (!changedProps.has("hass")) {
+    return false;
+  }
+
   const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
   if (!oldHass) {
     return true;
@@ -22,6 +26,11 @@ export function hasConfigChanged(
     oldHass.themes !== element.hass!.themes ||
     oldHass.locale !== element.hass!.locale ||
     oldHass.localize !== element.hass.localize ||
+    oldHass.formatEntityState !== element.hass.formatEntityState ||
+    oldHass.formatEntityAttributeName !==
+      element.hass.formatEntityAttributeName ||
+    oldHass.formatEntityAttributeValue !==
+      element.hass.formatEntityAttributeValue ||
     oldHass.config.state !== element.hass.config.state
   ) {
     return true;
@@ -64,6 +73,10 @@ export function hasConfigOrEntityChanged(
     return true;
   }
 
+  if (!changedProps.has("hass")) {
+    return false;
+  }
+
   const oldHass = changedProps.get("hass") as HomeAssistant;
   const newHass = element.hass as HomeAssistant;
 
@@ -80,6 +93,10 @@ export function hasConfigOrEntitiesChanged(
 ): boolean {
   if (hasConfigChanged(element, changedProps)) {
     return true;
+  }
+
+  if (!changedProps.has("hass")) {
+    return false;
   }
 
   const oldHass = changedProps.get("hass") as HomeAssistant;

@@ -1,9 +1,9 @@
 import {
+  mdiArrowOscillating,
+  mdiArrowOscillatingOff,
   mdiFan,
   mdiFanOff,
   mdiPower,
-  mdiRotateLeft,
-  mdiRotateRight,
   mdiTuneVariant,
 } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
@@ -23,14 +24,12 @@ import {
   computeFanSpeedStateDisplay,
 } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
-import { haOscillating } from "../../../data/icons/haOscillating";
-import { haOscillatingOff } from "../../../data/icons/haOscillatingOff";
+import "../../../state-control/fan/ha-state-control-fan-speed";
+import "../../../state-control/ha-state-control-toggle";
 import type { HomeAssistant } from "../../../types";
-import "../components/fan/ha-more-info-fan-speed";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/ha-more-info-toggle";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-fan")
 class MoreInfoFan extends LitElement {
@@ -39,18 +38,6 @@ class MoreInfoFan extends LitElement {
   @property({ attribute: false }) public stateObj?: FanEntity;
 
   @state() public _presetMode?: string;
-
-  @state() private _liveSpeed?: number;
-
-  private _speedSliderMoved(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._liveSpeed = value;
-  }
-
-  private _speedValueChanged() {
-    this._liveSpeed = undefined;
-  }
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
@@ -87,6 +74,9 @@ class MoreInfoFan extends LitElement {
 
   _handleOscillating(ev) {
     const newVal = ev.target.value === "true";
+    const oldVal = this.stateObj?.attributes.oscillating;
+
+    if (oldVal === newVal) return;
 
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
@@ -101,23 +91,14 @@ class MoreInfoFan extends LitElement {
   }
 
   private get _stateOverride() {
-    const liveValue = this._liveSpeed;
-
-    const forcedState =
-      liveValue != null ? (liveValue ? "on" : "off") : undefined;
-
-    const stateDisplay = this.hass.formatEntityState(
-      this.stateObj!,
-      forcedState
-    );
+    const stateDisplay = this.hass.formatEntityState(this.stateObj!);
 
     const positionStateDisplay = computeFanSpeedStateDisplay(
       this.stateObj!,
-      this.hass,
-      liveValue
+      this.hass
     );
 
-    if (positionStateDisplay && (stateActive(this.stateObj!) || liveValue)) {
+    if (positionStateDisplay && stateActive(this.stateObj!)) {
       return positionStateDisplay;
     }
     return stateDisplay;
@@ -159,21 +140,19 @@ class MoreInfoFan extends LitElement {
       <div class="controls">
         ${supportsSpeed
           ? html`
-              <ha-more-info-fan-speed
+              <ha-state-control-fan-speed
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
-                @slider-moved=${this._speedSliderMoved}
-                @value-changed=${this._speedValueChanged}
               >
-              </ha-more-info-fan-speed>
+              </ha-state-control-fan-speed>
             `
           : html`
-              <ha-more-info-toggle
+              <ha-state-control-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiFan}
                 .iconPathOff=${mdiFanOff}
-              ></ha-more-info-toggle>
+              ></ha-state-control-toggle>
             `}
         ${supportSpeedPercentage
           ? html`
@@ -207,10 +186,30 @@ class MoreInfoFan extends LitElement {
                 @selected=${this._handlePresetMode}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${this.stateObj.attributes.preset_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      attribute="preset_mode"
+                      .attributeValue=${this.stateObj.attributes.preset_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${this.stateObj.attributes.preset_modes?.map(
                   (mode) => html`
-                    <ha-list-item .value=${mode}>
+                    <ha-list-item .value=${mode} graphic="icon">
+                      <ha-attribute-icon
+                        slot="graphic"
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         this.stateObj!,
                         "preset_mode",
@@ -236,12 +235,21 @@ class MoreInfoFan extends LitElement {
                 @selected=${this._handleDirection}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
+                <ha-attribute-icon
+                  slot="icon"
+                  .hass=${this.hass}
+                  .stateObj=${this.stateObj}
+                  attribute="direction"
+                  .attributeValue=${this.stateObj.attributes.direction}
+                ></ha-attribute-icon>
                 <ha-list-item value="forward" graphic="icon">
-                  <ha-svg-icon
+                  <ha-attribute-icon
                     slot="graphic"
-                    .path=${mdiRotateRight}
-                  ></ha-svg-icon>
+                    .hass=${this.hass}
+                    .stateObj=${this.stateObj}
+                    attribute="direction"
+                    attributeValue="forward"
+                  ></ha-attribute-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
                     "direction",
@@ -249,10 +257,13 @@ class MoreInfoFan extends LitElement {
                   )}
                 </ha-list-item>
                 <ha-list-item value="reverse" graphic="icon">
-                  <ha-svg-icon
+                  <ha-attribute-icon
                     slot="graphic"
-                    .path=${mdiRotateLeft}
-                  ></ha-svg-icon>
+                    .hass=${this.hass}
+                    .stateObj=${this.stateObj}
+                    attribute="direction"
+                    attributeValue="reverse"
+                  ></ha-attribute-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
                     "direction",
@@ -280,12 +291,12 @@ class MoreInfoFan extends LitElement {
               >
                 <ha-svg-icon
                   slot="icon"
-                  .path=${haOscillatingOff}
+                  .path=${mdiArrowOscillatingOff}
                 ></ha-svg-icon>
                 <ha-list-item value="true" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
-                    .path=${haOscillating}
+                    .path=${mdiArrowOscillating}
                   ></ha-svg-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
@@ -296,7 +307,7 @@ class MoreInfoFan extends LitElement {
                 <ha-list-item value="false" graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
-                    .path=${haOscillatingOff}
+                    .path=${mdiArrowOscillatingOff}
                   ></ha-svg-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,

@@ -46,7 +46,7 @@ class HassLoadingScreen extends LitElement {
                 `}
           </div>`}
       <div class="content">
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
         ${this.message
           ? html`<div id="loading-text">${this.message}</div>`
           : nothing}

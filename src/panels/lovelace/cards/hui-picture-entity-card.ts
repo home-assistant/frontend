@@ -14,7 +14,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import { ImageEntity, computeImageUrl } from "../../../data/image";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -152,6 +152,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
+          .fitMode=${this._config.fit_mode}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),
@@ -180,6 +181,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
       hui-image {
         cursor: pointer;
+        height: 100%;
       }
 
       .footer {

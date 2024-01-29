@@ -1,5 +1,5 @@
 import { LocalizeFunc } from "../../../src/common/translations/localize";
-import { LovelaceConfig } from "../../../src/data/lovelace";
+import { LovelaceConfig } from "../../../src/data/lovelace/config/types";
 import { Entity } from "../../../src/fake_data/entity";
 
 export interface DemoConfig {

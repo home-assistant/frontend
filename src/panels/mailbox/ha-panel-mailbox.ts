@@ -19,6 +19,7 @@ import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
 import "../../components/ha-top-app-bar-fixed";
+import { formatDuration } from "../../common/datetime/format_duration";
 
 let registeredDialog = false;
 
@@ -89,11 +90,9 @@ class HaPanelMailbox extends LitElement {
                   <div class="row">
                     <div>${message.caller}</div>
                     <div class="tip">
-                      ${this.hass.localize(
-                        "ui.duration.second",
-                        "count",
-                        message.duration
-                      )}
+                      ${formatDuration(this.hass.locale, {
+                        seconds: message.duration,
+                      })}
                     </div>
                   </div>
                   <div secondary>
@@ -227,6 +226,8 @@ class HaPanelMailbox extends LitElement {
         ha-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
+          margin-inline-start: max(env(safe-area-inset-left), 24px);
+          margin-inline-end: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: #fff;
           text-transform: uppercase;
         }

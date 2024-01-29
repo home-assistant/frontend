@@ -16,7 +16,7 @@ export class HaLocationSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: LocationSelector;
 
-  @property() public value?: LocationSelectorValue;
+  @property({ type: Object }) public value?: LocationSelectorValue;
 
   @property() public label?: string;
 
@@ -26,6 +26,7 @@ export class HaLocationSelector extends LitElement {
 
   protected render() {
     return html`
+      <p>${this.label ? this.label : ""}</p>
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
@@ -50,8 +51,14 @@ export class HaLocationSelector extends LitElement {
       return [
         {
           id: "location",
-          latitude: value?.latitude || this.hass.config.latitude,
-          longitude: value?.longitude || this.hass.config.longitude,
+          latitude:
+            !value || isNaN(value.latitude)
+              ? this.hass.config.latitude
+              : value.latitude,
+          longitude:
+            !value || isNaN(value.longitude)
+              ? this.hass.config.longitude
+              : value.longitude,
           radius: selector.location?.radius ? value?.radius || 1000 : undefined,
           radius_color: zoneRadiusColor,
           icon:
@@ -78,9 +85,12 @@ export class HaLocationSelector extends LitElement {
   }
 
   static styles = css`
-    :host {
+    ha-locations-editor {
       display: block;
       height: 400px;
+    }
+    p {
+      margin-top: 0;
     }
   `;
 }

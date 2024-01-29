@@ -62,9 +62,11 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -224,7 +226,8 @@ export class HaTargetPicker extends LitElement {
         ${entityState
           ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
+              .hass=${this.hass}
+              .stateObj=${entityState}
             ></ha-state-icon>`
           : ""}
         <span role="gridcell">
@@ -237,8 +240,6 @@ export class HaTargetPicker extends LitElement {
           : html`<span role="gridcell">
               <ha-icon-button
                 class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                tabindex="-1"
-                role="button"
                 .label=${this.hass.localize(
                   "ui.components.target-picker.expand"
                 )}
@@ -257,8 +258,6 @@ export class HaTargetPicker extends LitElement {
         <span role="gridcell">
           <ha-icon-button
             class="mdc-chip__icon mdc-chip__icon--trailing"
-            tabindex="-1"
-            role="button"
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hideTooltip
@@ -307,40 +306,40 @@ export class HaTargetPicker extends LitElement {
             ></ha-area-picker>
           `
         : this._addMode === "device_id"
-        ? html`
-            <ha-device-picker
-              .hass=${this.hass}
-              id="input"
-              .type=${"device_id"}
-              .label=${this.hass.localize(
-                "ui.components.target-picker.add_device_id"
-              )}
-              .deviceFilter=${this.deviceFilter}
-              .entityFilter=${this.entityFilter}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeDomains=${this.includeDomains}
-              .excludeDevices=${ensureArray(this.value?.device_id)}
-              @value-changed=${this._targetPicked}
-              @click=${this._preventDefault}
-            ></ha-device-picker>
-          `
-        : html`
-            <ha-entity-picker
-              .hass=${this.hass}
-              id="input"
-              .type=${"entity_id"}
-              .label=${this.hass.localize(
-                "ui.components.target-picker.add_entity_id"
-              )}
-              .entityFilter=${this.entityFilter}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeDomains=${this.includeDomains}
-              .excludeEntities=${ensureArray(this.value?.entity_id)}
-              @value-changed=${this._targetPicked}
-              @click=${this._preventDefault}
-              allow-custom-entity
-            ></ha-entity-picker>
-          `}</mwc-menu-surface
+          ? html`
+              <ha-device-picker
+                .hass=${this.hass}
+                id="input"
+                .type=${"device_id"}
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.add_device_id"
+                )}
+                .deviceFilter=${this.deviceFilter}
+                .entityFilter=${this.entityFilter}
+                .includeDeviceClasses=${this.includeDeviceClasses}
+                .includeDomains=${this.includeDomains}
+                .excludeDevices=${ensureArray(this.value?.device_id)}
+                @value-changed=${this._targetPicked}
+                @click=${this._preventDefault}
+              ></ha-device-picker>
+            `
+          : html`
+              <ha-entity-picker
+                .hass=${this.hass}
+                id="input"
+                .type=${"entity_id"}
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.add_entity_id"
+                )}
+                .entityFilter=${this.entityFilter}
+                .includeDeviceClasses=${this.includeDeviceClasses}
+                .includeDomains=${this.includeDomains}
+                .excludeEntities=${ensureArray(this.value?.entity_id)}
+                @value-changed=${this._targetPicked}
+                @click=${this._preventDefault}
+                allow-custom-entity
+              ></ha-entity-picker>
+            `}</mwc-menu-surface
     >`;
   }
 

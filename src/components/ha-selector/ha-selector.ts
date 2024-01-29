@@ -13,6 +13,7 @@ const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
   area: () => import("./ha-selector-area"),
+  area_filter: () => import("./ha-selector-area-filter"),
   attribute: () => import("./ha-selector-attribute"),
   assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),
@@ -21,6 +22,7 @@ const LOAD_ELEMENTS = {
   config_entry: () => import("./ha-selector-config-entry"),
   conversation_agent: () => import("./ha-selector-conversation-agent"),
   constant: () => import("./ha-selector-constant"),
+  country: () => import("./ha-selector-country"),
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
@@ -33,6 +35,7 @@ const LOAD_ELEMENTS = {
   number: () => import("./ha-selector-number"),
   object: () => import("./ha-selector-object"),
   select: () => import("./ha-selector-select"),
+  selector: () => import("./ha-selector-selector"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
@@ -43,6 +46,7 @@ const LOAD_ELEMENTS = {
   icon: () => import("./ha-selector-icon"),
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
+  trigger: () => import("./ha-selector-trigger"),
   tts: () => import("./ha-selector-tts"),
   tts_voice: () => import("./ha-selector-tts-voice"),
   location: () => import("./ha-selector-location"),
@@ -55,11 +59,11 @@ const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public name?: string;
 
-  @property() public selector!: Selector;
+  @property({ attribute: false }) public selector!: Selector;
 
   @property() public value?: any;
 
@@ -67,7 +71,8 @@ export class HaSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property() public placeholder?: any;
 
@@ -75,7 +80,7 @@ export class HaSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: Record<string, any>;
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   public async focus() {
     await this.updateComplete;

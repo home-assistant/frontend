@@ -29,6 +29,7 @@ class StateInfo extends LitElement {
     const name = computeStateName(this.stateObj);
 
     return html`<state-badge
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .stateColor=${true}
         .color=${this.color}
@@ -95,25 +96,25 @@ class StateInfo extends LitElement {
       :host {
         min-width: 120px;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
       }
 
       state-badge {
-        float: left;
-      }
-      :host([rtl]) state-badge {
-        float: right;
+        flex: none;
       }
 
       .info {
-        margin-left: 56px;
+        margin-left: 8px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         height: 100%;
+        min-width: 0;
       }
 
       :host([rtl]) .info {
-        margin-right: 56px;
+        margin-right: 8px;
         margin-left: 0;
         text-align: right;
       }
@@ -125,7 +126,7 @@ class StateInfo extends LitElement {
         text-overflow: ellipsis;
       }
 
-      .name[in-dialog],
+      .name[inDialog],
       :host([secondary-line]) .name {
         line-height: 20px;
       }

@@ -1,5 +1,5 @@
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { LovelaceViewConfig } from "../../../../data/lovelace";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import { Lovelace } from "../../types";
 
 declare global {

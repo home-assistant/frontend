@@ -1,8 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import {
@@ -20,9 +21,9 @@ import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: DeviceSelector;
+  @property({ attribute: false }) public selector!: DeviceSelector;
 
   @state() private _entitySources?: EntitySources;
 
@@ -51,7 +52,19 @@ export class HaDeviceSelector extends LitElement {
     );
   }
 
-  protected updated(changedProperties): void {
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("selector") && this.value !== undefined) {
+      if (this.selector.device?.multiple && !Array.isArray(this.value)) {
+        this.value = [this.value];
+        fireEvent(this, "value-changed", { value: this.value });
+      } else if (!this.selector.device?.multiple && Array.isArray(this.value)) {
+        this.value = this.value[0];
+        fireEvent(this, "value-changed", { value: this.value });
+      }
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&

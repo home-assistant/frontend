@@ -98,8 +98,7 @@ class StepFlowCreateEntry extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",
-          "error",
-          err.message
+          { error: err.message }
         ),
       });
       picker.value = null;
@@ -127,6 +126,8 @@ class StepFlowCreateEntry extends LitElement {
         }
         .buttons > *:last-child {
           margin-left: auto;
+          margin-inline-start: auto;
+          margin-inline-end: initial;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .device {

@@ -8,6 +8,7 @@ import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -72,6 +73,7 @@ export class CloudGooglePref extends LitElement {
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.cloud.account.google.title")}
         </h1>

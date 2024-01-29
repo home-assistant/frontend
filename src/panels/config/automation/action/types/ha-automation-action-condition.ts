@@ -7,8 +7,8 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
-import { CONDITION_TYPES } from "../../../../../data/condition";
-import { HomeAssistant } from "../../../../../types";
+import { CONDITION_ICONS } from "../../../../../data/condition";
+import { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -18,7 +18,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: Condition;
+  @property({ attribute: false }) public action!: Condition;
 
   public static get defaultConfig() {
     return { condition: "state" };
@@ -55,7 +55,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string, string][] =>
-      Object.entries(CONDITION_TYPES)
+      (Object.entries(CONDITION_ICONS) as Entries<typeof CONDITION_ICONS>)
         .map(
           ([condition, icon]) =>
             [

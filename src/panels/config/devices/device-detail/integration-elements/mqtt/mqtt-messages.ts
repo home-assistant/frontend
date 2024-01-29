@@ -10,13 +10,13 @@ import { HomeAssistant } from "../../../../../../types";
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public messages!: MQTTMessage[];
+  @property({ attribute: false }) public messages!: MQTTMessage[];
 
   @property() public direction!: string;
 
-  @property() public showAsYaml = false;
+  @property({ type: Boolean }) public showAsYaml = false;
 
-  @property() public showDeserialized = false;
+  @property({ type: Boolean }) public showDeserialized = false;
 
   @property() public subscribedTopic!: string;
 

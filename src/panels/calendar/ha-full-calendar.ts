@@ -4,6 +4,7 @@ import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-button";
 import {
   mdiPlus,
@@ -13,11 +14,11 @@ import {
   mdiViewWeek,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -37,6 +38,7 @@ import type {
   CalendarEvent,
 } from "../../data/calendar";
 import { CalendarEntityFeature } from "../../data/calendar";
+import { TimeZone } from "../../data/translation";
 import { haStyle } from "../../resources/styles";
 import type {
   CalendarViewChanged,
@@ -46,7 +48,6 @@ import type {
 } from "../../types";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
-import { TimeZone } from "../../data/translation";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -63,6 +64,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
   height: "parent",
+  handleWindowResize: false,
   locales: allLocales,
   views: {
     listWeek: {
@@ -101,8 +103,23 @@ export class HAFullCalendar extends LitElement {
 
   @state() private _activeView = this.initialView;
 
-  public updateSize(): void {
-    this.calendar?.updateSize();
+  // @ts-ignore
+  private _resizeController = new ResizeController(this, {
+    callback: () => this.calendar?.updateSize(),
+  });
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.calendar?.destroy();
+    this.calendar = undefined;
+    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated && !this.calendar) {
+      this._loadCalendar(this._activeView);
+    }
   }
 
   protected render() {
@@ -241,10 +258,11 @@ export class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this._loadCalendar();
+    this._loadCalendar(this.initialView);
+    this._activeView = this.initialView;
   }
 
-  private async _loadCalendar() {
+  private async _loadCalendar(initialView: FullCalendarView) {
     const luxonPlugin =
       this.hass.locale.time_zone === TimeZone.local
         ? undefined
@@ -262,7 +280,7 @@ export class HAFullCalendar extends LitElement {
           ? "local"
           : this.hass.config.time_zone,
       firstDay: firstWeekdayIndex(this.hass.locale),
-      initialView: this.initialView,
+      initialView,
       eventDisplay: this.eventDisplay,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -439,6 +457,11 @@ export class HAFullCalendar extends LitElement {
           justify-content: initial;
         }
 
+        .header {
+          padding-right: var(--calendar-header-padding);
+          padding-left: var(--calendar-header-padding);
+        }
+
         .navigation {
           display: flex;
           align-items: center;
@@ -490,7 +513,7 @@ export class HAFullCalendar extends LitElement {
             --ha-card-background,
             var(--card-background-color, white)
           );
-          min-height: 400px;
+          height: var(--calendar-height);
           --fc-neutral-bg-color: var(
             --ha-card-background,
             var(--card-background-color, white)
@@ -513,7 +536,11 @@ export class HAFullCalendar extends LitElement {
 
         .fc-theme-standard .fc-scrollgrid {
           border: 1px solid var(--divider-color);
-          border-radius: var(--mdc-shape-small, 4px);
+          border-width: var(--calendar-border-width, 1px);
+          border-radius: var(
+            --calendar-border-radius,
+            var(--mdc-shape-small, 4px)
+          );
         }
 
         .fc-theme-standard td {

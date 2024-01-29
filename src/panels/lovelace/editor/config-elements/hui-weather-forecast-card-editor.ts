@@ -253,8 +253,8 @@ export class HuiWeatherForecastCardEditor
       data.show_current && data.show_forecast
         ? "show_both"
         : data.show_current
-        ? "show_current"
-        : "show_forecast";
+          ? "show_current"
+          : "show_forecast";
 
     return html`
       <ha-form

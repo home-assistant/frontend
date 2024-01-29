@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-markdown";
 import "../../../components/ha-select";
 import {
   extractApiErrorMessage,
@@ -106,7 +105,11 @@ class MoveDatadiskDialog extends LitElement {
       >
         ${this._moving
           ? html`
-              <ha-circular-progress alt="Moving" size="large" active>
+              <ha-circular-progress
+                aria-label="Moving"
+                size="large"
+                indeterminate
+              >
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.hass.localize(

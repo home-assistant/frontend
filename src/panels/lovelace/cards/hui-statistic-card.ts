@@ -144,7 +144,8 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-state-icon
               .icon=${this._config.icon}
-              .state=${stateObj}
+              .stateObj=${stateObj}
+              .hass=${this.hass}
             ></ha-state-icon>
           </div>
         </div>
@@ -153,8 +154,8 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
             >${this._value === undefined
               ? ""
               : this._value === null
-              ? "?"
-              : formatNumber(this._value, this.hass.locale)}</span
+                ? "?"
+                : formatNumber(this._value, this.hass.locale)}</span
           >
           <span class="measurement"
             >${this._config.unit ||

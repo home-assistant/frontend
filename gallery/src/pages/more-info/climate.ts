@@ -31,6 +31,21 @@ const ENTITIES = [
     max_temp: 30,
     supported_features: ClimateEntityFeature.TARGET_TEMPERATURE,
   }),
+  getEntity("climate", "fan", "fan_only", {
+    friendly_name: "Basic fan",
+    hvac_modes: ["fan_only", "off"],
+    hvac_mode: "fan_only",
+    fan_modes: ["low", "high"],
+    fan_mode: "low",
+    current_temperature: null,
+    temperature: null,
+    min_temp: 0,
+    max_temp: 1,
+    target_temp_step: 1,
+    supported_features:
+      // eslint-disable-next-line no-bitwise
+      ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE,
+  }),
   getEntity("climate", "hvac", "auto", {
     friendly_name: "Basic hvac",
     hvac_modes: ["auto", "off"],
@@ -77,7 +92,7 @@ const ENTITIES = [
 
 @customElement("demo-more-info-climate")
 class DemoMoreInfoClimate extends LitElement {
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 

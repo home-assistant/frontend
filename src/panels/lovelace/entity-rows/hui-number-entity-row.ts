@@ -89,15 +89,14 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
+                  labeled
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
                   .value=${Number(stateObj.state)}
-                  pin
                   @change=${this._selectedValueChanged}
-                  ignore-bar-touch
                 ></ha-slider>
                 <span class="state">
                   ${this.hass.formatEntityState(stateObj)}

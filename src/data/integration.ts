@@ -16,7 +16,9 @@ export type IntegrationType =
   | "helper"
   | "hub"
   | "service"
-  | "hardware";
+  | "hardware"
+  | "entity"
+  | "system";
 
 export interface IntegrationManifest {
   is_built_in: boolean;

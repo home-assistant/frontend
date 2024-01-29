@@ -1,10 +1,15 @@
 import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { getEntityDefaultButtonAction } from "../../cards/hui-button-card";
 import type { ButtonCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -27,52 +32,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  { name: "entity", selector: { entity: {} } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      { name: "name", selector: { text: {} } },
-      {
-        name: "icon",
-        selector: {
-          icon: {},
-        },
-        context: {
-          icon_entity: "entity",
-        },
-      },
-    ],
-  },
-  {
-    name: "",
-    type: "grid",
-    column_min_width: "100px",
-    schema: [
-      { name: "show_name", selector: { boolean: {} } },
-      { name: "show_state", selector: { boolean: {} } },
-      { name: "show_icon", selector: { boolean: {} } },
-    ],
-  },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      { name: "icon_height", selector: { text: { suffix: "px" } } },
-      { name: "theme", selector: { theme: {} } },
-    ],
-  },
-  {
-    name: "tap_action",
-    selector: { ui_action: {} },
-  },
-  {
-    name: "hold_action",
-    selector: { ui_action: {} },
-  },
-] as const;
-
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor
   extends LitElement
@@ -86,6 +45,63 @@ export class HuiButtonCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
+
+  private _schema = memoizeOne(
+    (entityId: string | undefined) =>
+      [
+        { name: "entity", selector: { entity: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            {
+              name: "icon",
+              selector: {
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
+              },
+            },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          column_min_width: "100px",
+          schema: [
+            { name: "show_name", selector: { boolean: {} } },
+            { name: "show_state", selector: { boolean: {} } },
+            { name: "show_icon", selector: { boolean: {} } },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "icon_height", selector: { text: { suffix: "px" } } },
+            { name: "theme", selector: { theme: {} } },
+          ],
+        },
+        {
+          name: "tap_action",
+          selector: {
+            ui_action: {
+              default_action: getEntityDefaultButtonAction(entityId),
+            },
+          },
+        },
+        {
+          name: "hold_action",
+          selector: {
+            ui_action: {
+              default_action: "more-info",
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -102,11 +118,13 @@ export class HuiButtonCardEditor
       data.icon_height = String(parseFloat(data.icon_height));
     }
 
+    const schema = this._schema(this._config.entity);
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -124,7 +142,9 @@ export class HuiButtonCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "tap_action":
       case "hold_action":
@@ -136,7 +156,9 @@ export class HuiButtonCardEditor
     }
   };
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "theme":
       case "tap_action":

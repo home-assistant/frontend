@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Helper to start Home Assistant Core inside the devcontainer
 
 # Stop on errors
@@ -11,11 +11,35 @@ if [ -z "${DEVCONTAINER}" ]; then
   exit 1
 fi
 
-if [ -z $(which hass) ]; then
-  echo "Installing Home Asstant core from dev."
-  python3 -m pip install --upgrade \
-    colorlog \
-    git+https://github.com/home-assistant/home-assistant.git@dev
+# Default to installing (or upgrading to) dev branch
+coreURL="https://github.com/home-assistant/core.git"
+ref="dev"
+
+while getopts "hr:s" opt; do
+  case $opt in
+    h) # Help
+      echo "Usage: $0 [-h|-r <ref>|-s]"
+      echo -n "Install and run core at the given ref, i.e. branch, tag, or commit. The dev branch is used if no option is specified."
+      echo "The -s flag skips the install/upgrade, using whatever version is currently installed."
+      exit 0
+      ;;
+    r) # Git ref
+      ref="${OPTARG}"
+      ;;
+    s) # Skip (use current install)
+      ref=""
+      ;;
+    *)
+      echo "Try $0 -h for help" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ -n "$ref" ]; then
+  echo "Installing Home Assistant core at ${ref}..."
+  python3 -m pip install --user --upgrade --src "$HOME/src" \
+  --editable "git+${coreURL}@${ref}#egg=homeassistant"
 fi
 
 if [ ! -d "${WD}/config" ]; then
@@ -30,7 +54,7 @@ logger:
     homeassistant.components.frontend: debug
 " >> "${WD}/config/configuration.yaml"
 
-  if [ ! -z "${HASSIO}" ]; then
+  if [ -n "${HASSIO}" ]; then
   echo "
 # frontend:
 #   development_repo: ${WD}
@@ -46,7 +70,7 @@ frontend:
 #   development_repo: ${WD}" >> "${WD}/config/configuration.yaml"
   fi
 
-  if [ ! -z "${CODESPACES}" ]; then
+  if [ -n "${CODESPACES}" ]; then
   echo "
 http:
   use_x_forwarded_for: true

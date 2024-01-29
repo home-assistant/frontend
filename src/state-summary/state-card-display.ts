@@ -12,7 +12,7 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-display")
-export class StateCardDisplay extends LitElement {
+class StateCardDisplay extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -70,24 +70,32 @@ export class StateCardDisplay extends LitElement {
       haStyle,
       css`
         state-info {
-          flex: 1 1 auto;
-          min-width: 0;
+          flex: 0 1 fit-content;
+          min-width: 120px;
         }
         .state {
           color: var(--primary-text-color);
           margin-inline-start: 16px;
           margin-inline-end: initial;
           text-align: var(--float-end, right);
-          flex: 0 0 auto;
-          overflow-wrap: break-word;
+          min-width: 50px;
+          flex: 0 1 fit-content;
+          word-break: break-word;
           display: flex;
           align-items: center;
           direction: ltr;
+          justify-content: flex-end;
         }
         .state.has-unit_of_measurement {
           white-space: nowrap;
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-display": StateCardDisplay;
   }
 }

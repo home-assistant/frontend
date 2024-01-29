@@ -9,7 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/entity/state-badge";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -19,6 +18,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateIconElementConfig } from "./types";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
@@ -59,6 +59,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
     return html`
       <state-badge
+        .hass=${this.hass}
         .stateObj=${stateObj}
         .title=${computeTooltip(this.hass, this._config)}
         @action=${this._handleAction}

@@ -25,7 +25,7 @@ class HassSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -57,19 +57,19 @@ class HassSubpage extends LitElement {
               ></ha-menu-button>
             `
           : this.backPath
-          ? html`
-              <a href=${this.backPath}>
+            ? html`
+                <a href=${this.backPath}>
+                  <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
+                  ></ha-icon-button-arrow-prev>
+                </a>
+              `
+            : html`
                 <ha-icon-button-arrow-prev
                   .hass=${this.hass}
+                  @click=${this._backTapped}
                 ></ha-icon-button-arrow-prev>
-              </a>
-            `
-          : html`
-              <ha-icon-button-arrow-prev
-                .hass=${this.hass}
-                @click=${this._backTapped}
-              ></ha-icon-button-arrow-prev>
-            `}
+              `}
 
         <div class="main-title"><slot name="header">${this.header}</slot></div>
         <slot name="toolbar-icon"></slot>
@@ -119,7 +119,6 @@ class HassSubpage extends LitElement {
           font-size: 20px;
           height: var(--header-height);
           padding: 8px 12px;
-          pointer-events: none;
           background-color: var(--app-header-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);
@@ -144,7 +143,7 @@ class HassSubpage extends LitElement {
         }
 
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }

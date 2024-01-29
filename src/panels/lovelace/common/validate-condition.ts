@@ -1,29 +1,189 @@
+import { ensureArray } from "../../../common/array/ensure-array";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
-export interface Condition {
-  entity: string;
-  state?: string;
-  state_not?: string;
+export type Condition =
+  | NumericStateCondition
+  | ScreenCondition
+  | StateCondition
+  | UserCondition
+  | OrCondition
+  | AndCondition;
+
+export type LegacyCondition = {
+  entity?: string;
+  state?: string | string[];
+  state_not?: string | string[];
+};
+
+export type NumericStateCondition = {
+  condition: "numeric_state";
+  entity?: string;
+  below?: number;
+  above?: number;
+};
+
+export type StateCondition = {
+  condition: "state";
+  entity?: string;
+  state?: string | string[];
+  state_not?: string | string[];
+};
+
+export type ScreenCondition = {
+  condition: "screen";
+  media_query?: string;
+};
+
+export type UserCondition = {
+  condition: "user";
+  users?: string[];
+};
+
+export type OrCondition = {
+  condition: "or";
+  conditions?: Condition[];
+};
+
+export type AndCondition = {
+  condition: "and";
+  conditions?: Condition[];
+};
+
+function checkStateCondition(
+  condition: StateCondition | LegacyCondition,
+  hass: HomeAssistant
+) {
+  const state =
+    condition.entity && hass.states[condition.entity]
+      ? hass.states[condition.entity].state
+      : UNAVAILABLE;
+
+  return condition.state != null
+    ? ensureArray(condition.state).includes(state)
+    : !ensureArray(condition.state_not).includes(state);
+}
+
+function checkStateNumericCondition(
+  condition: NumericStateCondition,
+  hass: HomeAssistant
+) {
+  const entity =
+    (condition.entity ? hass.states[condition.entity] : undefined) ?? undefined;
+
+  if (!entity) {
+    return false;
+  }
+
+  const numericState = Number(entity.state);
+
+  if (isNaN(numericState)) {
+    return false;
+  }
+
+  return (
+    (condition.above == null || condition.above < numericState) &&
+    (condition.below == null || condition.below > numericState)
+  );
+}
+
+function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
+  return condition.media_query
+    ? matchMedia(condition.media_query).matches
+    : false;
+}
+
+function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
+  return condition.users && hass.user?.id
+    ? condition.users.includes(hass.user.id)
+    : false;
+}
+
+function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return checkConditionsMet(condition.conditions, hass);
+}
+
+function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return condition.conditions.some((c) => checkConditionsMet([c], hass));
 }
 
 export function checkConditionsMet(
-  conditions: Condition[],
+  conditions: (Condition | LegacyCondition)[],
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    const state = hass.states[c.entity]
-      ? hass!.states[c.entity].state
-      : UNAVAILABLE;
-
-    return c.state != null ? state === c.state : state !== c.state_not;
+    if ("condition" in c) {
+      switch (c.condition) {
+        case "screen":
+          return checkScreenCondition(c, hass);
+        case "user":
+          return checkUserCondition(c, hass);
+        case "numeric_state":
+          return checkStateNumericCondition(c, hass);
+        case "and":
+          return checkAndCondition(c, hass);
+        case "or":
+          return checkOrCondition(c, hass);
+        default:
+          return checkStateCondition(c, hass);
+      }
+    }
+    return checkStateCondition(c, hass);
   });
 }
 
-export function validateConditionalConfig(conditions: Condition[]): boolean {
-  return conditions.every(
-    (c) =>
-      (c.entity &&
-        (c.state != null || c.state_not != null)) as unknown as boolean
+function validateStateCondition(condition: StateCondition | LegacyCondition) {
+  return (
+    condition.entity != null &&
+    (condition.state != null || condition.state_not != null)
   );
+}
+
+function validateScreenCondition(condition: ScreenCondition) {
+  return condition.media_query != null;
+}
+
+function validateUserCondition(condition: UserCondition) {
+  return condition.users != null;
+}
+
+function validateAndCondition(condition: AndCondition) {
+  return condition.conditions != null;
+}
+
+function validateOrCondition(condition: OrCondition) {
+  return condition.conditions != null;
+}
+
+function validateNumericStateCondition(condition: NumericStateCondition) {
+  return (
+    condition.entity != null &&
+    (condition.above != null || condition.below != null)
+  );
+}
+
+export function validateConditionalConfig(
+  conditions: (Condition | LegacyCondition)[]
+): boolean {
+  return conditions.every((c) => {
+    if ("condition" in c) {
+      switch (c.condition) {
+        case "screen":
+          return validateScreenCondition(c);
+        case "user":
+          return validateUserCondition(c);
+        case "numeric_state":
+          return validateNumericStateCondition(c);
+        case "and":
+          return validateAndCondition(c);
+        case "or":
+          return validateOrCondition(c);
+        default:
+          return validateStateCondition(c);
+      }
+    }
+    return validateStateCondition(c);
+  });
 }

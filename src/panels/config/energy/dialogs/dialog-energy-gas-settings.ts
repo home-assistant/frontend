@@ -13,6 +13,7 @@ import "../../../../components/ha-textfield";
 import {
   emptyGasEnergyPreference,
   GasSourceTypeEnergyPreference,
+  energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
@@ -66,10 +67,10 @@ export class DialogEnergyGasSettings
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
-      ? "number"
-      : this._source.stat_cost
-      ? "statistic"
-      : "no-costs";
+        ? "number"
+        : this._source.stat_cost
+          ? "statistic"
+          : "no-costs";
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
@@ -99,8 +100,8 @@ export class DialogEnergyGasSettings
       this._params.allowedGasUnitClass === undefined
         ? [...(this._gas_units || []), ...(this._energy_units || [])].join(", ")
         : this._params.allowedGasUnitClass === "energy"
-        ? this._energy_units?.join(", ") || ""
-        : this._gas_units?.join(", ") || "";
+          ? this._energy_units?.join(", ") || ""
+          : this._gas_units?.join(", ") || "";
 
     const unitPrice = this._pickedDisplayUnit
       ? `${this.hass.config.currency}/${this._pickedDisplayUnit}`
@@ -138,6 +139,7 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${this._params.allowedGasUnitClass ||
           gasUnitClasses}
           .includeDeviceClass=${gasDeviceClasses}

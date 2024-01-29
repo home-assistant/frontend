@@ -4,22 +4,29 @@ import {
   mdiFileDocument,
   mdiHandsPray,
   mdiHelp,
-  mdiHomeAssistant,
   mdiNewspaperVariant,
   mdiTshirtCrew,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-logo-svg";
 import {
-  fetchHassioHassOsInfo,
   HassioHassOSInfo,
+  fetchHassioHassOsInfo,
 } from "../../../data/hassio/host";
-import { fetchHassioInfo, HassioInfo } from "../../../data/hassio/supervisor";
+import { HassioInfo, fetchHassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
+import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -27,12 +34,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
 
-const PAGES: Array<{
-  name: string;
-  path: string;
-  iconPath: string;
-  iconColor: string;
-}> = [
+const PAGES = [
   {
     name: "change_log",
     path: "/latest-release-notes/",
@@ -75,16 +77,22 @@ const PAGES: Array<{
     iconPath: mdiFileDocument,
     iconColor: "#518C43",
   },
-];
+] as const satisfies readonly {
+  name: string;
+  path: string;
+  iconPath: string;
+  iconColor: string;
+}[];
 
+@customElement("ha-config-info")
 class HaConfigInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -105,41 +113,56 @@ class HaConfigInfo extends LitElement {
         .header=${this.hass.localize("ui.panel.config.info.caption")}
       >
         <div class="content">
-          <ha-card outlined>
-            <div class="logo-versions">
-              <a
-                href=${documentationUrl(this.hass, "")}
-                target="_blank"
-                rel="noreferrer"
+          <ha-card outlined class="header">
+            <a
+              href=${documentationUrl(this.hass, "")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ha-logo-svg
+                title=${this.hass.localize(
+                  "ui.panel.config.info.home_assistant_logo"
+                )}
               >
-                <ha-logo-svg
-                  title=${this.hass.localize(
-                    "ui.panel.config.info.home_assistant_logo"
-                  )}
-                >
-                </ha-logo-svg>
-              </a>
-              <div class="versions">
-                <span class="ha-version"
-                  >Home Assistant ${hass.connection.haVersion}</span
-                >
-                ${this._hassioInfo
-                  ? html`<span>Supervisor ${this._hassioInfo.supervisor}</span>`
-                  : ""}
-                ${this._osInfo?.version
-                  ? html`<span>Operating System ${this._osInfo.version}</span>`
-                  : ""}
-                <span>
+              </ha-logo-svg>
+            </a>
+            <p>Home Assistant</p>
+            <ul class="versions">
+              <li>
+                <span class="version-label">Core</span>
+                <span class="version">${hass.connection.haVersion}</span>
+              </li>
+              ${this._hassioInfo
+                ? html`
+                    <li>
+                      <span class="version-label">Supervisor</span>
+                      <span class="version"
+                        >${this._hassioInfo.supervisor}</span
+                      >
+                    </li>
+                  `
+                : nothing}
+              ${this._osInfo
+                ? html`
+                    <li>
+                      <span class="version-label">Operating System</span>
+                      <span class="version">${this._osInfo.version}</span>
+                    </li>
+                  `
+                : nothing}
+              <li>
+                <span class="version-label">
                   ${this.hass.localize(
-                    "ui.panel.config.info.frontend_version",
-                    "version",
-                    JS_VERSION,
-                    "type",
-                    JS_TYPE
+                    "ui.panel.config.info.frontend_version_label"
                   )}
                 </span>
-              </div>
-            </div>
+                <span class="version">
+                  ${JS_VERSION}${JS_TYPE !== "latest" ? ` ⸱ ${JS_TYPE}` : ""}
+                </span>
+              </li>
+            </ul>
+          </ha-card>
+          <ha-card outlined class="pages">
             <mwc-list>
               ${PAGES.map(
                 (page) => html`
@@ -164,9 +187,8 @@ class HaConfigInfo extends LitElement {
                 `
               )}
             </mwc-list>
-            ${!customUiList.length
-              ? ""
-              : html`
+            ${customUiList.length
+              ? html`
                   <div class="custom-ui">
                     ${this.hass.localize("ui.panel.config.info.custom_uis")}
                     ${customUiList.map(
@@ -178,7 +200,8 @@ class HaConfigInfo extends LitElement {
                       `
                     )}
                   </div>
-                `}
+                `
+              : nothing}
           </ha-card>
         </div>
       </hass-subpage>
@@ -222,32 +245,58 @@ class HaConfigInfo extends LitElement {
         }
 
         ha-logo-svg {
-          padding: 12px;
-          height: 150px;
-          width: 150px;
+          height: 56px;
+          width: 56px;
         }
 
         ha-card {
-          padding: 16px;
           max-width: 600px;
           margin: 0 auto;
-          margin-bottom: 24px;
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: 16px;
+          padding: 16px;
         }
 
-        .logo-versions {
+        .header {
           display: flex;
-          justify-content: flex-start;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
+          padding: 32px 8px 16px 8px;
+        }
+
+        .header p {
+          font-size: 22px;
+          font-weight: 400;
+          line-height: 28px;
+          text-align: center;
+          margin: 24px;
         }
 
         .versions {
           display: flex;
           flex-direction: column;
           color: var(--secondary-text-color);
-          padding: 12px 0;
           align-self: stretch;
           justify-content: flex-start;
+          padding: 0 12px;
+          margin: 0;
+        }
+
+        .versions li {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          font-size: 14px;
+          font-weight: 400;
+          padding: 4px 0;
+        }
+
+        .version-label {
+          color: var(--primary-text-color);
+        }
+
+        .version {
+          color: var(--secondary-text-color);
         }
 
         .ha-version {
@@ -256,8 +305,18 @@ class HaConfigInfo extends LitElement {
           font-size: 16px;
         }
 
+        .pages {
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          padding: 4px 0;
+        }
+
         mwc-list {
-          --mdc-list-side-padding: 4px;
+          --mdc-list-side-padding: 16px;
+          --mdc-list-vertical-padding: 0;
+        }
+
+        ha-clickable-list-item {
+          height: 64px;
         }
 
         ha-svg-icon {
@@ -270,13 +329,6 @@ class HaConfigInfo extends LitElement {
 
         .icon-background {
           border-radius: 50%;
-        }
-
-        @media all and (max-width: 500px), all and (max-height: 500px) {
-          ha-logo-svg {
-            height: 100px;
-            width: 100px;
-          }
         }
 
         .custom-ui {
@@ -293,5 +345,3 @@ declare global {
     "ha-config-info": HaConfigInfo;
   }
 }
-
-customElements.define("ha-config-info", HaConfigInfo);

@@ -1,5 +1,5 @@
-import "../../src/resources/ha-style";
-import "../../src/resources/roboto";
 import "./ha-gallery";
+
+import("../../src/resources/ha-style");
 
 document.body.appendChild(document.createElement("ha-gallery"));

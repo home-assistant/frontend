@@ -1,3 +1,5 @@
+import { AutomationConfig } from "../data/automation";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -35,6 +37,10 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
+}
+
+interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
+  type: "thread/import_credentials";
 }
 
 type EMOutgoingMessageWithAnswer = {
@@ -116,7 +122,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThemeUpdate
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMOutgoingMessageMatterCommission;
+  | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageImportThreadCredentials;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -142,11 +149,21 @@ interface EMIncomingMessageShowSidebar {
   command: "sidebar/show";
 }
 
+interface EMIncomingMessageShowAutomationEditor {
+  id: number;
+  type: "command";
+  command: "automation/editor/show";
+  payload?: {
+    config?: Partial<AutomationConfig>;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
   | EMIncomingMessageToggleSidebar
-  | EMIncomingMessageShowSidebar;
+  | EMIncomingMessageShowSidebar
+  | EMIncomingMessageShowAutomationEditor;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -161,6 +178,7 @@ export interface ExternalConfig {
   canWriteTag: boolean;
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
+  canImportThreadCredentials: boolean;
   hasAssist: boolean;
 }
 

@@ -21,9 +21,9 @@ import "./ha-logbook";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
-  @property() hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ reflect: true, type: Boolean }) narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() _time: { range: [Date, Date] };
 
@@ -240,7 +240,6 @@ export class HaPanelLogbook extends LitElement {
           margin-inline-start: initial;
           max-width: 100%;
           direction: var(--direction);
-          margin-bottom: -5px;
         }
 
         :host([narrow]) ha-date-range-picker {
@@ -273,5 +272,11 @@ export class HaPanelLogbook extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-logbook": HaPanelLogbook;
   }
 }

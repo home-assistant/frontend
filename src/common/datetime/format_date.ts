@@ -1,7 +1,8 @@
 import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { FrontendLocaleData, DateFormat } from "../../data/translation";
+import { DateFormat, FrontendLocaleData } from "../../data/translation";
 import "../../resources/intl-polyfill";
+import { resolveTimeZone } from "./resolve-time-zone";
 
 // Tuesday, August 10
 export const formatDateWeekdayDay = (
@@ -16,7 +17,7 @@ const formatDateWeekdayDayMem = memoizeOne(
       weekday: "long",
       month: "long",
       day: "numeric",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -33,7 +34,24 @@ const formatDateMem = memoizeOne(
       year: "numeric",
       month: "long",
       day: "numeric",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+// Aug 10, 2021
+export const formatDateShort = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateShortMem(locale, config.time_zone).format(dateObj);
+
+const formatDateShortMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -88,7 +106,7 @@ const formatDateNumericMem = memoizeOne(
         year: "numeric",
         month: "numeric",
         day: "numeric",
-        timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+        timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
       });
     }
 
@@ -96,24 +114,24 @@ const formatDateNumericMem = memoizeOne(
       year: "numeric",
       month: "numeric",
       day: "numeric",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     });
   }
 );
 
 // Aug 10
-export const formatDateShort = (
+export const formatDateVeryShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateShortMem(locale, config.time_zone).format(dateObj);
+) => formatDateVeryShortMem(locale, config.time_zone).format(dateObj);
 
-const formatDateShortMem = memoizeOne(
+const formatDateVeryShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       day: "numeric",
       month: "short",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -129,7 +147,7 @@ const formatDateMonthYearMem = memoizeOne(
     new Intl.DateTimeFormat(locale.language, {
       month: "long",
       year: "numeric",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -144,7 +162,7 @@ const formatDateMonthMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       month: "long",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -159,7 +177,7 @@ const formatDateYearMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       year: "numeric",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -174,7 +192,7 @@ const formatDateWeekdayMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "long",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -189,6 +207,6 @@ const formatDateWeekdayShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "short",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );

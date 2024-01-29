@@ -1,16 +1,16 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -36,7 +36,7 @@ export class HuiPictureHeaderFooter
 
   @property() public type!: "header" | "footer";
 
-  @property() protected _config?: PictureHeaderFooterConfig;
+  @state() protected _config?: PictureHeaderFooterConfig;
 
   public getCardSize(): number {
     return 3;
@@ -68,7 +68,7 @@ export class HuiPictureHeaderFooter
 
     return html`
       <img
-        alt=${this._config!.alt_text}
+        alt=${ifDefined(this._config?.alt_text)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

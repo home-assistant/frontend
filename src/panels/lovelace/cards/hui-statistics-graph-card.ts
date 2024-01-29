@@ -129,10 +129,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_statistics")) {
-      return true;
-    }
-    return hasConfigOrEntitiesChanged(this, changedProps);
+    return (
+      hasConfigOrEntitiesChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -193,11 +194,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .isLoadingData=${!this._statistics}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
+            .period=${this._config.period}
             .chartType=${this._config.chart_type || "line"}
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
             .hideLegend=${this._config.hide_legend || false}
+            .logarithmicScale=${this._config.logarithmic_scale || false}
           ></statistics-chart>
         </div>
       </ha-card>

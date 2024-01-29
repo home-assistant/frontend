@@ -30,7 +30,8 @@ export class HaDateTimeSelector extends LitElement {
   @query("ha-time-input") private _timeInput!: HaTimeInput;
 
   protected render() {
-    const values = this.value?.split(" ");
+    const values =
+      typeof this.value === "string" ? this.value.split(" ") : undefined;
 
     return html`
       <div class="input">

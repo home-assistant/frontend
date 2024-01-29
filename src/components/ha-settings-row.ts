@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 
 @customElement("ha-settings-row")
 export class HaSettingsRow extends LitElement {
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
@@ -35,7 +35,12 @@ export class HaSettingsRow extends LitElement {
         align-items: center;
       }
       .body {
-        padding: 8px 16px 8px 0;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 0;
+        padding-inline-start: 0;
+        padding-right: 16x;
+        padding-inline-end: 16px;
         overflow: hidden;
         display: var(--layout-vertical_-_display);
         flex-direction: var(--layout-vertical_-_flex-direction);

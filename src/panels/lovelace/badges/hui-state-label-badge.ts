@@ -1,8 +1,8 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/entity/ha-state-label-badge";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -14,7 +14,7 @@ import { StateLabelBadgeConfig } from "./types";
 export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected _config?: StateLabelBadgeConfig;
+  @state() protected _config?: StateLabelBadgeConfig;
 
   public setConfig(config: StateLabelBadgeConfig): void {
     this._config = config;

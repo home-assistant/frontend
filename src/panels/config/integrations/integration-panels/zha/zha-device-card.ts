@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   EntityRegistryEntry,
@@ -29,9 +29,9 @@ import { getIeeeTail } from "./functions";
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _entities: EntityRegistryEntry[] = [];
 
@@ -78,11 +78,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           <div>
             <div class="model">${this.device.model}</div>
             <div class="manuf">
-              ${this.hass.localize(
-                "ui.dialogs.zha_device_info.manuf",
-                "manufacturer",
-                this.device.manufacturer
-              )}
+              ${this.hass.localize("ui.dialogs.zha_device_info.manuf", {
+                manufacturer: this.device.manufacturer,
+              })}
             </div>
           </div>
 
@@ -93,6 +91,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                     <state-badge
                       @click=${this._openMoreInfo}
                       .title=${entity.stateName!}
+                      .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
                     ></state-badge>
@@ -100,14 +99,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 : ""
             )}
           </div>
-          <paper-input
+          <ha-textfield
             type="string"
             @change=${this._rename}
             .value=${this.device.user_given_name || this.device.name}
             .label=${this.hass.localize(
               "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}
-          ></paper-input>
+          ></ha-textfield>
           <ha-area-picker
             .hass=${this.hass}
             .device=${this.device.device_reg_id}
@@ -191,8 +190,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",
-          "error",
-          err.message
+          { error: err.message }
         ),
       });
       picker.value = null;
@@ -231,6 +229,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
         ha-card {
           border: none;
+        }
+        ha-textfield {
+          width: 100%;
         }
       `,
     ];

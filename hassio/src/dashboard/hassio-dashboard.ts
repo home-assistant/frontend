@@ -21,7 +21,7 @@ class HassioDashboard extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -133,6 +133,8 @@ class HassioDashboard extends LitElement {
           position: fixed;
           right: calc(16px + env(safe-area-inset-right));
           bottom: calc(16px + env(safe-area-inset-bottom));
+          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          inset-inline-start: initial;
           z-index: 1;
         }
       `,

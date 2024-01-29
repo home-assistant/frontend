@@ -153,7 +153,8 @@ class DialogExposeEntity extends LitElement {
       <ha-state-icon
         title=${ifDefined(entityState?.state)}
         slot="graphic"
-        .state=${entityState}
+        .hass=${this.hass}
+        .stateObj=${entityState}
       ></ha-state-icon>
       ${computeStateName(entityState)}
       <span slot="secondary">${entityState.entity_id}</span>
@@ -173,6 +174,9 @@ class DialogExposeEntity extends LitElement {
           --dialog-content-padding: 0;
           --mdc-dialog-min-width: 500px;
           --mdc-dialog-max-width: 600px;
+        }
+        mwc-list {
+          position: relative;
         }
         lit-virtualizer {
           height: 500px;

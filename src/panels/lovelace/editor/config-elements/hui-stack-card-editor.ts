@@ -1,6 +1,4 @@
 import {
-  mdiArrowLeft,
-  mdiArrowRight,
   mdiCodeBraces,
   mdiContentCopy,
   mdiContentCut,
@@ -25,7 +23,10 @@ import {
 import { storage } from "../../../../common/decorators/storage";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import "../../../../components/ha-icon-button-arrow-prev";
+import "../../../../components/ha-icon-button-arrow-next";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
@@ -130,25 +131,23 @@ export class HuiStackCardEditor
                     .path=${isGuiMode ? mdiCodeBraces : mdiListBoxOutline}
                   ></ha-icon-button>
 
-                  <ha-icon-button
+                  <ha-icon-button-arrow-prev
                     .disabled=${selected === 0}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.move_before"
                     )}
-                    .path=${mdiArrowLeft}
                     @click=${this._handleMove}
                     .move=${-1}
-                  ></ha-icon-button>
+                  ></ha-icon-button-arrow-prev>
 
-                  <ha-icon-button
+                  <ha-icon-button-arrow-next
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.move_after"
                     )}
-                    .path=${mdiArrowRight}
                     .disabled=${selected === numcards - 1}
                     @click=${this._handleMove}
                     .move=${1}
-                  ></ha-icon-button>
+                  ></ha-icon-button-arrow-next>
 
                   <ha-icon-button
                     .label=${this.hass!.localize(

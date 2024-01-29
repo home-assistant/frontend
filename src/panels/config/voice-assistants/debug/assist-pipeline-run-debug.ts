@@ -28,7 +28,7 @@ import "./assist-render-pipeline-run";
 export class AssistPipelineRunDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _pipelineRuns: PipelineRun[] = [];
 
@@ -79,48 +79,64 @@ export class AssistPipelineRunDebug extends LitElement {
                     .value=${this._pipelineId}
                     @value-changed=${this._pipelinePicked}
                   ></ha-assist-pipeline-picker>
-                  <ha-button raised @click=${this._runTextPipeline}>
-                    Run Text Pipeline
-                  </ha-button>
-                  <ha-button
-                    raised
-                    @click=${this._runAudioPipeline}
-                    .disabled=${!window.isSecureContext ||
-                    // @ts-ignore-next-line
-                    !(window.AudioContext || window.webkitAudioContext)}
-                  >
-                    Run Audio Pipeline
-                  </ha-button>
+                  <div class="start-buttons">
+                    <ha-button raised @click=${this._runTextPipeline}>
+                      Run Text Pipeline
+                    </ha-button>
+                    <ha-button
+                      raised
+                      @click=${this._runAudioPipeline}
+                      .disabled=${!window.isSecureContext ||
+                      // @ts-ignore-next-line
+                      !(window.AudioContext || window.webkitAudioContext)}
+                    >
+                      Run Audio Pipeline
+                    </ha-button>
+                    <ha-button
+                      raised
+                      @click=${this._runAudioWakeWordPipeline}
+                      .disabled=${!window.isSecureContext ||
+                      // @ts-ignore-next-line
+                      !(window.AudioContext || window.webkitAudioContext)}
+                    >
+                      Run Audio Pipeline with Wake Word detection
+                    </ha-button>
+                  </div>
                 `
               : this._pipelineRuns[0].init_options!.start_stage === "intent"
-              ? html`
-                  <ha-textfield
-                    id="continue-conversation-text"
-                    label="Response"
-                    .disabled=${!this._finished}
-                    @keydown=${this._handleContinueKeyDown}
-                  ></ha-textfield>
-                  <ha-button
-                    @click=${this._runTextPipeline}
-                    .disabled=${!this._finished}
-                  >
-                    Send
-                  </ha-button>
-                `
-              : this._finished
-              ? html`
-                  <ha-button @click=${this._runAudioPipeline}>
-                    Continue talking
-                  </ha-button>
-                `
-              : html`
-                  <ha-formfield label="Continue conversation">
-                    <ha-checkbox
-                      id="continue-conversation"
-                      checked
-                    ></ha-checkbox>
-                  </ha-formfield>
-                `}
+                ? html`
+                    <ha-textfield
+                      id="continue-conversation-text"
+                      label="Response"
+                      .disabled=${!this._finished}
+                      @keydown=${this._handleContinueKeyDown}
+                    ></ha-textfield>
+                    <ha-button
+                      @click=${this._runTextPipeline}
+                      .disabled=${!this._finished}
+                    >
+                      Send
+                    </ha-button>
+                  `
+                : this._finished
+                  ? this._pipelineRuns[0].init_options!.start_stage ===
+                    "wake_word"
+                    ? html`
+                        <ha-button @click=${this._runAudioWakeWordPipeline}>
+                          Continue listening for wake word
+                        </ha-button>
+                      `
+                    : html`<ha-button @click=${this._runAudioPipeline}>
+                        Continue talking
+                      </ha-button>`
+                  : html`
+                      <ha-formfield label="Continue conversation">
+                        <ha-checkbox
+                          id="continue-conversation"
+                          checked
+                        ></ha-checkbox>
+                      </ha-formfield>
+                    `}
           </div>
 
           ${this._pipelineRuns.map((run) =>
@@ -179,6 +195,89 @@ export class AssistPipelineRunDebug extends LitElement {
     );
   }
 
+  private async _runAudioWakeWordPipeline() {
+    const audioRecorder = new AudioRecorder((data) => {
+      if (this._audioBuffer) {
+        this._audioBuffer.push(data);
+      } else {
+        this._sendAudioChunk(data);
+      }
+    });
+
+    this._audioBuffer = [];
+    await audioRecorder.start();
+
+    let run: PipelineRun | undefined;
+
+    let stopRecording: (() => void) | undefined = () => {
+      stopRecording = undefined;
+      audioRecorder.close();
+      // We're currently STTing, so finish audio
+      if (run?.stage === "stt" && run.stt!.done === false) {
+        if (this._audioBuffer) {
+          for (const chunk of this._audioBuffer) {
+            this._sendAudioChunk(chunk);
+          }
+        }
+        // Send empty message to indicate we're done streaming.
+        this._sendAudioChunk(new Int16Array());
+      }
+      this._audioBuffer = undefined;
+    };
+
+    await this._doRunPipeline(
+      (updatedRun) => {
+        run = updatedRun;
+
+        // When we start wake work stage, the WS has a binary handler
+        if (updatedRun.stage === "wake_word" && this._audioBuffer) {
+          // Send the buffer over the WS to the Wake Word / STT engine.
+          for (const buffer of this._audioBuffer) {
+            this._sendAudioChunk(buffer);
+          }
+          this._audioBuffer = undefined;
+        }
+
+        // Stop recording if the server is done with STT stage
+        if (
+          !["ready", "wake_word", "stt"].includes(updatedRun.stage) &&
+          stopRecording
+        ) {
+          stopRecording();
+        }
+
+        // Play audio when we're done.
+        if (updatedRun.stage === "done" && !updatedRun.error) {
+          const url = updatedRun.tts!.tts_output!.url;
+          const audio = new Audio(url);
+          audio.addEventListener("ended", () => {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
+              this._runAudioWakeWordPipeline();
+            } else {
+              this._finished = true;
+            }
+          });
+          audio.play();
+        } else if (
+          (updatedRun.stage === "done" && updatedRun.error) ||
+          updatedRun.stage === "error"
+        ) {
+          this._finished = true;
+        }
+      },
+      {
+        start_stage: "wake_word",
+        end_stage: "tts",
+        input: {
+          sample_rate: audioRecorder.sampleRate!,
+        },
+      }
+    );
+  }
+
   private async _runAudioPipeline() {
     const audioRecorder = new AudioRecorder((data) => {
       if (this._audioBuffer) {
@@ -232,7 +331,10 @@ export class AssistPipelineRunDebug extends LitElement {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
-            if (this._continueConversationCheckbox.checked) {
+            if (
+              this.isConnected &&
+              this._continueConversationCheckbox.checked
+            ) {
               this._runAudioPipeline();
             } else {
               this._finished = true;
@@ -326,6 +428,13 @@ export class AssistPipelineRunDebug extends LitElement {
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
+      }
+      .start-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
       }
       .start-row {
         display: flex;

@@ -12,7 +12,7 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import type { LovelaceViewConfig } from "../../../../data/lovelace";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -37,7 +37,7 @@ export class HuiCreateDialogCard
   extends LitElement
   implements HassDialog<CreateCardDialogParams>
 {
-  @property({ attribute: false }) protected hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: CreateCardDialogParams;
 
@@ -69,8 +69,7 @@ export class HuiCreateDialogCard
     const title = this._viewConfig.title
       ? this.hass!.localize(
           "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-          "name",
-          `"${this._viewConfig.title}"`
+          { name: `"${this._viewConfig.title}"` }
         )
       : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
 

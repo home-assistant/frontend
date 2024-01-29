@@ -72,6 +72,7 @@ class IntegrationsStartupTime extends LitElement {
                   useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
+                crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 slot="graphic"
               />

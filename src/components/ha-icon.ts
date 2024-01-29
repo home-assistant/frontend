@@ -1,9 +1,9 @@
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,12 +11,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIcons } from "../data/custom_icons";
 import {
-  checkCacheVersion,
   Chunks,
-  findIconChunk,
-  getIcon,
   Icons,
   MDI_PREFIXES,
+  checkCacheVersion,
+  findIconChunk,
+  getIcon,
   writeCache,
 } from "../data/iconsets";
 import "./ha-svg-icon";
@@ -47,6 +47,8 @@ export class HaIcon extends LitElement {
 
   @state() private _path?: string;
 
+  @state() private _secondaryPath?: string;
+
   @state() private _viewBox?: string;
 
   @state() private _legacy = false;
@@ -55,6 +57,7 @@ export class HaIcon extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;
+      this._secondaryPath = undefined;
       this._viewBox = undefined;
       this._loadIcon();
     }
@@ -70,6 +73,7 @@ export class HaIcon extends LitElement {
     }
     return html`<ha-svg-icon
       .path=${this._path}
+      .secondaryPath=${this._secondaryPath}
       .viewBox=${this._viewBox}
     ></ha-svg-icon>`;
   }
@@ -124,6 +128,17 @@ export class HaIcon extends LitElement {
       return;
     }
 
+    if (iconName === "home-assistant") {
+      const icon = (await import("../resources/home-assistant-logo-svg"))
+        .mdiHomeAssistant;
+
+      if (this.icon === requestedIcon) {
+        this._path = icon;
+      }
+      cachedIcons[iconName] = icon;
+      return;
+    }
+
     let databaseIcon: string | undefined;
     try {
       databaseIcon = await getIcon(iconName);
@@ -164,6 +179,7 @@ export class HaIcon extends LitElement {
       return;
     }
     this._path = icon.path;
+    this._secondaryPath = icon.secondaryPath;
     this._viewBox = icon.viewBox;
   }
 

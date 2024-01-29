@@ -19,6 +19,7 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -35,16 +36,16 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../../data/light";
+import "../../../state-control/ha-state-control-toggle";
+import "../../../state-control/light/ha-state-control-light-brightness";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
-import "../components/ha-more-info-toggle";
 import "../components/lights/ha-favorite-color-button";
-import "../components/lights/ha-more-info-light-brightness";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "brightness" | "color_temp" | "color";
 
@@ -60,29 +61,10 @@ class MoreInfoLight extends LitElement {
 
   @state() private _effect?: string;
 
-  @state() private _selectedBrightness?: number;
-
-  @state() private _colorTempPreview?: number;
-
   @state() private _mainControl: MainControl = "brightness";
-
-  private _brightnessChanged(ev) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    this._selectedBrightness = (value * 255) / 100;
-  }
-
-  private _tempColorHovered(ev: CustomEvent<HASSDomEvents["color-hovered"]>) {
-    if (ev.detail && "color_temp_kelvin" in ev.detail) {
-      this._colorTempPreview = ev.detail.color_temp_kelvin;
-    } else {
-      this._colorTempPreview = undefined;
-    }
-  }
 
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
-      this._selectedBrightness = this.stateObj?.attributes.brightness;
       this._effect = this.stateObj?.attributes.effect;
     }
   }
@@ -98,19 +80,8 @@ class MoreInfoLight extends LitElement {
   }
 
   private get _stateOverride() {
-    if (this._colorTempPreview) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "color_temp_kelvin",
-        this._colorTempPreview
-      );
-    }
-    if (this._selectedBrightness) {
-      return this.hass.formatEntityAttributeValue(
-        this.stateObj!,
-        "brightness",
-        this._selectedBrightness
-      );
+    if (this.stateObj?.attributes.brightness) {
+      return this.hass.formatEntityAttributeValue(this.stateObj!, "brightness");
     }
     return undefined;
   }
@@ -153,24 +124,23 @@ class MoreInfoLight extends LitElement {
       <div class="controls">
         ${!supportsBrightness
           ? html`
-              <ha-more-info-toggle
+              <ha-state-control-toggle
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
                 .iconPathOn=${mdiLightbulb}
                 .iconPathOff=${mdiLightbulbOff}
-              ></ha-more-info-toggle>
+              ></ha-state-control-toggle>
             `
           : nothing}
         ${supportsColorTemp || supportsColor || supportsBrightness
           ? html`
               ${supportsBrightness && this._mainControl === "brightness"
                 ? html`
-                    <ha-more-info-light-brightness
+                    <ha-state-control-light-brightness
                       .stateObj=${this.stateObj}
                       .hass=${this.hass}
-                      @slider-moved=${this._brightnessChanged}
                     >
-                    </ha-more-info-light-brightness>
+                    </ha-state-control-light-brightness>
                   `
                 : nothing}
               ${supportsColor && this._mainControl === "color"
@@ -187,7 +157,6 @@ class MoreInfoLight extends LitElement {
                     <light-color-temp-picker
                       .hass=${this.hass}
                       .stateObj=${this.stateObj}
-                      @color-hovered=${this._tempColorHovered}
                     >
                     </light-color-temp-picker>
                   `
@@ -212,8 +181,9 @@ class MoreInfoLight extends LitElement {
                       <ha-icon-button-toggle
                         .selected=${this._mainControl === "brightness"}
                         .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.brightness"
+                        .label=${this.hass.formatEntityAttributeName(
+                          this.stateObj,
+                          "brightness"
                         )}
                         .control=${"brightness"}
                         @click=${this._setMainControl}
@@ -302,14 +272,32 @@ class MoreInfoLight extends LitElement {
                   @selected=${this._handleEffect}
                   @closed=${stopPropagation}
                 >
-                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  ${this.stateObj.attributes.effect
+                    ? html`<ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        attribute="effect"
+                        .attributeValue=${this.stateObj.attributes.effect}
+                      ></ha-attribute-icon>`
+                    : html`<ha-svg-icon
+                        slot="icon"
+                        .path=${mdiCreation}
+                      ></ha-svg-icon>`}
                   ${this.stateObj.attributes.effect_list?.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode}>
+                    (effect) => html`
+                      <ha-list-item .value=${effect} graphic="icon">
+                        <ha-attribute-icon
+                          slot="graphic"
+                          .hass=${this.hass}
+                          .stateObj=${this.stateObj}
+                          attribute="effect"
+                          .attributeValue=${effect}
+                        ></ha-attribute-icon>
                         ${this.hass.formatEntityAttributeValue(
                           this.stateObj!,
                           "effect",
-                          mode
+                          effect
                         )}
                       </ha-list-item>
                     `

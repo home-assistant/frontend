@@ -56,6 +56,7 @@ import {
   BrowserMediaPlayer,
   ERR_UNSUPPORTED_MEDIA,
 } from "./browser-media-player";
+import { debounce } from "../../common/util/debounce";
 
 declare global {
   interface HASSDomEvents {
@@ -69,8 +70,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public entityId!: string;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @query("mwc-linear-progress") private _progressBar?: LinearProgress;
 
@@ -108,6 +108,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
@@ -118,7 +119,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   public showResolvingNewMediaPicked() {
     this._tearDownBrowserPlayer();
     this._newMediaExpected = true;
+    // Sometimes the state does not update when playing media, like with TTS, so we wait max 2 secs and then stop waiting
+    this._debouncedResetMediaExpected();
   }
+
+  private _debouncedResetMediaExpected = debounce(() => {
+    this._newMediaExpected = false;
+  }, 2000);
 
   public hideResolvingNewMediaPicked() {
     this._newMediaExpected = false;
@@ -154,13 +161,16 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   protected render() {
     if (this._newMediaExpected) {
       return html`
-        <div class="controls-progress">
+        <div class="controls-progress buffering">
           ${until(
             // Only show spinner after 500ms
             new Promise((resolve) => {
               setTimeout(resolve, 500);
             }).then(
-              () => html`<ha-circular-progress active></ha-circular-progress>`
+              () =>
+                html`<ha-circular-progress
+                  indeterminate
+                ></ha-circular-progress>`
             )
           )}
         </div>
@@ -177,32 +187,32 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const controls: ControlButton[] | undefined = !this.narrow
       ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
-          (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
-        ((stateObj.state === "paused" || stateObj.state === "idle") &&
-          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
-        (stateObj.state === "on" &&
-          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
-      ? [
-          {
-            icon:
-              stateObj.state === "on"
-                ? mdiPlayPause
-                : stateObj.state !== "playing"
-                ? mdiPlay
-                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-                ? mdiPause
-                : mdiStop,
-            action:
-              stateObj.state !== "playing"
-                ? "media_play"
-                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-                ? "media_pause"
-                : "media_stop",
-          },
-        ]
-      : undefined;
+            (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
+          ((stateObj.state === "paused" || stateObj.state === "idle") &&
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
+          (stateObj.state === "on" &&
+            (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
+        ? [
+            {
+              icon:
+                stateObj.state === "on"
+                  ? mdiPlayPause
+                  : stateObj.state !== "playing"
+                    ? mdiPlay
+                    : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+                      ? mdiPause
+                      : mdiStop,
+              action:
+                stateObj.state !== "playing"
+                  ? "media_play"
+                  : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+                    ? "media_pause"
+                    : "media_stop",
+            },
+          ]
+        : undefined;
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
@@ -240,9 +250,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           </span>
         </div>
       </div>
-      <div class="controls-progress">
+      <div
+        class="controls-progress ${stateObj.state === "buffering"
+          ? "buffering"
+          : ""}"
+      >
         ${stateObj.state === "buffering"
-          ? html` <ha-circular-progress active></ha-circular-progress> `
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress> `
           : html`
               <div class="controls">
                 ${controls === undefined
@@ -264,14 +278,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
               ${stateObj.attributes.media_duration === Infinity
                 ? nothing
                 : this.narrow
-                ? html`<mwc-linear-progress></mwc-linear-progress>`
-                : html`
-                    <div class="progress">
-                      <div id="CurrentProgress"></div>
-                      <mwc-linear-progress wide></mwc-linear-progress>
-                      <div>${mediaDuration}</div>
-                    </div>
-                  `}
+                  ? html`<mwc-linear-progress></mwc-linear-progress>`
+                  : html`
+                      <div class="progress">
+                        <div id="CurrentProgress"></div>
+                        <mwc-linear-progress wide></mwc-linear-progress>
+                        <div>${mediaDuration}</div>
+                      </div>
+                    `}
             `}
       </div>
       ${this._renderChoosePlayer(stateObj)}
@@ -293,6 +307,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
                 <ha-slider
+                  labeled
                   min="0"
                   max="100"
                   step="1"
@@ -540,7 +555,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     return css`
       :host {
         display: flex;
-        min-height: 100px;
+        height: 100px;
+        box-sizing: border-box;
         background: var(
           --ha-card-background,
           var(--card-background-color, white)
@@ -626,12 +642,11 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       }
 
       img {
-        max-height: 100px;
-        max-width: 100px;
+        height: 100%;
       }
 
       .app img {
-        max-height: 68px;
+        height: 68px;
         margin: 16px 0 16px 16px;
       }
 
@@ -640,13 +655,16 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       }
 
       :host([narrow]) {
-        min-height: 56px;
-        max-height: 56px;
+        height: 57px;
       }
 
       :host([narrow]) .controls-progress {
         flex: unset;
         min-width: 48px;
+      }
+
+      :host([narrow]) .controls-progress.buffering {
+        flex: 1;
       }
 
       :host([narrow]) .media-info {
@@ -669,16 +687,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
       :host([narrow]) .choose-player.browser {
         justify-content: flex-end;
-      }
-
-      :host([narrow]) img {
-        max-height: 56px;
-        max-width: 56px;
-      }
-
-      :host([narrow]) .blank-image {
-        height: 56px;
-        width: 56px;
       }
 
       :host([narrow]) mwc-linear-progress {

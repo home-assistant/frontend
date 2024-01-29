@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-textarea";
 import {
   css,
   CSSResultGroup,
@@ -20,6 +19,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
+import "../../../../../components/ha-textarea";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -27,7 +27,7 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route?: Route;
 
@@ -98,8 +98,8 @@ class ZHAAddDevicesPage extends LitElement {
                   )}
                 </h1>
                 <ha-circular-progress
-                  active
-                  alt="Searching"
+                  indeterminate
+                  aria-label="Searching"
                 ></ha-circular-progress>
               `
             : html`
@@ -146,13 +146,13 @@ class ZHAAddDevicesPage extends LitElement {
               `}
         </div>
         ${this._showLogs
-          ? html`<paper-textarea
+          ? html`<ha-textarea
               readonly
-              max-rows="10"
               class="log"
-              value=${this._formattedEvents}
+              autogrow
+              .value=${this._formattedEvents}
             >
-            </paper-textarea>`
+            </ha-textarea>`
           : ""}
       </hass-tabs-subpage>
     `;
@@ -165,13 +165,6 @@ class ZHAAddDevicesPage extends LitElement {
   private _handleMessage(message: any): void {
     if (message.type === LOG_OUTPUT) {
       this._formattedEvents += message.log_entry.message + "\n";
-      if (this.shadowRoot) {
-        const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
-        if (paperTextArea) {
-          const textArea = (paperTextArea.inputElement as any).textarea;
-          textArea.scrollTop = textArea.scrollHeight;
-        }
-      }
     }
     if (message.type && DEVICE_MESSAGE_TYPES.includes(message.type)) {
       this._discoveredDevices[message.device_info.ieee] = message.device_info;
@@ -225,6 +218,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          text-align: center;
         }
         .content {
           display: flex;
@@ -236,7 +230,7 @@ class ZHAAddDevicesPage extends LitElement {
           color: var(--error-color);
         }
         ha-circular-progress {
-          padding: 20px;
+          margin: 20px;
         }
         .searching {
           margin-top: 20px;
@@ -261,10 +255,15 @@ class ZHAAddDevicesPage extends LitElement {
         .search-button {
           margin-top: 16px;
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         .help-text {
           color: grey;
           padding-left: 16px;
+        }
+        ha-textarea {
+          width: 100%;
         }
       `,
     ];

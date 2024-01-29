@@ -19,6 +19,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   formatNumber,
   numberFormatToLocale,
+  getNumberFormatOptions,
 } from "../../common/number/format_number";
 import {
   getDisplayUnit,
@@ -53,7 +54,7 @@ export class StatisticsChart extends LitElement {
     StatisticsMetaData
   >;
 
-  @property() public names?: Record<string, string>;
+  @property({ attribute: false }) public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -70,9 +71,15 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public hideLegend = false;
 
+  @property({ type: Boolean }) public logarithmicScale = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
+  @property() public period?: string;
+
   @state() private _chartData: ChartData = { datasets: [] };
+
+  @state() private _statisticIds: string[] = [];
 
   @state() private _chartOptions?: ChartOptions;
 
@@ -89,7 +96,14 @@ export class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated || changedProps.has("unit")) {
+    if (
+      !this.hasUpdated ||
+      changedProps.has("unit") ||
+      changedProps.has("period") ||
+      changedProps.has("chartType") ||
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("hideLegend")
+    ) {
       this._createOptions();
     }
     if (
@@ -157,6 +171,7 @@ export class StatisticsChart extends LitElement {
             },
           },
           ticks: {
+            source: this.chartType === "bar" ? "data" : undefined,
             maxRotation: 0,
             sampleSize: 5,
             autoSkipPadding: 20,
@@ -170,6 +185,12 @@ export class StatisticsChart extends LitElement {
           },
           time: {
             tooltipFormat: "datetime",
+            unit:
+              this.chartType === "bar" &&
+              this.period &&
+              ["hour", "day", "week", "month"].includes(this.period)
+                ? this.period
+                : undefined,
           },
         },
         y: {
@@ -181,6 +202,7 @@ export class StatisticsChart extends LitElement {
             display: unit || this.unit,
             text: unit || this.unit,
           },
+          type: this.logarithmicScale ? "logarithmic" : "linear",
         },
       },
       plugins: {
@@ -189,7 +211,11 @@ export class StatisticsChart extends LitElement {
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
                 context.parsed.y,
-                this.hass.locale
+                this.hass.locale,
+                getNumberFormatOptions(
+                  undefined,
+                  this.hass.entities[this._statisticIds[context.datasetIndex]]
+                )
               )} ${
                 // @ts-ignore
                 context.dataset.unit || ""
@@ -248,6 +274,7 @@ export class StatisticsChart extends LitElement {
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
+    const statisticIds: string[] = [];
     let endTime: Date;
 
     if (statisticsData.length === 0) {
@@ -374,8 +401,8 @@ export class StatisticsChart extends LitElement {
               ? type === "min" && hasMean
                 ? "+1"
                 : type === "max"
-                ? "-1"
-                : false
+                  ? "-1"
+                  : false
               : false,
             borderColor:
               band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
@@ -386,6 +413,7 @@ export class StatisticsChart extends LitElement {
             unit: meta?.unit_of_measurement,
             band,
           });
+          statisticIds.push(statistic_id);
         }
       });
 
@@ -411,11 +439,7 @@ export class StatisticsChart extends LitElement {
           } else {
             val = stat[type];
           }
-          dataValues.push(
-            val !== null && val !== undefined
-              ? Math.round(val * 100) / 100
-              : null
-          );
+          dataValues.push(val ?? null);
         });
         pushData(startDate, new Date(stat.end), dataValues);
       });
@@ -431,6 +455,7 @@ export class StatisticsChart extends LitElement {
     this._chartData = {
       datasets: totalDataSets,
     };
+    this._statisticIds = statisticIds;
   }
 
   static get styles(): CSSResultGroup {

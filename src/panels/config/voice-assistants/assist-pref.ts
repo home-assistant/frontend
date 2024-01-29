@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import { mdiHelpCircle, mdiPlus, mdiStar } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatLanguageCode } from "../../../common/language/format_language";
 import "../../../components/ha-alert";
@@ -12,9 +12,11 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import {
+  AssistDevice,
   AssistPipeline,
   createAssistPipeline,
   deleteAssistPipeline,
+  listAssistDevices,
   listAssistPipelines,
   setAssistPipelinePreferred,
   updateAssistPipeline,
@@ -24,8 +26,10 @@ import { ExposeEntitySettings } from "../../../data/expose";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 
+@customElement("assist-pref")
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -34,11 +38,13 @@ export class AssistPref extends LitElement {
     ExposeEntitySettings
   >;
 
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
   @state() private _pipelines: AssistPipeline[] = [];
 
   @state() private _preferred: string | null = null;
 
-  @property() public cloudStatus?: CloudStatus;
+  @state() private _devices: AssistDevice[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -46,6 +52,9 @@ export class AssistPref extends LitElement {
     listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
+    });
+    listAssistDevices(this.hass).then((devices) => {
+      this._devices = devices;
     });
   }
 
@@ -68,14 +77,15 @@ export class AssistPref extends LitElement {
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />Assist
         </h1>
         <div class="header-actions">
           <a
-            href="https://www.home-assistant.io/docs/assist/"
+            href=${documentationUrl(this.hass, "/docs/assist/")}
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
             class="icon-link"
           >
             <ha-icon-button
@@ -130,6 +140,18 @@ export class AssistPref extends LitElement {
               )}
             </ha-button>
           </a>
+          ${this._devices?.length
+            ? html`
+                <a href="/config/voice-assistants/assist/devices">
+                  <ha-button>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
+                      { number: this._devices.length }
+                    )}
+                  </ha-button>
+                </a>
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -256,5 +278,3 @@ declare global {
     "assist-pref": AssistPref;
   }
 }
-
-customElements.define("assist-pref", AssistPref);

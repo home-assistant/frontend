@@ -61,7 +61,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property() public showName?: boolean;
+  @property({ type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 
@@ -112,9 +112,9 @@ export class HaStateLabelBadge extends LitElement {
     const image = this.icon
       ? ""
       : this.image
-      ? this.image
-      : entityState.attributes.entity_picture_local ||
-        entityState.attributes.entity_picture;
+        ? this.image
+        : entityState.attributes.entity_picture_local ||
+          entityState.attributes.entity_picture;
     const value =
       !image && !showIcon
         ? this._computeValue(domain, entityState, entry)
@@ -140,7 +140,8 @@ export class HaStateLabelBadge extends LitElement {
         ${!image && showIcon
           ? html`<ha-state-icon
               .icon=${this.icon}
-              .state=${entityState}
+              .stateObj=${entityState}
+              .hass=${this.hass}
             ></ha-state-icon>`
           : ""}
         ${value && !image && !showIcon
@@ -173,7 +174,6 @@ export class HaStateLabelBadge extends LitElement {
       case "scene":
       case "sun":
       case "timer":
-      case "updater":
         return null;
       // @ts-expect-error we don't break and go to default
       case "sensor":
@@ -186,12 +186,12 @@ export class HaStateLabelBadge extends LitElement {
           entityState.state === UNAVAILABLE
           ? "—"
           : isNumericState(entityState)
-          ? formatNumber(
-              entityState.state,
-              this.hass!.locale,
-              getNumberFormatOptions(entityState, entry)
-            )
-          : this.hass!.formatEntityState(entityState);
+            ? formatNumber(
+                entityState.state,
+                this.hass!.locale,
+                getNumberFormatOptions(entityState, entry)
+              )
+            : this.hass!.formatEntityState(entityState);
     }
   }
 
@@ -207,7 +207,6 @@ export class HaStateLabelBadge extends LitElement {
       case "alarm_control_panel":
       case "binary_sensor":
       case "device_tracker":
-      case "updater":
       case "person":
       case "scene":
       case "sun":
@@ -284,8 +283,7 @@ export class HaStateLabelBadge extends LitElement {
         --ha-label-badge-label-text-transform: none;
       }
 
-      ha-label-badge.binary_sensor,
-      ha-label-badge.updater {
+      ha-label-badge.binary_sensor {
         --ha-label-badge-color: var(--label-badge-blue);
       }
 

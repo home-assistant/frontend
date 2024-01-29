@@ -18,7 +18,7 @@ import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 class HaConfigRepairs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false })
   public repairsIssues?: RepairsIssue[];
@@ -60,6 +60,7 @@ class HaConfigRepairs extends LitElement {
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 .title=${domainToName(this.hass.localize, issue.domain)}
+                crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 slot="graphic"
               />

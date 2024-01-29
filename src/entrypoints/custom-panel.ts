@@ -1,9 +1,7 @@
 // Compat needs to be first import
 import "../resources/compatibility";
-import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import "../resources/safari-14-attachshadow-patch";
 
-import { PolymerElement } from "@polymer/polymer";
 import { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
@@ -16,7 +14,9 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 
-setCancelSyntheticClickEvents(false);
+import("@polymer/polymer/lib/utils/settings").then(
+  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
+);
 
 declare global {
   interface Window {
@@ -35,7 +35,7 @@ window.loadES5Adapter = () => {
   return es5Loaded;
 };
 
-let panelEl: HTMLElement | PolymerElement | undefined;
+let panelEl: HTMLElement | undefined;
 
 function setProperties(properties) {
   if (!panelEl) {

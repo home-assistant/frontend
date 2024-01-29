@@ -5,6 +5,10 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  localizeWeekdays,
+  localizeMonths,
+} from "../common/datetime/localize_date";
 
 // Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
@@ -30,6 +34,10 @@ const Component = Vue.extend({
     twentyfourHours: {
       type: Boolean,
       default: true,
+    },
+    openingDirection: {
+      type: String,
+      default: "right",
     },
     disabled: {
       type: Boolean,
@@ -59,6 +67,10 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
+    language: {
+      type: String,
+      default: "en",
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -66,13 +78,15 @@ const Component = Vue.extend({
       props: {
         "time-picker": this.timePicker,
         "auto-apply": this.autoApply,
-        opens: "right",
+        opens: this.openingDirection,
         "show-dropdowns": false,
         "time-picker24-hour": this.twentyfourHours,
         disabled: this.disabled,
         ranges: this.ranges ? {} : false,
         "locale-data": {
           firstDay: this.firstDay,
+          daysOfWeek: localizeWeekdays(this.language, true),
+          monthNames: localizeMonths(this.language, false),
         },
       },
       model: {
@@ -126,9 +140,9 @@ class DateRangePickerElement extends WrappedElement {
           ${dateRangePickerStyles}
           .calendars {
             display: flex;
+            flex-wrap: nowrap !important;
           }
           .daterangepicker {
-            left: 0px !important;
             top: auto;
             box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
@@ -141,6 +155,8 @@ class DateRangePickerElement extends WrappedElement {
             );
             color: var(--primary-text-color);
             min-width: initial !important;
+            max-height: var(--date-range-picker-max-height);
+            overflow-y: auto;
           }
           .daterangepicker:before {
             display: none;
@@ -158,7 +174,7 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--secondary-text-color);
             border-radius: 0;
             outline: none;
-            width: 32px;
+            min-width: 32px;
             height: 32px;
           }
           .daterangepicker td.off,
@@ -234,6 +250,9 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker .drp-calendar.left {
             padding: 8px;
+            width: unset;
+            max-width: unset;
+            min-width: 270px;
           }
           .daterangepicker.show-calendar .ranges {
             margin-top: 0;
@@ -251,6 +270,10 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker.ltr {
             direction: ltr;
             text-align: left;
+          }
+          .vue-daterange-picker{
+            min-width: unset !important;
+            display: block !important;
           }
         `;
     const shadowRoot = this.shadowRoot!;

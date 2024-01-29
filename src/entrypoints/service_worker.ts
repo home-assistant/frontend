@@ -2,8 +2,8 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
-import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { cacheNames, RouteHandler } from "workbox-core";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
@@ -15,11 +15,8 @@ import {
 
 const noFallBackRegEx =
   /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
-// Clean up caches from older workboxes and old service workers.
-// Will help with cleaning up Workbox v4 stuff
-cleanupOutdatedCaches();
 
-function initRouting() {
+const initRouting = () => {
   precacheAndRoute(
     // @ts-ignore
     WB_MANIFEST,
@@ -33,6 +30,27 @@ function initRouting() {
   registerRoute(
     /\/(static|frontend_latest|frontend_es5)\/.+/,
     new CacheFirst({ matchOptions: { ignoreSearch: true } })
+  );
+
+  // Cache any brand images used for 30 days
+  // Use revalidation so cache is always available during an extended outage
+  registerRoute(
+    ({ url, request }) =>
+      url.origin === "https://brands.home-assistant.io" &&
+      request.destination === "image",
+    new StaleWhileRevalidate({
+      cacheName: "brands",
+      // CORS must be forced to work for CSS images
+      fetchOptions: { mode: "cors", credentials: "omit" },
+      plugins: [
+        // Add 404 so we quicly respond to domains with missing images
+        new CacheableResponsePlugin({ statuses: [0, 200, 404] }),
+        new ExpirationPlugin({
+          maxAgeSeconds: 60 * 60 * 24 * 30,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
   );
 
   // Get api from network.
@@ -59,18 +77,16 @@ function initRouting() {
     new StaleWhileRevalidate({
       cacheName: "file-cache",
       plugins: [
-        new CacheableResponsePlugin({
-          statuses: [0, 200],
-        }),
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24,
+          purgeOnQuotaError: true,
         }),
       ],
     })
   );
-}
+};
 
-function initPushNotifications() {
+const initPushNotifications = () => {
   // HTML5 Push Notifications
   function firePushCallback(payload, jwt) {
     // Don't send the JWT in the payload.data
@@ -176,7 +192,20 @@ function initPushNotifications() {
   self.addEventListener("notificationclose", (event) => {
     notificationEventCallback("closed", event);
   });
-}
+};
+
+const catchHandler: RouteHandler = async (options) => {
+  const dest = (options.request as Request).destination;
+  const url = (options.request as Request).url;
+
+  if (dest !== "document" || noFallBackRegEx.test(url)) {
+    return Response.error();
+  }
+  // eslint-disable-next-line no-console
+  console.log("Using fallback for:", url);
+
+  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
+};
 
 self.addEventListener("install", (event) => {
   // Delete all runtime caching, so that index.html has to be refetched.
@@ -206,19 +235,7 @@ self.addEventListener("message", (message) => {
   }
 });
 
-const catchHandler: RouteHandler = async (options) => {
-  const dest = (options.request as Request).destination;
-  const url = (options.request as Request).url;
-
-  if (dest !== "document" || noFallBackRegEx.test(url)) {
-    return Response.error();
-  }
-  // eslint-disable-next-line no-console
-  console.log("Using fallback for:", url);
-
-  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
-};
-
+cleanupOutdatedCaches();
 initRouting();
 setCatchHandler(catchHandler);
 initPushNotifications();

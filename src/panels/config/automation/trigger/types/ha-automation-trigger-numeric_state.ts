@@ -9,6 +9,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
@@ -25,15 +26,21 @@ export class HaNumericStateTrigger extends LitElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
+      entityId: string | string[],
       inputAboveIsEntity?: boolean,
       inputBelowIsEntity?: boolean
     ) =>
       [
-        { name: "entity_id", required: true, selector: { entity: {} } },
+        {
+          name: "entity_id",
+          required: true,
+          selector: { entity: { multiple: true } },
+        },
         {
           name: "attribute",
           selector: {
             attribute: {
+              entity_id: entityId ? entityId[0] : undefined,
               hide_attributes: [
                 "access_token",
                 "auto_update",
@@ -124,9 +131,6 @@ export class HaNumericStateTrigger extends LitElement {
                 "xy_color",
               ],
             },
-          },
-          context: {
-            filter_entity: "entity_id",
           },
         },
         {
@@ -235,7 +239,7 @@ export class HaNumericStateTrigger extends LitElement {
 
   public static get defaultConfig() {
     return {
-      entity_id: "",
+      entity_id: [],
     };
   }
 
@@ -257,6 +261,7 @@ export class HaNumericStateTrigger extends LitElement {
 
     const schema = this._schema(
       this.hass.localize,
+      this.trigger.entity_id,
       inputAboveIsEntity,
       inputBelowIsEntity
     );
@@ -265,6 +270,7 @@ export class HaNumericStateTrigger extends LitElement {
       mode_above: inputAboveIsEntity ? "input" : "value",
       mode_below: inputBelowIsEntity ? "input" : "value",
       ...this.trigger,
+      entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
 

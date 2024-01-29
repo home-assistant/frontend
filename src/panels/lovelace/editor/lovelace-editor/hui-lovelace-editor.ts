@@ -1,8 +1,8 @@
-import "../../../../components/ha-textfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import "../../../../components/ha-textfield";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { HomeAssistant } from "../../../../types";
 import { EditorTarget } from "../types";
 
@@ -18,7 +18,7 @@ declare global {
 export class HuiLovelaceEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config?: LovelaceConfig;
+  @property({ attribute: false }) public config?: LovelaceConfig;
 
   get _title(): string {
     if (!this.config) {

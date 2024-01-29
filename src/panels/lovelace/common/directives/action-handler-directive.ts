@@ -13,13 +13,8 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   ActionHandlerDetail,
   ActionHandlerOptions,
-} from "../../../../data/lovelace";
-
-const isTouch =
-  "ontouchstart" in window ||
-  navigator.maxTouchPoints > 0 ||
-  // @ts-ignore
-  navigator.msMaxTouchPoints > 0;
+} from "../../../../data/lovelace/action_handler";
+import { isTouch } from "../../../../util/is_touch";
 
 interface ActionHandlerType extends HTMLElement {
   holdTime: number;

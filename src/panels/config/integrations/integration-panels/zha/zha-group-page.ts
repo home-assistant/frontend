@@ -1,27 +1,29 @@
 import "@material/mwc-button";
 import { mdiDelete } from "@mdi/js";
+import "@polymer/paper-item/paper-item";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon-button";
 import {
+  ZHADeviceEndpoint,
+  ZHAGroup,
   addMembersToGroup,
   fetchGroup,
   fetchGroupableDevices,
   removeGroups,
   removeMembersFromGroup,
-  ZHADeviceEndpoint,
-  ZHAGroup,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
@@ -33,15 +35,15 @@ import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-tabl
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public group?: ZHAGroup;
 
   @property({ type: Number }) public groupId!: number;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
@@ -169,12 +171,14 @@ export class ZHAGroupPage extends LitElement {
                     @click=${this._removeMembersFromGroup}
                     class="button"
                   >
-                    <ha-circular-progress
-                      ?active=${this._processingRemove}
-                      alt=${this.hass.localize(
-                        "ui.panel.config.zha.groups.removing_members"
-                      )}
-                    ></ha-circular-progress>
+                    ${this._processingRemove
+                      ? html`<ha-circular-progress
+                          indeterminate
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.zha.groups.removing_members"
+                          )}
+                        ></ha-circular-progress>`
+                      : nothing}
                     ${this.hass!.localize(
                       "ui.panel.config.zha.groups.remove_members"
                     )}</mwc-button
@@ -208,7 +212,7 @@ export class ZHAGroupPage extends LitElement {
                 ? html`<ha-circular-progress
                     active
                     size="small"
-                    title="Saving"
+                    aria-label="Saving"
                   ></ha-circular-progress>`
                 : ""}
               ${this.hass!.localize(
@@ -320,5 +324,11 @@ export class ZHAGroupPage extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-group-page": ZHAGroupPage;
   }
 }

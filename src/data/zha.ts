@@ -383,11 +383,13 @@ export const removeMembersFromGroup = (
 export const addGroup = (
   hass: HomeAssistant,
   groupName: string,
+  groupId?: number,
   membersToAdd?: ZHAGroupMember[]
 ): Promise<ZHAGroup> =>
   hass.callWS({
     type: "zha/group/add",
     group_name: groupName,
+    group_id: groupId,
     members: membersToAdd,
   });
 

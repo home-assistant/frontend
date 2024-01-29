@@ -15,7 +15,7 @@ class HaEntityMarker extends LitElement {
   protected render() {
     return html`
       <div
-        class="marker"
+        class="marker ${this.entityPicture ? "picture" : ""}"
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
       >
@@ -45,7 +45,6 @@ class HaEntityMarker extends LitElement {
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
-        overflow: hidden;
         width: 48px;
         height: 48px;
         font-size: var(--ha-marker-font-size, 1.5em);
@@ -53,6 +52,9 @@ class HaEntityMarker extends LitElement {
         border: 1px solid var(--ha-marker-color, var(--primary-color));
         color: var(--primary-text-color);
         background-color: var(--card-background-color);
+      }
+      .marker.picture {
+        overflow: hidden;
       }
       .entity-picture {
         background-size: cover;

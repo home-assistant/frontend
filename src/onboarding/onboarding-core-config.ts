@@ -9,9 +9,11 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
+import "../components/ha-circular-progress";
 import "../components/ha-country-picker";
 import { ConfigUpdateValues, saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
@@ -24,7 +26,7 @@ import "./onboarding-location";
 class OnboardingCoreConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
 
   @state() private _working = false;
 
@@ -32,8 +34,7 @@ class OnboardingCoreConfig extends LitElement {
 
   private _elevation = "0";
 
-  private _timeZone: ConfigUpdateValues["time_zone"] =
-    Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
+  private _timeZone: ConfigUpdateValues["time_zone"] = LOCAL_TIME_ZONE;
 
   private _language: ConfigUpdateValues["language"] = getLocalLanguage();
 
@@ -57,7 +58,7 @@ class OnboardingCoreConfig extends LitElement {
     }
     if (this._skipCore) {
       return html`<div class="row center">
-        <ha-circular-progress active></ha-circular-progress>
+        <ha-circular-progress indeterminate></ha-circular-progress>
       </div>`;
     }
     return html`

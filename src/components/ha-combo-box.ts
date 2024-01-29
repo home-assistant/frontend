@@ -95,14 +95,13 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
-  @property() public renderer?: ComboBoxLitRenderer<any>;
+  @property({ attribute: false }) public renderer?: ComboBoxLitRenderer<any>;
 
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "opened" })
-  public opened?: boolean;
+  @property({ type: Boolean, reflect: true }) public opened = false;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
@@ -145,6 +144,7 @@ export class HaComboBox extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      <!-- @ts-ignore Tag definition is not included in theme folder -->
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
@@ -180,7 +180,7 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          helper=${ifDefined(this.helper)}
+          .helper=${this.helper}
           helperPersistent
         >
           <slot name="icon" slot="leadingIcon"></slot>
@@ -244,7 +244,6 @@ export class HaComboBox extends LitElement {
       );
 
       if (overlay) {
-        overlay.setAttribute("required-vertical-space", "0");
         this._removeInert(overlay);
       }
       this._observeBody();
@@ -331,7 +330,7 @@ export class HaComboBox extends LitElement {
       }
       vaadin-combo-box-light {
         position: relative;
-        --vaadin-combo-box-overlay-max-height: calc(45vh);
+        --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
       }
       ha-textfield {
         width: 100%;

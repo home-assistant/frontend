@@ -99,8 +99,10 @@ export class DialogEnterCode
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
+            autoValidate
+            validateOnInitialRender
             pattern=${ifDefined(this._dialogParams.codePattern)}
-            input-mode="text"
+            inputmode="text"
           ></ha-textfield>
           <ha-button slot="secondaryAction" dialogAction="cancel">
             ${this._dialogParams.cancelText ??
@@ -130,43 +132,43 @@ export class DialogEnterCode
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
-            input-mode="numeric"
+            inputmode="numeric"
           ></ha-textfield>
           <div class="keypad">
             ${BUTTONS.map((value) =>
               value === ""
                 ? html`<span></span>`
                 : value === "clear"
-                ? html`
-                    <ha-control-button
-                      @click=${this._clear}
-                      class="clear"
-                      .disabled=${!this._showClearButton}
-                      .label=${this.hass!.localize("ui.common.clear")}
-                    >
-                      <ha-svg-icon path=${mdiClose}></ha-svg-icon>
-                    </ha-control-button>
-                  `
-                : value === "submit"
-                ? html`
-                    <ha-control-button
-                      @click=${this._submit}
-                      class="submit"
-                      .label=${this._dialogParams!.submitText ??
-                      this.hass!.localize("ui.common.submit")}
-                    >
-                      <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-                    </ha-control-button>
-                  `
-                : html`
-                    <ha-control-button
-                      .value=${value}
-                      @click=${this._numberClick}
-                      .label=${value}
-                    >
-                      ${value}
-                    </ha-control-button>
-                  `
+                  ? html`
+                      <ha-control-button
+                        @click=${this._clear}
+                        class="clear"
+                        .disabled=${!this._showClearButton}
+                        .label=${this.hass!.localize("ui.common.clear")}
+                      >
+                        <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                      </ha-control-button>
+                    `
+                  : value === "submit"
+                    ? html`
+                        <ha-control-button
+                          @click=${this._submit}
+                          class="submit"
+                          .label=${this._dialogParams!.submitText ??
+                          this.hass!.localize("ui.common.submit")}
+                        >
+                          <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
+                        </ha-control-button>
+                      `
+                    : html`
+                        <ha-control-button
+                          .value=${value}
+                          @click=${this._numberClick}
+                          .label=${value}
+                        >
+                          ${value}
+                        </ha-control-button>
+                      `
             )}
           </div>
         </div>

@@ -1,23 +1,24 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import Fuse from "fuse.js";
+import Fuse, { IFuseOptions } from "fuse.js";
 import { HassConfig } from "home-assistant-js-websocket";
 import {
-  css,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
-  protocolIntegrationPicked,
   PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -34,10 +35,10 @@ import {
 import {
   Brand,
   Brands,
-  findIntegration,
-  getIntegrationDescriptions,
   Integration,
   Integrations,
+  findIntegration,
+  getIntegrationDescriptions,
 } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -139,12 +140,13 @@ class AddIntegrationDialog extends LitElement {
     }
     if (this._initialFilter !== undefined && this._filter === "") {
       this._initialFilter = undefined;
-      this._filter = "";
+      this._filter = undefined;
       this._width = undefined;
       this._height = undefined;
     } else if (
       this.hasUpdated &&
       changedProps.has("_filter") &&
+      !changedProps.has("_open") &&
       (!this._width || !this._height)
     ) {
       // Store the width and height so that when we search, box doesn't jump
@@ -239,7 +241,7 @@ class AddIntegrationDialog extends LitElement {
       });
 
       if (filter) {
-        const options: Fuse.IFuseOptions<IntegrationListItem> = {
+        const options: IFuseOptions<IntegrationListItem> = {
           keys: [
             { name: "name", weight: 5 },
             { name: "domain", weight: 5 },
@@ -248,7 +250,7 @@ class AddIntegrationDialog extends LitElement {
             "iot_standards",
           ],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
@@ -338,7 +340,9 @@ class AddIntegrationDialog extends LitElement {
       !("integrations" in integration) &&
       !this._flowsInProgress?.length
     ) {
-      return "What type of device is it?";
+      return this.hass.localize(
+        "ui.panel.config.integrations.what_device_type"
+      );
     }
     if (
       integration &&
@@ -346,9 +350,11 @@ class AddIntegrationDialog extends LitElement {
       !("integrations" in integration) &&
       this._flowsInProgress?.length
     ) {
-      return "Want to add these discovered devices?";
+      return this.hass.localize(
+        "ui.panel.config.integrations.confirm_add_discovered"
+      );
     }
-    return "What do you want to add?";
+    return this.hass.localize("ui.panel.config.integrations.what_to_add");
   }
 
   private _renderIntegration(
@@ -423,8 +429,7 @@ class AddIntegrationDialog extends LitElement {
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
     return html`<search-input
         .hass=${this.hass}
-        autofocus
-        dialogInitialFocus
+        dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
         .label=${this.hass.localize(
@@ -433,7 +438,9 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<mwc-list>
+        ? html`<mwc-list
+            dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
+          >
             <lit-virtualizer
               scroller
               class="ha-scrollbar"
@@ -448,7 +455,9 @@ class AddIntegrationDialog extends LitElement {
             >
             </lit-virtualizer>
           </mwc-list>`
-        : html`<ha-circular-progress active></ha-circular-progress>`} `;
+        : html`<div class="flex center">
+            <ha-circular-progress indeterminate></ha-circular-progress>
+          </div>`} `;
   }
 
   private _keyFunction = (integration: IntegrationListItem) =>
@@ -569,11 +578,20 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["cloud", "google_assistant", "alexa"].includes(integration.domain) &&
+      integration.domain === "cloud" &&
       isComponentLoaded(this.hass, "cloud")
     ) {
       this.closeDialog();
       navigate("/config/cloud");
+      return;
+    }
+
+    if (
+      ["google_assistant", "alexa"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      this.closeDialog();
+      navigate("/config/voice-assistants/assistants");
       return;
     }
 
@@ -672,11 +690,16 @@ class AddIntegrationDialog extends LitElement {
       p > a {
         color: var(--primary-color);
       }
-      ha-circular-progress {
-        width: 100%;
+      .flex.center {
         display: flex;
         justify-content: center;
+        align-items: center;
+      }
+      ha-circular-progress {
         margin: 24px 0;
+      }
+      mwc-list {
+        position: relative;
       }
       lit-virtualizer {
         contain: size layout !important;
@@ -697,6 +720,8 @@ class AddIntegrationDialog extends LitElement {
         margin: 0;
         margin-bottom: 8px;
         margin-left: 48px;
+        margin-inline-start: 48px;
+        margin-inline-end: initial;
         padding: 24px 24px 0 24px;
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
         font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
