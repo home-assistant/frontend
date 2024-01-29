@@ -9,8 +9,8 @@ export const stateIcon = (
   state?: string
 ): string | undefined => {
   const domain = computeStateDomain(stateObj);
-  const compareState = state ?? stateObj?.state;
-  const dc = stateObj?.attributes.device_class;
+  const compareState = state ?? stateObj.state;
+  const dc = stateObj.attributes.device_class;
   switch (domain) {
     case "automation":
       return compareState === "unavailable"
@@ -47,7 +47,7 @@ export const stateIcon = (
         : "mdi:close-circle-outline";
 
     case "input_datetime":
-      if (!stateObj?.attributes.has_date) {
+      if (!stateObj.attributes.has_date) {
         return "mdi:clock";
       }
       if (!stateObj.attributes.has_time) {
