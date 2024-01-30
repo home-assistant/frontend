@@ -84,6 +84,11 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
       return;
     }
 
+    if (this.device.via_device_id !== null) {
+      // only show device details for top level nodes (so not bridged)
+      return;
+    }
+
     const configEntries = await getConfigEntries(this.hass, {
       domain: "matter",
     });
