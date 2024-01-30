@@ -31,23 +31,22 @@ export const getMatterDeviceActions = async (
 
   const nodeDiagnostics = await getMatterNodeDiagnostics(hass, device.id);
 
-  if (!nodeDiagnostics.available) {
-    // actions can only be performed of the device is alive
-    return [];
-  }
-
   const actions: DeviceAction[] = [];
 
-  actions.push({
-    label: hass.localize(
-      "ui.panel.config.matter.device_actions.reinterview_device"
-    ),
-    icon: mdiChatQuestion,
-    action: () =>
-      showMatterReinterviewNodeDialog(el, {
-        device_id: device.id,
-      }),
-  });
+  if (nodeDiagnostics.available) {
+    // actions that can only be performed if the device is alive
+    actions.push({
+      label: hass.localize(
+        "ui.panel.config.matter.device_actions.reinterview_device"
+      ),
+      icon: mdiChatQuestion,
+      action: () =>
+        showMatterReinterviewNodeDialog(el, {
+          device_id: device.id,
+        }),
+    });
+  }
+
   actions.push({
     label: hass.localize("ui.panel.config.matter.device_actions.ping_device"),
     icon: mdiChatQuestion,
