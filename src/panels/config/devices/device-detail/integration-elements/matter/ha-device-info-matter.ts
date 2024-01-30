@@ -26,6 +26,8 @@ import {
   showConfirmationDialog,
 } from "../../../../../../dialogs/generic/show-dialog-box";
 
+const NABUCASA_FABRIC = 4939;
+
 @customElement("ha-device-info-matter")
 export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -155,13 +157,16 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           ${this._nodeDiagnostics.active_fabrics.map(
             (fabric) =>
               html`<ha-list-item
-                @click=${this._removeFabric}
-                .fabric=${fabric}
-                hasMeta
+                .hasMeta=${fabric.vendor_id !== NABUCASA_FABRIC}
                 >${fabric.vendor_name ||
                 fabric.fabric_label ||
                 fabric.vendor_id}
-                <ha-icon slot="meta" icon="mdi:close"></ha-icon>
+                <ha-icon
+                  @click=${this._removeFabric}
+                  slot="meta"
+                  .fabric=${fabric}
+                  icon="mdi:close"
+                ></ha-icon>
               </ha-list-item>`
           )}
         </mwc-list>
