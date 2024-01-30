@@ -394,12 +394,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           (e) => e.entity === entityId
         );
         const name =
-          entityConfig?.name ?? computeStateName(this.hass.states[entityId]);
+          entityConfig?.name ?? (entityId in this.hass.states ? computeStateName(this.hass.states[entityId]) : entityId);
 
         paths.push({
           points,
           name,
-          fullDatetime: (config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144,
+          fullDatetime: (config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW) > 144,
           color: this._getColor(entityId),
           gradualOpacity: 0.8,
         });
