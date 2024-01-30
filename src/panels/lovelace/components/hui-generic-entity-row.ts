@@ -28,7 +28,7 @@ import { createEntityNotFoundWarning } from "./hui-warning";
 export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public config?: EntitiesCardEntityConfig;
+  @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
   @property() public secondaryText?: string;
 
@@ -205,6 +205,8 @@ export class HuiGenericEntityRow extends LitElement {
       .info {
         margin-left: 16px;
         margin-right: 8px;
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
         flex: 1 1 30%;
       }
       .info,
@@ -215,10 +217,14 @@ export class HuiGenericEntityRow extends LitElement {
       }
       .flex ::slotted(*) {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         min-width: 0;
       }
       .flex ::slotted([slot="secondary"]) {
         margin-left: 0;
+        margin-inline-start: 0;
+        margin-inline-end: initial;
       }
       .secondary,
       ha-relative-time {

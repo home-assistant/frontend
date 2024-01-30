@@ -76,7 +76,8 @@ declare global {
     };
     "ui-mode-not-available": Error;
     duplicate: undefined;
-    "re-order": undefined;
+    "move-down": undefined;
+    "move-up": undefined;
   }
 }
 
@@ -87,7 +88,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public entityId: string | null = null;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -780,6 +781,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-entity-toggle {
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         ha-fab {
           position: relative;

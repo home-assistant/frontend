@@ -70,9 +70,9 @@ class HaSceneDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public scenes!: SceneEntity[];
+  @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
 
@@ -104,7 +104,10 @@ class HaSceneDashboard extends LitElement {
           ),
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon .state=${scene}></ha-state-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${scene}
+            ></ha-state-icon>
           `,
         },
         name: {

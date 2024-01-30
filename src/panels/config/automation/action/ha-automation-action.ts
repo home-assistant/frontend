@@ -1,17 +1,26 @@
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -27,11 +36,11 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public nested = false;
+  @property({ type: Array }) public path?: ItemPath;
 
-  @property() public actions!: Action[];
+  @property({ attribute: false }) public actions!: Action[];
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @state() private _showReorder: boolean = false;
 
   @storage({
     key: "automationClipboard",
@@ -45,31 +54,33 @@ export default class HaAutomationAction extends LitElement {
 
   private _actionKeys = new WeakMap<Action, string>();
 
+  private _unsubMql?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
+  }
+
+  private get nested() {
+    return this.path !== undefined;
+  }
+
   protected render() {
     return html`
-      ${this.reOrderMode && !this.nested
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description_actions"
-              )}
-              <ha-button slot="action" @click=${this._exitReOrderMode}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.exit"
-                )}
-              </ha-button>
-            </ha-alert>
-          `
-        : null}
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
+        .disabled=${!this._showReorder}
         @item-moved=${this._actionMoved}
+        group="actions"
+        .path=${this.path}
       >
         <div class="actions">
           ${repeat(
@@ -77,47 +88,30 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
+                .first=${idx === 0}
+                .last=${idx === this.actions.length - 1}
                 .action=${action}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
-                .hideMenu=${this.reOrderMode}
-                .reOrderMode=${this.reOrderMode}
                 @duplicate=${this._duplicateAction}
+                @move-down=${this._moveDown}
+                @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
-                @re-order=${this._enterReOrderMode}
                 .hass=${this.hass}
               >
-                ${this.reOrderMode
+                ${this._showReorder
                   ? html`
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_up"
-                        )}
-                        .path=${mdiArrowUp}
-                        @click=${this._moveUp}
-                        .disabled=${idx === 0}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_down"
-                        )}
-                        .path=${mdiArrowDown}
-                        @click=${this._moveDown}
-                        .disabled=${idx === this.actions.length - 1}
-                      ></ha-icon-button>
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
-                  : ""}
+                  : nothing}
               </ha-automation-action-row>
             `
           )}
+          </div>
         </div>
       </ha-sortable>
       <div class="buttons">
@@ -199,16 +193,6 @@ export default class HaAutomationAction extends LitElement {
     fireEvent(this, "value-changed", { value: actions });
   };
 
-  private async _enterReOrderMode(ev: CustomEvent) {
-    if (this.nested) return;
-    ev.stopPropagation();
-    this.reOrderMode = true;
-  }
-
-  private async _exitReOrderMode() {
-    this.reOrderMode = false;
-  }
-
   private _getKey(action: Action) {
     if (!this._actionKeys.has(action)) {
       this._actionKeys.set(action, Math.random().toString());
@@ -229,17 +213,28 @@ export default class HaAutomationAction extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(index: number, newIndex: number) {
-    const actions = this.actions.concat();
-    const action = actions.splice(index, 1)[0];
-    actions.splice(newIndex, 0, action);
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    oldPath?: ItemPath,
+    newPath?: ItemPath
+  ) {
+    const actions = nestedArrayMove(
+      this.actions,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+
     fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _actionChanged(ev: CustomEvent) {
@@ -286,7 +281,7 @@ export default class HaAutomationAction extends LitElement {
         overflow: hidden;
       }
       .handle {
-        padding: 12px;
+        padding: 12px 4px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }

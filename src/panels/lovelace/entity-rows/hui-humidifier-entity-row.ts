@@ -6,7 +6,7 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-humidifier-state";
 import { HumidifierEntity } from "../../../data/humidifier";
@@ -20,7 +20,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {

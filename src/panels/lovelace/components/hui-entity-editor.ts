@@ -19,7 +19,8 @@ export class HuiEntityEditor extends LitElement {
 
   @property({ attribute: false }) public entities?: EntityConfig[];
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property() public label?: string;
 

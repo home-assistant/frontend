@@ -20,6 +20,7 @@ import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+import { isTouch } from "../../util/is_touch";
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -58,9 +59,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public interactiveZones = false;
 
-  @property({ type: Boolean }) public fitZones?: boolean;
+  @property({ type: Boolean }) public fitZones = false;
 
-  @property({ type: Boolean }) public darkMode?: boolean;
+  @property({ type: Boolean }) public darkMode = false;
 
   @property({ type: Number }) public zoom = 14;
 
@@ -282,7 +283,7 @@ export class HaMap extends ReactiveElement {
         this._mapPaths.push(
           Leaflet!
             .circleMarker(path.points[pointIndex].point, {
-              radius: 3,
+              radius: isTouch ? 8 : 3,
               color: path.color || darkPrimaryColor,
               opacity,
               fillOpacity: opacity,
@@ -312,7 +313,7 @@ export class HaMap extends ReactiveElement {
         this._mapPaths.push(
           Leaflet!
             .circleMarker(path.points[pointIndex].point, {
-              radius: 3,
+              radius: isTouch ? 8 : 3,
               color: path.color || darkPrimaryColor,
               opacity,
               fillOpacity: opacity,

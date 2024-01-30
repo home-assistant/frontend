@@ -68,7 +68,7 @@ type ScriptItem = ScriptEntity & {
 class HaScriptPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scripts!: ScriptEntity[];
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -119,7 +119,8 @@ class HaScriptPicker extends LitElement {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .state=${script}
+              .hass=${this.hass}
+              .stateObj=${script}
               style=${styleMap({
                 color:
                   script.state === UNAVAILABLE ? "var(--error-color)" : "unset",

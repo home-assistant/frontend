@@ -48,7 +48,7 @@ const LOCATION_MARKER_ID = "location";
 class OnboardingLocation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
 
   @state() private _working = false;
 
@@ -295,8 +295,10 @@ class OnboardingLocation extends LitElement {
     if (ev.detail.id === LOCATION_MARKER_ID) {
       return;
     }
-    this._highlightedMarker = ev.detail.id;
-    const place = this._places!.find((plc) => plc.place_id === ev.detail.id)!;
+    this._highlightedMarker = Number(ev.detail.id);
+    const place = this._places!.find(
+      (plc) => plc.place_id === Number(ev.detail.id)
+    )!;
     this._location = [Number(place.lat), Number(place.lon)];
     this._country = place.address.country_code.toUpperCase();
   }

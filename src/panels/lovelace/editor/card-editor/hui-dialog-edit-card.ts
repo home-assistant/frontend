@@ -152,6 +152,7 @@ export class HuiDialogEditCard
     if (this._cardConfig && this._cardConfig.type) {
       let cardName: string | undefined;
       if (isCustomType(this._cardConfig.type)) {
+        // prettier-ignore
         cardName = getCustomCardEntry(
           stripCustomPrefix(this._cardConfig.type)
         )?.name;
@@ -496,6 +497,8 @@ export class HuiDialogEditCard
         }
         .gui-mode-button {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
         .header {
           display: flex;

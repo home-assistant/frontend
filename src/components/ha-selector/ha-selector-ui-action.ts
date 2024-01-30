@@ -12,7 +12,7 @@ export class HaSelectorUiAction extends LitElement {
 
   @property({ attribute: false }) public selector!: UiActionSelector;
 
-  @property() public value?: ActionConfig;
+  @property({ attribute: false }) public value?: ActionConfig;
 
   @property() public label?: string;
 

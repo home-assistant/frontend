@@ -8,7 +8,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -17,9 +17,7 @@ import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
@@ -27,9 +25,9 @@ import {
   fuzzyFilterSort,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-label";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
+import "../../components/ha-label";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
@@ -56,7 +54,7 @@ interface CommandItem extends QuickBarItem {
 
 interface EntityItem extends QuickBarItem {
   altText: string;
-  icon?: string;
+  icon?: TemplateResult;
 }
 
 const isCommandItem = (item: QuickBarItem): item is CommandItem =>
@@ -296,16 +294,14 @@ export class QuickBar extends LitElement {
         graphic="icon"
       >
         ${item.iconPath
-          ? html`<ha-svg-icon
-              .path=${item.iconPath}
-              class="entity"
-              slot="graphic"
-            ></ha-svg-icon>`
-          : html`<ha-icon
-              .icon=${item.icon}
-              class="entity"
-              slot="graphic"
-            ></ha-icon>`}
+          ? html`
+              <ha-svg-icon
+                .path=${item.iconPath}
+                class="entity"
+                slot="graphic"
+              ></ha-svg-icon>
+            `
+          : html`<span slot="graphic">${item.icon}</span>`}
         <span>${item.primaryText}</span>
         ${item.altText
           ? html`
@@ -476,10 +472,12 @@ export class QuickBar extends LitElement {
         const entityItem = {
           primaryText: computeStateName(entityState),
           altText: entityId,
-          icon: entityState.attributes.icon,
-          iconPath: entityState.attributes.icon
-            ? undefined
-            : domainIcon(computeDomain(entityId), entityState),
+          icon: html`
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${entityState}
+            ></ha-state-icon>
+          `,
           action: () => fireEvent(this, "hass-more-info", { entityId }),
         };
 

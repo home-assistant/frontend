@@ -17,7 +17,7 @@ class StateCardSelect extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <state-badge .stateObj=${this.stateObj}></state-badge>
+      <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
       <ha-select
         .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}

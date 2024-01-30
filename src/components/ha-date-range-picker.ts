@@ -47,11 +47,11 @@ export interface DateRangePickerRanges {
 export class HaDateRangePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public startDate!: Date;
+  @property({ attribute: false }) public startDate!: Date;
 
-  @property() public endDate!: Date;
+  @property({ attribute: false }) public endDate!: Date;
 
-  @property() public ranges?: DateRangePickerRanges | false;
+  @property({ attribute: false }) public ranges?: DateRangePickerRanges | false;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -61,11 +61,11 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) private _hour24format = false;
+  @property({ type: Boolean }) public minimal = false;
 
-  @property({ type: String }) private _rtlDirection = "ltr";
+  @state() private _hour24format = false;
 
-  @property({ type: Boolean }) private minimal = false;
+  @state() private _rtlDirection = "ltr";
 
   @property({ type: Boolean }) public extendedPresets = false;
 

@@ -55,13 +55,13 @@ export class HaStateControlClimateTemperature extends LitElement {
   @property({ attribute: false }) public stateObj!: ClimateEntity;
 
   @property({ attribute: "show-secondary", type: Boolean })
-  public showSecondary?: boolean;
+  public showSecondary = false;
 
   @property({ attribute: "use-current-as-primary", type: Boolean })
-  public showCurrentAsPrimary?: boolean;
+  public showCurrentAsPrimary = false;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
-  public preventInteractionOnScroll?: boolean;
+  public preventInteractionOnScroll = false;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
 
@@ -337,14 +337,14 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _renderSecondary() {
     if (!this.showSecondary) {
-      return html`<p class="label"></p>`;
+      return html`<p class="label secondary"></p>`;
     }
 
     const currentTemperature = this.stateObj.attributes.current_temperature;
 
     if (currentTemperature && !this.showCurrentAsPrimary) {
       return html`
-        <p class="label">
+        <p class="label secondary">
           <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
           ${this._renderCurrent(currentTemperature, "normal")}
         </p>
@@ -353,7 +353,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     if (this._supportsTargetTemperature && this.showCurrentAsPrimary) {
       return html`
-        <p class="label">
+        <p class="label secondary">
           <ha-svg-icon .path=${mdiThermostat}></ha-svg-icon>
           ${this._renderTarget(this._targetTemperature.value!, "normal")}
         </p>
@@ -362,7 +362,7 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     if (this._supportsTargetTemperatureRange && this.showCurrentAsPrimary) {
       return html`
-        <p class="label">
+        <p class="label secondary">
           <ha-svg-icon class="target-icon" .path=${mdiThermostat}></ha-svg-icon>
           <button
             @click=${this._handleSelectTemp}
@@ -387,7 +387,7 @@ export class HaStateControlClimateTemperature extends LitElement {
       `;
     }
 
-    return html`<p class="label"></p>`;
+    return html`<p class="label secondary"></p>`;
   }
 
   private _renderInfo() {
@@ -577,6 +577,9 @@ export class HaStateControlClimateTemperature extends LitElement {
         }
         .container.sm .target-icon {
           display: none;
+        }
+        .secondary {
+          direction: ltr;
         }
         ha-control-circular-slider {
           --control-circular-slider-low-color: var(

@@ -48,9 +48,9 @@ const logProviders: LogProvider[] = [
 export class HaConfigLogs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -239,6 +239,8 @@ export class HaConfigLogs extends LitElement {
         search-input.header {
           --mdc-ripple-color: transparant;
           margin-left: -16px;
+          margin-inline-start: -16px;
+          margin-inline-end: initial;
         }
         .content {
           direction: ltr;

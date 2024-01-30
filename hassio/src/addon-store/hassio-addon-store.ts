@@ -56,7 +56,7 @@ export class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -243,6 +243,8 @@ export class HassioAddonStore extends LitElement {
       }
       .advanced a {
         margin-left: 0.5em;
+        margin-inline-start: 0.5em;
+        margin-inline-end: initial;
         color: var(--primary-color);
       }
     `;

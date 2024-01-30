@@ -18,9 +18,9 @@ declare global {
 
 @customElement("ha-pick-auth-provider")
 export class HaPickAuthProvider extends LitElement {
-  @property() public authProviders: AuthProvider[] = [];
+  @property({ attribute: false }) public authProviders: AuthProvider[] = [];
 
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   protected render() {
     return html`

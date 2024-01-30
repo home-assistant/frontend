@@ -28,7 +28,7 @@ import "./assist-render-pipeline-run";
 export class AssistPipelineRunDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _pipelineRuns: PipelineRun[] = [];
 
@@ -442,6 +442,7 @@ export class AssistPipelineRunDebug extends LitElement {
         align-items: center;
         flex-wrap: wrap;
         margin: 0 16px 16px;
+        direction: var(--direction);
       }
       ha-assist-pipeline-picker {
         display: block;

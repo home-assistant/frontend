@@ -4,8 +4,6 @@ import {
   mdiFan,
   mdiFanOff,
   mdiPower,
-  mdiRotateLeft,
-  mdiRotateRight,
   mdiTuneVariant,
 } from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
@@ -13,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
@@ -187,10 +186,30 @@ class MoreInfoFan extends LitElement {
                 @selected=${this._handlePresetMode}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${this.stateObj.attributes.preset_mode
+                  ? html`<ha-attribute-icon
+                      slot="icon"
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                      attribute="preset_mode"
+                      .attributeValue=${this.stateObj.attributes.preset_mode}
+                    ></ha-attribute-icon>`
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${this.stateObj.attributes.preset_modes?.map(
                   (mode) => html`
-                    <ha-list-item .value=${mode}>
+                    <ha-list-item .value=${mode} graphic="icon">
+                      <ha-attribute-icon
+                        slot="graphic"
+                        .hass=${this.hass}
+                        .stateObj=${this.stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         this.stateObj!,
                         "preset_mode",
@@ -216,12 +235,21 @@ class MoreInfoFan extends LitElement {
                 @selected=${this._handleDirection}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiRotateLeft}></ha-svg-icon>
+                <ha-attribute-icon
+                  slot="icon"
+                  .hass=${this.hass}
+                  .stateObj=${this.stateObj}
+                  attribute="direction"
+                  .attributeValue=${this.stateObj.attributes.direction}
+                ></ha-attribute-icon>
                 <ha-list-item value="forward" graphic="icon">
-                  <ha-svg-icon
+                  <ha-attribute-icon
                     slot="graphic"
-                    .path=${mdiRotateRight}
-                  ></ha-svg-icon>
+                    .hass=${this.hass}
+                    .stateObj=${this.stateObj}
+                    attribute="direction"
+                    attributeValue="forward"
+                  ></ha-attribute-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
                     "direction",
@@ -229,10 +257,13 @@ class MoreInfoFan extends LitElement {
                   )}
                 </ha-list-item>
                 <ha-list-item value="reverse" graphic="icon">
-                  <ha-svg-icon
+                  <ha-attribute-icon
                     slot="graphic"
-                    .path=${mdiRotateLeft}
-                  ></ha-svg-icon>
+                    .hass=${this.hass}
+                    .stateObj=${this.stateObj}
+                    attribute="direction"
+                    attributeValue="reverse"
+                  ></ha-attribute-icon>
                   ${this.hass.formatEntityAttributeValue(
                     this.stateObj,
                     "direction",

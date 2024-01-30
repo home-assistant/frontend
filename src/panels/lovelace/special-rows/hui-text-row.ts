@@ -45,9 +45,11 @@ class HuiTextRow extends LitElement implements LovelaceRow {
       }
       .name {
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
       }
       .text {
-        text-align: right;
+        text-align: var(--float-end);
       }
     `;
   }

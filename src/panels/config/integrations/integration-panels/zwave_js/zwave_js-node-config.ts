@@ -71,9 +71,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId?: string;
 
@@ -477,6 +477,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+          padding-inline-start: initial;
+          padding-inline-end: 40px;
         }
 
         ha-settings-row {
@@ -497,6 +499,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           text-transform: uppercase;
           font-size: 0.8em;
           padding-right: 24px;
+          padding-inline-end: 24px;
+          padding-inline-start: initial;
           line-height: 1.5em;
         }
 

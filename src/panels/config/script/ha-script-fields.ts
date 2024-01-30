@@ -24,7 +24,7 @@ export default class HaScriptFields extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public fields!: Fields;
+  @property({ attribute: false }) public fields!: Fields;
 
   private _focusLastActionOnChange = false;
 

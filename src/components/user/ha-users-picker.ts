@@ -13,7 +13,7 @@ import "./ha-user-picker";
 class HaUsersPickerLight extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ attribute: false }) public value?: string[];
 
   @property({ attribute: "picked-user-label" })
   public pickedUserLabel?: string;

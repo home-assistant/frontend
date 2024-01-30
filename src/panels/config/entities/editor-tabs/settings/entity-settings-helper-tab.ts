@@ -36,7 +36,7 @@ import type { EntityRegistrySettingsEditor } from "../../entity-registry-setting
 export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ExtEntityRegistryEntry;
+  @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
 
   @state() private _error?: string;
 

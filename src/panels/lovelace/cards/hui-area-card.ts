@@ -1,5 +1,7 @@
 import "@material/mwc-ripple";
 import {
+  mdiFan,
+  mdiFanOff,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
@@ -9,36 +11,34 @@ import {
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { STATES_OFF, FIXED_DEVICE_CLASS_ICONS } from "../../../common/const";
+import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { createSearchParam } from "../../../common/url/search-params";
 import {
   formatNumber,
   isNumericState,
 } from "../../../common/number/format_number";
-import { subscribeOne } from "../../../common/util/subscribe-one";
+import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/entity/state-badge";
+import { subscribeOne } from "../../../common/util/subscribe-one";
 import "../../../components/ha-card";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -59,7 +59,6 @@ import "../components/hui-image";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
-import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -79,7 +78,7 @@ export const DEVICE_CLASSES = {
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
-  fan: { on: domainIcon("fan"), off: domainIcon("fan") },
+  fan: { on: mdiFan, off: mdiFanOff },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,
@@ -390,18 +389,21 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
-          sensors.push(
-            html`<div
+          sensors.push(html`
+            <div
               class="sensor"
               .domain=${"sensor"}
               .deviceClass=${deviceClass}
               @click=${this._sensorClicked}
             >
-              ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .deviceClass=${deviceClass}
+              ></ha-domain-icon>
               ${this._average(domain, deviceClass)}
-            </div> `
-          );
+            </div>
+          `);
         }
       });
     });
@@ -441,19 +443,21 @@ export class HuiAreaCard
           <div class="alerts">
             ${ALERT_DOMAINS.map((domain) => {
               if (!(domain in entitiesByDomain)) {
-                return "";
+                return nothing;
               }
               return this._deviceClasses[domain].map((deviceClass) => {
                 const entity = this._isOn(domain, deviceClass);
                 return entity
-                  ? html`<ha-svg-icon
-                      class="alert"
-                      .domain=${"binary_sensor"}
-                      .deviceClass=${deviceClass}
-                      @click=${this._sensorClicked}
-                      .path=${DOMAIN_ICONS[domain][deviceClass] ||
-                      binarySensorIcon(entity.state, entity)}
-                    ></ha-svg-icon>`
+                  ? html`
+                      <ha-state-icon
+                        class="alert"
+                        .hass=${this.hass}
+                        .stateObj=${entity}
+                        @click=${this._sensorClicked}
+                        .deviceClass=${deviceClass}
+                        .domain=${"binary_sensor"}
+                      ></ha-state-icon>
+                    `
                   : nothing;
               });
             })}
@@ -600,6 +604,8 @@ export class HuiAreaCard
         float: left;
         margin-right: 4px;
         cursor: pointer;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
       }
 
       .alerts {
@@ -607,11 +613,20 @@ export class HuiAreaCard
         cursor: pointer;
       }
 
-      .alerts ha-svg-icon {
+      ha-state-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .alerts ha-state-icon {
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         border-radius: 50%;
       }
 
@@ -636,6 +651,8 @@ export class HuiAreaCard
         background-color: var(--area-button-color, #727272b2);
         border-radius: 50%;
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         --mdc-icon-button-size: 44px;
       }
       .on {
