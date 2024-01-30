@@ -4,6 +4,7 @@ import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
 import type { HomeAssistant } from "../../../../../../types";
 import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
+import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getMatterDeviceActions = async (
@@ -44,6 +45,14 @@ export const getMatterDeviceActions = async (
     icon: mdiChatQuestion,
     action: () =>
       showMatterReinterviewNodeDialog(el, {
+        device_id: device.id,
+      }),
+  });
+  actions.push({
+    label: hass.localize("ui.panel.config.matter.device_actions.ping_device"),
+    icon: mdiChatQuestion,
+    action: () =>
+      showMatterPingNodeDialog(el, {
         device_id: device.id,
       }),
   });
