@@ -1204,6 +1204,17 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-info-zwave_js>
       `);
     }
+    if (domains.includes("matter")) {
+      import(
+        "./device-detail/integration-elements/matter/ha-device-info-matter"
+      );
+      deviceInfo.push(html`
+        <ha-device-info-matter
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-matter>
+      `);
+    }
   }
 
   private async _showSettings() {
