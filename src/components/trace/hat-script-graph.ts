@@ -17,10 +17,11 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
+import { ACTION_ICONS } from "../../data/action";
 import { Condition, Trigger } from "../../data/automation";
 import {
   Action,
@@ -45,7 +46,6 @@ import "./hat-graph-branch";
 import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 import "./hat-graph-node";
 import "./hat-graph-spacer";
-import { ACTION_ICONS } from "../../data/action";
 
 export interface NodeInfo {
   path: string;

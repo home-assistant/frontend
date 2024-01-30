@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { stateIcon } from "../common/entity/state_icon";
 import { HomeAssistant } from "../types";
 import {
   EntityRegistryDisplayEntry,
@@ -49,7 +50,7 @@ interface ComponentIcons {
 }
 
 interface ServiceIcons {
-  [domain: string]: Record<string, string>;
+  [service: string]: string;
 }
 
 export type IconCategory = "entity" | "entity_component" | "services";
@@ -127,26 +128,18 @@ export const getServiceIcons = async (
 
 export const entityIcon = async (
   hass: HomeAssistant,
-  state: HassEntity,
-  stateValue?: string
+  stateObj: HassEntity,
+  state?: string
 ) => {
-  const entity = hass.entities?.[state.entity_id] as
+  const entry = hass.entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
-  if (entity?.icon) {
-    return entity.icon;
+  if (entry?.icon) {
+    return entry.icon;
   }
-  const domain = computeStateDomain(state);
-  const deviceClass = state.attributes.device_class;
+  const domain = computeStateDomain(stateObj);
 
-  return getEntityIcon(
-    hass,
-    domain,
-    deviceClass,
-    stateValue ?? state.state,
-    entity?.platform,
-    entity?.translation_key
-  );
+  return getEntityIcon(hass, domain, stateObj, state, entry);
 };
 
 export const entryIcon = async (
@@ -157,39 +150,41 @@ export const entryIcon = async (
     return entry.icon;
   }
   const domain = computeDomain(entry.entity_id);
-  return getEntityIcon(
-    hass,
-    domain,
-    undefined,
-    undefined,
-    entry.platform,
-    entry.translation_key
-  );
+  return getEntityIcon(hass, domain, undefined, undefined, entry);
 };
 
 const getEntityIcon = async (
   hass: HomeAssistant,
   domain: string,
-  deviceClass?: string,
-  value?: string,
-  platform?: string,
-  translation_key?: string
+  stateObj?: HassEntity,
+  stateValue?: string,
+  entry?: EntityRegistryEntry | EntityRegistryDisplayEntry
 ) => {
+  const platform = entry?.platform;
+  const translation_key = entry?.translation_key;
+  const device_class = stateObj?.attributes.device_class;
+  const state = stateValue ?? stateObj?.state;
+
   let icon: string | undefined;
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
       const translations = platformIcons[domain]?.[translation_key];
-      icon = (value && translations?.state?.[value]) || translations?.default;
+      icon = (state && translations?.state?.[state]) || translations?.default;
     }
   }
+
+  if (!icon && stateObj) {
+    icon = stateIcon(stateObj, state);
+  }
+
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(hass, domain);
     if (entityComponentIcons) {
       const translations =
-        (deviceClass && entityComponentIcons[deviceClass]) ||
+        (device_class && entityComponentIcons[device_class]) ||
         entityComponentIcons._;
-      icon = (value && translations?.state?.[value]) || translations?.default;
+      icon = (state && translations?.state?.[state]) || translations?.default;
     }
   }
   return icon;
@@ -234,12 +229,34 @@ export const attributeIcon = async (
   return icon;
 };
 
-export const serviceIcon = async (hass: HomeAssistant, service: string) => {
+export const serviceIcon = async (
+  hass: HomeAssistant,
+  service: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
   const domain = computeDomain(service);
   const serviceName = computeObjectId(service);
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
-    return serviceIcons[serviceName];
+    icon = serviceIcons[serviceName];
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
+  }
+  return icon;
+};
+
+export const domainIcon = async (
+  hass: HomeAssistant,
+  domain: string,
+  deviceClass?: string
+): Promise<string | undefined> => {
+  const entityComponentIcons = await getComponentIcons(hass, domain);
+  if (entityComponentIcons) {
+    const translations =
+      (deviceClass && entityComponentIcons[deviceClass]) ||
+      entityComponentIcons._;
+    return translations?.default;
   }
   return undefined;
 };
