@@ -394,7 +394,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           (e) => e.entity === entityId
         );
         const name =
-          entityConfig?.name ?? (entityId in this.hass.states ? computeStateName(this.hass.states[entityId]) : entityId);
+          entityConfig?.name ??
+          (entityId in this.hass.states
+            ? computeStateName(this.hass.states[entityId])
+            : entityId);
 
         paths.push({
           points,
