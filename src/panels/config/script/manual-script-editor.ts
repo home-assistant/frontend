@@ -8,7 +8,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
@@ -16,7 +15,7 @@ import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
 @customElement("manual-script-editor")
-export class HaManualScriptEditor extends ReorderModeMixin(LitElement) {
+export class HaManualScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -120,8 +119,6 @@ export class HaManualScriptEditor extends ReorderModeMixin(LitElement) {
         </a>
       </div>
 
-      ${this._renderReorderModeAlert()}
-
       <ha-automation-action
         role="region"
         aria-labelledby="sequence-heading"
@@ -134,34 +131,6 @@ export class HaManualScriptEditor extends ReorderModeMixin(LitElement) {
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
-  }
-
-  private _renderReorderModeAlert() {
-    if (!this._reorderMode.active) {
-      return nothing;
-    }
-    return html`
-      <ha-alert
-        class="re-order"
-        alert-type="info"
-        .title=${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.title"
-        )}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_all"
-        )}
-        <ha-button slot="action" @click=${this._exitReOrderMode}>
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.re_order_mode.exit"
-          )}
-        </ha-button>
-      </ha-alert>
-    `;
-  }
-
-  private async _exitReOrderMode() {
-    this._reorderMode.exit();
   }
 
   private _fieldsChanged(ev: CustomEvent): void {
