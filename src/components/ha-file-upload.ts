@@ -282,6 +282,8 @@ export class HaFileUpload extends LitElement {
       }
       .value ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .big-icon {
         --mdc-icon-size: 48px;

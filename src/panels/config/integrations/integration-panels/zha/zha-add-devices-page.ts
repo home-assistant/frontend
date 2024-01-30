@@ -265,6 +265,8 @@ class ZHAAddDevicesPage extends LitElement {
           position: absolute;
           margin-top: 16px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           top: -6px;
           right: 0;
           color: var(--primary-color);
@@ -278,6 +280,8 @@ class ZHAAddDevicesPage extends LitElement {
         .help-text {
           color: grey;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
         ha-textarea {
           width: 100%;

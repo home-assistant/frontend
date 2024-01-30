@@ -790,7 +790,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           grid-column-end: -1;
         }
         .empty-message h1 {
-          margin-bottom: 0;
+          margin: 0;
         }
         search-input {
           --mdc-text-field-fill-color: var(--sidebar-background-color);

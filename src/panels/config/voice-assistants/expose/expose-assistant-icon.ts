@@ -84,6 +84,8 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
         position: relative;
         height: 24px;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
       }
       .unsupported {
         color: var(--error-color);

@@ -1470,9 +1470,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-switch {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         ha-settings-row ha-switch {
           margin-right: 0;
+          margin-inline-end: 0;
+          margin-inline-start: initial;
         }
         ha-textfield,
         ha-icon-picker,

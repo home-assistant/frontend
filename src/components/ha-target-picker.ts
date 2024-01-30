@@ -640,6 +640,8 @@ export class HaTargetPicker extends LitElement {
       }
       .expand-btn {
         margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
       }
       .mdc-chip.area_id:not(.add) {
         border: 2px solid #fed6a4;
