@@ -680,6 +680,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+          padding-inline-end: 40px;
+          padding-inline-start: initial;
         }
 
         .row {
@@ -701,6 +703,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           width: 48px;
           height: 48px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         .network-status div.heading ha-svg-icon {
           width: 48px;

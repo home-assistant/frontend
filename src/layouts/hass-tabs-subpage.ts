@@ -227,6 +227,8 @@ class HassTabsSubpage extends LitElement {
 
         ha-menu-button {
           margin-right: 24px;
+          margin-inline-end: 24px;
+          margin-inline-start: initial;
         }
 
         .toolbar {

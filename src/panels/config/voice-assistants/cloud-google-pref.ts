@@ -337,8 +337,9 @@ export class CloudGooglePref extends LitElement {
       }
       .header-actions .icon-link {
         margin-top: -16px;
-        margin-inline-end: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         direction: var(--direction);
         color: var(--secondary-text-color);
       }

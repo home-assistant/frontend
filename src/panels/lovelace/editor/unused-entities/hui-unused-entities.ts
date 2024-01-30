@@ -182,6 +182,8 @@ export class HuiUnusedEntities extends LitElement {
         bottom: 0;
         padding-right: 16px;
         padding-left: calc(16px + env(safe-area-inset-left));
+        padding-inline-end: 16px;
+        padding-inline-start: calc(16px + env(safe-area-inset-left));
       }
       ha-fab {
         position: relative;

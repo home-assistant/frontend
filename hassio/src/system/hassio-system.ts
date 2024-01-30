@@ -73,6 +73,8 @@ class HassioSystem extends LitElement {
           color: var(--primary-text-color);
           font-size: 2em;
           padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: initial;
           margin-bottom: 8px;
         }
         hassio-supervisor-log {

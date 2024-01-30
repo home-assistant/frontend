@@ -6731,6 +6731,8 @@ class DialogApp extends LitElement {
     }
     a:first-child {
       margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
     }
     svg {
       width: 100%;

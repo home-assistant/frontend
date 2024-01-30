@@ -4111,15 +4111,15 @@
           "default_router_not_found": "The border router used for Android + iOS credentials for this network could not be found.",
           "default_router": "Used for Android + iOS credentials",
           "set_default_router": "Use router for Android + iOS credentials",
-          "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
+          "no_routers_otbr_network": "No border routers were found. Check your border router is configured correctly or reset it to factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
           "add_dataset_label": "Operational dataset TLV",
           "add_dataset_button": "Add dataset",
           "confirm_reset_border_router": "Reset border router?",
-          "confirm_reset_border_router_text": "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_reset_border_router_text": "Home Assistant will create a new Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "confirm_set_dataset_border_router": "Reconfigure border router?",
-          "confirm_set_dataset_border_router_text": "This will reconfigure the Home Assistant border router to use a different Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_set_dataset_border_router_text": "Home Assistant will join an existing Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "otbr_config_failed": "Failed to configure the border router",
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
@@ -4135,7 +4135,7 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiate a channel change for your Thread networks. This is an advanced operation and can leave your Thread networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
         },
         "zha": {
           "common": {
@@ -4157,7 +4157,8 @@
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
-            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
+            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
+            "pairing_mode_link": "the documentation",
             "discovered_text": "Devices will show up here once discovered.",
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
@@ -5867,6 +5868,8 @@
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },

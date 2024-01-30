@@ -154,6 +154,10 @@ class HaAlert extends LitElement {
     .issue-type.success::after {
       background-color: var(--success-color);
     }
+    :host ::slotted(ul) {
+      margin: 0;
+      padding-inline-start: 20px;
+    }
   `;
 }
 

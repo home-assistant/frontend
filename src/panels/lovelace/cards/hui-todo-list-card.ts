@@ -709,6 +709,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
       .due ha-svg-icon {
         margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
         --mdc-icon-size: 14px;
       }
 

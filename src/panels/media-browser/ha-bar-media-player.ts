@@ -582,6 +582,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         align-items: center;
         width: 100%;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
+
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -633,6 +636,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         white-space: nowrap;
         overflow: hidden;
         padding-left: 16px;
+        padding-inline-start: 16px;
+        padding-inline-end: initial;
         width: 100%;
       }
 
@@ -669,6 +674,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
       :host([narrow]) .media-info {
         padding-left: 8px;
+        padding-inline-start: 8px;
+        padding-inline-end: initial;
       }
 
       :host([narrow]) .controls {
@@ -680,6 +687,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       :host([narrow]) .choose-player {
         padding-left: 0;
         padding-right: 8px;
+        padding-inline-start: 0;
+        padding-inline-end: 8px;
         min-width: 48px;
         flex: unset;
         justify-content: center;

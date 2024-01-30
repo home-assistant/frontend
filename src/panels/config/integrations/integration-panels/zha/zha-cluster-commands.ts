@@ -212,18 +212,24 @@ export class ZHAClusterCommands extends LitElement {
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
         .input-text {
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
         .command-form {
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
@@ -236,6 +242,8 @@ export class ZHAClusterCommands extends LitElement {
           top: -6px;
           right: 0;
           padding-right: 0px;
+          padding-inline-end: 0px;
+          padding-inline-start: initial;
           color: var(--primary-color);
         }
       `,

@@ -379,6 +379,8 @@ class ZHAConfigDashboard extends LitElement {
         .network-settings ha-settings-row {
           padding-left: 0;
           padding-right: 0;
+          padding-inline-start: 0;
+          padding-inline-end: 0;
 
           --paper-item-body-two-line-min-height: 55px;
         }
@@ -388,6 +390,8 @@ class ZHAConfigDashboard extends LitElement {
           word-break: break-all;
           text-indent: -1em;
           padding-left: 1em;
+          padding-inline-start: 1em;
+          padding-inline-end: initial;
         }
 
         .network-settings ha-settings-row ha-icon-button {

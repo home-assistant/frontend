@@ -3,13 +3,16 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
-const _legacyGitHubBlockQuoteToAlert = { Note: "info", Warning: "warning" };
-const _gitHubBlockQuoteToAlert = {
-  "[!NOTE]": "info",
-  "[!TIP]": "success",
-  "[!IMPORTANT]": "info",
-  "[!WARNING]": "warning",
-  "[!CAUTION]": "error",
+const _gitHubMarkdownAlerts = {
+  reType:
+    /(?<input>(\[!(?<type>caution|important|note|tip|warning)\])(?:\s|\\n)?)/i,
+  typeToHaAlert: {
+    caution: "error",
+    important: "info",
+    note: "info",
+    tip: "success",
+    warning: "warning",
+  },
 };
 
 @customElement("ha-markdown-element")
@@ -75,42 +78,33 @@ class HaMarkdownElement extends ReactiveElement {
         }
         node.addEventListener("load", this._resize);
       } else if (node instanceof HTMLQuoteElement) {
-        // Map GitHub blockquote elements to our ha-alert element
-        const firstElementChild = node.firstElementChild;
-        const quoteTitleElement = firstElementChild?.firstElementChild;
-        const blockQuoteType =
-          firstElementChild?.firstChild?.textContent &&
-          _gitHubBlockQuoteToAlert[firstElementChild.firstChild.textContent];
-        const legacyBlockQuoteType =
-          !blockQuoteType &&
-          quoteTitleElement?.textContent &&
-          _legacyGitHubBlockQuoteToAlert[quoteTitleElement.textContent];
+        /**
+         * Map GitHub blockquote elements to our ha-alert element
+         * https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts
+         */
+        const gitHubAlertMatch =
+          node.firstElementChild?.firstChild?.textContent &&
+          _gitHubMarkdownAlerts.reType.exec(
+            node.firstElementChild.firstChild.textContent
+          );
 
-        if (
-          blockQuoteType ||
-          (quoteTitleElement?.nodeName === "STRONG" && legacyBlockQuoteType)
-        ) {
-          const alertNote = document.createElement("ha-alert");
-          alertNote.alertType = blockQuoteType || legacyBlockQuoteType;
-          alertNote.title = blockQuoteType
-            ? ""
-            : (firstElementChild!.childNodes[1].nodeName === "#text" &&
-                firstElementChild!.childNodes[1].textContent?.trimStart()) ||
-              "";
+        if (gitHubAlertMatch) {
+          const { type: alertType } = gitHubAlertMatch.groups!;
+          const haAlertNode = document.createElement("ha-alert");
+          haAlertNode.alertType =
+            _gitHubMarkdownAlerts.typeToHaAlert[alertType.toLowerCase()];
 
-          const childNodes = Array.from(node.childNodes)
-            .map((child) => Array.from(child.childNodes))
-            .reduce((acc, val) => acc.concat(val), [])
-            .filter(
-              (childNode) =>
-                childNode.textContent &&
-                !(childNode.textContent in _gitHubBlockQuoteToAlert) &&
-                !(childNode.textContent in _legacyGitHubBlockQuoteToAlert)
-            );
-          for (const child of childNodes) {
-            alertNote.appendChild(child);
-          }
-          node.firstElementChild!.replaceWith(alertNote);
+          haAlertNode.append(
+            ...Array.from(node.childNodes)
+              .map((child) => Array.from(child.childNodes))
+              .reduce((acc, val) => acc.concat(val), [])
+              .filter(
+                (childNode) =>
+                  childNode.textContent &&
+                  childNode.textContent !== gitHubAlertMatch.input
+              )
+          );
+          walker.parentNode()!.replaceChild(haAlertNode, node);
         }
       } else if (
         node instanceof HTMLElement &&

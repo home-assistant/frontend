@@ -47,6 +47,8 @@ class MQTTDiscoveryPayload extends LitElement {
         position: relative;
         padding: 8px;
         padding-left: 29px;
+        padding-inline-start: 29px;
+        padding-inline-end: initial;
         border: 1px solid var(--divider-color);
       }
       .expander:before {
@@ -67,12 +69,16 @@ class MQTTDiscoveryPayload extends LitElement {
         border: 1px solid var(--divider-color);
         border-top: 0;
         padding-left: 16px;
+        padding-inline-start: 16px;
+        padding-inline-end: initial;
       }
       pre {
         display: inline-block;
         font-size: 0.9em;
         padding-left: 4px;
         padding-right: 4px;
+        padding-inline-start: 4px;
+        padding-inline-end: 4px;
         font-family: var(--code-font-family, monospace);
       }
     `;

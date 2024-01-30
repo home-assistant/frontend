@@ -265,6 +265,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       }
       .header-toolbar .header-btns {
         margin-right: -12px;
+        margin-inline-end: -12px;
+        margin-inline-start: initial;
       }
       .header-btns {
         display: flex;
