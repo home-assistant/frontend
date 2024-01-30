@@ -23,6 +23,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../../common/dom/media_query";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-menu";
@@ -69,25 +70,19 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _expandLast = false;
 
-  private _mqlListenerRef?: (event: MediaQueryListEvent) => void;
-
-  private _mql?: MediaQueryList;
+  private _unsubMql?: () => void;
 
   public connectedCallback() {
     super.connectedCallback();
-    this._mql = window.matchMedia("(min-width: 600px)");
-    this._showReorder = this._mql!.matches;
-    this._mqlListenerRef = (event: MediaQueryListEvent) => {
-      this._showReorder = event.matches;
-    };
-    this._mql.addListener(this._mqlListenerRef);
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._mqlListenerRef!);
-    this._mqlListenerRef = undefined;
-    this._mql = undefined;
+    this._unsubMql?.();
+    this._unsubMql = undefined;
   }
 
   public static get defaultConfig() {

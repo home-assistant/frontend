@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -50,25 +51,19 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
-  private _mqlListenerRef?: (event: MediaQueryListEvent) => void;
-
-  private _mql?: MediaQueryList;
+  private _unsubMql?: () => void;
 
   public connectedCallback() {
     super.connectedCallback();
-    this._mql = window.matchMedia("(min-width: 600px)");
-    this._showReorder = this._mql!.matches;
-    this._mqlListenerRef = (event: MediaQueryListEvent) => {
-      this._showReorder = event.matches;
-    };
-    this._mql.addListener(this._mqlListenerRef);
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._mqlListenerRef!);
-    this._mqlListenerRef = undefined;
-    this._mql = undefined;
+    this._unsubMql?.();
+    this._unsubMql = undefined;
   }
 
   private get nested() {
