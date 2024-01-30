@@ -32,7 +32,6 @@ import {
   expandDeviceTarget,
   Selector,
 } from "../data/selector";
-import { ReorderModeMixin } from "../state/reorder-mode-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
@@ -77,7 +76,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
 }
 
 @customElement("ha-service-control")
-export class HaServiceControl extends ReorderModeMixin(LitElement) {
+export class HaServiceControl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: {
@@ -441,7 +440,6 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
               allow-custom-entity
             ></ha-entity-picker>`
           : ""}
-      ${this._renderReorderModeAlert()}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
             .hass=${this.hass}
@@ -520,34 +518,6 @@ export class HaServiceControl extends ReorderModeMixin(LitElement) {
                 </ha-settings-row>`
               : "";
           })}`;
-  }
-
-  private _renderReorderModeAlert() {
-    if (!this._reorderMode.active) {
-      return nothing;
-    }
-    return html`
-      <ha-alert
-        class="re-order"
-        alert-type="info"
-        .title=${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.title"
-        )}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_all"
-        )}
-        <ha-button slot="action" @click=${this._exitReOrderMode}>
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.re_order_mode.exit"
-          )}
-        </ha-button>
-      </ha-alert>
-    `;
-  }
-
-  private async _exitReOrderMode() {
-    this._reorderMode.exit();
   }
 
   private _localizeValueCallback = (key: string) => {

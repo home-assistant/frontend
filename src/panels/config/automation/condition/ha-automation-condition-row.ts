@@ -13,7 +13,6 @@ import {
   mdiFlask,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -43,10 +42,6 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import "./ha-automation-condition-editor";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -113,16 +108,10 @@ export default class HaAutomationConditionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
-
   protected render() {
     if (!this.condition) {
       return nothing;
     }
-
-    const noReorderModeAvailable = this._reorderMode === undefined;
 
     return html`
       <ha-card outlined>
@@ -173,17 +162,6 @@ export default class HaAutomationConditionRow extends LitElement {
                 "ui.panel.config.automation.editor.conditions.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
-
-            <mwc-list-item
-              graphic="icon"
-              .disabled=${this.disabled}
-              class=${classMap({ hidden: noReorderModeAvailable })}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.re_order"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
             </mwc-list-item>
 
             <li divider role="separator"></li>
@@ -369,36 +347,33 @@ export default class HaAutomationConditionRow extends LitElement {
         await this._renameCondition();
         break;
       case 2:
-        this._reorderMode?.enter();
+        fireEvent(this, "duplicate");
         break;
       case 3:
-        fireEvent(this, "duplicate");
+        this._setClipboard();
         break;
       case 4:
         this._setClipboard();
-        break;
-      case 5:
-        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
-      case 6:
+      case 5:
         fireEvent(this, "move-up");
         break;
-      case 7:
+      case 6:
         fireEvent(this, "move-down");
         break;
-      case 8:
+      case 7:
         this._switchUiMode();
         this.expand();
         break;
-      case 9:
+      case 8:
         this._switchYamlMode();
         this.expand();
         break;
-      case 10:
+      case 9:
         this._onDisable();
         break;
-      case 11:
+      case 10:
         this._onDelete();
         break;
     }

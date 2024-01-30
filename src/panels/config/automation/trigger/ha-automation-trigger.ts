@@ -1,4 +1,3 @@
-import { consume } from "@lit-labs/context";
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -19,10 +18,6 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { AutomationClipboard, Trigger } from "../../../../data/automation";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -41,9 +36,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Array }) public path?: ItemPath;
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
+  @state() private _showReorder: boolean = false;
 
   @storage({
     key: "automationClipboard",
@@ -57,6 +50,27 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  private _mqlListenerRef?: (event: MediaQueryListEvent) => void;
+
+  private _mql?: MediaQueryList;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia("(min-width: 600px)");
+    this._showReorder = this._mql!.matches;
+    this._mqlListenerRef = (event: MediaQueryListEvent) => {
+      this._showReorder = event.matches;
+    };
+    this._mql.addListener(this._mqlListenerRef);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mqlListenerRef = undefined;
+    this._mql = undefined;
+  }
+
   private get nested() {
     return this.path !== undefined;
   }
@@ -65,7 +79,7 @@ export default class HaAutomationTrigger extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._reorderMode?.active}
+        .disabled=${!this._showReorder}
         @item-moved=${this._triggerMoved}
         group="triggers"
         .path=${this.path}
@@ -88,7 +102,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
               >
-                ${this._reorderMode?.active
+                ${this._showReorder
                   ? html`
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>

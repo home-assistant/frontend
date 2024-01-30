@@ -9,7 +9,6 @@ import {
   mdiDrag,
   mdiPlus,
   mdiRenameBox,
-  mdiSort,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -21,7 +20,6 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -44,10 +42,6 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../../state/reorder-mode-mixin";
 import { HomeAssistant, ItemPath } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
@@ -71,11 +65,30 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
+  @state() private _showReorder: boolean = false;
 
   private _expandLast = false;
+
+  private _mqlListenerRef?: (event: MediaQueryListEvent) => void;
+
+  private _mql?: MediaQueryList;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia("(min-width: 600px)");
+    this._showReorder = this._mql!.matches;
+    this._mqlListenerRef = (event: MediaQueryListEvent) => {
+      this._showReorder = event.matches;
+    };
+    this._mql.addListener(this._mqlListenerRef);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mqlListenerRef = undefined;
+    this._mql = undefined;
+  }
 
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -111,12 +124,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
   protected render() {
     const action = this.action;
 
-    const noReorderModeAvailable = this._reorderMode === undefined;
-
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._reorderMode?.active}
+        .disabled=${!this._showReorder}
         group="choose-options"
         .path=${[...(this.path ?? []), "choose"]}
       >
@@ -142,7 +153,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         ? ""
                         : this._getDescription(option))}
                     </h3>
-                    ${this._reorderMode?.active
+                    ${this._showReorder
                       ? html`
                           <div class="handle" slot="icons">
                             <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -169,21 +180,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         <ha-svg-icon
                           slot="graphic"
                           .path=${mdiRenameBox}
-                        ></ha-svg-icon>
-                      </mwc-list-item>
-                      <mwc-list-item
-                        graphic="icon"
-                        .disabled=${this.disabled}
-                        class=${classMap({
-                          hidden: noReorderModeAvailable,
-                        })}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.re_order"
-                        )}
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${mdiSort}
                         ></ha-svg-icon>
                       </mwc-list-item>
 
@@ -332,18 +328,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
         await this._renameAction(ev);
         break;
       case 1:
-        this._reorderMode?.enter();
-        break;
-      case 2:
         this._duplicateOption(ev);
         break;
-      case 3:
+      case 2:
         this._moveUp(ev);
         break;
-      case 4:
+      case 3:
         this._moveDown(ev);
         break;
-      case 5:
+      case 4:
         this._removeOption(ev);
         break;
     }

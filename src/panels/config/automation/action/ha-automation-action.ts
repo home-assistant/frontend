@@ -1,5 +1,4 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
-import { consume } from "@lit-labs/context";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -20,10 +19,6 @@ import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -44,9 +39,7 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ attribute: false }) public actions!: Action[];
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
+  @state() private _showReorder: boolean = false;
 
   @storage({
     key: "automationClipboard",
@@ -60,6 +53,27 @@ export default class HaAutomationAction extends LitElement {
 
   private _actionKeys = new WeakMap<Action, string>();
 
+  private _mqlListenerRef?: (event: MediaQueryListEvent) => void;
+
+  private _mql?: MediaQueryList;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia("(min-width: 600px)");
+    this._showReorder = this._mql!.matches;
+    this._mqlListenerRef = (event: MediaQueryListEvent) => {
+      this._showReorder = event.matches;
+    };
+    this._mql.addListener(this._mqlListenerRef);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mqlListenerRef = undefined;
+    this._mql = undefined;
+  }
+
   private get nested() {
     return this.path !== undefined;
   }
@@ -68,7 +82,7 @@ export default class HaAutomationAction extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._reorderMode?.active}
+        .disabled=${!this._showReorder}
         @item-moved=${this._actionMoved}
         group="actions"
         .path=${this.path}
@@ -92,7 +106,7 @@ export default class HaAutomationAction extends LitElement {
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
               >
-                ${this._reorderMode?.active
+                ${this._showReorder
                   ? html`
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>

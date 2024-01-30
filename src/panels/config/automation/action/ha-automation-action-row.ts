@@ -14,7 +14,6 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -36,9 +35,9 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-service-icon";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
@@ -58,10 +57,6 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
@@ -75,10 +70,10 @@ import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import "./types/ha-automation-action-set_conversation_response";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
@@ -151,10 +146,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
-
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -192,8 +183,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     const type = getType(this.action);
     const yamlMode = this._yamlMode;
-
-    const noReorderModeAvailable = this._reorderMode === undefined;
 
     return html`
       <ha-card outlined>
@@ -262,16 +251,6 @@ export default class HaAutomationActionRow extends LitElement {
                 "ui.panel.config.automation.editor.actions.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
-              graphic="icon"
-              .disabled=${this.disabled}
-              class=${classMap({ hidden: noReorderModeAvailable })}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.re_order"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
             </mwc-list-item>
 
             <li divider role="separator"></li>
@@ -458,36 +437,33 @@ export default class HaAutomationActionRow extends LitElement {
         await this._renameAction();
         break;
       case 2:
-        this._reorderMode?.enter();
+        fireEvent(this, "duplicate");
         break;
       case 3:
-        fireEvent(this, "duplicate");
+        this._setClipboard();
         break;
       case 4:
         this._setClipboard();
-        break;
-      case 5:
-        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
-      case 6:
+      case 5:
         fireEvent(this, "move-up");
         break;
-      case 7:
+      case 6:
         fireEvent(this, "move-down");
         break;
-      case 8:
+      case 7:
         this._switchUiMode();
         this.expand();
         break;
-      case 9:
+      case 8:
         this._switchYamlMode();
         this.expand();
         break;
-      case 10:
+      case 9:
         this._onDisable();
         break;
-      case 11:
+      case 10:
         this._onDelete();
         break;
     }

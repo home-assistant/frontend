@@ -13,7 +13,6 @@ import {
   mdiIdentifier,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -53,10 +52,6 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
@@ -142,16 +137,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
-
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
     if (!this.trigger) return nothing;
-
-    const noReorderModeAvailable = this._reorderMode === undefined;
 
     const supported =
       customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
@@ -199,17 +188,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 "ui.panel.config.automation.editor.triggers.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
-
-            <mwc-list-item
-              graphic="icon"
-              .disabled=${this.disabled}
-              class=${classMap({ hidden: noReorderModeAvailable })}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.re_order"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
             </mwc-list-item>
 
             <mwc-list-item graphic="icon" .disabled=${this.disabled}>
@@ -502,40 +480,37 @@ export default class HaAutomationTriggerRow extends LitElement {
         await this._renameTrigger();
         break;
       case 1:
-        this._reorderMode?.enter();
-        break;
-      case 2:
         this._requestShowId = true;
         this.expand();
         break;
-      case 3:
+      case 2:
         fireEvent(this, "duplicate");
+        break;
+      case 3:
+        this._setClipboard();
         break;
       case 4:
         this._setClipboard();
-        break;
-      case 5:
-        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
-      case 6:
+      case 5:
         fireEvent(this, "move-up");
         break;
-      case 7:
+      case 6:
         fireEvent(this, "move-down");
         break;
-      case 8:
+      case 7:
         this._switchUiMode();
         this.expand();
         break;
-      case 9:
+      case 8:
         this._switchYamlMode();
         this.expand();
         break;
-      case 10:
+      case 9:
         this._onDisable();
         break;
-      case 11:
+      case 10:
         this._onDelete();
         break;
     }

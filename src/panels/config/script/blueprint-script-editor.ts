@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
@@ -18,10 +18,9 @@ import { BlueprintScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
-import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 
 @customElement("blueprint-script-editor")
-export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
+export class HaBlueprintScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -57,7 +56,6 @@ export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
             </mwc-button>
           </ha-alert>`
         : ""}
-      ${this._renderReorderModeAlert()}
       <ha-card
         outlined
         class="blueprint"
@@ -149,34 +147,6 @@ export class HaBlueprintScriptEditor extends ReorderModeMixin(LitElement) {
           : ""}
       </ha-card>
     `;
-  }
-
-  private _renderReorderModeAlert() {
-    if (!this._reorderMode.active) {
-      return nothing;
-    }
-    return html`
-      <ha-alert
-        class="re-order"
-        alert-type="info"
-        .title=${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.title"
-        )}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_all"
-        )}
-        <ha-button slot="action" @click=${this._exitReOrderMode}>
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.re_order_mode.exit"
-          )}
-        </ha-button>
-      </ha-alert>
-    `;
-  }
-
-  private async _exitReOrderMode() {
-    this._reorderMode.exit();
   }
 
   private async _getBlueprints() {
