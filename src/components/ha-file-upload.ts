@@ -31,11 +31,11 @@ export class HaFileUpload extends LitElement {
 
   @property() public supports?: string;
 
-  @property() public value?: File | File[] | FileList | string;
+  @property({ type: Object }) public value?: File | File[] | FileList | string;
 
   @property({ type: Boolean }) public multiple = false;
 
-  @property({ type: Boolean, reflect: true }) public disabled: boolean = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public uploading = false;
 
@@ -282,6 +282,8 @@ export class HaFileUpload extends LitElement {
       }
       .value ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .big-icon {
         --mdc-icon-size: 48px;

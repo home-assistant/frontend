@@ -1,6 +1,6 @@
-import "@material/mwc-list/mwc-list";
+import "@material/mwc-select/mwc-select";
 import "@material/mwc-list/mwc-list-item";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -26,17 +26,17 @@ class MoreInfoRemote extends LitElement {
     return html`
       ${supportsFeature(stateObj, REMOTE_SUPPORT_ACTIVITY)
         ? html`
-            <mwc-list
+            <mwc-select
               .label=${this.hass!.localize(
                 "ui.dialogs.more_info_control.remote.activity"
               )}
-              .value=${stateObj.attributes.current_activity}
-              @selected=${this.handleActivityChanged}
+              .value=${stateObj.attributes.current_activity || ""}
+              @selected=${this._handleActivityChanged}
               fixedMenuPosition
               naturalMenuWidth
               @closed=${stopPropagation}
             >
-              ${stateObj.attributes.activity_list!.map(
+              ${stateObj.attributes.activity_list?.map(
                 (activity) => html`
                   <mwc-list-item .value=${activity}>
                     ${this.hass.formatEntityAttributeValue(
@@ -47,7 +47,7 @@ class MoreInfoRemote extends LitElement {
                   </mwc-list-item>
                 `
               )}
-            </mwc-list>
+            </mwc-select>
           `
         : nothing}
 
@@ -59,7 +59,7 @@ class MoreInfoRemote extends LitElement {
     `;
   }
 
-  private handleActivityChanged(ev) {
+  private _handleActivityChanged(ev) {
     const oldVal = this.stateObj!.attributes.current_activity;
     const newVal = ev.target.value;
 
@@ -72,6 +72,12 @@ class MoreInfoRemote extends LitElement {
       activity: newVal,
     });
   }
+
+  static styles = css`
+    mwc-select {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

@@ -18,7 +18,7 @@ import type { HomeAssistant } from "../../../../types";
 export class HuiEntityPickerTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;

@@ -2,6 +2,7 @@ import { ContextProvider } from "@lit-labs/context";
 import {
   areasContext,
   configContext,
+  connectionContext,
   devicesContext,
   entitiesContext,
   localeContext,
@@ -24,6 +25,12 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       string,
       ContextProvider<any> | undefined
     > = {
+      connection: new ContextProvider(this, {
+        context: connectionContext,
+        initialValue: this.hass
+          ? this.hass.connection
+          : this._pendingHass.connection,
+      }),
       states: new ContextProvider(this, {
         context: statesContext,
         initialValue: this.hass ? this.hass.states : this._pendingHass.states,

@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiChevronRight } from "@mdi/js";
 import formatISO9075 from "date-fns/formatISO9075";
 import {
   css,
@@ -21,6 +20,7 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 import {
   adjustStatisticsSum,
   fetchStatistics,
@@ -165,7 +165,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
                 this.hass.config
               )}
             </span>
-            <ha-svg-icon slot="meta" .path=${mdiChevronRight}></ha-svg-icon>
+            <ha-icon-next slot="meta"></ha-icon-next>
           </mwc-list-item>
         `);
       }

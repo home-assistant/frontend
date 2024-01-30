@@ -147,7 +147,7 @@ class PanelDeveloperTools extends LitElement {
           }
         }
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
@@ -163,6 +163,8 @@ class PanelDeveloperTools extends LitElement {
         paper-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
+          margin-inline-start: max(env(safe-area-inset-left), 24px);
+          margin-inline-end: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(
             --app-header-selection-bar-color,
             var(--app-header-text-color, #fff)

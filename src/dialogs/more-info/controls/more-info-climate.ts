@@ -3,7 +3,6 @@ import {
   mdiArrowOscillating,
   mdiFan,
   mdiThermometer,
-  mdiThermostat,
   mdiTuneVariant,
   mdiWaterPercent,
 } from "@mdi/js";
@@ -11,6 +10,7 @@ import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -20,11 +20,8 @@ import "../../../components/ha-switch";
 import {
   ClimateEntity,
   ClimateEntityFeature,
+  climateHvacModeIcon,
   compareClimateHvacModes,
-  computeFanModeIcon,
-  computeHvacModeIcon,
-  computePresetModeIcon,
-  computeSwingModeIcon,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
@@ -164,7 +161,12 @@ class MoreInfoClimate extends LitElement {
           @selected=${this._handleOperationModeChanged}
           @closed=${stopPropagation}
         >
-          <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
+          ${html`
+            <ha-svg-icon
+              slot="icon"
+              .path=${climateHvacModeIcon(stateObj.state)}
+            ></ha-svg-icon>
+          `}
           ${stateObj.attributes.hvac_modes
             .concat()
             .sort(compareClimateHvacModes)
@@ -173,7 +175,7 @@ class MoreInfoClimate extends LitElement {
                 <ha-list-item .value=${mode} graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
-                    .path=${computeHvacModeIcon(mode)}
+                    .path=${climateHvacModeIcon(mode)}
                   ></ha-svg-icon>
                   ${this.hass.formatEntityState(stateObj, mode)}
                 </ha-list-item>
@@ -194,14 +196,32 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handlePresetmodeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${stateObj.attributes.preset_mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${stateObj.attributes.preset_mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.preset_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computePresetModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="preset_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "preset_mode",
@@ -227,14 +247,29 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handleFanModeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                ${stateObj.attributes.fan_mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="fan_mode"
+                        .attributeValue=${stateObj.attributes.fan_mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.fan_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeFanModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="fan_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "fan_mode",
@@ -260,17 +295,32 @@ class MoreInfoClimate extends LitElement {
                 @selected=${this._handleSwingmodeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiArrowOscillating}
-                ></ha-svg-icon>
+                ${stateObj.attributes.swing_mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_mode"
+                        .attributeValue=${stateObj.attributes.swing_mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiArrowOscillating}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.swing_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeSwingModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "swing_mode",

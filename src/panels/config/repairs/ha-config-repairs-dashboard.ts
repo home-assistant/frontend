@@ -26,7 +26,7 @@ import { showSystemInformationDialog } from "./show-system-information-dialog";
 class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _repairsIssues: RepairsIssue[] = [];
 

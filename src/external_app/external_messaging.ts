@@ -1,3 +1,5 @@
+import { AutomationConfig } from "../data/automation";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -147,11 +149,21 @@ interface EMIncomingMessageShowSidebar {
   command: "sidebar/show";
 }
 
+interface EMIncomingMessageShowAutomationEditor {
+  id: number;
+  type: "command";
+  command: "automation/editor/show";
+  payload?: {
+    config?: Partial<AutomationConfig>;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
   | EMIncomingMessageToggleSidebar
-  | EMIncomingMessageShowSidebar;
+  | EMIncomingMessageShowSidebar
+  | EMIncomingMessageShowAutomationEditor;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess

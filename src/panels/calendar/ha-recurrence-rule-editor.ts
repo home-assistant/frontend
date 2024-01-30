@@ -39,7 +39,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property() public value = "";
 
-  @property() public dtstart?: Date;
+  @property({ attribute: false }) public dtstart?: Date;
 
   @property({ type: Boolean }) public allDay = false;
 

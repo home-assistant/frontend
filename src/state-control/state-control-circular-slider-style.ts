@@ -65,6 +65,10 @@ export const stateControlCircularSliderStyle = css`
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
+  }
+  .buttons > * {
+    pointer-events: auto;
   }
   .primary-state {
     font-size: 36px;

@@ -31,11 +31,11 @@ export class HaGauge extends LitElement {
 
   @property({ type: String }) public valueText?: string;
 
-  @property() public locale!: FrontendLocaleData;
+  @property({ attribute: false }) public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean }) public needle?: boolean;
+  @property({ type: Boolean }) public needle = false;
 
-  @property() public levels?: LevelDefinition[];
+  @property({ type: Array }) public levels?: LevelDefinition[];
 
   @property() public label = "";
 

@@ -189,7 +189,7 @@ const computePanels = memoizeOne(
 class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -1048,6 +1048,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .configuration-badge {
           position: absolute;
           left: calc(var(--app-drawer-width, 248px) - 42px);
+          inset-inline-start: calc(var(--app-drawer-width, 248px) - 42px);
+          inset-inline-end: initial;
           min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;

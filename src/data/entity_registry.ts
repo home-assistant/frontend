@@ -15,6 +15,7 @@ type entityCategory = "config" | "diagnostic";
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
   name?: string;
+  icon?: string;
   device_id?: string;
   area_id?: string;
   hidden?: boolean;
@@ -31,6 +32,7 @@ export interface EntityRegistryDisplayEntryResponse {
     ai?: string;
     ec?: number;
     en?: string;
+    ic?: string;
     pl?: string;
     tk?: string;
     hb?: boolean;
@@ -100,6 +102,7 @@ export interface WeatherEntityOptions {
 
 export interface SwitchAsXEntityOptions {
   entity_id: string;
+  invert: boolean;
 }
 
 export interface EntityRegistryOptions {

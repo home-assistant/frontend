@@ -149,6 +149,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           text-decoration: none;
           color: var(--primary-text-color);
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         h1 {
           font-size: 28px;

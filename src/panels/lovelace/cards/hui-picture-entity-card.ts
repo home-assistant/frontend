@@ -181,6 +181,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
       hui-image {
         cursor: pointer;
+        height: 100%;
       }
 
       .footer {

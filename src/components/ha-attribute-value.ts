@@ -13,8 +13,7 @@ class HaAttributeValue extends LitElement {
 
   @property() public attribute!: string;
 
-  @property({ type: Boolean, attribute: "hide-unit" })
-  public hideUnit?: boolean;
+  @property({ type: Boolean, attribute: "hide-unit" }) public hideUnit = false;
 
   protected render() {
     if (!this.stateObj) {

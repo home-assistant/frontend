@@ -42,7 +42,7 @@ export class ZHAManageClusters extends LitElement {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @state() private _selectedClusterIndex = -1;
 

@@ -54,7 +54,7 @@ export class HuiCardOptions extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public path?: [number, number];
+  @property({ type: Array }) public path?: [number, number];
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 

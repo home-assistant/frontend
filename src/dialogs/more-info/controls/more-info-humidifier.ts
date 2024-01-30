@@ -12,11 +12,11 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import "../../../components/ha-attribute-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   HumidifierEntity,
   HumidifierEntityFeature,
-  computeHumidiferModeIcon,
 } from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import { HomeAssistant } from "../../../types";
@@ -109,14 +109,32 @@ class MoreInfoHumidifier extends LitElement {
                 @selected=${this._handleModeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${stateObj.attributes.mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="mode"
+                        .attributeValue=${stateObj.attributes.mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeHumidiferModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj!,
                         "mode",

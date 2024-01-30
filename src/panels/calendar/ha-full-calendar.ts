@@ -452,6 +452,8 @@ export class HAFullCalendar extends LitElement {
         :host([narrow]) .header {
           padding-right: 8px;
           padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: 8px;
           flex-direction: column;
           align-items: flex-start;
           justify-content: initial;
@@ -460,6 +462,8 @@ export class HAFullCalendar extends LitElement {
         .header {
           padding-right: var(--calendar-header-padding);
           padding-left: var(--calendar-header-padding);
+          padding-inline-start: var(--calendar-header-padding);
+          padding-inline-end: var(--calendar-header-padding);
         }
 
         .navigation {

@@ -231,6 +231,8 @@ class HaInputSelectForm extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;
@@ -247,6 +249,8 @@ class HaInputSelectForm extends LitElement {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
           padding-right: 12px;
+          padding-inline-end: 12px;
+          padding-inline-start: initial;
         }
         .handle ha-svg-icon {
           pointer-events: none;

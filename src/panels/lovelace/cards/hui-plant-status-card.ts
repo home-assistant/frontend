@@ -16,7 +16,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { batteryIcon } from "../../../common/entity/battery_icon";
+import { batteryLevelIcon } from "../../../common/entity/battery_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
@@ -252,7 +252,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   private computeIcon(attr: string, batLvl: number): string {
     if (attr === "battery") {
-      return batteryIcon(batLvl);
+      return batteryLevelIcon(batLvl);
     }
     return SENSOR_ICONS[attr];
   }

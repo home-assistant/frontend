@@ -267,6 +267,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           list-style-type: none;
           margin: 4px;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
         .entitylistitem {
           margin-bottom: 12px;
