@@ -156,11 +156,11 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode ?? false;
-    const forcedDark = this.darkMode ?? false;
+    const darkTheme = this.hass.themes.darkMode ?? false;
+    const darkMapForced = this.darkMode ?? false;
     const map = this.shadowRoot!.getElementById("map");
-    map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", forcedDark);
+    map!.classList.toggle("dark", darkTheme);
+    map!.classList.toggle("forced-dark", darkMapForced);
   }
 
   private async _loadMap(): Promise<void> {
@@ -360,7 +360,7 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    const className =
+    const classNameMarker =
       this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light";
 
     for (const entity of this.entities) {
@@ -408,7 +408,7 @@ export class HaMap extends ReactiveElement {
             icon: Leaflet.divIcon({
               html: iconHTML,
               iconSize: [24, 24],
-              className,
+              classNameMarker,
             }),
             interactive: this.interactiveZones,
             title,
@@ -457,7 +457,7 @@ export class HaMap extends ReactiveElement {
               ></ha-entity-marker>
             `,
           iconSize: [48, 48],
-          className: "",
+          classNameMarker: "",
         }),
         title: title,
       });
@@ -493,6 +493,7 @@ export class HaMap extends ReactiveElement {
   }
 
   static get styles(): CSSResultGroup {
+    const filterDefaultDark = 'invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(0.3)';
     return css`
       :host {
         display: block;
@@ -505,8 +506,10 @@ export class HaMap extends ReactiveElement {
         background: #090909;
       }
       #map.forced-dark {
-        --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
-          contrast(1.2) saturate(0.3);
+        --map-filter: var(--map-filter-dark, filterDefaultDark);
+      }
+      #map.forced-dark.dark {
+        --filter: var(--map-filter-dark, var(--map-filter, filterDefaultDark));
       }
       #map:active {
         cursor: grabbing;
@@ -520,10 +523,13 @@ export class HaMap extends ReactiveElement {
         color: #ffffff;
       }
       .leaflet-tile-pane {
-        filter: var(--map-filter);
+        filter: var(--filter, var(--map-filter));
+      }
+      #map.dark .leaflet-tile-pane {
+        filter: var(--filter, var(--map-filter, filterDefaultDark));
       }
       .dark .leaflet-bar a {
-        background-color: var(--card-background-color, #1c1c1c);
+        background-color: #1c1c1c;
         color: #ffffff;
       }
       .leaflet-marker-draggable {
