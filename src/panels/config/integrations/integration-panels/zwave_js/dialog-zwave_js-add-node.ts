@@ -825,6 +825,8 @@ class DialogZWaveJSAddNode extends LitElement {
           width: 16px;
           height: 16px;
           margin-right: 0px;
+          margin-inline-end: 0px;
+          margin-inline-start: initial;
         }
         .stage {
           padding: 8px;
@@ -891,6 +893,8 @@ class DialogZWaveJSAddNode extends LitElement {
         .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
         }
       `,
     ];

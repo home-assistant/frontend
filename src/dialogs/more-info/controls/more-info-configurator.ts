@@ -118,6 +118,8 @@ export class MoreInfoConfigurator extends LitElement {
       width: 14px;
       height: 14px;
       margin-right: 20px;
+      margin-inline-end: 20px;
+      margin-inline-start: initial;
     }
   `;
 }

@@ -1094,6 +1094,8 @@ class HUIRoot extends LitElement {
           box-sizing: border-box;
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          padding-inline-start: env(safe-area-inset-left);
+          padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
         }
         hui-view {

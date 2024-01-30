@@ -197,6 +197,8 @@ class HaQrScanner extends LitElement {
     ha-textfield {
       flex: 1;
       margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
     }
   `;
 }

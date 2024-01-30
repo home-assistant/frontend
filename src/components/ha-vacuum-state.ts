@@ -94,6 +94,8 @@ export class HaVacuumState extends LitElement {
           top: 3px;
           height: 37px;
           margin-right: -0.57em;
+          margin-inline-end: -0.57em;
+          margin-inline-start: initial;
         }
         mwc-button[disabled] {
           background-color: transparent;
