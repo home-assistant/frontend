@@ -17,6 +17,7 @@ import {
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
 import "../../../../../components/ha-textarea";
@@ -118,8 +119,24 @@ class ZHAAddDevicesPage extends LitElement {
             ? html`
                 <div class="discovery-text">
                   <h4>
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.add_device_page.pairing_mode"
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.add_device_page.pairing_mode",
+                      {
+                        documentation_link: html`
+                          <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href=${documentationUrl(
+                              this.hass,
+                              "/integrations/zha#adding-devices"
+                            )}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zha.add_device_page.pairing_mode_link"
+                            )}
+                          </a>
+                        `,
+                      }
                     )}
                   </h4>
                   <h4>

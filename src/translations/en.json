@@ -4157,7 +4157,8 @@
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
-            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
+            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
+            "pairing_mode_link": "the documentation",
             "discovered_text": "Devices will show up here once discovered.",
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
