@@ -4604,6 +4604,34 @@
             "download_logs": "Download logs"
           }
         },
+        "matter": {
+          "network_type": {
+            "thread": "Thread",
+            "wifi": "Wi-Fi",
+            "ethernet": "Ethernet",
+            "unknown": "Unknown"
+          },
+          "node_type": {
+            "end_device": "End-device",
+            "sleepy_end_device": "Sleepy end device",
+            "routing_end_device": "Routing end device",
+            "bridge": "Bridge",
+            "unknown": "Unknown"
+          },
+          "device_info": {
+            "device_diagnostics": "Device diagnostics",
+            "node_id": "Node ID",
+            "network_type": "Network Type",
+            "node_type": "Device type",
+            "network_name": "Network name",
+            "ip_adresses": "IP Address(es)",
+            "mac_address": "MAC address",
+            "available": "Available?",
+            "active_fabrics": "Connected fabrics",
+            "date_commissioned": "Commissioned at",
+            "last_interview": "Last full interview"
+          }
+        },
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
