@@ -4632,6 +4632,16 @@
             "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
             "remove_fabric_failed_header": "Remove {fabric} fabric failed",
             "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
+          },
+          "reinterview_node": {
+            "title": "Re-interview a Matter device",
+            "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
+            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "run_in_background": "You can close this dialog and the interview will continue in the background.",
+            "start_reinterview": "Start re-interview",
+            "in_progress": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "interview_complete": "Device interview complete."
           }
         },
         "tips": {
