@@ -1099,6 +1099,17 @@ export class HaConfigDevicePage extends LitElement {
       );
       deviceActions.push(...actions);
     }
+    if (domains.includes("matter")) {
+      const zwave = await import(
+        "./device-detail/integration-elements/matter/device-actions"
+      );
+      const actions = await zwave.getMatterDeviceActions(
+        this,
+        this.hass,
+        device
+      );
+      deviceActions.push(...actions);
+    }
 
     this._deviceActions = deviceActions;
   }

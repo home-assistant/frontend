@@ -4633,6 +4633,9 @@
             "remove_fabric_failed_header": "Remove {fabric} fabric failed",
             "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
           },
+          "device_actions": {
+            "reinterview_device": "Re-interview device"
+          },
           "reinterview_node": {
             "title": "Re-interview a Matter device",
             "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
