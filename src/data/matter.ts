@@ -42,9 +42,9 @@ export interface MatterPingResult {
 }
 
 export interface MatterCommissioningParameters {
-  setupPinCode: number;
-  setupManualCode: string;
-  setupQRCode: string;
+  setup_pin_code: number;
+  setup_manual_code: string;
+  setup_qr_code: string;
 }
 
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
