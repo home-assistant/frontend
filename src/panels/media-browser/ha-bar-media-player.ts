@@ -389,7 +389,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     return html`
       <ha-domain-icon
         .hass=${this.hass}
-        domain=${computeDomain(this.entityId)}
+        .domain=${computeDomain(this.entityId)}
       ></ha-domain-icon>
     `;
   }
