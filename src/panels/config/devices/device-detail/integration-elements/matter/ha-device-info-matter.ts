@@ -48,7 +48,15 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
     const fabricName =
       fabric.vendor_name || fabric.fabric_label || fabric.vendor_id.toString();
     const confirm = await showConfirmationDialog(this, {
-      title: `Remove ${fabricName}?`,
+      title: this.hass.localize(
+        "ui.panel.config.matter.device_info.remove_fabric_confirm_header",
+        { fabric: fabricName }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.matter.device_info.remove_fabric_confirm_text",
+        { fabric: fabricName }
+      ),
+      warning: true,
     });
 
     if (!confirm) {
@@ -57,10 +65,16 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
 
     try {
       await removeMatterFabric(this.hass, this.device.id, fabric.fabric_index);
+      this._fetchNodeDetails();
     } catch (err: any) {
       showAlertDialog(this, {
-        title: "ERRORRR",
-        text: "We should provide an error here",
+        title: this.hass.localize(
+          "ui.panel.config.matter.device_info.remove_fabric_failed_header",
+          { fabric: fabricName }
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.matter.device_info.remove_fabric_failed_text"
+        ),
       });
     }
   }
@@ -94,7 +108,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
     return html`
       <ha-expansion-panel
         .header=${this.hass.localize(
-          "ui.panel.config.matter.device_info.device_diagnostics"
+          "ui.panel.config.matter.device_info.device_info"
         )}
       >
         <div>
@@ -157,7 +171,8 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
           ${this._nodeDiagnostics.active_fabrics.map(
             (fabric) =>
               html`<ha-list-item
-                .hasMeta=${fabric.vendor_id !== NABUCASA_FABRIC}
+                .hasMeta=${this._nodeDiagnostics?.available &&
+                fabric.vendor_id !== NABUCASA_FABRIC}
                 >${fabric.vendor_name ||
                 fabric.fabric_label ||
                 fabric.vendor_id}

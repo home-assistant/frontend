@@ -4619,7 +4619,7 @@
             "unknown": "Unknown"
           },
           "device_info": {
-            "device_diagnostics": "Device diagnostics",
+            "device_info": "Device info",
             "node_id": "Node ID",
             "network_type": "Network Type",
             "node_type": "Device type",
@@ -4628,8 +4628,10 @@
             "mac_address": "MAC address",
             "available": "Available?",
             "active_fabrics": "Connected fabrics",
-            "date_commissioned": "Commissioned at",
-            "last_interview": "Last full interview"
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
+            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_failed_header": "Remove {fabric} fabric failed",
+            "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
           }
         },
         "tips": {
