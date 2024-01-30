@@ -12,13 +12,6 @@ export const stateIcon = (
   const compareState = state ?? stateObj.state;
   const dc = stateObj.attributes.device_class;
   switch (domain) {
-    case "automation":
-      return compareState === "unavailable"
-        ? "mdi:robot-confused"
-        : compareState === "off"
-          ? "mdi:robot-off"
-          : "mdi:robot";
-
     case "update":
       return updateIcon(stateObj, compareState);
 
@@ -31,20 +24,10 @@ export const stateIcon = (
     case "device_tracker":
       return deviceTrackerIcon(stateObj, compareState);
 
-    case "person":
-      return compareState === "not_home"
-        ? "mdi:account-arrow-right"
-        : "mdi:account";
-
     case "sun":
       return compareState === "above_horizon"
         ? "mdi:white-balance-sunny"
         : "mdi:weather-night";
-
-    case "input_boolean":
-      return compareState === "on"
-        ? "mdi:check-circle-outline"
-        : "mdi:close-circle-outline";
 
     case "input_datetime":
       if (!stateObj.attributes.has_date) {
