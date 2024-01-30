@@ -59,7 +59,6 @@ export class HaDomainIcon extends LitElement {
       return html`
         <img
           alt=""
-          slot="start"
           src=${image}
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
