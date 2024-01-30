@@ -5,6 +5,7 @@ import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
 import type { HomeAssistant } from "../../../../../../types";
 import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
 import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
+import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getMatterDeviceActions = async (
@@ -35,6 +36,16 @@ export const getMatterDeviceActions = async (
 
   if (nodeDiagnostics.available) {
     // actions that can only be performed if the device is alive
+    actions.push({
+      label: hass.localize(
+        "ui.panel.config.matter.device_actions.open_commissioning_window"
+      ),
+      icon: mdiChatQuestion,
+      action: () =>
+        showMatterOpenCommissioningWindowDialog(el, {
+          device_id: device.id,
+        }),
+    });
     actions.push({
       label: hass.localize(
         "ui.panel.config.matter.device_actions.reinterview_device"

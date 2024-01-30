@@ -4635,7 +4635,8 @@
           },
           "device_actions": {
             "reinterview_device": "Re-interview device",
-            "ping_device": "Ping device"
+            "ping_device": "Ping device",
+            "open_commissioning_window": "Enable commisisioning mode"
           },
           "reinterview_node": {
             "title": "Re-interview a Matter device",
@@ -4655,6 +4656,14 @@
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
             "ping_complete": "Ping device complete."
+          },
+          "open_commissioning_window": {
+            "title": "Enable commissioning mode",
+            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "start_ping": "Start ping",
+            "in_progress": "We're communicating with the device. This may take some time.",
+            "failed": "The command failed. Additional information may be available in the logs.",
+            "sharing_code": "Sharing code"
           }
         },
         "tips": {
