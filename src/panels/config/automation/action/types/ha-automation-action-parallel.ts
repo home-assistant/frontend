@@ -1,10 +1,16 @@
 import { consume } from "@lit-labs/context";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   mdiDotsVertical,
   mdiRenameBox,
-  mdiSort,
   mdiContentDuplicate,
   mdiDelete,
   mdiPlus,
@@ -35,6 +41,7 @@ import type { ActionElement } from "../ha-automation-action-row";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fullEntitiesContext } from "../../../../../data/context";
 import { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { listenMediaQuery } from "../../../../../common/dom/media_query";
 
 const preventDefault = (ev) => ev.preventDefault();
 
@@ -50,16 +57,33 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @state() private _expandedStates: boolean[] = [];
 
+  @state() private _showReorder: boolean = false;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
   private _expandLast = false;
 
+  private _unsubMql?: () => void;
+
   public static get defaultConfig() {
     return {
       parallel: [{ sequence: [] }],
     };
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
   }
 
   private _expandedChanged(ev) {
@@ -97,8 +121,9 @@ export class HaParallelAction extends LitElement implements ActionElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
-        @item-moved=${this._sequenceMoved}
+        .disabled=${!this._showReorder}
+        group="sequences"
+        .path=${[...(this.path ?? []), "parallel"]}
       >
         <div class="sequences">
           ${action.parallel.map(
@@ -117,107 +142,99 @@ export class HaParallelAction extends LitElement implements ActionElement {
                       )}:
                       ${sequence.alias || this._getDescription(sequence)}
                     </h3>
-                    ${this.reOrderMode
+                    ${this._showReorder
                       ? html`
-                          <ha-icon-button
-                            .index=${idx}
-                            slot="icons"
-                            .label=${this.hass.localize(
-                              "ui.panel.config.automation.editor.move_up"
-                            )}
-                            .path=${mdiArrowUp}
-                            @click=${this._moveUp}
-                            .disabled=${idx === 0}
-                          ></ha-icon-button>
-                          <ha-icon-button
-                            .index=${idx}
-                            slot="icons"
-                            .label=${this.hass.localize(
-                              "ui.panel.config.automation.editor.move_down"
-                            )}
-                            .path=${mdiArrowDown}
-                            @click=${this._moveDown}
-                            .disabled=${idx ===
-                            ensureArray(this.action.parallel).length - 1}
-                          ></ha-icon-button>
                           <div class="handle" slot="icons">
                             <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                           </div>
                         `
-                      : html`
-                          <ha-button-menu
-                            slot="icons"
-                            .idx=${idx}
-                            @action=${this._handleAction}
-                            @click=${preventDefault}
-                            fixed
-                          >
-                            <ha-icon-button
-                              slot="trigger"
-                              .label=${this.hass.localize("ui.common.menu")}
-                              .path=${mdiDotsVertical}
-                            ></ha-icon-button>
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.rename"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiRenameBox}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.re_order"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiSort}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
+                      : nothing}
+                    <ha-button-menu
+                      slot="icons"
+                      .idx=${idx}
+                      @action=${this._handleAction}
+                      @click=${preventDefault}
+                      fixed
+                    >
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this.hass.localize("ui.common.menu")}
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.rename"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiRenameBox}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
 
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.duplicate"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiContentDuplicate}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
+                      <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.duplicate"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiContentDuplicate}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
 
-                            <mwc-list-item
-                              class="warning"
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.type.parallel.remove_sequence"
-                              )}
-                              <ha-svg-icon
-                                class="warning"
-                                slot="graphic"
-                                .path=${mdiDelete}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
-                          </ha-button-menu>
-                        `}
+                      <mwc-list-item
+                        graphic="icon"
+                        .disabled=${this.disabled || idx === 0}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_up"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiArrowUp}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+
+                      <mwc-list-item
+                        graphic="icon"
+                        .disabled=${this.disabled ||
+                        idx === ensureArray(action.parallel).length - 1}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_down"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiArrowDown}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+
+                      <mwc-list-item
+                        class="warning"
+                        graphic="icon"
+                        .disabled=${this.disabled}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.type.parallel.remove_sequence"
+                        )}
+                        <ha-svg-icon
+                          class="warning"
+                          slot="graphic"
+                          .path=${mdiDelete}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+                    </ha-button-menu>
                     <div class="card-content">
                       <ha-automation-action
                         nested
                         .actions=${ensureArray(sequence.sequence) || []}
                         .disabled=${this.disabled}
                         @value-changed=${this._actionChanged}
-                        .path=${[...(this.path ?? []), "parallel"]}
+                        .path=${[
+                          ...(this.path ?? []),
+                          "parallel",
+                          idx,
+                          "sequence",
+                        ]}
                         .hass=${this.hass}
                         .idx=${idx}
                       ></ha-automation-action>
@@ -247,12 +264,15 @@ export class HaParallelAction extends LitElement implements ActionElement {
         await this._renameAction(ev);
         break;
       case 1:
-        fireEvent(this, "re-order");
-        break;
-      case 2:
         this._duplicateParallel(ev);
         break;
+      case 2:
+        this._moveUp(ev);
+        break;
       case 3:
+        this._moveDown(ev);
+        break;
+      case 4:
         this._removeSequence(ev);
         break;
     }
@@ -322,20 +342,14 @@ export class HaParallelAction extends LitElement implements ActionElement {
     }
   }
 
-  private _sequenceMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
   private _moveUp(ev) {
-    const index = (ev.target as any).index;
+    const index = (ev.target as any).idx;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
-    const index = (ev.target as any).index;
+    const index = (ev.target as any).idx;
     const newIndex = index + 1;
     this._move(index, newIndex);
   }
