@@ -201,8 +201,19 @@ class StepFlowForm extends LitElement {
         step,
       });
     } catch (err: any) {
-      this._errorMsg =
-        (err && err.body && err.body.message) || "Unknown error occurred";
+      if (err && err.body) {
+        if (err.body.message) {
+          this._errorMsg = err.body.message;
+        }
+        if (err.body.errors) {
+          this.step = { ...this.step, errors: err.body.errors };
+        }
+        if (!err.body.message && !err.body.errors) {
+          this._errorMsg = "Unknown error occurred";
+        }
+      } else {
+        this._errorMsg = "Unknown error occurred";
+      }
     } finally {
       this._loading = false;
     }
