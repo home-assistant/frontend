@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
@@ -18,12 +18,11 @@ import {
   fetchBlueprints,
 } from "../../../data/blueprint";
 import { haStyle } from "../../../resources/styles";
-import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
 @customElement("blueprint-automation-editor")
-export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
+export class HaBlueprintAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -78,7 +77,6 @@ export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
       ${this.config.description
         ? html`<p class="description">${this.config.description}</p>`
         : ""}
-      ${this._renderReorderModeAlert()}
       <ha-card
         outlined
         class="blueprint"
@@ -171,34 +169,6 @@ export class HaBlueprintAutomationEditor extends ReorderModeMixin(LitElement) {
           : ""}
       </ha-card>
     `;
-  }
-
-  private _renderReorderModeAlert() {
-    if (!this._reorderMode.active) {
-      return nothing;
-    }
-    return html`
-      <ha-alert
-        class="re-order"
-        alert-type="info"
-        .title=${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.title"
-        )}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.description_all"
-        )}
-        <ha-button slot="action" @click=${this._exitReOrderMode}>
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.re_order_mode.exit"
-          )}
-        </ha-button>
-      </ha-alert>
-    `;
-  }
-
-  private async _exitReOrderMode() {
-    this._reorderMode.exit();
   }
 
   private async _getBlueprints() {

@@ -16,7 +16,6 @@ import {
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import { ReorderModeMixin } from "../../../state/reorder-mode-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./action/ha-automation-action";
@@ -24,7 +23,7 @@ import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 
 @customElement("manual-automation-editor")
-export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
+export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -94,7 +93,6 @@ export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert("triggers")}
 
       <ha-automation-trigger
         role="region"
@@ -137,7 +135,6 @@ export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert("conditions")}
 
       <ha-automation-condition
         role="region"
@@ -178,7 +175,6 @@ export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
             )}
           </p>`
         : nothing}
-      ${this._renderReorderModeAlert("actions")}
 
       <ha-automation-action
         role="region"
@@ -192,34 +188,6 @@ export class HaManualAutomationEditor extends ReorderModeMixin(LitElement) {
         .disabled=${this.disabled}
       ></ha-automation-action>
     `;
-  }
-
-  private _renderReorderModeAlert(type: "conditions" | "actions" | "triggers") {
-    if (!this._reorderMode.active) {
-      return nothing;
-    }
-    return html`
-      <ha-alert
-        class="re-order"
-        alert-type="info"
-        .title=${this.hass.localize(
-          "ui.panel.config.automation.editor.re_order_mode.title"
-        )}
-      >
-        ${this.hass.localize(
-          `ui.panel.config.automation.editor.re_order_mode.description_${type}`
-        )}
-        <ha-button slot="action" @click=${this._exitReOrderMode}>
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.re_order_mode.exit"
-          )}
-        </ha-button>
-      </ha-alert>
-    `;
-  }
-
-  private async _exitReOrderMode() {
-    this._reorderMode.exit();
   }
 
   private _triggerChanged(ev: CustomEvent): void {
