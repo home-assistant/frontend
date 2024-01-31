@@ -9,11 +9,11 @@ import { EditorTarget } from "../editor/types";
 
 @customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {
-  @property() protected value?: string[];
+  @property({ type: Array }) public value?: string[];
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected inputLabel?: string;
+  @property() public inputLabel?: string;
 
   protected render() {
     if (!this.value) {
@@ -105,6 +105,8 @@ export class HuiInputListEditor extends LitElement {
     return css`
       ha-icon-button {
         margin-right: -24px;
+        margin-inline-end: -24px;
+        margin-inline-start: initial;
         color: var(--secondary-text-color);
       }
       ha-textfield {

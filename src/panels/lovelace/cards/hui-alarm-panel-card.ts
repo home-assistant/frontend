@@ -12,11 +12,11 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
@@ -199,8 +199,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             @click=${this._handleMoreInfo}
             .label=${stateLabel}
           >
-            <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
-            </ha-svg-icon>
+            <ha-state-icon
+              slot="icon"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+            ></ha-state-icon>
           </ha-assist-chip>
         </h1>
         <div id="armActions" class="actions">
@@ -352,6 +355,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       .state {
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         position: relative;
         bottom: 16px;
         color: var(--alarm-state-color);

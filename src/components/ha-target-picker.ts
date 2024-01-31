@@ -62,9 +62,11 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -224,7 +226,8 @@ export class HaTargetPicker extends LitElement {
         ${entityState
           ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
+              .hass=${this.hass}
+              .stateObj=${entityState}
             ></ha-state-icon>`
           : ""}
         <span role="gridcell">
@@ -637,6 +640,8 @@ export class HaTargetPicker extends LitElement {
       }
       .expand-btn {
         margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
       }
       .mdc-chip.area_id:not(.add) {
         border: 2px solid #fed6a4;

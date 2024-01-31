@@ -10,7 +10,8 @@ import "./persistent-notification-item";
 export class HuiNotificationItem extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public notification?: HassEntity | PersistentNotification;
+  @property({ attribute: false })
+  public notification?: HassEntity | PersistentNotification;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (!this.hass || !this.notification || changedProps.has("notification")) {

@@ -21,7 +21,7 @@ const ENTITIES = [
 
 @customElement("demo-more-info-lock")
 class DemoMoreInfoLock extends LitElement {
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 

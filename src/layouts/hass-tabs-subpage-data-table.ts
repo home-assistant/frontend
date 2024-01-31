@@ -116,7 +116,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Function to call when the back button is pressed.
    * @type {() => void}
    */
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   /**
    * String to show when there are no records in the data table.
@@ -130,13 +130,13 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: Boolean }) public empty = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   /**
    * Array of tabs to show on the page.
    * @type {Array}
    */
-  @property() public tabs: PageNavigation[] = [];
+  @property({ attribute: false }) public tabs: PageNavigation[] = [];
 
   /**
    * Force hides the filter menu.

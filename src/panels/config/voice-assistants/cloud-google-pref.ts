@@ -8,6 +8,7 @@ import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -336,8 +337,9 @@ export class CloudGooglePref extends LitElement {
       }
       .header-actions .icon-link {
         margin-top: -16px;
-        margin-inline-end: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         direction: var(--direction);
         color: var(--secondary-text-color);
       }

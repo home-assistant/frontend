@@ -1,5 +1,6 @@
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-card";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -9,7 +10,7 @@ import "./ha-debug-connection-row";
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render() {
     return html`
@@ -18,31 +19,27 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
           .header=${this.hass.localize(
             "ui.panel.developer-tools.tabs.debug.title"
           )}
-          class="form"
         >
-          <div class="card-content">
-                  <ha-debug-connection-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-debug-connection-row>
+          <ha-debug-connection-row
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-debug-connection-row>
         </ha-card>
       </div>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .content {
-          padding: 28px 20px 16px;
-          display: block;
-          max-width: 600px;
-          margin: 0 auto;
-        }
-      `,
-    ];
-  }
+  static styles = [
+    haStyle,
+    css`
+      .content {
+        padding: 28px 20px 16px;
+        display: block;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    `,
+  ];
 }
 
 declare global {

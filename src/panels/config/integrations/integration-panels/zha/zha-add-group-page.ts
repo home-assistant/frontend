@@ -20,9 +20,9 @@ import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-tabl
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
@@ -196,5 +196,11 @@ export class ZHAAddGroupPage extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-add-group-page": ZHAAddGroupPage;
   }
 }

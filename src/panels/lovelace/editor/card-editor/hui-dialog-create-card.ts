@@ -37,7 +37,7 @@ export class HuiCreateDialogCard
   extends LitElement
   implements HassDialog<CreateCardDialogParams>
 {
-  @property({ attribute: false }) protected hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: CreateCardDialogParams;
 

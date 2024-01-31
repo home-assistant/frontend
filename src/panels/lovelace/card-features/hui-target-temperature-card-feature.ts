@@ -183,7 +183,7 @@ class HuiTargetTemperatureCardFeature
         <ha-control-button-group>
           <ha-control-number-buttons
             .formatOptions=${options}
-            .target="value"
+            .target=${"value"}
             .value=${this.stateObj.attributes.temperature}
             .unit=${this.hass.config.unit_system.temperature}
             .min=${this._min}

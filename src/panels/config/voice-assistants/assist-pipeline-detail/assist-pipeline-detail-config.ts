@@ -10,9 +10,9 @@ import "../../../../components/ha-form/ha-form";
 export class AssistPipelineDetailConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public data?: Partial<AssistPipeline>;
+  @property({ attribute: false }) public data?: Partial<AssistPipeline>;
 
-  @property() public supportedLanguages?: string[];
+  @property({ type: Array }) public supportedLanguages?: string[];
 
   public async focus() {
     await this.updateComplete;

@@ -415,6 +415,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       }
       .volume {
         display: flex;
+        align-items: center;
         flex-grow: 2;
         flex-shrink: 2;
       }

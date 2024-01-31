@@ -684,6 +684,8 @@ class HaPanelDevState extends LitElement {
           cursor: pointer;
           flex-shrink: 0;
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         .entities td:nth-child(1) {
           min-width: 300px;

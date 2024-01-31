@@ -23,7 +23,7 @@ import { HomeAssistant } from "../../../../../types";
 export class MatterConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: string;
 
@@ -209,4 +209,10 @@ export class MatterConfigDashboard extends LitElement {
       }
     `,
   ];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "matter-config-dashboard": MatterConfigDashboard;
+  }
 }

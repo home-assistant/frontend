@@ -1,5 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
@@ -11,8 +11,7 @@ import { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
 export class HuiDialogWebBrowserPlayMedia extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false })
-  private _params?: WebBrowserPlayMediaDialogParams;
+  @state() private _params?: WebBrowserPlayMediaDialogParams;
 
   public showDialog(params: WebBrowserPlayMediaDialogParams): void {
     this._params = params;

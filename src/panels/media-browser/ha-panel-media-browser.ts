@@ -65,10 +65,9 @@ const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
 class PanelMediaBrowser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() _currentItem?: MediaPlayerItem;
 

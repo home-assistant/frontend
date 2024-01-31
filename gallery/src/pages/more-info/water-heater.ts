@@ -42,7 +42,7 @@ const ENTITIES = [
 
 @customElement("demo-more-info-water-heater")
 class DemoMoreInfoWaterHeater extends LitElement {
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 

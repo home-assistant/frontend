@@ -1149,6 +1149,14 @@
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
           "switch_as_x": "Show switch as",
+          "invert": {
+            "label": "Invert state",
+            "descriptions": {
+              "cover": "Show as open when the switch is off",
+              "lock": "Show as locked when the switch is off",
+              "valve": "[%key:ui::dialogs::entity_registry::editor::invert::descriptions::cover%]"
+            }
+          },
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -2157,7 +2165,9 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show full logs",
-          "download_full_log": "Download full log"
+          "download_full_log": "Download full log",
+          "provider_not_found": "Log provider not found",
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2255,9 +2265,16 @@
             "pipeline": {
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted."
+              },
+              "devices": {
+                "title": "Assist devices",
+                "device": "Device",
+                "pipeline": "Assistant",
+                "area": "Area"
               },
               "detail": {
                 "update_assistant_action": "Update",
@@ -2267,7 +2284,7 @@
                 "debug": "Debug",
                 "set_as_preferred": "Set as preferred",
                 "form": {
-                  "name": "Name",
+                  "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "language": "Language",
@@ -2429,14 +2446,6 @@
             "automation_settings": "Automation settings",
             "move_up": "Move up",
             "move_down": "Move down",
-            "re_order": "Re-order",
-            "re_order_mode": {
-              "title": "Re-order mode",
-              "description_triggers": "You are in re-order mode, you can re-order your triggers.",
-              "description_conditions": "You are in re-order mode, you can re-order your conditions.",
-              "description_actions": "You are in re-order mode, you can re-order your actions.",
-              "exit": "Exit"
-            },
             "description": {
               "label": "Description",
               "placeholder": "Optional description",
@@ -2498,7 +2507,9 @@
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other triggers" }
+                "other": {
+                  "label": "Other triggers"
+                }
               },
               "type": {
                 "calendar": {
@@ -2558,7 +2569,8 @@
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
-                    "picker": "When the state of an entity (or attribute) changes."
+                    "picker": "When the state of an entity (or attribute) changes.",
+                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "homeassistant": {
@@ -2669,7 +2681,11 @@
                   "minutes": "Minutes",
                   "seconds": "Seconds",
                   "description": {
-                    "picker": "Periodically, at a defined interval."
+                    "picker": "Periodically, at a defined interval.",
+                    "initial": "When a time pattern matches",
+                    "invalid": "Invalid Time Pattern for {parts}",
+                    "full": "Trigger {secondsChoice, select, \n every {every second of }\n every_interval {every {seconds} seconds of }\n on_the_xth {on the {secondsWithOrdinal} second of }\n other {}\n} {minutesChoice, select, \n every {every minute of }\n every_interval {every {minutes} minutes of }\n has_seconds {the {minutesWithOrdinal} minute of }\n on_the_xth {on the {minutesWithOrdinal} minute of }\n other {}\n} {hoursChoice, select, \n every {every hour}\n every_interval {every {hours} hours}\n has_seconds_or_minutes {the {hoursWithOrdinal} hour}\n on_the_xth {on the {hoursWithOrdinal} hour}\n other {}\n}",
+                    "ordinal": "{part, selectordinal, \none {#st}\ntwo {#nd}\nfew {#rd}\nother {#th}\n}"
                   }
                 },
                 "webhook": {
@@ -2734,7 +2750,9 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other conditions" },
+                "other": {
+                  "label": "Other conditions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2814,7 +2832,8 @@
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
-                    "picker": "If the sun is above or below the horizon."
+                    "picker": "If the sun is above or below the horizon.",
+                    "full": "Confirm sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -2898,8 +2917,12 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "groups": {
-                "helpers": { "label": "Helpers" },
-                "other": { "label": "Other actions" },
+                "helpers": {
+                  "label": "Helpers"
+                },
+                "other": {
+                  "label": "Other actions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."
@@ -3092,6 +3115,13 @@
                 "check_condition": {
                   "description": {
                     "full": "Test {condition}"
+                  }
+                },
+                "set_conversation_response": {
+                  "label": "Set conversation response",
+                  "description": {
+                    "picker": "Set response of conversation when automation was triggered by conversation trigger.",
+                    "full": "Set response of conversation to {response}"
                   }
                 },
                 "unknown": {
@@ -4073,15 +4103,15 @@
           "default_router_not_found": "The border router used for Android + iOS credentials for this network could not be found.",
           "default_router": "Used for Android + iOS credentials",
           "set_default_router": "Use router for Android + iOS credentials",
-          "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
+          "no_routers_otbr_network": "No border routers were found. Check your border router is configured correctly or reset it to factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
           "add_dataset_label": "Operational dataset TLV",
           "add_dataset_button": "Add dataset",
           "confirm_reset_border_router": "Reset border router?",
-          "confirm_reset_border_router_text": "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_reset_border_router_text": "Home Assistant will create a new Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "confirm_set_dataset_border_router": "Reconfigure border router?",
-          "confirm_set_dataset_border_router_text": "This will reconfigure the Home Assistant border router to use a different Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_set_dataset_border_router_text": "Home Assistant will join an existing Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "otbr_config_failed": "Failed to configure the border router",
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
@@ -4097,7 +4127,7 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiate a channel change for your Thread networks. This is an advanced operation and can leave your Thread networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
         },
         "zha": {
           "common": {
@@ -4119,7 +4149,8 @@
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
-            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
+            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
+            "pairing_mode_link": "the documentation",
             "discovered_text": "Devices will show up here once discovered.",
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
@@ -5119,6 +5150,8 @@
             },
             "area": {
               "name": "Area",
+              "alert_classes": "Alert Classes",
+              "sensor_classes": "Sensor Classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "show_camera": "Show camera feed instead of area picture"
             },
@@ -5210,6 +5243,7 @@
             "grid": {
               "name": "Grid",
               "description": "The Grid card allows you to show multiple cards in a grid.",
+              "title": "Title",
               "columns": "Columns",
               "square": "Render cards as squares"
             },
@@ -5220,7 +5254,10 @@
             "history-graph": {
               "name": "History graph",
               "description": "The History graph card allows you to display a graph for each of the entities listed.",
-              "logarithmic_scale": "Logarithmic scale"
+              "logarithmic_scale": "Logarithmic scale",
+              "min_y_axis": "Y axis minimum",
+              "max_y_axis": "Y axis maximum",
+              "fit_y_data": "Extend Y axis limits to fit data"
             },
             "statistics-graph": {
               "name": "Statistics graph",
@@ -5820,14 +5857,14 @@
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
-          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Unused refresh tokens will be automatically removed after 90 days. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
           "created_at": "Created {date}",
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_all_tokens": "Delete all tokens",
-          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -5878,6 +5915,7 @@
           "previous": "Previous",
           "start_over": "Start over",
           "error": "Error: {error}",
+          "error_required": "[%key:ui::common::error_required%]",
           "hide_password": "Hide password",
           "show_password": "Show password",
           "providers": {
@@ -6190,7 +6228,8 @@
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",
               "source": "Source",
-              "issue": "Issue"
+              "issue": "Issue",
+              "no_statistics": "[%key:ui::components::statistics_charts::no_statistics_found%]"
             }
           },
           "yaml": {
@@ -6397,7 +6436,8 @@
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections"
+        "remove_all": "Remove all selections",
+        "download_data": "Download data"
       }
     },
     "tips": {

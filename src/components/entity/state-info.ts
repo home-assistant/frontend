@@ -29,6 +29,7 @@ class StateInfo extends LitElement {
     const name = computeStateName(this.stateObj);
 
     return html`<state-badge
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .stateColor=${true}
         .color=${this.color}

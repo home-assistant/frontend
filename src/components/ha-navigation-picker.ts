@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -50,7 +51,7 @@ const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
 
 @customElement("ha-navigation-picker")
 export class HaNavigationPicker extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public label?: string;
 
@@ -205,6 +206,8 @@ export class HaNavigationPicker extends LitElement {
       }
       *[slot="prefix"] {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
     `;
   }

@@ -34,6 +34,10 @@ const SCHEMA = [
     name: "",
     schema: [
       {
+        name: "title",
+        selector: { text: {} },
+      },
+      {
         name: "columns",
         default: DEFAULT_COLUMNS,
         selector: { number: { min: 1, mode: "box" } },

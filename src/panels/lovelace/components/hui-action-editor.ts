@@ -72,17 +72,17 @@ const ASSIST_SCHEMA = [
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
-  @property() public config?: ActionConfig;
+  @property({ attribute: false }) public config?: ActionConfig;
 
   @property() public label?: string;
 
-  @property() public actions?: UiAction[];
+  @property({ attribute: false }) public actions?: UiAction[];
 
-  @property() public defaultAction?: UiAction;
+  @property({ attribute: false }) public defaultAction?: UiAction;
 
   @property() public tooltipText?: string;
 
-  @property() protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @query("ha-select") private _select!: HaSelect;
 
