@@ -19,7 +19,7 @@ class HaUserPicker extends LitElement {
 
   @property() public value = "";
 
-  @property() public users?: User[];
+  @property({ attribute: false }) public users?: User[];
 
   @property({ type: Boolean }) public disabled = false;
 

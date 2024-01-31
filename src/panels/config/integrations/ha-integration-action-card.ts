@@ -22,7 +22,7 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property() public label!: string;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     return html`
@@ -113,9 +113,13 @@ export class HaIntegrationActionCard extends LitElement {
       }
       :host ::slotted(*) {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       :host ::slotted(:last-child) {
         margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
       }
     `,
   ];

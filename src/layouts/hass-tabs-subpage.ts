@@ -45,7 +45,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
@@ -227,6 +227,8 @@ class HassTabsSubpage extends LitElement {
 
         ha-menu-button {
           margin-right: 24px;
+          margin-inline-end: 24px;
+          margin-inline-start: initial;
         }
 
         .toolbar {
@@ -302,7 +304,7 @@ class HassTabsSubpage extends LitElement {
           max-height: var(--header-height);
           line-height: 20px;
           color: var(--sidebar-text-color);
-          margin: var(--main-title-margin, 0 0 0 24px);
+          margin: var(--main-title-margin, var(--margin-title));
         }
 
         .content {
@@ -312,6 +314,8 @@ class HassTabsSubpage extends LitElement {
           );
           margin-left: env(safe-area-inset-left);
           margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: env(safe-area-inset-right);
           height: calc(100% - 1px - var(--header-height));
           height: calc(
             100% - 1px - var(--header-height) - env(safe-area-inset-bottom)

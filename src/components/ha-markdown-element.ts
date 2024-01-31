@@ -3,7 +3,17 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
-const _blockQuoteToAlert = { Note: "info", Warning: "warning" };
+const _gitHubMarkdownAlerts = {
+  reType:
+    /(?<input>(\[!(?<type>caution|important|note|tip|warning)\])(?:\s|\\n)?)/i,
+  typeToHaAlert: {
+    caution: "error",
+    important: "info",
+    note: "info",
+    tip: "success",
+    warning: "warning",
+  },
+};
 
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends ReactiveElement {
@@ -68,32 +78,33 @@ class HaMarkdownElement extends ReactiveElement {
         }
         node.addEventListener("load", this._resize);
       } else if (node instanceof HTMLQuoteElement) {
-        // Map GitHub blockquote elements to our ha-alert element
-        const firstElementChild = node.firstElementChild;
-        const quoteTitleElement = firstElementChild?.firstElementChild;
-        const quoteType =
-          quoteTitleElement?.textContent &&
-          _blockQuoteToAlert[quoteTitleElement.textContent];
+        /**
+         * Map GitHub blockquote elements to our ha-alert element
+         * https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts
+         */
+        const gitHubAlertMatch =
+          node.firstElementChild?.firstChild?.textContent &&
+          _gitHubMarkdownAlerts.reType.exec(
+            node.firstElementChild.firstChild.textContent
+          );
 
-        // GitHub is strict on how these are defined, we need to make sure we know what we have before starting to replace it
-        if (quoteTitleElement?.nodeName === "STRONG" && quoteType) {
-          const alertNote = document.createElement("ha-alert");
-          alertNote.alertType = quoteType;
-          alertNote.title =
-            (firstElementChild!.childNodes[1].nodeName === "#text" &&
-              firstElementChild!.childNodes[1].textContent?.trimStart()) ||
-            "";
+        if (gitHubAlertMatch) {
+          const { type: alertType } = gitHubAlertMatch.groups!;
+          const haAlertNode = document.createElement("ha-alert");
+          haAlertNode.alertType =
+            _gitHubMarkdownAlerts.typeToHaAlert[alertType.toLowerCase()];
 
-          const childNodes = Array.from(firstElementChild!.childNodes);
-          for (const child of childNodes.slice(
-            childNodes.findIndex(
-              // There is always a line break between the title and the content, we want to skip that
-              (childNode) => childNode instanceof HTMLBRElement
-            ) + 1
-          )) {
-            alertNote.appendChild(child);
-          }
-          node.firstElementChild!.replaceWith(alertNote);
+          haAlertNode.append(
+            ...Array.from(node.childNodes)
+              .map((child) => Array.from(child.childNodes))
+              .reduce((acc, val) => acc.concat(val), [])
+              .filter(
+                (childNode) =>
+                  childNode.textContent &&
+                  childNode.textContent !== gitHubAlertMatch.input
+              )
+          );
+          walker.parentNode()!.replaceChild(haAlertNode, node);
         }
       } else if (
         node instanceof HTMLElement &&

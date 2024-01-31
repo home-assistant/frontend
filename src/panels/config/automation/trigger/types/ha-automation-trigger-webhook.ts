@@ -27,7 +27,7 @@ const DEFAULT_WEBHOOK_ID = "";
 export class HaWebhookTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: WebhookTrigger;
+  @property({ attribute: false }) public trigger!: WebhookTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 

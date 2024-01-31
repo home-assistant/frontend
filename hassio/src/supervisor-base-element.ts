@@ -29,6 +29,10 @@ import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
 import { HomeAssistant, Route } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
+import {
+  computeRTLDirection,
+  setDirectionStyles,
+} from "../../src/common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -95,6 +99,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
     if (changedProperties.has("_language") || !this.hasUpdated) {
       this._initializeLocalize();
+      this._applyDirection(this.hass);
     }
   }
 
@@ -214,5 +219,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
         this._updateSupervisor(ev.detail)
       );
     }
+  }
+
+  private _applyDirection(hass: HomeAssistant) {
+    const direction = computeRTLDirection(hass);
+    setDirectionStyles(direction, this);
   }
 }

@@ -825,6 +825,8 @@ class DialogZWaveJSAddNode extends LitElement {
           width: 16px;
           height: 16px;
           margin-right: 0px;
+          margin-inline-end: 0px;
+          margin-inline-start: initial;
         }
         .stage {
           padding: 8px;
@@ -851,6 +853,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .select-inclusion .outline:nth-child(2) {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
 
         .select-inclusion .outline {
@@ -869,6 +873,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
           .select-inclusion .outline:nth-child(2) {
             margin-left: 0;
+            margin-inline-start: 0;
+            margin-inline-end: initial;
             margin-top: 16px;
           }
         }
@@ -887,6 +893,8 @@ class DialogZWaveJSAddNode extends LitElement {
         .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
         }
       `,
     ];

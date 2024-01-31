@@ -246,7 +246,8 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .state=${entity}
+                      .hass=${this.hass}
+                      .stateObj=${entity}
                       slot="graphic"
                     ></ha-state-icon>
                     ${entity.attributes.friendly_name || entity.entity_id}
@@ -270,7 +271,8 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .state=${group}
+                      .hass=${this.hass}
+                      .stateObj=${group}
                       slot="graphic"
                     ></ha-state-icon>
                     ${group.attributes.friendly_name || group.entity_id}
@@ -294,7 +296,8 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .state=${scene}
+                      .hass=${this.hass}
+                      .stateObj=${scene}
                       slot="graphic"
                     ></ha-state-icon>
                     ${scene.attributes.friendly_name || scene.entity_id}
@@ -349,7 +352,8 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .state=${automation}
+                      .hass=${this.hass}
+                      .stateObj=${automation}
                       slot="graphic"
                     ></ha-state-icon>
                     ${automation.attributes.friendly_name ||
@@ -403,7 +407,8 @@ export class HaRelatedItems extends LitElement {
                     graphic="icon"
                   >
                     <ha-state-icon
-                      .state=${script}
+                      .hass=${this.hass}
+                      .stateObj=${script}
                       slot="graphic"
                     ></ha-state-icon>
                     ${script.attributes.friendly_name || script.entity_id}

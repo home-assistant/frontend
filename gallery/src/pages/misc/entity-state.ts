@@ -53,6 +53,7 @@ const SENSOR_DEVICE_CLASSES = [
   "volatile_organic_compounds_parts",
   "voltage",
   "volume",
+  "volume_flow_rate",
   "water",
   "weight",
   "wind_speed",
@@ -344,6 +345,7 @@ export class DemoEntityState extends LitElement {
           title: "Icon",
           template: (entry) => html`
             <state-badge
+              .hass=${hass}
               .stateObj=${entry.stateObj}
               .stateColor=${true}
             ></state-badge>

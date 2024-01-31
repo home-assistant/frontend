@@ -181,7 +181,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                         { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-rx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -204,7 +204,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                         { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-tx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -267,6 +267,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           list-style-type: none;
           margin: 4px;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
         .entitylistitem {
           margin-bottom: 12px;

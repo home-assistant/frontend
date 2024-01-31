@@ -7,11 +7,11 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-trigger")
 export class HaTriggerSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TriggerSelector;
+  @property({ attribute: false }) public selector!: TriggerSelector;
 
-  @property() public value?: Trigger;
+  @property({ attribute: false }) public value?: Trigger;
 
   @property() public label?: string;
 
@@ -24,8 +24,7 @@ export class HaTriggerSelector extends LitElement {
         .disabled=${this.disabled}
         .triggers=${this.value || []}
         .hass=${this.hass}
-        .nested=${this.selector.trigger?.nested}
-        .reOrderMode=${this.selector.trigger?.reorder_mode}
+        .path=${this.selector.trigger?.path}
       ></ha-automation-trigger>
     `;
   }

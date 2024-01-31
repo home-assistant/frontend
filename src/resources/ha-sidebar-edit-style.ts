@@ -1,7 +1,7 @@
 import { css } from "lit";
 
-export const sortableStyles = css`
-  #sortable a:nth-of-type(2n) paper-icon-item {
+export const sidebarEditStyle = css`
+  .reorder-list a:nth-of-type(2n) paper-icon-item {
     animation-name: keyframes1;
     animation-iteration-count: infinite;
     transform-origin: 50% 10%;
@@ -9,7 +9,7 @@ export const sortableStyles = css`
     animation-duration: 0.25s;
   }
 
-  #sortable a:nth-of-type(2n-1) paper-icon-item {
+  .reorder-list a:nth-of-type(2n-1) paper-icon-item {
     animation-name: keyframes2;
     animation-iteration-count: infinite;
     animation-direction: alternate;
@@ -18,38 +18,18 @@ export const sortableStyles = css`
     animation-duration: 0.33s;
   }
 
-  #sortable a {
+  .reorder-list a {
     height: 48px;
     display: flex;
   }
 
-  #sortable {
+  .reorder-list {
     outline: none;
     display: block !important;
   }
 
   .hidden-panel {
     display: flex !important;
-  }
-
-  .sortable-fallback {
-    display: none;
-    opacity: 0;
-  }
-
-  .sortable-ghost {
-    border: 2px solid var(--primary-color);
-    background: rgba(var(--rgb-primary-color), 0.25);
-    border-radius: 4px;
-    opacity: 0.4;
-  }
-
-  .sortable-drag {
-    border-radius: 4px;
-    opacity: 1;
-    background: var(--card-background-color);
-    box-shadow: 0px 4px 8px 3px #00000026;
-    cursor: grabbing;
   }
 
   @keyframes keyframes1 {

@@ -8,7 +8,7 @@ import type { HaYamlEditor } from "../ha-yaml-editor";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: any;
 
