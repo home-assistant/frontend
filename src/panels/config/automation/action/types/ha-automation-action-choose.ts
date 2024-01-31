@@ -122,7 +122,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._showReorder}
+        .disabled=${!this._showReorder || this.disabled}
         group="choose-options"
         .path=${[...(this.path ?? []), "choose"]}
       >
@@ -148,7 +148,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         ? ""
                         : this._getDescription(option))}
                     </h3>
-                    ${this._showReorder
+                    ${this._showReorder && !this.disabled
                       ? html`
                           <div class="handle" slot="icons">
                             <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
