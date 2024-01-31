@@ -9,6 +9,7 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
 import { BlueprintInput } from "../../../../src/data/blueprint";
 import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
@@ -93,22 +94,25 @@ const DEVICES = [
   },
 ];
 
-const AREAS = [
+const AREAS: AreaRegistryEntry[] = [
   {
     area_id: "backyard",
     name: "Backyard",
+    icon: null,
     picture: null,
     aliases: [],
   },
   {
     area_id: "bedroom",
     name: "Bedroom",
+    icon: "mdi:bed",
     picture: null,
     aliases: [],
   },
   {
     area_id: "livingroom",
     name: "Livingroom",
+    icon: "mdi:sofa",
     picture: null,
     aliases: [],
   },
