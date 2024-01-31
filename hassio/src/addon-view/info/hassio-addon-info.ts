@@ -99,7 +99,7 @@ const RATING_ICON = {
 
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -1188,11 +1188,13 @@ class HassioAddonInfo extends LitElement {
         }
         .addon-header {
           padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: initial;
           font-size: 24px;
           color: var(--ha-card-header-color, --primary-text-color);
         }
         .addon-version {
-          float: right;
+          float: var(--float-end);
           font-size: 15px;
           vertical-align: middle;
         }

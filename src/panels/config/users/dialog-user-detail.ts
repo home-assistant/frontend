@@ -292,7 +292,12 @@ class DialogUserDetail extends LitElement {
           margin-top: 4px;
         }
         .badge-container > * {
-          margin: 4px 4px 4px 0;
+          margin-top: 4px;
+          margin-bottom: 4px;
+          margin-right: 4px;
+          margin-left: 0;
+          margin-inline-end: 4px;
+          margin-inline-start: 0;
         }
         .state {
           background-color: rgba(var(--rgb-primary-text-color), 0.15);
@@ -303,6 +308,8 @@ class DialogUserDetail extends LitElement {
         }
         .state:not(:first-child) {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .row {
           display: flex;
@@ -310,6 +317,8 @@ class DialogUserDetail extends LitElement {
         }
         ha-help-tooltip {
           margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: initial;
           position: relative;
         }
       `,

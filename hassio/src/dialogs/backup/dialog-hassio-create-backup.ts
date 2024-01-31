@@ -138,6 +138,9 @@ class HassioCreateBackupDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        :host {
+          direction: var(--direction);
+        }
         ha-circular-progress {
           display: block;
           text-align: center;

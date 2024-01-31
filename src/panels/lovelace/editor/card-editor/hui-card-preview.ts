@@ -10,7 +10,7 @@ import { LovelaceCard } from "../../types";
 export class HuiCardPreview extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public config?: LovelaceCardConfig;
+  @property({ attribute: false }) public config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 

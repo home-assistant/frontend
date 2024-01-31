@@ -9,7 +9,7 @@ import { HomeAssistant } from "../../types";
 export class HaPickLanguageRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render() {
     return html`

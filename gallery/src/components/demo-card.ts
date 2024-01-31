@@ -11,11 +11,11 @@ export interface DemoCardConfig {
 
 @customElement("demo-card")
 class DemoCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config!: DemoCardConfig;
+  @property({ attribute: false }) public config!: DemoCardConfig;
 
-  @property() public showConfig = false;
+  @property({ type: Boolean }) public showConfig = false;
 
   @state() private _size?: number;
 

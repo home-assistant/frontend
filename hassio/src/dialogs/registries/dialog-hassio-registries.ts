@@ -157,11 +157,10 @@ class HassioRegistriesDialog extends LitElement {
   }
 
   public focus(): void {
-    this.updateComplete.then(
-      () =>
-        (
-          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-        )?.focus()
+    this.updateComplete.then(() =>
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -230,6 +229,8 @@ class HassioRegistriesDialog extends LitElement {
         ha-icon-button {
           color: var(--error-color);
           margin-right: -10px;
+          margin-inline-end: -10px;
+          margin-inline-start: initial;
         }
       `,
     ];

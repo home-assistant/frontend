@@ -62,7 +62,10 @@ class OnboardingRestoreBackup extends LitElement {
       try {
         await fetchInstallationType();
       } catch (err: any) {
-        if ((err as Error).message === "unauthorized") {
+        if (
+          (err as Error).message === "unauthorized" ||
+          (err as Error).message === "not_found"
+        ) {
           window.location.replace("/");
         }
       }

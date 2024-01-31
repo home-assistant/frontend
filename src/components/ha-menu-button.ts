@@ -11,7 +11,7 @@ import "./ha-icon-button";
 class HaMenuButton extends LitElement {
   @property({ type: Boolean }) public hassio = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 

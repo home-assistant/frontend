@@ -16,7 +16,7 @@ export class HaEventAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: EventAction;
+  @property({ attribute: false }) public action!: EventAction;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 

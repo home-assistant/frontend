@@ -1,3 +1,5 @@
+import { AutomationConfig } from "../data/automation";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -33,6 +35,13 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
+interface EMOutgoingMessageScanQRCode extends EMMessage {
+  type: "qr_code/scan";
+  title: string;
+  description: string;
+  alternative_option_label?: string;
+}
+
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
 }
@@ -45,6 +54,13 @@ type EMOutgoingMessageWithAnswer = {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
+  };
+  "qr_code/scan": {
+    request: EMOutgoingMessageScanQRCode;
+    response:
+      | EMIncomingMessageQRCodeResponseCanceled
+      | EMIncomingMessageQRCodeResponseAlternativeOptions
+      | EMIncomingMessageQRCodeResponseScanResult;
   };
 };
 
@@ -147,11 +163,34 @@ interface EMIncomingMessageShowSidebar {
   command: "sidebar/show";
 }
 
+interface EMIncomingMessageShowAutomationEditor {
+  id: number;
+  type: "command";
+  command: "automation/editor/show";
+  payload?: {
+    config?: Partial<AutomationConfig>;
+  };
+}
+
+export interface EMIncomingMessageQRCodeResponseCanceled {
+  action: "canceled";
+}
+
+export interface EMIncomingMessageQRCodeResponseAlternativeOptions {
+  action: "alternative_options";
+}
+
+export interface EMIncomingMessageQRCodeResponseScanResult {
+  action: "scan_result";
+  result: string;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
   | EMIncomingMessageToggleSidebar
-  | EMIncomingMessageShowSidebar;
+  | EMIncomingMessageShowSidebar
+  | EMIncomingMessageShowAutomationEditor;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -168,6 +207,7 @@ export interface ExternalConfig {
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
   hasAssist: boolean;
+  hasQRScanner: number;
 }
 
 export class ExternalMessaging {

@@ -166,7 +166,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
-            .darkMode=${this._config.dark_mode}
+            ?darkMode=${this._config.dark_mode}
             interactiveZones
             renderPassive
           ></ha-map>

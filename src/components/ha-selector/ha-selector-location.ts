@@ -16,7 +16,7 @@ export class HaLocationSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: LocationSelector;
 
-  @property() public value?: LocationSelectorValue;
+  @property({ type: Object }) public value?: LocationSelectorValue;
 
   @property() public label?: string;
 
@@ -51,8 +51,14 @@ export class HaLocationSelector extends LitElement {
       return [
         {
           id: "location",
-          latitude: value?.latitude || this.hass.config.latitude,
-          longitude: value?.longitude || this.hass.config.longitude,
+          latitude:
+            !value || isNaN(value.latitude)
+              ? this.hass.config.latitude
+              : value.latitude,
+          longitude:
+            !value || isNaN(value.longitude)
+              ? this.hass.config.longitude
+              : value.longitude,
           radius: selector.location?.radius ? value?.radius || 1000 : undefined,
           radius_color: zoneRadiusColor,
           icon:
