@@ -58,87 +58,83 @@ class DialogMatterReinterviewNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b>
+          : this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.reinterview_node.in_progress"
+                        )}
+                      </b>
+                    </p>
+                    <p>
                       ${this.hass.localize(
-                        "ui.panel.config.matter.reinterview_node.in_progress"
+                        "ui.panel.config.matter.reinterview_node.run_in_background"
                       )}
-                    </b>
-                  </p>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.reinterview_node.run_in_background"
-                    )}
-                  </p>
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.reinterview_node.interview_failed"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "finished"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.reinterview_node.interview_complete"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
+                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </mwc-button>
+              `
+            : this._status === "failed"
+              ? html`
+                  <div class="flex-container">
+                    <ha-svg-icon
+                      .path=${mdiCloseCircle}
+                      class="failed"
+                    ></ha-svg-icon>
+                    <div class="status">
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.reinterview_node.interview_failed"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </mwc-button>
+                `
+              : this._status === "finished"
+                ? html`
+                    <div class="flex-container">
+                      <ha-svg-icon
+                        .path=${mdiCheckCircle}
+                        class="success"
+                      ></ha-svg-icon>
+                      <div class="status">
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.matter.reinterview_node.interview_complete"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                      ${this.hass.localize("ui.common.close")}
+                    </mwc-button>
+                  `
+                : nothing}
       </ha-dialog>
     `;
   }
 
-  private _startReinterview(): void {
+  private async _startReinterview(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
-    interviewMatterNode(this.hass, this.device_id!)
-      .then(() => {
-        this._status = "finished";
-      })
-      .catch(() => {
-        this._status = "failed";
-      });
+    try {
+      await interviewMatterNode(this.hass, this.device_id!);
+      this._status = "finished";
+    } catch (err) {
+      this._status = "failed";
+    }
   }
 
   public closeDialog(): void {

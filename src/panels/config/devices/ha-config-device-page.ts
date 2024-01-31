@@ -1100,10 +1100,10 @@ export class HaConfigDevicePage extends LitElement {
       deviceActions.push(...actions);
     }
     if (domains.includes("matter")) {
-      const zwave = await import(
+      const matter = await import(
         "./device-detail/integration-elements/matter/device-actions"
       );
-      const actions = await zwave.getMatterDeviceActions(
+      const actions = await matter.getMatterDeviceActions(
         this,
         this.hass,
         device

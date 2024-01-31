@@ -38,67 +38,7 @@ class DialogMatterPingNode extends LitElement {
           this.hass.localize("ui.panel.config.matter.ping_node.title")
         )}
       >
-        ${!this._status
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.ping_node.introduction"
-                )}
-              </p>
-              <p>
-                <em>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.ping_node.battery_device_warning"
-                  )}
-                </em>
-              </p>
-              <mwc-button slot="primaryAction" @click=${this._startPing}>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.ping_node.start_ping"
-                )}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b>
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.ping_node.in_progress"
-                      )}
-                    </b>
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.ping_node.ping_failed"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "finished"
+        ${this._pingResult
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
@@ -115,15 +55,13 @@ class DialogMatterPingNode extends LitElement {
               </div>
               <div>
                 <mwc-list>
-                  ${Object.keys(this._pingResult!).map(
-                    (ip) =>
+                  ${Object.entries(this._pingResult).map(
+                    ([ip, success]) =>
                       html`<ha-list-item hasMeta
                         >${ip}
                         <ha-icon
                           slot="meta"
-                          icon=${this._pingResult![ip]
-                            ? "mdi:check"
-                            : "mdi:close"}
+                          icon=${success ? "mdi:check" : "mdi:close"}
                         ></ha-icon>
                       </ha-list-item>`
                   )}
@@ -133,24 +71,76 @@ class DialogMatterPingNode extends LitElement {
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.ping_node.in_progress"
+                        )}
+                      </b>
+                    </p>
+                  </div>
+                </div>
+                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </mwc-button>
+              `
+            : this._status === "failed"
+              ? html`
+                  <div class="flex-container">
+                    <ha-svg-icon
+                      .path=${mdiCloseCircle}
+                      class="failed"
+                    ></ha-svg-icon>
+                    <div class="status">
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.ping_node.ping_failed"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </mwc-button>
+                `
+              : html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.ping_node.introduction"
+                    )}
+                  </p>
+                  <p>
+                    <em>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.ping_node.battery_device_warning"
+                      )}
+                    </em>
+                  </p>
+                  <mwc-button slot="primaryAction" @click=${this._startPing}>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.ping_node.start_ping"
+                    )}
+                  </mwc-button>
+                `}
       </ha-dialog>
     `;
   }
 
-  private _startPing(): void {
+  private async _startPing(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
-    pingMatterNode(this.hass, this.device_id!)
-      .then((result) => {
-        this._pingResult = result;
-        this._status = "finished";
-      })
-      .catch(() => {
-        this._status = "failed";
-      });
+    try {
+      this._pingResult = await pingMatterNode(this.hass, this.device_id!);
+    } catch (err) {
+      this._status = "failed";
+    }
   }
 
   public closeDialog(): void {
