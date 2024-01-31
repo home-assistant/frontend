@@ -1,7 +1,13 @@
 import { mdiHelpCircle, mdiPlus } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { formatListWithAnds } from "../../../common/string/format-list";
@@ -11,19 +17,9 @@ import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
-  subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -33,7 +29,7 @@ import {
 } from "./show-dialog-area-registry-detail";
 
 @customElement("ha-config-areas-dashboard")
-export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
+export class HaConfigAreasDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -42,24 +38,18 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _areas!: AreaRegistryEntry[];
-
-  @state() private _devices!: DeviceRegistryEntry[];
-
-  @state() private _entities!: EntityRegistryEntry[];
-
   private _processAreas = memoizeOne(
     (
-      areas: AreaRegistryEntry[],
-      devices: DeviceRegistryEntry[],
-      entities: EntityRegistryEntry[]
-    ) =>
-      areas.map((area) => {
+      areas: HomeAssistant["areas"],
+      devices: HomeAssistant["devices"],
+      entities: HomeAssistant["entities"]
+    ) => {
+      const processArea = (area: AreaRegistryEntry) => {
         let noDevicesInArea = 0;
         let noServicesInArea = 0;
         let noEntitiesInArea = 0;
 
-        for (const device of devices) {
+        for (const device of Object.values(devices)) {
           if (device.area_id === area.area_id) {
             if (device.entry_type === "service") {
               noServicesInArea++;
@@ -69,7 +59,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
           }
         }
 
-        for (const entity of entities) {
+        for (const entity of Object.values(entities)) {
           if (entity.area_id === area.area_id) {
             noEntitiesInArea++;
           }
@@ -81,24 +71,22 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
           services: noServicesInArea,
           entities: noEntitiesInArea,
         };
-      })
+      };
+
+      return Object.values(areas).map(processArea);
+    }
   );
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeAreaRegistry(this.hass.connection, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._devices = entries;
-      }),
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._entities = entries;
-      }),
-    ];
-  }
-
   protected render(): TemplateResult {
+    const areas =
+      !this.hass.areas || !this.hass.devices || !this.hass.entities
+        ? undefined
+        : this._processAreas(
+            this.hass.areas,
+            this.hass.devices,
+            this.hass.entities
+          );
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -115,52 +103,11 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
           @click=${this._showHelp}
         ></ha-icon-button>
         <div class="container">
-          ${!this._areas || !this._devices || !this._entities
-            ? ""
-            : this._processAreas(
-                this._areas,
-                this._devices,
-                this._entities
-              ).map(
-                (area) =>
-                  html`<a href=${`/config/areas/area/${area.area_id}`}
-                    ><ha-card outlined>
-                      <div
-                        style=${styleMap({
-                          backgroundImage: area.picture
-                            ? `url(${area.picture})`
-                            : undefined,
-                        })}
-                        class="picture ${!area.picture ? "placeholder" : ""}"
-                      ></div>
-                      <h1 class="card-header">${area.name}</h1>
-                      <div class="card-content">
-                        <div>
-                          ${formatListWithAnds(
-                            this.hass.locale,
-                            [
-                              area.devices &&
-                                this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.devices",
-                                  { count: area.devices }
-                                ),
-                              area.services &&
-                                this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.services",
-                                  { count: area.services }
-                                ),
-                              area.entities &&
-                                this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.entities",
-                                  { count: area.entities }
-                                ),
-                            ].filter((v): v is string => Boolean(v))
-                          )}
-                        </div>
-                      </div>
-                    </ha-card></a
-                  >`
-              )}
+          ${areas?.length
+            ? html`<div class="areas">
+                ${areas.map((area) => this._renderArea(area))}
+              </div>`
+            : nothing}
         </div>
         <ha-fab
           slot="fab"
@@ -176,13 +123,55 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private _renderArea(area) {
+    return html`<a href=${`/config/areas/area/${area.area_id}`}>
+      <ha-card outlined>
+        <div
+          style=${styleMap({
+            backgroundImage: area.picture ? `url(${area.picture})` : undefined,
+          })}
+          class="picture ${!area.picture ? "placeholder" : ""}"
+        >
+          ${!area.picture && area.icon
+            ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+            : ""}
+        </div>
+        <h1 class="card-header">${area.name}</h1>
+        <div class="card-content">
+          <div>
+            ${formatListWithAnds(
+              this.hass.locale,
+              [
+                area.devices &&
+                  this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.devices",
+                    { count: area.devices }
+                  ),
+                area.services &&
+                  this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.services",
+                    { count: area.services }
+                  ),
+                area.entities &&
+                  this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.entities",
+                    { count: area.entities }
+                  ),
+              ].filter((v): v is string => Boolean(v))
+            )}
+          </div>
+        </div>
+      </ha-card>
+    </a>`;
+  }
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
   }
 
   private _createArea() {
-    this._openDialog();
+    this._openAreaDialog();
   }
 
   private _showHelp() {
@@ -202,7 +191,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _openDialog(entry?: AreaRegistryEntry) {
+  private _openAreaDialog(entry?: AreaRegistryEntry) {
     showAreaRegistryDetailDialog(this, {
       entry,
       createEntry: async (values) =>
@@ -213,14 +202,17 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return css`
       .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        grid-gap: 16px 16px;
         padding: 8px 16px 16px;
         margin: 0 auto 64px auto;
-        max-width: 2000px;
       }
-      .container > * {
+      .areas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-gap: 16px 16px;
+        max-width: 2000px;
+        margin-bottom: 16px;
+      }
+      .areas > * {
         max-width: 500px;
       }
       ha-card {
@@ -238,6 +230,12 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
         background-size: cover;
         background-position: center;
         position: relative;
+      }
+      .placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        --mdc-icon-size: 48px;
       }
       .picture.placeholder::before {
         position: absolute;

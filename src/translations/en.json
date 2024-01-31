@@ -1771,6 +1771,7 @@
             "update_area": "Update area",
             "delete": "Delete",
             "name": "Name",
+            "icon": "Icon",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
