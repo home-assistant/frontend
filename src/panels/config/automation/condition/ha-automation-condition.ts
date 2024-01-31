@@ -117,7 +117,7 @@ export default class HaAutomationCondition extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._showReorder}
+        .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._conditionMoved}
         group="conditions"
         .path=${this.path}
@@ -141,7 +141,7 @@ export default class HaAutomationCondition extends LitElement {
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
               >
-                ${this._showReorder
+                ${this._showReorder && !this.disabled
                   ? html`
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
