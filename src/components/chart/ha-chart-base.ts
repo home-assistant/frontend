@@ -261,6 +261,7 @@ export class HaChartBase extends LitElement {
                       ${this._tooltip.footer.map((item) => html`${item}<br />`)}
                     </div>`
                   : ""}
+                <slot name="tooltip-footer"></slot>
               </div>`
             : ""}
         </div>
@@ -449,9 +450,12 @@ export class HaChartBase extends LitElement {
         color: white;
         border-radius: 4px;
         pointer-events: none;
-        z-index: 1000;
+        z-index: 1;
         width: 200px;
         box-sizing: border-box;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
       }
       :host([rtl]) .chartTooltip {
         direction: rtl;
