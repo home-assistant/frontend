@@ -31,41 +31,54 @@ class NotificationManager extends LitElement {
 
   @state() private _parameters?: ShowToastParams;
 
-  @query("ha-toast") private _toast!: HaToast;
+  @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
     // Can happen on initial load
     if (!this._toast) {
       await this.updateComplete;
     }
-    this._toast.close("dismiss");
+    this._toast?.close("dismiss");
     this._parameters = parameters;
     if (!this._parameters || this._parameters.duration === 0) {
+      this._parameters = undefined;
       return;
     }
 
     if (
-      this._parameters.duration !== undefined &&
-      this._parameters.duration > 0 &&
-      this._parameters.duration <= 4000
+      this._parameters.duration === undefined ||
+      (this._parameters.duration > 0 && this._parameters.duration <= 4000)
     ) {
       this._parameters.duration = 4000;
     }
-
-    this._toast.labelText = this._parameters.message;
-    if (this._parameters.duration) {
-      this._toast.timeoutMs = this._parameters.duration;
-    }
-    this._toast.show();
   }
 
   public shouldUpdate(changedProperties) {
     return !this._toast || changedProperties.has("_parameters");
   }
 
-  protected render(): TemplateResult {
+  public updated() {
+    if (this._parameters) {
+      this._toast?.show();
+    }
+  }
+
+  private _toastClosed() {
+    this._parameters = undefined;
+  }
+
+  protected render() {
+    if (!this._parameters) {
+      return nothing;
+    }
     return html`
-      <ha-toast leading dir=${computeRTL(this.hass) ? "rtl" : "ltr"}>
+      <ha-toast
+        leading
+        dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
+        .labelText=${this._parameters.message}
+        .timeoutMs=${this._parameters.duration!}
+        @MDCSnackbar:closed=${this._toastClosed}
+      >
         ${this._parameters?.action
           ? html`
               <ha-button
@@ -95,13 +108,7 @@ class NotificationManager extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        color: var(--primary-color);
-        font-weight: bold;
-        margin-left: 8px;
-      }
-    `;
+    return css``;
   }
 }
 
