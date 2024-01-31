@@ -6656,6 +6656,8 @@
         "remove_all": "Remove all selections",
         "download_data": "Download data",
         "download_data_error": "Unable to download data",
+        "add_card": "Add current view as card",
+        "add_card_error": "Unable to add card",
         "error_no_data": "You need to select data first."
       }
     },
