@@ -57,13 +57,13 @@ import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId!: string;
 
@@ -680,6 +680,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+          padding-inline-end: 40px;
+          padding-inline-start: initial;
         }
 
         .row {
@@ -701,6 +703,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           width: 48px;
           height: 48px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         .network-status div.heading ha-svg-icon {
           width: 48px;

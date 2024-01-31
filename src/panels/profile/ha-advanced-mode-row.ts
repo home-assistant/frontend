@@ -13,9 +13,9 @@ import { HomeAssistant } from "../../types";
 class AdvancedModeRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public coreUserData?: CoreFrontendUserData;
+  @property({ attribute: false }) public coreUserData?: CoreFrontendUserData;
 
   protected render(): TemplateResult {
     return html`

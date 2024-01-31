@@ -62,19 +62,19 @@ interface DeviceRowData extends DeviceRegistryEntry {
 export class HaConfigDeviceDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries!: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   entities!: EntityRegistryEntry[];
 
-  @property() public manifests!: IntegrationManifest[];
+  @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -605,6 +605,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       css`
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

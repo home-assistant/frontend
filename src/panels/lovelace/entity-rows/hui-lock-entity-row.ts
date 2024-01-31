@@ -66,6 +66,8 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
     return css`
       mwc-button {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }

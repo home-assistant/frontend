@@ -8,17 +8,21 @@ import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
-import type { RepairsIssue } from "../../../data/repairs";
+import {
+  fetchRepairsIssueData,
+  type RepairsIssue,
+} from "../../../data/repairs";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false })
   public repairsIssues?: RepairsIssue[];
@@ -107,10 +111,24 @@ class HaConfigRepairs extends LitElement {
     `;
   }
 
-  private _openShowMoreDialog(ev): void {
+  private async _openShowMoreDialog(ev): Promise<void> {
     const issue = ev.currentTarget.issue as RepairsIssue;
     if (issue.is_fixable) {
       showRepairsFlowDialog(this, issue);
+    } else if (
+      issue.domain === "homeassistant" &&
+      issue.translation_key === "config_entry_reauth"
+    ) {
+      const data = await fetchRepairsIssueData(
+        this.hass.connection,
+        issue.domain,
+        issue.issue_id
+      );
+      if ("flow_id" in data.issue_data) {
+        showConfigFlowDialog(this, {
+          continueFlowId: data.issue_data.flow_id as string,
+        });
+      }
     } else {
       showRepairsIssueDialog(this, {
         issue,

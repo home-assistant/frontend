@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../types";
 class NumberFormatRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     return html`

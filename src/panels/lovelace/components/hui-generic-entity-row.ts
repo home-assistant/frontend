@@ -6,7 +6,7 @@ import {
   html,
   nothing,
 } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
@@ -24,10 +24,11 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
 
-class HuiGenericEntityRow extends LitElement {
+@customElement("hui-generic-entity-row")
+export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public config?: EntitiesCardEntityConfig;
+  @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
   @property() public secondaryText?: string;
 
@@ -204,6 +205,8 @@ class HuiGenericEntityRow extends LitElement {
       .info {
         margin-left: 16px;
         margin-right: 8px;
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
         flex: 1 1 30%;
       }
       .info,
@@ -214,10 +217,14 @@ class HuiGenericEntityRow extends LitElement {
       }
       .flex ::slotted(*) {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         min-width: 0;
       }
       .flex ::slotted([slot="secondary"]) {
         margin-left: 0;
+        margin-inline-start: 0;
+        margin-inline-end: initial;
       }
       .secondary,
       ha-relative-time {
@@ -249,4 +256,9 @@ class HuiGenericEntityRow extends LitElement {
     `;
   }
 }
-customElements.define("hui-generic-entity-row", HuiGenericEntityRow);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-generic-entity-row": HuiGenericEntityRow;
+  }
+}

@@ -222,6 +222,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
       }
       ha-checkbox {
         margin-left: -16px;
+        margin-inline-start: -16px;
+        margin-inline-end: initial;
       }
       .checkbox-spacer {
         width: 32px;

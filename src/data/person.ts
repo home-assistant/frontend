@@ -24,16 +24,6 @@ export const fetchPersons = (hass: HomeAssistant) =>
     config: Person[];
   }>({ type: "person/list" });
 
-export const listUserPersons = (): Promise<Record<string, BasePerson>> =>
-  fetch("/api/person/list", {
-    credentials: "same-origin",
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-    throw new Error(resp.statusText);
-  });
-
 export const createPerson = (
   hass: HomeAssistant,
   values: PersonMutableParams

@@ -7,9 +7,9 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiColorSelector;
+  @property({ attribute: false }) public selector!: UiColorSelector;
 
   @property() public value?: string;
 
@@ -36,6 +36,6 @@ export class HaSelectorUiColor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-color": HaSelectorUiColor;
+    "ha-selector-ui_color": HaSelectorUiColor;
   }
 }

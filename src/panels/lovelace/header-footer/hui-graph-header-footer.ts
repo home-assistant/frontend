@@ -1,10 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -62,7 +62,7 @@ export class HuiGraphHeaderFooter
 
   @property() public type!: "header" | "footer";
 
-  @property() protected _config?: GraphHeaderFooterConfig;
+  @state() protected _config?: GraphHeaderFooterConfig;
 
   @state() private _coordinates?: number[][];
 

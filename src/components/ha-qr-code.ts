@@ -1,6 +1,7 @@
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import QRCode from "qrcode";
+import "./ha-alert";
 
 @customElement("ha-qr-code")
 export class HaQrCode extends LitElement {
@@ -66,7 +67,8 @@ export class HaQrCode extends LitElement {
       const computedStyles = getComputedStyle(this);
 
       QRCode.toCanvas(canvas, this.data, {
-        errorCorrectionLevel: this.errorCorrectionLevel,
+        errorCorrectionLevel:
+          this.errorCorrectionLevel || (this.centerImage ? "Q" : "M"),
         width: this.width,
         scale: this.scale,
         margin: this.margin,
@@ -111,4 +113,10 @@ export class HaQrCode extends LitElement {
       display: block;
     }
   `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-qr-code": HaQrCode;
+  }
 }

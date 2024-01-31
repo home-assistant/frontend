@@ -10,7 +10,7 @@ import { HomeAssistant } from "../../types";
 class HaPushNotificationsRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     const platformLoaded = isComponentLoaded(this.hass, "notify.html5");

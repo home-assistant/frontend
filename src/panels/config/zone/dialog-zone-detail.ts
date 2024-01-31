@@ -152,13 +152,13 @@ class DialogZoneDetail extends LitElement {
             {
               name: "latitude",
               required: true,
-              selector: { text: {} },
+              selector: { number: {} },
             },
             {
               name: "longitude",
               required: true,
 
-              selector: { text: {} },
+              selector: { number: {} },
             },
           ],
         },
@@ -183,7 +183,7 @@ class DialogZoneDetail extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
-    const value = ev.detail.value;
+    const value = { ...ev.detail.value };
     if (
       value.location.latitude !== this._data!.latitude ||
       value.location.longitude !== this._data!.longitude ||

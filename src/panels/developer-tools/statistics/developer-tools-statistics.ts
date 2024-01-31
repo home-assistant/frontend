@@ -51,7 +51,7 @@ type DisplayedStatisticData = StatisticData & {
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
@@ -177,7 +177,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._displayData(this._data, this.hass.localize)}
-        noDataText="No statistics"
+        .noDataText=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
+        )}
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
