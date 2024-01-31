@@ -207,7 +207,7 @@ export interface ExternalConfig {
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
   hasAssist: boolean;
-  hasQRScanner: boolean;
+  hasQRScanner: number;
 }
 
 export class ExternalMessaging {
