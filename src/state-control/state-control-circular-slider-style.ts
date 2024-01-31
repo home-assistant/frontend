@@ -73,6 +73,9 @@ export const stateControlCircularSliderStyle = css`
   .primary-state {
     font-size: 36px;
   }
+  .primary-state {
+    font-size: 36px;
+  }
 
   .buttons ha-outlined-icon-button {
     --md-outlined-icon-button-container-width: 48px;
