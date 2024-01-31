@@ -35,6 +35,13 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
+interface EMOutgoingMessageScanQRCode extends EMMessage {
+  type: "qr_code/scan";
+  title: string;
+  description: string;
+  alternative_option_label?: string;
+}
+
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
 }
@@ -47,6 +54,13 @@ type EMOutgoingMessageWithAnswer = {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
+  };
+  "qr_code/scan": {
+    request: EMOutgoingMessageScanQRCode;
+    response:
+      | EMIncomingMessageQRCodeResponseCanceled
+      | EMIncomingMessageQRCodeResponseAlternativeOptions
+      | EMIncomingMessageQRCodeResponseScanResult;
   };
 };
 
@@ -158,6 +172,19 @@ interface EMIncomingMessageShowAutomationEditor {
   };
 }
 
+export interface EMIncomingMessageQRCodeResponseCanceled {
+  action: "canceled";
+}
+
+export interface EMIncomingMessageQRCodeResponseAlternativeOptions {
+  action: "alternative_options";
+}
+
+export interface EMIncomingMessageQRCodeResponseScanResult {
+  action: "scan_result";
+  result: string;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
@@ -180,6 +207,7 @@ export interface ExternalConfig {
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
   hasAssist: boolean;
+  hasQRScanner: number;
 }
 
 export class ExternalMessaging {
