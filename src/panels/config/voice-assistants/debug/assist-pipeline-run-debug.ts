@@ -28,7 +28,7 @@ import "./assist-render-pipeline-run";
 export class AssistPipelineRunDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _pipelineRuns: PipelineRun[] = [];
 
@@ -247,7 +247,7 @@ export class AssistPipelineRunDebug extends LitElement {
         }
 
         // Play audio when we're done.
-        if (updatedRun.stage === "done") {
+        if (updatedRun.stage === "done" && !updatedRun.error) {
           const url = updatedRun.tts!.tts_output!.url;
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
@@ -261,7 +261,10 @@ export class AssistPipelineRunDebug extends LitElement {
             }
           });
           audio.play();
-        } else if (updatedRun.stage === "error") {
+        } else if (
+          (updatedRun.stage === "done" && updatedRun.error) ||
+          updatedRun.stage === "error"
+        ) {
           this._finished = true;
         }
       },
@@ -439,6 +442,7 @@ export class AssistPipelineRunDebug extends LitElement {
         align-items: center;
         flex-wrap: wrap;
         margin: 0 16px 16px;
+        direction: var(--direction);
       }
       ha-assist-pipeline-picker {
         display: block;

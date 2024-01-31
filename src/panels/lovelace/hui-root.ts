@@ -1027,7 +1027,7 @@ class HUIRoot extends LitElement {
           }
         }
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
@@ -1040,6 +1040,8 @@ class HUIRoot extends LitElement {
           width: 100%;
           height: 100%;
           margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: initial;
         }
         ha-tabs,
         paper-tabs {
@@ -1092,6 +1094,8 @@ class HUIRoot extends LitElement {
           box-sizing: border-box;
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          padding-inline-start: env(safe-area-inset-left);
+          padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
         }
         hui-view {

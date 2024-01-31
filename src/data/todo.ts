@@ -18,6 +18,8 @@ export interface TodoItem {
   uid: string;
   summary: string;
   status: TodoItemStatus;
+  description?: string | null;
+  due?: string | null;
 }
 
 export const enum TodoListEntityFeature {
@@ -25,6 +27,9 @@ export const enum TodoListEntityFeature {
   DELETE_TODO_ITEM = 2,
   UPDATE_TODO_ITEM = 4,
   MOVE_TODO_ITEM = 8,
+  SET_DUE_DATE_ON_ITEM = 16,
+  SET_DUE_DATETIME_ON_ITEM = 32,
+  SET_DESCRIPTION_ON_ITEM = 64,
 }
 
 export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
@@ -74,20 +79,36 @@ export const updateItem = (
   hass.callService(
     "todo",
     "update_item",
-    { item: item.uid, rename: item.summary, status: item.status },
+    {
+      item: item.uid,
+      rename: item.summary,
+      status: item.status,
+      description: item.description,
+      due_datetime: item.due?.includes("T") ? item.due : undefined,
+      due_date:
+        item.due === undefined || item.due?.includes("T")
+          ? undefined
+          : item.due,
+    },
     { entity_id }
   );
 
 export const createItem = (
   hass: HomeAssistant,
   entity_id: string,
-  summary: string
+  item: Omit<TodoItem, "uid" | "status">
 ): Promise<ServiceCallResponse> =>
   hass.callService(
     "todo",
     "add_item",
     {
-      item: summary,
+      item: item.summary,
+      description: item.description || undefined,
+      due_datetime: item.due?.includes("T") ? item.due : undefined,
+      due_date:
+        item.due === undefined || item.due?.includes("T")
+          ? undefined
+          : item.due,
     },
     { entity_id }
   );

@@ -3,13 +3,13 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   CUSTOM_TYPE_PREFIX,
@@ -18,10 +18,9 @@ import {
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
-import { sortableStyles } from "../../../../resources/ha-sortable-style";
-import type { SortableInstance } from "../../../../resources/sortable";
 import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
@@ -29,8 +28,8 @@ import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
-import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
+import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
@@ -38,6 +37,7 @@ import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import { LovelaceCardFeatureConfig } from "../../card-features/types";
@@ -48,6 +48,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const UI_FEATURE_TYPES = [
   "alarm-modes",
+  "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
   "cover-open-close",
@@ -64,6 +65,7 @@ const UI_FEATURE_TYPES = [
   "target-humidity",
   "target-temperature",
   "vacuum-commands",
+  "update-actions",
   "water-heater-operation-modes",
   "numeric-input",
 ] as const satisfies readonly FeatureType[];
@@ -77,8 +79,10 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "humidifier-modes",
   "water-heater-operation-modes",
   "lawn-mower-commands",
+  "climate-fan-modes",
   "climate-preset-modes",
   "numeric-input",
+  "update-actions",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -86,6 +90,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   SupportsFeature | undefined
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
+  "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
@@ -104,6 +109,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "update-actions": supportsUpdateActionsCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();
@@ -140,13 +146,6 @@ export class HuiCardFeaturesEditor extends LitElement {
   public label?: string;
 
   private _featuresKeys = new WeakMap<LovelaceCardFeatureConfig, string>();
-
-  private _sortable?: SortableInstance;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._destroySortable();
-  }
 
   private _supportsFeatureType(type: string): boolean {
     if (!this.stateObj) return false;
@@ -197,10 +196,6 @@ export class HuiCardFeaturesEditor extends LitElement {
     return this._featuresKeys.get(feature)!;
   }
 
-  protected firstUpdated() {
-    this._createSortable();
-  }
-
   private _getSupportedFeaturesType() {
     const featuresTypes = UI_FEATURE_TYPES.filter(
       (type) => !this.featuresTypes || this.featuresTypes.includes(type)
@@ -241,61 +236,66 @@ export class HuiCardFeaturesEditor extends LitElement {
                 </ha-alert>
               `
             : nothing}
-          <div class="features">
-            ${repeat(
-              this.features,
-              (featureConf) => this._getKey(featureConf),
-              (featureConf, index) => {
-                const type = featureConf.type;
-                const supported = this._supportsFeatureType(type);
-                const editable = this._isFeatureTypeEditable(type);
-                return html`
-                  <div class="feature">
-                    <div class="handle">
-                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                    </div>
-                    <div class="feature-content">
-                      <div>
-                        <span> ${this._getFeatureTypeLabel(type)} </span>
-                        ${this.stateObj && !supported
-                          ? html`
-                              <span class="secondary">
-                                ${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.features.not_compatible"
-                                )}
-                              </span>
-                            `
-                          : nothing}
+          <ha-sortable
+            handle-selector=".handle"
+            @item-moved=${this._featureMoved}
+          >
+            <div class="features">
+              ${repeat(
+                this.features,
+                (featureConf) => this._getKey(featureConf),
+                (featureConf, index) => {
+                  const type = featureConf.type;
+                  const supported = this._supportsFeatureType(type);
+                  const editable = this._isFeatureTypeEditable(type);
+                  return html`
+                    <div class="feature">
+                      <div class="handle">
+                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
+                      <div class="feature-content">
+                        <div>
+                          <span> ${this._getFeatureTypeLabel(type)} </span>
+                          ${this.stateObj && !supported
+                            ? html`
+                                <span class="secondary">
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.features.not_compatible"
+                                  )}
+                                </span>
+                              `
+                            : nothing}
+                        </div>
+                      </div>
+                      ${editable
+                        ? html`
+                            <ha-icon-button
+                              .label=${this.hass!.localize(
+                                `ui.panel.lovelace.editor.features.edit`
+                              )}
+                              .path=${mdiPencil}
+                              class="edit-icon"
+                              .index=${index}
+                              @click=${this._editFeature}
+                              .disabled=${!supported}
+                            ></ha-icon-button>
+                          `
+                        : nothing}
+                      <ha-icon-button
+                        .label=${this.hass!.localize(
+                          `ui.panel.lovelace.editor.features.remove`
+                        )}
+                        .path=${mdiDelete}
+                        class="remove-icon"
+                        .index=${index}
+                        @click=${this._removeFeature}
+                      ></ha-icon-button>
                     </div>
-                    ${editable
-                      ? html`
-                          <ha-icon-button
-                            .label=${this.hass!.localize(
-                              `ui.panel.lovelace.editor.features.edit`
-                            )}
-                            .path=${mdiPencil}
-                            class="edit-icon"
-                            .index=${index}
-                            @click=${this._editFeature}
-                            .disabled=${!supported}
-                          ></ha-icon-button>
-                        `
-                      : nothing}
-                    <ha-icon-button
-                      .label=${this.hass!.localize(
-                        `ui.panel.lovelace.editor.features.remove`
-                      )}
-                      .path=${mdiDelete}
-                      class="remove-icon"
-                      .index=${index}
-                      @click=${this._removeFeature}
-                    ></ha-icon-button>
-                  </div>
-                `;
-              }
-            )}
-          </div>
+                  `;
+                }
+              )}
+            </div>
+          </ha-sortable>
           ${supportedFeaturesType.length > 0
             ? html`
                 <ha-button-menu
@@ -337,36 +337,6 @@ export class HuiCardFeaturesEditor extends LitElement {
     `;
   }
 
-  private async _createSortable() {
-    const Sortable = (await import("../../../../resources/sortable")).default;
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector(".features")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        handle: ".handle",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._rowMoved(evt);
-        },
-      }
-    );
-  }
-
-  private _destroySortable() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
-  }
-
   private async _addFeature(ev: CustomEvent): Promise<void> {
     const index = ev.detail.index as number;
 
@@ -387,14 +357,13 @@ export class HuiCardFeaturesEditor extends LitElement {
     fireEvent(this, "features-changed", { features: newConfigFeature });
   }
 
-  private _rowMoved(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) {
-      return;
-    }
+  private _featureMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
 
     const newFeatures = this.features!.concat();
 
-    newFeatures.splice(ev.newIndex!, 0, newFeatures.splice(ev.oldIndex!, 1)[0]);
+    newFeatures.splice(newIndex, 0, newFeatures.splice(oldIndex, 1)[0]);
 
     fireEvent(this, "features-changed", { features: newFeatures });
   }
@@ -420,78 +389,76 @@ export class HuiCardFeaturesEditor extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      sortableStyles,
-      css`
-        :host {
-          display: flex !important;
-          flex-direction: column;
-        }
-        .content {
-          padding: 12px;
-        }
-        ha-expansion-panel {
-          display: block;
-          --expansion-panel-content-padding: 0;
-          border-radius: 6px;
-        }
-        h3 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        ha-svg-icon,
-        ha-icon {
-          color: var(--secondary-text-color);
-        }
-        ha-button-menu {
-          margin-top: 8px;
-        }
-        .feature {
-          display: flex;
-          align-items: center;
-        }
-        .feature .handle {
-          padding-right: 8px;
-          cursor: move;
-          padding-inline-end: 8px;
-          padding-inline-start: initial;
-          direction: var(--direction);
-        }
-        .feature .handle > * {
-          pointer-events: none;
-        }
+    return css`
+      :host {
+        display: flex !important;
+        flex-direction: column;
+      }
+      .content {
+        padding: 12px;
+      }
+      ha-expansion-panel {
+        display: block;
+        --expansion-panel-content-padding: 0;
+        border-radius: 6px;
+      }
+      h3 {
+        margin: 0;
+        font-size: inherit;
+        font-weight: inherit;
+      }
+      ha-svg-icon,
+      ha-icon {
+        color: var(--secondary-text-color);
+      }
+      ha-button-menu {
+        margin-top: 8px;
+      }
+      .feature {
+        display: flex;
+        align-items: center;
+      }
+      .feature .handle {
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor: grab;
+        padding-right: 8px;
+        padding-inline-end: 8px;
+        padding-inline-start: initial;
+        direction: var(--direction);
+      }
+      .feature .handle > * {
+        pointer-events: none;
+      }
 
-        .feature-content {
-          height: 60px;
-          font-size: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-grow: 1;
-        }
+      .feature-content {
+        height: 60px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-grow: 1;
+      }
 
-        .feature-content div {
-          display: flex;
-          flex-direction: column;
-        }
+      .feature-content div {
+        display: flex;
+        flex-direction: column;
+      }
 
-        .remove-icon,
-        .edit-icon {
-          --mdc-icon-button-size: 36px;
-          color: var(--secondary-text-color);
-        }
+      .remove-icon,
+      .edit-icon {
+        --mdc-icon-button-size: 36px;
+        color: var(--secondary-text-color);
+      }
 
-        .secondary {
-          font-size: 12px;
-          color: var(--secondary-text-color);
-        }
+      .secondary {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+      }
 
-        li[divider] {
-          border-bottom-color: var(--divider-color);
-        }
-      `,
-    ];
+      li[divider] {
+        border-bottom-color: var(--divider-color);
+      }
+    `;
   }
 }
 

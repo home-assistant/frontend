@@ -29,14 +29,13 @@ import { configSections } from "../ha-panel-config";
 class HaConfigSystemNavigation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _latestBackupDate?: string;
 
@@ -177,8 +176,9 @@ class HaConfigSystemNavigation extends LitElement {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
-      this._boardName = hardwareInfo?.hardware.find((hw) => hw.board !== null)
-        ?.name;
+      this._boardName = hardwareInfo?.hardware.find(
+        (hw) => hw.board !== null
+      )?.name;
     } else if (isHassioLoaded) {
       const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
       if (osData.board) {

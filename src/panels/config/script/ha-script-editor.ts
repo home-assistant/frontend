@@ -74,7 +74,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
@@ -538,7 +538,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       value.valid
         ? ""
         : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}s.header`
+              `ui.panel.config.automation.editor.${key}s.name`
             )}:
             ${value.error}<br />`
     );

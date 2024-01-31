@@ -54,7 +54,7 @@ export class HaAreaPicker extends LitElement {
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
-  public noAdd?: boolean;
+  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -88,13 +88,15 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-areas" })
   public excludeAreas?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: HassEntity) => boolean;
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 
@@ -446,6 +448,7 @@ export class HaAreaPicker extends LitElement {
       cancel: () => {
         this._setValue(undefined);
         this._suggestion = undefined;
+        this.comboBox.setInputValue("");
       },
     });
   }

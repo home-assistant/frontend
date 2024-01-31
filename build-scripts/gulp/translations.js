@@ -426,6 +426,7 @@ gulp.task(
       "fetch-nightly-translations",
       gulp.series("clean-translations", "ensure-translations-build-dir")
     ),
+    gulp.parallel("create-test-metadata", "create-test-translation"),
     "build-master-translation",
     "build-merged-translations",
     "build-translation-fragment-supervisor",

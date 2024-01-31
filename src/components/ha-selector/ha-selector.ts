@@ -59,11 +59,11 @@ const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public name?: string;
 
-  @property() public selector!: Selector;
+  @property({ attribute: false }) public selector!: Selector;
 
   @property() public value?: any;
 
@@ -71,7 +71,8 @@ export class HaSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property() public placeholder?: any;
 
@@ -79,7 +80,7 @@ export class HaSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: Record<string, any>;
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   public async focus() {
     await this.updateComplete;

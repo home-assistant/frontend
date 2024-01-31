@@ -13,7 +13,14 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -74,7 +81,7 @@ export interface EntityRow extends StateEntity {
   entity?: HassEntity;
   unavailable: boolean;
   restored: boolean;
-  status: string;
+  status: string | undefined;
   area?: string;
   localized_platform: string;
 }
@@ -83,15 +90,15 @@ export interface EntityRow extends StateEntity {
 export class HaConfigEntities extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _stateEntities: StateEntity[] = [];
 
-  @property() public _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -205,7 +212,8 @@ export class HaConfigEntities extends LitElement {
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             slot="item-icon"
-            .state=${entry.entity}
+            .hass=${this.hass}
+            .stateObj=${entry.entity}
           ></ha-state-icon>
         `,
       },
@@ -429,7 +437,13 @@ export class HaConfigEntities extends LitElement {
               ? localize("ui.panel.config.entities.picker.status.unavailable")
               : entry.disabled_by
                 ? localize("ui.panel.config.entities.picker.status.disabled")
-                : localize("ui.panel.config.entities.picker.status.ok"),
+                : entry.hidden_by
+                  ? localize("ui.panel.config.entities.picker.status.hidden")
+                  : entry.readonly
+                    ? localize(
+                        "ui.panel.config.entities.picker.status.readonly"
+                      )
+                    : undefined,
         });
       }
 
@@ -675,7 +689,7 @@ export class HaConfigEntities extends LitElement {
     `;
   }
 
-  public willUpdate(changedProps): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;
@@ -974,6 +988,7 @@ export class HaConfigEntities extends LitElement {
           font-weight: bold;
           padding-left: 16px;
           padding-inline-start: 16px;
+          padding-inline-end: initial;
           direction: var(--direction);
         }
         .table-header .selected-txt {
@@ -985,6 +1000,7 @@ export class HaConfigEntities extends LitElement {
         .header-toolbar .header-btns {
           margin-right: -12px;
           margin-inline-end: -12px;
+          margin-inline-start: initial;
           direction: var(--direction);
         }
         .header-btns {
@@ -996,11 +1012,14 @@ export class HaConfigEntities extends LitElement {
         }
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);
           padding-left: 8px;
           padding-inline-start: 8px;
+          padding-inline-end: initial;
           text-transform: uppercase;
           direction: var(--direction);
         }

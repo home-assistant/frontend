@@ -81,7 +81,7 @@ class MoreInfoMediaPlayer extends LitElement {
           : ""}
       </div>
       ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) &&
       stateActive(stateObj)
         ? html`
             <div class="volume">
@@ -104,8 +104,9 @@ class MoreInfoMediaPlayer extends LitElement {
                 : ""}
               ${supportsFeature(
                 stateObj,
-                MediaPlayerEntityFeature.VOLUME_BUTTONS
-              )
+                MediaPlayerEntityFeature.VOLUME_SET
+              ) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -260,6 +261,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
       .browse-media-icon {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
     `;
   }

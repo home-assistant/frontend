@@ -64,15 +64,15 @@ type SceneItem = SceneEntity & {
 class HaSceneDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public scenes!: SceneEntity[];
+  @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
 
@@ -104,7 +104,10 @@ class HaSceneDashboard extends LitElement {
           ),
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon .state=${scene}></ha-state-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${scene}
+            ></ha-state-icon>
           `,
         },
         name: {
@@ -249,7 +252,7 @@ class HaSceneDashboard extends LitElement {
         >
         </ha-button-related-filter-menu>
         ${!this.scenes.length
-          ? html` <div class="empty" slot="empty">
+          ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
               <h1>
                 ${this.hass.localize(
@@ -265,9 +268,7 @@ class HaSceneDashboard extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.scene.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -387,6 +388,7 @@ class HaSceneDashboard extends LitElement {
         .empty {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

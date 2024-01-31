@@ -33,7 +33,7 @@ interface FilterValue {
 
 @customElement("ha-button-related-filter-menu")
 export class HaRelatedFilterButtonMenu extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public corner: Corner = "BOTTOM_START";
 

@@ -68,13 +68,13 @@ type ScriptItem = ScriptEntity & {
 class HaScriptPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scripts!: ScriptEntity[];
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
@@ -119,7 +119,8 @@ class HaScriptPicker extends LitElement {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .state=${script}
+              .hass=${this.hass}
+              .stateObj=${script}
               style=${styleMap({
                 color:
                   script.state === UNAVAILABLE ? "var(--error-color)" : "unset",
@@ -294,9 +295,7 @@ class HaScriptPicker extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.script.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`
@@ -509,6 +508,7 @@ class HaScriptPicker extends LitElement {
         .empty {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
+          max-width: 500px;
         }
       `,
     ];

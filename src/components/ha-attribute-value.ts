@@ -9,12 +9,11 @@ import { HomeAssistant } from "../types";
 class HaAttributeValue extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public attribute!: string;
 
-  @property({ type: Boolean, attribute: "hide-unit" })
-  public hideUnit?: boolean;
+  @property({ type: Boolean, attribute: "hide-unit" }) public hideUnit = false;
 
   protected render() {
     if (!this.stateObj) {

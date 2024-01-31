@@ -27,7 +27,7 @@ jobs:
           ref: dev
 
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -63,7 +63,7 @@ jobs:
           ref: master
 
       - name: Setup Node
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4.0.1
         with:
           node-version-file: ".nvmrc"
           cache: yarn

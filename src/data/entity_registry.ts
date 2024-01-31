@@ -8,11 +8,14 @@ import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
 
+export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
+
 type entityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
   name?: string;
+  icon?: string;
   device_id?: string;
   area_id?: string;
   hidden?: boolean;
@@ -22,13 +25,14 @@ export interface EntityRegistryDisplayEntry {
   display_precision?: number;
 }
 
-interface EntityRegistryDisplayEntryResponse {
+export interface EntityRegistryDisplayEntryResponse {
   entities: {
     ei: string;
     di?: string;
     ai?: string;
     ec?: number;
     en?: string;
+    ic?: string;
     pl?: string;
     tk?: string;
     hb?: boolean;
@@ -98,6 +102,7 @@ export interface WeatherEntityOptions {
 
 export interface SwitchAsXEntityOptions {
   entity_id: string;
+  invert: boolean;
 }
 
 export interface EntityRegistryOptions {
@@ -251,34 +256,6 @@ export const subscribeEntityRegistry = (
     "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
-    conn,
-    onChange
-  );
-
-const subscribeEntityRegistryDisplayUpdates = (
-  conn: Connection,
-  store: Store<EntityRegistryDisplayEntryResponse>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchEntityRegistryDisplay(conn).then((entities) =>
-          store.setState(entities, true)
-        ),
-      500,
-      true
-    ),
-    "entity_registry_updated"
-  );
-
-export const subscribeEntityRegistryDisplay = (
-  conn: Connection,
-  onChange: (entities: EntityRegistryDisplayEntryResponse) => void
-) =>
-  createCollection<EntityRegistryDisplayEntryResponse>(
-    "_entityRegistryDisplay",
-    fetchEntityRegistryDisplay,
-    subscribeEntityRegistryDisplayUpdates,
     conn,
     onChange
   );

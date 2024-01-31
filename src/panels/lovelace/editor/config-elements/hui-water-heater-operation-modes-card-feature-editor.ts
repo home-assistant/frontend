@@ -38,8 +38,8 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
             select: {
               multiple: true,
               mode: "list",
-              options: OPERATION_MODES.filter(
-                (mode) => stateObj?.attributes.operation_list?.includes(mode)
+              options: OPERATION_MODES.filter((mode) =>
+                stateObj?.attributes.operation_list?.includes(mode)
               ).map((mode) => ({
                 value: mode,
                 label: stateObj ? formatEntityState(stateObj, mode) : mode,

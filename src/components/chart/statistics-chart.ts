@@ -58,7 +58,7 @@ export class StatisticsChart extends LitElement {
     StatisticsMetaData
   >;
 
-  @property() public names?: Record<string, string>;
+  @property({ attribute: false }) public names?: Record<string, string>;
 
   @property() public unit?: string;
 

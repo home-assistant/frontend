@@ -80,6 +80,18 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Whole tile tap action",
+    config: `
+- type: tile
+  entity: switch.tv_outlet
+  color: pink
+  tap_action:
+    action: toggle
+  icon_tap_action:
+    action: none
+    `,
+  },
+  {
     heading: "Unknown entity",
     config: `
 - type: tile

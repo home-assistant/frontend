@@ -1,4 +1,5 @@
 import "../card-features/hui-alarm-modes-card-feature";
+import "../card-features/hui-climate-fan-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
@@ -17,6 +18,8 @@ import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-target-humidity-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
+import "../card-features/hui-update-actions-card-feature";
+
 import { LovelaceCardFeatureConfig } from "../card-features/types";
 import {
   createLovelaceElement,
@@ -25,6 +28,7 @@ import {
 
 const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "alarm-modes",
+  "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
   "cover-open-close",
@@ -43,6 +47,7 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "target-temperature",
   "vacuum-commands",
   "water-heater-operation-modes",
+  "update-actions",
 ]);
 
 export const createCardFeatureElement = (config: LovelaceCardFeatureConfig) =>

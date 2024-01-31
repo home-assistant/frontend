@@ -9,6 +9,7 @@ import {
   OrCondition,
   StateCondition,
 } from "../../../common/validate-condition";
+import "../ha-card-conditions-editor";
 
 const orConditionStruct = object({
   condition: literal("or"),
