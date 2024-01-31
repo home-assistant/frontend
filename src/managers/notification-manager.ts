@@ -1,11 +1,4 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state, query } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -101,7 +94,7 @@ class NotificationManager extends LitElement {
   }
 
   private buttonClicked() {
-    this._toast.close("action");
+    this._toast?.close("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
