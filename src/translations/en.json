@@ -5105,12 +5105,7 @@
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
-              "legend_mode": "Legend Mode",
-              "legend_modes": {
-                "off": "Off",
-                "compact": "Compact",
-                "full": "Full"
-              },
+              "hide_legend": "Hide legend",
               "logarithmic_scale": "Logarithmic scale"
             },
             "statistic": {

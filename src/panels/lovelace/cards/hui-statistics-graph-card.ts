@@ -24,7 +24,6 @@ import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
-import type { LegendMode } from "../../../components/chart/statistics-chart";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
 
@@ -94,7 +93,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     return (
       5 +
       (this._config?.title ? 2 : 0) +
-      (this._legendMode !== "off" ? this._entities?.length || 0 : 0)
+      (!this._config?.hide_legend ? this._entities?.length || 0 : 0)
     );
   }
 
@@ -200,22 +199,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
-            .legendMode=${this._legendMode}
+            .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
           ></statistics-chart>
         </div>
       </ha-card>
     `;
-  }
-
-  private get _legendMode(): LegendMode {
-    if (!this._config) {
-      return "full";
-    }
-    if (this._config.hide_legend) {
-      return "off";
-    }
-    return this._config.legend_mode ?? "full";
   }
 
   private get _intervalTimeout(): number {

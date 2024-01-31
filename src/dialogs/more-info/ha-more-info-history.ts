@@ -91,7 +91,7 @@ export class MoreInfoHistory extends LitElement {
                   .metadata=${this._metadata}
                   .statTypes=${statTypes}
                   .names=${this._statNames}
-                  legendMode="off"
+                  hideLegend
                   .showNames=${false}
                 ></statistics-chart>`
               : html`<state-history-charts

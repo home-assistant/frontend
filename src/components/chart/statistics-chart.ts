@@ -47,8 +47,6 @@ export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   change: "sum",
 };
 
-export type LegendMode = "full" | "compact" | "off";
-
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,7 +73,7 @@ export class StatisticsChart extends LitElement {
 
   @property() public chartType: ChartType = "line";
 
-  @property() public legendMode: LegendMode = "full";
+  @property({ type: Boolean }) public hideLegend = false;
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
@@ -115,7 +113,7 @@ export class StatisticsChart extends LitElement {
       changedProps.has("period") ||
       changedProps.has("chartType") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("legendMode")
+      changedProps.has("hideLegend")
     ) {
       this._createOptions();
     }
@@ -123,8 +121,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statisticsData") ||
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
-      changedProps.has("_hiddenStats") ||
-      changedProps.has("legendMode")
+      changedProps.has("hideLegend") ||
+      changedProps.has("_hiddenStats")
     ) {
       this._generateData();
     }
@@ -159,7 +157,7 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .externalHidden=${this.legendMode === "compact"}
+        externalHidden
         .hass=${this.hass}
         .data=${this._chartData}
         .extraData=${this._chartDatasetExtra}
@@ -256,7 +254,7 @@ export class StatisticsChart extends LitElement {
           propagate: true,
         },
         legend: {
-          display: this.legendMode !== "off",
+          display: !this.hideLegend,
           labels: {
             usePointStyle: true,
           },
@@ -420,7 +418,7 @@ export class StatisticsChart extends LitElement {
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
-          if (this.legendMode === "compact") {
+          if (!this.hideLegend) {
             const show_legend = hasMean
               ? type === "mean"
               : displayed_legend === false;
@@ -448,15 +446,12 @@ export class StatisticsChart extends LitElement {
                   : false
               : false,
             borderColor:
-              band && hasMean
-                ? color + (this.legendMode === "off" ? "00" : "7F")
-                : color,
+              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
-            hidden:
-              this.legendMode === "compact"
-                ? this._hiddenStats.has(statistic_id)
-                : false,
+            hidden: !this.hideLegend
+              ? this._hiddenStats.has(statistic_id)
+              : false,
             data: [],
             // @ts-ignore
             unit: meta?.unit_of_measurement,
