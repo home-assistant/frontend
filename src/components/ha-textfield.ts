@@ -6,15 +6,15 @@ import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextFieldBase {
-  @property({ type: Boolean }) public invalid?: boolean;
+  @property({ type: Boolean }) public invalid = false;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   // @ts-ignore
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
-  @property({ type: Boolean }) public iconTrailing?: boolean;
+  @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 
@@ -187,6 +187,8 @@ export class HaTextField extends TextFieldBase {
       }
       .mdc-text-field__affix--prefix {
         padding-right: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-end: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-start: initial;
       }
 
       .mdc-text-field:not(.mdc-text-field--disabled)

@@ -1,20 +1,32 @@
+import { html, nothing } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../../../common/entity/state_color";
+import "../../../../../components/ha-attribute-icon";
+import "../../../../../components/tile/ha-tile-badge";
 import {
-  HUMIDIFIER_ACTION_ICONS,
   HUMIDIFIER_ACTION_MODE,
   HumidifierEntity,
 } from "../../../../../data/humidifier";
-import { ComputeBadgeFunction } from "./tile-badge";
+import { RenderBadgeFunction } from "./tile-badge";
 
-export const computeHumidifierBadge: ComputeBadgeFunction = (stateObj) => {
-  const hvacAction = (stateObj as HumidifierEntity).attributes.action;
+export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
+  const action = (stateObj as HumidifierEntity).attributes.action;
 
-  if (!hvacAction || hvacAction === "off") {
-    return undefined;
+  if (!action || action === "off") {
+    return nothing;
   }
 
-  return {
-    iconPath: HUMIDIFIER_ACTION_ICONS[hvacAction],
-    color: stateColorCss(stateObj, HUMIDIFIER_ACTION_MODE[hvacAction]),
-  };
+  return html`
+    <ha-tile-badge
+      style=${styleMap({
+        "--tile-badge-background-color": stateColorCss(
+          stateObj,
+          HUMIDIFIER_ACTION_MODE[action]
+        ),
+      })}
+    >
+      <ha-attribute-icon .hass=${hass} .stateObj=${stateObj} attribute="action">
+      </ha-attribute-icon>
+    </ha-tile-badge>
+  `;
 };

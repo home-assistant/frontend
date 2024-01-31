@@ -1,6 +1,4 @@
 import { mdiFolder, mdiPuzzle } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   CSSResultGroup,
   LitElement,
@@ -16,6 +14,7 @@ import { formatDateTime } from "../../../src/common/datetime/format_date_time";
 import { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
+import "../../../src/components/ha-textfield";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
 import {
@@ -25,12 +24,9 @@ import {
 } from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { mdiHomeAssistant } from "../../../src/resources/home-assistant-logo-svg";
-import {
-  HomeAssistant,
-  TranslationDict,
-  ValueChangedEvent,
-} from "../../../src/types";
+import { HomeAssistant, TranslationDict } from "../../../src/types";
 import "./supervisor-formfield-label";
+import type { HaTextField } from "../../../src/components/ha-textfield";
 
 type BackupOrRestoreKey = keyof TranslationDict["supervisor"]["backup"] &
   keyof TranslationDict["ui"]["panel"]["page-onboarding"]["restore"];
@@ -76,7 +72,7 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 export class SupervisorBackupContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public localize?: LocalizeFunc;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
@@ -100,7 +96,7 @@ export class SupervisorBackupContent extends LitElement {
 
   @property() public confirmBackupPassword = "";
 
-  @query("paper-input, ha-radio, ha-checkbox", true) private _focusTarget;
+  @query("ha-textfield, ha-radio, ha-checkbox", true) private _focusTarget;
 
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -151,13 +147,13 @@ export class SupervisorBackupContent extends LitElement {
                 )
               : this.backup.date}
           </div>`
-        : html`<paper-input
+        : html`<ha-textfield
             name="backupName"
             .label=${this._localize("name")}
             .value=${this.backupName}
-            @value-changed=${this._handleTextValueChanged}
+            @change=${this._handleTextValueChanged}
           >
-          </paper-input>`}
+          </ha-textfield>`}
       ${!this.backup || this.backup.type === "full"
         ? html`<div class="sub-header">
               ${!this.backup
@@ -265,23 +261,23 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupHasPassword
         ? html`
-            <paper-input
+            <ha-textfield
               .label=${this._localize("password")}
               type="password"
               name="backupPassword"
               .value=${this.backupPassword}
-              @value-changed=${this._handleTextValueChanged}
+              @change=${this._handleTextValueChanged}
             >
-            </paper-input>
+            </ha-textfield>
             ${!this.backup
-              ? html` <paper-input
+              ? html`<ha-textfield
                   .label=${this._localize("confirm_password")}
                   type="password"
                   name="confirmBackupPassword"
                   .value=${this.confirmBackupPassword}
-                  @value-changed=${this._handleTextValueChanged}
+                  @change=${this._handleTextValueChanged}
                 >
-                </paper-input>`
+                </ha-textfield>`
               : ""}
           `
         : ""}
@@ -320,6 +316,8 @@ export class SupervisorBackupContent extends LitElement {
         display: flex;
         flex-direction: column;
         margin-left: 30px;
+        margin-inline-start: 30px;
+        margin-inline-end: initial;
       }
       ha-formfield.password {
         display: block;
@@ -328,6 +326,8 @@ export class SupervisorBackupContent extends LitElement {
       .backup-types {
         display: flex;
         margin-left: -13px;
+        margin-inline-start: -13px;
+        margin-inline-end: initial;
       }
       .sub-header {
         margin-top: 8px;
@@ -429,9 +429,9 @@ export class SupervisorBackupContent extends LitElement {
     this[input.name] = input.value;
   }
 
-  private _handleTextValueChanged(ev: ValueChangedEvent<string>) {
-    const input = ev.currentTarget as PaperInputElement;
-    this[input.name!] = ev.detail.value;
+  private _handleTextValueChanged(ev: InputEvent) {
+    const input = ev.currentTarget as HaTextField;
+    this[input.name!] = input.value;
   }
 
   private _toggleHasPassword(): void {

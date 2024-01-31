@@ -25,7 +25,7 @@ export interface DeviceEndpointRowData extends DataTableRowData {
 
 @customElement("zha-device-endpoint-data-table")
 export class ZHADeviceEndpointDataTable extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 

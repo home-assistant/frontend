@@ -19,7 +19,7 @@ export class HaLanguagePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public languages?: string[];
+  @property({ type: Array }) public languages?: string[];
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 

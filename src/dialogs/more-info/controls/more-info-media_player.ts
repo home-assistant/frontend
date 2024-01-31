@@ -261,6 +261,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
       .browse-media-icon {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
     `;
   }

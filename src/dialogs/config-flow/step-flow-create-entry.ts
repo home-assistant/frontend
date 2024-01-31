@@ -126,6 +126,8 @@ class StepFlowCreateEntry extends LitElement {
         }
         .buttons > *:last-child {
           margin-left: auto;
+          margin-inline-start: auto;
+          margin-inline-end: initial;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .device {

@@ -50,7 +50,7 @@ export class HaDateInput extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public canClear?: boolean;
+  @property({ type: Boolean }) public canClear = false;
 
   render() {
     return html`<ha-textfield

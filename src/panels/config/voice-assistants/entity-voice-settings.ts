@@ -385,6 +385,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           height: 32px;
           width: 32px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         ha-aliases-editor {
           display: block;
@@ -395,6 +397,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         ha-formfield {
           margin-left: -8px;
+          margin-inline-start: -8px;
+          margin-inline-end: initial;
         }
         ha-checkbox {
           --mdc-checkbox-state-layer-size: 40px;
@@ -407,6 +411,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           color: var(--error-color);
           --mdc-icon-size: 16px;
           margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
         .header {
           margin-top: 8px;

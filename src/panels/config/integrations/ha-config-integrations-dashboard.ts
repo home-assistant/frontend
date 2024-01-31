@@ -92,13 +92,13 @@ const groupByIntegration = (
 class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public configEntries?: ConfigEntryExtended[];
 
@@ -790,7 +790,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           grid-column-end: -1;
         }
         .empty-message h1 {
-          margin-bottom: 0;
+          margin: 0;
         }
         search-input {
           --mdc-text-field-fill-color: var(--sidebar-background-color);
