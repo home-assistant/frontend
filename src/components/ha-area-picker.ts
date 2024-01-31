@@ -1,6 +1,6 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -36,8 +36,12 @@ type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
   html`<ha-list-item
+    graphic="icon"
     class=${classMap({ "add-new": item.area_id === "add_new" })}
   >
+    ${item.icon
+      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+      : nothing}
     ${item.name}
   </ha-list-item>`;
 
@@ -135,6 +139,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
+            icon: null,
             aliases: [],
           },
         ];
@@ -262,7 +267,9 @@ export class HaAreaPicker extends LitElement {
       }
 
       if (areaIds) {
-        outputAreas = areas.filter((area) => areaIds!.includes(area.area_id));
+        outputAreas = outputAreas.filter((area) =>
+          areaIds!.includes(area.area_id)
+        );
       }
 
       if (excludeAreas) {
@@ -277,6 +284,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_match"),
             picture: null,
+            icon: null,
             aliases: [],
           },
         ];
@@ -290,6 +298,7 @@ export class HaAreaPicker extends LitElement {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
               picture: null,
+              icon: "mdi:plus",
               aliases: [],
             },
           ];
