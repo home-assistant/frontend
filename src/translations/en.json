@@ -4626,17 +4626,21 @@
             "network_name": "Network name",
             "ip_adresses": "IP Address(es)",
             "mac_address": "MAC address",
-            "available": "Available?",
-            "active_fabrics": "Connected fabrics",
-            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
-            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
-            "remove_fabric_failed_header": "Remove {fabric} fabric failed",
-            "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
+            "available": "Available?"
           },
           "device_actions": {
             "reinterview_device": "Re-interview device",
             "ping_device": "Ping device",
-            "open_commissioning_window": "Enable commisisioning mode"
+            "open_commissioning_window": "Enable commisisioning mode",
+            "manage_fabrics": "Manage fabrics"
+          },
+          "manage_fabrics": {
+            "title": "Connected fabrics",
+            "fabrics": "Manage the fabrics that have access to this device.",
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
+            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_failed_header": "Remove {fabric} fabric failed",
+            "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
           },
           "reinterview_node": {
             "title": "Re-interview a Matter device",
@@ -4660,7 +4664,7 @@
           "open_commissioning_window": {
             "title": "Enable commissioning mode",
             "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
-            "start_ping": "Start ping",
+            "start_commissioning": "Enable commissioning mode",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
             "sharing_code": "Sharing code"

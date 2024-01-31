@@ -9,11 +9,11 @@ export const loadOpenCommissioningWindowDialog = () =>
 
 export const showMatterOpenCommissioningWindowDialog = (
   element: HTMLElement,
-  pingNodeDialogParams: MatterOpenCommissioningWindowDialogParams
+  dialogParams: MatterOpenCommissioningWindowDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-matter-open-commissioning-window",
     dialogImport: loadOpenCommissioningWindowDialog,
-    dialogParams: pingNodeDialogParams,
+    dialogParams,
   });
 };

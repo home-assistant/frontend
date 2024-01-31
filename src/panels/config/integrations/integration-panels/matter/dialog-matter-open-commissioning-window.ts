@@ -46,60 +46,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           )
         )}
       >
-        ${!this._status
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.open_commissioning_window.introduction"
-                )}
-              </p>
-              <mwc-button slot="primaryAction" @click=${this._start}>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.open_commissioning_window.start_ping"
-                )}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b>
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.open_commissioning_window.in_progress"
-                      )}
-                    </b>
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.failed"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-            `
-          : ``}
-        ${this._status === "finished"
+        ${this._commissionParams
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
@@ -110,36 +57,87 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.sharing_code"
-                    )}: <b>${this._commissionParams?.setup_manual_code}</b>
+                    )}: <b>${this._commissionParams.setup_manual_code}</b>
                   </p>
                 </div>
               </div>
               <ha-qr-code
-                .data=${this._commissionParams?.setup_qr_code}
+                .data=${this._commissionParams.setup_qr_code}
+                errorCorrectionLevel="quartile"
+                scale="6"
               ></ha-qr-code>
               <div></div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.open_commissioning_window.in_progress"
+                        )}
+                      </b>
+                    </p>
+                  </div>
+                </div>
+                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </mwc-button>
+              `
+            : this._status === "failed"
+              ? html`
+                  <div class="flex-container">
+                    <ha-svg-icon
+                      .path=${mdiCloseCircle}
+                      class="failed"
+                    ></ha-svg-icon>
+                    <div class="status">
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.open_commissioning_window.failed"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </mwc-button>
+                `
+              : html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.introduction"
+                    )}
+                  </p>
+                  <mwc-button slot="primaryAction" @click=${this._start}>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                    )}
+                  </mwc-button>
+                `}
       </ha-dialog>
     `;
   }
 
-  private _start(): void {
+  private async _start(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
-    openMatterCommissioningWindow(this.hass, this.device_id!)
-      .then((result) => {
-        this._commissionParams = result;
-        this._status = "finished";
-      })
-      .catch(() => {
-        this._status = "failed";
-      });
+    this._commissionParams = undefined;
+    try {
+      this._commissionParams = await openMatterCommissioningWindow(
+        this.hass,
+        this.device_id!
+      );
+    } catch (e) {
+      this._status = "failed";
+    }
   }
 
   public closeDialog(): void {
@@ -180,6 +178,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         ha-svg-icon {
           width: 68px;
           height: 48px;
+        }
+
+        ha-qr-code {
+          text-align: center;
         }
 
         .flex-container ha-circular-progress,

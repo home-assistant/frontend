@@ -1,4 +1,4 @@
-import { mdiChatQuestion } from "@mdi/js";
+import { mdiChatProcessing, mdiChatQuestion, mdiExportVariant } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
@@ -7,6 +7,7 @@ import { showMatterReinterviewNodeDialog } from "../../../../integrations/integr
 import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
 import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
 import type { DeviceAction } from "../../../ha-config-device-page";
+import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
 
 export const getMatterDeviceActions = async (
   el: HTMLElement,
@@ -40,7 +41,7 @@ export const getMatterDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.matter.device_actions.open_commissioning_window"
       ),
-      icon: mdiChatQuestion,
+      icon: mdiExportVariant,
       action: () =>
         showMatterOpenCommissioningWindowDialog(el, {
           device_id: device.id,
@@ -48,9 +49,19 @@ export const getMatterDeviceActions = async (
     });
     actions.push({
       label: hass.localize(
+        "ui.panel.config.matter.device_actions.manage_fabrics"
+      ),
+      icon: mdiExportVariant,
+      action: () =>
+        showMatterManageFabricsDialog(el, {
+          device_id: device.id,
+        }),
+    });
+    actions.push({
+      label: hass.localize(
         "ui.panel.config.matter.device_actions.reinterview_device"
       ),
-      icon: mdiChatQuestion,
+      icon: mdiChatProcessing,
       action: () =>
         showMatterReinterviewNodeDialog(el, {
           device_id: device.id,
