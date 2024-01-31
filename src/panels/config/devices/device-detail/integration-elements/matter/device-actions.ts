@@ -1,13 +1,21 @@
-import { mdiChatProcessing, mdiChatQuestion, mdiExportVariant } from "@mdi/js";
-import { getConfigEntries } from "../../../../../../data/config_entries";
+import {
+  mdiAccessPoint,
+  mdiChatProcessing,
+  mdiChatQuestion,
+  mdiExportVariant,
+} from "@mdi/js";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
+import {
+  NetworkType,
+  getMatterNodeDiagnostics,
+} from "../../../../../../data/matter";
 import type { HomeAssistant } from "../../../../../../types";
 import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
 import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
 import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
 import type { DeviceAction } from "../../../ha-config-device-page";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
+import { navigate } from "../../../../../../common/navigate";
 
 export const getMatterDeviceActions = async (
   el: HTMLElement,
@@ -16,18 +24,6 @@ export const getMatterDeviceActions = async (
 ): Promise<DeviceAction[]> => {
   if (device.via_device_id !== null) {
     // only show device actions for top level nodes (so not bridged)
-    return [];
-  }
-
-  const configEntries = await getConfigEntries(hass, {
-    domain: "matter",
-  });
-
-  const configEntry = configEntries.find((entry) =>
-    device.config_entries.includes(entry.entry_id)
-  );
-
-  if (!configEntry) {
     return [];
   }
 
@@ -66,6 +62,16 @@ export const getMatterDeviceActions = async (
         showMatterReinterviewNodeDialog(el, {
           device_id: device.id,
         }),
+    });
+  }
+
+  if (nodeDiagnostics.network_type === NetworkType.THREAD) {
+    actions.push({
+      label: hass.localize(
+        "ui.panel.config.matter.device_actions.view_thread_network"
+      ),
+      icon: mdiAccessPoint,
+      action: () => navigate("/config/thread"),
     });
   }
 

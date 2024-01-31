@@ -4632,7 +4632,8 @@
             "reinterview_device": "Re-interview device",
             "ping_device": "Ping device",
             "open_commissioning_window": "Enable commisisioning mode",
-            "manage_fabrics": "Manage fabrics"
+            "manage_fabrics": "Manage fabrics",
+            "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
             "title": "Connected fabrics",
