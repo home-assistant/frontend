@@ -67,7 +67,8 @@ export class HaQrCode extends LitElement {
       const computedStyles = getComputedStyle(this);
 
       QRCode.toCanvas(canvas, this.data, {
-        errorCorrectionLevel: this.errorCorrectionLevel,
+        errorCorrectionLevel:
+          this.errorCorrectionLevel || (this.centerImage ? "Q" : "M"),
         width: this.width,
         scale: this.scale,
         margin: this.margin,
