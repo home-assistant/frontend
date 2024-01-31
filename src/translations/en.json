@@ -6505,7 +6505,9 @@
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
         "remove_all": "Remove all selections",
-        "download_data": "Download data"
+        "download_data": "Download data",
+        "download_data_error": "Unable to download data",
+        "error_no_data": "You need to select data first."
       }
     },
     "tips": {
