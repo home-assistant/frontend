@@ -4625,7 +4625,7 @@
           "device_actions": {
             "reinterview_device": "Re-interview device",
             "ping_device": "Ping device",
-            "open_commissioning_window": "Enable commisisioning mode",
+            "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
             "view_thread_network": "View Thread network"
           },
@@ -4657,11 +4657,12 @@
             "ping_complete": "Ping device complete."
           },
           "open_commissioning_window": {
-            "title": "Enable commissioning mode",
+            "title": "Share device",
             "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
-            "start_commissioning": "Enable commissioning mode",
+            "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
+            "success": "Your device can now be added to another Matter controller, scan the QR code below or enter the sharing code in the app of the controller you want to add your device to.",
             "sharing_code": "Sharing code"
           }
         },
