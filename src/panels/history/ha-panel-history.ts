@@ -53,6 +53,7 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -175,7 +176,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="actionItems"
           @click=${this._downloadHistory}
-          .disabled=${this._isLoading || !this._targetPickerValue}
+          .disabled=${this._isLoading}
           .path=${mdiDownload}
           .label=${this.hass.localize("ui.panel.history.download_data")}
         ></ha-icon-button>
@@ -361,14 +362,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private async _getStats() {
-    const entityIds = this._getEntityIds();
-    if (!entityIds) {
+    const statisticIds = this._getEntityIds();
+    if (!statisticIds) {
+      this._statisticsHistory = undefined;
       return;
     }
-    this._getStatistics(entityIds);
-  }
 
-  private async _getStatistics(statisticIds: string[]): Promise<void> {
     try {
       const statistics = await fetchStatistics(
         this.hass!,
@@ -423,23 +422,14 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private async _getHistory() {
-    if (!this._targetPickerValue) {
-      return;
-    }
-    this._isLoading = true;
     const entityIds = this._getEntityIds();
 
-    if (entityIds === undefined) {
-      this._isLoading = false;
+    if (!entityIds) {
       this._stateHistory = undefined;
       return;
     }
 
-    if (entityIds.length === 0) {
-      this._isLoading = false;
-      this._stateHistory = { line: [], timeline: [] };
-      return;
-    }
+    this._isLoading = true;
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -629,10 +619,20 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _downloadHistory() {
+    const entities = this._getEntityIds();
+    if (!entities || !this._mungedStateHistory) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.history.download_data_error"),
+        text: this.hass.localize("ui.panel.history.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
     const csv: string[] = ["entity_id,state,last_changed\n"];
     const formatDate = (number) => new Date(number).toISOString();
 
-    for (const line of this._mungedStateHistory!.line) {
+    for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
         const entityId = entity.entity_id;
         for (const data of [entity.states, entity.statistics]) {
@@ -645,7 +645,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }
       }
     }
-    for (const timeline of this._mungedStateHistory!.timeline) {
+    for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
         csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
