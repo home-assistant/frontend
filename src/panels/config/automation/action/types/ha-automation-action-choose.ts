@@ -296,7 +296,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              .path=${[...(this.path ?? []), "choose", "default"]}
+              .path=${[...(this.path ?? []), "default"]}
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
