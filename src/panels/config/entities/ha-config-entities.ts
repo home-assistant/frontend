@@ -35,7 +35,6 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -680,7 +679,6 @@ export class HaConfigEntities extends LitElement {
               extended
               @click=${this._addDevice}
               slot="fab"
-              ?rtl=${computeRTL(this.hass)}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </ha-fab>`

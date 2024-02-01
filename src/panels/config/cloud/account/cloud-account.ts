@@ -1,9 +1,8 @@
 import "@material/mwc-button";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
@@ -36,8 +35,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public cloudStatus!: CloudStatusLoggedIn;
 
   @state() private _subscription?: SubscriptionInfo;
-
-  @state() private _rtlDirection: "rtl" | "ltr" = "rtl";
 
   protected render() {
     return html`
@@ -172,13 +169,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
             <cloud-remote-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-remote-pref>
 
             <cloud-tts-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-tts-pref>
 
             <ha-tip .hass=${this.hass}>
@@ -193,7 +188,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-webhooks>
           </ha-config-section>
         </div>
@@ -203,15 +197,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
   firstUpdated() {
     this._fetchSubscriptionInfo();
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale !== this.hass.locale) {
-        this._rtlDirection = computeRTLDirection(this.hass);
-      }
-    }
   }
 
   protected override hassSubscribe() {
@@ -270,10 +255,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   private async _logoutFromCloud() {
     await cloudLogout(this.hass);
     fireEvent(this, "ha-refresh-cloud-status");
-  }
-
-  _computeRTLDirection(hass) {
-    return computeRTLDirection(hass);
   }
 
   static get styles() {
