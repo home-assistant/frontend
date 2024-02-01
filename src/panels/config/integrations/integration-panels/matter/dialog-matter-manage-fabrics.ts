@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiClose } from "@mdi/js";
+import { mdiDelete } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -70,7 +70,7 @@ class DialogMatterManageFabrics extends LitElement {
                       @click=${this._removeFabric}
                       slot="meta"
                       .fabric=${fabric}
-                      .path=${mdiClose}
+                      .path=${mdiDelete}
                     ></ha-icon-button>
                   </ha-list-item>`
               )}

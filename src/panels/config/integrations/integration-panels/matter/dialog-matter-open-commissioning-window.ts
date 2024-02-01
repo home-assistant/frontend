@@ -48,6 +48,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       >
         ${this._commissionParams
           ? html`
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.matter.open_commissioning_window.success"
+                )}
+              </p>
               <div class="flex-container">
                 <ha-svg-icon
                   .path=${mdiCheckCircle}
