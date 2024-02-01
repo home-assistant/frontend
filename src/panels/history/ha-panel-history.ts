@@ -15,7 +15,6 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { computeRTL } from "../../common/util/compute_rtl";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
@@ -354,15 +353,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     ) {
       this._getHistory();
       this._getStats();
-    }
-
-    if (!changedProps.has("hass") && !changedProps.has("_entities")) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language !== this.hass.language) {
-      this.rtl = computeRTL(this.hass);
     }
   }
 
@@ -710,6 +700,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           ha-date-range-picker {
             margin-right: 0;
             margin-inline-end: 0;
+            margin-inline-start: initial;
             width: 100%;
           }
         }

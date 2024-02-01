@@ -27,7 +27,6 @@ import {
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   DataTableRowData,
@@ -618,7 +617,6 @@ export class VoiceAssistantsExpose extends LitElement {
             "ui.panel.config.voice_assistants.expose.add"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._addEntry}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

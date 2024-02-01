@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
@@ -99,7 +98,6 @@ export class HuiUnusedEntities extends LitElement {
       </div>
       <div
         class="fab ${classMap({
-          rtl: computeRTL(this.hass),
           selected: this._selectedEntities.length,
         })}"
       >
@@ -171,19 +169,12 @@ export class HuiUnusedEntities extends LitElement {
       }
       .fab {
         position: sticky;
-        float: right;
+        float: var(--float-end);
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
+        inset-inline-end: calc(16px + env(safe-area-inset-right));
+        inset-inline-start: initial;
         z-index: 1;
-      }
-      .fab.rtl {
-        right: initial;
-        left: 0;
-        bottom: 0;
-        padding-right: 16px;
-        padding-left: calc(16px + env(safe-area-inset-left));
-        padding-inline-end: 16px;
-        padding-inline-start: calc(16px + env(safe-area-inset-left));
       }
       ha-fab {
         position: relative;
