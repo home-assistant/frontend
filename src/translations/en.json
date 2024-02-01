@@ -5574,31 +5574,49 @@
               },
               "climate-fan-modes": {
                 "label": "Climate fan modes",
-                "style": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style%]",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
-                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::dropdown%]",
-                  "icons": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::icons%]"
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
                 "fan_modes": "Fan modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",
-                "style": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style%]",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
-                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::dropdown%]",
-                  "icons": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::icons%]"
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 }
+              },
+              "climate-preset-modes": {
+                "label": "Climate preset modes",
+                "style": "Style",
+                "style_list": {
+                  "dropdown": "Dropdown",
+                  "icons": "Icons"
+                },
+                "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
               },
               "humidifier-modes": {
                 "label": "Humidifier modes",
-                "style": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style%]",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
-                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::dropdown%]",
-                  "icons": "[%key:ui::panel::lovelace::editor::features::types::preset-modes::style_list::icons%]"
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
                 "modes": "Modes"
               },
@@ -5612,15 +5630,6 @@
                   "buttons": "Buttons",
                   "slider": "Slider"
                 }
-              },
-              "preset-modes": {
-                "label": "Preset modes",
-                "style": "Style",
-                "style_list": {
-                  "dropdown": "Dropdown",
-                  "icons": "Icons"
-                },
-                "preset_modes": "Preset modes"
               },
               "target-temperature": {
                 "label": "Target temperature"

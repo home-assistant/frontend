@@ -11,41 +11,41 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import { ClimateEntity, ClimateEntityFeature } from "../../../data/climate";
-import { FanEntity, FanEntityFeature } from "../../../data/fan";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { PresetModesCardFeatureConfig } from "./types";
+import { ClimatePresetModesCardFeatureConfig } from "./types";
 
-export const supportsPresetModesCardFeature = (stateObj: HassEntity) => {
+export const supportsClimatePresetModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
-    (domain === "climate" &&
-      supportsFeature(stateObj, ClimateEntityFeature.PRESET_MODE)) ||
-    (domain === "fan" &&
-      supportsFeature(stateObj, FanEntityFeature.PRESET_MODE))
+    domain === "climate" &&
+    supportsFeature(stateObj, ClimateEntityFeature.PRESET_MODE)
   );
 };
 
-@customElement("hui-preset-modes-card-feature")
-class HuiPresetModesCardFeature
+@customElement("hui-climate-preset-modes-card-feature")
+class HuiClimatePresetModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: ClimateEntity | FanEntity;
+  @property({ attribute: false }) public stateObj?: ClimateEntity;
 
-  @state() private _config?: PresetModesCardFeatureConfig;
+  @state() private _config?: ClimatePresetModesCardFeatureConfig;
 
   @state() _currentPresetMode?: string;
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_, stateObj?: HassEntity): PresetModesCardFeatureConfig {
+  static getStubConfig(
+    _,
+    stateObj?: HassEntity
+  ): ClimatePresetModesCardFeatureConfig {
     return {
-      type: "preset-modes",
+      type: "climate-preset-modes",
       style: "dropdown",
       preset_modes: stateObj?.attributes.preset_modes || [],
     };
@@ -53,12 +53,14 @@ class HuiPresetModesCardFeature
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-preset-modes-card-feature-editor"
+      "../editor/config-elements/hui-climate-preset-modes-card-feature-editor"
     );
-    return document.createElement("hui-preset-modes-card-feature-editor");
+    return document.createElement(
+      "hui-climate-preset-modes-card-feature-editor"
+    );
   }
 
-  public setConfig(config: PresetModesCardFeatureConfig): void {
+  public setConfig(config: ClimatePresetModesCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -104,8 +106,7 @@ class HuiPresetModesCardFeature
   }
 
   private async _setMode(mode: string) {
-    const domain = computeDomain(this.stateObj!.entity_id);
-    await this.hass!.callService(domain, "set_preset_mode", {
+    await this.hass!.callService("climate", "set_preset_mode", {
       entity_id: this.stateObj!.entity_id,
       preset_mode: mode,
     });
@@ -116,7 +117,7 @@ class HuiPresetModesCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsPresetModesCardFeature(this.stateObj)
+      !supportsClimatePresetModesCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -228,6 +229,6 @@ class HuiPresetModesCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-preset-modes-card-feature": HuiPresetModesCardFeature;
+    "hui-climate-preset-modes-card-feature": HuiClimatePresetModesCardFeature;
   }
 }

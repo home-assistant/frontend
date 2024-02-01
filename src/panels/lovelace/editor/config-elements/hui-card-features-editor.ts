@@ -22,10 +22,12 @@ import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
+import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
 import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
@@ -33,7 +35,6 @@ import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-law
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
-import { supportsPresetModesCardFeature } from "../../card-features/hui-preset-modes-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
@@ -50,10 +51,12 @@ const UI_FEATURE_TYPES = [
   "alarm-modes",
   "climate-fan-modes",
   "climate-hvac-modes",
+  "climate-preset-modes",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
   "humidifier-toggle",
@@ -61,7 +64,6 @@ const UI_FEATURE_TYPES = [
   "light-brightness",
   "light-color-temp",
   "numeric-input",
-  "preset-modes",
   "select-options",
   "target-humidity",
   "target-temperature",
@@ -76,10 +78,10 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "climate-hvac-modes",
   "climate-fan-modes",
+  "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
   "numeric-input",
-  "preset-modes",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -92,10 +94,12 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "alarm-modes": supportsAlarmModesCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
+  "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
@@ -103,7 +107,6 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
-  "preset-modes": supportsPresetModesCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,

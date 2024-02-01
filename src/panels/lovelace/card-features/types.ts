@@ -26,6 +26,12 @@ export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
 
+export interface FanPresetModesCardFeatureConfig {
+  type: "fan-preset-modes";
+  style?: "dropdown" | "icons";
+  preset_modes?: string[];
+}
+
 export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
 }
@@ -47,8 +53,8 @@ export interface ClimateHvacModesCardFeatureConfig {
   hvac_modes?: HvacMode[];
 }
 
-export interface PresetModesCardFeatureConfig {
-  type: "preset-modes";
+export interface ClimatePresetModesCardFeatureConfig {
+  type: "climate-preset-modes";
   style?: "dropdown" | "icons";
   preset_modes?: string[];
 }
@@ -118,10 +124,12 @@ export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
+  | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
@@ -129,7 +137,6 @@ export type LovelaceCardFeatureConfig =
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | NumericInputCardFeatureConfig
-  | PresetModesCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
