@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { property, state, query } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -98,10 +98,6 @@ class NotificationManager extends LitElement {
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
-  }
-
-  static get styles(): CSSResultGroup {
-    return css``;
   }
 }
 
