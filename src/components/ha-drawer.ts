@@ -13,7 +13,7 @@ export class HaDrawer extends DrawerBase {
 
   private _mc?: HammerManager;
 
-  private _rtlStyle: HTMLStyleElement;
+  private _rtlStyle?: HTMLElement;
 
   protected createAdapter() {
     return {
@@ -49,7 +49,9 @@ export class HaDrawer extends DrawerBase {
         `;
 
         this.shadowRoot!.appendChild(this._rtlStyle);
-      } else this.shadowRoot!.removeChild(this._rtlStyle);
+      } else if (this._rtlStyle) {
+        this.shadowRoot!.removeChild(this._rtlStyle);
+      }
     }
 
     if (changedProps.has("open") && this.open && this.type === "modal") {

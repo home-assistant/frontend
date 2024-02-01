@@ -635,7 +635,6 @@ export class HaMediaPlayerBrowse extends LitElement {
         @click=${this._childClicked}
         .item=${child}
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
-        dir=${computeRTLDirection(this.hass)}
       >
         ${backgroundImage === "none" && !child.can_play
           ? html`<ha-svg-icon

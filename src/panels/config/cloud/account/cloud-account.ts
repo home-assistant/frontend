@@ -257,10 +257,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
-  _computeRTLDirection(hass) {
-    return computeRTLDirection(hass);
-  }
-
   static get styles() {
     return [
       haStyle,
