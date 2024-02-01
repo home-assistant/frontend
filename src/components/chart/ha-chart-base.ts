@@ -438,7 +438,10 @@ export class HaChartBase extends LitElement {
         color: white;
         border-radius: 4px;
         pointer-events: none;
-        z-index: 1000;
+        z-index: 1;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
         width: 200px;
         box-sizing: border-box;
         direction: var(--direction);
