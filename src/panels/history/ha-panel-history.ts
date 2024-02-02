@@ -1,4 +1,4 @@
-import { mdiDownload, mdiFilterRemove, mdiRefresh } from "@mdi/js";
+import { mdiDownload, mdiFilterRemove } from "@mdi/js";
 import { differenceInHours } from "date-fns/esm";
 import {
   HassServiceTarget,
@@ -166,13 +166,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ></ha-icon-button>
             `
           : ""}
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._getHistory}
-          .disabled=${this._isLoading || !this._targetPickerValue}
-          .path=${mdiRefresh}
-          .label=${this.hass.localize("ui.common.refresh")}
-        ></ha-icon-button>
         <ha-icon-button
           slot="actionItems"
           @click=${this._downloadHistory}
