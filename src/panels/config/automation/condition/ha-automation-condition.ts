@@ -121,6 +121,7 @@ export default class HaAutomationCondition extends LitElement {
         @item-moved=${this._conditionMoved}
         group="conditions"
         .path=${this.path}
+        invert-swap
       >
         <div class="conditions">
           ${repeat(
@@ -291,22 +292,32 @@ export default class HaAutomationCondition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .conditions {
+        padding: 16px;
+        margin: -16px -16px 0px -16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .conditions:not(:has(ha-automation-condition-row)) {
+        margin: -16px;
+      }
+      .sortable-ghost {
+        background: none;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+      .sortable-drag {
+        background: none;
+      }
       ha-automation-condition-row {
         display: block;
-        margin-bottom: 16px;
         scroll-margin-top: 48px;
       }
       ha-svg-icon {
         height: 20px;
       }
-      ha-alert {
-        display: block;
-        margin-bottom: 16px;
-        border-radius: var(--ha-card-border-radius, 12px);
-        overflow: hidden;
-      }
       .handle {
-        padding: 12px 4px;
+        padding: 12px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }
