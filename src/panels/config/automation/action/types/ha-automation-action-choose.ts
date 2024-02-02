@@ -125,6 +125,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .disabled=${!this._showReorder || this.disabled}
         group="choose-options"
         .path=${[...(this.path ?? []), "choose"]}
+        invert-swap
       >
         <div class="options">
           ${repeat(
@@ -296,7 +297,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              .path=${[...(this.path ?? []), "choose", "default"]}
+              .path=${[...(this.path ?? []), "default"]}
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
@@ -502,8 +503,22 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return [
       haStyle,
       css`
-        .option {
-          margin: 0 0 16px 0;
+        .options {
+          padding: 16px;
+          margin: -16px -16px 0px -16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .options:not(:has(.option)) {
+          margin: -16px;
+        }
+        .sortable-ghost {
+          background: none;
+          border-radius: var(--ha-card-border-radius, 12px);
+        }
+        .sortable-drag {
+          background: none;
         }
         .add-card mwc-button {
           display: block;
@@ -539,7 +554,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           padding: 0 16px 16px 16px;
         }
         .handle {
-          padding: 12px 4px;
+          padding: 12px;
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
         }
