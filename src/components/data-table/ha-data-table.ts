@@ -892,6 +892,8 @@ export class HaDataTable extends LitElement {
         search-input {
           display: block;
           flex: 1;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: transparent;
         }
         slot[name="header"] {
           display: block;
