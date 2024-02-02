@@ -329,7 +329,16 @@ export const getDisplayUnit = (
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
-export const getRecordedEntities = (hass: HomeAssistant) =>
-  hass.callWS<RecordedEntities>({
+let recordedEntitiesCache: RecordedEntities | undefined;
+
+export const getRecordedEntities = async (
+  hass: HomeAssistant
+): Promise<RecordedEntities> => {
+  if (recordedEntitiesCache) {
+    return recordedEntitiesCache;
+  }
+  recordedEntitiesCache = await hass.callWS<RecordedEntities>({
     type: "recorder/recorded_entities",
   });
+  return recordedEntitiesCache;
+};
