@@ -72,17 +72,17 @@ type CategoryType = {
   services: ServiceIcons;
 };
 
-export function getHassIcons(
+export async function getHassIcons(
   hass: HomeAssistant,
   category: "entity",
   integration?: string
 ): Promise<IconResources<PlatformIcons>>;
-export function getHassIcons(
+export async function getHassIcons(
   hass: HomeAssistant,
   category: "entity_component",
   integration?: string
 ): Promise<IconResources<ComponentIcons>>;
-export function getHassIcons(
+export async function getHassIcons(
   hass: HomeAssistant,
   category: "services",
   integration?: string
