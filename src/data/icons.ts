@@ -112,7 +112,7 @@ export const getComponentIcons = async (
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  resources.entity_component.domains = hass.config.components;
+  resources.entity_component.domains = [...hass.config.components];
   resources.entity_component.resources = getHassIcons<ComponentIcons>(
     hass,
     "entity_component"
@@ -139,7 +139,7 @@ export const getServiceIcons = async (
     });
     return resources.services.all;
   }
-  if (!force && domain && domain in resources.services.domains) {
+  if (!force && domain in resources.services.domains) {
     return resources.services.domains[domain];
   }
   if (resources.services.all && !force) {
