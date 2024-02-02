@@ -220,22 +220,27 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   ): HistoryResult {
     const result: HistoryResult = { ...historyResult, line: [] };
 
-    const keys = new Set([
-      ...historyResult.line.map((i) =>
-        computeGroupKey(i.unit, i.device_class, true)
-      ),
-      ...ltsResult.line.map((i) =>
-        computeGroupKey(i.unit, i.device_class, true)
-      ),
-    ]);
-    for (const key of keys) {
-      const historyItem = historyResult.line.find(
-        (i) => computeGroupKey(i.unit, i.device_class, true) === key
-      );
-      const ltsItem = ltsResult.line.find(
-        (i) => computeGroupKey(i.unit, i.device_class, true) === key
-      );
+    const lookup: Record<
+      string,
+      { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
+    > = {};
 
+    for (const item of historyResult.line) {
+      lookup[computeGroupKey(item.unit, item.device_class, true)] = {
+        historyItem: item,
+      };
+    }
+
+    for (const item of ltsResult.line) {
+      const key = computeGroupKey(item.unit, item.device_class, true);
+      if (key in lookup) {
+        lookup[key].ltsItem = item;
+      } else {
+        lookup[key] = { ltsItem: item };
+      }
+    }
+
+    for (const { historyItem, ltsItem } of Object.values(lookup)) {
       if (!historyItem || !ltsItem) {
         // Only one result has data for this item, so just push it directly instead of merging.
         result.line.push(historyItem || ltsItem!);
