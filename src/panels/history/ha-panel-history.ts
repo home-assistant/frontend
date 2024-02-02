@@ -52,7 +52,7 @@ import {
 import {
   fetchStatistics,
   Statistics,
-  getRecordedEntities,
+  getRecordedExcludedEntities,
 } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
@@ -102,7 +102,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _interval?: number;
 
-  private _recordedEntities?: string[];
+  private _excludedEntities?: string[];
 
   public constructor() {
     super();
@@ -230,8 +230,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _entityFilter = (entity: HassEntity): boolean =>
-    !this._recordedEntities ||
-    this._recordedEntities.includes(entity.entity_id);
+    !this._excludedEntities ||
+    !this._excludedEntities.includes(entity.entity_id);
 
   private mergeHistoryResults(
     ltsResult: HistoryResult,
@@ -341,15 +341,16 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _getRecordedEntities() {
-    const { entity_ids: entityIds } = await getRecordedEntities(this.hass);
-    this._recordedEntities = entityIds;
+  private async _getRecordedExcludedEntities() {
+    const { recorded_ids: _recordedIds, excluded_ids: excludedIds } =
+      await getRecordedExcludedEntities(this.hass);
+    this._excludedEntities = excludedIds;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    this._getRecordedEntities();
+    this._getRecordedExcludedEntities();
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {

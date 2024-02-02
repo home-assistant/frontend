@@ -15,6 +15,10 @@ export interface RecorderInfo {
 export interface RecordedEntities {
   entity_ids: string[];
 }
+export interface RecordedExcludedEntities {
+  recorded_ids: string[];
+  excluded_ids: string[];
+}
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
@@ -329,16 +333,24 @@ export const getDisplayUnit = (
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
-let recordedEntitiesCache: RecordedEntities | undefined;
+let recordedExcludedEntitiesCache: RecordedExcludedEntities | undefined;
 
-export const getRecordedEntities = async (
+export const getRecordedExcludedEntities = async (
   hass: HomeAssistant
-): Promise<RecordedEntities> => {
-  if (recordedEntitiesCache) {
-    return recordedEntitiesCache;
+): Promise<RecordedExcludedEntities> => {
+  if (recordedExcludedEntitiesCache) {
+    return recordedExcludedEntitiesCache;
   }
-  recordedEntitiesCache = await hass.callWS<RecordedEntities>({
+  const recordedEntities = await hass.callWS<RecordedEntities>({
     type: "recorder/recorded_entities",
   });
-  return recordedEntitiesCache;
+
+  recordedExcludedEntitiesCache = {
+    recorded_ids: recordedEntities.entity_ids,
+    excluded_ids: Object.keys(hass.states).filter(
+      (id) => !recordedEntities.entity_ids.includes(id)
+    ),
+  };
+
+  return recordedExcludedEntitiesCache;
 };
