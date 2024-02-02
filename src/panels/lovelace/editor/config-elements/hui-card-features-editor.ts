@@ -78,6 +78,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "climate-hvac-modes",
   "climate-fan-modes",
+  "climate-preset-modes",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
