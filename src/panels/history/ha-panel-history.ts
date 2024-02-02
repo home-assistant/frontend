@@ -6,6 +6,7 @@ import {
 } from "home-assistant-js-websocket/dist/types";
 import { LitElement, PropertyValues, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
@@ -71,7 +72,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     state: true,
     subscribe: false,
   })
-  private _targetPickerValue?: HassServiceTarget;
+  private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _isLoading = false;
 
@@ -138,6 +139,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    const entitiesSelected = this._getEntityIds().length > 0;
     return html`
       <ha-top-app-bar-fixed>
         ${this._showBack
@@ -155,7 +157,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ></ha-menu-button>
             `}
         <div slot="title">${this.hass.localize("panel.history")}</div>
-        ${this._targetPickerValue
+        ${entitiesSelected
           ? html`
               <ha-icon-button
                 slot="actionItems"
@@ -196,7 +198,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             ? html`<div class="progress-wrapper">
                 <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
-            : !this._targetPickerValue
+            : !entitiesSelected
               ? html`<div class="start-search">
                   ${this.hass.localize("ui.panel.history.start_search")}
                 </div>`
@@ -368,14 +370,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     if (
-      this._targetPickerValue &&
-      (changedProps.has("_startDate") ||
-        changedProps.has("_endDate") ||
-        changedProps.has("_targetPickerValue") ||
-        (!this._stateHistory &&
-          (changedProps.has("_deviceEntityLookup") ||
-            changedProps.has("_areaEntityLookup") ||
-            changedProps.has("_areaDeviceLookup"))))
+      changedProps.has("_startDate") ||
+      changedProps.has("_endDate") ||
+      changedProps.has("_targetPickerValue") ||
+      (!this._stateHistory &&
+        (changedProps.has("_deviceEntityLookup") ||
+          changedProps.has("_areaEntityLookup") ||
+          changedProps.has("_areaDeviceLookup")))
     ) {
       this._getHistory();
       this._getStats();
@@ -383,7 +384,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _removeAll() {
-    this._targetPickerValue = undefined;
+    this._targetPickerValue = {};
     this._updatePath();
   }
 
@@ -516,83 +517,99 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityIds(): string[] {
-    if (
-      !this._targetPickerValue ||
-      this._deviceEntityLookup === undefined ||
-      this._areaEntityLookup === undefined ||
-      this._areaDeviceLookup === undefined
-    ) {
-      return [];
-    }
+    return this.__getEntityIds(
+      this._targetPickerValue,
+      this._deviceEntityLookup,
+      this._areaEntityLookup,
+      this._areaDeviceLookup
+    );
+  }
 
-    const entityIds = new Set<string>();
-    let {
-      area_id: searchingAreaId,
-      device_id: searchingDeviceId,
-      entity_id: searchingEntityId,
-    } = this._targetPickerValue;
+  private __getEntityIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      deviceEntityLookup: DeviceEntityLookup | undefined,
+      areaEntityLookup: AreaEntityLookup | undefined,
+      areaDeviceLookup: AreaDeviceLookup | undefined
+    ): string[] => {
+      if (
+        !targetPickerValue ||
+        deviceEntityLookup === undefined ||
+        areaEntityLookup === undefined ||
+        areaDeviceLookup === undefined
+      ) {
+        return [];
+      }
 
-    if (searchingAreaId) {
-      searchingAreaId = ensureArray(searchingAreaId);
-      for (const singleSearchingAreaId of searchingAreaId) {
-        const foundEntities = this._areaEntityLookup[singleSearchingAreaId];
-        if (foundEntities?.length) {
+      const entityIds = new Set<string>();
+      let {
+        area_id: searchingAreaId,
+        device_id: searchingDeviceId,
+        entity_id: searchingEntityId,
+      } = targetPickerValue;
+
+      if (searchingAreaId) {
+        searchingAreaId = ensureArray(searchingAreaId);
+        for (const singleSearchingAreaId of searchingAreaId) {
+          const foundEntities = areaEntityLookup[singleSearchingAreaId];
+          if (foundEntities?.length) {
+            for (const foundEntity of foundEntities) {
+              if (foundEntity.entity_category === null) {
+                entityIds.add(foundEntity.entity_id);
+              }
+            }
+          }
+
+          const foundDevices = areaDeviceLookup[singleSearchingAreaId];
+          if (!foundDevices?.length) {
+            continue;
+          }
+
+          for (const foundDevice of foundDevices) {
+            const foundDeviceEntities = deviceEntityLookup[foundDevice.id];
+            if (!foundDeviceEntities?.length) {
+              continue;
+            }
+
+            for (const foundDeviceEntity of foundDeviceEntities) {
+              if (
+                (!foundDeviceEntity.area_id ||
+                  foundDeviceEntity.area_id === singleSearchingAreaId) &&
+                foundDeviceEntity.entity_category === null
+              ) {
+                entityIds.add(foundDeviceEntity.entity_id);
+              }
+            }
+          }
+        }
+      }
+
+      if (searchingDeviceId) {
+        searchingDeviceId = ensureArray(searchingDeviceId);
+        for (const singleSearchingDeviceId of searchingDeviceId) {
+          const foundEntities = deviceEntityLookup[singleSearchingDeviceId];
+          if (!foundEntities?.length) {
+            continue;
+          }
+
           for (const foundEntity of foundEntities) {
             if (foundEntity.entity_category === null) {
               entityIds.add(foundEntity.entity_id);
             }
           }
         }
+      }
 
-        const foundDevices = this._areaDeviceLookup[singleSearchingAreaId];
-        if (!foundDevices?.length) {
-          continue;
-        }
-
-        for (const foundDevice of foundDevices) {
-          const foundDeviceEntities = this._deviceEntityLookup[foundDevice.id];
-          if (!foundDeviceEntities?.length) {
-            continue;
-          }
-
-          for (const foundDeviceEntity of foundDeviceEntities) {
-            if (
-              (!foundDeviceEntity.area_id ||
-                foundDeviceEntity.area_id === singleSearchingAreaId) &&
-              foundDeviceEntity.entity_category === null
-            ) {
-              entityIds.add(foundDeviceEntity.entity_id);
-            }
-          }
+      if (searchingEntityId) {
+        searchingEntityId = ensureArray(searchingEntityId);
+        for (const singleSearchingEntityId of searchingEntityId) {
+          entityIds.add(singleSearchingEntityId);
         }
       }
+
+      return [...entityIds];
     }
-
-    if (searchingDeviceId) {
-      searchingDeviceId = ensureArray(searchingDeviceId);
-      for (const singleSearchingDeviceId of searchingDeviceId) {
-        const foundEntities = this._deviceEntityLookup[singleSearchingDeviceId];
-        if (!foundEntities?.length) {
-          continue;
-        }
-
-        for (const foundEntity of foundEntities) {
-          if (foundEntity.entity_category === null) {
-            entityIds.add(foundEntity.entity_id);
-          }
-        }
-      }
-    }
-
-    if (searchingEntityId) {
-      searchingEntityId = ensureArray(searchingEntityId);
-      for (const singleSearchingEntityId of searchingEntityId) {
-        entityIds.add(singleSearchingEntityId);
-      }
-    }
-
-    return [...entityIds];
-  }
+  );
 
   private _dateRangeChanged(ev) {
     this._startDate = ev.detail.startDate;
@@ -614,20 +631,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _updatePath() {
     const params: Record<string, string> = {};
 
-    if (this._targetPickerValue) {
-      if (this._targetPickerValue.entity_id) {
-        params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
-          ","
-        );
-      }
-      if (this._targetPickerValue.area_id) {
-        params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
-      }
-      if (this._targetPickerValue.device_id) {
-        params.device_id = ensureArray(this._targetPickerValue.device_id).join(
-          ","
-        );
-      }
+    if (this._targetPickerValue.entity_id) {
+      params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
+        ","
+      );
+    }
+    if (this._targetPickerValue.area_id) {
+      params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
+    }
+    if (this._targetPickerValue.device_id) {
+      params.device_id = ensureArray(this._targetPickerValue.device_id).join(
+        ","
+      );
     }
 
     if (this._startDate) {
