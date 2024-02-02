@@ -226,13 +226,19 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     > = {};
 
     for (const item of historyResult.line) {
-      lookup[computeGroupKey(item.unit, item.device_class, true)] = {
-        historyItem: item,
-      };
+      const key = computeGroupKey(item.unit, item.device_class, true);
+      if (key) {
+        lookup[key] = {
+          historyItem: item,
+        };
+      }
     }
 
     for (const item of ltsResult.line) {
       const key = computeGroupKey(item.unit, item.device_class, true);
+      if (!key) {
+        continue;
+      }
       if (key in lookup) {
         lookup[key].ltsItem = item;
       } else {

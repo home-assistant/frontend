@@ -524,7 +524,7 @@ export const computeHistory = (
 };
 
 export const computeGroupKey = (
-  unit: string,
+  unit: string | undefined,
   device_class: string | undefined,
   splitDeviceClasses: boolean
 ) => (splitDeviceClasses ? `${unit}_${device_class || ""}` : unit);
