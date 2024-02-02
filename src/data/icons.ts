@@ -72,16 +72,32 @@ type CategoryType = {
   services: ServiceIcons;
 };
 
-export const getHassIcons = async <T extends IconCategory>(
+export function getHassIcons(
+  hass: HomeAssistant,
+  category: "entity",
+  integration?: string
+): Promise<IconResources<PlatformIcons>>;
+export function getHassIcons(
+  hass: HomeAssistant,
+  category: "entity_component",
+  integration?: string
+): Promise<IconResources<ComponentIcons>>;
+export function getHassIcons(
+  hass: HomeAssistant,
+  category: "services",
+  integration?: string
+): Promise<IconResources<ServiceIcons>>;
+export async function getHassIcons<T extends IconCategory>(
   hass: HomeAssistant,
   category: IconCategory,
   integration?: string
-) =>
-  hass.callWS<IconResources<CategoryType[T]>>({
+): Promise<IconResources<CategoryType[T]>> {
+  return hass.callWS<IconResources<CategoryType[T]>>({
     type: "frontend/get_icons",
     category,
     integration,
   });
+}
 
 export const getPlatformIcons = async (
   hass: HomeAssistant,
@@ -94,7 +110,7 @@ export const getPlatformIcons = async (
   if (!isComponentLoaded(hass, integration)) {
     return undefined;
   }
-  const result = getHassIcons<"entity">(hass, "entity", integration).then(
+  const result = getHassIcons(hass, "entity", integration).then(
     (res) => res?.resources[integration]
   );
   resources.entity[integration] = result;
@@ -117,7 +133,7 @@ export const getComponentIcons = async (
     return undefined;
   }
   resources.entity_component.domains = [...hass.config.components];
-  resources.entity_component.resources = getHassIcons<"entity_component">(
+  resources.entity_component.resources = getHassIcons(
     hass,
     "entity_component"
   ).then((result) => result.resources);
@@ -133,14 +149,12 @@ export const getServiceIcons = async (
     if (!force && resources.services.all) {
       return resources.services.all;
     }
-    resources.services.all = getHassIcons<"services">(
-      hass,
-      "services",
-      domain
-    ).then((res) => {
-      resources.services.domains = res.resources;
-      return res?.resources;
-    });
+    resources.services.all = getHassIcons(hass, "services", domain).then(
+      (res) => {
+        resources.services.domains = res.resources;
+        return res?.resources;
+      }
+    );
     return resources.services.all;
   }
   if (!force && domain in resources.services.domains) {
@@ -155,7 +169,7 @@ export const getServiceIcons = async (
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  const result = getHassIcons<"services">(hass, "services", domain);
+  const result = getHassIcons(hass, "services", domain);
   resources.services.domains[domain] = result.then(
     (res) => res?.resources[domain]
   );
