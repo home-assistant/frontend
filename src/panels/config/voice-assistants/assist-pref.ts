@@ -225,13 +225,11 @@ export class AssistPref extends LitElement {
       .header-actions {
         position: absolute;
         right: 0px;
+        inset-inline-end: 0px;
+        inset-inline-start: initial;
         top: 24px;
         display: flex;
         flex-direction: row;
-      }
-      :host([dir="rtl"]) .header-actions {
-        right: auto;
-        left: 0;
       }
       .header-actions .icon-link {
         margin-top: -16px;

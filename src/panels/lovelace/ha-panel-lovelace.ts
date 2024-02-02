@@ -73,6 +73,8 @@ export class LovelacePanel extends LitElement {
 
   private _unsubUpdates?: Promise<UnsubscribeFunc>;
 
+  private _loading = false;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (
@@ -162,7 +164,7 @@ export class LovelacePanel extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!this.lovelace && this._panelState !== "error") {
+    if (!this.lovelace && this._panelState !== "error" && !this._loading) {
       this._fetchConfig(false);
     }
   }
@@ -233,6 +235,8 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
+    this._loading = true;
+
     let conf: LovelaceConfig;
     let rawConf: LovelaceRawConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
@@ -301,6 +305,7 @@ export class LovelacePanel extends LitElement {
       rawConf = DEFAULT_CONFIG;
       confMode = "generated";
     } finally {
+      this._loading = false;
       // Ignore updates for another 2 seconds.
       if (this.lovelace && this.lovelace.mode === "yaml") {
         setTimeout(() => {

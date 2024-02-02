@@ -177,11 +177,9 @@ export class CloudTTSPref extends LitElement {
       .example {
         position: absolute;
         right: 16px;
+        inset-inline-end: 16px;
+        inset-inline-start: initial;
         top: 16px;
-      }
-      :host([dir="rtl"]) .example {
-        right: auto;
-        left: 24px;
       }
       .row {
         display: flex;
