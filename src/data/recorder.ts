@@ -12,6 +12,10 @@ export interface RecorderInfo {
   thread_running: boolean;
 }
 
+export interface RecordedEntities {
+  entity_ids: string[];
+}
+
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
@@ -324,3 +328,8 @@ export const getDisplayUnit = (
 
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
+
+export const getRecordedEntities = (hass: HomeAssistant) =>
+  hass.callWS<RecordedEntities>({
+    type: "recorder/recorded_entities",
+  });

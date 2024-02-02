@@ -1,5 +1,6 @@
 import { mdiDownload, mdiFilterRemove, mdiRefresh } from "@mdi/js";
 import { differenceInHours } from "date-fns/esm";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -48,7 +49,11 @@ import {
   LineChartEntity,
   computeGroupKey,
 } from "../../data/history";
-import { fetchStatistics, Statistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  Statistics,
+  getRecordedEntities,
+} from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
@@ -96,6 +101,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _interval?: number;
+
+  private _recordedEntities?: string[];
 
   public constructor() {
     super();
@@ -195,6 +202,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
+              .entityFilter=${this._entityFilter}
               addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
@@ -220,6 +228,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       </ha-top-app-bar-fixed>
     `;
   }
+
+  private _entityFilter = (entity: HassEntity): boolean =>
+    !this._recordedEntities ||
+    this._recordedEntities.includes(entity.entity_id);
 
   private mergeHistoryResults(
     ltsResult: HistoryResult,
@@ -329,8 +341,16 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
   }
 
+  private async _getRecordedEntities() {
+    const { entity_ids: entityIds } = await getRecordedEntities(this.hass);
+    this._recordedEntities = entityIds;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    this._getRecordedEntities();
+
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
