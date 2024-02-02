@@ -39,6 +39,12 @@ export class HaSortable extends LitElement {
   @property({ type: String, attribute: "group" })
   public group?: string;
 
+  @property({ type: Number, attribute: "swap-threshold" })
+  public swapThreshold?: number;
+
+  @property({ type: Boolean, attribute: "invert-swap" })
+  public invertSwap?: boolean;
+
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
       if (this.disabled) {
@@ -81,7 +87,7 @@ export class HaSortable extends LitElement {
         }
 
         .sortable-ghost {
-          border: 2px solid var(--primary-color);
+          box-shadow: 0 0 0 2px var(--primary-color);
           background: rgba(var(--rgb-primary-color), 0.25);
           border-radius: 4px;
           opacity: 0.4;
@@ -108,13 +114,20 @@ export class HaSortable extends LitElement {
 
     const options: SortableInstance.Options = {
       animation: 150,
-      swapThreshold: 0.75,
+      swapThreshold: 1,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
     };
 
     if (this.draggableSelector) {
       options.draggable = this.draggableSelector;
+    }
+
+    if (this.swapThreshold !== undefined) {
+      options.swapThreshold = this.swapThreshold;
+    }
+    if (this.invertSwap !== undefined) {
+      options.invertSwap = this.invertSwap;
     }
     if (this.handleSelector) {
       options.handle = this.handleSelector;

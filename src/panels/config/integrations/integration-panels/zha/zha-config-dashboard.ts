@@ -19,7 +19,6 @@ import {
   ConfigEntry,
   getConfigEntries,
 } from "../../../../../data/config_entries";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
@@ -259,7 +258,6 @@ class ZHAConfigDashboard extends LitElement {
           <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}
             extended
-            ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </ha-fab>

@@ -8,12 +8,18 @@ import type {
   Marker,
   Polyline,
 } from "leaflet";
+import { isToday } from "date-fns";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   LeafletModuleType,
   setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
+import {
+  formatTimeWithSeconds,
+  formatTimeWeekday,
+} from "../../common/datetime/format_time";
+import { formatDateTime } from "../../common/datetime/format_date_time";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
@@ -27,12 +33,14 @@ const getEntityId = (entity: string | HaMapEntity): string =>
 
 export interface HaMapPathPoint {
   point: LatLngTuple;
-  tooltip: string;
+  timestamp: Date;
 }
 export interface HaMapPaths {
   points: HaMapPathPoint[];
   color?: string;
+  name?: string;
   gradualOpacity?: number;
+  fullDatetime?: boolean;
 }
 
 export interface HaMapEntity {
@@ -242,6 +250,30 @@ export class HaMap extends ReactiveElement {
     });
   }
 
+  private _computePathTooltip(path: HaMapPaths, point: HaMapPathPoint): string {
+    let formattedTime: string;
+    if (path.fullDatetime) {
+      formattedTime = formatDateTime(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else if (isToday(point.timestamp)) {
+      formattedTime = formatTimeWithSeconds(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else {
+      formattedTime = formatTimeWeekday(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    }
+    return `${path.name}<br>${formattedTime}`;
+  }
+
   private _drawPaths(): void {
     const hass = this.hass;
     const map = this.leafletMap;
@@ -289,7 +321,10 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindTooltip(path.points[pointIndex].tooltip, { direction: "top" })
+            .bindTooltip(
+              this._computePathTooltip(path, path.points[pointIndex]),
+              { direction: "top" }
+            )
         );
 
         // DRAW line between this and next point
@@ -319,7 +354,10 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindTooltip(path.points[pointIndex].tooltip, { direction: "top" })
+            .bindTooltip(
+              this._computePathTooltip(path, path.points[pointIndex]),
+              { direction: "top" }
+            )
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
@@ -556,6 +594,7 @@ export class HaMap extends ReactiveElement {
         color: white !important;
         border-radius: 4px;
         box-shadow: none !important;
+        text-align: center;
       }
     `;
   }

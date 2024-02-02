@@ -13,7 +13,6 @@ import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -186,9 +185,6 @@ export class HuiGenericEntityRow extends LitElement {
       "no-secondary",
       !this.secondaryText && !this.config?.secondary_info
     );
-    if (changedProps.has("hass")) {
-      toggleAttribute(this, "rtl", computeRTL(this.hass!));
-    }
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -233,22 +229,11 @@ export class HuiGenericEntityRow extends LitElement {
       state-badge {
         flex: 0 0 40px;
       }
-      :host([rtl]) .flex {
-        margin-left: 0;
-        margin-right: 16px;
-      }
-      :host([rtl]) .flex ::slotted(*) {
-        margin-left: 0;
-        margin-right: 8px;
-      }
       .pointer {
         cursor: pointer;
       }
       .state {
-        text-align: right;
-      }
-      .state.rtl {
-        text-align: left;
+        text-align: var(--float-end);
       }
       .value {
         direction: ltr;

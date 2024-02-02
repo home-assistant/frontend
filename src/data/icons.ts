@@ -8,30 +8,41 @@ import {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 
-const resources: Record<IconCategory, any> = {
+const resources: {
+  entity: Record<string, Promise<PlatformIcons>>;
+  entity_component: {
+    domains?: string[];
+    resources?: Promise<Record<string, ComponentIcons>>;
+  };
+  services: {
+    all?: Promise<Record<string, ServiceIcons>>;
+    domains: { [domain: string]: ServiceIcons | Promise<ServiceIcons> };
+  };
+} = {
   entity: {},
-  entity_component: undefined,
-  services: {},
+  entity_component: {},
+  services: { domains: {} },
 };
 
-interface IconResources {
-  resources: Record<string, string | Record<string, string>>;
+interface IconResources<
+  T extends ComponentIcons | PlatformIcons | ServiceIcons,
+> {
+  resources: Record<string, T>;
 }
 
 interface PlatformIcons {
-  [domain: string]: {
-    [translation_key: string]: {
-      state: Record<string, string>;
-      state_attributes: Record<
-        string,
-        {
-          state: Record<string, string>;
-          default: string;
-        }
-      >;
-      default: string;
-    };
+  [translation_key: string]: {
+    state: Record<string, string>;
+    state_attributes: Record<
+      string,
+      {
+        state: Record<string, string>;
+        default: string;
+      }
+    >;
+    default: string;
   };
 }
 
@@ -55,12 +66,18 @@ interface ServiceIcons {
 
 export type IconCategory = "entity" | "entity_component" | "services";
 
-export const getHassIcons = async (
+type CategoryType = {
+  entity: PlatformIcons;
+  entity_component: ComponentIcons;
+  services: ServiceIcons;
+};
+
+export const getHassIcons = async <T extends IconCategory>(
   hass: HomeAssistant,
-  category: IconCategory,
+  category: T,
   integration?: string
-): Promise<IconResources> =>
-  hass.callWS<{ resources: Record<string, string> }>({
+) =>
+  hass.callWS<IconResources<CategoryType[T]>>({
     type: "frontend/get_icons",
     category,
     integration,
@@ -70,14 +87,17 @@ export const getPlatformIcons = async (
   hass: HomeAssistant,
   integration: string,
   force = false
-): Promise<PlatformIcons> => {
+): Promise<PlatformIcons | undefined> => {
   if (!force && integration in resources.entity) {
     return resources.entity[integration];
   }
-  const result = getHassIcons(hass, "entity", integration);
-  resources.entity[integration] = result.then(
+  if (!isComponentLoaded(hass, integration)) {
+    return undefined;
+  }
+  const result = getHassIcons(hass, "entity", integration).then(
     (res) => res?.resources[integration]
   );
+  resources.entity[integration] = result;
   return resources.entity[integration];
 };
 
@@ -85,45 +105,59 @@ export const getComponentIcons = async (
   hass: HomeAssistant,
   domain: string,
   force = false
-): Promise<ComponentIcons> => {
-  if (!force && resources.entity_component) {
-    return resources.entity_component.then((res) => res[domain]);
+): Promise<ComponentIcons | undefined> => {
+  if (
+    !force &&
+    resources.entity_component.resources &&
+    resources.entity_component.domains?.includes(domain)
+  ) {
+    return resources.entity_component.resources.then((res) => res[domain]);
   }
-  resources.entity_component = getHassIcons(hass, "entity_component").then(
-    (result) => result.resources
-  );
-  return resources.entity_component.then((res) => res[domain]);
+  if (!isComponentLoaded(hass, domain)) {
+    return undefined;
+  }
+  resources.entity_component.domains = [...hass.config.components];
+  resources.entity_component.resources = getHassIcons(
+    hass,
+    "entity_component"
+  ).then((result) => result.resources);
+  return resources.entity_component.resources.then((res) => res[domain]);
 };
 
 export const getServiceIcons = async (
   hass: HomeAssistant,
   domain?: string,
   force = false
-): Promise<ServiceIcons> => {
+): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> => {
   if (!domain) {
     if (!force && resources.services.all) {
       return resources.services.all;
     }
     resources.services.all = getHassIcons(hass, "services", domain).then(
       (res) => {
-        resources.services = res.resources;
+        resources.services.domains = res.resources;
         return res?.resources;
       }
     );
     return resources.services.all;
   }
-  if (!force && domain && domain in resources.services) {
-    return resources.services[domain];
+  if (!force && domain in resources.services.domains) {
+    return resources.services.domains[domain];
   }
   if (resources.services.all && !force) {
     await resources.services.all;
-    if (domain in resources.services) {
-      return resources.services[domain];
+    if (domain in resources.services.domains) {
+      return resources.services.domains[domain];
     }
   }
+  if (!isComponentLoaded(hass, domain)) {
+    return undefined;
+  }
   const result = getHassIcons(hass, "services", domain);
-  resources.services[domain] = result.then((res) => res?.resources[domain]);
-  return resources.services[domain];
+  resources.services.domains[domain] = result.then(
+    (res) => res?.resources[domain]
+  );
+  return resources.services.domains[domain];
 };
 
 export const entityIcon = async (
@@ -238,7 +272,7 @@ export const serviceIcon = async (
   const serviceName = computeObjectId(service);
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
-    icon = serviceIcons[serviceName];
+    icon = serviceIcons[serviceName] as string;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);

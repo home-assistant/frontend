@@ -10,7 +10,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
-import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 
@@ -212,12 +211,10 @@ export class HaChartBase extends LitElement {
             height: `${
               this.height ?? this._chartHeight ?? this.clientWidth / 2
             }px`,
-            "padding-left": `${
-              computeRTL(this.hass) ? 0 : this._paddingYAxisInternal
-            }px`,
-            "padding-right": `${
-              computeRTL(this.hass) ? this._paddingYAxisInternal : 0
-            }px`,
+            "padding-left": `${this._paddingYAxisInternal}`,
+            "padding-right": 0,
+            "padding-inline-start": `${this._paddingYAxisInternal}`,
+            "padding-inline-end": 0,
           })}
         >
           <canvas></canvas>
@@ -433,14 +430,6 @@ export class HaChartBase extends LitElement {
       .chartTooltip .bullet {
         align-self: baseline;
       }
-      :host([rtl]) .chartLegend .bullet,
-      :host([rtl]) .chartTooltip .bullet {
-        margin-right: inherit;
-        margin-left: 6px;
-        margin-inline-end: inherit;
-        margin-inline-start: 6px;
-        direction: var(--direction);
-      }
       .chartTooltip {
         padding: 8px;
         font-size: 90%;
@@ -449,12 +438,13 @@ export class HaChartBase extends LitElement {
         color: white;
         border-radius: 4px;
         pointer-events: none;
-        z-index: 1000;
+        z-index: 1;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
         width: 200px;
         box-sizing: border-box;
-      }
-      :host([rtl]) .chartTooltip {
-        direction: rtl;
+        direction: var(--direction);
       }
       .chartLegend ul,
       .chartTooltip ul {

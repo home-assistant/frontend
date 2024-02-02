@@ -612,11 +612,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           text-align: center;
         }
 
-        /* ============= RTL ============= */
-        :host([rtl]) .temp-attribute {
-          text-align: left;
-        }
-
         /* ============= NARROW ============= */
 
         :host([narrow]) .icon-image {
