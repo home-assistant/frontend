@@ -1,15 +1,16 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
+import { evaluateStateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
+import {
+  addEntityToCondition,
+  checkConditionsMet,
+} from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
 import { EntityFilterBadgeConfig } from "./types";
-import {
-  buildConditionForFilter,
-  checkConditionsMet,
-} from "../common/validate-condition";
 
 @customElement("hui-entity-filter-badge")
 export class HuiEntityFilterBadge
@@ -86,20 +87,23 @@ export class HuiEntityFilterBadge
     }
 
     const entitiesList = this._configEntities.filter((entityConf) => {
-      const conditions =
-        entityConf.conditions ??
-        this._config!.conditions ??
-        entityConf.state_filter ??
-        this._config!.state_filter;
+      const stateObj = this.hass.states[entityConf.entity];
+      if (!stateObj) return false;
 
-      return (
-        conditions
-          .map((condition) =>
-            buildConditionForFilter(condition, entityConf.entity)
-          )
-          .filter((condition) => checkConditionsMet([condition], this.hass!))
-          .length > 0
-      );
+      const conditions = entityConf.conditions ?? this._config!.conditions;
+      if (conditions) {
+        const conditionWithEntity = conditions.map((condition) =>
+          addEntityToCondition(condition, entityConf.entity)
+        );
+        return checkConditionsMet(conditionWithEntity, this.hass!);
+      }
+
+      const filters = entityConf.state_filter ?? this._config!.state_filter;
+      if (filters) {
+        return filters.some((filter) => evaluateStateFilter(stateObj, filter));
+      }
+
+      return false;
     });
 
     if (entitiesList.length === 0) {

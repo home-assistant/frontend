@@ -1,8 +1,7 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export type Condition =
   | NumericStateCondition
@@ -17,25 +16,6 @@ export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-}
-
-type FilterOperator =
-  | "=="
-  | "<="
-  | "<"
-  | ">="
-  | ">"
-  | "!="
-  | "in"
-  | "not in"
-  | "regex";
-
-// Legacy entity-filter badge & card condition
-export interface LegacyFilterCondition {
-  operator: FilterOperator;
-  entity?: string | number;
-  attribute?: string;
-  value: string | number | string[];
 }
 
 interface BaseCondition {
@@ -90,72 +70,6 @@ function getValueFromEntityId(
     value = value.map((v) => getValueFromEntityId(hass, v) as string);
   }
   return value;
-}
-
-function checkLegacyFilterCondition(
-  condition: LegacyFilterCondition,
-  hass: HomeAssistant
-) {
-  const entity: HassEntity = hass.states[condition.entity!];
-
-  if (!entity) {
-    return false;
-  }
-
-  let value = condition.value;
-  let state: string | number = condition.attribute
-    ? entity.attributes[condition.attribute]
-    : entity.state;
-
-  if (Array.isArray(value) || typeof value === "string") {
-    value = getValueFromEntityId(hass, value);
-  }
-
-  if (condition.operator === "==" || condition.operator === "!=") {
-    const valueIsNumeric =
-      typeof value === "number" ||
-      (typeof value === "string" && !isNaN(Number(value.trim())));
-    const stateIsNumeric =
-      typeof state === "number" ||
-      (typeof state === "string" && !isNaN(Number(state.trim())));
-    if (valueIsNumeric && stateIsNumeric) {
-      value = Number(value);
-      state = Number(state);
-    }
-  }
-
-  switch (condition.operator) {
-    case "==":
-      return state === value;
-    case "<=":
-      return state <= value;
-    case "<":
-      return state < value;
-    case ">=":
-      return state >= value;
-    case ">":
-      return state > value;
-    case "!=":
-      return state !== value;
-    case "in":
-      if (Array.isArray(value) || typeof value === "string") {
-        return value.includes(`${state}`);
-      }
-      return false;
-    case "not in":
-      if (Array.isArray(value) || typeof value === "string") {
-        return !value.includes(`${state}`);
-      }
-      return false;
-    case "regex": {
-      if (state !== null && typeof state === "object") {
-        return RegExp(`${value}`).test(JSON.stringify(state));
-      }
-      return RegExp(`${value}`).test(`${state}`);
-    }
-    default:
-      return false;
-  }
 }
 
 function checkStateCondition(
@@ -236,47 +150,13 @@ function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
 }
 
 /**
- * Build a condition for filters
- * @param condition condition to apply
- * @param entityId base the condition on that entity (current entity to filter)
- * @returns a new condition that handled legacy filter conditions
- */
-export function buildConditionForFilter(
-  condition: Condition | LegacyFilterCondition | string | number,
-  entityId: string
-): Condition | LegacyFilterCondition {
-  let newCondition: Condition | LegacyFilterCondition;
-
-  if (typeof condition === "string" || typeof condition === "number") {
-    newCondition = {
-      condition: "state",
-      state: `${condition}`,
-    };
-  } else {
-    newCondition = condition;
-  }
-
-  // Set the entity to filter on
-  if (
-    ("condition" in newCondition &&
-      (newCondition.condition === "numeric_state" ||
-        newCondition.condition === "state")) ||
-    "operator" in newCondition
-  ) {
-    newCondition.entity = entityId;
-  }
-
-  return newCondition;
-}
-
-/**
  * Return the result of applying conditions
  * @param conditions conditions to apply
  * @param hass Home Assistant object
  * @returns true if conditions are respected
  */
 export function checkConditionsMet(
-  conditions: (Condition | LegacyCondition | LegacyFilterCondition)[],
+  conditions: (Condition | LegacyCondition)[],
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
@@ -295,8 +175,6 @@ export function checkConditionsMet(
         default:
           return checkStateCondition(c, hass);
       }
-    } else if ("operator" in c) {
-      return checkLegacyFilterCondition(c, hass);
     }
     return checkStateCondition(c, hass);
   });
@@ -358,4 +236,35 @@ export function validateConditionalConfig(
     }
     return validateStateCondition(c);
   });
+}
+
+/**
+ * Build a condition for filters
+ * @param condition condition to apply
+ * @param entityId base the condition on that entity
+ * @returns a new condition with entity id
+ */
+export function addEntityToCondition(
+  condition: Condition,
+  entityId: string
+): Condition {
+  if ("conditions" in condition && condition.conditions) {
+    return {
+      ...condition,
+      conditions: condition.conditions.map((c) =>
+        addEntityToCondition(c, entityId)
+      ),
+    };
+  }
+
+  if (
+    condition.condition === "state" ||
+    condition.condition === "numeric_state"
+  ) {
+    return {
+      ...condition,
+      entity: entityId,
+    };
+  }
+  return condition;
 }
