@@ -187,8 +187,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus=${this.handleRippleFocus}
-        @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
         @mouseup=${this.handleRippleDeactivate}
         @mouseenter=${this.handleRippleMouseEnter}
@@ -290,16 +288,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   @eventOptions({ passive: true })
-  private handleRippleFocus() {
-    this._rippleHandlers.startFocus();
-  }
-
-  @eventOptions({ passive: true })
-  private handleRippleBlur() {
-    this._rippleHandlers.endFocus();
-  }
-
-  @eventOptions({ passive: true })
   private handleRippleMouseEnter() {
     this._rippleHandlers.startHover();
   }
@@ -352,7 +340,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           outline: none;
         }
 
-        :host(:focus-visible) ha-state-icon,
+        ha-card:focus-visible {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px
+            var(--state-color, var(--paper-item-icon-color, #44739e));
+          border-color: var(
+            --state-color,
+            var(--paper-item-icon-color, #44739e)
+          );
+          box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
+
+        ha-card:focus-visible ha-state-icon,
         :host(:active) ha-state-icon {
           transform: scale(1.2);
         }
