@@ -9597,7 +9597,7 @@ __metadata:
     hls.js: "npm:1.5.2"
     home-assistant-js-websocket: "npm:9.1.0"
     html-minifier-terser: "npm:7.2.0"
-    husky: "npm:9.0.6"
+    husky: "npm:9.0.7"
     idb-keyval: "npm:6.2.1"
     instant-mocha: "npm:1.5.2"
     intl-messageformat: "npm:10.5.11"
@@ -9879,12 +9879,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:9.0.6":
-  version: 9.0.6
-  resolution: "husky@npm:9.0.6"
+"husky@npm:9.0.7":
+  version: 9.0.7
+  resolution: "husky@npm:9.0.7"
   bin:
     husky: bin.js
-  checksum: e198c90a59d460cf860c33e0a4c3927ecfb645d4fd4c2de3fbcd5fb56b858a923af452508d549f6ed020bb48de08290912cd77c006dd2a83e551c24c17340d5b
+  checksum: c5673acb9f224b6d2b36ee4892c6b99dbe9a077b041aee6013efeacb71d2d2cbe6ab7fac061f68fa5653c7dbe93aacfeed69eea01f755688e4c36c4044dcc5c0
   languageName: node
   linkType: hard
 
