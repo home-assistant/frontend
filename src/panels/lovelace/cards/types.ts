@@ -4,11 +4,9 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
 import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
-import {
-  Condition,
-  LegacyCondition,
-  LegacyFilterCondition,
-} from "../common/validate-condition";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LegacyStateFilter } from "../common/evaluate-filter";
+import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
 import { LovelaceElementConfig } from "../elements/types";
 import {
@@ -17,7 +15,6 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -197,8 +194,8 @@ export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
-  state_filter?: Array<Condition | LegacyFilterCondition | string | number>;
-  conditions: Array<Condition | LegacyFilterCondition | string | number>;
+  state_filter?: Array<LegacyStateFilter>;
+  conditions: Array<Condition>;
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
