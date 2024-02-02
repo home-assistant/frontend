@@ -72,32 +72,16 @@ type CategoryType = {
   services: ServiceIcons;
 };
 
-export async function getHassIcons(
+export const getHassIcons = async <T extends IconCategory>(
   hass: HomeAssistant,
-  category: "entity",
+  category: T,
   integration?: string
-): Promise<IconResources<PlatformIcons>>;
-export async function getHassIcons(
-  hass: HomeAssistant,
-  category: "entity_component",
-  integration?: string
-): Promise<IconResources<ComponentIcons>>;
-export async function getHassIcons(
-  hass: HomeAssistant,
-  category: "services",
-  integration?: string
-): Promise<IconResources<ServiceIcons>>;
-export async function getHassIcons<T extends IconCategory>(
-  hass: HomeAssistant,
-  category: IconCategory,
-  integration?: string
-): Promise<IconResources<CategoryType[T]>> {
-  return hass.callWS<IconResources<CategoryType[T]>>({
+) =>
+  hass.callWS<IconResources<CategoryType[T]>>({
     type: "frontend/get_icons",
     category,
     integration,
   });
-}
 
 export const getPlatformIcons = async (
   hass: HomeAssistant,
