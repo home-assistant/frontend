@@ -66,14 +66,18 @@ interface ServiceIcons {
 
 export type IconCategory = "entity" | "entity_component" | "services";
 
-export const getHassIcons = async <
-  T extends ServiceIcons | ComponentIcons | PlatformIcons,
->(
+type CategoryType = {
+  entity: PlatformIcons;
+  entity_component: ComponentIcons;
+  services: ServiceIcons;
+};
+
+export const getHassIcons = async <T extends IconCategory>(
   hass: HomeAssistant,
   category: IconCategory,
   integration?: string
 ) =>
-  hass.callWS<IconResources<T>>({
+  hass.callWS<IconResources<CategoryType[T]>>({
     type: "frontend/get_icons",
     category,
     integration,
@@ -90,7 +94,7 @@ export const getPlatformIcons = async (
   if (!isComponentLoaded(hass, integration)) {
     return undefined;
   }
-  const result = getHassIcons<PlatformIcons>(hass, "entity", integration).then(
+  const result = getHassIcons<"entity">(hass, "entity", integration).then(
     (res) => res?.resources[integration]
   );
   resources.entity[integration] = result;
@@ -113,7 +117,7 @@ export const getComponentIcons = async (
     return undefined;
   }
   resources.entity_component.domains = [...hass.config.components];
-  resources.entity_component.resources = getHassIcons<ComponentIcons>(
+  resources.entity_component.resources = getHassIcons<"entity_component">(
     hass,
     "entity_component"
   ).then((result) => result.resources);
@@ -129,7 +133,7 @@ export const getServiceIcons = async (
     if (!force && resources.services.all) {
       return resources.services.all;
     }
-    resources.services.all = getHassIcons<ServiceIcons>(
+    resources.services.all = getHassIcons<"services">(
       hass,
       "services",
       domain
@@ -151,7 +155,7 @@ export const getServiceIcons = async (
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  const result = getHassIcons<ServiceIcons>(hass, "services", domain);
+  const result = getHassIcons<"services">(hass, "services", domain);
   resources.services.domains[domain] = result.then(
     (res) => res?.resources[domain]
   );
