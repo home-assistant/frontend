@@ -87,7 +87,12 @@ export const getComponentIcons = async (
   force = false
 ): Promise<ComponentIcons> => {
   if (!force && resources.entity_component) {
-    return resources.entity_component.then((res) => res[domain]);
+    const domainRes = await resources.entity_component.then(
+      (res) => res[domain]
+    );
+    if (domainRes) {
+      return domainRes;
+    }
   }
   resources.entity_component = getHassIcons(hass, "entity_component").then(
     (result) => result.resources
