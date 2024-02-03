@@ -574,6 +574,9 @@ export class HassioNetwork extends LitElement {
           display: block;
           margin-top: 16px;
         }
+        ha-expansion-panel ha-textfield:last-child {
+          margin-bottom: 8px;
+        }
         mwc-list-item {
           --mdc-list-side-padding: 10px;
         }
