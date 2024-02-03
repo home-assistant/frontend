@@ -144,15 +144,6 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.password_error_msg"
                   )}
                 ></ha-textfield>
-                <button
-                  class="link pwd-forgot-link"
-                  .disabled=${this._requestInProgress}
-                  @click=${this._handleForgotPassword}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.login.forgot_password"
-                  )}
-                </button>
               </div>
               <div class="card-actions">
                 <ha-progress-button
@@ -163,6 +154,15 @@ export class CloudLogin extends LitElement {
                   )}</ha-progress-button
                 >
               </div>
+              <button
+                class="link pwd-forgot-link"
+                .disabled=${this._requestInProgress}
+                @click=${this._handleForgotPassword}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.login.forgot_password"
+                )}
+              </button>
             </ha-card>
 
             <ha-card outlined>
