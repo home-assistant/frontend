@@ -84,6 +84,7 @@ import {
   LogSeverity,
   setIntegrationLogLevel,
   subscribeLogInfo,
+  fetchSupportsMultipleConfigEntries,
 } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -124,6 +125,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _entities: EntityRegistryEntry[] = [];
 
   @state() private _manifest?: IntegrationManifest;
+
+  @state() private _supports_multiple_config_entries = true;
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -180,6 +183,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._extraConfigEntries = undefined;
       this._fetchManifest();
       this._fetchDiagnostics();
+      this._fetchSupportsMultipleConfigEntries();
     }
   }
 
@@ -504,15 +508,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
               </mwc-list>
               <div class="card-actions">
-                <ha-button @click=${this._addIntegration}>
-                  ${this._manifest?.integration_type
-                    ? this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
-                      )
-                    : this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_entry`
-                      )}
-                </ha-button>
+                ${this._supports_multiple_config_entries ||
+                configEntries.length === 0
+                  ? html`<ha-button @click=${this._addIntegration}>
+                      ${this._manifest?.integration_type
+                        ? this.hass.localize(
+                            `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                          )
+                        : this.hass.localize(
+                            `ui.panel.config.integrations.integration_page.add_entry`
+                          )}
+                    </ha-button>`
+                  : html`<ha-alert alert-type="info"
+                      >${this.hass.localize(
+                        `ui.panel.config.integrations.integration_page.supports_one_config_entry`
+                      )}</ha-alert
+                    >`}
               </div>
             </ha-card>
           </div>
@@ -882,6 +893,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         // this._handleFlowUpdated();
       },
     });
+  }
+
+  private async _fetchSupportsMultipleConfigEntries() {
+    if (!this.domain) {
+      return;
+    }
+    try {
+      this._supports_multiple_config_entries =
+        await fetchSupportsMultipleConfigEntries(this.hass, this.domain);
+    } catch (err: any) {
+      // No issue, as diagnostics are not required
+    }
   }
 
   private async _fetchManifest() {
@@ -1348,7 +1371,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: block;
           margin-top: 4px;
         }
-        ha-alert:first-of-type {
+        .overview ha-alert:first-of-type {
           margin-top: 16px;
         }
         ha-list-item.discovered {

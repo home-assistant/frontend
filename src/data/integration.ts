@@ -99,6 +99,15 @@ export const fetchIntegrationManifest = (
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
 
+export const fetchSupportsMultipleConfigEntries = (
+  hass: HomeAssistant,
+  integration: string
+) =>
+  hass.callWS<boolean>({
+    type: "config_entries/supports_multiple",
+    integration,
+  });
+
 export const fetchIntegrationLogInfo = (conn) =>
   conn.sendMessagePromise({
     type: "logger/log_info",

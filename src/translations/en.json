@@ -3869,7 +3869,8 @@
             "add_helper": "Add helper",
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "supports_one_config_entry": "The integration supports only one entry"
           },
           "config_entry": {
             "application_credentials": {
