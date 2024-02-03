@@ -35,7 +35,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
           )}
         </div>
         <div class="card-actions">
-          <a href="/config/integrations">
+          <a href="/config/integrations/dashboard">
             <mwc-button>
               ${this.hass.localize(
                 "ui.panel.lovelace.cards.empty_state.go_to_integrations_page"
