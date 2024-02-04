@@ -903,7 +903,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._supports_multiple_config_entries =
         await fetchSupportsMultipleConfigEntries(this.hass, this.domain);
     } catch (err: any) {
-      // No issue, as diagnostics are not required
+      this._supports_multiple_config_entries = true;
     }
   }
 
