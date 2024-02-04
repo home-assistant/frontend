@@ -37,14 +37,14 @@ export class HuiEntityFilterCard
     return {
       type: "entity-filter",
       entities: foundEntities,
-      conditions: [
-        foundEntities[0]
-          ? {
+      conditions: foundEntities[0]
+        ? [
+            {
               condition: "state",
               state: hass.states[foundEntities[0]].state,
-            }
-          : "",
-      ],
+            },
+          ]
+        : [],
       card: { type: "entities" },
     };
   }
