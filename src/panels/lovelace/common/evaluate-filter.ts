@@ -69,11 +69,17 @@ export const evaluateStateFilter = (
       return state !== value;
     case "in":
       if (Array.isArray(value) || typeof value === "string") {
+        if (Array.isArray(value)) {
+          value = value.map((val) => `${val}`);
+        }
         return value.includes(state);
       }
       return false;
     case "not in":
       if (Array.isArray(value) || typeof value === "string") {
+        if (Array.isArray(value)) {
+          value = value.map((val) => `${val}`);
+        }
         return !value.includes(state);
       }
       return false;
