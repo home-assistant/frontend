@@ -55,6 +55,8 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { ClimateEntity } from "../../data/climate";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -673,6 +675,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
         const entityId = entity.entity_id;
+        const isClimate = computeDomain(entityId) === "climate";
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
@@ -681,7 +684,23 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }
 
         for (const s of entity.states) {
-          csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+          const lastChanged = formatDate(s.last_changed);
+          csv.push(`${entityId},${s.state},${lastChanged}\n`);
+
+          if (isClimate && s.attributes) {
+            const attrs = s.attributes as ClimateEntity["attributes"];
+            for (const attr of [
+              "current_temperature",
+              "temperature",
+              "target_temp_high",
+              "target_temp_low",
+              "hvac_action",
+            ]) {
+              if (attr in attrs) {
+                csv.push(`${entityId}-${attr},${attrs[attr]},${lastChanged}\n`);
+              }
+            }
+          }
         }
       }
     }
