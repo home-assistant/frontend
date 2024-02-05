@@ -1201,7 +1201,8 @@
               "shutter": "Shutter"
             },
             "switch": {
-              "outlet": "Outlet"
+              "outlet": "Outlet",
+              "valve": "Valve"
             }
           },
           "unavailable": "This entity is unavailable.",
