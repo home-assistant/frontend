@@ -35,6 +35,7 @@ export interface MatterNodeDiagnostics {
   mac_address?: string;
   available: boolean;
   active_fabrics: MatterFabricData[];
+  active_fabric_index: number;
 }
 
 export interface MatterPingResult {
