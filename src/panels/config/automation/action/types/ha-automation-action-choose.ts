@@ -122,6 +122,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
+        draggable-selector=".option"
         .disabled=${!this._showReorder || this.disabled}
         group="choose-options"
         .path=${[...(this.path ?? []), "choose"]}
@@ -277,18 +278,21 @@ export class HaChooseAction extends LitElement implements ActionElement {
               </div>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_option"
+              )}
+              .disabled=${this.disabled}
+              @click=${this._addOption}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <ha-button
-        outlined
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.add_option"
-        )}
-        .disabled=${this.disabled}
-        @click=${this._addOption}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
+
       ${this._showDefault || action.default
         ? html`
             <h2>
@@ -505,13 +509,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
       css`
         .options {
           padding: 16px;
-          margin: -16px -16px 0px -16px;
+          margin: -16px;
           display: flex;
           flex-direction: column;
           gap: 16px;
-        }
-        .options:not(:has(.option)) {
-          margin: -16px;
         }
         .sortable-ghost {
           background: none;
@@ -561,6 +562,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .handle ha-svg-icon {
           pointer-events: none;
           height: 24px;
+        }
+        .buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          order: 1;
         }
       `,
     ];
