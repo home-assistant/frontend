@@ -56,7 +56,6 @@ import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { ClimateEntity } from "../../data/climate";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -659,7 +658,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _downloadHistory() {
-    const entities = this._getEntityIds();
+    // Make a copy because getEntityIDs is memoized and sort works in-place
+    const entities = [...this._getEntityIds()].sort();
     if (entities.length === 0 || !this._mungedStateHistory) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.history.download_data_error"),
@@ -669,13 +669,49 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const csv: string[] = ["entity_id,state,last_changed\n"];
+    const csv: string[] = [""]; // headers will be replaced later.
+    const headers = ["entity_id", "state", "last_changed"];
+    const processedDomainAttributes = new Set<string>();
+    const domainAttributes: Record<
+      string,
+      Record<string, number | undefined>
+    > = {
+      climate: {
+        current_temperature: undefined,
+        hvac_action: undefined,
+        target_temp_high: undefined,
+        target_temp_low: undefined,
+        temperature: undefined,
+      },
+      humidifier: {
+        action: undefined,
+        current_humidity: undefined,
+        humidity: undefined,
+      },
+      water_heater: {
+        current_temperature: undefined,
+        operation_mode: undefined,
+        temperature: undefined,
+      },
+    };
     const formatDate = (number) => new Date(number).toISOString();
 
     for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
         const entityId = entity.entity_id;
-        const isClimate = computeDomain(entityId) === "climate";
+        const domain = computeDomain(entityId);
+        const extraAttributes = domainAttributes[domain];
+
+        // Add extra attributes to headers if needed
+        if (extraAttributes && !processedDomainAttributes.has(domain)) {
+          processedDomainAttributes.add(domain);
+          let index = headers.length;
+          for (const attr of Object.keys(extraAttributes)) {
+            headers.push(attr);
+            extraAttributes[attr] = index;
+            index += 1;
+          }
+        }
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
@@ -685,22 +721,21 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         for (const s of entity.states) {
           const lastChanged = formatDate(s.last_changed);
-          csv.push(`${entityId},${s.state},${lastChanged}\n`);
+          const data = [entityId, s.state, lastChanged];
 
-          if (isClimate && s.attributes) {
-            const attrs = s.attributes as ClimateEntity["attributes"];
-            for (const attr of [
-              "current_temperature",
-              "temperature",
-              "target_temp_high",
-              "target_temp_low",
-              "hvac_action",
-            ]) {
+          if (s.attributes && extraAttributes) {
+            const attrs = s.attributes;
+            for (const [attr, index] of Object.entries(extraAttributes) as [
+              string,
+              number,
+            ][]) {
               if (attr in attrs) {
-                csv.push(`${entityId}-${attr},${attrs[attr]},${lastChanged}\n`);
+                data[index] = attrs[attr];
               }
             }
           }
+
+          csv.push(data.join(",") + "\n");
         }
       }
     }
@@ -710,6 +745,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
       }
     }
+    csv[0] = headers.join(",") + "\n";
     const blob = new Blob(csv, {
       type: "text/csv",
     });
