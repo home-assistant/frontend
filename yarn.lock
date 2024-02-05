@@ -2107,12 +2107,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/motion@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@lit-labs/motion@npm:1.0.6"
+"@lit-labs/motion@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@lit-labs/motion@npm:1.0.7"
   dependencies:
-    lit: "npm:^2.0.0 || ^3.0.0"
-  checksum: 10/f4da8019e0215e418216f7c001632d24f3d23c0d303970d3b04ff00ff9e89db5cc8a188c6ec44628fe5e139cc05a7313c177ea2a35c4a3aa3318990a950150e5
+    lit: "npm:^3.1.2"
+  checksum: 10/6ac9e35b6272648299ae59d3f728e4a016b21df7d75c18d673b8a0cda2d64baad9ced61892df43c43224d5e5f69d94b148d4ecdc2eadb3d2fe26b2c93c799b63
   languageName: node
   linkType: hard
 
@@ -9482,7 +9482,7 @@ __metadata:
     "@koa/cors": "npm:5.0.0"
     "@lezer/highlight": "npm:1.2.0"
     "@lit-labs/context": "npm:0.4.1"
-    "@lit-labs/motion": "npm:1.0.6"
+    "@lit-labs/motion": "npm:1.0.7"
     "@lit-labs/observers": "npm:2.0.2"
     "@lit-labs/virtualizer": "npm:2.0.12"
     "@lokalise/node-api": "npm:12.1.0"
