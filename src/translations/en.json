@@ -4662,8 +4662,9 @@
             "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
-            "success": "Your device can now be added to another Matter controller, scan the QR code below or enter the sharing code in the app of the controller you want to add your device to.",
-            "sharing_code": "Sharing code"
+            "success": "Your device is ready to be added to another Matter platform.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "copy_code": "Copy code"
           }
         },
         "tips": {
