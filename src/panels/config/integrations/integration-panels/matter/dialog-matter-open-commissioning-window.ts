@@ -60,34 +60,36 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   "ui.panel.config.matter.open_commissioning_window.scan_code"
                 )}
               </p>
-              <div class="status sharing-code">
-                <img
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  alt=${domainToName(this.hass.localize, "matter")}
-                  src=${brandsUrl({
-                    domain: "matter",
-                    type: "logo",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                />
-                <ha-qr-code
-                  .data=${this._commissionParams.setup_qr_code}
-                  errorCorrectionLevel="quartile"
-                  scale="6"
-                  margin="1"
-                ></ha-qr-code>
-                <span class="code"
-                  >${this._commissionParams.setup_manual_code.substring(
-                    0,
-                    4
-                  )}-${this._commissionParams.setup_manual_code.substring(
-                    4,
-                    7
-                  )}-${this._commissionParams.setup_manual_code.substring(
-                    7
-                  )}</span
-                >
+              <div class="sharing-code-container">
+                <div class="sharing-code">
+                  <img
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    alt=${domainToName(this.hass.localize, "matter")}
+                    src=${brandsUrl({
+                      domain: "matter",
+                      type: "logo",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                  />
+                  <ha-qr-code
+                    .data=${this._commissionParams.setup_qr_code}
+                    errorCorrectionLevel="quartile"
+                    scale="6"
+                    margin="1"
+                  ></ha-qr-code>
+                  <span class="code"
+                    >${this._commissionParams.setup_manual_code.substring(
+                      0,
+                      4
+                    )}-${this._commissionParams.setup_manual_code.substring(
+                      4,
+                      7
+                    )}-${this._commissionParams.setup_manual_code.substring(
+                      7
+                    )}</span
+                  >
+                </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this._copyCode}>
                 ${this.hass.localize(
@@ -175,6 +177,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
   public closeDialog(): void {
     this.device_id = undefined;
     this._status = undefined;
+    this._commissionParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -221,10 +224,20 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           margin-right: 20px;
         }
 
+        .sharing-code-container {
+          display: flex;
+          justify-content: center;
+          padding-top: 16px;
+        }
+
         .sharing-code {
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 200px;
+          border: 2px solid;
+          border-radius: 16px;
+          padding: 16px 0;
         }
 
         .sharing-code img {
