@@ -1485,9 +1485,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:6.10.0, @codemirror/language@npm:^6.0.0":
-  version: 6.10.0
-  resolution: "@codemirror/language@npm:6.10.0"
+"@codemirror/language@npm:6.10.1, @codemirror/language@npm:^6.0.0":
+  version: 6.10.1
+  resolution: "@codemirror/language@npm:6.10.1"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.23.0"
@@ -1495,7 +1495,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.0.0"
     "@lezer/lr": "npm:^1.0.0"
     style-mod: "npm:^4.0.0"
-  checksum: 10/674f87a5f7cae19a5e0cbdd0e06beade7f3694809cc30b31939aa04790dd43008942e3cd3b537ba5729fd14fed81c8ff62b7dcf51800db815cbf8d19d1d6a763
+  checksum: 10/14bd54aec51a36945e176ebf0e85377be498b69c4056bdca7e2eeedeea1bcc9d644a7c9d55b7340101d6e895bdbef8bc2f3ed17daa4e53a9d1ec13c4be72b0b7
   languageName: node
   linkType: hard
 
@@ -9459,7 +9459,7 @@ __metadata:
     "@bundle-stats/plugin-webpack-filter": "npm:4.9.2"
     "@codemirror/autocomplete": "npm:6.12.0"
     "@codemirror/commands": "npm:6.3.3"
-    "@codemirror/language": "npm:6.10.0"
+    "@codemirror/language": "npm:6.10.1"
     "@codemirror/legacy-modes": "npm:6.3.3"
     "@codemirror/search": "npm:6.5.5"
     "@codemirror/state": "npm:6.4.0"
