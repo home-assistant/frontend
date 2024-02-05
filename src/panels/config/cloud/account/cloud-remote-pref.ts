@@ -130,8 +130,7 @@ export class CloudRemotePref extends LitElement {
           ></ha-svg-icon>
           <ha-formfield .label=${"Allow external activation"}>
             <ha-switch
-              .checked=${remote_allow_remote_enable === undefined ||
-              remote_allow_remote_enable}
+              .checked=${remote_allow_remote_enable}
               @change=${this._toggleAllowRemoteEnabledChanged}
             ></ha-switch>
           </ha-formfield>
