@@ -797,7 +797,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__cell--icon-button:first-child {
           padding-left: 16px;
           padding-inline-start: 16px;
-          padding-inline-end: initial; // 8px?
+          padding-inline-end: initial;
         }
 
         .mdc-data-table__cell--overflow-menu:last-child,
@@ -806,7 +806,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__cell--icon-button:last-child {
           padding-right: 16px;
           padding-inline-end: 16px;
-          padding-inline-start: initial; // 8px?
+          padding-inline-start: initial;
         }
         .mdc-data-table__cell--overflow-menu,
         .mdc-data-table__header-cell--overflow-menu {
