@@ -117,6 +117,7 @@ export default class HaAutomationCondition extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
+        draggable-selector="ha-automation-condition-row"
         .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._conditionMoved}
         group="conditions"
@@ -152,29 +153,29 @@ export default class HaAutomationCondition extends LitElement {
               </ha-automation-condition-row>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add"
+              )}
+              @click=${this._addConditionDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add_building_block"
+              )}
+              @click=${this._addConditionBuildingBlockDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <div class="buttons">
-        <ha-button
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add"
-          )}
-          @click=${this._addConditionDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        <ha-button
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add_building_block"
-          )}
-          @click=${this._addConditionBuildingBlockDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
     `;
   }
 
@@ -294,13 +295,10 @@ export default class HaAutomationCondition extends LitElement {
     return css`
       .conditions {
         padding: 16px;
-        margin: -16px -16px 0px -16px;
+        margin: -16px;
         display: flex;
         flex-direction: column;
         gap: 16px;
-      }
-      .conditions:not(:has(ha-automation-condition-row)) {
-        margin: -16px;
       }
       .sortable-ghost {
         background: none;
@@ -312,6 +310,9 @@ export default class HaAutomationCondition extends LitElement {
       ha-automation-condition-row {
         display: block;
         scroll-margin-top: 48px;
+      }
+      .buttons {
+        order: 1;
       }
       ha-svg-icon {
         height: 20px;
