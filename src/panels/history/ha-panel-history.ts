@@ -672,26 +672,23 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const csv: string[] = [""]; // headers will be replaced later.
     const headers = ["entity_id", "state", "last_changed"];
     const processedDomainAttributes = new Set<string>();
-    const domainAttributes: Record<
-      string,
-      Record<string, number | undefined>
-    > = {
+    const domainAttributes: Record<string, Record<string, number>> = {
       climate: {
-        current_temperature: undefined,
-        hvac_action: undefined,
-        target_temp_high: undefined,
-        target_temp_low: undefined,
-        temperature: undefined,
+        current_temperature: 0,
+        hvac_action: 0,
+        target_temp_high: 0,
+        target_temp_low: 0,
+        temperature: 0,
       },
       humidifier: {
-        action: undefined,
-        current_humidity: undefined,
-        humidity: undefined,
+        action: 0,
+        current_humidity: 0,
+        humidity: 0,
       },
       water_heater: {
-        current_temperature: undefined,
-        operation_mode: undefined,
-        temperature: undefined,
+        current_temperature: 0,
+        operation_mode: 0,
+        temperature: 0,
       },
     };
     const formatDate = (number) => new Date(number).toISOString();
@@ -725,10 +722,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
           if (s.attributes && extraAttributes) {
             const attrs = s.attributes;
-            for (const [attr, index] of Object.entries(extraAttributes) as [
-              string,
-              number,
-            ][]) {
+            for (const [attr, index] of Object.entries(extraAttributes)) {
               if (attr in attrs) {
                 data[index] = attrs[attr];
               }
