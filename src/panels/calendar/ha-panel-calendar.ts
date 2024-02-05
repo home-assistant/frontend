@@ -187,7 +187,7 @@ class PanelCalendar extends LitElement {
           .events=${this._events}
           .calendars=${this._calendars}
           .narrow=${this.narrow}
-          initialView="dayGridMonth"
+          .initialView=${this.narrow ? "listWeek" : "dayGridMonth"}
           .hass=${this.hass}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
