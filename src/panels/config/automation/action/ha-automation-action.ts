@@ -77,6 +77,7 @@ export default class HaAutomationAction extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
+        draggable-selector="ha-automation-action-row"
         .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._actionMoved}
         group="actions"
@@ -112,30 +113,29 @@ export default class HaAutomationAction extends LitElement {
               </ha-automation-action-row>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.add"
+              )}
+              @click=${this._addActionDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.add_building_block"
+              )}
+              @click=${this._addActionBuildingBlockDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
           </div>
         </div>
       </ha-sortable>
-      <div class="buttons">
-        <ha-button
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.add"
-          )}
-          @click=${this._addActionDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        <ha-button
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.add_building_block"
-          )}
-          @click=${this._addActionBuildingBlockDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
     `;
   }
 
@@ -269,13 +269,10 @@ export default class HaAutomationAction extends LitElement {
     return css`
       .actions {
         padding: 16px;
-        margin: -16px -16px 0px -16px;
+        margin: -16px;
         display: flex;
         flex-direction: column;
         gap: 16px;
-      }
-      .actions:not(:has(ha-automation-action-row)) {
-        margin: -16px;
       }
       .sortable-ghost {
         background: none;
@@ -304,6 +301,7 @@ export default class HaAutomationAction extends LitElement {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        order: 1;
       }
     `;
   }
