@@ -234,10 +234,9 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
-          width: 200px;
           border: 2px solid;
           border-radius: 16px;
-          padding: 16px 0;
+          padding: 16px;
         }
 
         .sharing-code img {
