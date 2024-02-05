@@ -624,7 +624,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _targetsChanged(ev) {
-    this._targetPickerValue = ev.detail.value;
+    this._targetPickerValue = ev.detail.value || {};
     this._updatePath();
   }
 
