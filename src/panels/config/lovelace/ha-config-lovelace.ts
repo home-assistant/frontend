@@ -12,6 +12,9 @@ export const lovelaceTabs = [
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
     iconPath: mdiViewDashboard,
   },
+];
+
+export const lovelaceResourcesTabs = [
   {
     path: "/config/lovelace/resources",
     translationKey: "ui.panel.config.lovelace.resources.caption",
