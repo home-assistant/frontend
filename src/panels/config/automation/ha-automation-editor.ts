@@ -476,21 +476,31 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
-    const validation = await validateConfig(this.hass, {
-      trigger: this._config.trigger,
-      condition: this._config.condition,
-      action: this._config.action,
-    });
-    this._validationErrors = (
-      Object.entries(validation) as Entries<typeof validation>
-    ).map(([key, value]) =>
-      value.valid
-        ? ""
-        : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}s.name`
-            )}:
-            ${value.error}<br />`
-    );
+
+    try {
+      const validation = await validateConfig(this.hass, {
+        trigger: this._config.trigger,
+        condition: this._config.condition,
+        action: this._config.action,
+      });
+
+      this._validationErrors = (
+        Object.entries(validation) as Entries<typeof validation>
+      ).map(([key, value]) =>
+        value.valid
+          ? ""
+          : html`${this.hass.localize(
+                `ui.panel.config.automation.editor.${key}s.name`
+              )}:
+              ${value.error}<br />`
+      );
+    } catch (errors: any) {
+      this._validationErrors = errors.message || errors.code;
+      showToast(this, {
+        message: errors.message || errors.code,
+      });
+      throw errors;
+    }
   }
 
   private _normalizeConfig(config: AutomationConfig): AutomationConfig {
