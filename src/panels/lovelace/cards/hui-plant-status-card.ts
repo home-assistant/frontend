@@ -143,7 +143,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                     ? html`<ha-icon
                         .icon=${batteryLevelIcon(stateObj.attributes.battery)}
                       ></ha-icon>`
-                    : html` <ha-svg-icon
+                    : html`<ha-svg-icon
                         .path=${SENSOR_ICONS[item]}
                       ></ha-svg-icon>`}
                 </div>
