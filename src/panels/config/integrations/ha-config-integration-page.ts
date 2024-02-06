@@ -505,9 +505,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </mwc-list>
 
               <div class="card-actions">
-                ${this._manifest.config_flow ||
-                (this._manifest.integration_type &&
-                  this._manifest.integration_type.toString() === "virtual")
+                ${this._manifest?.config_flow ||
+                (this._manifest?.integration_type &&
+                  this._manifest?.integration_type?.toString() === "virtual")
                   ? html`
                       <ha-button @click=${this._addIntegration}>
                         ${this._manifest?.integration_type
