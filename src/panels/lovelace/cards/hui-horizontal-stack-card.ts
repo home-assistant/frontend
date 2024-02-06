@@ -29,26 +29,25 @@ export class HuiHorizontalStackCard extends HuiStackCard {
           display: flex;
           height: 100%;
         }
-        #root {
-          --stack-card-side-margin: 4px;
-        }
         #root > * {
           flex: 1 1 0;
           margin: var(
             --horizontal-stack-card-margin,
-            var(--stack-card-margin, 0 var(--stack-card-side-margin))
+            var(--stack-card-margin, 0 4px)
           );
           min-width: 0;
         }
-        #root > *:first-child {
+        #root[dir="ltr"] > *:first-child {
           margin-left: 0;
-          margin-inline-start: 0;
-          margin-inline-end: var(--stack-card-side-margin);
         }
-        #root > *:last-child {
+        #root[dir="ltr"] > *:last-child {
           margin-right: 0;
-          margin-inline-end: 0;
-          margin-inline-start: var(--stack-card-side-margin);
+        }
+        #root[dir="rtl"] > *:first-child {
+          margin-right: 0;
+        }
+        #root[dir="rtl"] > *:last-child {
+          margin-left: 0;
         }
       `,
     ];
