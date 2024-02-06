@@ -1,6 +1,7 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { IntegrationManifest } from "../../../data/integration";
 import { IntegrationListItem } from "./dialog-add-integration";
+import { Integration } from "../../../data/integrations";
 
 export interface AddIntegrationDialogParams {
   brand?: string;
