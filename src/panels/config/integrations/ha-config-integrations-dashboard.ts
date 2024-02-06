@@ -29,7 +29,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
@@ -67,7 +67,10 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
-import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import {
+  showAddIntegrationDialog,
+  showSingleInstanceOnlyDialog,
+} from "./show-add-integration-dialog";
 import "./ha-disabled-config-entry-card";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 
@@ -658,6 +661,14 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
+      if (integration.single_instance_only) {
+        const configEntries = await getConfigEntries(this.hass, { domain });
+        if (configEntries.length > 0) {
+          showSingleInstanceOnlyDialog(this, { integration });
+          return;
+        }
+      }
+
       // Integration exists, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",

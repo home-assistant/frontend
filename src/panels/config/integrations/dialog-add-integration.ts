@@ -576,13 +576,15 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    const configEntries = await getConfigEntries(this.hass, {
-      domain: integration.domain,
-    });
-    if (integration.single_instance_only && configEntries.length > 0) {
-      this.closeDialog();
-      showSingleInstanceOnlyDialog(this, { integration });
-      return;
+    if (integration.single_instance_only) {
+      const configEntries = await getConfigEntries(this.hass, {
+        domain: integration.domain,
+      });
+      if (configEntries.length > 0) {
+        this.closeDialog();
+        showSingleInstanceOnlyDialog(this, { integration });
+        return;
+      }
     }
 
     if (integration.config_flow) {

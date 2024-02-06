@@ -13,7 +13,7 @@ export interface YamlIntegrationDialogParams {
 }
 
 export interface SingleInstanceOnlyDialogParams {
-  integration: IntegrationListItem;
+  integration: IntegrationListItem | Integration;
 }
 
 export const showAddIntegrationDialog = (
