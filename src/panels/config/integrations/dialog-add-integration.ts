@@ -52,8 +52,10 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import {
   AddIntegrationDialogParams,
+  showSingleInstanceOnlyDialog,
   showYamlIntegrationDialog,
 } from "./show-add-integration-dialog";
+import { getConfigEntries } from "../../../data/config_entries";
 
 export interface IntegrationListItem {
   name: string;
@@ -67,6 +69,7 @@ export interface IntegrationListItem {
   cloud?: boolean;
   is_built_in?: boolean;
   is_add?: boolean;
+  single_instance_only?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -208,6 +211,7 @@ class AddIntegrationDialog extends LitElement {
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
+            single_instance_only: integration.single_instance_only,
           });
         } else if (
           !("integration_type" in integration) &&
@@ -569,6 +573,15 @@ class AddIntegrationDialog extends LitElement {
 
     if (integration.iot_standards) {
       this._pickedBrand = integration.domain;
+      return;
+    }
+
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: integration.domain,
+    });
+    if (integration.single_instance_only && configEntries.length > 0) {
+      this.closeDialog();
+      showSingleInstanceOnlyDialog(this, { integration });
       return;
     }
 

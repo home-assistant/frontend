@@ -43,6 +43,7 @@ export interface IntegrationManifest {
     | "cloud_push"
     | "local_polling"
     | "local_push";
+  single_instance_only: boolean;
 }
 export interface IntegrationSetup {
   domain: string;
@@ -98,15 +99,6 @@ export const fetchIntegrationManifest = (
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
-
-export const fetchSupportsMultipleConfigEntries = (
-  hass: HomeAssistant,
-  integration: string
-) =>
-  hass.callWS<boolean>({
-    type: "config_entries/supports_multiple",
-    integration,
-  });
 
 export const fetchIntegrationLogInfo = (conn) =>
   conn.sendMessagePromise({

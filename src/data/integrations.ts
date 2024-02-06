@@ -11,6 +11,7 @@ export interface Integration {
   iot_class?: string;
   supported_by?: string;
   is_built_in?: boolean;
+  single_instance_only?: boolean;
 }
 
 export interface Integrations {
