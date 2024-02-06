@@ -503,16 +503,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <mwc-list>
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
               </mwc-list>
+
               <div class="card-actions">
-                <ha-button @click=${this._addIntegration}>
-                  ${this._manifest?.integration_type
-                    ? this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
-                      )
-                    : this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_entry`
+                ${this._manifest.config_flow ||
+                (this._manifest.integration_type &&
+                  this._manifest.integration_type.toString() === "virtual")
+                  ? html`
+                      <ha-button @click=${this._addIntegration}>
+                        ${this._manifest?.integration_type
+                          ? this.hass.localize(
+                              `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                            )
+                          : this.hass.localize(
+                              `ui.panel.config.integrations.integration_page.add_entry`
+                            )}
+                      </ha-button>
+                    `
+                  : html`
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_flow.yaml_only`
                       )}
-                </ha-button>
+                    `}
               </div>
             </ha-card>
           </div>
