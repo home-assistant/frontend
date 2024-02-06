@@ -86,9 +86,9 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  await import("../../resources/intl-polyfill").then(() =>
-    polyfillLocaleData(language)
-  );
+  await import("../../resources/intl-polyfill")
+    .then(({ polyfillIntlPromise }) => polyfillIntlPromise)
+    .then(() => polyfillLocaleData(language));
 
   // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};

@@ -59,4 +59,4 @@ const polyfillIntl = async () => {
   );
 };
 
-await polyfillIntl();
+export const polyfillIntlPromise = polyfillIntl();
