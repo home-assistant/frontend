@@ -1,11 +1,15 @@
-import { mdiArrowAll, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { haStyle } from "../../../resources/styles";
 import { ItemPath } from "../../../types";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
@@ -35,10 +39,10 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
       <ha-sortable
         .disabled=${!editMode}
         group="card"
-        handle-selector=".handle"
         draggable-selector=".card"
         .path=${[...(this.itemPath ?? []), "cards"]}
         .rollback=${false}
+        swap-threshold="0.7"
       >
         <div class="container">
           ${repeat(
@@ -63,10 +67,31 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
                     ? html`
                         <div class="card-overlay">
                           <div class="card-actions">
-                            <ha-svg-icon
-                              class="handle"
-                              .path=${mdiArrowAll}
-                            ></ha-svg-icon>
+                            <ha-button-menu
+                              corner="BOTTOM_END"
+                              menuCorner="END"
+                            >
+                              <ha-icon-button
+                                slot="trigger"
+                                .path=${mdiDotsVertical}
+                              >
+                              </ha-icon-button>
+                              <ha-list-item graphic="icon">
+                                Edit
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPencil}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                              <ha-list-item graphic="icon" class="warning">
+                                Delete
+                                <ha-svg-icon
+                                  class="warning"
+                                  slot="graphic"
+                                  .path=${mdiDelete}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            </ha-button-menu>
                           </div>
                         </div>
                       `
@@ -89,6 +114,7 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       css`
         .container {
           --column-count: 4;
@@ -125,6 +151,7 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
 
         .card-wrapper {
           height: 100%;
+          cursor: grab;
         }
 
         .card-overlay {
@@ -137,10 +164,9 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
           align-items: center;
           justify-content: center;
           transition: opacity 0.2s ease-in-out;
-          background-color: rgba(var(--rgb-card-background-color), 0.3);
         }
 
-        .card:hover .card-overlay {
+        .container:not(.dragging) .card:hover .card-overlay {
           opacity: 1;
           pointer-events: auto;
         }
@@ -149,12 +175,16 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
           display: flex;
           align-items: center;
           justify-content: center;
+          background: var(--card-background-color);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+          height: 32px;
+          border-radius: 16px;
+          margin: 2px;
         }
-        .card-actions ha-svg-icon {
-          padding: 4px;
-        }
-        .handle {
-          cursor: grab;
+        .card-actions ha-icon-button {
+          --mdc-icon-button-size: 32px;
+          --mdc-icon-size: 20px;
+          cursor: pointer;
         }
 
         :host([edit-mode]) .container {
@@ -170,6 +200,7 @@ class HuiSectionCard extends HuiStackCard<GridCardConfig> {
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
           min-height: 60px;
+          order: 1;
         }
       `,
     ];

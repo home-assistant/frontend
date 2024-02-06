@@ -44,7 +44,7 @@ export class HaSortable extends LitElement {
 
   @property({ type: Boolean, attribute: "invert-swap" })
   public invertSwap?: boolean;
-  
+
   @property({ type: Boolean })
   public rollback: boolean = true;
 
@@ -146,6 +146,7 @@ export class HaSortable extends LitElement {
   }
 
   private _handleEnd = async (evt: SortableEvent) => {
+    this.children[0]?.classList.remove("dragging");
     // put back in original location
     if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
@@ -174,6 +175,7 @@ export class HaSortable extends LitElement {
   };
 
   private _handleChoose = (evt: SortableEvent) => {
+    this.children[0]?.classList.add("dragging");
     if (!this.rollback) return;
     (evt.item as any).placeholder = document.createComment("sort-placeholder");
     evt.item.after((evt.item as any).placeholder);

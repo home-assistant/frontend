@@ -234,6 +234,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         min-height: 60px;
+        order: 1;
       }
     `;
   }
