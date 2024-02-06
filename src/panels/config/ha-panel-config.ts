@@ -213,6 +213,15 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#616161",
     },
   ],
+  application_credentials: [
+    {
+      component: "application_credentials",
+      path: "/config/application_credentials",
+      translationKey: "ui.panel.config.application_credentials.caption",
+      iconPath: mdiDevices,
+      iconColor: "#2D338F",
+    },
+  ],
   voice_assistants: [
     {
       path: "/config/voice-assistants",
