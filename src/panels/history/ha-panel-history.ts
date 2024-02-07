@@ -55,6 +55,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -657,7 +658,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _downloadHistory() {
-    const entities = this._getEntityIds();
+    // Make a copy because getEntityIDs is memoized and sort works in-place
+    const entities = [...this._getEntityIds()].sort();
     if (entities.length === 0 || !this._mungedStateHistory) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.history.download_data_error"),
@@ -667,12 +669,46 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const csv: string[] = ["entity_id,state,last_changed\n"];
+    const csv: string[] = [""]; // headers will be replaced later.
+    const headers = ["entity_id", "state", "last_changed"];
+    const processedDomainAttributes = new Set<string>();
+    const domainAttributes: Record<string, Record<string, number>> = {
+      climate: {
+        current_temperature: 0,
+        hvac_action: 0,
+        target_temp_high: 0,
+        target_temp_low: 0,
+        temperature: 0,
+      },
+      humidifier: {
+        action: 0,
+        current_humidity: 0,
+        humidity: 0,
+      },
+      water_heater: {
+        current_temperature: 0,
+        operation_mode: 0,
+        temperature: 0,
+      },
+    };
     const formatDate = (number) => new Date(number).toISOString();
 
     for (const line of this._mungedStateHistory.line) {
       for (const entity of line.data) {
         const entityId = entity.entity_id;
+        const domain = computeDomain(entityId);
+        const extraAttributes = domainAttributes[domain];
+
+        // Add extra attributes to headers if needed
+        if (extraAttributes && !processedDomainAttributes.has(domain)) {
+          processedDomainAttributes.add(domain);
+          let index = headers.length;
+          for (const attr of Object.keys(extraAttributes)) {
+            headers.push(attr);
+            extraAttributes[attr] = index;
+            index += 1;
+          }
+        }
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
@@ -681,7 +717,19 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }
 
         for (const s of entity.states) {
-          csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+          const lastChanged = formatDate(s.last_changed);
+          const data = [entityId, s.state, lastChanged];
+
+          if (s.attributes && extraAttributes) {
+            const attrs = s.attributes;
+            for (const [attr, index] of Object.entries(extraAttributes)) {
+              if (attr in attrs) {
+                data[index] = attrs[attr];
+              }
+            }
+          }
+
+          csv.push(data.join(",") + "\n");
         }
       }
     }
@@ -691,6 +739,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
       }
     }
+    csv[0] = headers.join(",") + "\n";
     const blob = new Blob(csv, {
       type: "text/csv",
     });
