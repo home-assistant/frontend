@@ -7,40 +7,29 @@ import {
   assign,
   boolean,
   dynamic,
-  enums,
   literal,
-  number,
   object,
   optional,
   string,
-  type,
-  union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { customType } from "../../../../common/structs/is-custom-type";
 import "../../../../components/ha-card";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import { isCustomType } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import type { EntitiesCardConfig } from "../../cards/types";
-import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
+import type { PictureElementsCardConfig } from "../../cards/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
-import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
-import {
-  EditorTarget,
-  EditSubElementEvent,
-  SubElementEditorConfig,
-} from "../types";
+import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "./../hui-picture-elements-card-row-editor";
+import { LovelaceElementConfig } from "../../elements/types";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 const stateBadgeElementConfigStruct = object({
   type: literal("state-badge"),
@@ -52,17 +41,29 @@ const stateBadgeElementConfigStruct = object({
   double_tap_action: optional(actionConfigStruct),
 });
 
-const conditionalElementRowConfigStruct = object({
-  type: literal("conditional"),
-  row: any(),
-  conditions: array(
-    object({
-      entity: string(),
-      state: optional(string()),
-      state_not: optional(string()),
-    })
-  ),
+const stateIconElementConfigStruct = object({
+  type: literal("state-icon"),
+  entity: optional(string()),
+  icon: optional(string()),
+  state_color: optional(boolean()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
 });
+
+// const conditionalElementRowConfigStruct = object({
+//   type: literal("conditional"),
+//   row: any(),
+//   conditions: array(
+//     object({
+//       entity: string(),
+//       state: optional(string()),
+//       state_not: optional(string()),
+//     })
+//   ),
+// });
 
 // const customEntitiesRowConfigStruct = type({
 //   type: customType(),
@@ -78,12 +79,15 @@ const elementRowConfigStruct = dynamic<any>((value) => {
       case "state-badge": {
         return stateBadgeElementConfigStruct;
       }
+      case "state-icon": {
+        return stateIconElementConfigStruct;
+      }
     }
   }
 
   // No "type" property => has to be the default entity row config struct
   // return entitiesConfigStruct;
-  return null;
+  return object();
 });
 
 const cardConfigStruct = assign(
@@ -101,19 +105,33 @@ const cardConfigStruct = assign(
   })
 );
 
-
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
-  { name: "image", selector: { text: {} } },
-  { name: "dark_mode_image", selector: { text: {} } },
-  { name: "camera_image", selector: { entity: { domain: "camera" } } },
-  { name: "camera_view", selector: { select: { options: ["auto", "live"] } } },
-  { name: "theme", selector: { theme: {} } },
-  { name: "state_filter", selector: { object: {} } },
-  { name: "dark_mode_filter", selector: { object: {} } },
+  {
+    name: "",
+    type: "expandable",
+    title: "Background",
+    schema: [
+      { name: "image", selector: { text: {} } },
+      { name: "dark_mode_image", selector: { text: {} } },
+      { name: "camera_image", selector: { entity: { domain: "camera" } } },
+      {
+        name: "camera_view",
+        selector: { select: { options: ["auto", "live"] } },
+      },
+    ],
+  },
+  {
+    name: "",
+    type: "expandable",
+    title: "Global Style",
+    schema: [
+      { name: "theme", selector: { theme: {} } },
+      { name: "state_filter", selector: { object: {} } },
+      { name: "dark_mode_filter", selector: { object: {} } },
+    ],
+  },
 ] as const;
-
-
 
 @customElement("hui-picture-elements-card-editor")
 export class HuiPictureElementsCardEditor
@@ -126,7 +144,7 @@ export class HuiPictureElementsCardEditor
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  public setConfig(config: PictureElemenentsCardConfig): void {
+  public setConfig(config: PictureElementsCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
@@ -154,24 +172,35 @@ export class HuiPictureElementsCardEditor
         .data=${this._config}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._formChanged}
       ></ha-form>
-      <hui-entities-card-row-editor
+      <hui-picture-elements-card-row-editor
         .hass=${this.hass}
-        .entities=${this._configEntities}
-        @entities-changed=${this._valueChanged}
+        .elements=${this._config.elements}
+        @elements-changed=${this._elementsChanged}
         @edit-detail-element=${this._editDetailElement}
-      ></hui-entities-card-row-editor>
+      ></hui-picture-elements-card-row-editor>
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _formChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
     }
 
     fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _elementsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const config = {
+      ...this._config,
+      elements: ev.detail.elements as LovelaceElementConfig[],
+    } as LovelaceCardConfig;
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _handleSubElementChanged(ev: CustomEvent): void {
@@ -183,18 +212,22 @@ export class HuiPictureElementsCardEditor
     const configValue = this._subElementEditorConfig?.type;
     const value = ev.detail.config;
 
-    if (configValue === "row") {
-      const newConfigEntities = this._configEntities!.concat();
+    if (configValue === "element") {
+      const newConfigElements = this._config.elements!.concat();
       if (!value) {
-        newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
+        newConfigElements.splice(this._subElementEditorConfig!.index!, 1);
         this._goBack();
       } else {
-        newConfigEntities[this._subElementEditorConfig!.index!] = value;
+        newConfigElements[this._subElementEditorConfig!.index!] = value;
       }
 
-      this._config = { ...this._config!, entities: newConfigEntities };
-      this._configEntities = processEditorEntities(this._config!.entities);
+      this._config = { ...this._config!, elements: newConfigElements };
     } else if (configValue) {
+      console.log(configValue);
+      console.log(
+        "Don't know what this means, but don't think I should be here."
+      );
+      /*
       if (value === "") {
         this._config = { ...this._config };
         delete this._config[configValue!];
@@ -203,7 +236,7 @@ export class HuiPictureElementsCardEditor
           ...this._config,
           [configValue]: value,
         };
-      }
+      }*/
     }
 
     this._subElementEditorConfig = {
@@ -221,6 +254,15 @@ export class HuiPictureElementsCardEditor
   private _goBack(): void {
     this._subElementEditorConfig = undefined;
   }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [

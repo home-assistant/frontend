@@ -7,6 +7,7 @@ import {
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -78,8 +79,9 @@ export interface SubElementEditorConfig {
   elementConfig?:
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceCardFeatureConfig;
-  type: "header" | "footer" | "row" | "feature";
+    | LovelaceCardFeatureConfig
+    | LovelaceElementConfig;
+  type: "header" | "footer" | "row" | "feature" | "element";
 }
 
 export interface EditSubElementEvent {

@@ -104,6 +104,11 @@ export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
 }
 
+export interface LovelacePictureElementEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceRowConfig): void;
+}
+
 export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
