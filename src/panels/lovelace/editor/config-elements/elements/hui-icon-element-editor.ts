@@ -1,16 +1,16 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-form/ha-form";
-import { LovelacePictureElementEditor } from "../../types";
-import { StateBadgeElementConfig } from "../../elements/types";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-form/ha-form";
+import { LovelacePictureElementEditor } from "../../../types";
+import { IconElementConfig } from "../../../elements/types";
 
 const SCHEMA = [
-  { name: "entity", selector: { entity: {} } },
-  { name: "style", selector: { object: {} } },
+  { name: "icon", selector: { icon: {} } },
   { name: "title", selector: { text: {} } },
+  { name: "entity", selector: { entity: {} } },
   {
     name: "tap_action",
     selector: {
@@ -23,18 +23,19 @@ const SCHEMA = [
       ui_action: {},
     },
   },
+  { name: "style", selector: { object: {} } },
 ] as const;
 
-@customElement("hui-state-badge-element-editor")
-export class HuiStateBadgeElementEditor
+@customElement("hui-icon-element-editor")
+export class HuiIconElementEditor
   extends LitElement
   implements LovelacePictureElementEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: StateBadgeElementConfig;
+  @state() private _config?: IconElementConfig;
 
-  public setConfig(config: StateBadgeElementConfig): void {
+  public setConfig(config: IconElementConfig): void {
     this._config = config;
   }
 
@@ -61,8 +62,10 @@ export class HuiStateBadgeElementEditor
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        return (
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.card.generic.${schema.name}`
+          ) || schema.name
         );
     }
   };
@@ -70,6 +73,6 @@ export class HuiStateBadgeElementEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-state-badge-element-editor": HuiStateBadgeElementEditor;
+    "hui-icon-element-editor": HuiIconElementEditor;
   }
 }

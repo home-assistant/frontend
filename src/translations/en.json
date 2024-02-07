@@ -5726,7 +5726,8 @@
               "header": "Header editor",
               "footer": "Footer editor",
               "row": "Entity row editor",
-              "feature": "Feature editor"
+              "feature": "Feature editor",
+              "element": "Element editor"
             }
           }
         },

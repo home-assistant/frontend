@@ -20,14 +20,13 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureElementsCardConfig } from "../../cards/types";
-import type { LovelaceRowConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./../hui-picture-elements-card-row-editor";
+import "../hui-picture-elements-card-row-editor";
 import { LovelaceElementConfig } from "../../elements/types";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
@@ -53,21 +52,60 @@ const stateIconElementConfigStruct = object({
   double_tap_action: optional(actionConfigStruct),
 });
 
-// const conditionalElementRowConfigStruct = object({
-//   type: literal("conditional"),
-//   row: any(),
-//   conditions: array(
-//     object({
-//       entity: string(),
-//       state: optional(string()),
-//       state_not: optional(string()),
-//     })
-//   ),
-// });
+const stateLabelElementConfigStruct = object({
+  type: literal("state-label"),
+  entity: optional(string()),
+  attribute: optional(string()),
+  prefix: optional(string()),
+  suffix: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
 
-// const customEntitiesRowConfigStruct = type({
-//   type: customType(),
-// });
+const serviceButtonElementConfigStruct = object({
+  type: literal("service-button"),
+  style: optional(any()),
+  title: optional(string()),
+  service: optional(string()),
+  service_data: optional(any()),
+});
+
+const iconElementConfigStruct = object({
+  type: literal("icon"),
+  entity: optional(string()),
+  icon: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
+
+const imageElementConfigStruct = object({
+  type: literal("image"),
+  entity: optional(string()),
+  image: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+  camera_image: optional(string()),
+  camera_view: optional(string()),
+  state_image: optional(any()),
+  filter: optional(string()),
+  state_filter: optional(any()),
+  aspect_ratio: optional(string()),
+});
+
+const conditionalElementConfigStruct = object({
+  type: literal("conditional"),
+  conditions: optional(array(any())),
+  elements: optional(array(any())),
+});
 
 const elementRowConfigStruct = dynamic<any>((value) => {
   if (value && typeof value === "object" && "type" in value) {
@@ -75,19 +113,32 @@ const elementRowConfigStruct = dynamic<any>((value) => {
     //   return customEntitiesRowConfigStruct;
     // }
 
-    switch ((value as LovelaceRowConfig).type!) {
+    switch ((value as LovelaceElementConfig).type!) {
       case "state-badge": {
         return stateBadgeElementConfigStruct;
       }
       case "state-icon": {
         return stateIconElementConfigStruct;
       }
+      case "state-label": {
+        return stateLabelElementConfigStruct;
+      }
+      case "service-button": {
+        return serviceButtonElementConfigStruct;
+      }
+      case "icon": {
+        return iconElementConfigStruct;
+      }
+      case "image": {
+        return imageElementConfigStruct;
+      }
+      case "conditional": {
+        return conditionalElementConfigStruct;
+      }
     }
   }
 
-  // No "type" property => has to be the default entity row config struct
-  // return entitiesConfigStruct;
-  return object();
+  return stateBadgeElementConfigStruct;
 });
 
 const cardConfigStruct = assign(
@@ -124,7 +175,7 @@ const SCHEMA = [
   {
     name: "",
     type: "expandable",
-    title: "Global Style",
+    title: "Card Style",
     schema: [
       { name: "theme", selector: { theme: {} } },
       { name: "state_filter", selector: { object: {} } },
@@ -222,21 +273,6 @@ export class HuiPictureElementsCardEditor
       }
 
       this._config = { ...this._config!, elements: newConfigElements };
-    } else if (configValue) {
-      console.log(configValue);
-      console.log(
-        "Don't know what this means, but don't think I should be here."
-      );
-      /*
-      if (value === "") {
-        this._config = { ...this._config };
-        delete this._config[configValue!];
-      } else {
-        this._config = {
-          ...this._config,
-          [configValue]: value,
-        };
-      }*/
     }
 
     this._subElementEditorConfig = {
@@ -258,8 +294,10 @@ export class HuiPictureElementsCardEditor
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        return (
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.card.generic.${schema.name}`
+          ) || schema.name
         );
     }
   };

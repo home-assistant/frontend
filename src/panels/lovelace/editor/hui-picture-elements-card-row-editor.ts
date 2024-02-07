@@ -17,6 +17,16 @@ declare global {
   }
 }
 
+const elementTypes: string[] = [
+  "state-badge",
+  "state-icon",
+  "state-label",
+  "service-button",
+  "icon",
+  "image",
+  "conditional",
+];
+
 @customElement("hui-picture-elements-card-row-editor")
 export class HuiPictureElementsCardRowEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -33,14 +43,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     }
 
     return html`
-      <h3>
-        ${this.label ||
-        `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.entities"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.required"
-        )})`}
-      </h3>
+      <h3>${this.label || `${"Elements"}`}</h3>
       <div class="entities">
         ${this.elements.map(
           (element, index) => html`
@@ -94,12 +97,14 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           naturalMenuWidth
           .label=${this.label ?? "Add new Element"}
           .value=${""}
-          .helper=${""}
           @closed=${stopPropagation}
           @selected=${this._addEntity}
         >
-          <mwc-list-item .value=${"state-badge"}>State Badge</mwc-list-item>
-          <mwc-list-item .value=${"state-icon"}>State Icon</mwc-list-item>
+          ${elementTypes.map(
+            (element) => html`
+              <mwc-list-item .value=${element}>${element}</mwc-list-item>
+            `
+          )}
         </ha-select>
       </div>
     `;
@@ -112,6 +117,14 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     }
     const newElements = this.elements!.concat({
       type: value as string,
+      ...(value !== "conditional"
+        ? {
+            style: {
+              top: "50%",
+              left: "50%",
+            },
+          }
+        : {}),
     });
     fireEvent(this, "elements-changed", { elements: newElements });
     this._select.select(-1);
@@ -126,23 +139,6 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     fireEvent(this, "elements-changed", { elements: newElements });
   }
 
-  // private _valueChanged(ev: CustomEvent): void {
-  //   const value = ev.detail.value;
-  //   const index = (ev.target as any).index;
-  //   const newConfigEntities = this.elements!.concat();
-
-  //   if (value === "" || value === undefined) {
-  //     newConfigEntities.splice(index, 1);
-  //   } else {
-  //     newConfigEntities[index] = {
-  //       ...newConfigEntities[index],
-  //       entity: value!,
-  //     };
-  //   }
-
-  //   fireEvent(this, "elements-changed", { elements: newConfigEntities });
-  // }
-
   private _editRow(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
     fireEvent(this, "edit-detail-element", {
@@ -153,6 +149,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       },
     });
   }
+
   private _duplicateRow(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
     const newElements = [...this.elements!, this.elements![index]];
