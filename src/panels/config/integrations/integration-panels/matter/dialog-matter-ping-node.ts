@@ -146,6 +146,7 @@ class DialogMatterPingNode extends LitElement {
   public closeDialog(): void {
     this.device_id = undefined;
     this._status = undefined;
+    this._pingResult = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
