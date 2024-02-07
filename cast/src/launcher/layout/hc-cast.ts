@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -28,6 +27,7 @@ import { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
+import "../../../../src/components/ha-list-item";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -83,34 +83,33 @@ class HcCast extends LitElement {
               `
             : html`
                 <div class="section-header">PICK A VIEW</div>
-                <paper-listbox
-                  attr-for-selected="data-path"
-                  .selected=${this.castManager.status.lovelacePath || ""}
-                >
+                <mwc-list>
                   ${(
                     this.lovelaceViews ?? [
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
                     ]
                   ).map(
-                    (view, idx) => html`
-                      <paper-icon-item
+                    (view, idx) =>
+                      html`<ha-list-item
+                        graphic="avatar"
                         @click=${this._handlePickView}
                         data-path=${view.path || idx}
+                        selected=${this.castManager.status?.lovelacePath || ""}
                       >
+                        ${view.title || view.path}
                         ${view.icon
                           ? html`
                               <ha-icon
                                 .icon=${view.icon}
-                                slot="item-icon"
+                                slot="graphic"
                               ></ha-icon>
                             `
-                          : ""}
-                        ${view.title || view.path}
-                      </paper-icon-item>
-                    `
-                  )}
-                </paper-listbox>
+                          : ""}</ha-list-item
+                      > `
+                  )}</mwc-list
+                >
               `}
+
         <div class="card-actions">
           ${this.castManager.status
             ? html`
@@ -246,25 +245,13 @@ class HcCast extends LitElement {
         height: 18px;
       }
 
-      paper-listbox {
-        padding-top: 0;
-      }
-
-      paper-listbox ha-icon {
+      ha-list-item ha-icon {
         padding: 12px;
         color: var(--secondary-text-color);
       }
 
-      paper-icon-item {
-        cursor: pointer;
-      }
-
-      paper-icon-item[disabled] {
-        cursor: initial;
-      }
-
-      :host([hide-icons]) paper-icon-item {
-        --paper-item-icon-width: 0px;
+      :host([hide-icons]) ha-icon {
+        display: none;
       }
 
       .spacer {
