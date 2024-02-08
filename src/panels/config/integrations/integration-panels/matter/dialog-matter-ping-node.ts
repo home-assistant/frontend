@@ -1,12 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { pingMatterNode, MatterPingResult } from "../../../../../data/matter";
-import { haStyleDialog } from "../../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 
@@ -40,33 +40,24 @@ class DialogMatterPingNode extends LitElement {
       >
         ${this._pingResult
           ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.ping_node.ping_complete"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <mwc-list>
-                  ${Object.entries(this._pingResult).map(
-                    ([ip, success]) =>
-                      html`<ha-list-item hasMeta
-                        >${ip}
-                        <ha-icon
-                          slot="meta"
-                          icon=${success ? "mdi:check" : "mdi:close"}
-                        ></ha-icon>
-                      </ha-list-item>`
-                  )}
-                </mwc-list>
-              </div>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.matter.ping_node.ping_complete"
+                )}
+              </h2>
+              <mwc-list>
+                ${Object.entries(this._pingResult).map(
+                  ([ip, success]) =>
+                    html`<ha-list-item hasMeta noninteractive
+                      >${ip}
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${success ? mdiCheckCircle : mdiAlertCircle}
+                        class=${success ? "success" : "failed"}
+                      ></ha-svg-icon>
+                    </ha-list-item>`
+                )}
+              </mwc-list>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
@@ -151,6 +142,7 @@ class DialogMatterPingNode extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       haStyleDialog,
       css`
         .success {
@@ -170,22 +162,21 @@ class DialogMatterPingNode extends LitElement {
           margin-top: 16px;
         }
 
-        .stage ha-svg-icon {
-          width: 16px;
-          height: 16px;
-        }
         .stage {
           padding: 8px;
         }
 
-        ha-svg-icon {
-          width: 68px;
-          height: 48px;
+        mwc-list {
+          --mdc-list-side-padding: 0;
         }
 
         .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
+        }
+        .flex-container ha-svg-icon {
+          width: 68px;
+          height: 48px;
         }
       `,
     ];
