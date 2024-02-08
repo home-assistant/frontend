@@ -232,6 +232,7 @@ export class HaAutomationTrace extends LitElement {
                   <div class="main">
                     <div class="graph">
                       <hat-script-graph
+                        .hass=${this.hass}
                         .trace=${this._trace}
                         .selected=${this._selected?.path}
                         @graph-node-selected=${this._pickNode}
