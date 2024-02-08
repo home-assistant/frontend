@@ -23,6 +23,7 @@ import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
 import { mockTodo } from "./stubs/todo";
+import { mockSensor } from "./stubs/sensor";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
@@ -50,6 +51,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockHistory(hass);
     mockRecorder(hass);
     mockTodo(hass);
+    mockSensor(hass);
     mockSystemLog(hass);
     mockTemplate(hass);
     mockEvents(hass);
