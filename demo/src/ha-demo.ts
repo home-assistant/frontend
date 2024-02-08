@@ -17,6 +17,7 @@ import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFrontend } from "./stubs/frontend";
+import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
 import { mockMediaPlayer } from "./stubs/media_player";
@@ -55,6 +56,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
     mockConfigEntries(hass);
