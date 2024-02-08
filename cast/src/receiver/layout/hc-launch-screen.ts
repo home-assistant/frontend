@@ -15,7 +15,7 @@ class HcLaunchScreen extends LitElement {
           alt="Nabu Casa logo on left, Home Assistant logo on right, and red heart in center"
           src="https://cast.home-assistant.io/images/nabu-loves-hass.png"
         />
-        <div class="status">
+        <div>
           ${this.hass ? "Connected" : "Not Connected"}
           ${this.error ? html` <p>Error: ${this.error}</p> ` : ""}
         </div>
@@ -42,11 +42,6 @@ class HcLaunchScreen extends LitElement {
       img {
         max-width: 80%;
         object-fit: cover;
-      }
-      .status {
-        padding-right: 54px;
-        padding-inline-end: 54px;
-        padding-inline-start: initial;
       }
     `;
   }
