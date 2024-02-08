@@ -404,10 +404,8 @@ export class DemoEntityState extends LitElement {
       entities: {
         "select.speed": {
           entity_id: "select.speed",
-          device_id: "c2348ced290888dbbd38e7015fae7ece",
           translation_key: "speed",
           platform: "demo",
-          name: null,
         },
       },
     });
