@@ -542,8 +542,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   }
 
   static styles = css`
-    ha-selector {
-      width: 60;
+    ha-settings-row {
+      --paper-item-body-two-line-min-height: 0;
     }
     .options {
       max-width: 800px;
