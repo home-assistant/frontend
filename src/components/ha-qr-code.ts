@@ -74,8 +74,7 @@ export class HaQrCode extends LitElement {
         margin: this.margin,
         maskPattern: this.maskPattern,
         color: {
-          light: computedStyles.getPropertyValue("--card-background-color"),
-          dark: computedStyles.getPropertyValue("--primary-text-color"),
+          light: #ffffffff,
         },
       }).catch((err) => {
         this._error = err.message;
