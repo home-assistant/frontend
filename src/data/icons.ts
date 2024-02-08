@@ -110,14 +110,7 @@ export const getComponentIcons = async (
   domain: string,
   force = false
 ): Promise<ComponentIcons | undefined> => {
-  if (
-    !force &&
-    resources.entity_component.resources &&
-    resources.entity_component.domains?.includes(domain)
-  ) {
-    return resources.entity_component.resources.then((res) => res[domain]);
-  }
-
+  // For Cast, old instances can connect to it.
   if (
     __BACKWARDS_COMPAT__ &&
     !atLeastVersion(hass.connection.haVersion, 2024, 2)
@@ -125,6 +118,14 @@ export const getComponentIcons = async (
     return import("../fake_data/entity_component_icons")
       .then((mod) => mod.ENTITY_COMPONENT_ICONS)
       .then((res) => res[domain]);
+  }
+
+  if (
+    !force &&
+    resources.entity_component.resources &&
+    resources.entity_component.domains?.includes(domain)
+  ) {
+    return resources.entity_component.resources.then((res) => res[domain]);
   }
 
   if (!isComponentLoaded(hass, domain)) {
