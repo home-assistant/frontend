@@ -74,7 +74,7 @@ export class HaQrCode extends LitElement {
         margin: this.margin,
         maskPattern: this.maskPattern,
         color: {
-          light: #ffffffff,
+          light: "#ffffffff",
         },
       }).catch((err) => {
         this._error = err.message;
