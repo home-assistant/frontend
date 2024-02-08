@@ -85,7 +85,7 @@ export class HatGraphNode extends LitElement {
           <g style="pointer-events: none" transform="translate(${-12} ${-12})">
             ${this.iconPath
               ? svg`<path class="icon" d=${this.iconPath}/>`
-              : svg`<foreignObject><span class="icon"><slot name="icon"></slot></icon></foreignObject>`}
+              : svg`<foreignObject><span class="icon"><slot name="icon"></slot></span></foreignObject>`}
           </g>
         </g>
       </svg>
