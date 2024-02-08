@@ -36,7 +36,7 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
 }
 
 interface EMOutgoingMessageScanBarCode extends EMMessage {
-  type: "qr_code/scan";
+  type: "bar_code/scan";
   title: string;
   description: string;
   alternative_option_label?: string;
@@ -55,7 +55,7 @@ type EMOutgoingMessageWithAnswer = {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
   };
-  "qr_code/scan": {
+  "bar_code/scan": {
     request: EMOutgoingMessageScanBarCode;
     response:
       | EMIncomingMessageBarCodeResponseCanceled
@@ -183,7 +183,7 @@ export interface EMIncomingMessageBarCodeResponseAlternativeOptions {
 export interface EMIncomingMessageBarCodeResponseScanResult {
   action: "scan_result";
   // A string decoded from the barcode data.
-  result: string;
+  rawValue: string;
   // https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API#supported_barcode_formats
   format:
     | "aztec"
@@ -224,7 +224,7 @@ export interface ExternalConfig {
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
   hasAssist: boolean;
-  hasQRScanner: number;
+  hasBarCodeScanner: number;
 }
 
 export class ExternalMessaging {
