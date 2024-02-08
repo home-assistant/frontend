@@ -275,6 +275,14 @@ const SCHEMAS: {
         selector: { color_temp: {} },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },
+      qr_code: {
+        name: "QR Code",
+        selector: { qr_code: { data: "https://home-assistant.io" } },
+      },
+      constant: {
+        name: "Constant",
+        selector: { constant: { value: true, label: "Yes!" } },
+      },
     },
   },
   {
@@ -501,7 +509,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           this.requestUpdate();
         };
         return html`
-          <demo-black-white-row .title=${info.name} .value=${this.data[idx]}>
+          <demo-black-white-row .title=${info.name}>
             ${["light", "dark"].map((slot) =>
               Object.entries(info.input).map(
                 ([key, value]) => html`
