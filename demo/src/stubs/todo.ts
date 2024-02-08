@@ -21,4 +21,5 @@ export const mockTodo = (hass: MockHomeAssistant) => {
       },
     ] as TodoItem[],
   }));
+  hass.mockWS("todo/item/subscribe", (_msg, _hass) => () => {});
 };
