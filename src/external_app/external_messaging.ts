@@ -35,7 +35,7 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
-interface EMOutgoingMessageScanQRCode extends EMMessage {
+interface EMOutgoingMessageScanBarCode extends EMMessage {
   type: "qr_code/scan";
   title: string;
   description: string;
@@ -56,11 +56,11 @@ type EMOutgoingMessageWithAnswer = {
     response: ExternalConfig;
   };
   "qr_code/scan": {
-    request: EMOutgoingMessageScanQRCode;
+    request: EMOutgoingMessageScanBarCode;
     response:
-      | EMIncomingMessageQRCodeResponseCanceled
-      | EMIncomingMessageQRCodeResponseAlternativeOptions
-      | EMIncomingMessageQRCodeResponseScanResult;
+      | EMIncomingMessageBarCodeResponseCanceled
+      | EMIncomingMessageBarCodeResponseAlternativeOptions
+      | EMIncomingMessageBarCodeResponseScanResult;
   };
 };
 
@@ -172,17 +172,34 @@ interface EMIncomingMessageShowAutomationEditor {
   };
 }
 
-export interface EMIncomingMessageQRCodeResponseCanceled {
+export interface EMIncomingMessageBarCodeResponseCanceled {
   action: "canceled";
 }
 
-export interface EMIncomingMessageQRCodeResponseAlternativeOptions {
+export interface EMIncomingMessageBarCodeResponseAlternativeOptions {
   action: "alternative_options";
 }
 
-export interface EMIncomingMessageQRCodeResponseScanResult {
+export interface EMIncomingMessageBarCodeResponseScanResult {
   action: "scan_result";
+  // A string decoded from the barcode data.
   result: string;
+  // https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API#supported_barcode_formats
+  format:
+    | "aztec"
+    | "code_128"
+    | "code_39"
+    | "code_93"
+    | "codabar"
+    | "data_matrix"
+    | "ean_13"
+    | "ean_8"
+    | "itf"
+    | "pdf417"
+    | "qr_code"
+    | "upc_a"
+    | "upc_e"
+    | "unknown";
 }
 
 export type EMIncomingMessageCommands =
