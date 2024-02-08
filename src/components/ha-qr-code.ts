@@ -64,7 +64,6 @@ export class HaQrCode extends LitElement {
         changedProperties.has("errorCorrectionLevel") ||
         changedProperties.has("centerImage"))
     ) {
-      const computedStyles = getComputedStyle(this);
 
       QRCode.toCanvas(canvas, this.data, {
         errorCorrectionLevel:
