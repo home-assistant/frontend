@@ -64,7 +64,6 @@ export class HaQrCode extends LitElement {
         changedProperties.has("errorCorrectionLevel") ||
         changedProperties.has("centerImage"))
     ) {
-
       QRCode.toCanvas(canvas, this.data, {
         errorCorrectionLevel:
           this.errorCorrectionLevel || (this.centerImage ? "Q" : "M"),
@@ -73,7 +72,7 @@ export class HaQrCode extends LitElement {
         margin: this.margin,
         maskPattern: this.maskPattern,
         color: {
-          light: "#ffffffff",
+          light: "#fff",
         },
       }).catch((err) => {
         this._error = err.message;
