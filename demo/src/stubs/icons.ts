@@ -22,9 +22,12 @@ export const mockIcons = (hass: MockHomeAssistant) => {
           return { resources: {} };
         }
       }
-      return {
-        resources: ENTITY_COMPONENT_ICONS,
-      };
+      if (category === "entity_component") {
+        return {
+          resources: ENTITY_COMPONENT_ICONS,
+        };
+      }
+      return { resources: {} };
     }
   );
 };
