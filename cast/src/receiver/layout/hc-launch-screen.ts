@@ -15,7 +15,7 @@ class HcLaunchScreen extends LitElement {
           alt="Nabu Casa logo on left, Home Assistant logo on right, and red heart in center"
           src="https://cast.home-assistant.io/images/nabu-loves-hass.png"
         />
-        <div>
+        <div class="status">
           ${this.hass ? "Connected" : "Not Connected"}
           ${this.error ? html` <p>Error: ${this.error}</p> ` : ""}
         </div>
