@@ -35,15 +35,20 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
-interface EMOutgoingMessageStartBarCodeScan extends EMMessage {
+interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
   title: string;
   description: string;
   alternative_option_label?: string;
 }
 
-interface EMOutgoingMessageStopBarCodeScan extends EMMessage {
+interface EMOutgoingMessageBarCodeClose extends EMMessage {
   type: "bar_code/close";
+}
+
+interface EMOutgoingMessageBarCodeNotify extends EMMessage {
+  type: "bar_code/notify";
+  message: string;
 }
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
@@ -125,6 +130,9 @@ type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultSuccess
   | EMOutgoingMessageAppConfiguration
   | EMOutgoingMessageAssistShow
+  | EMOutgoingMessageBarCodeClose
+  | EMOutgoingMessageBarCodeNotify
+  | EMOutgoingMessageBarCodeScan
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
@@ -133,8 +141,6 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
   | EMOutgoingMessageSidebarShow
-  | EMOutgoingMessageStartBarCodeScan
-  | EMOutgoingMessageStopBarCodeScan
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate;
 
