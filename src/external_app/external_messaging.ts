@@ -44,9 +44,6 @@ interface EMOutgoingMessageStartBarCodeScan extends EMMessage {
 
 interface EMOutgoingMessageStopBarCodeScan extends EMMessage {
   type: "bar_code/close";
-  title: string;
-  description: string;
-  alternative_option_label?: string;
 }
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
