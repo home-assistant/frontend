@@ -1508,14 +1508,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:6.5.5":
-  version: 6.5.5
-  resolution: "@codemirror/search@npm:6.5.5"
+"@codemirror/search@npm:6.5.6":
+  version: 6.5.6
+  resolution: "@codemirror/search@npm:6.5.6"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.0.0"
     crelt: "npm:^1.0.5"
-  checksum: 10/61707efa563edaea1d83f0680db63a953f3f1c125e50bd912d84d07129aa5ba1f3a775f62339f7931c01f5afd69db777c0571215bd0aaef51964c37ee932f6df
+  checksum: 10/6668a34b4617e909617d3d831627d74b7a7985e8cd86d396bfcb3e86262f2310fc029fd6c846f1b8f1e6768e75985c9f1b0b18b31e05341f06b5b75c1ffde38d
   languageName: node
   linkType: hard
 
@@ -9437,10 +9437,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.5.3":
-  version: 1.5.3
-  resolution: "hls.js@npm:1.5.3"
-  checksum: 10/c5b7cb6fddd6ad425a82e1b8b4f818552e6e242254b35c7d7c7b9d3beb4dd40cc85d8bbc32a5d1b57031305d7d9f4973f9d0f80b70351bb8597393f4629072fc
+"hls.js@npm:1.5.4":
+  version: 1.5.4
+  resolution: "hls.js@npm:1.5.4"
+  checksum: 10/b86ee818db7a9b3f576fa1fb6c325a91885d6018be6e6cf496a7e1e8fd9ae060979de4347fd6635af47e704170cb47a09ef0942a38409c165f9958044d232e4d
   languageName: node
   linkType: hard
 
@@ -9461,7 +9461,7 @@ __metadata:
     "@codemirror/commands": "npm:6.3.3"
     "@codemirror/language": "npm:6.10.1"
     "@codemirror/legacy-modes": "npm:6.3.3"
-    "@codemirror/search": "npm:6.5.5"
+    "@codemirror/search": "npm:6.5.6"
     "@codemirror/state": "npm:6.4.0"
     "@codemirror/view": "npm:6.23.1"
     "@egjs/hammerjs": "npm:2.0.17"
@@ -9594,7 +9594,7 @@ __metadata:
     gulp-merge-json: "npm:2.1.2"
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.1"
-    hls.js: "npm:1.5.3"
+    hls.js: "npm:1.5.4"
     home-assistant-js-websocket: "npm:9.1.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.0.10"
