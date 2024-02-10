@@ -8,6 +8,16 @@ import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
+import {
+  ConditionalElementConfig,
+  IconElementConfig,
+  ImageElementConfig,
+  LovelaceElementConfig,
+  ServiceButtonElementConfig,
+  StateBadgeElementConfig,
+  StateIconElementConfig,
+  StateLabelElementConfig,
+} from "../elements/types";
 
 declare global {
   interface HASSDomEvents {
@@ -31,9 +41,7 @@ const elementTypes: string[] = [
 export class HuiPictureElementsCardRowEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public elements?: any[];
-
-  @property() public label?: string;
+  @property({ attribute: false }) public elements?: LovelaceElementConfig[];
 
   @query("ha-select") private _select!: HaSelect;
 
@@ -43,47 +51,47 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     }
 
     return html`
-      <h3>${this.label || `${"Elements"}`}</h3>
-      <div class="entities">
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.picture-elements.elements"
+        )}
+      </h3>
+      <div class="elements">
         ${this.elements.map(
           (element, index) => html`
-            <div class="entity">
+            <div class="element">
               ${element.type
                 ? html`
-                    <div class="special-row">
+                    <div class="element-row">
                       <div>
                         <span>
-                          ${`${element.type} ${element.entity ?? ""} ${element.title ?? ""}`}
+                          ${this.hass?.localize(
+                            `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
+                          )}
                         </span>
                         <span class="secondary"
-                          >${this.hass!.localize(
-                            "ui.panel.lovelace.editor.card.entities.edit_special_row"
-                          )}</span
+                          >${this._getSecondaryDescription(element)}</span
                         >
                       </div>
                     </div>
                   `
                 : nothing}
               <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.clear"
-                )}
+                .label=${this.hass!.localize("ui.common.clear")}
                 .path=${mdiClose}
                 class="remove-icon"
                 .index=${index}
                 @click=${this._removeRow}
               ></ha-icon-button>
               <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.edit"
-                )}
+                .label=${this.hass!.localize("ui.common.edit")}
                 .path=${mdiPencil}
                 class="edit-icon"
                 .index=${index}
                 @click=${this._editRow}
               ></ha-icon-button>
               <ha-icon-button
-                .label=${"Duplicate"}
+                .label=${"ui.common.duplicate"}
                 .path=${mdiContentDuplicate}
                 class="duplicate-icon"
                 .index=${index}
@@ -95,14 +103,20 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
         <ha-select
           fixedMenuPosition
           naturalMenuWidth
-          .label=${this.label ?? "Add new Element"}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.picture-elements.new_element"
+          )}
           .value=${""}
           @closed=${stopPropagation}
-          @selected=${this._addEntity}
+          @selected=${this._addElement}
         >
           ${elementTypes.map(
             (element) => html`
-              <mwc-list-item .value=${element}>${element}</mwc-list-item>
+              <mwc-list-item .value=${element}
+                >${this.hass?.localize(
+                  `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
+                )}</mwc-list-item
+              >
             `
           )}
         </ha-select>
@@ -110,13 +124,50 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     `;
   }
 
-  private async _addEntity(ev): Promise<void> {
+  private _getSecondaryDescription(element: LovelaceElementConfig): string {
+    switch (element.type) {
+      case "icon":
+        return element.title ?? (element as IconElementConfig).icon ?? "";
+      case "state-badge":
+      case "state-icon":
+      case "state-label":
+        return (
+          element.title ??
+          (
+            element as
+              | StateBadgeElementConfig
+              | StateIconElementConfig
+              | StateLabelElementConfig
+          ).entity ??
+          ""
+        );
+      case "service-button":
+        return (
+          element.title ?? (element as ServiceButtonElementConfig).service ?? ""
+        );
+      case "image":
+        return (
+          element.title ??
+          (element as ImageElementConfig).image ??
+          (element as ImageElementConfig).camera_image ??
+          ""
+        );
+      case "conditional":
+        return (
+          element.title ??
+          `${(element as ConditionalElementConfig).elements.length.toString()} ${this.hass?.localize("ui.panel.lovelace.editor.card.picture-elements.elements")}`
+        );
+    }
+    return "";
+  }
+
+  private async _addElement(ev): Promise<void> {
     const value = ev.target!.value;
     if (value === "") {
       return;
     }
     const newElements = this.elements!.concat({
-      type: value as string,
+      type: value! as string,
       ...(value !== "conditional"
         ? {
             style: {
@@ -125,7 +176,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
             },
           }
         : {}),
-    });
+    } as LovelaceElementConfig);
     fireEvent(this, "elements-changed", { elements: newElements });
     this._select.select(-1);
   }
@@ -159,39 +210,12 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-entity-picker {
-        margin-top: 8px;
-      }
-      .add-entity {
-        display: block;
-        margin-left: 31px;
-        margin-right: 71px;
-        margin-inline-start: 31px;
-        margin-inline-end: 71px;
-        direction: var(--direction);
-      }
-      .entity {
+      .element {
         display: flex;
         align-items: center;
       }
 
-      .entity .handle {
-        padding-right: 8px;
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      .entity .handle > * {
-        pointer-events: none;
-      }
-
-      .entity ha-entity-picker {
-        flex-grow: 1;
-      }
-
-      .special-row {
+      .element-row {
         height: 60px;
         font-size: 16px;
         display: flex;
@@ -200,7 +224,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
         flex-grow: 1;
       }
 
-      .special-row div {
+      .element-row div {
         display: flex;
         flex-direction: column;
       }

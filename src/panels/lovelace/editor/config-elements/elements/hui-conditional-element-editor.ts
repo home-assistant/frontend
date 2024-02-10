@@ -13,6 +13,9 @@ import "../../hui-picture-elements-card-row-editor";
 import { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import { EditSubElementEvent, SubElementEditorConfig } from "../../types";
 import "../../hui-sub-element-editor";
+import { SchemaUnion } from "../../../../../components/ha-form/types";
+
+const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
 
 @customElement("hui-conditional-element-editor")
 export class HuiConditionalElementEditor
@@ -47,6 +50,13 @@ export class HuiConditionalElementEditor
     }
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._formChanged}
+      ></ha-form>
       <ha-card-conditions-editor
         .hass=${this.hass}
         .conditions=${this._config.conditions || []}
@@ -60,6 +70,10 @@ export class HuiConditionalElementEditor
         @edit-detail-element=${this._editDetailElement}
       ></hui-picture-elements-card-row-editor>
     `;
+  }
+
+  private _formChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -120,6 +134,13 @@ export class HuiConditionalElementEditor
     ev?.stopPropagation();
     this._subElementEditorConfig = undefined;
   }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.elements.${schema.name}`) ||
+    schema.name;
 }
 
 declare global {

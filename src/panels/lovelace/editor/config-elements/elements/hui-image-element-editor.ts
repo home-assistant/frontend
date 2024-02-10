@@ -31,7 +31,7 @@ const SCHEMA = [
   { name: "state_image", selector: { object: {} } },
   { name: "filter", selector: { text: {} } },
   { name: "state_filter", selector: { object: {} } },
-  { name: "aspect_ratio", selector: { object: {} } },
+  { name: "aspect_ratio", selector: { text: {} } },
   { name: "style", selector: { object: {} } },
 ] as const;
 
@@ -68,16 +68,12 @@ export class HuiImageElementEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    switch (schema.name) {
-      default:
-        return (
-          this.hass!.localize(
-            `ui.panel.lovelace.editor.card.generic.${schema.name}`
-          ) || schema.name
-        );
-    }
-  };
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.elements.${schema.name}`) ||
+    schema.name;
 }
 
 declare global {

@@ -59,16 +59,12 @@ export class HuiIconElementEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    switch (schema.name) {
-      default:
-        return (
-          this.hass!.localize(
-            `ui.panel.lovelace.editor.card.generic.${schema.name}`
-          ) || schema.name
-        );
-    }
-  };
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.elements.${schema.name}`) ||
+    schema.name;
 }
 
 declare global {

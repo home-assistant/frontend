@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   any,
@@ -12,10 +12,10 @@ import {
   optional,
   string,
 } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
@@ -29,6 +29,7 @@ import { configElementStyle } from "./config-elements-style";
 import "../hui-picture-elements-card-row-editor";
 import { LovelaceElementConfig } from "../../elements/types";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 
 const stateBadgeElementConfigStruct = object({
   type: literal("state-badge"),
@@ -105,14 +106,11 @@ const conditionalElementConfigStruct = object({
   type: literal("conditional"),
   conditions: optional(array(any())),
   elements: optional(array(any())),
+  title: optional(string()),
 });
 
 const elementRowConfigStruct = dynamic<any>((value) => {
   if (value && typeof value === "object" && "type" in value) {
-    // if (isCustomType((value as LovelaceRowConfig).type!)) {
-    //   return customEntitiesRowConfigStruct;
-    // }
-
     switch ((value as LovelaceElementConfig).type!) {
       case "state-badge": {
         return stateBadgeElementConfigStruct;
@@ -156,34 +154,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  {
-    name: "",
-    type: "expandable",
-    title: "Background",
-    schema: [
-      { name: "image", selector: { text: {} } },
-      { name: "dark_mode_image", selector: { text: {} } },
-      { name: "camera_image", selector: { entity: { domain: "camera" } } },
-      {
-        name: "camera_view",
-        selector: { select: { options: ["auto", "live"] } },
-      },
-    ],
-  },
-  {
-    name: "",
-    type: "expandable",
-    title: "Card Style",
-    schema: [
-      { name: "theme", selector: { theme: {} } },
-      { name: "state_filter", selector: { object: {} } },
-      { name: "dark_mode_filter", selector: { object: {} } },
-    ],
-  },
-] as const;
-
 @customElement("hui-picture-elements-card-editor")
 export class HuiPictureElementsCardEditor
   extends LitElement
@@ -199,6 +169,35 @@ export class HuiPictureElementsCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "",
+          type: "expandable",
+          title: localize(
+            "ui.panel.lovelace.editor.card.picture-elements.card_options"
+          ),
+          schema: [
+            { name: "title", selector: { text: {} } },
+            { name: "image", selector: { text: {} } },
+            { name: "dark_mode_image", selector: { text: {} } },
+            {
+              name: "camera_image",
+              selector: { entity: { domain: "camera" } },
+            },
+            {
+              name: "camera_view",
+              selector: { select: { options: ["auto", "live"] } },
+            },
+            { name: "theme", selector: { theme: {} } },
+            { name: "state_filter", selector: { object: {} } },
+            { name: "dark_mode_filter", selector: { object: {} } },
+          ],
+        },
+      ] as const
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -221,7 +220,7 @@ export class HuiPictureElementsCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._formChanged}
       ></ha-form>
@@ -291,8 +290,16 @@ export class HuiPictureElementsCardEditor
     this._subElementEditorConfig = undefined;
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (schema) => {
     switch (schema.name) {
+      case "dark_mode_image":
+      case "state_filter":
+      case "dark_mode_filter":
+        return (
+          this.hass!.localize(
+            `ui.panel.lovelace.editor.card.picture-elements.${schema.name}`
+          ) || schema.name
+        );
       default:
         return (
           this.hass!.localize(
@@ -303,26 +310,7 @@ export class HuiPictureElementsCardEditor
   };
 
   static get styles(): CSSResultGroup {
-    return [
-      configElementStyle,
-      css`
-        .edit-entity-row-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 18px;
-        }
-
-        hui-header-footer-editor {
-          padding-top: 4px;
-        }
-
-        ha-textfield {
-          display: block;
-          margin-bottom: 16px;
-        }
-      `,
-    ];
+    return [configElementStyle];
   }
 }
 

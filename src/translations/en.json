@@ -5455,7 +5455,22 @@
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates."
+              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates.",
+              "card_options": "Card Options",
+              "elements": "Elements",
+              "new_element": "Add new element",
+              "dark_mode_image": "Dark mode image path",
+              "state_filter": "State filter",
+              "dark_mode_filter": "Dark mode state filter",
+              "element_types": {
+                "state-badge": "State badge",
+                "state-icon": "State icon",
+                "state-label": "State label",
+                "service-button": "Service call button",
+                "icon": "Icon",
+                "image": "Image",
+                "conditional": "Conditional"
+              }
             },
             "picture-entity": {
               "name": "Picture entity",
@@ -5520,6 +5535,14 @@
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
             }
+          },
+          "elements": {
+            "style": "Style",
+            "prefix": "Prefix",
+            "suffix": "Suffix",
+            "state_image": "State image",
+            "filter": "Filter",
+            "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
           },
           "features": {
             "name": "Features",
