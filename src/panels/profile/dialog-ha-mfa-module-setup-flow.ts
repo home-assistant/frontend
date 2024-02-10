@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
-import "../../components/ha-markdown";
+import "../../components/ha-qr-code";
 import { autocompleteLoginFields } from "../../data/auth";
 import {
   DataEntryFlowStep,
@@ -71,6 +71,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     if (!this._opened) {
       return nothing;
     }
+
     return html`
       <ha-dialog
         open
@@ -86,13 +87,11 @@ class HaMfaModuleSetupFlow extends LitElement {
                 <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : html`${this._step.type === "abort"
-                ? html` <ha-markdown
-                    allowsvg
-                    breaks
-                    .content=${this.hass.localize(
+                ? html`<p>
+                    ${this.hass.localize(
                       `component.auth.mfa_setup.${this._step.handler}.abort.${this._step.reason}`
                     )}
-                  ></ha-markdown>`
+                  </p> `
                 : this._step.type === "create_entry"
                   ? html`<p>
                       ${this.hass.localize(
@@ -101,18 +100,41 @@ class HaMfaModuleSetupFlow extends LitElement {
                       )}
                     </p>`
                   : this._step.type === "form"
-                    ? html`<ha-markdown
-                          allowsvg
-                          breaks
-                          .content=${this.hass.localize(
+                    ? html` <p>
+                          ${this.hass.localize(
                             `component.auth.mfa_setup.${
                               this._step!.handler
                             }.step.${
                               (this._step! as DataEntryFlowStepForm).step_id
-                            }.description`,
-                            this._step!.description_placeholders
+                            }.description`
                           )}
-                        ></ha-markdown>
+                        </p>
+                        <p>
+                          ${this.hass.localize(
+                            `ui.panel.profile.mfa_setup.totp.qr_code`
+                          )}
+                        </p>
+                        <p>
+                          <a href=${this._step!.description_placeholders!.url}>
+                            <ha-qr-code
+                              .data=${this._step!.description_placeholders!.url}
+                              errorCorrectionLevel="quartile"
+                              scale="5"
+                              margin="1"
+                            ></ha-qr-code>
+                          </a>
+                          <small>
+                            ${this.hass.localize(
+                              `ui.panel.profile.mfa_setup.totp.key_code`
+                            )}
+                            ${this._step!.description_placeholders!.code}
+                          </small>
+                        </p>
+                        <p>
+                          ${this.hass.localize(
+                            `ui.panel.profile.mfa_setup.totp.verification_code`
+                          )}
+                        </p>
                         <ha-form
                           .hass=${this.hass}
                           .data=${this._stepData}
@@ -156,24 +178,6 @@ class HaMfaModuleSetupFlow extends LitElement {
         }
         ha-dialog {
           max-width: 500px;
-        }
-        ha-markdown {
-          --markdown-svg-background-color: white;
-          --markdown-svg-color: black;
-          display: block;
-          margin: 0 auto;
-        }
-        ha-markdown a {
-          color: var(--primary-color);
-        }
-        ha-markdown-element p {
-          text-align: center;
-        }
-        ha-markdown-element code {
-          background-color: transparent;
-        }
-        ha-markdown-element > *:last-child {
-          margin-bottom: revert;
         }
         .init-spinner {
           padding: 10px 100px 34px;
