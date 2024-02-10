@@ -5918,7 +5918,12 @@
           "title_success": "Success!",
           "step_done": "Setup done for {step}",
           "close": "Close",
-          "submit": "Submit"
+          "submit": "Submit",
+          "totp": {
+            "qr_code": "1. Tap the QR Code or scan it with your authenticator app:",
+            "key_code": "Or enter the key manually:",
+            "verification_code": "2. Enter the six digit code shown in your authenticator to verify:"
+          }
         },
         "advanced_mode": {
           "title": "Advanced mode",
