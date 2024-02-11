@@ -3,7 +3,6 @@ import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { mainWindow } from "../common/dom/get_main_window";
 
 const blockingElements = (document as any).$blockingElements;
 
@@ -34,7 +33,8 @@ export class HaDrawer extends DrawerBase {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("direction")) {
-      if (mainWindow.document.dir === "rtl") {
+      this.mdcRoot.dir = this.direction;
+      if (this.direction === "rtl") {
         this._rtlStyle = document.createElement("style");
         this._rtlStyle.innerHTML = `
           .mdc-drawer--animate {
