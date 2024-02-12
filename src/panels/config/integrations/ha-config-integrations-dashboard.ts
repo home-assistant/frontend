@@ -661,7 +661,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
-      if (integration.single_instance_only) {
+      if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
           showSingleInstanceOnlyDialog(this, { integration });

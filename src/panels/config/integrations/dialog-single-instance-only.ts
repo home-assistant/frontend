@@ -29,12 +29,12 @@ export class DialogSingleInstanceOnly extends LitElement {
         open
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
-          "ui.panel.config.integrations.config_flow.single_instance_only_title"
+          "ui.panel.config.integrations.config_flow.single_config_entry_title"
         )}
       >
         <p>
           ${this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_instance_only",
+            "ui.panel.config.integrations.config_flow.single_config_entry",
             {
               integration_name: this._params.integration.name,
             }

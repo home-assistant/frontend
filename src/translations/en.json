@@ -3870,7 +3870,7 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "single_instance_only": "This integration allows only one configuration"
+            "single_config_entry": "This integration allows only one configuration"
           },
           "config_entry": {
             "application_credentials": {
@@ -3980,8 +3980,8 @@
             "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
-            "single_instance_only_title": "This integration allows only one configuration",
-            "single_instance_only": "The {integration_name} supports only one configuration. Adding additional ones is not needed."
+            "single_config_entry_title": "This integration allows only one configuration",
+            "single_config_entry": "The {integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },
         "users": {

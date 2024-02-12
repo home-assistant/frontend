@@ -69,7 +69,7 @@ export interface IntegrationListItem {
   cloud?: boolean;
   is_built_in?: boolean;
   is_add?: boolean;
-  single_instance_only?: boolean;
+  single_config_entry?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -211,7 +211,7 @@ class AddIntegrationDialog extends LitElement {
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
-            single_instance_only: integration.single_instance_only,
+            single_config_entry: integration.single_config_entry,
           });
         } else if (
           !("integration_type" in integration) &&
@@ -576,7 +576,7 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    if (integration.single_instance_only) {
+    if (integration.single_config_entry) {
       const configEntries = await getConfigEntries(this.hass, {
         domain: integration.domain,
       });

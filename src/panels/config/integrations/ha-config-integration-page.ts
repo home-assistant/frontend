@@ -504,11 +504,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
               </mwc-list>
               <div class="card-actions">
-                ${this._manifest?.single_instance_only &&
+                ${this._manifest?.single_config_entry &&
                 this.configEntries.length > 0
                   ? html`<ha-alert alert-type="info"
                       >${this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.single_instance_only`
+                        `ui.panel.config.integrations.integration_page.single_config_entry_only`
                       )}</ha-alert
                     >`
                   : html`<ha-button @click=${this._addIntegration}>
