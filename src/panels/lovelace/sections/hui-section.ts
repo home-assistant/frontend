@@ -24,15 +24,6 @@ import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceCard } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
 
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "ll-create-card": undefined;
-    "ll-edit-card": { path: [number] | [number, number] };
-    "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
-  }
-}
-
 @customElement("hui-section")
 export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

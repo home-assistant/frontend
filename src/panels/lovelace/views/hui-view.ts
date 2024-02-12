@@ -36,6 +36,7 @@ import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
 import { createErrorSectionConfig } from "../sections/hui-error-section";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 declare global {
   // for fire event
