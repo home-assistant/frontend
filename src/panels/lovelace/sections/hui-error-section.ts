@@ -11,7 +11,9 @@ export interface ErrorSectionConfig extends LovelaceSectionConfig {
 }
 
 export const createErrorSectionElement = (config: ErrorSectionConfig) => {
-  const el = document.createElement("hui-error-section");
+  const el = document.createElement(
+    "hui-error-section"
+  ) as LovelaceSectionElement;
   el.setConfig(config);
   return el;
 };

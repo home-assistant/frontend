@@ -5,9 +5,9 @@ import type { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import {
   LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
   isStrategySection,
 } from "../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { createCardElement } from "../create-element/create-card-element";
@@ -34,12 +34,12 @@ declare global {
 }
 
 @customElement("hui-section")
-export class HUISection extends ReactiveElement {
+export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public view!: LovelaceViewConfig;
+  @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   @property({ type: Number }) public index!: number;
 
@@ -90,13 +90,12 @@ export class HUISection extends ReactiveElement {
           - lovelace changes if edit mode is enabled or config has changed
     */
 
-    const oldView = changedProperties.get("view");
+    const oldConfig = changedProperties.get("config");
 
     // If config has changed, create element if necessary and set all values.
     if (
-      changedProperties.has("index") ||
-      (changedProperties.has("view") &&
-        (!oldView || this.view[this.index] !== oldView[this.index]))
+      changedProperties.has("config") &&
+      (!oldConfig || this.config !== oldConfig)
     ) {
       this._initializeConfig();
     }
@@ -129,9 +128,7 @@ export class HUISection extends ReactiveElement {
   }
 
   private async _initializeConfig() {
-    let sectionConfig = this.view.sections![
-      this.index
-    ] as LovelaceSectionConfig;
+    let sectionConfig = { ...this.config };
     let isStrategy = false;
 
     if (isStrategySection(sectionConfig)) {
@@ -244,6 +241,6 @@ export class HUISection extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-section": HUISection;
+    "hui-section": HuiSection;
   }
 }

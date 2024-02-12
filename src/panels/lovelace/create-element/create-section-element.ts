@@ -12,7 +12,7 @@ export const createSectionElement = (
   config: LovelaceSectionConfig
 ): LovelaceSectionElement | HuiErrorCard =>
   createLovelaceElement(
-    "view",
+    "section",
     config,
     ALWAYS_LOADED_LAYOUTS,
     LAZY_LOAD_LAYOUTS

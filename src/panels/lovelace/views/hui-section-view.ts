@@ -1,20 +1,17 @@
 import { mdiArrowAll, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../common/util/array_move";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionConfig as LovelaceRawSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { HuiErrorCard } from "../cards/hui-error-card";
-import type { Lovelace, LovelaceCard } from "../types";
+import { HuiSection } from "../sections/hui-section";
+import type { Lovelace } from "../types";
 
 @customElement("hui-section-view")
 export class SectionView extends LitElement implements LovelaceViewElement {
@@ -26,9 +23,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public sections: HuiSection[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -36,58 +31,57 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     this._config = config;
   }
 
-  private _cardConfigKeys = new WeakMap<LovelaceCardConfig, string>();
+  private _sectionConfigKeys = new WeakMap<LovelaceRawSectionConfig, string>();
 
-  private _getKey(cardConfig: LovelaceCardConfig) {
-    if (!this._cardConfigKeys.has(cardConfig)) {
-      this._cardConfigKeys.set(cardConfig, Math.random().toString());
+  private _getKey(sectionConfig: LovelaceRawSectionConfig) {
+    if (!this._sectionConfigKeys.has(sectionConfig)) {
+      this._sectionConfigKeys.set(sectionConfig, Math.random().toString());
     }
-    return this._cardConfigKeys.get(cardConfig)!;
+    return this._sectionConfigKeys.get(sectionConfig)!;
   }
 
   protected render() {
     if (!this.lovelace) return nothing;
 
-    const cardsConfig = this._config?.cards ?? [];
+    const sectionsConfig = this._config?.sections ?? [];
 
     const editMode = this.lovelace.editMode;
 
     return html`
       <ha-sortable
         .disabled=${!editMode}
-        @item-moved=${this._cardMoved}
+        @item-moved=${this._sectionMoved}
         group="section"
         handle-selector=".handle"
-        draggable-selector=".card"
+        draggable-selector=".section"
         .rollback=${false}
       >
         <div class="container ${classMap({ "edit-mode": editMode })}">
           ${repeat(
-            cardsConfig,
-            (cardConfig) => this._getKey(cardConfig),
-            (cardConfig, idx) => {
-              const card = this.cards[idx];
-              (card as any).editMode = editMode;
-              (card as any).inert = editMode && cardConfig.type !== "section";
-              (card as any).itemPath = [idx];
+            sectionsConfig,
+            (sectionConfig) => this._getKey(sectionConfig),
+            (_sectionConfig, idx) => {
+              const section = this.sections[idx];
+              (section as any).editMode = editMode;
+              (section as any).itemPath = [idx];
               return html`
-                <div class="card">
-                  <div class="card-wrapper">${card}</div>
+                <div class="section">
+                  <div class="section-wrapper">${section}</div>
                   ${editMode
                     ? html`
-                        <div class="card-overlay">
-                          <div class="card-actions">
+                        <div class="section-overlay">
+                          <div class="section-actions">
                             <ha-svg-icon
                               class="handle"
                               .path=${mdiArrowAll}
                             ></ha-svg-icon>
                             <ha-icon-button
-                              @click=${this._editCard}
+                              @click=${this._editSection}
                               .index=${idx}
                               .path=${mdiPencil}
                             ></ha-icon-button>
                             <ha-icon-button
-                              @click=${this._deleteCard}
+                              @click=${this._deleteSection}
                               .index=${idx}
                               .path=${mdiDelete}
                             ></ha-icon-button>
@@ -101,7 +95,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
           )}
           ${editMode
             ? html`
-                <button class="add" @click=${this._addCard}>
+                <button class="add" @click=${this._addSection}>
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                 </button>
               `
@@ -111,16 +105,16 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _addCard(): void {
-    const cards = [
-      ...(this._config!.cards ?? []),
-      { type: "section", cards: [] },
+  private _addSection(): void {
+    const sections = [
+      ...(this._config!.sections ?? []),
+      { type: "grid", cards: [] },
     ];
 
     const config = this._config!;
     const newConfig = {
       ...config,
-      cards,
+      sections,
     };
     this.lovelace?.saveConfig({
       ...this.lovelace.config,
@@ -130,40 +124,16 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     });
   }
 
-  private _editCard(ev): void {
-    fireEvent(this, "ll-edit-card", {
-      path: [this.index!, ev.target.index],
-    });
+  private _editSection(_ev): void {
+    // TODO edit section
   }
 
-  private _deleteCard(ev): void {
-    fireEvent(this, "ll-delete-card", {
-      confirm: true,
-      path: [this.index!, ev.target.index],
-    });
+  private _deleteSection(_ev): void {
+    // TODO delete section
   }
 
-  private _cardMoved(ev: CustomEvent) {
-    const cards = nestedArrayMove(
-      deepClone(this._config!.cards),
-      ev.detail.oldIndex,
-      ev.detail.newIndex,
-      ev.detail.oldPath,
-      ev.detail.newPath
-    );
-
-    const config = this._config!;
-    const newConfig = {
-      ...config,
-      cards,
-    };
-
-    this.lovelace?.saveConfig({
-      ...this.lovelace.config,
-      views: this.lovelace.config.views.map((view, i) =>
-        i === this.index ? newConfig : view
-      ),
-    });
+  private _sectionMoved(_ev: CustomEvent) {
+    // TODO move section
   }
 
   static get styles(): CSSResultGroup {
@@ -173,7 +143,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         padding-top: 4px;
       }
 
-      .card {
+      .section {
         position: relative;
       }
 
@@ -199,7 +169,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         }
       }
 
-      .card-overlay {
+      .section-overlay {
         position: absolute;
         top: 0;
         right: 0;
@@ -212,17 +182,17 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         background-color: rgba(var(--rgb-card-background-color), 0.3);
       }
 
-      .card:hover .card-overlay {
+      .section:hover .section-overlay {
         opacity: 1;
         pointer-events: auto;
       }
 
-      .card-actions {
+      .section-actions {
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      .card-actions ha-svg-icon {
+      .section-actions ha-svg-icon {
         padding: 4px;
       }
       .handle {

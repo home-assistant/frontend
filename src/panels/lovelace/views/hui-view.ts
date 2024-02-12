@@ -4,10 +4,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
-import type {
-  LovelaceSectionElement,
-  LovelaceViewElement,
-} from "../../../data/lovelace";
+import type { LovelaceViewElement } from "../../../data/lovelace";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -28,19 +25,17 @@ import {
   createErrorCardConfig,
   createErrorCardElement,
 } from "../create-element/create-element-base";
-import { createSectionElement } from "../create-element/create-section-element";
 import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
-import {
-  createErrorSectionConfig,
-  createErrorSectionElement,
-} from "../sections/hui-error-section";
+import "../sections/hui-section";
+import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
+import { createErrorSectionConfig } from "../sections/hui-error-section";
 
 declare global {
   // for fire event
@@ -70,7 +65,7 @@ export class HUIView extends ReactiveElement {
 
   @state() private _badges: LovelaceBadge[] = [];
 
-  @state() private _sections: LovelaceSectionElement[] = [];
+  @state() private _sections: HuiSection[] = [];
 
   private _layoutElementType?: string;
 
@@ -121,14 +116,10 @@ export class HUIView extends ReactiveElement {
 
   // Public to make demo happy
   public createSectionElement(sectionConfig: LovelaceSectionConfig) {
-    const element = createSectionElement(
-      sectionConfig
-    ) as LovelaceSectionElement;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorSectionElement(createErrorSectionConfig(e.message));
-    }
+    const element = document.createElement("hui-section");
+    element.hass = this.hass;
+    element.lovelace = this.lovelace;
+    element.config = sectionConfig;
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -174,7 +165,7 @@ export class HUIView extends ReactiveElement {
     }
   }
 
-  protected update(changedProperties) {
+  protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
 
     // If no layout element, we're still creating one
@@ -197,6 +188,14 @@ export class HUIView extends ReactiveElement {
           }
         });
 
+        this._sections.forEach((element) => {
+          try {
+            element.hass = this.hass;
+          } catch (e: any) {
+            this._rebuildSection(element, createErrorSectionConfig(e.message));
+          }
+        });
+
         this._layoutElement.hass = this.hass;
 
         const oldHass = changedProperties.get("hass") as
@@ -216,6 +215,14 @@ export class HUIView extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+        this._sections.forEach((element) => {
+          try {
+            element.hass = this.hass;
+            element.lovelace = this.lovelace;
+          } catch (e: any) {
+            this._rebuildSection(element, createErrorSectionConfig(e.message));
+          }
+        });
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
@@ -346,13 +353,9 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    this._sections = config.sections.map((sectionConfig) => {
+    this._sections = config.sections.map((sectionConfig, index) => {
       const element = this.createSectionElement(sectionConfig);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorSectionElement(createErrorSectionConfig(e.message));
-      }
+      element.index = index;
       return element;
     });
   }
@@ -399,25 +402,19 @@ export class HUIView extends ReactiveElement {
   }
 
   private _rebuildSection(
-    cardElToReplace: LovelaceSectionElement,
+    sectionElToReplace: HuiSection,
     config: LovelaceSectionConfig
   ): void {
-    let newSectionEl = this.createSectionElement(config);
-    try {
-      newSectionEl.hass = this.hass;
-    } catch (e: any) {
-      newSectionEl = createErrorSectionElement(
-        createErrorSectionConfig(e.message)
-      );
-    }
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(
+    const newSectionEl = this.createSectionElement(config);
+    newSectionEl.index = sectionElToReplace.index;
+    if (sectionElToReplace.parentElement) {
+      sectionElToReplace.parentElement!.replaceChild(
         newSectionEl,
-        cardElToReplace
+        sectionElToReplace
       );
     }
     this._sections = this._sections!.map((curSectionEl) =>
-      curSectionEl === cardElToReplace ? newSectionEl : curSectionEl
+      curSectionEl === sectionElToReplace ? newSectionEl : curSectionEl
     );
   }
 }

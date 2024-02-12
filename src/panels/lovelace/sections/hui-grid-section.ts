@@ -1,6 +1,7 @@
 import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import { LovelaceSectionElement } from "../../../data/lovelace";
@@ -16,7 +17,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ type: Number }) public index!: number;
 
   @property({ type: Boolean }) public isStrategy = false;
 
@@ -44,7 +45,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const cardsConfig = this._config?.cards ?? [];
 
-    const editMode = true && !this.isStrategy;
+    const editMode = (this.lovelace?.editMode && !this.isStrategy) || false;
 
     return html`
       <h1 class="card-header">Section</h1>
@@ -56,14 +57,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .rollback=${false}
         swap-threshold="0.7"
       >
-        <div class="container">
+        <div class="container ${classMap({ "edit-mode": editMode })}">
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
-            (cardConfig, idx) => {
+            (_cardConfig, idx) => {
               const card = this.cards![idx];
               (card as any).editMode = editMode;
-              (card as any).inert = editMode && cardConfig.type !== "section";
+              (card as any).inert = editMode;
               (card as any).itemPath = [idx];
               const size = card && (card as any).getSize?.();
               return html`
@@ -178,6 +179,13 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           transition: opacity 0.2s ease-in-out;
         }
 
+        .container.edit-mode {
+          padding: 10px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          border: 2px dashed var(--divider-color);
+          min-height: 60px;
+        }
+
         .container:not(.dragging) .card:hover .card-overlay {
           opacity: 1;
           pointer-events: auto;
@@ -197,13 +205,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
           cursor: pointer;
-        }
-
-        :host([edit-mode]) .container {
-          padding: 10px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          border: 2px dashed var(--divider-color);
-          min-height: 60px;
         }
 
         .add {
