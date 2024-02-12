@@ -87,12 +87,13 @@ export class HuiDialogEditCard
     const [view, card] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
-      card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+      params.newCardConfig ??
+      (card !== null ? this._viewConfig.cards![card] : undefined);
     this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
-    if (params.cardConfig) {
+    if (params.newCardConfig) {
       this._dirty = true;
     }
   }
@@ -368,16 +369,13 @@ export class HuiDialogEditCard
       return;
     }
     this._saving = true;
+    const [view, card] = this._params!.path;
     await this._params!.saveConfig(
-      this._params!.path.length === 1
-        ? addCard(
-            this._params!.lovelaceConfig,
-            this._params!.path as [number],
-            this._cardConfig!
-          )
+      card === null
+        ? addCard(this._params!.lovelaceConfig, [view], this._cardConfig!)
         : replaceCard(
             this._params!.lovelaceConfig,
-            this._params!.path as [number, number],
+            [view, card],
             this._cardConfig!
           )
     );
