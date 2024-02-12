@@ -2167,6 +2167,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lrnwebcomponents/simple-tooltip@patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch":
+  version: 8.0.0
+  resolution: "@lrnwebcomponents/simple-tooltip@patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch::version=8.0.0&hash=91f01a"
+  dependencies:
+    lit: "npm:^3.1.0"
+  checksum: 10/25e2ec2e7379004784ede67419da99a57c2aeb5f7c5747069682b0ca4f28a4e4aaec03a6946d17b33b85407b625d9747af7d0e576f2f1172f8b57090f425fbf9
+  languageName: node
+  linkType: hard
+
 "@material/animation@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/animation@npm:14.0.0-canary.53b3cad2f.0"
@@ -9486,7 +9495,7 @@ __metadata:
     "@lit-labs/observers": "npm:2.0.2"
     "@lit-labs/virtualizer": "npm:2.0.12"
     "@lokalise/node-api": "npm:12.1.0"
-    "@lrnwebcomponents/simple-tooltip": "npm:8.0.0"
+    "@lrnwebcomponents/simple-tooltip": "patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
