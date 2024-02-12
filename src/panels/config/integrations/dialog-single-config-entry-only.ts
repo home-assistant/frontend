@@ -3,15 +3,15 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { SingleInstanceOnlyDialogParams } from "./show-add-integration-dialog";
+import { SingleConfigEntryOnlyDialogParams } from "./show-add-integration-dialog";
 
-@customElement("dialog-single-instance-only")
-export class DialogSingleInstanceOnly extends LitElement {
+@customElement("dialog-single-config-entry-only")
+export class DialogSingleConfigEntryOnly extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: SingleInstanceOnlyDialogParams;
+  @state() private _params?: SingleConfigEntryOnlyDialogParams;
 
-  public showDialog(params: SingleInstanceOnlyDialogParams): void {
+  public showDialog(params: SingleConfigEntryOnlyDialogParams): void {
     this._params = params;
   }
 
@@ -36,7 +36,7 @@ export class DialogSingleInstanceOnly extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry",
             {
-              integration_name: this._params.integration.name,
+              integration_name: this._params.name,
             }
           )}
         </p>
@@ -71,6 +71,6 @@ export class DialogSingleInstanceOnly extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-single-instance-only": DialogSingleInstanceOnly;
+    "dialog-single-config-entry-only": DialogSingleConfigEntryOnly;
   }
 }

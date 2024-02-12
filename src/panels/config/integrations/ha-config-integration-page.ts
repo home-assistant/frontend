@@ -37,6 +37,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -242,6 +243,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const entities = this._getEntities(configEntries, this._entities);
 
     const services = !devices.some((device) => device.entry_type !== "service");
+    const single_config_entry_only =
+      this._manifest?.single_config_entry && configEntries.length > 0;
 
     return html`
       <hass-subpage
@@ -504,22 +507,25 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
               </mwc-list>
               <div class="card-actions">
-                ${this._manifest?.single_config_entry &&
-                this.configEntries.length > 0
+                <ha-button
+                  @click=${this._addIntegration}
+                  disabled=${ifDefined(single_config_entry_only)}
+                >
+                  ${this._manifest?.integration_type
+                    ? this.hass.localize(
+                        `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                      )
+                    : this.hass.localize(
+                        `ui.panel.config.integrations.integration_page.add_entry`
+                      )}
+                </ha-button>
+                ${single_config_entry_only
                   ? html`<ha-alert alert-type="info"
                       >${this.hass.localize(
                         `ui.panel.config.integrations.integration_page.single_config_entry_only`
                       )}</ha-alert
                     >`
-                  : html`<ha-button @click=${this._addIntegration}>
-                      ${this._manifest?.integration_type
-                        ? this.hass.localize(
-                            `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
-                          )
-                        : this.hass.localize(
-                            `ui.panel.config.integrations.integration_page.add_entry`
-                          )}
-                    </ha-button>`}
+                  : ``}
               </div>
             </ha-card>
           </div>

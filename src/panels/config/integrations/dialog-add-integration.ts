@@ -52,7 +52,7 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import {
   AddIntegrationDialogParams,
-  showSingleInstanceOnlyDialog,
+  showSingleConfigEntryOnlyDialog,
   showYamlIntegrationDialog,
 } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
@@ -582,7 +582,7 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
-        showSingleInstanceOnlyDialog(this, { integration });
+        showSingleConfigEntryOnlyDialog(this, { name: integration.name });
         return;
       }
     }

@@ -69,7 +69,7 @@ import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import {
   showAddIntegrationDialog,
-  showSingleInstanceOnlyDialog,
+  showSingleConfigEntryOnlyDialog,
 } from "./show-add-integration-dialog";
 import "./ha-disabled-config-entry-card";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -664,7 +664,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
-          showSingleInstanceOnlyDialog(this, { integration });
+          showSingleConfigEntryOnlyDialog(this, { name: integration.name });
           return;
         }
       }

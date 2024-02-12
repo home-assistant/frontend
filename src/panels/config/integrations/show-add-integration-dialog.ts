@@ -1,7 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { IntegrationManifest } from "../../../data/integration";
-import { IntegrationListItem } from "./dialog-add-integration";
-import { Integration } from "../../../data/integrations";
 
 export interface AddIntegrationDialogParams {
   brand?: string;
@@ -13,8 +11,8 @@ export interface YamlIntegrationDialogParams {
   manifest: IntegrationManifest;
 }
 
-export interface SingleInstanceOnlyDialogParams {
-  integration: IntegrationListItem | Integration;
+export interface SingleConfigEntryOnlyDialogParams {
+  name: string;
 }
 
 export const showAddIntegrationDialog = (
@@ -39,13 +37,13 @@ export const showYamlIntegrationDialog = (
   });
 };
 
-export const showSingleInstanceOnlyDialog = (
+export const showSingleConfigEntryOnlyDialog = (
   element: HTMLElement,
-  dialogParams?: SingleInstanceOnlyDialogParams
+  dialogParams?: SingleConfigEntryOnlyDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-single-instance-only",
-    dialogImport: () => import("./dialog-single-instance-only"),
+    dialogTag: "dialog-single-config-entry-only",
+    dialogImport: () => import("./dialog-single-config-entry-only"),
     dialogParams: dialogParams,
   });
 };
