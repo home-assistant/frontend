@@ -64,8 +64,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (_cardConfig, idx) => {
               const card = this.cards![idx];
               (card as any).editMode = editMode;
-              (card as any).inert = editMode;
-              (card as any).itemPath = [idx];
               const size = card && (card as any).getSize?.();
               return html`
                 <div
@@ -75,7 +73,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "--row-size": size?.[1],
                   })}
                 >
-                  <div class="card-wrapper">${card}</div>
+                  <div class="card-wrapper" .inert=${editMode}>${card}</div>
                   ${editMode
                     ? html`
                         <div class="card-overlay">
@@ -156,6 +154,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           position: relative;
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 4);
+          cursor: grab;
         }
         .add {
           grid-row: span var(--row-size, 1);
@@ -164,7 +163,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
         .card-wrapper {
           height: 100%;
-          cursor: grab;
         }
 
         .card-overlay {
