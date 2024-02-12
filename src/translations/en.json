@@ -3870,7 +3870,7 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "single_config_entry": "This integration allows only one configuration"
+            "single_config_entry_only": "This integration allows only one configuration"
           },
           "config_entry": {
             "application_credentials": {
