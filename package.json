@@ -33,7 +33,7 @@
     "@codemirror/legacy-modes": "6.3.3",
     "@codemirror/search": "6.5.6",
     "@codemirror/state": "6.4.0",
-    "@codemirror/view": "6.23.1",
+    "@codemirror/view": "6.24.0",
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "6.12.2",
     "@formatjs/intl-displaynames": "6.6.6",
