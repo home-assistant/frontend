@@ -18,6 +18,7 @@ export interface ConfigEntry {
   supports_options: boolean;
   supports_remove_device: boolean;
   supports_unload: boolean;
+  supports_reconfigure: boolean;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
   disabled_by: "user" | null;

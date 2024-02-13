@@ -26,13 +26,18 @@ const HEADERS = {
   "HA-Frontend-Base": `${location.protocol}//${location.host}`,
 };
 
-export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
+export const createConfigFlow = (
+  hass: HomeAssistant,
+  handler: string,
+  source?: string
+) =>
   hass.callApi<DataEntryFlowStep>(
     "POST",
     "config/config_entries/flow",
     {
       handler,
       show_advanced_options: Boolean(hass.userData?.showAdvanced),
+      source: source,
     },
     HEADERS
   );
