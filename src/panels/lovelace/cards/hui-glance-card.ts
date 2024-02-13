@@ -89,12 +89,12 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       state_color: true,
       ...config,
     };
-    const entities = processConfigEntities<GlanceConfigEntity>(
-      config.entities
-    ).map((entityConf) => ({
-      hold_action: { action: "more-info" } as MoreInfoActionConfig,
-      ...entityConf,
-    }));
+    const entities = processConfigEntities(config.entities).map(
+      (entityConf) => ({
+        hold_action: { action: "more-info" } as MoreInfoActionConfig,
+        ...entityConf,
+      })
+    );
 
     for (const entity of entities) {
       if (
@@ -310,6 +310,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                       <hui-timestamp-display
                         .hass=${this.hass}
                         .ts=${new Date(stateObj.state)}
+                        .format=${entityConf.format}
                         capitalize
                       ></hui-timestamp-display>
                     `
