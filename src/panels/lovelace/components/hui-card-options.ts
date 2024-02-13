@@ -39,17 +39,19 @@ import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
-  LovelaceCardPath,
-  LovelaceContainerPath,
   addCard,
   deleteCard,
   moveCard,
   moveCardToPosition,
-  parseLovelaceCardPath,
   swapCard,
 } from "../editor/config-util";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import { Lovelace, LovelaceCard } from "../types";
+import {
+  LovelaceCardPath,
+  LovelaceContainerPath,
+  parseLovelaceCardPath,
+} from "../editor/lovelace-path";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -79,7 +81,7 @@ export class HuiCardOptions extends LitElement {
     if (!changedProps.has("path") || !this.path) {
       return;
     }
-    const { view: viewIndex } = parseLovelaceCardPath(this.path);
+    const { viewIndex } = parseLovelaceCardPath(this.path);
     this.classList.toggle(
       "panel",
       this.lovelace!.config.views[viewIndex].panel
@@ -87,12 +89,12 @@ export class HuiCardOptions extends LitElement {
   }
 
   private get _currentView() {
-    const { view: viewIndex } = parseLovelaceCardPath(this.path!);
+    const { viewIndex } = parseLovelaceCardPath(this.path!);
     return this.lovelace!.config.views[viewIndex] as LovelaceViewConfig;
   }
 
   protected render(): TemplateResult {
-    const { card: cardIndex } = parseLovelaceCardPath(this.path!);
+    const { cardIndex } = parseLovelaceCardPath(this.path!);
 
     return html`
       <div class="card"><slot></slot></div>
@@ -278,7 +280,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _duplicateCard(): void {
-    const { card: cardIndex } = parseLovelaceCardPath(this.path!);
+    const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = this.path!.slice(0, -1) as LovelaceContainerPath;
     const cardConfig = this._currentView.cards![cardIndex];
     showEditCardDialog(this, {
@@ -299,7 +301,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _copyCard(): void {
-    const { card: cardIndex } = parseLovelaceCardPath(this.path!);
+    const { cardIndex } = parseLovelaceCardPath(this.path!);
     const cardConfig = this._currentView.cards![cardIndex];
     this._clipboard = deepClone(cardConfig);
   }
@@ -307,7 +309,7 @@ export class HuiCardOptions extends LitElement {
   private _decreaseCardPosiion(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
-    const { card: cardIndex } = parseLovelaceCardPath(path);
+    const { cardIndex } = parseLovelaceCardPath(path);
     const containerPath = path.slice(0, -1) as LovelaceContainerPath;
     lovelace.saveConfig(
       swapCard(lovelace.config, path, [...containerPath, cardIndex - 1])
@@ -317,7 +319,7 @@ export class HuiCardOptions extends LitElement {
   private _increaseCardPosition(): void {
     const lovelace = this.lovelace!;
     const path = this.path!;
-    const { card: cardIndex } = parseLovelaceCardPath(path);
+    const { cardIndex } = parseLovelaceCardPath(path);
     const containerPath = path.slice(0, -1) as LovelaceContainerPath;
     lovelace.saveConfig(
       swapCard(lovelace.config, path, [...containerPath, cardIndex + 1])
@@ -327,7 +329,7 @@ export class HuiCardOptions extends LitElement {
   private async _changeCardPosition(): Promise<void> {
     const lovelace = this.lovelace!;
     const path = this.path!;
-    const { card: cardIndex } = parseLovelaceCardPath(path);
+    const { cardIndex } = parseLovelaceCardPath(path);
     const positionString = await showPromptDialog(this, {
       title: this.hass!.localize(
         "ui.panel.lovelace.editor.change_position.title"
@@ -364,7 +366,7 @@ export class HuiCardOptions extends LitElement {
           return;
         }
         try {
-          const { card: cardIndex } = parseLovelaceCardPath(this.path!);
+          const { cardIndex } = parseLovelaceCardPath(this.path!);
           await saveConfig(
             this.hass!,
             urlPath,

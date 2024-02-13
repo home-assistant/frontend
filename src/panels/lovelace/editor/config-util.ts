@@ -5,46 +5,19 @@ import {
   isStrategyView,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-
-export type LovelaceCardPath = [number, number] | [number, number, number];
-export type LovelaceContainerPath = [number] | [number, number];
-
-export const parseLovelaceCardPath = (
-  path: LovelaceCardPath
-): { view: number; section?: number; card: number } => {
-  if (path.length === 2) {
-    return {
-      view: path[0],
-      card: path[1],
-    };
-  }
-  return {
-    view: path[0],
-    section: path[1],
-    card: path[2],
-  };
-};
-
-export const parseLovelaceContainerPath = (
-  path: LovelaceContainerPath
-): { view: number; section?: number } => {
-  if (path.length === 1) {
-    return {
-      view: path[0],
-    };
-  }
-  return {
-    view: path[0],
-    section: path[1],
-  };
-};
+import {
+  LovelaceCardPath,
+  LovelaceContainerPath,
+  parseLovelaceCardPath,
+  parseLovelaceContainerPath,
+} from "./lovelace-path";
 
 export const addCard = (
   config: LovelaceConfig,
   path: LovelaceContainerPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig => {
-  const { view: viewIndex } = parseLovelaceContainerPath(path);
+  const { viewIndex } = parseLovelaceContainerPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -78,7 +51,7 @@ export const addCards = (
   path: LovelaceContainerPath,
   cardConfigs: LovelaceCardConfig[]
 ): LovelaceConfig => {
-  const { view: viewIndex } = parseLovelaceContainerPath(path);
+  const { viewIndex } = parseLovelaceContainerPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -112,7 +85,7 @@ export const replaceCard = (
   path: LovelaceCardPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig => {
-  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
+  const { viewIndex, cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -143,7 +116,7 @@ export const deleteCard = (
   config: LovelaceConfig,
   path: LovelaceCardPath
 ): LovelaceConfig => {
-  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
+  const { viewIndex, cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -175,7 +148,7 @@ export const insertCard = (
   path: LovelaceCardPath,
   cardConfig: LovelaceCardConfig
 ) => {
-  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
+  const { viewIndex, cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -213,8 +186,10 @@ export const swapCard = (
   path1: LovelaceCardPath,
   path2: LovelaceCardPath
 ): LovelaceConfig => {
-  const { view: viewIndex1, card: cardIndex1 } = parseLovelaceCardPath(path1);
-  const { view: viewIndex2, card: cardIndex2 } = parseLovelaceCardPath(path2);
+  const { viewIndex: viewIndex1, cardIndex: cardIndex1 } =
+    parseLovelaceCardPath(path1);
+  const { viewIndex: viewIndex2, cardIndex: cardIndex2 } =
+    parseLovelaceCardPath(path2);
 
   const origView1 = config.views[viewIndex1];
   const origView2 = config.views[viewIndex2];
@@ -258,7 +233,7 @@ export const moveCardToPosition = (
   path: LovelaceCardPath,
   position: number
 ): LovelaceConfig => {
-  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
+  const { viewIndex, cardIndex } = parseLovelaceCardPath(path);
   const view = config.views[viewIndex];
 
   if (isStrategyView(view)) {
@@ -292,9 +267,9 @@ export const moveCard = (
   fromPath: LovelaceCardPath,
   toPath: LovelaceContainerPath
 ): LovelaceConfig => {
-  const { view: fromViewIndex, card: fromCardIndex } =
+  const { viewIndex: fromViewIndex, cardIndex: fromCardIndex } =
     parseLovelaceCardPath(fromPath);
-  const { view: toViewIndex } = parseLovelaceContainerPath(toPath);
+  const { viewIndex: toViewIndex } = parseLovelaceContainerPath(toPath);
 
   if (fromViewIndex === toViewIndex) {
     throw new Error("You cannot move a card to the view it is in.");
