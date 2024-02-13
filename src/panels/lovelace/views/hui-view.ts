@@ -28,22 +28,21 @@ import {
 import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { deleteCard } from "../editor/config-util";
+import { LovelaceCardPath, deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
+import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
-import { createErrorSectionConfig } from "../sections/hui-error-section";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "ll-create-card": undefined;
-    "ll-edit-card": { path: [number, number] };
-    "ll-delete-card": { path: [number, number]; confirm: boolean };
+    "ll-edit-card": { path: LovelaceCardPath };
+    "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;

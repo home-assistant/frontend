@@ -6,12 +6,45 @@ import {
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 
+export type LovelaceCardPath = [number, number] | [number, number, number];
+export type LovelaceContainerPath = [number] | [number, number];
+
+export const parseLovelaceCardPath = (
+  path: LovelaceCardPath
+): { view: number; section?: number; card: number } => {
+  if (path.length === 2) {
+    return {
+      view: path[0],
+      card: path[1],
+    };
+  }
+  return {
+    view: path[0],
+    section: path[1],
+    card: path[2],
+  };
+};
+
+export const parseLovelaceContainerPath = (
+  path: LovelaceContainerPath
+): { view: number; section?: number } => {
+  if (path.length === 1) {
+    return {
+      view: path[0],
+    };
+  }
+  return {
+    view: path[0],
+    section: path[1],
+  };
+};
+
 export const addCard = (
   config: LovelaceConfig,
-  path: [number],
+  path: LovelaceContainerPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig => {
-  const [viewIndex] = path;
+  const { view: viewIndex } = parseLovelaceContainerPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -42,10 +75,10 @@ export const addCard = (
 
 export const addCards = (
   config: LovelaceConfig,
-  path: [number],
+  path: LovelaceContainerPath,
   cardConfigs: LovelaceCardConfig[]
 ): LovelaceConfig => {
-  const [viewIndex] = path;
+  const { view: viewIndex } = parseLovelaceContainerPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -76,10 +109,10 @@ export const addCards = (
 
 export const replaceCard = (
   config: LovelaceConfig,
-  path: [number, number],
+  path: LovelaceCardPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig => {
-  const [viewIndex, cardIndex] = path;
+  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -108,9 +141,9 @@ export const replaceCard = (
 
 export const deleteCard = (
   config: LovelaceConfig,
-  path: [number, number]
+  path: LovelaceCardPath
 ): LovelaceConfig => {
-  const [viewIndex, cardIndex] = path;
+  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -139,10 +172,10 @@ export const deleteCard = (
 
 export const insertCard = (
   config: LovelaceConfig,
-  path: [number, number],
+  path: LovelaceCardPath,
   cardConfig: LovelaceCardConfig
 ) => {
-  const [viewIndex, cardIndex] = path;
+  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
   const views: LovelaceViewConfig[] = [];
 
   config.views.forEach((viewConf, index) => {
@@ -177,54 +210,62 @@ export const insertCard = (
 
 export const swapCard = (
   config: LovelaceConfig,
-  path1: [number, number],
-  path2: [number, number]
+  path1: LovelaceCardPath,
+  path2: LovelaceCardPath
 ): LovelaceConfig => {
-  const origView1 = config.views[path1[0]];
-  const origView2 = config.views[path2[0]];
+  const { view: viewIndex1, card: cardIndex1 } = parseLovelaceCardPath(path1);
+  const { view: viewIndex2, card: cardIndex2 } = parseLovelaceCardPath(path2);
+
+  const origView1 = config.views[viewIndex1];
+  const origView2 = config.views[viewIndex2];
 
   if (isStrategyView(origView1) || isStrategyView(origView2)) {
     throw new Error("You cannot move swap cards in a strategy view.");
   }
 
-  const card1 = origView1.cards![path1[1]];
-  const card2 = origView2.cards![path2[1]];
+  const card1 = origView1.cards![cardIndex1];
+  const card2 = origView2.cards![cardIndex2];
 
   const newView1 = {
     ...origView1,
     cards: origView1.cards!.map((origCard, index) =>
-      index === path1[1] ? card2 : origCard
+      index === cardIndex1 ? card2 : origCard
     ),
   };
 
-  const updatedOrigView2 = path1[0] === path2[0] ? newView1 : origView2;
+  const updatedOrigView2 = viewIndex1 === viewIndex2 ? newView1 : origView2;
   const newView2 = {
     ...updatedOrigView2,
     cards: updatedOrigView2.cards!.map((origCard, index) =>
-      index === path2[1] ? card1 : origCard
+      index === cardIndex2 ? card1 : origCard
     ),
   };
 
   return {
     ...config,
     views: config.views.map((origView, index) =>
-      index === path2[0] ? newView2 : index === path1[0] ? newView1 : origView
+      index === viewIndex2
+        ? newView2
+        : index === viewIndex1
+          ? newView1
+          : origView
     ),
   };
 };
 
 export const moveCardToPosition = (
   config: LovelaceConfig,
-  path: [number, number],
+  path: LovelaceCardPath,
   position: number
 ): LovelaceConfig => {
-  const view = config.views[path[0]];
+  const { view: viewIndex, card: cardIndex } = parseLovelaceCardPath(path);
+  const view = config.views[viewIndex];
 
   if (isStrategyView(view)) {
     throw new Error("You cannot move a card in a strategy view.");
   }
 
-  const oldIndex = path[1];
+  const oldIndex = cardIndex;
   const newIndex = Math.max(Math.min(position - 1, view.cards!.length - 1), 0);
 
   const newCards = [...view.cards!];
@@ -241,21 +282,25 @@ export const moveCardToPosition = (
   return {
     ...config,
     views: config.views.map((origView, index) =>
-      index === path[0] ? newView : origView
+      index === viewIndex ? newView : origView
     ),
   };
 };
 
 export const moveCard = (
   config: LovelaceConfig,
-  fromPath: [number, number],
-  toPath: [number]
+  fromPath: LovelaceCardPath,
+  toPath: LovelaceContainerPath
 ): LovelaceConfig => {
-  if (fromPath[0] === toPath[0]) {
+  const { view: fromViewIndex, card: fromCardIndex } =
+    parseLovelaceCardPath(fromPath);
+  const { view: toViewIndex } = parseLovelaceContainerPath(toPath);
+
+  if (fromViewIndex === toViewIndex) {
     throw new Error("You cannot move a card to the view it is in.");
   }
-  const fromView = config.views[fromPath[0]];
-  const toView = config.views[toPath[0]];
+  const fromView = config.views[fromViewIndex];
+  const toView = config.views[toViewIndex];
 
   if (isStrategyView(fromView)) {
     throw new Error("You cannot move a card from a strategy view.");
@@ -265,12 +310,12 @@ export const moveCard = (
     throw new Error("You cannot move a card to a strategy view.");
   }
 
-  const card = fromView.cards![fromPath[1]];
+  const card = fromView.cards![fromCardIndex];
 
   const newView1 = {
     ...fromView,
     cards: (fromView.cards || []).filter(
-      (_origConf, ind) => ind !== fromPath[1]
+      (_origConf, ind) => ind !== fromCardIndex
     ),
   };
 
@@ -284,9 +329,9 @@ export const moveCard = (
   return {
     ...config,
     views: config.views.map((origView, index) =>
-      index === toPath[0]
+      index === toViewIndex
         ? newView2
-        : index === fromPath[0]
+        : index === fromViewIndex
           ? newView1
           : origView
     ),

@@ -16,12 +16,12 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { computeCards } from "../../common/generate-lovelace-config";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
 import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
-import { computeCards } from "../../common/generate-lovelace-config";
 
 declare global {
   interface HASSDomEvents {
@@ -214,7 +214,7 @@ export class HuiCreateDialogCard
     showEditCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
-      path: [this._params!.path[0], null],
+      path: [...this._params!.path, null],
       newCardConfig: config,
     });
 
