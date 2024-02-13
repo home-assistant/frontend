@@ -120,6 +120,7 @@ export class HaSortable extends LitElement {
       swapThreshold: 1,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
+      onStart: this._handleStart,
     };
 
     if (this.draggableSelector) {
@@ -174,8 +175,11 @@ export class HaSortable extends LitElement {
     });
   };
 
-  private _handleChoose = (evt: SortableEvent) => {
+  private _handleStart = () => {
     this.children[0]?.classList.add("dragging");
+  };
+
+  private _handleChoose = (evt: SortableEvent) => {
     if (!this.rollback) return;
     (evt.item as any).placeholder = document.createComment("sort-placeholder");
     evt.item.after((evt.item as any).placeholder);
