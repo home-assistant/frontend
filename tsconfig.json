@@ -42,13 +42,13 @@
           // LitElement
           "no-property-visibility-mismatch": "error",
           // CSS
-          "no-invalid-css": "off", // warning does not work
+          "no-invalid-css": "off" // warning does not work
         },
         "globalTags": ["google-cast-launcher"],
         "customHtmlData": [
-          "./node_modules/@lrnwebcomponents/simple-tooltip/custom-elements.json",
-        ],
-      },
-    ],
-  },
+          "./node_modules/@lrnwebcomponents/simple-tooltip/custom-elements.json"
+        ]
+      }
+    ]
+  }
 }
