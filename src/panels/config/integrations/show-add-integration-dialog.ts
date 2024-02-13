@@ -12,7 +12,7 @@ export interface YamlIntegrationDialogParams {
 }
 
 export interface SingleConfigEntryOnlyDialogParams {
-  name: string;
+  name?: string;
 }
 
 export const showAddIntegrationDialog = (
