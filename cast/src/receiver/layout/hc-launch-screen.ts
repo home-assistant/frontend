@@ -43,11 +43,6 @@ class HcLaunchScreen extends LitElement {
         max-width: 80%;
         object-fit: cover;
       }
-      .status {
-        padding-right: 54px;
-        padding-inline-end: 54px;
-        padding-inline-start: initial;
-      }
     `;
   }
 }
