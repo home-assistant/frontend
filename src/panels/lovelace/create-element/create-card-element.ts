@@ -6,7 +6,6 @@ import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-grid-card";
-import "../cards/hui-section-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
