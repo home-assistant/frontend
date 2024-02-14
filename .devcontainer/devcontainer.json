@@ -5,6 +5,7 @@
     "context": ".."
   },
   "appPort": "8124:8123",
+  "postCreateCommand": "sudo apt update && sudo apt upgrade -y && sudo apt install -y libpcap-dev",
   "postStartCommand": "script/bootstrap",
   "containerEnv": {
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
