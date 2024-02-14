@@ -155,7 +155,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       case "conditional":
         return (
           element.title ??
-          `${(element as ConditionalElementConfig).elements.length.toString()} ${this.hass?.localize("ui.panel.lovelace.editor.card.picture-elements.elements")}`
+          `${((element as ConditionalElementConfig).elements || []).length.toString()} ${this.hass?.localize("ui.panel.lovelace.editor.card.picture-elements.elements")}`
         );
     }
     return "";
