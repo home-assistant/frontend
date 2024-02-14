@@ -14,6 +14,7 @@ export interface BlueprintMetaData {
   domain: BlueprintDomain;
   name: string;
   input?: Record<string, BlueprintInput | null>;
+  input_sections?: Record<string, BlueprintInputSection>;
   description?: string;
   source_url?: string;
   author?: string;
@@ -24,6 +25,13 @@ export interface BlueprintInput {
   description?: string;
   selector?: Selector;
   default?: any;
+  section?: string;
+}
+
+export interface BlueprintInputSection {
+  name: string;
+  icon?: string;
+  default_collapsed?: boolean;
 }
 
 export interface BlueprintImportResult {
