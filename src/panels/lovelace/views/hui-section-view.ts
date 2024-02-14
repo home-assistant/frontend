@@ -10,7 +10,7 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import { LovelaceSectionConfig as LovelaceRawSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { addSection, deleteSection } from "../editor/config-util";
+import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
@@ -128,8 +128,16 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _sectionMoved(_ev: CustomEvent) {
-    // TODO move section
+  private _sectionMoved(ev: CustomEvent) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+
+    const newConfig = moveSection(
+      this.lovelace!.config,
+      [this.index!, oldIndex],
+      [this.index!, newIndex]
+    );
+    this.lovelace!.saveConfig(newConfig);
   }
 
   static get styles(): CSSResultGroup {

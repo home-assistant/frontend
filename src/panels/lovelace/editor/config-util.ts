@@ -260,3 +260,44 @@ export const deleteSection = (
   });
   return newConfig;
 };
+
+export const insertSection = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionIndex: number,
+  sectionConfig: LovelaceSectionRawConfig
+): LovelaceConfig => {
+  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  if (isStrategyView(view)) {
+    throw new Error("Inserting sections in a strategy is not supported.");
+  }
+  const sections = view.sections
+    ? [
+        ...view.sections.slice(0, sectionIndex),
+        sectionConfig,
+        ...view.sections.slice(sectionIndex),
+      ]
+    : [sectionConfig];
+
+  const newConfig = updateLovelaceContainer(config, [viewIndex], {
+    ...view,
+    sections,
+  });
+  return newConfig;
+};
+
+export const moveSection = (
+  config: LovelaceConfig,
+  fromPath: [number, number],
+  toPath: [number, number]
+): LovelaceConfig => {
+  const section = findLovelaceContainer(
+    config,
+    fromPath
+  ) as LovelaceSectionRawConfig;
+
+  let newConfig = deleteSection(config, fromPath[0], fromPath[1]);
+  newConfig = insertSection(newConfig, toPath[0], toPath[1], section);
+
+  return newConfig;
+};
