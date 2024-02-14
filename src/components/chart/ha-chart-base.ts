@@ -211,9 +211,9 @@ export class HaChartBase extends LitElement {
             height: `${
               this.height ?? this._chartHeight ?? this.clientWidth / 2
             }px`,
-            "padding-left": `${this._paddingYAxisInternal}`,
+            "padding-left": `${this._paddingYAxisInternal}px`,
             "padding-right": 0,
-            "padding-inline-start": `${this._paddingYAxisInternal}`,
+            "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
         >

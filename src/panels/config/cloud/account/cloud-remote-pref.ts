@@ -13,6 +13,7 @@ import {
   CloudStatusLoggedIn,
   connectCloudRemote,
   disconnectCloudRemote,
+  updateCloudPref,
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -29,7 +30,8 @@ export class CloudRemotePref extends LitElement {
       return nothing;
     }
 
-    const { remote_enabled } = this.cloudStatus.prefs;
+    const { remote_enabled, remote_allow_remote_enable } =
+      this.cloudStatus.prefs;
 
     const {
       remote_connected,
@@ -126,6 +128,12 @@ export class CloudRemotePref extends LitElement {
             .path=${mdiContentCopy}
             @click=${this._copyURL}
           ></ha-svg-icon>
+          <ha-formfield .label=${"Allow external activation"}>
+            <ha-switch
+              .checked=${remote_allow_remote_enable}
+              @change=${this._toggleAllowRemoteEnabledChanged}
+            ></ha-switch>
+          </ha-formfield>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._openCertInfo}>
@@ -153,6 +161,20 @@ export class CloudRemotePref extends LitElement {
       } else {
         await disconnectCloudRemote(this.hass);
       }
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(err.message);
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _toggleAllowRemoteEnabledChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+
+    try {
+      await updateCloudPref(this.hass, {
+        remote_allow_remote_enable: toggle.checked,
+      });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
       alert(err.message);
@@ -215,6 +237,9 @@ export class CloudRemotePref extends LitElement {
         --mdc-icon-size: 18px;
         color: var(--secondary-text-color);
         cursor: pointer;
+      }
+      ha-formfield {
+        margin-top: 8px;
       }
     `;
   }
