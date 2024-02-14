@@ -1289,6 +1289,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
       source: "reconfigure",
+      entryId: configEntry.entry_id,
     });
   }
 
