@@ -37,7 +37,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -509,7 +508,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="card-actions">
                 <ha-button
                   @click=${this._addIntegration}
-                  disabled=${ifDefined(single_config_entry_only)}
+                  .disabled=${single_config_entry_only}
                 >
                   ${this._manifest?.integration_type
                     ? this.hass.localize(
@@ -525,7 +524,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         `ui.panel.config.integrations.integration_page.single_config_entry_only`
                       )}</ha-alert
                     >`
-                  : ``}
+                  : nothing}
               </div>
             </ha-card>
           </div>

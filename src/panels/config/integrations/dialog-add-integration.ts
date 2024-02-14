@@ -52,7 +52,6 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import {
   AddIntegrationDialogParams,
-  showSingleConfigEntryOnlyDialog,
   showYamlIntegrationDialog,
 } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
@@ -582,7 +581,17 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
-        showSingleConfigEntryOnlyDialog(this, { name: integration.name });
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry",
+            {
+              integration_name: integration.name,
+            }
+          ),
+        });
         return;
       }
     }

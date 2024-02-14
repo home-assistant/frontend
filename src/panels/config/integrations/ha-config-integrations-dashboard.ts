@@ -67,10 +67,7 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
-import {
-  showAddIntegrationDialog,
-  showSingleConfigEntryOnlyDialog,
-} from "./show-add-integration-dialog";
+import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import "./ha-disabled-config-entry-card";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 
@@ -664,7 +661,17 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
-          showSingleConfigEntryOnlyDialog(this, { name: integration.name });
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry",
+              {
+                integration_name: integration.name,
+              }
+            ),
+          });
           return;
         }
       }
