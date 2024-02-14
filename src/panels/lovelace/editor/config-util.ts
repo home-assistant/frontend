@@ -1,15 +1,21 @@
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
-import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import {
   LovelaceCardPath,
   LovelaceContainerPath,
   findLovelaceCards,
+  findLovelaceContainer,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
   parseLovelaceContainerPath,
   updateLovelaceCards,
+  updateLovelaceContainer,
 } from "./lovelace-path";
 
 export const addCard = (
@@ -129,8 +135,8 @@ export const moveCard = (
   const cards = findLovelaceCards(config, fromContainerPath);
   const card = cards![fromCardIndex];
 
-  const configWithNewCard = addCard(config, toPath, card);
-  const newConfig = deleteCard(configWithNewCard, fromPath);
+  let newConfig = addCard(config, toPath, card);
+  newConfig = deleteCard(newConfig, fromPath);
 
   return newConfig;
 };
@@ -198,3 +204,43 @@ export const deleteView = (
   ...config,
   views: config.views.filter((_origView, index) => index !== viewIndex),
 });
+
+export const addSection = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionConfig: LovelaceSectionRawConfig
+): LovelaceConfig => {
+  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  if (isStrategyView(view)) {
+    throw new Error("Deleting sections in a strategy is not supported.");
+  }
+  const sections = view.sections
+    ? [...view.sections, sectionConfig]
+    : [sectionConfig];
+
+  const newConfig = updateLovelaceContainer(config, [viewIndex], {
+    ...view,
+    sections,
+  });
+  return newConfig;
+};
+
+export const deleteSection = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionIndex: number
+): LovelaceConfig => {
+  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  if (isStrategyView(view)) {
+    throw new Error("Deleting sections in a strategy is not supported.");
+  }
+  const sections = view.sections?.filter(
+    (_origSection, index) => index !== sectionIndex
+  );
+
+  const newConfig = updateLovelaceContainer(config, [viewIndex], {
+    ...view,
+    sections,
+  });
+  return newConfig;
+};

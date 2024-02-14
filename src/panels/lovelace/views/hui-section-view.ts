@@ -10,6 +10,7 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import { LovelaceSectionConfig as LovelaceRawSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import { addSection, deleteSection } from "../editor/config-util";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
@@ -106,30 +107,25 @@ export class SectionView extends LitElement implements LovelaceViewElement {
   }
 
   private _addSection(): void {
-    const sections = [
-      ...(this._config!.sections ?? []),
-      { type: "grid", cards: [] },
-    ];
-
-    const config = this._config!;
-    const newConfig = {
-      ...config,
-      sections,
-    };
-    this.lovelace?.saveConfig({
-      ...this.lovelace.config,
-      views: this.lovelace.config.views.map((view, i) =>
-        i === this.index ? newConfig : view
-      ),
+    const newConfig = addSection(this.lovelace!.config, this.index!, {
+      type: "grid",
+      cards: [],
     });
+    this.lovelace!.saveConfig(newConfig);
   }
 
   private _editSection(_ev): void {
     // TODO edit section
   }
 
-  private _deleteSection(_ev): void {
-    // TODO delete section
+  private _deleteSection(ev): void {
+    const sectionIndex = ev.currentTarget.index;
+    const newConfig = deleteSection(
+      this.lovelace!.config,
+      this.index!,
+      sectionIndex
+    );
+    this.lovelace!.saveConfig(newConfig);
   }
 
   private _sectionMoved(_ev: CustomEvent) {
