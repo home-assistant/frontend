@@ -34,6 +34,7 @@ export interface LovelaceViewElement extends HTMLElement {
 export interface LovelaceSectionElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
+  viewIndex?: number;
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   isStrategy: boolean;

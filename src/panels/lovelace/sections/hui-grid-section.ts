@@ -1,9 +1,11 @@
+import { ActionDetail } from "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -18,6 +20,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ type: Number }) public index!: number;
+
+  @property({ type: Number }) public viewIndex!: number;
 
   @property({ type: Boolean }) public isStrategy = false;
 
@@ -48,7 +52,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     const editMode = (this.lovelace?.editMode && !this.isStrategy) || false;
 
     return html`
-      <h1 class="card-header">Section</h1>
+      <h2 class="card-header">${this._config?.title || "Unnamed section"}</h2>
       <ha-sortable
         .disabled=${!editMode}
         group="card"
@@ -81,6 +85,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                             <ha-button-menu
                               corner="BOTTOM_END"
                               menuCorner="END"
+                              .path=${[this.viewIndex, this.index, idx]}
+                              @action=${this._handleAction}
                             >
                               <ha-icon-button
                                 slot="trigger"
@@ -113,7 +119,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           )}
           ${editMode
             ? html`
-                <button class="add">
+                <button class="add" @click=${this._addCard}>
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                 </button>
               `
@@ -121,6 +127,23 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _addCard() {
+    fireEvent(this, "ll-create-card");
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    const path = (ev.currentTarget as any).path;
+
+    switch (ev.detail.index) {
+      case 0:
+        fireEvent(this, "ll-edit-card", { path });
+        break;
+      case 1:
+        fireEvent(this, "ll-delete-card", { path, confirm: true });
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -20,6 +20,7 @@ import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dia
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
+import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceCard } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
@@ -33,6 +34,8 @@ export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   @property({ type: Number }) public index!: number;
+
+  @property({ type: Number }) public viewIndex!: number;
 
   @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
@@ -151,6 +154,7 @@ export class HuiSection extends ReactiveElement {
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.lovelace = this.lovelace;
     this._layoutElement!.index = this.index;
+    this._layoutElement!.viewIndex = this.viewIndex;
     this._layoutElement!.cards = this._cards;
 
     if (addLayoutElement) {
@@ -166,21 +170,26 @@ export class HuiSection extends ReactiveElement {
       config
     ) as LovelaceSectionElement;
     this._layoutElementType = config.type;
-    this._layoutElement.addEventListener("ll-create-card", () => {
+    this._layoutElement.addEventListener("ll-create-card", (ev) => {
+      ev.stopPropagation();
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
-        path: [this.index],
+        path: [this.viewIndex, this.index],
       });
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
+      ev.stopPropagation();
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
-        path: ev.detail.path,
+        path: [this.viewIndex, this.index],
+        cardIndex,
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
+      ev.stopPropagation();
       if (ev.detail.confirm) {
         confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
       } else {

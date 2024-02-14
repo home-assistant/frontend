@@ -1,7 +1,13 @@
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  LovelaceSectionRawConfig,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
-import { isStrategyView } from "../../../data/lovelace/config/view";
+import {
+  LovelaceViewRawConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 
 export type LovelaceCardPath = [number, number] | [number, number, number];
 export type LovelaceContainerPath = [number] | [number, number];
@@ -40,6 +46,32 @@ export const getLovelaceContainerPath = (
   path: LovelaceCardPath
 ): LovelaceContainerPath => path.slice(0, -1) as LovelaceContainerPath;
 
+export const findLovelaceContainer = (
+  config: LovelaceConfig,
+  path: LovelaceContainerPath
+): LovelaceViewRawConfig | LovelaceSectionRawConfig => {
+  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
+
+  const view = config.views[viewIndex];
+
+  if (!view) {
+    throw new Error("View does not exist");
+  }
+  if (sectionIndex === undefined) {
+    return view;
+  }
+  if (isStrategyView(view)) {
+    throw new Error("Can not find section in a strategy view");
+  }
+
+  const section = view.sections?.[sectionIndex];
+
+  if (!section) {
+    throw new Error("Section does not exist");
+  }
+  return section;
+};
+
 export const findLovelaceCards = (
   config: LovelaceConfig,
   path: LovelaceContainerPath
@@ -69,8 +101,52 @@ export const findLovelaceCards = (
   return section.cards;
 };
 
-export const updateLovelaceCards = <T extends LovelaceConfig = LovelaceConfig>(
-  config: T,
+export const updateLovelaceContainer = (
+  config: LovelaceConfig,
+  path: LovelaceContainerPath,
+  containerConfig: LovelaceViewRawConfig | LovelaceSectionRawConfig
+): LovelaceConfig => {
+  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
+
+  let updated = false;
+  const newViews = config.views.map((view, vIndex) => {
+    if (vIndex !== viewIndex) return view;
+
+    if (sectionIndex === undefined) {
+      updated = true;
+      return containerConfig;
+    }
+
+    if (isStrategyView(view)) {
+      throw new Error("Can not update section in a strategy view");
+    }
+
+    if (view.sections === undefined) {
+      throw new Error("Section does not exist");
+    }
+
+    const newSections = view.sections.map((section, sIndex) => {
+      if (sIndex !== sectionIndex) return section;
+      updated = true;
+      return containerConfig;
+    });
+    return {
+      ...view,
+      sections: newSections,
+    };
+  });
+
+  if (!updated) {
+    throw new Error("Can not update cards in a non-existing view/section");
+  }
+  return {
+    ...config,
+    views: newViews,
+  };
+};
+
+export const updateLovelaceCards = (
+  config: LovelaceConfig,
   path: LovelaceContainerPath,
   cards: LovelaceCardConfig[]
 ): LovelaceConfig => {

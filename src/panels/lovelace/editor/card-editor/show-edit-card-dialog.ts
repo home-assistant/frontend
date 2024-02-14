@@ -1,17 +1,20 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceCardPath } from "../config-util";
+import { LovelaceContainerPath } from "../lovelace-path";
 
-type PartialLovelaceCardPath = [number, null] | [number, number, null];
-
-export interface EditCardDialogParams {
+export type EditCardDialogParams = {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
-  path: LovelaceCardPath | PartialLovelaceCardPath;
-  // If specified, the card will be replaced with the new card.
-  newCardConfig?: LovelaceCardConfig;
-}
+  path: LovelaceContainerPath;
+} & (
+  | {
+      cardIndex: number;
+    }
+  | {
+      cardConfig: LovelaceCardConfig;
+    }
+);
 
 export const importEditCardDialog = () => import("./hui-dialog-edit-card");
 

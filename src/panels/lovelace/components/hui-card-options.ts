@@ -284,8 +284,8 @@ export class HuiCardOptions extends LitElement {
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
-      path: [...containerPath, null],
-      newCardConfig: cardConfig,
+      path: containerPath,
+      cardConfig,
     });
   }
 

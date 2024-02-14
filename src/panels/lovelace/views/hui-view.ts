@@ -28,8 +28,12 @@ import {
 import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { LovelaceCardPath, deleteCard } from "../editor/config-util";
+import { deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
+import {
+  LovelaceCardPath,
+  parseLovelaceCardPath,
+} from "../editor/lovelace-path";
 import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
@@ -120,6 +124,7 @@ export class HUIView extends ReactiveElement {
     element.hass = this.hass;
     element.lovelace = this.lovelace;
     element.config = sectionConfig;
+    element.viewIndex = this.index;
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -294,10 +299,12 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
-        path: ev.detail.path,
+        path: [this.index],
+        cardIndex,
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
