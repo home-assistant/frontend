@@ -148,8 +148,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   public getSize(): [number, number] {
-    if (this._config?.show_icon && this._config?.show_name) {
-      return [1, 2];
+    if (
+      (this._config?.show_icon && this._config?.show_name) ||
+      this._config?.show_state
+    ) {
+      return [2, 2];
     }
     return [1, 1];
   }
