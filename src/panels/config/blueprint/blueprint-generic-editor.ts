@@ -139,6 +139,9 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         <ha-markdown .content=${title}></ha-markdown>
       </div>
       <div class="content">
+        ${section?.description
+          ? html`<ha-markdown .content=${section.description}></ha-markdown>`
+          : nothing}
         ${blueprint?.metadata?.input &&
         Object.keys(blueprint?.metadata?.input).length
           ? Object.entries(blueprint?.metadata?.input).map(([key, value]) => {
