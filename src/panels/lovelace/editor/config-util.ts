@@ -114,7 +114,7 @@ export const moveCardToIndex = (
   return newConfig;
 };
 
-export const moveCard = (
+export const moveCardToContainer = (
   config: LovelaceConfig,
   fromPath: LovelaceCardPath,
   toPath: LovelaceContainerPath
@@ -137,6 +137,22 @@ export const moveCard = (
 
   let newConfig = addCard(config, toPath, card);
   newConfig = deleteCard(newConfig, fromPath);
+
+  return newConfig;
+};
+
+export const moveCard = (
+  config: LovelaceConfig,
+  fromPath: LovelaceCardPath,
+  toPath: LovelaceCardPath
+): LovelaceConfig => {
+  const { cardIndex: fromCardIndex } = parseLovelaceCardPath(fromPath);
+  const fromContainerPath = getLovelaceContainerPath(fromPath);
+  const cards = findLovelaceCards(config, fromContainerPath);
+  const card = cards![fromCardIndex];
+
+  let newConfig = deleteCard(config, fromPath);
+  newConfig = insertCard(newConfig, toPath, card);
 
   return newConfig;
 };

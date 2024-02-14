@@ -13,6 +13,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import type { Lovelace, LovelaceCard } from "../types";
+import { moveCard } from "../editor/config-util";
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -55,9 +56,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       <h2 class="card-header">${this._config?.title || "Unnamed section"}</h2>
       <ha-sortable
         .disabled=${!editMode}
+        @item-moved=${this._cardMoved}
         group="card"
         draggable-selector=".card"
-        .path=${[this.index, "cards"]}
+        .path=${[this.viewIndex, this.index]}
         .rollback=${false}
         swap-threshold="0.7"
       >
@@ -127,6 +129,17 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _cardMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const newConfig = moveCard(
+      this.lovelace!.config,
+      [...oldPath, oldIndex] as [number, number, number],
+      [...newPath, newIndex] as [number, number, number]
+    );
+    this.lovelace!.saveConfig(newConfig);
   }
 
   private _addCard() {

@@ -40,7 +40,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import {
   addCard,
   deleteCard,
-  moveCard,
+  moveCardToContainer,
   moveCardToIndex,
 } from "../editor/config-util";
 import {
@@ -353,7 +353,7 @@ export class HuiCardOptions extends LitElement {
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(
-            moveCard(this.lovelace!.config, this.path!, [viewIndex])
+            moveCardToContainer(this.lovelace!.config, this.path!, [viewIndex])
           );
           showSaveSuccessToast(this, this.hass!);
           return;
