@@ -46,14 +46,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   }
 
   render() {
-    if (!this.cards) return nothing;
+    if (!this.cards || !this._config) return nothing;
 
     const cardsConfig = this._config?.cards ?? [];
 
     const editMode = (this.lovelace?.editMode && !this.isStrategy) || false;
 
     return html`
-      <h2 class="card-header">${this._config?.title || "Unnamed section"}</h2>
+      <h2 class="card-header">${this._config.title ?? "Unnamed section"}</h2>
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
@@ -182,6 +182,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           margin-block-end: 0px;
           letter-spacing: -0.012em;
           line-height: 32px;
+          min-height: 32px;
           display: block;
           padding: 24px 16px 16px;
         }

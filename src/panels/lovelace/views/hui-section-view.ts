@@ -13,6 +13,11 @@ import type { HomeAssistant } from "../../../types";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  findLovelaceContainer,
+  updateLovelaceContainer,
+} from "../editor/lovelace-path";
 
 @customElement("hui-section-view")
 export class SectionView extends LitElement implements LovelaceViewElement {
@@ -114,8 +119,34 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _editSection(_ev): void {
-    // TODO edit section
+  private async _editSection(ev) {
+    const index = ev.currentTarget.index;
+
+    const path = [this.index!, index] as [number, number];
+
+    const section = findLovelaceContainer(
+      this.lovelace!.config,
+      path
+    ) as LovelaceRawSectionConfig;
+
+    const title = await showPromptDialog(this, {
+      title: "Edit section title",
+      inputLabel: "Title",
+      inputType: "string",
+      defaultValue: section.title,
+      confirmText: "Update",
+    });
+
+    if (title === null) {
+      return;
+    }
+
+    const newConfig = updateLovelaceContainer(this.lovelace!.config, path, {
+      ...section,
+      title: title || undefined,
+    });
+
+    this.lovelace!.saveConfig(newConfig);
   }
 
   private _deleteSection(ev): void {
@@ -209,6 +240,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         border: 2px dashed var(--primary-color);
         min-height: 60px;
         order: 1;
+        max-height: 200px;
       }
     `;
   }
