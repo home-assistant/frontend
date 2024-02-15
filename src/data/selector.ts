@@ -41,6 +41,7 @@ export type Selector =
   | NumberSelector
   | ObjectSelector
   | AssistPipelineSelector
+  | QRCodeSelector
   | SelectSelector
   | SelectorSelector
   | StateSelector
@@ -338,6 +339,15 @@ export interface StateSelector {
 export interface BackupLocationSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   backup_location: {} | null;
+}
+
+export interface QRCodeSelector {
+  qr_code: {
+    data: string;
+    scale?: number;
+    error_correction_level?: "low" | "medium" | "quartile" | "high";
+    center_image?: string;
+  } | null;
 }
 
 export interface StringSelector {

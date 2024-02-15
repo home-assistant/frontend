@@ -3,17 +3,10 @@ import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield
 import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
 import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
-import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textarea")
 export class HaTextArea extends TextAreaBase {
   @property({ type: Boolean, reflect: true }) autogrow = false;
-
-  firstUpdated() {
-    super.firstUpdated();
-
-    this.setAttribute("dir", mainWindow.document.dir);
-  }
 
   updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -54,9 +47,10 @@ export class HaTextArea extends TextAreaBase {
         margin-top: 16px;
         margin-bottom: 16px;
       }
-      :host([dir="rtl"]) .mdc-floating-label {
-        right: 16px;
-        left: initial;
+      .mdc-floating-label {
+        inset-inline-start: 16px !important;
+        inset-inline-end: initial !important;
+        transform-origin: var(--float-start) top;
       }
     `,
   ];

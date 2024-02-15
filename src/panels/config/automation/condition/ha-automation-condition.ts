@@ -117,10 +117,12 @@ export default class HaAutomationCondition extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._showReorder}
+        draggable-selector="ha-automation-condition-row"
+        .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._conditionMoved}
         group="conditions"
         .path=${this.path}
+        invert-swap
       >
         <div class="conditions">
           ${repeat(
@@ -141,7 +143,7 @@ export default class HaAutomationCondition extends LitElement {
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
               >
-                ${this._showReorder
+                ${this._showReorder && !this.disabled
                   ? html`
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -151,29 +153,29 @@ export default class HaAutomationCondition extends LitElement {
               </ha-automation-condition-row>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add"
+              )}
+              @click=${this._addConditionDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add_building_block"
+              )}
+              @click=${this._addConditionBuildingBlockDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <div class="buttons">
-        <ha-button
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add"
-          )}
-          @click=${this._addConditionDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        <ha-button
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add_building_block"
-          )}
-          @click=${this._addConditionBuildingBlockDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
     `;
   }
 
@@ -225,12 +227,14 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _moveUp(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index + 1;
     this._move(index, newIndex);
@@ -291,22 +295,32 @@ export default class HaAutomationCondition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .conditions {
+        padding: 16px;
+        margin: -16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .sortable-ghost {
+        background: none;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+      .sortable-drag {
+        background: none;
+      }
       ha-automation-condition-row {
         display: block;
-        margin-bottom: 16px;
         scroll-margin-top: 48px;
+      }
+      .buttons {
+        order: 1;
       }
       ha-svg-icon {
         height: 20px;
       }
-      ha-alert {
-        display: block;
-        margin-bottom: 16px;
-        border-radius: var(--ha-card-border-radius, 12px);
-        overflow: hidden;
-      }
       .handle {
-        padding: 12px 4px;
+        padding: 12px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }
