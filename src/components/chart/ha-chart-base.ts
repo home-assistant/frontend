@@ -2,7 +2,6 @@ import type {
   Chart,
   ChartType,
   ChartData,
-  ChartDataset,
   ChartOptions,
   TooltipModel,
 } from "chart.js";
@@ -36,6 +35,11 @@ interface Tooltip
   left: string;
 }
 
+export interface ChartDatasetExtra {
+  show_legend?: boolean;
+  legend_label?: string;
+}
+
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
   public chart?: Chart;
@@ -46,6 +50,8 @@ export class HaChartBase extends LitElement {
   public chartType: ChartType = "line";
 
   @property({ attribute: false }) public data: ChartData = { datasets: [] };
+
+  @property({ attribute: false }) public extraData?: ChartDatasetExtra[];
 
   @property({ attribute: false }) public options?: ChartOptions;
 
@@ -213,8 +219,7 @@ export class HaChartBase extends LitElement {
             <ul>
               ${this._datasetOrder.map((index) => {
                 const dataset = this.data.datasets[index];
-                return this.chartType === "bar" &&
-                  (dataset as ChartDataset<"bar">).pointStyle === false
+                return this.extraData?.[index]?.show_legend === false
                   ? nothing
                   : html`<li
                       .datasetIndex=${index}
@@ -222,7 +227,8 @@ export class HaChartBase extends LitElement {
                       class=${classMap({
                         hidden: this._hiddenDatasets.has(index),
                       })}
-                      .title=${dataset.label}
+                      .title=${this.extraData?.[index]?.legend_label ??
+                      dataset.label}
                     >
                       <div
                         class="bullet"
@@ -231,7 +237,10 @@ export class HaChartBase extends LitElement {
                           borderColor: dataset.borderColor as string,
                         })}
                       ></div>
-                      <div class="label">${dataset.label}</div>
+                      <div class="label">
+                        ${this.extraData?.[index]?.legend_label ??
+                        dataset.label}
+                      </div>
                     </li>`;
               })}
             </ul>

@@ -159,6 +159,13 @@ export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   max_devices?: number;
 }
 
+export interface EnergyDevicesDetailGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-devices-detail-graph";
+  title?: string;
+  collection_key?: string;
+  max_devices?: number;
+}
+
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   type: "energy-sources-table";
   title?: string;
