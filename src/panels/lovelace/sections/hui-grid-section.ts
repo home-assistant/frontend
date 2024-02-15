@@ -1,5 +1,4 @@
-import { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -12,8 +11,9 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
-import type { Lovelace, LovelaceCard } from "../types";
+import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
+import type { Lovelace, LovelaceCard } from "../types";
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -50,10 +50,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const cardsConfig = this._config?.cards ?? [];
 
-    const editMode = (this.lovelace?.editMode && !this.isStrategy) || false;
+    const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
 
     return html`
-      <h2 class="card-header">${this._config.title ?? "Unnamed section"}</h2>
+      <h2 class="section-header">${this._config.title ?? "Unnamed section"}</h2>
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
@@ -62,6 +62,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .path=${[this.viewIndex, this.index]}
         .rollback=${false}
         swap-threshold="0.7"
+        delay="200"
       >
         <div class="container ${classMap({ "edit-mode": editMode })}">
           ${repeat(
@@ -79,42 +80,17 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "--row-size": size?.[1],
                   })}
                 >
-                  <div class="card-wrapper" .inert=${editMode}>${card}</div>
                   ${editMode
                     ? html`
-                        <div class="card-overlay">
-                          <div class="card-actions">
-                            <ha-button-menu
-                              corner="BOTTOM_END"
-                              menuCorner="END"
-                              .path=${[this.viewIndex, this.index, idx]}
-                              @action=${this._handleAction}
-                            >
-                              <ha-icon-button
-                                slot="trigger"
-                                .path=${mdiDotsVertical}
-                              >
-                              </ha-icon-button>
-                              <ha-list-item graphic="icon">
-                                Edit
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiPencil}
-                                ></ha-svg-icon>
-                              </ha-list-item>
-                              <ha-list-item graphic="icon" class="warning">
-                                Delete
-                                <ha-svg-icon
-                                  class="warning"
-                                  slot="graphic"
-                                  .path=${mdiDelete}
-                                ></ha-svg-icon>
-                              </ha-list-item>
-                            </ha-button-menu>
-                          </div>
-                        </div>
+                        <hui-card-edit-mode
+                          .hass=${this.hass}
+                          .lovelace=${this.lovelace}
+                          .path=${[this.viewIndex, this.index, idx]}
+                        >
+                          ${card}
+                        </hui-card-edit-mode>
                       `
-                    : nothing}
+                    : card}
                 </div>
               `;
             }
@@ -146,19 +122,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     fireEvent(this, "ll-create-card");
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    const path = (ev.currentTarget as any).path;
-
-    switch (ev.detail.index) {
-      case 0:
-        fireEvent(this, "ll-edit-card", { path });
-        break;
-      case 1:
-        fireEvent(this, "ll-delete-card", { path, confirm: true });
-        break;
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -173,7 +136,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           margin: 0 auto;
         }
 
-        .card-header {
+        .container.edit-mode {
+          padding: 10px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          border: 2px dashed var(--divider-color);
+          min-height: 60px;
+        }
+
+        .section-header {
           color: var(--ha-card-header-color, --primary-text-color);
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, 24px);
@@ -188,67 +158,25 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
 
         .card {
+          border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 4);
-          cursor: grab;
         }
+
         .add {
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 2);
-        }
-
-        .card-wrapper {
-          height: 100%;
-        }
-
-        .card-overlay {
-          position: absolute;
-          top: 0;
-          right: 0;
-          display: flex;
-          opacity: 0;
-          pointer-events: none;
-          align-items: center;
-          justify-content: center;
-          transition: opacity 0.2s ease-in-out;
-        }
-
-        .container.edit-mode {
-          padding: 10px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          border: 2px dashed var(--divider-color);
-          min-height: 60px;
-        }
-
-        .container:not(.dragging) .card:hover .card-overlay {
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-        .card-actions {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--card-background-color);
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-          height: 32px;
-          border-radius: 16px;
-          margin: 2px;
-        }
-        .card-actions ha-icon-button {
-          --mdc-icon-button-size: 32px;
-          --mdc-icon-size: 20px;
-          cursor: pointer;
-        }
-
-        .add {
           background: none;
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
           min-height: 60px;
           order: 1;
+        }
+
+        .sortable-ghost {
+          border-radius: var(--ha-card-border-radius, 12px);
         }
       `,
     ];

@@ -48,6 +48,9 @@ export class HaSortable extends LitElement {
   @property({ type: Boolean })
   public rollback: boolean = true;
 
+  @property({ type: Number })
+  public delay?: number;
+
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
       if (this.disabled) {
@@ -120,7 +123,6 @@ export class HaSortable extends LitElement {
       swapThreshold: 1,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
-      onStart: this._handleStart,
     };
 
     if (this.draggableSelector) {
@@ -142,12 +144,15 @@ export class HaSortable extends LitElement {
     if (this.group) {
       options.group = this.group;
     }
+    if (this.delay) {
+      options.delay = this.delay;
+      options.delayOnTouchOnly = true;
+    }
 
     this._sortable = new Sortable(container, options);
   }
 
   private _handleEnd = async (evt: SortableEvent) => {
-    this.children[0]?.classList.remove("dragging");
     // put back in original location
     if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
@@ -173,10 +178,6 @@ export class HaSortable extends LitElement {
       oldPath,
       newPath,
     });
-  };
-
-  private _handleStart = () => {
-    this.children[0]?.classList.add("dragging");
   };
 
   private _handleChoose = (evt: SortableEvent) => {
