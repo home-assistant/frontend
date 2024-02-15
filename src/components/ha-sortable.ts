@@ -14,6 +14,8 @@ declare global {
       oldPath?: ItemPath;
       newPath?: ItemPath;
     };
+    "drag-start": undefined;
+    "drag-end": undefined;
   }
 }
 
@@ -122,6 +124,7 @@ export class HaSortable extends LitElement {
       animation: 150,
       swapThreshold: 1,
       onChoose: this._handleChoose,
+      onStart: this._handleStart,
       onEnd: this._handleEnd,
     };
 
@@ -153,6 +156,7 @@ export class HaSortable extends LitElement {
   }
 
   private _handleEnd = async (evt: SortableEvent) => {
+    fireEvent(this, "drag-end");
     // put back in original location
     if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
@@ -178,6 +182,10 @@ export class HaSortable extends LitElement {
       oldPath,
       newPath,
     });
+  };
+
+  private _handleStart = () => {
+    fireEvent(this, "drag-start");
   };
 
   private _handleChoose = (evt: SortableEvent) => {

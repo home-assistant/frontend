@@ -32,6 +32,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @state() _config?: LovelaceSectionConfig;
 
+  @state() _dragging = false;
+
   public setConfig(config: LovelaceSectionConfig): void {
     this._config = config;
   }
@@ -57,6 +59,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
+        @drag-start=${this._dragStart}
+        @drag-end=${this._dragEnd}
         group="card"
         draggable-selector=".card"
         .path=${[this.viewIndex, this.index]}
@@ -86,6 +90,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                           .hass=${this.hass}
                           .lovelace=${this.lovelace}
                           .path=${[this.viewIndex, this.index, idx]}
+                          .hiddenOverlay=${this._dragging}
                         >
                           ${card}
                         </hui-card-edit-mode>
@@ -116,6 +121,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       [...newPath, newIndex] as [number, number, number]
     );
     this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _dragStart() {
+    this._dragging = true;
+  }
+
+  private _dragEnd() {
+    this._dragging = false;
   }
 
   private _addCard() {

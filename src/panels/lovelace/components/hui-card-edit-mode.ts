@@ -38,6 +38,8 @@ export class HuiCardEditMode extends LitElement {
 
   @property({ type: Array }) public path!: LovelaceCardPath;
 
+  @property({ type: Boolean }) public hiddenOverlay = false;
+
   @state()
   public _menuOpened: boolean = false;
 
@@ -92,7 +94,8 @@ export class HuiCardEditMode extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const showOverlay = this._hover || this._menuOpened;
+    const showOverlay =
+      (this._hover || this._menuOpened) && !this.hiddenOverlay;
 
     return html`
       <div class="card-wrapper" .inert=${true}><slot></slot></div>
