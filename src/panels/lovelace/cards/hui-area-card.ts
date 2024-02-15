@@ -1,22 +1,22 @@
 import "@material/mwc-ripple";
 import {
+  mdiFan,
+  mdiFanOff,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
-  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterAlert,
-  mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -26,17 +26,18 @@ import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
-import { formatNumber } from "../../../common/number/format_number";
-import { subscribeOne } from "../../../common/util/subscribe-one";
+import {
+  formatNumber,
+  isNumericState,
+} from "../../../common/number/format_number";
+import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/entity/state-badge";
+import { subscribeOne } from "../../../common/util/subscribe-one";
 import "../../../components/ha-card";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -76,11 +77,7 @@ export const DEVICE_CLASSES = {
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
-  fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: {
-    temperature: mdiThermometer,
-    humidity: mdiWaterPercent,
-  },
+  fan: { on: mdiFan, off: mdiFanOff },
   binary_sensor: {
     motion: mdiRun,
     moisture: mdiWaterAlert,
@@ -215,10 +212,7 @@ export class HuiAreaCard
     }
     let uom;
     const values = entities.filter((entity) => {
-      if (
-        !entity.attributes.unit_of_measurement ||
-        isNaN(Number(entity.state))
-      ) {
+      if (!isNumericState(entity) || isNaN(Number(entity.state))) {
         return false;
       }
       if (!uom) {
@@ -236,7 +230,7 @@ export class HuiAreaCard
     );
     return `${formatNumber(sum / values.length, this.hass!.locale, {
       maximumFractionDigits: 1,
-    })} ${uom}`;
+    })}${uom ? blankBeforeUnit(uom, this.hass!.locale) : ""}${uom || ""}`;
   }
 
   private _area = memoizeOne(
@@ -281,6 +275,9 @@ export class HuiAreaCard
     this._config = config;
 
     this._deviceClasses = { ...DEVICE_CLASSES };
+    if (config.sensor_classes) {
+      this._deviceClasses.sensor = config.sensor_classes;
+    }
     if (config.alert_classes) {
       this._deviceClasses.binary_sensor = config.alert_classes;
     }
@@ -385,19 +382,21 @@ export class HuiAreaCard
       if (!(domain in entitiesByDomain)) {
         return;
       }
-      DEVICE_CLASSES[domain].forEach((deviceClass) => {
+      this._deviceClasses[domain].forEach((deviceClass) => {
         if (
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
           sensors.push(html`
-            ${DOMAIN_ICONS[domain][deviceClass]
-              ? html`<ha-svg-icon
-                  .path=${DOMAIN_ICONS[domain][deviceClass]}
-                ></ha-svg-icon>`
-              : ""}
-            ${this._average(domain, deviceClass)}
+            <div class="sensor">
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .deviceClass=${deviceClass}
+              ></ha-domain-icon>
+              ${this._average(domain, deviceClass)}
+            </div>
           `);
         }
       });
@@ -438,16 +437,18 @@ export class HuiAreaCard
           <div class="alerts">
             ${ALERT_DOMAINS.map((domain) => {
               if (!(domain in entitiesByDomain)) {
-                return "";
+                return nothing;
               }
               return this._deviceClasses[domain].map((deviceClass) => {
                 const entity = this._isOn(domain, deviceClass);
                 return entity
-                  ? html`<ha-svg-icon
-                      class="alert"
-                      .path=${DOMAIN_ICONS[domain][deviceClass] ||
-                      binarySensorIcon(entity.state, entity)}
-                    ></ha-svg-icon>`
+                  ? html`
+                      <ha-state-icon
+                        class="alert"
+                        .hass=${this.hass}
+                        .stateObj=${entity}
+                      ></ha-state-icon>
+                    `
                   : nothing;
               });
             })}
@@ -566,15 +567,32 @@ export class HuiAreaCard
         margin-top: 8px;
       }
 
+      .sensor {
+        white-space: nowrap;
+        float: left;
+        margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
+      }
+
       .alerts {
         padding: 16px;
       }
 
-      .alerts ha-svg-icon {
+      ha-state-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .alerts ha-state-icon {
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         border-radius: 50%;
       }
 
@@ -599,6 +617,8 @@ export class HuiAreaCard
         background-color: var(--area-button-color, #727272b2);
         border-radius: 50%;
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         --mdc-icon-button-size: 44px;
       }
       .on {

@@ -318,10 +318,6 @@ class DialogMediaManage extends LitElement {
           display: block;
         }
 
-        mwc-list {
-          direction: ltr;
-        }
-
         .danger {
           --mdc-theme-primary: var(--error-color);
         }

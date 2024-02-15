@@ -30,7 +30,7 @@ class HaConfigAutomation extends HassRouterPage {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public automations: AutomationEntity[] = [];
+  @property({ attribute: false }) public automations: AutomationEntity[] = [];
 
   private _debouncedUpdateAutomations = debounce((pageEl) => {
     const newAutomations = this._getAutomations(this.hass.states);

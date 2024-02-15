@@ -34,7 +34,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _uiAvailable = true;
 
@@ -580,19 +580,18 @@ class HaPanelDevService extends LitElement {
         }
         .switch-mode-container .error {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .attributes {
           width: 100%;
         }
 
         .attributes th {
-          text-align: left;
+          text-align: var(--float-start);
           background-color: var(--card-background-color);
           border-bottom: 1px solid var(--primary-text-color);
-        }
-
-        :host([rtl]) .attributes th {
-          text-align: right;
+          direction: var(--direction);
         }
 
         .attributes tr {

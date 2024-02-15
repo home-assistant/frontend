@@ -105,6 +105,8 @@ export class HuiInputListEditor extends LitElement {
     return css`
       ha-icon-button {
         margin-right: -24px;
+        margin-inline-end: -24px;
+        margin-inline-start: initial;
         color: var(--secondary-text-color);
       }
       ha-textfield {

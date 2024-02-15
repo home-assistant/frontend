@@ -24,6 +24,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import { SelectOption } from "../../../../data/selector";
+import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -35,6 +36,7 @@ const cardConfigStruct = assign(
     camera_view: optional(string()),
     aspect_ratio: optional(string()),
     alert_classes: optional(array(string())),
+    sensor_classes: optional(array(string())),
   })
 );
 
@@ -47,8 +49,14 @@ export class HuiAreaCardEditor
 
   @state() private _config?: AreaCardConfig;
 
+  @state() private _numericDeviceClasses?: string[];
+
   private _schema = memoizeOne(
-    (showCamera: boolean, binaryClasses: SelectOption[]) =>
+    (
+      showCamera: boolean,
+      binaryClasses: SelectOption[],
+      sensorClasses: SelectOption[]
+    ) =>
       [
         { name: "area", selector: { area: {} } },
         { name: "show_camera", required: false, selector: { boolean: {} } },
@@ -88,13 +96,37 @@ export class HuiAreaCardEditor
             },
           },
         },
+        {
+          name: "sensor_classes",
+          selector: {
+            select: {
+              reorder: true,
+              multiple: true,
+              custom_value: true,
+              options: sensorClasses,
+            },
+          },
+        },
       ] as const
   );
 
-  private _binaryClassesForArea = memoizeOne((area: string): string[] => {
+  private _binaryClassesForArea = memoizeOne((area: string): string[] =>
+    this._classesForArea(area, "binary_sensor")
+  );
+
+  private _sensorClassesForArea = memoizeOne(
+    (area: string, numericDeviceClasses?: string[]): string[] =>
+      this._classesForArea(area, "sensor", numericDeviceClasses)
+  );
+
+  private _classesForArea(
+    area: string,
+    domain: "sensor" | "binary_sensor",
+    numericDeviceClasses?: string[] | undefined
+  ): string[] {
     const entities = Object.values(this.hass!.entities).filter(
       (e) =>
-        computeDomain(e.entity_id) === "binary_sensor" &&
+        computeDomain(e.entity_id) === domain &&
         !e.entity_category &&
         !e.hidden &&
         (e.area_id === area ||
@@ -103,37 +135,59 @@ export class HuiAreaCardEditor
 
     const classes = entities
       .map((e) => this.hass!.states[e.entity_id]?.attributes.device_class || "")
-      .filter((c) => c);
+      .filter(
+        (c) =>
+          c &&
+          (domain !== "sensor" ||
+            !numericDeviceClasses ||
+            numericDeviceClasses.includes(c))
+      );
 
     return [...new Set(classes)];
-  });
+  }
 
-  private _buildOptions = memoizeOne(
-    (possibleClasses: string[], currentClasses: string[]): SelectOption[] => {
-      const options = [...new Set([...possibleClasses, ...currentClasses])].map(
-        (deviceClass) => ({
-          value: deviceClass,
-          label:
-            this.hass!.localize(
-              `component.binary_sensor.entity_component.${deviceClass}.name`
-            ) || deviceClass,
-        })
-      );
-      options.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.label,
-          b.label,
-          this.hass!.locale.language
-        )
-      );
-
-      return options;
-    }
+  private _buildBinaryOptions = memoizeOne(
+    (possibleClasses: string[], currentClasses: string[]): SelectOption[] =>
+      this._buildOptions("binary_sensor", possibleClasses, currentClasses)
   );
+
+  private _buildSensorOptions = memoizeOne(
+    (possibleClasses: string[], currentClasses: string[]): SelectOption[] =>
+      this._buildOptions("sensor", possibleClasses, currentClasses)
+  );
+
+  private _buildOptions(
+    domain: "sensor" | "binary_sensor",
+    possibleClasses: string[],
+    currentClasses: string[]
+  ): SelectOption[] {
+    const options = [...new Set([...possibleClasses, ...currentClasses])].map(
+      (deviceClass) => ({
+        value: deviceClass,
+        label:
+          this.hass!.localize(
+            `component.${domain}.entity_component.${deviceClass}.name`
+          ) || deviceClass,
+      })
+    );
+    options.sort((a, b) =>
+      caseInsensitiveStringCompare(a.label, b.label, this.hass!.locale.language)
+    );
+
+    return options;
+  }
 
   public setConfig(config: AreaCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
+  }
+
+  protected async updated() {
+    if (this.hass && !this._numericDeviceClasses) {
+      const { numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass);
+      this._numericDeviceClasses = sensorNumericDeviceClasses;
+    }
   }
 
   protected render() {
@@ -141,20 +195,32 @@ export class HuiAreaCardEditor
       return nothing;
     }
 
-    const possibleClasses = this._binaryClassesForArea(this._config.area || "");
-    const selectOptions = this._buildOptions(
-      possibleClasses,
+    const possibleBinaryClasses = this._binaryClassesForArea(
+      this._config.area || ""
+    );
+    const possibleSensorClasses = this._sensorClassesForArea(
+      this._config.area || "",
+      this._numericDeviceClasses
+    );
+    const binarySelectOptions = this._buildBinaryOptions(
+      possibleBinaryClasses,
       this._config.alert_classes || DEVICE_CLASSES.binary_sensor
+    );
+    const sensorSelectOptions = this._buildSensorOptions(
+      possibleSensorClasses,
+      this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
 
     const schema = this._schema(
       this._config.show_camera || false,
-      selectOptions
+      binarySelectOptions,
+      sensorSelectOptions
     );
 
     const data = {
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
+      sensor_classes: DEVICE_CLASSES.sensor,
       ...this._config,
     };
 
@@ -200,10 +266,6 @@ export class HuiAreaCardEditor
       case "camera_view":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.camera_view"
-        );
-      case "alert_classes":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.area.alert_classes"
         );
     }
     return this.hass!.localize(

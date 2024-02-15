@@ -27,7 +27,6 @@ import {
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   DataTableRowData,
@@ -68,9 +67,9 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -137,7 +136,8 @@ export class VoiceAssistantsExpose extends LitElement {
         template: (entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
-            .state=${entry.entity}
+            .stateObj=${entry.entity}
+            .hass=${this.hass}
           ></ha-state-icon>
         `,
       },
@@ -617,7 +617,6 @@ export class VoiceAssistantsExpose extends LitElement {
             "ui.panel.config.voice_assistants.expose.add"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._addEntry}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -823,6 +822,8 @@ export class VoiceAssistantsExpose extends LitElement {
         }
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

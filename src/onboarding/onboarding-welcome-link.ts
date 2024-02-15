@@ -18,7 +18,7 @@ class OnboardingWelcomeLink extends LitElement {
 
   @property() public iconPath!: string;
 
-  @property({ attribute: true, type: Boolean }) public noninteractive?: boolean;
+  @property({ type: Boolean }) public noninteractive = false;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 

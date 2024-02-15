@@ -21,6 +21,7 @@ import "./hui-entity-picker-table";
 import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
+import { computeCards } from "../../common/generate-lovelace-config";
 
 declare global {
   interface HASSDomEvents {
@@ -213,8 +214,8 @@ export class HuiCreateDialogCard
     showEditCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
-      cardConfig: config,
+      path: [this._params!.path[0], null],
+      newCardConfig: config,
     });
 
     this.closeDialog();
@@ -242,11 +243,17 @@ export class HuiCreateDialogCard
   }
 
   private _suggestCards(): void {
+    const cardConfig = computeCards(
+      this.hass.states,
+      this._selectedEntities,
+      {}
+    );
     showSuggestCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path as [number],
       entities: this._selectedEntities,
+      cardConfig,
     });
 
     this.closeDialog();

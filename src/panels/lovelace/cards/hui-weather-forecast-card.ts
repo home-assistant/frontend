@@ -75,8 +75,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
-  private _veryVeryNarrow = false;
+  // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
+  @property({ type: Boolean, reflect: true }) public veryVeryNarrow = false;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -227,7 +227,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
-        ? forecastData.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
+        ? forecastData.forecast.slice(0, this.veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
@@ -256,7 +256,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   html`
                     <ha-state-icon
                       class="weather-icon"
-                      .state=${stateObj}
+                      .stateObj=${stateObj}
+                      .hass=${this.hass}
                     ></ha-state-icon>
                   `}
                 </div>
@@ -452,7 +453,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     } else {
       this.removeAttribute("verynarrow");
     }
-    this._veryVeryNarrow = card.offsetWidth < 245;
+    this.veryVeryNarrow = card.offsetWidth < 245;
   }
 
   private _showValue(item?: any): boolean {
@@ -609,11 +610,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           font-size: 16px;
           padding: 10px 20px;
           text-align: center;
-        }
-
-        /* ============= RTL ============= */
-        :host([rtl]) .temp-attribute {
-          text-align: left;
         }
 
         /* ============= NARROW ============= */

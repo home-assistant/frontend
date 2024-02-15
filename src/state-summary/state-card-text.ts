@@ -16,7 +16,7 @@ class StateCardText extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <state-badge .stateObj=${this.stateObj}></state-badge>
+      <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
       <ha-textfield
         .label=${computeStateName(this.stateObj)}
         .disabled=${this.stateObj.state === UNAVAILABLE}

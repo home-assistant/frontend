@@ -199,57 +199,46 @@ const tryDescribeTrigger = (
 
   // State Trigger
   if (trigger.platform === "state") {
-    let base = "When";
     const entities: string[] = [];
     const states = hass.states;
 
+    let attribute = "";
     if (trigger.attribute) {
       const stateObj = Array.isArray(trigger.entity_id)
         ? hass.states[trigger.entity_id[0]]
         : hass.states[trigger.entity_id];
-      base += ` ${computeAttributeNameDisplay(
+      attribute = computeAttributeNameDisplay(
         hass.localize,
         stateObj,
         hass.entities,
         trigger.attribute
-      )} of`;
+      );
     }
 
-    if (Array.isArray(trigger.entity_id)) {
-      for (const entity of trigger.entity_id.values()) {
+    const entityArray: string[] = ensureArray(trigger.entity_id);
+    if (entityArray) {
+      for (const entity of entityArray) {
         if (states[entity]) {
           entities.push(computeStateName(states[entity]) || entity);
         }
       }
-    } else if (trigger.entity_id) {
-      entities.push(
-        states[trigger.entity_id]
-          ? computeStateName(states[trigger.entity_id])
-          : trigger.entity_id
-      );
     }
 
-    if (entities.length === 0) {
-      // no entity_id or empty array
-      entities.push("something");
-    }
+    const stateObj = hass.states[entityArray[0]];
 
-    base += ` ${entities} changes`;
-
-    const stateObj =
-      hass.states[
-        Array.isArray(trigger.entity_id)
-          ? trigger.entity_id[0]
-          : trigger.entity_id
-      ];
+    let fromChoice = "other";
+    let fromString = "";
     if (trigger.from !== undefined) {
+      let fromArray: string[] = [];
       if (trigger.from === null) {
         if (!trigger.attribute) {
-          base += " from any state";
+          fromChoice = "null";
         }
-      } else if (Array.isArray(trigger.from)) {
+      } else {
+        fromArray = ensureArray(trigger.from);
+
         const from: string[] = [];
-        for (const state of trigger.from.values()) {
+        for (const state of fromArray) {
           from.push(
             trigger.attribute
               ? hass
@@ -263,34 +252,25 @@ const tryDescribeTrigger = (
           );
         }
         if (from.length !== 0) {
-          const fromString = formatListWithOrs(hass.locale, from);
-          base += ` from ${fromString}`;
+          fromString = formatListWithOrs(hass.locale, from);
+          fromChoice = "fromUsed";
         }
-      } else {
-        base += ` from ${
-          trigger.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  trigger.attribute,
-                  trigger.from
-                )
-                .toString()
-            : hass
-                .formatEntityState(stateObj, trigger.from.toString())
-                .toString()
-        }`;
       }
     }
 
+    let toChoice = "other";
+    let toString = "";
     if (trigger.to !== undefined) {
+      let toArray: string[] = [];
       if (trigger.to === null) {
         if (!trigger.attribute) {
-          base += " to any state";
+          toChoice = "null";
         }
-      } else if (Array.isArray(trigger.to)) {
+      } else {
+        toArray = ensureArray(trigger.to);
+
         const to: string[] = [];
-        for (const state of trigger.to.values()) {
+        for (const state of toArray) {
           to.push(
             trigger.attribute
               ? hass
@@ -304,21 +284,9 @@ const tryDescribeTrigger = (
           );
         }
         if (to.length !== 0) {
-          const toString = formatListWithOrs(hass.locale, to);
-          base += ` to ${toString}`;
+          toString = formatListWithOrs(hass.locale, to);
+          toChoice = "toUsed";
         }
-      } else {
-        base += ` to ${
-          trigger.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  trigger.attribute,
-                  trigger.to
-                )
-                .toString()
-            : hass.formatEntityState(stateObj, trigger.to.toString())
-        }`;
       }
     }
 
@@ -327,17 +295,29 @@ const tryDescribeTrigger = (
       trigger.from === undefined &&
       trigger.to === undefined
     ) {
-      base += " state or any attributes";
+      toChoice = "special";
     }
 
+    let duration = "";
     if (trigger.for) {
-      const duration = describeDuration(hass.locale, trigger.for);
-      if (duration) {
-        base += ` for ${duration}`;
-      }
+      duration = describeDuration(hass.locale, trigger.for) ?? "";
     }
 
-    return base;
+    return hass.localize(
+      `${triggerTranslationBaseKey}.state.description.full`,
+      {
+        hasAttribute: attribute !== "" ? "true" : "false",
+        attribute: attribute,
+        hasEntity: entities.length !== 0 ? "true" : "false",
+        entity: formatListWithOrs(hass.locale, entities),
+        fromChoice: fromChoice,
+        fromString: fromString,
+        toChoice: toChoice,
+        toString: toString,
+        hasDuration: duration !== "" ? "true" : "false",
+        duration: duration,
+      }
+    );
   }
 
   // Sun Trigger
@@ -1016,60 +996,40 @@ const tryDescribeCondition = (
   }
 
   // Sun condition
-  if (
-    condition.condition === "sun" &&
-    ("before" in condition || "after" in condition)
-  ) {
-    let base = "Confirm";
-
-    if (!condition.after && !condition.before) {
-      base += " sun";
-      return base;
-    }
-
-    base += " sun";
-
-    if (condition.after) {
-      let after_duration = "";
-
-      if (condition.after_offset) {
-        if (typeof condition.after_offset === "number") {
-          after_duration = ` offset by ${secondsToDuration(
-            condition.after_offset
-          )!}`;
-        } else if (typeof condition.after_offset === "string") {
-          after_duration = ` offset by ${condition.after_offset}`;
-        } else {
-          after_duration = ` offset by ${JSON.stringify(
-            condition.after_offset
-          )}`;
-        }
+  if (condition.condition === "sun" && (condition.before || condition.after)) {
+    let afterDuration = "";
+    if (condition.after && condition.after_offset) {
+      if (typeof condition.after_offset === "number") {
+        afterDuration = secondsToDuration(condition.after_offset)!;
+      } else if (typeof condition.after_offset === "string") {
+        afterDuration = condition.after_offset;
+      } else {
+        afterDuration = JSON.stringify(condition.after_offset);
       }
-
-      base += ` after ${condition.after}${after_duration}`;
     }
 
-    if (condition.before) {
-      let before_duration = "";
-
-      if (condition.before_offset) {
-        if (typeof condition.before_offset === "number") {
-          before_duration = ` offset by ${secondsToDuration(
-            condition.before_offset
-          )!}`;
-        } else if (typeof condition.before_offset === "string") {
-          before_duration = ` offset by ${condition.before_offset}`;
-        } else {
-          before_duration = ` offset by ${JSON.stringify(
-            condition.before_offset
-          )}`;
-        }
+    let beforeDuration = "";
+    if (condition.before && condition.before_offset) {
+      if (typeof condition.before_offset === "number") {
+        beforeDuration = secondsToDuration(condition.before_offset)!;
+      } else if (typeof condition.before_offset === "string") {
+        beforeDuration = condition.before_offset;
+      } else {
+        beforeDuration = JSON.stringify(condition.before_offset);
       }
-
-      base += ` before ${condition.before}${before_duration}`;
     }
 
-    return base;
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.sun.description.full`,
+      {
+        afterChoice: condition.after ?? "other",
+        afterOffsetChoice: afterDuration !== "" ? "offset" : "other",
+        afterOffset: afterDuration,
+        beforeChoice: condition.before ?? "other",
+        beforeOffsetChoice: beforeDuration !== "" ? "offset" : "other",
+        beforeOffset: beforeDuration,
+      }
+    );
   }
 
   // Zone condition

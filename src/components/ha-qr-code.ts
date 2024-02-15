@@ -2,6 +2,7 @@ import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import QRCode from "qrcode";
 import "./ha-alert";
+import { rgb2hex } from "../common/color/convert-color";
 
 @customElement("ha-qr-code")
 export class HaQrCode extends LitElement {
@@ -65,16 +66,37 @@ export class HaQrCode extends LitElement {
         changedProperties.has("centerImage"))
     ) {
       const computedStyles = getComputedStyle(this);
+      const textRgb = computedStyles.getPropertyValue(
+        "--rgb-primary-text-color"
+      );
+      const backgroundRgb = computedStyles.getPropertyValue(
+        "--rgb-card-background-color"
+      );
+      const textHex = rgb2hex(
+        textRgb.split(",").map((a) => parseInt(a, 10)) as [
+          number,
+          number,
+          number,
+        ]
+      );
+      const backgroundHex = rgb2hex(
+        backgroundRgb.split(",").map((a) => parseInt(a, 10)) as [
+          number,
+          number,
+          number,
+        ]
+      );
 
       QRCode.toCanvas(canvas, this.data, {
-        errorCorrectionLevel: this.errorCorrectionLevel,
+        errorCorrectionLevel:
+          this.errorCorrectionLevel || (this.centerImage ? "Q" : "M"),
         width: this.width,
         scale: this.scale,
         margin: this.margin,
         maskPattern: this.maskPattern,
         color: {
-          light: computedStyles.getPropertyValue("--card-background-color"),
-          dark: computedStyles.getPropertyValue("--primary-text-color"),
+          light: backgroundHex,
+          dark: textHex,
         },
       }).catch((err) => {
         this._error = err.message;

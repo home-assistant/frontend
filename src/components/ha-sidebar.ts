@@ -38,7 +38,6 @@ import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
-import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import {
@@ -189,7 +188,7 @@ const computePanels = memoizeOne(
 class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -307,16 +306,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
-      toggleAttribute(this, "rtl", computeRTL(this.hass));
-    }
-
     this._calculateCounts();
 
     if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
     }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
       const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
       if (selectedEl) {
@@ -851,28 +846,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           font-size: 20px;
           align-items: center;
           padding-left: calc(4px + env(safe-area-inset-left));
-        }
-        :host([rtl]) .menu {
-          padding-left: 4px;
-          padding-right: calc(4px + env(safe-area-inset-right));
+          padding-inline-start: calc(4px + env(safe-area-inset-left));
+          padding-inline-end: initial;
         }
         :host([expanded]) .menu {
           width: calc(256px + env(safe-area-inset-left));
-        }
-        :host([rtl][expanded]) .menu {
-          width: calc(256px + env(safe-area-inset-right));
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
         }
         .title {
           margin-left: 19px;
+          margin-inline-start: 19px;
+          margin-inline-end: initial;
           width: 100%;
           display: none;
-        }
-        :host([rtl]) .title {
-          margin-left: 0;
-          margin-right: 19px;
         }
         :host([narrow]) .title {
           margin: 0;
@@ -904,11 +892,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           overflow-x: hidden;
           background: none;
           margin-left: env(safe-area-inset-left);
-        }
-
-        :host([rtl]) paper-listbox {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: initial;
         }
 
         a {
@@ -925,16 +910,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
           margin: 4px;
           padding-left: 12px;
+          padding-inline-start: 12px;
+          padding-inline-end: initial;
           border-radius: 4px;
           --paper-item-min-height: 40px;
           width: 48px;
         }
         :host([expanded]) paper-icon-item {
           width: 248px;
-        }
-        :host([rtl]) paper-icon-item {
-          padding-left: auto;
-          padding-right: 12px;
         }
 
         ha-icon[slot="item-icon"],
@@ -1010,11 +993,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .configuration-container {
           display: flex;
           margin-left: env(safe-area-inset-left);
-        }
-        :host([rtl]) .notifications-container,
-        :host([rtl]) .configuration-container {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: initial;
         }
         .notifications {
           cursor: pointer;
@@ -1025,29 +1005,26 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .profile {
           margin-left: env(safe-area-inset-left);
-        }
-        :host([rtl]) .profile {
-          margin-left: initial;
-          margin-right: env(safe-area-inset-right);
+          margin-inline-start: env(safe-area-inset-left);
+          margin-inline-end: initial;
         }
         .profile paper-icon-item {
           padding-left: 4px;
-        }
-        :host([rtl]) .profile paper-icon-item {
-          padding-left: auto;
-          padding-right: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: auto;
         }
         .profile .item-text {
           margin-left: 8px;
-        }
-        :host([rtl]) .profile .item-text {
-          margin-right: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         .notification-badge,
         .configuration-badge {
           position: absolute;
           left: calc(var(--app-drawer-width, 248px) - 42px);
+          inset-inline-start: calc(var(--app-drawer-width, 248px) - 42px);
+          inset-inline-end: initial;
           min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;
@@ -1104,9 +1081,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           font-weight: 500;
         }
 
-        :host([rtl]) .menu ha-icon-button {
-          -webkit-transform: scaleX(-1);
-          transform: scaleX(-1);
+        .menu ha-icon-button {
+          -webkit-transform: scaleX(var(--scale-direction));
+          transform: scaleX(var(--scale-direction));
         }
       `,
     ];

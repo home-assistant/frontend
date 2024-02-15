@@ -19,7 +19,7 @@ const qosLevel = ["0", "1", "2"];
 export class MQTTConfigPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @storage({
     key: "panel-dev-mqtt-topic-ls",
@@ -227,6 +227,8 @@ export class MQTTConfigPanel extends LitElement {
         @media screen and (max-width: 600px) {
           ha-select {
             margin-left: 0px;
+            margin-inline-start: 0px;
+            margin-inline-end: initial;
             margin-top: 8px;
           }
           ha-textfield {

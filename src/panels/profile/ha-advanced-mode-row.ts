@@ -15,7 +15,7 @@ class AdvancedModeRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public coreUserData?: CoreFrontendUserData;
+  @property({ attribute: false }) public coreUserData?: CoreFrontendUserData;
 
   protected render(): TemplateResult {
     return html`

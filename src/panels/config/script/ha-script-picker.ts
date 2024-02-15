@@ -26,7 +26,6 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -68,7 +67,7 @@ type ScriptItem = ScriptEntity & {
 class HaScriptPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scripts!: ScriptEntity[];
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -119,7 +118,8 @@ class HaScriptPicker extends LitElement {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .state=${script}
+              .hass=${this.hass}
+              .stateObj=${script}
               style=${styleMap({
                 color:
                   script.state === UNAVAILABLE ? "var(--error-color)" : "unset",
@@ -307,7 +307,6 @@ class HaScriptPicker extends LitElement {
             "ui.panel.config.script.picker.add_script"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._createNew}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

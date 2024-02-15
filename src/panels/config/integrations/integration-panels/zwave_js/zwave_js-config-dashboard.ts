@@ -18,7 +18,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
@@ -61,9 +60,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId!: string;
 
@@ -472,7 +471,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.zwave_js.common.add_node"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
@@ -680,6 +678,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+          padding-inline-end: 40px;
+          padding-inline-start: initial;
         }
 
         .row {
@@ -701,6 +701,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           width: 48px;
           height: 48px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         .network-status div.heading ha-svg-icon {
           width: 48px;

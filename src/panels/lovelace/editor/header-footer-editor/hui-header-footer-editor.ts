@@ -120,6 +120,8 @@ export class HuiHeaderFooterEditor extends LitElement {
 
       .header-footer-icon {
         padding-right: 8px;
+        padding-inline-end: 8px;
+        padding-inline-start: initial;
       }
     `;
   }

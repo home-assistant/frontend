@@ -52,7 +52,7 @@ let resourcesLoaded = false;
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
-  @property() public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -60,8 +60,7 @@ export class LovelacePanel extends LitElement {
 
   @property({ attribute: false }) public route?: Route;
 
-  @property()
-  private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =
+  @state() private _panelState: "loading" | "loaded" | "error" | "yaml-editor" =
     "loading";
 
   @state() private _errorMsg?: string;
@@ -73,6 +72,8 @@ export class LovelacePanel extends LitElement {
   private _fetchConfigOnConnect = false;
 
   private _unsubUpdates?: Promise<UnsubscribeFunc>;
+
+  private _loading = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -114,7 +115,7 @@ export class LovelacePanel extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    const panelState = this._panelState!;
+    const panelState = this._panelState;
 
     if (panelState === "loaded") {
       return html`
@@ -163,7 +164,7 @@ export class LovelacePanel extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!this.lovelace && this._panelState !== "error") {
+    if (!this.lovelace && this._panelState !== "error" && !this._loading) {
       this._fetchConfig(false);
     }
   }
@@ -234,6 +235,8 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
+    this._loading = true;
+
     let conf: LovelaceConfig;
     let rawConf: LovelaceRawConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
@@ -302,6 +305,7 @@ export class LovelacePanel extends LitElement {
       rawConf = DEFAULT_CONFIG;
       confMode = "generated";
     } finally {
+      this._loading = false;
       // Ignore updates for another 2 seconds.
       if (this.lovelace && this.lovelace.mode === "yaml") {
         setTimeout(() => {

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
@@ -35,6 +34,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import "../../../components/ha-list-item";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -76,7 +76,8 @@ declare global {
     };
     "ui-mode-not-available": Error;
     duplicate: undefined;
-    "re-order": undefined;
+    "move-down": undefined;
+    "move-up": undefined;
   }
 }
 
@@ -87,7 +88,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public entityId: string | null = null;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -149,7 +150,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
             @click=${this._showInfo}
@@ -159,20 +160,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
             @click=${this._runActions}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
           ${stateObj && this._config && this.narrow
             ? html`<a href="/config/automation/trace/${this._config.id}">
-                <mwc-list-item graphic="icon">
+                <ha-list-item graphic="icon">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
                   )}
@@ -180,22 +181,22 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                     slot="graphic"
                     .path=${mdiTransitConnection}
                   ></ha-svg-icon>
-                </mwc-list-item>
+                </ha-list-item>
               </a>`
             : ""}
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             @click=${this._promptAutomationAlias}
             .disabled=${!this.automationId || this._mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
           ${this._config && !("use_blueprint" in this._config)
             ? html`
-                <mwc-list-item
+                <ha-list-item
                   graphic="icon"
                   @click=${this._promptAutomationMode}
                   .disabled=${this._readOnly || this._mode === "yaml"}
@@ -207,11 +208,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                     slot="graphic"
                     .path=${mdiDebugStepOver}
                   ></ha-svg-icon>
-                </mwc-list-item>
+                </ha-list-item>
               `
             : ""}
 
-          <mwc-list-item
+          <ha-list-item
             .disabled=${!this._readOnly && !this.automationId}
             graphic="icon"
             @click=${this._duplicate}
@@ -225,11 +226,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               slot="graphic"
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
           <li divider role="separator"></li>
 
-          <mwc-list-item graphic="icon" @click=${this._switchUiMode}>
+          <ha-list-item graphic="icon" @click=${this._switchUiMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`<ha-svg-icon
@@ -238,8 +239,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
               : ``}
-          </mwc-list-item>
-          <mwc-list-item graphic="icon" @click=${this._switchYamlMode}>
+          </ha-list-item>
+          <ha-list-item graphic="icon" @click=${this._switchYamlMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`<ha-svg-icon
@@ -248,11 +249,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   .path=${mdiCheck}
                 ></ha-svg-icon>`
               : ``}
-          </mwc-list-item>
+          </ha-list-item>
 
           <li divider role="separator"></li>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
             @click=${this._toggle}
@@ -266,9 +267,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ? mdiPlayCircleOutline
                 : mdiStopCircleOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             .disabled=${!this.automationId}
             class=${classMap({ warning: Boolean(this.automationId) })}
             graphic="icon"
@@ -281,7 +282,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
 
         ${this._config
@@ -780,6 +781,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-entity-toggle {
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         ha-fab {
           position: relative;

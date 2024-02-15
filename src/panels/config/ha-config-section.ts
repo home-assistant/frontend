@@ -93,6 +93,8 @@ export class HaConfigSection extends LitElement {
       .horizontal .intro {
         max-width: 400px;
         margin-right: 40px;
+        margin-inline-end: 40px;
+        margin-inline-start: initial;
       }
 
       .panel {
@@ -113,6 +115,8 @@ export class HaConfigSection extends LitElement {
       .narrow .intro {
         padding-bottom: 20px;
         margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
         max-width: 500px;
       }
 

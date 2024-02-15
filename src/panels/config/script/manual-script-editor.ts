@@ -3,6 +3,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
@@ -17,9 +18,9 @@ import type HaScriptFields from "./ha-script-fields";
 export class HaManualScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -122,7 +123,9 @@ export class HaManualScriptEditor extends LitElement {
         role="region"
         aria-labelledby="sequence-heading"
         .actions=${this.config.sequence}
+        .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
+        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -141,6 +144,21 @@ export class HaManualScriptEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
+    });
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const updatedConfig = nestedArrayMove(
+      this.config,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+    fireEvent(this, "value-changed", {
+      value: updatedConfig,
     });
   }
 
@@ -178,6 +196,12 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        ha-alert.re-order {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];

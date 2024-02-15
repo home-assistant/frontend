@@ -25,7 +25,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public names?: Record<string, string>;
+  @property({ attribute: false }) public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -224,7 +224,11 @@ export class StateHistoryChartTimeline extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (!this.clickForMoreInfo) {
+        if (
+          !this.clickForMoreInfo ||
+          !(e.native instanceof MouseEvent) ||
+          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
+        ) {
           return;
         }
 

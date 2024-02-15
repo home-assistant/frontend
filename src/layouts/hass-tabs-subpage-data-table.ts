@@ -4,7 +4,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -116,7 +115,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Function to call when the back button is pressed.
    * @type {() => void}
    */
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   /**
    * String to show when there are no records in the data table.
@@ -136,7 +135,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Array of tabs to show on the page.
    * @type {Array}
    */
-  @property() public tabs: PageNavigation[] = [];
+  @property({ attribute: false }) public tabs: PageNavigation[] = [];
 
   /**
    * Force hides the filter menu.
@@ -244,7 +243,6 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .selectable=${this.selectable}
                 .hasFab=${this.hasFab}
                 .id=${this.id}
-                .dir=${computeRTLDirection(this.hass)}
                 .clickable=${this.clickable}
                 .appendRow=${this.appendRow}
               >

@@ -1,20 +1,14 @@
-import { CSSResultGroup, html, css, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import { customElement } from "lit/decorators";
 import "../ha-icon";
 import "../ha-svg-icon";
 
 @customElement("ha-tile-icon")
 export class HaTileIcon extends LitElement {
-  @property() public iconPath?: string;
-
-  @property() public icon?: string;
-
   protected render(): TemplateResult {
     return html`
       <div class="shape">
-        ${this.icon
-          ? html`<ha-icon .icon=${this.icon}></ha-icon>`
-          : html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`}
+        <slot></slot>
       </div>
     `;
   }
@@ -47,8 +41,7 @@ export class HaTileIcon extends LitElement {
         transition: color 180ms ease-in-out;
         overflow: hidden;
       }
-      .shape ha-icon,
-      .shape ha-svg-icon {
+      .shape ::slotted(*) {
         display: flex;
         color: var(--tile-icon-color);
         transition: color 180ms ease-in-out;
