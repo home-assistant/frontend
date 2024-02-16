@@ -2168,7 +2168,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
