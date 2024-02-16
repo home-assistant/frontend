@@ -6534,7 +6534,7 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Individual devices summary usage",
+          "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage"
         }
       },
