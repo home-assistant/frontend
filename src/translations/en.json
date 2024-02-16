@@ -317,6 +317,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
@@ -2168,7 +2169,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2347,7 +2358,21 @@
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
-            "start_debug_run": "Start debug run"
+            "start_debug_run": "Start debug run",
+            "pipeline": {
+              "header": "Assist Pipeline",
+              "run_text_pipeline": "Run text pipeline",
+              "run_audio_pipeline": "Run audio pipeline",
+              "run_audio_with_wake": "Run audio pipeline with wake word detection",
+              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "send": "Send",
+              "continue_listening": "Continue listening for wake word",
+              "continue_talking": "Continue talking",
+              "continue_conversation": "Continue conversation",
+              "input_text": "Input text",
+              "run": "[%key:ui::card::service::run%]",
+              "error_starting": "Error starting pipeline"
+            }
           },
           "expose": {
             "caption": "Expose",
@@ -5599,6 +5624,15 @@
                   "icons": "Icons"
                 },
                 "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
