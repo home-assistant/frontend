@@ -114,14 +114,15 @@ class HaServicePicker extends LitElement {
       if (!filter) {
         return processedServices;
       }
-      const split_filter = filter.split(' ')
-      return processedServices.filter(
-        (service) => {
-          const lower_service_name = service.name.toLowerCase();
-          const lower_service = service.service.toLowerCase();
-          return split_filter.every(f => lower_service_name.includes(f)) || split_filter.every(f => lower_service.toLowerCase().includes(f))
-        }
-      );
+      const split_filter = filter.split(" ");
+      return processedServices.filter((service) => {
+        const lower_service_name = service.name.toLowerCase();
+        const lower_service = service.service.toLowerCase();
+        return (
+          split_filter.every((f) => lower_service_name.includes(f)) ||
+          split_filter.every((f) => lower_service.toLowerCase().includes(f))
+        );
+      });
     }
   );
 
