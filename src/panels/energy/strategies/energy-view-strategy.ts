@@ -156,7 +156,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     if (prefs.device_consumption.length) {
       view.cards!.push({
         title: hass.localize(
-          "ui.panel.energy.cards.energy_devices_graph_title"
+          "ui.panel.energy.cards.energy_devices_detail_graph_title"
         ),
         type: "energy-devices-detail-graph",
         collection_key: "energy_dashboard",
