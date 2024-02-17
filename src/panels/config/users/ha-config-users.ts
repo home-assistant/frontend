@@ -1,6 +1,6 @@
 import { mdiCheck, mdiPlus } from "@mdi/js";
-import { html, LitElement, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { LitElement, PropertyValues, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -13,11 +13,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import {
+  User,
   computeUserBadges,
   deleteUser,
   fetchUsers,
   updateUser,
-  User,
 } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -30,13 +30,13 @@ import { showUserDetailDialog } from "./show-dialog-user-detail";
 export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public _users: User[] = [];
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
-
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _users: User[] = [];
 
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {

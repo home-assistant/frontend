@@ -153,7 +153,8 @@ class DialogExposeEntity extends LitElement {
       <ha-state-icon
         title=${ifDefined(entityState?.state)}
         slot="graphic"
-        .state=${entityState}
+        .hass=${this.hass}
+        .stateObj=${entityState}
       ></ha-state-icon>
       ${computeStateName(entityState)}
       <span slot="secondary">${entityState.entity_id}</span>

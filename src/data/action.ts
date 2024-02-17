@@ -2,6 +2,7 @@ import {
   mdiAbTesting,
   mdiApplicationVariableOutline,
   mdiArrowDecision,
+  mdiBullhorn,
   mdiCallSplit,
   mdiCodeBraces,
   mdiDevices,
@@ -36,6 +37,7 @@ export const ACTION_ICONS = {
   stop: mdiHandBackRight,
   parallel: mdiShuffleDisabled,
   variables: mdiApplicationVariableOutline,
+  set_conversation_response: mdiBullhorn,
 } as const;
 
 export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_ICONS>([
@@ -68,6 +70,7 @@ export const ACTION_GROUPS: AutomationElementGroup = {
     members: {
       event: {},
       service: {},
+      set_conversation_response: {},
     },
   },
 } as const;

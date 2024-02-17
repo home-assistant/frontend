@@ -5,15 +5,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
-import {
-  ClimateEntity,
-  ClimateEntityFeature,
-  computeFanModeIcon,
-} from "../../../data/climate";
+import { ClimateEntity, ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -136,7 +133,13 @@ class HuiClimateFanModesCardFeature
           "fan_mode",
           mode
         ),
-        path: computeFanModeIcon(mode),
+        icon: html`<ha-attribute-icon
+          slot="graphic"
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+          attribute="fan_mode"
+          .attributeValue=${mode}
+        ></ha-attribute-icon>`,
       }));
 
     if (this._config.style === "icons") {
@@ -171,12 +174,19 @@ class HuiClimateFanModesCardFeature
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
         >
-          <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
+          ${this._currentFanMode
+            ? html`<ha-attribute-icon
+                slot="icon"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                attribute="fan_mode"
+                .attributeValue=${this._currentFanMode}
+              ></ha-attribute-icon>`
+            : html` <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>`}
           ${options.map(
             (option) => html`
               <ha-list-item .value=${option.value} graphic="icon">
-                <ha-svg-icon slot="graphic" .path=${option.path}></ha-svg-icon>
-                ${option.label}
+                ${option.icon}${option.label}
               </ha-list-item>
             `
           )}

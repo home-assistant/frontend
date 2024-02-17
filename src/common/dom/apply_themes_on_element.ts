@@ -41,7 +41,9 @@ export const applyThemesOnElement = (
   // If there is no explicitly desired dark mode provided, we automatically
   // use the active one from `themes`.
   const darkMode =
-    themeSettings?.dark !== undefined ? themeSettings.dark : themes.darkMode;
+    themeSettings?.dark !== undefined
+      ? themeSettings.dark
+      : themes?.darkMode || false;
 
   let cacheKey = themeToApply;
   let themeRules: Partial<ThemeVars> = {};

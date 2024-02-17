@@ -1,22 +1,25 @@
-import { html, LitElement } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { batteryStateIcon } from "../../common/entity/battery_icon";
-import "../ha-svg-icon";
+import { batteryLevelIcon } from "../../common/entity/battery_icon";
+import "../ha-icon";
 
 @customElement("ha-battery-icon")
 export class HaBatteryIcon extends LitElement {
-  @property() public batteryStateObj;
+  @property({ attribute: false }) public batteryStateObj?: HassEntity;
 
-  @property() public batteryChargingStateObj;
+  @property({ attribute: false }) public batteryChargingStateObj?: HassEntity;
 
   protected render() {
+    if (!this.batteryStateObj) return nothing;
+
     return html`
-      <ha-svg-icon
-        .path=${batteryStateIcon(
-          this.batteryStateObj,
-          this.batteryChargingStateObj
+      <ha-icon
+        .icon=${batteryLevelIcon(
+          this.batteryStateObj.state,
+          this.batteryChargingStateObj?.state === "on"
         )}
-      ></ha-svg-icon>
+      ></ha-icon>
     `;
   }
 }

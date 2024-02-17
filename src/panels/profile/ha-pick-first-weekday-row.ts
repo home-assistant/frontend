@@ -12,7 +12,7 @@ import { HomeAssistant } from "../../types";
 class FirstWeekdayRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     return html`

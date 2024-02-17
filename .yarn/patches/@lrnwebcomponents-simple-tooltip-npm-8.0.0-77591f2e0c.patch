@@ -1,0 +1,13 @@
+diff --git a/simple-tooltip.js b/simple-tooltip.js
+index 78a87f6a223925f0e29fbedb268c85a142ec6985..3d686dd6a3d5a93342b4b01408089fc316b408ca 100644
+--- a/simple-tooltip.js
++++ b/simple-tooltip.js
+@@ -195,6 +195,8 @@ class SimpleTooltip extends LitElement {
+         .hidden {
+           position: absolute;
+           left: -10000px;
++          inset-inline-start: -10000px;
++          inset-inline-end: initial;
+           top: auto;
+           width: 1px;
+           height: 1px;

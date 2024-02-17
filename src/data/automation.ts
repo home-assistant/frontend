@@ -74,8 +74,8 @@ export interface StateTrigger extends BaseTrigger {
   platform: "state";
   entity_id: string | string[];
   attribute?: string;
-  from?: string | number;
-  to?: string | string[] | number;
+  from?: string | string[];
+  to?: string | string[];
   for?: string | number | ForDict;
 }
 

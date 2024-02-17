@@ -10,13 +10,13 @@ import "../../../../src/components/ha-card";
 
 @customElement("hc-layout")
 class HcLayout extends LitElement {
-  @property() public subtitle?: string | undefined;
+  @property() public subtitle?: string;
 
-  @property() public auth?: Auth;
+  @property({ attribute: false }) public auth?: Auth;
 
-  @property() public connection?: Connection;
+  @property({ attribute: false }) public connection?: Connection;
 
-  @property() public user?: HassUser;
+  @property({ attribute: false }) public user?: HassUser;
 
   protected render(): TemplateResult {
     return html`

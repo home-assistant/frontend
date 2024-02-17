@@ -1,13 +1,14 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
+import "../../../components/ha-alert";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
-
 import {
   BlueprintOrError,
   Blueprints,
@@ -22,9 +23,9 @@ import "../ha-config-section";
 export class HaBlueprintScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ reflect: true, type: Boolean }) public narrow!: boolean;
+  @property({ reflect: true, type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -82,7 +83,6 @@ export class HaBlueprintScriptEditor extends LitElement {
                 )
             : html`<ha-circular-progress indeterminate></ha-circular-progress>`}
         </div>
-
         ${this.config.use_blueprint.path
           ? blueprint && "error" in blueprint
             ? html`<p class="warning padding">
@@ -98,8 +98,23 @@ export class HaBlueprintScriptEditor extends LitElement {
               ${blueprint?.metadata?.input &&
               Object.keys(blueprint.metadata.input).length
                 ? Object.entries(blueprint.metadata.input).map(
-                    ([key, value]) =>
-                      html`<ha-settings-row .narrow=${this.narrow}>
+                    ([key, value]) => {
+                      const selector = value?.selector ?? { text: undefined };
+                      const type = Object.keys(selector)[0];
+                      const enhancedSelector = [
+                        "action",
+                        "condition",
+                        "trigger",
+                      ].includes(type)
+                        ? {
+                            [type]: {
+                              ...selector[type],
+                              path: [key],
+                            },
+                          }
+                        : selector;
+
+                      return html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
                         <ha-markdown
                           slot="description"
@@ -109,7 +124,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                         ></ha-markdown>
                         ${html`<ha-selector
                           .hass=${this.hass}
-                          .selector=${value?.selector ?? { text: undefined }}
+                          .selector=${enhancedSelector}
                           .key=${key}
                           .disabled=${this.disabled}
                           .required=${value?.default === undefined}
@@ -119,8 +134,10 @@ export class HaBlueprintScriptEditor extends LitElement {
                             ? this.config.use_blueprint.input[key]
                             : value?.default}
                           @value-changed=${this._inputChanged}
+                          @item-moved=${this._itemMoved}
                         ></ha-selector>`}
-                      </ha-settings-row>`
+                      </ha-settings-row>`;
+                    }
                   )
                 : html`<p class="padding">
                     ${this.hass.localize(
@@ -164,6 +181,29 @@ export class HaBlueprintScriptEditor extends LitElement {
       return;
     }
     const input = { ...this.config.use_blueprint.input, [key]: value };
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config,
+        use_blueprint: {
+          ...this.config.use_blueprint,
+          input,
+        },
+      },
+    });
+  }
+
+  private _itemMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+
+    const input = nestedArrayMove(
+      this.config.use_blueprint.input,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
 
     fireEvent(this, "value-changed", {
       value: {
@@ -228,6 +268,10 @@ export class HaBlueprintScriptEditor extends LitElement {
         ha-alert {
           margin-bottom: 16px;
           display: block;
+        }
+        ha-alert.re-order {
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];

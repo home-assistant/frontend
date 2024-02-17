@@ -461,11 +461,15 @@ class DialogZWaveJSNodeStatistics extends LitElement {
         .key-cell {
           display: table-cell;
           padding-right: 5px;
+          padding-inline-end: 5px;
+          padding-inline-start: initial;
         }
 
         .value-cell {
           display: table-cell;
           padding-left: 5px;
+          padding-inline-start: 5px;
+          padding-inline-end: initial;
         }
 
         span[slot="meta"] {

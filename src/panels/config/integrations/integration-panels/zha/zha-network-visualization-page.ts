@@ -32,9 +32,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property()
   public zoomedDeviceIdFromURL?: string;
@@ -470,5 +470,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zha-network-visualization-page": ZHANetworkVisualizationPage;
   }
 }

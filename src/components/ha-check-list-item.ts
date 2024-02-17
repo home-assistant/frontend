@@ -37,6 +37,10 @@ export class HaCheckListItem extends CheckListItemBase {
       .mdc-deprecated-list-item__graphic {
         margin-top: var(--check-list-item-graphic-margin-top);
       }
+      :host([graphic="icon"]) .mdc-deprecated-list-item__graphic {
+        margin-inline-start: 0;
+        margin-inline-end: var(--mdc-list-item-graphic-margin, 32px);
+      }
     `,
   ];
 }

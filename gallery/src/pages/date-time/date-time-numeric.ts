@@ -1,19 +1,20 @@
-import { html, css, LitElement } from "lit";
+import "@material/mwc-list/mwc-list";
+import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
+import { formatDateTimeNumeric } from "../../../../src/common/datetime/format_date_time";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select";
-import { translationMetadata } from "../../../../src/resources/translations-metadata";
-import { formatDateTimeNumeric } from "../../../../src/common/datetime/format_date_time";
-import { timeOptions } from "../../data/date-options";
-import { demoConfig } from "../../../../src/fake_data/demo_config";
 import {
+  DateFormat,
+  FirstWeekday,
   FrontendLocaleData,
   NumberFormat,
   TimeFormat,
-  DateFormat,
-  FirstWeekday,
   TimeZone,
 } from "../../../../src/data/translation";
+import { demoConfig } from "../../../../src/fake_data/demo_config";
+import { translationMetadata } from "../../../../src/resources/translations-metadata";
+import { timeOptions } from "../../data/date-options";
 
 @customElement("demo-date-time-date-time-numeric")
 export class DemoDateTimeDateTimeNumeric extends LitElement {

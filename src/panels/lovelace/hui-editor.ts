@@ -49,7 +49,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public closeEditor?: () => void;
+  @property({ attribute: false }) public closeEditor?: () => void;
 
   @state() private _saving?: boolean;
 

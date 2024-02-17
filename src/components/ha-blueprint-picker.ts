@@ -24,7 +24,7 @@ class HaBluePrintPicker extends LitElement {
 
   @property() public domain: BlueprintDomain = "automation";
 
-  @property() public blueprints?: Blueprints;
+  @property({ attribute: false }) public blueprints?: Blueprints;
 
   @property({ type: Boolean }) public disabled = false;
 

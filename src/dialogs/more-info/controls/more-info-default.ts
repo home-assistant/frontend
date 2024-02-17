@@ -8,7 +8,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoDefault extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {

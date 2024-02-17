@@ -13,7 +13,7 @@ import "./ha-user-picker";
 class HaUsersPickerLight extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ attribute: false }) public value?: string[];
 
   @property({ attribute: "picked-user-label" })
   public pickedUserLabel?: string;
@@ -23,6 +23,8 @@ class HaUsersPickerLight extends LitElement {
 
   @property({ attribute: false })
   public users?: User[];
+
+  @property({ type: Boolean }) public disabled = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -40,47 +42,46 @@ class HaUsersPickerLight extends LitElement {
 
     const notSelectedUsers = this._notSelectedUsers(this.users, this.value);
     return html`
-      ${guard(
-        [notSelectedUsers],
-        () =>
-          this.value?.map(
-            (user_id, idx) => html`
-              <div>
-                <ha-user-picker
-                  .label=${this.pickedUserLabel}
-                  .noUserLabel=${this.hass!.localize(
-                    "ui.components.user-picker.remove_user"
-                  )}
-                  .index=${idx}
-                  .hass=${this.hass}
-                  .value=${user_id}
-                  .users=${this._notSelectedUsersAndSelected(
-                    user_id,
-                    this.users,
-                    notSelectedUsers
-                  )}
-                  @value-changed=${this._userChanged}
-                ></ha-user-picker>
-                <ha-icon-button
-                  .userId=${user_id}
-                  .label=${this.hass!.localize(
-                    "ui.components.user-picker.remove_user"
-                  )}
-                  .path=${mdiClose}
-                  @click=${this._removeUser}
-                >
-                  ></ha-icon-button
-                >
-              </div>
-            `
-          )
+      ${guard([notSelectedUsers], () =>
+        this.value?.map(
+          (user_id, idx) => html`
+            <div>
+              <ha-user-picker
+                .label=${this.pickedUserLabel}
+                .noUserLabel=${this.hass!.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
+                .index=${idx}
+                .hass=${this.hass}
+                .value=${user_id}
+                .users=${this._notSelectedUsersAndSelected(
+                  user_id,
+                  this.users,
+                  notSelectedUsers
+                )}
+                .disabled=${this.disabled}
+                @value-changed=${this._userChanged}
+              ></ha-user-picker>
+              <ha-icon-button
+                .userId=${user_id}
+                .label=${this.hass!.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
+                .path=${mdiClose}
+                @click=${this._removeUser}
+              >
+                ></ha-icon-button
+              >
+            </div>
+          `
+        )
       )}
       <ha-user-picker
         .label=${this.pickUserLabel ||
         this.hass!.localize("ui.components.user-picker.add_user")}
         .hass=${this.hass}
         .users=${notSelectedUsers}
-        .disabled=${!notSelectedUsers?.length}
+        .disabled=${this.disabled || !notSelectedUsers?.length}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;

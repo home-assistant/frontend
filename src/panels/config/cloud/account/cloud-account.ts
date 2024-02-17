@@ -1,15 +1,13 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-item/paper-item-body";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
+import "../../../../components/ha-list-item";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -38,8 +36,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
   @state() private _subscription?: SubscriptionInfo;
 
-  @state() private _rtlDirection: "rtl" | "ltr" = "rtl";
-
   protected render() {
     return html`
       <hass-subpage
@@ -65,12 +61,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <paper-item-body two-line>
+                <ha-list-item twoline>
                   ${this.cloudStatus.email.replace(
                     /(\w{3})[\w.-]+@([\w.]+\w)/,
                     "$1***@$2"
                   )}
-                  <div secondary class="wrap">
+                  <span slot="secondary" class="wrap">
                     ${this._subscription
                       ? this._subscription.human_description.replace(
                           "{periodEnd}",
@@ -87,8 +83,8 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.cloud.account.fetching_subscription"
                         )}
-                  </div>
-                </paper-item-body>
+                  </span>
+                </ha-list-item>
               </div>
 
               ${this.cloudStatus.cloud === "connecting" &&
@@ -103,12 +99,10 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <paper-item-body>
+                <ha-list-item>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.connection_status"
-                  )}
-                </paper-item-body>
-                <div class="status">
+                  )}:
                   ${this.cloudStatus.cloud === "connected"
                     ? this.hass.localize(
                         "ui.panel.config.cloud.account.connected"
@@ -120,7 +114,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.cloud.account.connecting"
                         )}
-                </div>
+                </ha-list-item>
               </div>
 
               <div class="card-actions">
@@ -175,13 +169,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
             <cloud-remote-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-remote-pref>
 
             <cloud-tts-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-tts-pref>
 
             <ha-tip .hass=${this.hass}>
@@ -196,7 +188,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-webhooks>
           </ha-config-section>
         </div>
@@ -206,15 +197,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
   firstUpdated() {
     this._fetchSubscriptionInfo();
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale !== this.hass.locale) {
-        this._rtlDirection = computeRTLDirection(this.hass);
-      }
-    }
   }
 
   protected override hassSubscribe() {
@@ -273,10 +255,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   private async _logoutFromCloud() {
     await cloudLogout(this.hass);
     fireEvent(this, "ha-refresh-cloud-status");
-  }
-
-  _computeRTLDirection(hass) {
-    return computeRTLDirection(hass);
   }
 
   static get styles() {

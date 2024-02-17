@@ -72,7 +72,7 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 export class SupervisorBackupContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public localize?: LocalizeFunc;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
@@ -316,6 +316,8 @@ export class SupervisorBackupContent extends LitElement {
         display: flex;
         flex-direction: column;
         margin-left: 30px;
+        margin-inline-start: 30px;
+        margin-inline-end: initial;
       }
       ha-formfield.password {
         display: block;
@@ -324,6 +326,8 @@ export class SupervisorBackupContent extends LitElement {
       .backup-types {
         display: flex;
         margin-left: -13px;
+        margin-inline-start: -13px;
+        margin-inline-end: initial;
       }
       .sub-header {
         margin-top: 8px;

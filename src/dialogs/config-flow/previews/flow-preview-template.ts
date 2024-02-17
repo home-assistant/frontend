@@ -24,7 +24,7 @@ class FlowPreviewTemplate extends LitElement {
 
   @property() public flowId!: string;
 
-  @property() public stepData!: Record<string, any>;
+  @property({ attribute: false }) public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
 

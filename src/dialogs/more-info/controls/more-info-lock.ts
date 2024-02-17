@@ -2,11 +2,11 @@ import { mdiDoorOpen, mdiLock, mdiLockOff } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-outlined-icon-button";
+import "../../../components/ha-state-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   LockEntity,
@@ -62,9 +62,10 @@ class MoreInfoLock extends LitElement {
                 <div class="status">
                   <span></span>
                   <div class="icon">
-                    <ha-svg-icon
-                      .path=${domainIcon("lock", this.stateObj)}
-                    ></ha-svg-icon>
+                    <ha-state-icon
+                      .hass=${this.hass}
+                      .stateObj=${this.stateObj}
+                    ></ha-state-icon>
                   </div>
                 </div>
               `

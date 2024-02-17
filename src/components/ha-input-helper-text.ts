@@ -14,6 +14,8 @@ class InputHelperText extends LitElement {
       font-size: 0.75rem;
       padding-left: 16px;
       padding-right: 16px;
+      padding-inline-start: 16px;
+      padding-inline-end: 16px;
     }
   `;
 }

@@ -35,9 +35,9 @@ const SHOW_ALL_ENTRIES_LIMIT = 6;
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormMultiSelectSchema;
+  @property({ attribute: false }) public schema!: HaFormMultiSelectSchema;
 
-  @property() public data!: HaFormMultiSelectData;
+  @property({ attribute: false }) public data!: HaFormMultiSelectData;
 
   @property() public label!: string;
 

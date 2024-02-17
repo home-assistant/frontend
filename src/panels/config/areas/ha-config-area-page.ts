@@ -1,11 +1,9 @@
+import { consume } from "@lit-labs/context";
 import "@material/mwc-button";
 import "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
-import {
-  HassEntity,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket/dist/types";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -18,33 +16,31 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
-  subscribeAreaRegistry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
 import { AutomationEntity } from "../../../data/automation";
+import { fullEntitiesContext } from "../../../data/context";
 import {
-  computeDeviceName,
   DeviceRegistryEntry,
+  computeDeviceName,
   sortDeviceRegistryByName,
-  subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
-  computeEntityRegistryName,
   EntityRegistryEntry,
+  computeEntityRegistryName,
   sortEntityRegistryByName,
-  subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { SceneEntity } from "../../../data/scene";
 import { ScriptEntity } from "../../../data/script";
-import { findRelated, RelatedResult } from "../../../data/search";
+import { RelatedResult, findRelated } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -52,7 +48,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import "../../../components/ha-list-item";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -60,34 +55,24 @@ declare type NameAndEntity<EntityType extends HassEntity> = {
 };
 
 @customElement("ha-config-area-page")
-class HaConfigAreaPage extends SubscribeMixin(LitElement) {
+class HaConfigAreaPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public areaId!: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @state() public _areas!: AreaRegistryEntry[];
-
-  @state() public _devices!: DeviceRegistryEntry[];
-
-  @state() public _entities!: EntityRegistryEntry[];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   @state() private _related?: RelatedResult;
 
   private _logbookTime = { recent: 86400 };
-
-  private _area = memoizeOne(
-    (
-      areaId: string,
-      areas: AreaRegistryEntry[]
-    ): AreaRegistryEntry | undefined =>
-      areas.find((area) => area.area_id === areaId)
-  );
 
   private _memberships = memoizeOne(
     (
@@ -150,26 +135,12 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeAreaRegistry(this.hass.connection, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._devices = entries;
-      }),
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._entities = entries;
-      }),
-    ];
-  }
-
   protected render() {
-    if (!this._areas || !this._devices || !this._entities) {
+    if (!this.hass.areas || !this.hass.devices || !this.hass.entities) {
       return nothing;
     }
 
-    const area = this._area(this.areaId, this._areas);
+    const area = this.hass.areas[this.areaId];
 
     if (!area) {
       return html`
@@ -182,8 +153,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
     const memberships = this._memberships(
       this.areaId,
-      this._devices,
-      this._entities
+      Object.values(this.hass.devices),
+      this._entityReg
     );
     const { devices, entities } = memberships;
 
@@ -617,7 +588,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
-    const entry = this._entities.find(
+    const entry = this._entityReg.find(
       (e) => e.entity_id === entityState.entity_id
     );
     let url = `/config/script/show/${entityState.entity_id}`;
@@ -657,7 +628,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   }
 
   private async _deleteConfirm() {
-    const area = this._area(this.areaId, this._areas);
+    const area = this.hass.areas[this.areaId];
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.areas.delete.confirmation_title",
@@ -686,7 +657,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           font-weight: 500;
           color: var(--secondary-text-color);
         }
-
         img {
           border-radius: var(--ha-card-border-radius, 12px);
           width: 100%;

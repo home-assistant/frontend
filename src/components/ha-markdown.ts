@@ -42,6 +42,10 @@ export class HaMarkdown extends LitElement {
       ha-markdown-element > *:last-child {
         margin-bottom: 0;
       }
+      ha-alert {
+        display: block;
+        margin: 4px 0;
+      }
       a {
         color: var(--primary-color);
       }

@@ -16,7 +16,7 @@ class HassioPanelRouter extends HassRouterPage {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
     beforeRender: (page: string) =>

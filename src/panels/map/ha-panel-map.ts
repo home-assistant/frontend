@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../types";
 class HaPanelMap extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   private _entities: string[] = [];
 

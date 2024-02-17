@@ -23,7 +23,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
@@ -254,7 +253,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   ? html`
                       <ha-slider
                         labeled
-                        .dir=${computeRTLDirection(this.hass!)}
                         .value=${Number(stateObj.attributes.volume_level) * 100}
                         @change=${this._selectedValueChanged}
                         id="input"
@@ -415,6 +413,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       }
       .volume {
         display: flex;
+        align-items: center;
         flex-grow: 2;
         flex-shrink: 2;
       }

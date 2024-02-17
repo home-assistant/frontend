@@ -8,7 +8,7 @@ import "./ha-multi-textfield";
 class AliasesEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public aliases!: string[];
+  @property({ type: Array }) public aliases!: string[];
 
   @property({ type: Boolean }) public disabled = false;
 

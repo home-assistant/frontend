@@ -8,7 +8,6 @@ import {
   mdiWeatherLightning,
   mdiWeatherLightningRainy,
   mdiWeatherNight,
-  mdiWeatherNightPartlyCloudy,
   mdiWeatherPartlyCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
@@ -519,13 +518,6 @@ export const getWeatherStateIcon = (
 
   return undefined;
 };
-
-export const weatherIcon = (state?: string, nightTime?: boolean): string =>
-  !state
-    ? undefined
-    : nightTime && state === "partlycloudy"
-      ? mdiWeatherNightPartlyCloudy
-      : weatherIcons[state];
 
 const EIGHT_HOURS = 28800000;
 const DAY_IN_MILLISECONDS = 86400000;

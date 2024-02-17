@@ -40,7 +40,9 @@ class StateCardClimate extends LitElement {
 
         ha-climate-state {
           margin-left: 16px;
-          text-align: right;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
+          text-align: var(--float-end);
         }
       `,
     ];

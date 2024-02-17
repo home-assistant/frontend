@@ -8,11 +8,11 @@ import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_action")
 export class HaSelectorUiAction extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiActionSelector;
+  @property({ attribute: false }) public selector!: UiActionSelector;
 
-  @property() public value?: ActionConfig;
+  @property({ attribute: false }) public value?: ActionConfig;
 
   @property() public label?: string;
 
@@ -39,6 +39,6 @@ export class HaSelectorUiAction extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-action": HaSelectorUiAction;
+    "ha-selector-ui_action": HaSelectorUiAction;
   }
 }

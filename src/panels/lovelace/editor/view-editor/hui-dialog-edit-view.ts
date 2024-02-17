@@ -524,6 +524,8 @@ export class HuiDialogEditView extends LitElement {
         }
         mwc-button.warning {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
         ha-circular-progress {
           display: none;

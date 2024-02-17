@@ -9,6 +9,7 @@ import {
   localizeWeekdays,
   localizeMonths,
 } from "../common/datetime/localize_date";
+import { mainWindow } from "../common/dom/get_main_window";
 
 // Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
@@ -157,7 +158,7 @@ class DateRangePickerElement extends WrappedElement {
             min-width: initial !important;
             max-height: var(--date-range-picker-max-height);
             overflow-y: auto;
-          }
+                      }
           .daterangepicker:before {
             display: none;
           }
@@ -267,15 +268,37 @@ class DateRangePickerElement extends WrappedElement {
           .calendar-table {
             padding: 0 !important;
           }
-          .daterangepicker.ltr {
+          .calendar-time {
             direction: ltr;
-            text-align: left;
+          }
+          .daterangepicker.ltr {
+            direction: var(--direction);
+            text-align: var(--float-start);
           }
           .vue-daterange-picker{
             min-width: unset !important;
             display: block !important;
           }
         `;
+    if (mainWindow.document.dir === "rtl") {
+      style.innerHTML += `
+            .daterangepicker .calendar-table .next span {
+              transform: rotate(135deg);
+              -webkit-transform: rotate(135deg);
+            }
+            .daterangepicker .calendar-table .prev span {
+              transform: rotate(-45deg);
+              -webkit-transform: rotate(-45deg);
+            }
+            .daterangepicker td.start-date {
+              border-radius: 0 50% 50% 0;
+            }
+            .daterangepicker td.end-date {
+              border-radius: 50% 0 0 50%;
+            }
+            `;
+    }
+
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);
     // Stop click events from reaching the document, otherwise it will close the picker immediately.

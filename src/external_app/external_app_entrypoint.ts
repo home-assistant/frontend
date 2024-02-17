@@ -7,6 +7,7 @@ This is the entry point for providing external app stuff from app entrypoint.
 
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
+import { showAutomationEditor } from "../data/automation";
 import { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type { EMIncomingMessageCommands } from "./external_messaging";
 
@@ -73,6 +74,14 @@ const handleExternalMessage = (
       return true;
     }
     fireEvent(hassMainEl, "hass-toggle-menu", { open: true });
+    bus.fireMessage({
+      id: msg.id,
+      type: "result",
+      success: true,
+      result: null,
+    });
+  } else if (msg.command === "automation/editor/show") {
+    showAutomationEditor(msg.payload?.config);
     bus.fireMessage({
       id: msg.id,
       type: "result",

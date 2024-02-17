@@ -62,22 +62,16 @@ export const sidebarEditStyle = css`
     position: absolute;
     top: 0;
     right: 4px;
+    inset-inline-end: 4px;
+    inset-inline-start: initial;
     --mdc-icon-button-size: 40px;
-  }
-
-  :host([rtl]) .show-panel {
-    right: initial;
-    left: 4px;
   }
 
   .hide-panel {
     top: 4px;
     right: 8px;
-  }
-
-  :host([rtl]) .hide-panel {
-    right: initial;
-    left: 8px;
+    inset-inline-end: 8px;
+    inset-inline-start: initial;
   }
 
   :host([expanded]) .hide-panel {

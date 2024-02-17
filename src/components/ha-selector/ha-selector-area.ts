@@ -21,9 +21,9 @@ import "../ha-areas-picker";
 
 @customElement("ha-selector-area")
 export class HaAreaSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: AreaSelector;
+  @property({ attribute: false }) public selector!: AreaSelector;
 
   @property() public value?: any;
 

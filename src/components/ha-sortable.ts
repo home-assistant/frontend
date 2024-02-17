@@ -4,12 +4,15 @@ import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
+import { ItemPath } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
+      oldPath?: ItemPath;
+      newPath?: ItemPath;
     };
   }
 }
@@ -21,6 +24,9 @@ export class HaSortable extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
+  @property({ type: Array })
+  public path?: ItemPath;
+
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
 
@@ -29,6 +35,15 @@ export class HaSortable extends LitElement {
 
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
+
+  @property({ type: String, attribute: "group" })
+  public group?: string;
+
+  @property({ type: Number, attribute: "swap-threshold" })
+  public swapThreshold?: number;
+
+  @property({ type: Boolean, attribute: "invert-swap" })
+  public invertSwap?: boolean;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -68,12 +83,11 @@ export class HaSortable extends LitElement {
     return html`
       <style>
         .sortable-fallback {
-          display: none;
-          opacity: 0;
+          display: none !important;
         }
 
         .sortable-ghost {
-          border: 2px solid var(--primary-color);
+          box-shadow: 0 0 0 2px var(--primary-color);
           background: rgba(var(--rgb-primary-color), 0.25);
           border-radius: 4px;
           opacity: 0.4;
@@ -100,6 +114,7 @@ export class HaSortable extends LitElement {
 
     const options: SortableInstance.Options = {
       animation: 150,
+      swapThreshold: 1,
       onChoose: this._handleChoose,
       onEnd: this._handleEnd,
     };
@@ -107,30 +122,51 @@ export class HaSortable extends LitElement {
     if (this.draggableSelector) {
       options.draggable = this.draggableSelector;
     }
+
+    if (this.swapThreshold !== undefined) {
+      options.swapThreshold = this.swapThreshold;
+    }
+    if (this.invertSwap !== undefined) {
+      options.invertSwap = this.invertSwap;
+    }
     if (this.handleSelector) {
       options.handle = this.handleSelector;
     }
+    if (this.draggableSelector) {
+      options.draggable = this.draggableSelector;
+    }
+    if (this.group) {
+      options.group = this.group;
+    }
+
     this._sortable = new Sortable(container, options);
   }
 
-  private _handleEnd = (evt: SortableEvent) => {
+  private _handleEnd = async (evt: SortableEvent) => {
     // put back in original location
     if ((evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
-    // if item was not moved, ignore
+
+    const oldIndex = evt.oldIndex;
+    const oldPath = (evt.from.parentElement as HaSortable).path;
+    const newIndex = evt.newIndex;
+    const newPath = (evt.to.parentElement as HaSortable).path;
+
     if (
-      evt.oldIndex === undefined ||
-      evt.newIndex === undefined ||
-      evt.oldIndex === evt.newIndex
+      oldIndex === undefined ||
+      newIndex === undefined ||
+      (oldIndex === newIndex && oldPath?.join(".") === newPath?.join("."))
     ) {
       return;
     }
 
     fireEvent(this, "item-moved", {
-      oldIndex: evt.oldIndex!,
-      newIndex: evt.newIndex!,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath,
     });
   };
 

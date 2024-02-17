@@ -84,13 +84,15 @@ export class HaDevicePicker extends LitElement {
   @property({ type: Array, attribute: "exclude-devices" })
   public excludeDevices?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaDevicePickerEntityFilterFunc;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 

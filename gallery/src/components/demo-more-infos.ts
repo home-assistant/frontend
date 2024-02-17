@@ -1,19 +1,19 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import "./demo-more-info";
-import "../ha-demo-options";
 import { HomeAssistant } from "../../../src/types";
+import "../ha-demo-options";
+import "./demo-more-info";
 
 @customElement("demo-more-infos")
 class DemoMoreInfos extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: [];
+  @property({ type: Array }) public entities!: string[];
 
-  @property({ attribute: false }) _showConfig: boolean = false;
+  @state() private _showConfig = false;
 
   render() {
     return html`

@@ -14,6 +14,8 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
+const TAG_BASE = "https://www.home-assistant.io/tag/";
+
 @customElement("dialog-tag-detail")
 class DialogTagDetail
   extends LitElement
@@ -119,7 +121,7 @@ class DialogTagDetail
                 </div>
                 <div id="qr">
                   <ha-qr-code
-                    .data=${this._params!.entry!.id}
+                    .data=${`${TAG_BASE}${this._params!.entry!.id}`}
                     center-image="/static/icons/favicon-192x192.png"
                     error-correction-level="quartile"
                     scale="5"

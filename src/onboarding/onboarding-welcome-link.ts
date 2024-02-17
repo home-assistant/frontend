@@ -10,6 +10,7 @@ import {
   state,
 } from "lit/decorators";
 import "../components/ha-card";
+import "../components/ha-svg-icon";
 
 @customElement("onboarding-welcome-link")
 class OnboardingWelcomeLink extends LitElement {
@@ -17,7 +18,7 @@ class OnboardingWelcomeLink extends LitElement {
 
   @property() public iconPath!: string;
 
-  @property({ attribute: true, type: Boolean }) public noninteractive?: boolean;
+  @property({ type: Boolean }) public noninteractive = false;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 

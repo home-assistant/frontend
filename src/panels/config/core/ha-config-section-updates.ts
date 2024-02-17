@@ -34,7 +34,7 @@ import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 class HaConfigSectionUpdates extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _showSkipped = false;
 

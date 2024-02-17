@@ -249,6 +249,8 @@ export class HuiConditionalCardEditor
         }
         .gui-mode-button {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
       `,
     ];

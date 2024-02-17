@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
 import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";

@@ -10,7 +10,7 @@ import "./hassio-addon-info";
 
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 

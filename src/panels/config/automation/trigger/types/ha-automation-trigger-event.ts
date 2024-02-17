@@ -15,7 +15,7 @@ import {
 export class HaEventTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: EventTrigger;
+  @property({ attribute: false }) public trigger!: EventTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 

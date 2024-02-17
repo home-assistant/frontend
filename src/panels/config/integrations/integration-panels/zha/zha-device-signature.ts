@@ -8,7 +8,7 @@ import { HomeAssistant } from "../../../../../types";
 class ZHADeviceZigbeeInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device: ZHADevice | undefined;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @state() private _signature: any;
 

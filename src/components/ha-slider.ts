@@ -2,9 +2,15 @@ import { customElement } from "lit/decorators";
 import "element-internals-polyfill";
 import { MdSlider } from "@material/web/slider/slider";
 import { CSSResult, css } from "lit";
+import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
 export class HaSlider extends MdSlider {
+  public connectedCallback() {
+    super.connectedCallback();
+    this.dir = mainWindow.document.dir;
+  }
+
   static override styles: CSSResult[] = [
     ...MdSlider.styles,
     css`

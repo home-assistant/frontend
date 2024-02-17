@@ -4,9 +4,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HaTextField } from "../ha-textfield";
 import "../ha-textfield";
 import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property({ attribute: false }) public schema!: HaFormFloatSchema;
 
   @property({ attribute: false }) public data!: HaFormFloatData;
@@ -38,7 +41,9 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}
-        .validationMessage=${this.schema.required ? "Required" : undefined}
+        .validationMessage=${this.schema.required
+          ? this.localize?.("ui.common.error_required")
+          : undefined}
         @input=${this._valueChanged}
       ></ha-textfield>
     `;

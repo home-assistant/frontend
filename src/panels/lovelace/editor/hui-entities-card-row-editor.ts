@@ -21,11 +21,11 @@ declare global {
 
 @customElement("hui-entities-card-row-editor")
 export class HuiEntitiesCardRowEditor extends LitElement {
-  @property({ attribute: false }) protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) protected entities?: LovelaceRowConfig[];
+  @property({ attribute: false }) public entities?: LovelaceRowConfig[];
 
-  @property() protected label?: string;
+  @property() public label?: string;
 
   private _entityKeys = new WeakMap<LovelaceRowConfig, string>();
 

@@ -7,7 +7,6 @@ import "../components/ha-textfield";
 import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import { loadPolyfillIfNeeded } from "../resources/resize-observer.polyfill";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import { isUnavailableState } from "../data/entity";
 import { debounce } from "../common/util/debounce";
 
@@ -61,7 +60,6 @@ class StateCardNumber extends LitElement {
             <div class="flex">
               <ha-slider
                 labeled
-                .dir=${computeRTLDirection(this.hass)}
                 .disabled=${isUnavailableState(this.stateObj.state)}
                 .step=${Number(this.stateObj.attributes.step)}
                 .min=${Number(this.stateObj.attributes.min)}

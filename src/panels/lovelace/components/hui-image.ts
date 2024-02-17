@@ -400,12 +400,14 @@ export class HuiImage extends LitElement {
 
       .container {
         transition: filter 0.2s linear;
+        height: 100%;
       }
 
       img {
         display: block;
-        height: auto;
+        height: 100%;
         width: 100%;
+        object-fit: cover;
       }
 
       .progress-container {
@@ -427,6 +429,12 @@ export class HuiImage extends LitElement {
       .ratio.contain {
         background-size: contain;
         background-repeat: no-repeat;
+      }
+      .fill img {
+        object-fit: fill;
+      }
+      .contain img {
+        object-fit: contain;
       }
 
       .ratio img,

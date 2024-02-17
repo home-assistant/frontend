@@ -1,4 +1,3 @@
-import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-state-label-badge";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { HomeAssistant } from "../../../types";
@@ -29,10 +28,6 @@ export class HuiBadgePreview extends HTMLElement {
   }
 
   set hass(hass: HomeAssistant) {
-    if (!this._hass || this._hass.language !== hass.language) {
-      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
-    }
-
     this._hass = hass;
     if (this._element) {
       this._element.hass = hass;

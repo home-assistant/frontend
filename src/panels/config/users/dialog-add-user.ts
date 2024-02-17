@@ -8,7 +8,6 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -161,7 +160,6 @@ export class DialogAddUser extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.users.editor.local_only"
               )}
-              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .checked=${this._localOnly}
@@ -173,7 +171,6 @@ export class DialogAddUser extends LitElement {
           <div class="row">
             <ha-formfield
               .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
-              .dir=${computeRTLDirection(this.hass)}
             >
               <ha-switch
                 .checked=${this._isAdmin}

@@ -64,9 +64,11 @@ export class HaTargetPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -98,6 +100,7 @@ export class HaTargetPicker extends LitElement {
                 area_id,
                 area?.name || area_id,
                 undefined,
+                area?.icon,
                 mdiSofa
               );
             })
@@ -109,6 +112,7 @@ export class HaTargetPicker extends LitElement {
                 "device_id",
                 device_id,
                 device ? computeDeviceName(device, this.hass) : device_id,
+                undefined,
                 undefined,
                 mdiDevices
               );
@@ -209,7 +213,8 @@ export class HaTargetPicker extends LitElement {
     id: string,
     name: string,
     entityState?: HassEntity,
-    iconPath?: string
+    icon?: string | null,
+    fallbackIconPath?: string
   ) {
     return html`
       <div
@@ -217,16 +222,22 @@ export class HaTargetPicker extends LitElement {
           [type]: true,
         })}"
       >
-        ${iconPath
-          ? html`<ha-svg-icon
+        ${icon
+          ? html`<ha-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .path=${iconPath}
-            ></ha-svg-icon>`
-          : ""}
+              .icon=${icon}
+            ></ha-icon>`
+          : fallbackIconPath
+            ? html`<ha-svg-icon
+                class="mdc-chip__icon mdc-chip__icon--leading"
+                .path=${fallbackIconPath}
+              ></ha-svg-icon>`
+            : ""}
         ${entityState
           ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
+              .hass=${this.hass}
+              .stateObj=${entityState}
             ></ha-state-icon>`
           : ""}
         <span role="gridcell">
@@ -640,6 +651,8 @@ export class HaTargetPicker extends LitElement {
       }
       .expand-btn {
         margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
       }
       .mdc-chip.area_id:not(.add) {
         border: 2px solid #fed6a4;

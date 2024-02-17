@@ -138,7 +138,7 @@ const dataMinusKeysRender = (
 export class AssistPipelineDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public pipelineRun!: PipelineRun;
+  @property({ attribute: false }) public pipelineRun!: PipelineRun;
 
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
@@ -390,9 +390,13 @@ export class AssistPipelineDebug extends LitElement {
     }
     ha-expansion-panel {
       padding-left: 8px;
+      padding-inline-start: 8px;
+      padding-inline-end: initial;
     }
     .card-content ha-expansion-panel {
       padding-left: 0px;
+      padding-inline-start: 0px;
+      padding-inline-end: initial;
       --expansion-panel-summary-padding: 0px;
       --expansion-panel-content-padding: 0px;
     }

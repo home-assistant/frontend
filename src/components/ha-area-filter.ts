@@ -1,4 +1,4 @@
-import { mdiChevronRight, mdiSofa } from "@mdi/js";
+import { mdiSofa } from "@mdi/js";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -6,6 +6,7 @@ import { showAreaFilterDialog } from "../dialogs/area-filter/show-area-filter-di
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 import "./ha-textfield";
+import "./ha-icon-next";
 
 export type AreaFilterValue = {
   hidden?: string[];
@@ -53,11 +54,10 @@ export class HaAreaPicker extends LitElement {
         <ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>
         <span>${this.label}</span>
         <span slot="secondary">${description}</span>
-        <ha-svg-icon
+        <ha-icon-next
           slot="meta"
           .label=${this.hass.localize("ui.common.edit")}
-          .path=${mdiChevronRight}
-        ></ha-svg-icon>
+        ></ha-icon-next>
       </ha-list-item>
     `;
   }

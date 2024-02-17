@@ -100,7 +100,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
 class MoreInfoVacuum extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: VacuumEntity;
+  @property({ attribute: false }) public stateObj?: VacuumEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {

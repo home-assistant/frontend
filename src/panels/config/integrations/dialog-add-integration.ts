@@ -720,6 +720,8 @@ class AddIntegrationDialog extends LitElement {
         margin: 0;
         margin-bottom: 8px;
         margin-left: 48px;
+        margin-inline-start: 48px;
+        margin-inline-end: initial;
         padding: 24px 24px 0 24px;
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
         font-size: var(--mdc-typography-headline6-font-size, 1.25rem);

@@ -475,6 +475,8 @@ export class HuiEnergySolarGraphCard
         align-items: center;
         padding: 20%;
         margin-left: 32px;
+        margin-inline-start: 32px;
+        margin-inline-end: initial;
         box-sizing: border-box;
       }
     `;

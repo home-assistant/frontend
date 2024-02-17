@@ -9,7 +9,7 @@ class IntegrationBadge extends LitElement {
 
   @property() public title!: string;
 
-  @property({ type: Boolean }) public darkOptimizedIcon?: boolean;
+  @property({ type: Boolean }) public darkOptimizedIcon = false;
 
   @property({ type: Boolean, reflect: true }) public clickable = false;
 

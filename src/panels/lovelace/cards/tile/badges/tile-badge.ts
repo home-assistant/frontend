@@ -1,43 +1,46 @@
 import { mdiExclamationThick } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
+import { TemplateResult, html, nothing } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity";
 import { HomeAssistant } from "../../../../../types";
-import { computeClimateBadge } from "./tile-badge-climate";
-import { computePersonBadge } from "./tile-badge-person";
-import { computeHumidifierBadge } from "./tile-badge-humidifier";
+import { renderClimateBadge } from "./tile-badge-climate";
+import { renderHumidifierBadge } from "./tile-badge-humidifier";
+import { renderPersonBadge } from "./tile-badge-person";
+import "../../../../../components/tile/ha-tile-badge";
+import "../../../../../components/ha-svg-icon";
 
-export type TileBadge = {
-  color?: string;
-  icon?: string;
-  iconPath?: string;
-};
-
-export type ComputeBadgeFunction = (
+export type RenderBadgeFunction = (
   stateObj: HassEntity,
   hass: HomeAssistant
-) => TileBadge | undefined;
+) => TemplateResult | typeof nothing;
 
-export const computeTileBadge: ComputeBadgeFunction = (stateObj, hass) => {
+export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
   if (stateObj.state === UNKNOWN) {
-    return undefined;
+    return nothing;
   }
   if (stateObj.state === UNAVAILABLE) {
-    return {
-      color: "var(--orange-color)",
-      iconPath: mdiExclamationThick,
-    };
+    return html`
+      <ha-tile-badge
+        style=${styleMap({
+          "--tile-badge-background-color": "var(--orange-color)",
+        })}
+      >
+        <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
+      </ha-tile-badge>
+    `;
   }
   const domain = computeDomain(stateObj.entity_id);
   switch (domain) {
     case "person":
     case "device_tracker":
-      return computePersonBadge(stateObj, hass);
+      return renderPersonBadge(stateObj, hass);
     case "climate":
-      return computeClimateBadge(stateObj, hass);
+      return renderClimateBadge(stateObj, hass);
     case "humidifier":
-      return computeHumidifierBadge(stateObj, hass);
+      return renderHumidifierBadge(stateObj, hass);
     default:
-      return undefined;
+      return nothing;
   }
 };

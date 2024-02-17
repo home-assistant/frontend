@@ -27,7 +27,7 @@ const INTERVAL_FORMAT = ["relative", "total"];
 class HuiTimestampDisplay extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public ts?: Date;
+  @property({ attribute: false }) public ts?: Date;
 
   @property() public format?: TimestampRenderingFormat;
 

@@ -34,7 +34,7 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 class HaConfigSectionGeneral extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _submitting = false;
 
@@ -294,10 +294,7 @@ class HaConfigSectionGeneral extends LitElement {
     this._country = this.hass.config.country;
     this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
-    this._timeZone =
-      this.hass.config.time_zone ||
-      Intl.DateTimeFormat?.().resolvedOptions?.().timeZone ||
-      "Etc/GMT";
+    this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
   }

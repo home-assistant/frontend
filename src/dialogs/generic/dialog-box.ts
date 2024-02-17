@@ -74,7 +74,7 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   value=${ifDefined(this._params.defaultValue)}
-                  .placeholder=${ifDefined(this._params.placeholder)}
+                  .placeholder=${this._params.placeholder}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}

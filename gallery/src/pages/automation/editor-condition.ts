@@ -80,7 +80,7 @@ const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
 ];
 
 @customElement("demo-automation-editor-condition")
-class DemoHaAutomationEditorCondition extends LitElement {
+export class DemoAutomationEditorCondition extends LitElement {
   @state() private hass!: HomeAssistant;
 
   @state() private _disabled = false;
@@ -155,6 +155,6 @@ class DemoHaAutomationEditorCondition extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-automation-editor-condition": DemoHaAutomationEditorCondition;
+    "demo-automation-editor-condition": DemoAutomationEditorCondition;
   }
 }

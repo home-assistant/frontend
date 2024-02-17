@@ -17,6 +17,7 @@ import {
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
+import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
 import "../../../../../components/ha-textarea";
@@ -27,7 +28,7 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route?: Route;
 
@@ -118,8 +119,24 @@ class ZHAAddDevicesPage extends LitElement {
             ? html`
                 <div class="discovery-text">
                   <h4>
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.add_device_page.pairing_mode"
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.add_device_page.pairing_mode",
+                      {
+                        documentation_link: html`
+                          <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href=${documentationUrl(
+                              this.hass,
+                              "/integrations/zha#adding-devices"
+                            )}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zha.add_device_page.pairing_mode_link"
+                            )}
+                          </a>
+                        `,
+                      }
                     )}
                   </h4>
                   <h4>
@@ -218,6 +235,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          text-align: center;
         }
         .content {
           display: flex;
@@ -247,6 +265,8 @@ class ZHAAddDevicesPage extends LitElement {
           position: absolute;
           margin-top: 16px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           top: -6px;
           right: 0;
           color: var(--primary-color);
@@ -254,10 +274,14 @@ class ZHAAddDevicesPage extends LitElement {
         .search-button {
           margin-top: 16px;
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         .help-text {
           color: grey;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
         ha-textarea {
           width: 100%;

@@ -21,7 +21,15 @@ export class HaListItem extends ListItemBase {
             --mdc-list-side-padding-left,
             var(--mdc-list-side-padding, 20px)
           );
+          padding-inline-start: var(
+            --mdc-list-side-padding-left,
+            var(--mdc-list-side-padding, 20px)
+          );
           padding-right: var(
+            --mdc-list-side-padding-right,
+            var(--mdc-list-side-padding, 20px)
+          );
+          padding-inline-end: var(
             --mdc-list-side-padding-right,
             var(--mdc-list-side-padding, 20px)
           );

@@ -13,7 +13,7 @@ import { TriggerElement } from "../ha-automation-trigger-row";
 export class HaTagTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: TagTrigger;
+  @property({ attribute: false }) public trigger!: TagTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 

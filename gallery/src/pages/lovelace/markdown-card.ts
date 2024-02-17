@@ -65,15 +65,23 @@ const CONFIGS = [
     >> ...by using additional greater-than signs right next to each other...
     > > > ...or with spaces between arrows.
 
-    > **Warning** Hey there
-    > This is a warning with a title
+    > [!NOTE]
+    > This is a GitHub note alert
 
-    > **Note**
-    > This is a note
+    > [!TIP]
+    > This is a GitHub tip alert
 
-    > **Note**
-    > This is a multiline note
-    > Lorem ipsum...
+    > [!IMPORTANT]
+    > This is a GitHub important alert
+
+    > [!WARNING]
+    > This is a GitHub warning alert
+
+    > [!CAUTION]
+    > This is a GitHub caution alert
+
+    > [!TIP]
+    > - This is a list entry in GitHub tip alert
 
     ## Lists
 

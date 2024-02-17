@@ -9,14 +9,21 @@ import {
   mdiDrag,
   mdiPlus,
   mdiRenameBox,
-  mdiSort,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../../common/dom/media_query";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-menu";
@@ -36,7 +43,7 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import { HomeAssistant, ItemPath } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const preventDefault = (ev) => ev.preventDefault();
@@ -47,9 +54,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: ChooseAction;
+  @property({ attribute: false }) public path?: ItemPath;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ attribute: false }) public action!: ChooseAction;
 
   @state() private _showDefault = false;
 
@@ -59,7 +66,24 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  @state() private _showReorder: boolean = false;
+
   private _expandLast = false;
+
+  private _unsubMql?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
+  }
 
   public static get defaultConfig() {
     return { choose: [{ conditions: [], sequence: [] }] };
@@ -98,8 +122,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this.reOrderMode}
-        @item-moved=${this._optionMoved}
+        draggable-selector=".option"
+        .disabled=${!this._showReorder || this.disabled}
+        group="choose-options"
+        .path=${[...(this.path ?? []), "choose"]}
+        invert-swap
       >
         <div class="options">
           ${repeat(
@@ -123,100 +150,89 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         ? ""
                         : this._getDescription(option))}
                     </h3>
-                    ${this.reOrderMode
+                    ${this._showReorder && !this.disabled
                       ? html`
-                          <ha-icon-button
-                            .index=${idx}
-                            slot="icons"
-                            .label=${this.hass.localize(
-                              "ui.panel.config.automation.editor.move_up"
-                            )}
-                            .path=${mdiArrowUp}
-                            @click=${this._moveUp}
-                            .disabled=${idx === 0}
-                          ></ha-icon-button>
-                          <ha-icon-button
-                            .index=${idx}
-                            slot="icons"
-                            .label=${this.hass.localize(
-                              "ui.panel.config.automation.editor.move_down"
-                            )}
-                            .path=${mdiArrowDown}
-                            @click=${this._moveDown}
-                            .disabled=${idx ===
-                            ensureArray(this.action.choose).length - 1}
-                          ></ha-icon-button>
                           <div class="handle" slot="icons">
                             <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                           </div>
                         `
-                      : html`
-                          <ha-button-menu
-                            slot="icons"
-                            .idx=${idx}
-                            @action=${this._handleAction}
-                            @click=${preventDefault}
-                            fixed
-                          >
-                            <ha-icon-button
-                              slot="trigger"
-                              .label=${this.hass.localize("ui.common.menu")}
-                              .path=${mdiDotsVertical}
-                            ></ha-icon-button>
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.rename"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiRenameBox}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.re_order"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiSort}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
+                      : nothing}
 
-                            <mwc-list-item
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.duplicate"
-                              )}
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${mdiContentDuplicate}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
+                    <ha-button-menu
+                      slot="icons"
+                      .idx=${idx}
+                      @action=${this._handleAction}
+                      @click=${preventDefault}
+                      fixed
+                    >
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this.hass.localize("ui.common.menu")}
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.rename"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiRenameBox}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
 
-                            <mwc-list-item
-                              class="warning"
-                              graphic="icon"
-                              .disabled=${this.disabled}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-                              )}
-                              <ha-svg-icon
-                                class="warning"
-                                slot="graphic"
-                                .path=${mdiDelete}
-                              ></ha-svg-icon>
-                            </mwc-list-item>
-                          </ha-button-menu>
-                        `}
+                      <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.duplicate"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiContentDuplicate}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+
+                      <mwc-list-item
+                        graphic="icon"
+                        .disabled=${this.disabled || idx === 0}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_up"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiArrowUp}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+
+                      <mwc-list-item
+                        graphic="icon"
+                        .disabled=${this.disabled ||
+                        idx === ensureArray(this.action.choose).length - 1}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.move_down"
+                        )}
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiArrowDown}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+
+                      <mwc-list-item
+                        class="warning"
+                        graphic="icon"
+                        .disabled=${this.disabled}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                        )}
+                        <ha-svg-icon
+                          class="warning"
+                          slot="graphic"
+                          .path=${mdiDelete}
+                        ></ha-svg-icon>
+                      </mwc-list-item>
+                    </ha-button-menu>
+
                     <div class="card-content">
                       <h4>
                         ${this.hass.localize(
@@ -224,11 +240,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-condition
-                        nested
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "conditions",
+                        ]}
                         .conditions=${ensureArray<string | Condition>(
                           option.conditions
                         )}
-                        .reOrderMode=${this.reOrderMode}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
                         .idx=${idx}
@@ -240,9 +260,13 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-action
-                        nested
+                        .path=${[
+                          ...(this.path ?? []),
+                          "choose",
+                          idx,
+                          "sequence",
+                        ]}
                         .actions=${ensureArray(option.sequence) || []}
-                        .reOrderMode=${this.reOrderMode}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
                         .idx=${idx}
@@ -254,18 +278,21 @@ export class HaChooseAction extends LitElement implements ActionElement {
               </div>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_option"
+              )}
+              .disabled=${this.disabled}
+              @click=${this._addOption}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <ha-button
-        outlined
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.add_option"
-        )}
-        .disabled=${this.disabled}
-        @click=${this._addOption}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
+
       ${this._showDefault || action.default
         ? html`
             <h2>
@@ -274,9 +301,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              nested
+              .path=${[...(this.path ?? []), "default"]}
               .actions=${ensureArray(action.default) || []}
-              .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
@@ -302,12 +328,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
         await this._renameAction(ev);
         break;
       case 1:
-        fireEvent(this, "re-order");
-        break;
-      case 2:
         this._duplicateOption(ev);
         break;
+      case 2:
+        this._moveUp(ev);
+        break;
       case 3:
+        this._moveDown(ev);
+        break;
+      case 4:
         this._removeOption(ev);
         break;
     }
@@ -411,13 +440,13 @@ export class HaChooseAction extends LitElement implements ActionElement {
   }
 
   private _moveUp(ev) {
-    const index = (ev.target as any).index;
+    const index = (ev.target as any).idx;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
-    const index = (ev.target as any).index;
+    const index = (ev.target as any).idx;
     const newIndex = index + 1;
     this._move(index, newIndex);
   }
@@ -433,12 +462,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: { ...this.action, choose: options },
     });
-  }
-
-  private _optionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
   }
 
   private _removeOption(ev: CustomEvent) {
@@ -484,8 +507,19 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return [
       haStyle,
       css`
-        .option {
-          margin: 0 0 16px 0;
+        .options {
+          padding: 16px;
+          margin: -16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .sortable-ghost {
+          background: none;
+          border-radius: var(--ha-card-border-radius, 12px);
+        }
+        .sortable-drag {
+          background: none;
         }
         .add-card mwc-button {
           display: block;
@@ -494,6 +528,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        mwc-list-item[disabled] {
+          --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        mwc-list-item.hidden {
+          display: none;
         }
         h3 {
           margin: 0;
@@ -522,6 +562,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .handle ha-svg-icon {
           pointer-events: none;
           height: 24px;
+        }
+        .buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          order: 1;
         }
       `,
     ];

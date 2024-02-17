@@ -65,9 +65,9 @@ class HassioAddonConfig extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Boolean }) private _configHasChanged = false;
+  @state() private _configHasChanged = false;
 
-  @property({ type: Boolean }) private _valid = true;
+  @state() private _valid = true;
 
   @state() private _canShowSchema = false;
 

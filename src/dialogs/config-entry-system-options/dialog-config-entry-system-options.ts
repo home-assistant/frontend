@@ -2,7 +2,6 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
@@ -82,7 +81,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
                 }
               )}
             </p>`}
-          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked=${!this._disableNewEntities}
@@ -109,7 +107,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
                 }
               )}
             </p>`}
-          .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
             .checked=${!this._disablePolling}

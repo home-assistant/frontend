@@ -10,7 +10,7 @@ import "../../../../components/ha-form/ha-form";
 export class AssistPipelineDetailSTT extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public data?: Partial<AssistPipeline>;
+  @property({ attribute: false }) public data?: Partial<AssistPipeline>;
 
   @state() private _supportedLanguages?: string[];
 

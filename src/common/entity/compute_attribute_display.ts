@@ -53,9 +53,7 @@ export const computeAttributeValueDisplay = (
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
-    }
-
-    if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
+    } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
       unit = config.unit_system.temperature;
     }
 

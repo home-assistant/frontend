@@ -21,7 +21,7 @@ import type { HaSelect } from "../components/ha-select";
 class StateCardInputSelect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: InputSelectEntity;
+  @property({ attribute: false }) public stateObj!: InputSelectEntity;
 
   @query("ha-select", true) private _haSelect!: HaSelect;
 
@@ -40,7 +40,7 @@ class StateCardInputSelect extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <state-badge .stateObj=${this.stateObj}></state-badge>
+      <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
       <ha-select
         .label=${computeStateName(this.stateObj)}
         .value=${this.stateObj.state}

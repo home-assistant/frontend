@@ -100,7 +100,8 @@ export const showRepairsFlowDialog = (
         return hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.data.${field.name}`
+          }.fix_flow.step.${step.step_id}.data.${field.name}`,
+          step.description_placeholders
         );
       },
 
@@ -163,7 +164,8 @@ export const showRepairsFlowDialog = (
           hass.localize(
             `component.${issue.domain}.issues.step.${
               issue.translation_key || issue.issue_id
-            }.fix_flow.${step.step_id}.title`
+            }.fix_flow.${step.step_id}.title`,
+            step.description_placeholders
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
@@ -191,7 +193,8 @@ export const showRepairsFlowDialog = (
           hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
-            }.fix_flow.step.${step.step_id}.title`
+            }.fix_flow.step.${step.step_id}.title`,
+            step.description_placeholders
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
