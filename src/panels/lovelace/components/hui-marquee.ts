@@ -96,6 +96,8 @@ class HuiMarquee extends LitElement {
 
       :host([animating]) .marquee-inner span {
         padding-right: 16px;
+        padding-inline-end: 16px;
+        padding-inline-start: initial;
       }
 
       @keyframes marquee {

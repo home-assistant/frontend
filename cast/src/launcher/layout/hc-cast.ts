@@ -241,6 +241,8 @@ class HcCast extends LitElement {
 
       mwc-button ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         height: 18px;
       }
 

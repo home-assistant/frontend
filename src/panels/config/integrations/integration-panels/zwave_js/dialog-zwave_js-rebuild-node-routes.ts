@@ -255,6 +255,8 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
         .flex-container ha-svg-icon,
         .flex-container ha-circular-progress {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
         }
       `,
     ];

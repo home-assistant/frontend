@@ -206,6 +206,8 @@ export class HaIconPicker extends LitElement {
       }
       *[slot="prefix"] {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
     `;
   }

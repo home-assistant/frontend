@@ -155,6 +155,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       }
       google-cast-launcher {
         margin-right: 0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
         cursor: pointer;
         display: inline-block;
         height: 24px;

@@ -1099,6 +1099,17 @@ export class HaConfigDevicePage extends LitElement {
       );
       deviceActions.push(...actions);
     }
+    if (domains.includes("matter")) {
+      const matter = await import(
+        "./device-detail/integration-elements/matter/device-actions"
+      );
+      const actions = await matter.getMatterDeviceActions(
+        this,
+        this.hass,
+        device
+      );
+      deviceActions.push(...actions);
+    }
 
     this._deviceActions = deviceActions;
   }
@@ -1202,6 +1213,17 @@ export class HaConfigDevicePage extends LitElement {
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zwave_js>
+      `);
+    }
+    if (domains.includes("matter")) {
+      import(
+        "./device-detail/integration-elements/matter/ha-device-info-matter"
+      );
+      deviceInfo.push(html`
+        <ha-device-info-matter
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-matter>
       `);
     }
   }

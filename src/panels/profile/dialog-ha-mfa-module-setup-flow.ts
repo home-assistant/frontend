@@ -166,12 +166,23 @@ class HaMfaModuleSetupFlow extends LitElement {
         ha-markdown a {
           color: var(--primary-color);
         }
+        ha-markdown-element p {
+          text-align: center;
+        }
+        ha-markdown-element code {
+          background-color: transparent;
+        }
+        ha-markdown-element > *:last-child {
+          margin-bottom: revert;
+        }
         .init-spinner {
           padding: 10px 100px 34px;
           text-align: center;
         }
         .submit-spinner {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
       `,
     ];

@@ -25,7 +25,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type { MediaPlayerItem } from "../../data/media-player";
@@ -539,7 +538,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     .graphic=${mediaClass.show_list_images
                                       ? "medium"
                                       : "avatar"}
-                                    dir=${computeRTLDirection(this.hass)}
                                   >
                                     <span class="title">
                                       ${this.hass.localize(
@@ -637,7 +635,6 @@ export class HaMediaPlayerBrowse extends LitElement {
         @click=${this._childClicked}
         .item=${child}
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
-        dir=${computeRTLDirection(this.hass)}
       >
         ${backgroundImage === "none" && !child.can_play
           ? html`<ha-svg-icon
@@ -1198,10 +1195,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list-item .title {
           margin-left: 16px;
-        }
-        mwc-list-item[dir="rtl"] .title {
-          margin-right: 16px;
-          margin-left: 0;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
 
         /* ============= Narrow ============= */
@@ -1331,6 +1326,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         lit-virtualizer.not_shown {
           height: calc(100% - 36px);
+        }
+
+        ha-browse-media-tts {
+          direction: var(--direction);
         }
       `,
     ];

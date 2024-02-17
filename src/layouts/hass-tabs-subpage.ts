@@ -13,7 +13,6 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { LocalizeFunc } from "../common/translations/localize";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -57,8 +56,6 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
-
-  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   @state() private _activeTab?: PageNavigation;
 
@@ -122,14 +119,6 @@ class HassTabsSubpage extends LitElement {
       this._activeTab = this.tabs.find((tab) =>
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
-    }
-    if (changedProperties.has("hass")) {
-      const oldHass = changedProperties.get("hass") as
-        | HomeAssistant
-        | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this.rtl = computeRTL(this.hass);
-      }
     }
     super.willUpdate(changedProperties);
   }
@@ -227,6 +216,8 @@ class HassTabsSubpage extends LitElement {
 
         ha-menu-button {
           margin-right: 24px;
+          margin-inline-end: 24px;
+          margin-inline-start: initial;
         }
 
         .toolbar {
@@ -332,6 +323,8 @@ class HassTabsSubpage extends LitElement {
         #fab {
           position: fixed;
           right: calc(16px + env(safe-area-inset-right));
+          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          inset-inline-start: initial;
           bottom: calc(16px + env(safe-area-inset-bottom));
           z-index: 1;
         }
@@ -341,15 +334,8 @@ class HassTabsSubpage extends LitElement {
         #fab[is-wide] {
           bottom: 24px;
           right: 24px;
-        }
-        :host([rtl]) #fab {
-          right: auto;
-          left: calc(16px + env(safe-area-inset-left));
-        }
-        :host([rtl][is-wide]) #fab {
-          bottom: 24px;
-          left: 24px;
-          right: auto;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
         }
       `,
     ];

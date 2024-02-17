@@ -187,6 +187,8 @@ export class HaTextField extends TextFieldBase {
       }
       .mdc-text-field__affix--prefix {
         padding-right: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-end: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-start: initial;
       }
 
       .mdc-text-field:not(.mdc-text-field--disabled)

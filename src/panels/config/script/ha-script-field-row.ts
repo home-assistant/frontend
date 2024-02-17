@@ -331,6 +331,8 @@ export default class HaScriptFieldRow extends LitElement {
             color: var(--secondary-text-color);
             opacity: 0.9;
             margin-right: 8px;
+            margin-inline-end: 8px;
+            margin-inline-start: initial;
           }
         }
         .card-content {

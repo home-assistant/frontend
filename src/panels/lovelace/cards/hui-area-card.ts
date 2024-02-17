@@ -23,9 +23,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { FIXED_DEVICE_CLASS_ICONS, STATES_OFF } from "../../../common/const";
+import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { binarySensorIcon } from "../../../common/entity/binary_sensor_icon";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import {
@@ -36,8 +35,9 @@ import { blankBeforeUnit } from "../../../common/translations/blank_before_unit"
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import "../../../components/ha-card";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-state-icon";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -388,13 +388,16 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          const icon = FIXED_DEVICE_CLASS_ICONS[deviceClass];
-          sensors.push(
-            html`<div class="sensor">
-              ${icon ? html`<ha-svg-icon .path=${icon}></ha-svg-icon>` : ""}
+          sensors.push(html`
+            <div class="sensor">
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .deviceClass=${deviceClass}
+              ></ha-domain-icon>
               ${this._average(domain, deviceClass)}
-            </div> `
-          );
+            </div>
+          `);
         }
       });
     });
@@ -434,16 +437,18 @@ export class HuiAreaCard
           <div class="alerts">
             ${ALERT_DOMAINS.map((domain) => {
               if (!(domain in entitiesByDomain)) {
-                return "";
+                return nothing;
               }
               return this._deviceClasses[domain].map((deviceClass) => {
                 const entity = this._isOn(domain, deviceClass);
                 return entity
-                  ? html`<ha-svg-icon
-                      class="alert"
-                      .path=${DOMAIN_ICONS[domain][deviceClass] ||
-                      binarySensorIcon(entity.state, entity)}
-                    ></ha-svg-icon>`
+                  ? html`
+                      <ha-state-icon
+                        class="alert"
+                        .hass=${this.hass}
+                        .stateObj=${entity}
+                      ></ha-state-icon>
+                    `
                   : nothing;
               });
             })}
@@ -566,17 +571,28 @@ export class HuiAreaCard
         white-space: nowrap;
         float: left;
         margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
       }
 
       .alerts {
         padding: 16px;
       }
 
-      .alerts ha-svg-icon {
+      ha-state-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .alerts ha-state-icon {
         background: var(--accent-color);
         color: var(--text-accent-color, var(--text-primary-color));
         padding: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         border-radius: 50%;
       }
 

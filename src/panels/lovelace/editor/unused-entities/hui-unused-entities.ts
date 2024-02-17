@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
@@ -22,6 +21,7 @@ import "../card-editor/hui-entity-picker-table";
 import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { computeCards } from "../../common/generate-lovelace-config";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -99,7 +99,6 @@ export class HuiUnusedEntities extends LitElement {
       </div>
       <div
         class="fab ${classMap({
-          rtl: computeRTL(this.hass),
           selected: this._selectedEntities.length,
         })}"
       >
@@ -128,12 +127,18 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _addToLovelaceView(): void {
+    const cardConfig = computeCards(
+      this.hass.states,
+      this._selectedEntities,
+      {}
+    );
     if (this.lovelace.config.views.length === 1) {
       showSuggestCardDialog(this, {
         lovelaceConfig: this.lovelace.config!,
         saveConfig: this.lovelace.saveConfig,
         path: [0],
         entities: this._selectedEntities,
+        cardConfig,
       });
       return;
     }
@@ -146,6 +151,7 @@ export class HuiUnusedEntities extends LitElement {
           saveConfig: this.lovelace.saveConfig,
           path: [viewIndex],
           entities: this._selectedEntities,
+          cardConfig,
         });
       },
     });
@@ -171,17 +177,12 @@ export class HuiUnusedEntities extends LitElement {
       }
       .fab {
         position: sticky;
-        float: right;
+        float: var(--float-end);
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
+        inset-inline-end: calc(16px + env(safe-area-inset-right));
+        inset-inline-start: initial;
         z-index: 1;
-      }
-      .fab.rtl {
-        right: initial;
-        left: 0;
-        bottom: 0;
-        padding-right: 16px;
-        padding-left: calc(16px + env(safe-area-inset-left));
       }
       ha-fab {
         position: relative;

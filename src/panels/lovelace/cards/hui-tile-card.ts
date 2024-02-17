@@ -524,6 +524,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         position: absolute;
         top: -3px;
         right: -3px;
+        inset-inline-end: -3px;
+        inset-inline-start: initial;
+      }
+      .icon-container:not([role="button"]) {
+        pointer-events: none;
       }
       .icon-container[role="button"]:focus-visible,
       .icon-container[role="button"]:active {

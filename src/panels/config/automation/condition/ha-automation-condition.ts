@@ -1,5 +1,4 @@
-import { consume } from "@lit-labs/context";
-import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -13,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
@@ -22,10 +22,6 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import {
-  ReorderMode,
-  reorderModeContext,
-} from "../../../../state/reorder-mode-mixin";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -44,9 +40,7 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Array }) public path?: ItemPath;
 
-  @state()
-  @consume({ context: reorderModeContext, subscribe: true })
-  private _reorderMode?: ReorderMode;
+  @state() private _showReorder: boolean = false;
 
   @storage({
     key: "automationClipboard",
@@ -59,6 +53,21 @@ export default class HaAutomationCondition extends LitElement {
   private _focusLastConditionOnChange = false;
 
   private _conditionKeys = new WeakMap<Condition, string>();
+
+  private _unsubMql?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(min-width: 600px)", (matches) => {
+      this._showReorder = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
+  }
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
@@ -108,10 +117,12 @@ export default class HaAutomationCondition extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._reorderMode?.active}
+        draggable-selector="ha-automation-condition-row"
+        .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._conditionMoved}
         group="conditions"
         .path=${this.path}
+        invert-swap
       >
         <div class="conditions">
           ${repeat(
@@ -121,68 +132,50 @@ export default class HaAutomationCondition extends LitElement {
               <ha-automation-condition-row
                 .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
+                .first=${idx === 0}
+                .last=${idx === this.conditions.length - 1}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
-                .hideMenu=${Boolean(this._reorderMode?.active)}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateCondition}
-                @move-condition=${this._move}
+                @move-down=${this._moveDown}
+                @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
               >
-                ${this._reorderMode?.active
+                ${this._showReorder && !this.disabled
                   ? html`
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_up"
-                        )}
-                        .path=${mdiArrowUp}
-                        @click=${this._moveUp}
-                        .disabled=${idx === 0}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .index=${idx}
-                        slot="icons"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.move_down"
-                        )}
-                        .path=${mdiArrowDown}
-                        @click=${this._moveDown}
-                        .disabled=${idx === this.conditions.length - 1}
-                      ></ha-icon-button>
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
-                  : ""}
+                  : nothing}
               </ha-automation-condition-row>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add"
+              )}
+              @click=${this._addConditionDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+            <ha-button
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add_building_block"
+              )}
+              @click=${this._addConditionBuildingBlockDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <div class="buttons">
-        <ha-button
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add"
-          )}
-          @click=${this._addConditionDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-        <ha-button
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.add_building_block"
-          )}
-          @click=${this._addConditionBuildingBlockDialog}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
     `;
   }
 
@@ -234,12 +227,14 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _moveUp(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index + 1;
     this._move(index, newIndex);
@@ -300,19 +295,29 @@ export default class HaAutomationCondition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .conditions {
+        padding: 16px;
+        margin: -16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .sortable-ghost {
+        background: none;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+      .sortable-drag {
+        background: none;
+      }
       ha-automation-condition-row {
         display: block;
-        margin-bottom: 16px;
         scroll-margin-top: 48px;
+      }
+      .buttons {
+        order: 1;
       }
       ha-svg-icon {
         height: 20px;
-      }
-      ha-alert {
-        display: block;
-        margin-bottom: 16px;
-        border-radius: var(--ha-card-border-radius, 12px);
-        overflow: hidden;
       }
       .handle {
         padding: 12px;
