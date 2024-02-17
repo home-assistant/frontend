@@ -13,7 +13,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
 ) => {
   class LitLocalizeLiteClass extends superClass {
     // Initialized to empty will prevent undefined errors if called before connected to DOM.
-    @property() public localize: LocalizeFunc = empty;
+    @property({ attribute: false }) public localize: LocalizeFunc = empty;
 
     // Use browser language setup before login.
     @property() public language?: string = getLocalLanguage();

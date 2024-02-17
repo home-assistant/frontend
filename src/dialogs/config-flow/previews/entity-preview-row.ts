@@ -2,8 +2,10 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import "../../../panels/lovelace/components/hui-timestamp-display";
 import { HomeAssistant } from "../../../types";
 
 @customElement("entity-preview-row")
@@ -49,6 +51,8 @@ class EntityPreviewRow extends LitElement {
       .name {
         margin-left: 16px;
         margin-right: 8px;
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
         flex: 1 1 30%;
       }
       .value {

@@ -262,6 +262,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 
@@ -323,6 +324,9 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   show_names?: boolean;
   logarithmic_scale?: boolean;
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
   split_device_classes?: boolean;
 }
 
@@ -455,6 +459,7 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  show_current_as_primary?: boolean;
   features?: LovelaceCardFeatureConfig[];
 }
 

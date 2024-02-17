@@ -50,6 +50,7 @@ export const FIXED_DOMAIN_STATES = {
   timer: ["active", "idle", "paused"],
   update: ["on", "off"],
   vacuum: ["cleaning", "docked", "error", "idle", "paused", "returning"],
+  valve: ["closed", "closing", "open", "opening"],
   weather: [
     "clear-night",
     "cloudy",
@@ -210,6 +211,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "volatile_organic_compounds",
       "volatile_organic_compounds_parts",
       "voltage",
+      "volume_flow_rate",
     ],
     state_class: ["measurement", "total", "total_increasing"],
   },

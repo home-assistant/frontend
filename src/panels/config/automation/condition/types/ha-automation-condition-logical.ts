@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LogicalCondition } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-condition";
 import type { ConditionElement } from "../ha-automation-condition-row";
 
@@ -14,7 +14,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ attribute: false }) public path?: ItemPath;
 
   public static get defaultConfig() {
     return {
@@ -25,12 +25,11 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
   protected render() {
     return html`
       <ha-automation-condition
-        nested
+        .path=${[...(this.path ?? []), "conditions"]}
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
-        .reOrderMode=${this.reOrderMode}
       ></ha-automation-condition>
     `;
   }

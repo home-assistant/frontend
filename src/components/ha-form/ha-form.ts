@@ -39,30 +39,47 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
   @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
-  @property() public error?: Record<string, string>;
+  @property({ attribute: false }) public error?: Record<
+    string,
+    string | string[]
+  >;
 
-  @property() public warning?: Record<string, string>;
+  @property({ attribute: false }) public warning?: Record<string, string>;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeError?: (schema: any, error) => string;
+  @property({ attribute: false }) public computeError?: (
+    schema: any,
+    error
+  ) => string;
 
-  @property() public computeWarning?: (schema: any, warning) => string;
+  @property({ attribute: false }) public computeWarning?: (
+    schema: any,
+    warning
+  ) => string;
 
-  @property() public computeLabel?: (
+  @property({ attribute: false }) public computeLabel?: (
     schema: any,
     data: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: any) => string | undefined;
+  @property({ attribute: false }) public computeHelper?: (
+    schema: any
+  ) => string | undefined;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
+  ) => string;
+
+  protected getFormProperties(): Record<string, any> {
+    return {};
+  }
 
   public async focus() {
     await this.updateComplete;
@@ -143,9 +160,11 @@ export class HaForm extends LitElement implements HaFormElement {
                   helper: this._computeHelper(item),
                   disabled: this.disabled || item.disabled || false,
                   hass: this.hass,
+                  localize: this.hass?.localize,
                   computeLabel: this.computeLabel,
                   computeHelper: this.computeHelper,
                   context: this._generateContext(item),
+                  ...this.getFormProperties(),
                 })}
           `;
         })}
@@ -212,7 +231,20 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeHelper ? this.computeHelper(schema) : "";
   }
 
-  private _computeError(error, schema: HaFormSchema | readonly HaFormSchema[]) {
+  private _computeError(
+    error: string | string[],
+    schema: HaFormSchema | readonly HaFormSchema[]
+  ): string | TemplateResult {
+    if (Array.isArray(error)) {
+      return html`<ul>
+        ${error.map(
+          (err) =>
+            html`<li>
+              ${this.computeError ? this.computeError(err, schema) : err}
+            </li>`
+        )}
+      </ul>`;
+    }
     return this.computeError ? this.computeError(error, schema) : error;
   }
 

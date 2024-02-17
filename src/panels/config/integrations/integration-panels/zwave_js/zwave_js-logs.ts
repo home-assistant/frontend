@@ -23,9 +23,9 @@ import { configTabs } from "./zwave_js-config-router";
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public configEntryId!: string;
 

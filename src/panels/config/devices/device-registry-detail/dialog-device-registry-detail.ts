@@ -179,6 +179,8 @@ class DialogDeviceRegistryDetail extends LitElement {
       css`
         mwc-button.warning {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
         ha-textfield {
           display: block;

@@ -2,6 +2,7 @@ export default {
   "*.?(c|m){js,ts}": [
     "eslint --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --fix",
     "prettier --cache --write",
+    "lit-analyzer --quiet",
   ],
   "*.{json,css,md,markdown,html,y?aml}": "prettier --cache --write",
   "translations/*/*.json": (files) =>

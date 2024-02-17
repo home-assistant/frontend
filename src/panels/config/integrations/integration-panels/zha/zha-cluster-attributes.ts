@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +14,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
 import {
   Attribute,
@@ -27,19 +27,15 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import {
-  ChangeEvent,
-  ItemSelectedEvent,
-  SetAttributeServiceData,
-} from "./types";
+import { ItemSelectedEvent, SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property() public selectedCluster?: Cluster;
+  @property({ type: Object }) public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
 
@@ -101,24 +97,28 @@ export class ZHAClusterAttributes extends LitElement {
   private _renderAttributeInteractions(): TemplateResult {
     return html`
       <div class="input-text">
-        <paper-input
-          label=${this.hass!.localize("ui.panel.config.zha.common.value")}
+        <ha-textfield
+          .label=${this.hass!.localize("ui.panel.config.zha.common.value")}
           type="string"
           .value=${this._attributeValue}
-          @value-changed=${this._onAttributeValueChanged}
-          placeholder=${this.hass!.localize("ui.panel.config.zha.common.value")}
-        ></paper-input>
+          @change=${this._onAttributeValueChanged}
+          .placeholder=${this.hass!.localize(
+            "ui.panel.config.zha.common.value"
+          )}
+        ></ha-textfield>
       </div>
       <div class="input-text">
-        <paper-input
-          label=${this.hass!.localize(
+        <ha-textfield
+          .label=${this.hass!.localize(
             "ui.panel.config.zha.common.manufacturer_code_override"
           )}
           type="number"
           .value=${this._manufacturerCodeOverride}
-          @value-changed=${this._onManufacturerCodeOverrideChanged}
-          placeholder=${this.hass!.localize("ui.panel.config.zha.common.value")}
-        ></paper-input>
+          @change=${this._onManufacturerCodeOverrideChanged}
+          .placeholder=${this.hass!.localize(
+            "ui.panel.config.zha.common.value"
+          )}
+        ></ha-textfield>
       </div>
       <div class="card-actions">
         <ha-progress-button
@@ -197,13 +197,13 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  private _onAttributeValueChanged(value: ChangeEvent): void {
-    this._attributeValue = value.detail!.value;
+  private _onAttributeValueChanged(event): void {
+    this._attributeValue = event.target!.value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
-    this._manufacturerCodeOverride = value.detail!.value;
+  private _onManufacturerCodeOverrideChanged(event): void {
+    this._manufacturerCodeOverride = event.target!.value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
@@ -238,7 +238,8 @@ export class ZHAClusterAttributes extends LitElement {
           margin-top: 16px;
         }
 
-        .menu {
+        .menu,
+        ha-textfield {
           width: 100%;
         }
 
@@ -250,12 +251,16 @@ export class ZHAClusterAttributes extends LitElement {
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
         .input-text {
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 

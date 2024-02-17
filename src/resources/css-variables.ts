@@ -4,10 +4,9 @@ export function computeCssVariable(
   if (Array.isArray(props)) {
     return props
       .reverse()
-      .reduce<string | undefined>(
-        (str, variable) => `var(${variable}${str ? `, ${str}` : ""})`,
-        undefined
-      );
+      .reduce<
+        string | undefined
+      >((str, variable) => `var(${variable}${str ? `, ${str}` : ""})`, undefined);
   }
   return `var(${props})`;
 }

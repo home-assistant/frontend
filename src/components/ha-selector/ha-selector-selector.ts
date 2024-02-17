@@ -70,15 +70,15 @@ const SELECTOR_SCHEMAS = {
   number: [
     {
       name: "min",
-      selector: { number: { mode: "box" } },
+      selector: { number: { mode: "box", step: "any" } },
     },
     {
       name: "max",
-      selector: { number: { mode: "box" } },
+      selector: { number: { mode: "box", step: "any" } },
     },
     {
       name: "step",
-      selector: { number: { mode: "box" } },
+      selector: { number: { mode: "box", step: "any" } },
     },
   ] as const,
   object: [] as const,
@@ -284,6 +284,8 @@ export class HaSelectorSelector extends LitElement {
         margin-bottom: 16px;
         padding-left: 16px;
         padding-right: 4px;
+        padding-inline-start: 16px;
+        padding-inline-end: 4px;
         white-space: nowrap;
       }
     `;

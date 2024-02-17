@@ -24,9 +24,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() stateObj?: LightEntity;
+  @property({ attribute: false }) public stateObj?: LightEntity;
 
-  @property() color!: LightColor;
+  @property({ attribute: false }) color!: LightColor;
 
   @query("ha-outlined-icon-button", true)
   private _button?: HaOutlinedIconButton;

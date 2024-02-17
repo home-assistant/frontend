@@ -142,12 +142,18 @@ export class HaIntegrationListItem extends ListItemBase {
         }
         .mdc-deprecated-list-item__meta > * {
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         .mdc-deprecated-list-item__meta > *:last-child {
           margin-right: 0px;
+          margin-inline-end: 0px;
+          margin-inline-start: initial;
         }
         ha-icon-next {
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         .open-in-new {
           --mdc-icon-size: 22px;

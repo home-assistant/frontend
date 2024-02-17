@@ -51,7 +51,7 @@ class HassioAddonDashboard extends LitElement {
     | HassioAddonDetails
     | StoreAddonDetails;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: string;
 
@@ -250,7 +250,9 @@ class HassioAddonDashboard extends LitElement {
     }
 
     if (path === "uninstall") {
-      window.history.back();
+      if (this.isConnected) {
+        navigate(this._backPath);
+      }
     } else if (path === "install") {
       this.addon = await fetchHassioAddonInfo(this.hass, this.addon!.slug);
     } else {

@@ -1,7 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
@@ -15,7 +14,7 @@ import { HomeAssistant } from "../types";
 class StateCardInputNumber extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
 
@@ -58,7 +57,6 @@ class StateCardInputNumber extends LitElement {
             <div class="flex">
               <ha-slider
                 labeled
-                .dir=${computeRTLDirection(this.hass)}
                 .disabled=${isUnavailableState(this.stateObj.state)}
                 .step=${Number(this.stateObj.attributes.step)}
                 .min=${Number(this.stateObj.attributes.min)}

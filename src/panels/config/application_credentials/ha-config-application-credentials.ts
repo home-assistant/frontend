@@ -41,11 +41,11 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _selected: string[] = [];
 
@@ -265,6 +265,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       }
       .header-toolbar .header-btns {
         margin-right: -12px;
+        margin-inline-end: -12px;
+        margin-inline-start: initial;
       }
       .header-btns {
         display: flex;
@@ -275,6 +277,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       }
       ha-button-menu {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
     `;
   }

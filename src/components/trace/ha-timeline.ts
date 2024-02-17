@@ -76,6 +76,8 @@ export class HaTimeline extends LitElement {
           flex-direction: column;
           align-items: center;
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
           width: 24px;
         }
         :host([notEnabled]) ha-svg-icon {

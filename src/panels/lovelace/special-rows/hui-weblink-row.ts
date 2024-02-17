@@ -58,6 +58,8 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
         overflow: hidden;
         text-overflow: ellipsis;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
       }
     `;
   }

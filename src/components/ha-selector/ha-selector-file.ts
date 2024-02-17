@@ -10,9 +10,9 @@ import "../ha-file-upload";
 
 @customElement("ha-selector-file")
 export class HaFileSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: FileSelector;
+  @property({ attribute: false }) public selector!: FileSelector;
 
   @property() public value?: string;
 

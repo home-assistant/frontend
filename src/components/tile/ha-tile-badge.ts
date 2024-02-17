@@ -1,19 +1,13 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement } from "lit/decorators";
 import "../ha-icon";
 
 @customElement("ha-tile-badge")
 export class HaTileBadge extends LitElement {
-  @property() public iconPath?: string;
-
-  @property() public icon?: string;
-
   protected render(): TemplateResult {
     return html`
       <div class="badge">
-        ${this.icon
-          ? html`<ha-icon .icon=${this.icon}></ha-icon>`
-          : html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`}
+        <slot></slot>
       </div>
     `;
   }
@@ -36,8 +30,7 @@ export class HaTileBadge extends LitElement {
         background-color: var(--tile-badge-background-color);
         transition: background-color 280ms ease-in-out;
       }
-      .badge ha-icon,
-      .badge ha-svg-icon {
+      .badge ::slotted(*) {
         color: var(--tile-badge-icon-color);
       }
     `;

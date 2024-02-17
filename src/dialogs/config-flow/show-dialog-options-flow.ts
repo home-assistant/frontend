@@ -110,9 +110,11 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepFieldError(hass, step, error) {
-        return hass.localize(
-          `component.${configEntry.domain}.options.error.${error}`,
-          step.description_placeholders
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.error.${error}`,
+            step.description_placeholders
+          ) || error
         );
       },
 

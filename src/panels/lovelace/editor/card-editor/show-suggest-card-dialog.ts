@@ -3,16 +3,15 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 export interface SuggestCardDialogParams {
-  cardTitle?: string;
   lovelaceConfig?: LovelaceConfig;
   yaml?: boolean;
   saveConfig?: (config: LovelaceConfig) => void;
   path?: [number];
-  entities: string[]; // We can pass entity id's that will be added to the config when a card is picked
-  cardConfig?: LovelaceCardConfig[]; // We can pass a suggested config
+  entities?: string[]; // We pass this to create dialog when user chooses "Pick own"
+  cardConfig: LovelaceCardConfig[]; // We can pass a suggested config
 }
 
-const importsuggestCardDialog = () => import("./hui-dialog-suggest-card");
+const importSuggestCardDialog = () => import("./hui-dialog-suggest-card");
 
 export const showSuggestCardDialog = (
   element: HTMLElement,
@@ -20,7 +19,7 @@ export const showSuggestCardDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "hui-dialog-suggest-card",
-    dialogImport: importsuggestCardDialog,
+    dialogImport: importSuggestCardDialog,
     dialogParams: suggestCardDialogParams,
   });
 };

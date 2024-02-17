@@ -33,9 +33,9 @@ class HaConfigVoiceAssistants extends HassRouterPage {
 
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })
@@ -74,6 +74,11 @@ class HaConfigVoiceAssistants extends HassRouterPage {
       debug: {
         tag: "assist-debug",
         load: () => import("./debug/assist-debug"),
+      },
+      assist: {
+        tag: "ha-config-voice-assistants-assist-devices",
+        load: () =>
+          import("./assist/ha-config-voice-assistants-assist-devices"),
       },
     },
   };

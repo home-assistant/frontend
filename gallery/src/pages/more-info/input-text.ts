@@ -18,7 +18,7 @@ const ENTITIES = [
 
 @customElement("demo-more-info-input-text")
 class DemoMoreInfoInputText extends LitElement {
-  @property() public hass!: MockHomeAssistant;
+  @property({ attribute: false }) public hass!: MockHomeAssistant;
 
   @query("demo-more-infos") private _demoRoot!: HTMLElement;
 

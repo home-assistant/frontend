@@ -12,7 +12,7 @@ import "../ha-textfield";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: any;
 
@@ -24,7 +24,7 @@ export class HaTextSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public selector!: StringSelector;
+  @property({ attribute: false }) public selector!: StringSelector;
 
   @property({ type: Boolean }) public disabled = false;
 

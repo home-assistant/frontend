@@ -79,7 +79,8 @@ export const computeStateDisplayFromEntityAttributes = (
     if (
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
-      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement]
+      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement] &&
+      entity?.display_precision === undefined
     ) {
       try {
         return formatDuration(state, attributes.unit_of_measurement);
@@ -113,7 +114,7 @@ export const computeStateDisplayFromEntityAttributes = (
     const unit = attributes.unit_of_measurement;
 
     if (unit) {
-      return `${value}${blankBeforeUnit(unit)}${unit}`;
+      return `${value}${blankBeforeUnit(unit, locale)}${unit}`;
     }
 
     return value;

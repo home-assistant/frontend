@@ -7,7 +7,7 @@ import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-not";
@@ -30,7 +30,7 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public yamlMode = false;
 
-  @property({ type: Boolean }) public reOrderMode = false;
+  @property({ type: Array }) public path?: ItemPath;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -67,8 +67,8 @@ export default class HaAutomationConditionEditor extends LitElement {
                 {
                   hass: this.hass,
                   condition: condition,
-                  reOrderMode: this.reOrderMode,
                   disabled: this.disabled,
+                  path: this.path,
                 }
               )}
             </div>

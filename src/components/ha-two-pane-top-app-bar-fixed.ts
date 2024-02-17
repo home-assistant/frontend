@@ -17,7 +17,7 @@ export const passiveEventOptionsIfSupported = supportsPassiveEventListener
   : undefined;
 
 @customElement("ha-two-pane-top-app-bar-fixed")
-export abstract class TopAppBarBaseBase extends BaseElement {
+export class TopAppBarBaseBase extends BaseElement {
   protected override mdcFoundation!: MDCFixedTopAppBarFoundation;
 
   protected override mdcFoundationClass = MDCFixedTopAppBarFoundation;
@@ -280,6 +280,8 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       #title {
         border-right: 1px solid rgba(255, 255, 255, 0.12);
+        border-inline-end: 1px solid rgba(255, 255, 255, 0.12);
+        border-inline-start: initial;
         box-sizing: border-box;
         flex: 0 0 var(--sidepane-width, 250px);
         width: var(--sidepane-width, 250px);
@@ -290,6 +292,8 @@ export abstract class TopAppBarBaseBase extends BaseElement {
       }
       .pane {
         border-right: 1px solid var(--divider-color);
+        border-inline-end: 1px solid var(--divider-color);
+        border-inline-start: initial;
         box-sizing: border-box;
         display: flex;
         flex: 0 0 var(--sidepane-width, 250px);
@@ -316,6 +320,16 @@ export abstract class TopAppBarBaseBase extends BaseElement {
         height: 100%;
         overflow: auto;
       }
+      .mdc-top-app-bar__title {
+        padding-inline-start: 20px;
+        padding-inline-end: initial;
+      }
     `,
   ];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-two-pane-top-app-bar-fixed": TopAppBarBaseBase;
+  }
 }

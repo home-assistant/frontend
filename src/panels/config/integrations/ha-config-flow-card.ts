@@ -24,9 +24,9 @@ import "../../../components/ha-list-item";
 export class HaConfigFlowCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public flow!: DataEntryFlowProgressExtended;
+  @property({ attribute: false }) public flow!: DataEntryFlowProgressExtended;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     const attention = ATTENTION_SOURCES.includes(this.flow.context.source);

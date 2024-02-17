@@ -15,10 +15,14 @@ export const configElementStyle = css`
   .side-by-side > * {
     flex: 1;
     padding-right: 8px;
+    padding-inline-end: 8px;
+    padding-inline-start: initial;
   }
   .side-by-side > *:last-child {
     flex: 1;
     padding-right: 0;
+    padding-inline-end: 0;
+    padding-inline-start: initial;
   }
   .suffix {
     margin: 0 8px;

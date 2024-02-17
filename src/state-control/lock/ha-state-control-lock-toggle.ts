@@ -9,10 +9,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
+import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { callProtectedLockService, LockEntity } from "../../data/lock";
@@ -81,18 +81,6 @@ export class HaStateControlLockToggle extends LitElement {
 
     const color = stateColorCss(this.stateObj);
 
-    const onIcon = domainIcon(
-      "lock",
-      this.stateObj,
-      locking ? "locking" : "locked"
-    );
-
-    const offIcon = domainIcon(
-      "lock",
-      this.stateObj,
-      unlocking ? "unlocking" : "unlocked"
-    );
-
     if (this.stateObj.state === UNKNOWN) {
       return html`
         <div class="buttons">
@@ -100,13 +88,21 @@ export class HaStateControlLockToggle extends LitElement {
             .label=${this.hass.localize("ui.card.lock.lock")}
             @click=${this._turnOn}
           >
-            <ha-svg-icon .path=${onIcon}></ha-svg-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${this.stateObj}
+              .stateValue=${locking ? "locking" : "locked"}
+            ></ha-state-icon>
           </ha-control-button>
           <ha-control-button
             .label=${this.hass.localize("ui.card.lock.unlock")}
             @click=${this._turnOff}
           >
-            <ha-svg-icon .path=${offIcon}></ha-svg-icon>
+            <ha-state-icon
+              .hass=${this.hass}
+              .stateObj=${this.stateObj}
+              .stateValue=${unlocking ? "unlocking" : "unlocked"}
+            ></ha-state-icon>
           </ha-control-button>
         </div>
       `;
@@ -127,16 +123,20 @@ export class HaStateControlLockToggle extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
-        <ha-svg-icon
+        <ha-state-icon
           slot="icon-on"
-          .path=${onIcon}
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          .stateValue=${locking ? "locking" : "locked"}
           class=${classMap({ pulse: locking })}
-        ></ha-svg-icon>
-        <ha-svg-icon
+        ></ha-state-icon>
+        <ha-state-icon
           slot="icon-off"
-          .path=${offIcon}
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          .stateValue=${unlocking ? "unlocking" : "unlocked"}
           class=${classMap({ pulse: unlocking })}
-        ></ha-svg-icon>
+        ></ha-state-icon>
       </ha-control-switch>
     `;
   }

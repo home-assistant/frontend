@@ -1,4 +1,4 @@
-import Sortable from "sortablejs";
+import type Sortable from "sortablejs";
 import SortableCore, {
   OnSpill,
   AutoScroll,

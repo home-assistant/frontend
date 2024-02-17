@@ -38,7 +38,7 @@ import "./ha-set-vibrate-row";
 class HaPanelProfile extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _refreshTokens?: RefreshToken[];
 
@@ -250,7 +250,6 @@ class HaPanelProfile extends LitElement {
           max-width: 600px;
           margin: 0 auto;
           padding-bottom: env(safe-area-inset-bottom);
-          overflow: hidden;
         }
 
         .content > * {

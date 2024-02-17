@@ -17,7 +17,8 @@ import { haStyleScrollbar } from "../../../resources/styles";
 export class HuiButtonsBase extends LitElement {
   @state() public hass!: HomeAssistant;
 
-  @property() public configEntities?: EntitiesCardEntityConfig[];
+  @property({ attribute: false })
+  public configEntities?: EntitiesCardEntityConfig[];
 
   protected render(): TemplateResult {
     return html`
@@ -94,16 +95,22 @@ export class HuiButtonsBase extends LitElement {
           width: 24px;
           height: 24px;
           margin-left: -4px;
+          margin-inline-start: -4px;
+          margin-inline-end: initial;
           margin-top: -2px;
         }
         state-badge.no-text {
           width: 26px;
           height: 26px;
           margin-left: -3px;
+          margin-inline-start: -3px;
+          margin-inline-end: initial;
           margin-top: -3px;
         }
         ha-assist-chip state-badge {
           margin-right: -4px;
+          margin-inline-end: -4px;
+          margin-inline-start: initial;
           --mdc-icon-size: 18px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {

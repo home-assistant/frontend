@@ -51,7 +51,7 @@ class HaConfigSectionStorage extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: { code: string; message: string };
 

@@ -7,7 +7,7 @@ import "../ha-input-helper-text";
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: string;
 

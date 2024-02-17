@@ -54,7 +54,8 @@ export const computeInitialHaFormData = (
         "icon" in selector ||
         "template" in selector ||
         "text" in selector ||
-        "theme" in selector
+        "theme" in selector ||
+        "object" in selector
       ) {
         data[field.name] = "";
       } else if ("number" in selector) {

@@ -7,7 +7,6 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
@@ -86,7 +85,6 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
               <div class="flex">
                 <ha-slider
                   labeled
-                  .dir=${computeRTLDirection(this.hass)}
                   .disabled=${isUnavailableState(stateObj.state)}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}

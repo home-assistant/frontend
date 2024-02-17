@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTimeNumeric } from "../../common/datetime/format_date_time";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-select";
@@ -13,7 +14,7 @@ import { HomeAssistant } from "../../types";
 class TimeZoneRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     const date = new Date();
@@ -48,10 +49,9 @@ class TimeZoneRow extends LitElement {
                 >${this.hass.localize(
                   `ui.panel.profile.time_zone.options.${format}`,
                   {
-                    timezone: (format === "server"
-                      ? this.hass.config.time_zone
-                      : Intl.DateTimeFormat?.().resolvedOptions?.().timeZone ||
-                        ""
+                    timezone: resolveTimeZone(
+                      format,
+                      this.hass.config.time_zone
                     ).replace("_", " "),
                   }
                 )}</span

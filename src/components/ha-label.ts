@@ -5,11 +5,11 @@ import { customElement } from "lit/decorators";
 class HaLabel extends LitElement {
   protected render(): TemplateResult {
     return html`
-        <span class="label">
-            <slot name="icon"></slot>
-            <slot></slot>
-        </div>
-      `;
+      <span class="label">
+        <slot name="icon"></slot>
+        <slot></slot>
+      </span>
+    `;
   }
 
   static get styles(): CSSResultGroup {
@@ -42,6 +42,8 @@ class HaLabel extends LitElement {
         ::slotted([slot="icon"]) {
           margin-right: 8px;
           margin-left: -8px;
+          margin-inline-start: -8px;
+          margin-inline-end: 8px;
           display: flex;
           color: var(--ha-label-icon-color);
         }

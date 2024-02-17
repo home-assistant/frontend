@@ -2,11 +2,6 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
-// Import components that are allwoed to be defined.
-import "./ha-alert";
-import "./ha-icon";
-import "./ha-svg-icon";
-
 @customElement("ha-markdown")
 export class HaMarkdown extends LitElement {
   @property() public content?;
@@ -46,6 +41,10 @@ export class HaMarkdown extends LitElement {
       }
       ha-markdown-element > *:last-child {
         margin-bottom: 0;
+      }
+      ha-alert {
+        display: block;
+        margin: 4px 0;
       }
       a {
         color: var(--primary-color);

@@ -59,7 +59,7 @@ export class DemoHaBarButton extends LitElement {
               <ha-control-button
                 class=${ifDefined(btn.class)}
                 label=${ifDefined(btn.label)}
-                disabled=${ifDefined(btn.disabled)}
+                ?disabled=${btn.disabled}
               >
                 <ha-svg-icon .path=${btn.icon || mdiLightbulb}></ha-svg-icon>
               </ha-control-button>

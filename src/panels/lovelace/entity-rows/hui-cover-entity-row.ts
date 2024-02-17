@@ -72,6 +72,8 @@ class HuiCoverEntityRow extends LitElement implements LovelaceRow {
       ha-cover-controls,
       ha-cover-tilt-controls {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }

@@ -5,8 +5,9 @@ import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 export interface EditCardDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
-  path: [number] | [number, number];
-  cardConfig?: LovelaceCardConfig;
+  path: [number, number | null];
+  // If specified, the card will be replaced with the new card.
+  newCardConfig?: LovelaceCardConfig;
 }
 
 export const importEditCardDialog = () => import("./hui-dialog-edit-card");

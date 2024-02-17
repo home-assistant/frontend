@@ -59,6 +59,8 @@ export class HuiEnergyDateSelectionCard
     return css`
       .padded {
         padding-left: 16px !important;
+        padding-inline-start: 16px !important;
+        padding-inline-end: initial !important;
       }
     `;
   }

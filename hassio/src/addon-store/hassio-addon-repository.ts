@@ -140,3 +140,9 @@ export class HassioAddonRepositoryEl extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-addon-repository": HassioAddonRepositoryEl;
+  }
+}

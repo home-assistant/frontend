@@ -8,9 +8,7 @@ import {
   html,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -100,9 +98,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
               )}
               extended
               @click=${this._addCard}
-              class=${classMap({
-                rtl: computeRTL(this.hass!),
-              })}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </ha-fab>
@@ -241,12 +236,9 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         position: fixed;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
+        inset-inline-end: calc(16px + env(safe-area-inset-right));
+        inset-inline-start: initial;
         z-index: 1;
-      }
-
-      ha-fab.rtl {
-        right: auto;
-        left: calc(16px + env(safe-area-inset-left));
       }
     `;
   }

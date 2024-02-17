@@ -1,15 +1,19 @@
+import { mdiThermostat } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
+import "../../../components/ha-control-select-menu";
+import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import {
   ClimateEntity,
+  climateHvacModeIcon,
   compareClimateHvacModes,
-  computeHvacModeIcon,
   HvacMode,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -34,6 +38,9 @@ class HuiClimateHvacModesCardFeature
   @state() private _config?: ClimateHvacModesCardFeatureConfig;
 
   @state() _currentHvacMode?: HvacMode;
+
+  @query("ha-control-select-menu", true)
+  private _haSelect?: HaControlSelectMenu;
 
   static getStubConfig(
     _,
@@ -66,8 +73,23 @@ class HuiClimateHvacModesCardFeature
     }
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (this._haSelect && changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        this.hass &&
+        this.hass.formatEntityAttributeValue !==
+          oldHass?.formatEntityAttributeValue
+      ) {
+        this._haSelect.layoutOptions();
+      }
+    }
+  }
+
   private async _valueChanged(ev: CustomEvent) {
-    const mode = (ev.detail as any).value as HvacMode;
+    const mode =
+      (ev.detail as any).value ?? ((ev.target as any).value as HvacMode);
 
     if (mode === this.stateObj!.state) return;
 
@@ -108,8 +130,49 @@ class HuiClimateHvacModesCardFeature
       .map<ControlSelectOption>((mode) => ({
         value: mode,
         label: this.hass!.formatEntityState(this.stateObj!, mode),
-        path: computeHvacModeIcon(mode),
+        icon: html`
+          <ha-svg-icon
+            slot="graphic"
+            .path=${climateHvacModeIcon(mode)}
+          ></ha-svg-icon>
+        `,
       }));
+
+    if (this._config.style === "dropdown") {
+      return html`
+        <div class="container">
+          <ha-control-select-menu
+            show-arrow
+            hide-label
+            .label=${this.hass.localize("ui.card.climate.mode")}
+            .value=${this._currentHvacMode}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
+            fixedMenuPosition
+            naturalMenuWidth
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+          >
+            ${this._currentHvacMode
+              ? html`
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${climateHvacModeIcon(this._currentHvacMode)}
+                  ></ha-svg-icon>
+                `
+              : html`
+                  <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
+                `}
+            ${options.map(
+              (option) => html`
+                <ha-list-item .value=${option.value} graphic="icon">
+                  ${option.icon}${option.label}
+                </ha-list-item>
+              `
+            )}
+          </ha-control-select-menu>
+        </div>
+      `;
+    }
 
     return html`
       <div class="container">
@@ -131,6 +194,14 @@ class HuiClimateHvacModesCardFeature
 
   static get styles() {
     return css`
+      ha-control-select-menu {
+        box-sizing: border-box;
+        --control-select-menu-height: 40px;
+        --control-select-menu-border-radius: 10px;
+        line-height: 1.2;
+        display: block;
+        width: 100%;
+      }
       ha-control-select {
         --control-select-padding: 0;
         --control-select-thickness: 40px;

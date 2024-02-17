@@ -278,7 +278,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         >
           <ha-state-icon
             .icon=${entityConf.icon}
-            .state=${stateObj}
+            .stateObj=${stateObj}
+            .hass=${this.hass}
           ></ha-state-icon>
         </ha-icon-button>
 
@@ -345,6 +346,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       .box .title {
         font-weight: 500;
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
 
       ha-icon-button {

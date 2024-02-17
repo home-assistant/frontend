@@ -115,7 +115,7 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Number, attribute: false })
   public renderSize?: number;
 
-  @property({ type: Number })
+  @property({ type: Array })
   public value?: [number, number];
 
   @property({ type: Number })

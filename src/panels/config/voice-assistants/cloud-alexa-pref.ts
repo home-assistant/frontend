@@ -27,7 +27,7 @@ export class CloudAlexaPref extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private _exposeNew?: boolean;
 
@@ -258,18 +258,17 @@ export class CloudAlexaPref extends LitElement {
       .header-actions {
         position: absolute;
         right: 24px;
+        inset-inline-end: 24px;
+        inset-inline-start: initial;
         top: 24px;
         display: flex;
         flex-direction: row;
       }
-      :host([dir="rtl"]) .header-actions {
-        right: auto;
-        left: 24px;
-      }
       .header-actions .icon-link {
         margin-top: -16px;
-        margin-inline-end: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         direction: var(--direction);
         color: var(--secondary-text-color);
       }

@@ -11,7 +11,8 @@ import "./notification-item-template";
 export class HuiConfiguratorNotificationItem extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public notification?: PersitentNotificationEntity;
+  @property({ attribute: false })
+  public notification?: PersitentNotificationEntity;
 
   protected render() {
     if (!this.hass || !this.notification) {

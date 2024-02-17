@@ -53,7 +53,11 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
 
     return html`
-      <ha-state-icon .icon=${this._config.icon} .state=${stateObj}>
+      <ha-state-icon
+        .icon=${this._config.icon}
+        .stateObj=${stateObj}
+        .hass=${this.hass}
+      >
       </ha-state-icon>
       <div class="flex">
         <div .title=${name}>${name}</div>
@@ -85,6 +89,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         flex: 1;
         overflow: hidden;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -96,6 +102,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       }
       mwc-button {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }

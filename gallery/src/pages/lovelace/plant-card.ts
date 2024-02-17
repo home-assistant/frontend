@@ -3,6 +3,7 @@ import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { createPlantEntities } from "../../data/plants";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const CONFIGS = [
   {
@@ -43,6 +44,7 @@ export class DemoPlantEntity extends LitElement {
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(createPlantEntities());
+    mockIcons(hass);
   }
 }
 

@@ -3,6 +3,7 @@ import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("climate", "ecobee", "auto", {
@@ -35,6 +36,18 @@ const ENTITIES = [
     friendly_name: "Nest",
     supported_features: 43,
   }),
+  getEntity("climate", "sensibo", "fan_only", {
+    current_temperature: null,
+    temperature: null,
+    min_temp: 0,
+    max_temp: 1,
+    target_temp_step: 1,
+    hvac_modes: ["fan_only", "off"],
+    friendly_name: "Sensibo purifier",
+    fan_modes: ["low", "high"],
+    fan_mode: "low",
+    supported_features: 9,
+  }),
   getEntity("climate", "unavailable", "unavailable", {
     supported_features: 43,
   }),
@@ -55,6 +68,23 @@ const CONFIGS = [
     config: `
 - type: thermostat
   entity: climate.nest
+    `,
+  },
+  {
+    heading: "Fan only example",
+    config: `
+- type: thermostat
+  entity: climate.sensibo
+  features:
+    - type: climate-hvac-modes
+      hvac_modes:
+        - fan_only
+        - 'off'
+    - type: climate-fan-modes
+      style: icons
+      fan_modes:
+        - low
+        - high
     `,
   },
   {
@@ -87,6 +117,7 @@ class DemoThermostatEntity extends LitElement {
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
+    mockIcons(hass);
   }
 }
 

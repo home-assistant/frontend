@@ -31,9 +31,9 @@ declare global {
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public item!: MediaPlayerItem;
+  @property({ attribute: false }) public item!: MediaPlayerItem;
 
   @property() public action!: MediaPlayerBrowseAction;
 
@@ -62,7 +62,7 @@ class BrowseMediaTTS extends LitElement {
           this.hass.localize(
             "ui.components.media-browser.tts.example_message",
             {
-              name: this.hass.user?.name || "",
+              name: this.hass.user?.name || "Alice",
             }
           )}
         >

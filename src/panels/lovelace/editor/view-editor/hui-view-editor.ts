@@ -26,7 +26,7 @@ declare global {
 export class HuiViewEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isNew!: boolean;
+  @property({ type: Boolean }) public isNew = false;
 
   @state() private _config!: LovelaceViewConfig;
 

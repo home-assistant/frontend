@@ -138,6 +138,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       .flex {
         flex: 1;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -153,6 +155,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       }
       google-cast-launcher {
         margin-right: 0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
         cursor: pointer;
         display: inline-block;
         height: 24px;

@@ -144,6 +144,8 @@ export class HaIntegrationHeader extends LitElement {
     }
     .secondary > ha-svg-icon {
       margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
       flex-shrink: 0;
     }
     .error ha-svg-icon {

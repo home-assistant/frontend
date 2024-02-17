@@ -215,6 +215,8 @@ class HuiEnergyCarbonGaugeCard
       ha-svg-icon {
         position: absolute;
         right: 4px;
+        inset-inline-end: 4px;
+        inset-inline-start: initial;
         top: 4px;
         color: var(--secondary-text-color);
       }

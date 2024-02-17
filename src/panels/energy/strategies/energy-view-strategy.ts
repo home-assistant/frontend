@@ -166,3 +166,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     return view;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "energy-view-strategy": EnergyViewStrategy;
+  }
+}

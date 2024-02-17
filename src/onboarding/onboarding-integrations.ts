@@ -36,7 +36,7 @@ const HIDDEN_DOMAINS = new Set([
 class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
 
   @state() private _entries: ConfigEntry[] = [];
 

@@ -14,9 +14,9 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ type: Array }) public value?: string[];
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property() public helper?: string;
 
@@ -73,7 +73,8 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   protected render() {
     if (!this.hass) {

@@ -25,25 +25,15 @@ interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-// eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
-  html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
-    ${item.state
-      ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
-      : ""}
-    <span>${item.friendly_name}</span>
-    <span slot="secondary">${item.entity_id}</span>
-  </ha-list-item>`;
-
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public autofocus = false;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
@@ -102,7 +92,8 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-entities" })
   public excludeEntities?: string[];
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean }) public hideClearIcon = false;
 
@@ -126,6 +117,21 @@ export class HaEntityPicker extends LitElement {
   private _initedStates = false;
 
   private _states: HassEntityWithCachedName[] = [];
+
+  private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
+    item
+  ) =>
+    html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
+      ${item.state
+        ? html`<state-badge
+            slot="graphic"
+            .stateObj=${item}
+            .hass=${this.hass}
+          ></state-badge>`
+        : ""}
+      <span>${item.friendly_name}</span>
+      <span slot="secondary">${item.entity_id}</span>
+    </ha-list-item>`;
 
   private _getStates = memoizeOne(
     (
@@ -326,7 +332,7 @@ export class HaEntityPicker extends LitElement {
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
-        .renderer=${rowRenderer}
+        .renderer=${this._rowRenderer}
         .required=${this.required}
         .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}

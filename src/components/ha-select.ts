@@ -10,9 +10,9 @@ import "./ha-icon-button";
 @customElement("ha-select")
 export class HaSelect extends SelectBase {
   // @ts-ignore
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
 
-  @property({ type: Boolean, reflect: true }) public clearable?: boolean;
+  @property({ type: Boolean, reflect: true }) public clearable = false;
 
   protected override render() {
     return html`

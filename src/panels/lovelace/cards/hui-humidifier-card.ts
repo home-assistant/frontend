@@ -128,7 +128,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         <p class="title">${name}</p>
         <ha-state-control-humidifier-humidity
           prevent-interaction-on-scroll
-          show-current
+          .showCurrentAsPrimary=${this._config.show_current_as_primary}
+          show-secondary
           .hass=${this.hass}
           .stateObj=${stateObj}
         ></ha-state-control-humidifier-humidity>

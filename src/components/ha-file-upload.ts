@@ -31,18 +31,18 @@ export class HaFileUpload extends LitElement {
 
   @property() public supports?: string;
 
-  @property() public value?: File | File[] | FileList | string;
+  @property({ type: Object }) public value?: File | File[] | FileList | string;
 
-  @property({ type: Boolean }) private multiple = false;
+  @property({ type: Boolean }) public multiple = false;
 
-  @property({ type: Boolean, reflect: true }) public disabled: boolean = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean }) private uploading = false;
+  @property({ type: Boolean }) public uploading = false;
 
-  @property({ type: Number }) private progress?: number;
+  @property({ type: Number }) public progress?: number;
 
   @property({ type: Boolean, attribute: "auto-open-file-dialog" })
-  private autoOpenFileDialog = false;
+  public autoOpenFileDialog = false;
 
   @state() private _drag = false;
 
@@ -282,6 +282,8 @@ export class HaFileUpload extends LitElement {
       }
       .value ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .big-icon {
         --mdc-icon-size: 48px;

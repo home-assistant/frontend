@@ -12,9 +12,9 @@ import "../ha-checkbox";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormBooleanSchema;
+  @property({ attribute: false }) public schema!: HaFormBooleanSchema;
 
-  @property() public data!: HaFormBooleanData;
+  @property({ attribute: false }) public data!: HaFormBooleanData;
 
   @property() public label!: string;
 

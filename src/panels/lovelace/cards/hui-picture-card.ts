@@ -6,7 +6,7 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -38,7 +38,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() protected _config?: PictureCardConfig;
+  @state() private _config?: PictureCardConfig;
 
   public getCardSize(): number {
     return 5;

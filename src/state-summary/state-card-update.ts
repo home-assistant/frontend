@@ -47,10 +47,15 @@ export class StateCardUpdate extends LitElement {
           word-break: break-word;
           display: flex;
           align-items: center;
-          direction: ltr;
           justify-content: flex-end;
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-update": StateCardUpdate;
   }
 }

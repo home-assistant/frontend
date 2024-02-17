@@ -22,6 +22,7 @@ export interface ThreadDataSet {
   network_name: string;
   pan_id: string | null;
   preferred_border_agent_id: string | null;
+  preferred_extended_address: string | null;
   preferred: boolean;
   source: string;
 }
@@ -107,10 +108,12 @@ export const setPreferredThreadDataSet = (
 export const setPreferredBorderAgent = (
   hass: HomeAssistant,
   dataset_id: string,
-  border_agent_id: string
+  border_agent_id: string | null,
+  extended_address: string
 ): Promise<void> =>
   hass.callWS({
-    type: "thread/set_preferred_border_agent_id",
+    type: "thread/set_preferred_border_agent",
     dataset_id,
     border_agent_id,
+    extended_address,
   });

@@ -226,6 +226,8 @@ class MqttSubscribeCard extends LitElement {
         ha-select {
           margin-left: 0px;
           margin-top: 8px;
+          margin-inline-start: 0px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           flex: auto;

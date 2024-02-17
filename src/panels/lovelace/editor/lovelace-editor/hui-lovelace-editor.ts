@@ -18,7 +18,7 @@ declare global {
 export class HuiLovelaceEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public config?: LovelaceConfig;
+  @property({ attribute: false }) public config?: LovelaceConfig;
 
   get _title(): string {
     if (!this.config) {

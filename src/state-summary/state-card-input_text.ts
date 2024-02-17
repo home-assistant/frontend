@@ -76,6 +76,8 @@ class StateCardInputText extends LitElement {
       css`
         ha-textfield {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
       `,
     ];

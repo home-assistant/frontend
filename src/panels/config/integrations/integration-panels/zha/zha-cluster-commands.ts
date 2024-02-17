@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -14,6 +13,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-textfield";
 import {
   Cluster,
   Command,
@@ -23,16 +23,16 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { ChangeEvent, IssueCommandServiceData } from "./types";
+import { IssueCommandServiceData } from "./types";
 
 export class ZHAClusterCommands extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property() public selectedCluster?: Cluster;
+  @property({ type: Object }) public selectedCluster?: Cluster;
 
   @state() private _commands: Command[] | undefined;
 
@@ -88,17 +88,17 @@ export class ZHAClusterCommands extends LitElement {
         ${this._selectedCommandId !== undefined
           ? html`
               <div class="input-text">
-                <paper-input
-                  label=${this.hass!.localize(
+                <ha-textfield
+                  .label=${this.hass!.localize(
                     "ui.panel.config.zha.common.manufacturer_code_override"
                   )}
                   type="number"
                   .value=${this._manufacturerCodeOverride}
-                  @value-changed=${this._onManufacturerCodeOverrideChanged}
-                  placeholder=${this.hass!.localize(
+                  @change=${this._onManufacturerCodeOverrideChanged}
+                  .placeholder=${this.hass!.localize(
                     "ui.panel.config.zha.common.value"
                   )}
-                ></paper-input>
+                ></ha-textfield>
               </div>
               <div class="command-form">
                 <ha-form
@@ -180,8 +180,8 @@ export class ZHAClusterCommands extends LitElement {
       this._computeIssueClusterCommandServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
-    this._manufacturerCodeOverride = value.detail!.value;
+  private _onManufacturerCodeOverrideChanged(event): void {
+    this._manufacturerCodeOverride = Number(event.target.value);
     this._issueClusterCommandServiceData =
       this._computeIssueClusterCommandServiceData();
   }
@@ -199,7 +199,8 @@ export class ZHAClusterCommands extends LitElement {
         ha-select {
           margin-top: 16px;
         }
-        .menu {
+        .menu,
+        ha-textfield {
           width: 100%;
         }
 
@@ -211,18 +212,24 @@ export class ZHAClusterCommands extends LitElement {
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
         .input-text {
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
         .command-form {
           padding-left: 28px;
           padding-right: 28px;
+          padding-inline-start: 28px;
+          padding-inline-end: 28px;
           padding-bottom: 10px;
         }
 
@@ -235,6 +242,8 @@ export class ZHAClusterCommands extends LitElement {
           top: -6px;
           right: 0;
           padding-right: 0px;
+          padding-inline-end: 0px;
+          padding-inline-start: initial;
           color: var(--primary-color);
         }
       `,

@@ -10,7 +10,7 @@ import { TraceExtended } from "../../data/trace";
 export class HaTraceLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public trace!: TraceExtended;
 

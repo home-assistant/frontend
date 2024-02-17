@@ -65,7 +65,7 @@ interface ThreadNetwork {
 export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _configEntryId: string | null = null;
 
@@ -210,8 +210,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 <span slot="secondary">${router.server}</span>
                 ${showOverflow
                   ? html`${network.dataset &&
-                      router.border_agent_id ===
-                        network.dataset.preferred_border_agent_id
+                      router.extended_address ===
+                        network.dataset.preferred_extended_address
                         ? html`<ha-svg-icon
                             .path=${mdiCellphoneKey}
                             .title=${this.hass.localize(
@@ -524,12 +524,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     dataset: ThreadDataSet,
     router: ThreadRouter
   ) {
-    const datasetId = dataset.dataset_id;
-    const borderAgentId = router.border_agent_id;
-    if (!borderAgentId) {
-      return;
-    }
-    await setPreferredBorderAgent(this.hass, datasetId, borderAgentId);
+    await setPreferredBorderAgent(
+      this.hass,
+      dataset.dataset_id,
+      router.border_agent_id,
+      router.extended_address
+    );
     this._refresh();
   }
 

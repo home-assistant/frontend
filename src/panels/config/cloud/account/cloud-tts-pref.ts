@@ -24,7 +24,7 @@ import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 export class CloudTTSPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private savingPreferences = false;
 
@@ -177,11 +177,9 @@ export class CloudTTSPref extends LitElement {
       .example {
         position: absolute;
         right: 16px;
+        inset-inline-end: 16px;
+        inset-inline-start: initial;
         top: 16px;
-      }
-      :host([dir="rtl"]) .example {
-        right: auto;
-        left: 24px;
       }
       .row {
         display: flex;
@@ -191,9 +189,13 @@ export class CloudTTSPref extends LitElement {
       }
       .row > *:first-child {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
       .row > *:last-child {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .card-actions {
         display: flex;

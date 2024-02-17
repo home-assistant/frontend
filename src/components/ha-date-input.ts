@@ -18,7 +18,8 @@ export interface datePickerDialogParams {
   max?: string;
   locale?: string;
   firstWeekday?: number;
-  onChange: (value: string) => void;
+  canClear?: boolean;
+  onChange: (value: string | undefined) => void;
 }
 
 const showDatePickerDialog = (
@@ -49,6 +50,8 @@ export class HaDateInput extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public canClear = false;
+
   render() {
     return html`<ha-textfield
       .label=${this.label}
@@ -58,6 +61,7 @@ export class HaDateInput extends LitElement {
       helperPersistent
       readonly
       @click=${this._openDialog}
+      @keydown=${this._keyDown}
       .value=${this.value
         ? formatDateNumeric(
             new Date(`${this.value.split("T")[0]}T00:00:00`),
@@ -82,13 +86,23 @@ export class HaDateInput extends LitElement {
       min: this.min || "1970-01-01",
       max: this.max,
       value: this.value,
+      canClear: this.canClear,
       onChange: (value) => this._valueChanged(value),
       locale: this.locale.language,
       firstWeekday: firstWeekdayIndex(this.locale),
     });
   }
 
-  private _valueChanged(value: string) {
+  private _keyDown(ev: KeyboardEvent) {
+    if (!this.canClear) {
+      return;
+    }
+    if (["Backspace", "Delete"].includes(ev.key)) {
+      this._valueChanged(undefined);
+    }
+  }
+
+  private _valueChanged(value: string | undefined) {
     if (this.value !== value) {
       this.value = value;
       fireEvent(this, "change");

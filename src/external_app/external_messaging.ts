@@ -1,3 +1,5 @@
+import { AutomationConfig } from "../data/automation";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -31,6 +33,22 @@ interface EMMessageResultError {
 
 interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
+}
+
+interface EMOutgoingMessageBarCodeScan extends EMMessage {
+  type: "bar_code/scan";
+  title: string;
+  description: string;
+  alternative_option_label?: string;
+}
+
+interface EMOutgoingMessageBarCodeClose extends EMMessage {
+  type: "bar_code/close";
+}
+
+interface EMOutgoingMessageBarCodeNotify extends EMMessage {
+  type: "bar_code/notify";
+  message: string;
 }
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
@@ -108,20 +126,23 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
 }
 
 type EMOutgoingMessageWithoutAnswer =
-  | EMOutgoingMessageHaptic
-  | EMOutgoingMessageConnectionStatus
+  | EMMessageResultError
+  | EMMessageResultSuccess
   | EMOutgoingMessageAppConfiguration
-  | EMOutgoingMessageTagWrite
-  | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageAssistShow
+  | EMOutgoingMessageBarCodeClose
+  | EMOutgoingMessageBarCodeNotify
+  | EMOutgoingMessageBarCodeScan
+  | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
-  | EMOutgoingMessageThemeUpdate
-  | EMMessageResultSuccess
-  | EMMessageResultError
+  | EMOutgoingMessageHaptic
+  | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
-  | EMOutgoingMessageImportThreadCredentials;
+  | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageTagWrite
+  | EMOutgoingMessageThemeUpdate;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -147,11 +168,58 @@ interface EMIncomingMessageShowSidebar {
   command: "sidebar/show";
 }
 
+interface EMIncomingMessageShowAutomationEditor {
+  id: number;
+  type: "command";
+  command: "automation/editor/show";
+  payload?: {
+    config?: Partial<AutomationConfig>;
+  };
+}
+
+export interface EMIncomingMessageBarCodeScanResult {
+  id: number;
+  type: "command";
+  command: "bar_code/scan_result";
+  payload: {
+    // A string decoded from the barcode data.
+    rawValue: string;
+    // https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API#supported_barcode_formats
+    format:
+      | "aztec"
+      | "code_128"
+      | "code_39"
+      | "code_93"
+      | "codabar"
+      | "data_matrix"
+      | "ean_13"
+      | "ean_8"
+      | "itf"
+      | "pdf417"
+      | "qr_code"
+      | "upc_a"
+      | "upc_e"
+      | "unknown";
+  };
+}
+
+export interface EMIncomingMessageBarCodeScanAborted {
+  id: number;
+  type: "command";
+  command: "bar_code/aborted";
+  payload: {
+    reason: "canceled" | "alternative_options";
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
   | EMIncomingMessageToggleSidebar
-  | EMIncomingMessageShowSidebar;
+  | EMIncomingMessageShowSidebar
+  | EMIncomingMessageShowAutomationEditor
+  | EMIncomingMessageBarCodeScanResult
+  | EMIncomingMessageBarCodeScanAborted;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -168,6 +236,7 @@ export interface ExternalConfig {
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
   hasAssist: boolean;
+  hasBarCodeScanner: number;
 }
 
 export class ExternalMessaging {

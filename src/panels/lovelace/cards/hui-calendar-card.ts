@@ -59,7 +59,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public _events: CalendarEvent[] = [];
+  @state() private _events: CalendarEvent[] = [];
 
   @state() private _config?: CalendarCardConfig;
 

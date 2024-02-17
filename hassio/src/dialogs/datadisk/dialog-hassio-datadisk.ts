@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
-import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-select";
 import {
   extractApiErrorMessage,

@@ -3,7 +3,7 @@ import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, ItemPath } from "../types";
 import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
@@ -42,6 +42,7 @@ export type Selector =
   | NumberSelector
   | ObjectSelector
   | AssistPipelineSelector
+  | QRCodeSelector
   | SelectSelector
   | SelectorSelector
   | StateSelector
@@ -60,8 +61,7 @@ export type Selector =
 
 export interface ActionSelector {
   action: {
-    reorder_mode?: boolean;
-    nested?: boolean;
+    path?: ItemPath;
   } | null;
 }
 
@@ -114,8 +114,7 @@ export interface ColorTempSelector {
 
 export interface ConditionSelector {
   condition: {
-    reorder_mode?: boolean;
-    nested?: boolean;
+    path?: ItemPath;
   } | null;
 }
 
@@ -348,6 +347,15 @@ export interface BackupLocationSelector {
   backup_location: {} | null;
 }
 
+export interface QRCodeSelector {
+  qr_code: {
+    data: string;
+    scale?: number;
+    error_correction_level?: "low" | "medium" | "quartile" | "high";
+    center_image?: string;
+  } | null;
+}
+
 export interface StringSelector {
   text: {
     multiline?: boolean;
@@ -398,8 +406,7 @@ export interface TimeSelector {
 
 export interface TriggerSelector {
   trigger: {
-    reorder_mode?: boolean;
-    nested?: boolean;
+    path?: ItemPath;
   } | null;
 }
 

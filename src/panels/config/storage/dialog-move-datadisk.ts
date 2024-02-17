@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-markdown";
 import "../../../components/ha-select";
 import {
   extractApiErrorMessage,
