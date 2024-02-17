@@ -4,6 +4,7 @@ import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { mockTodo } from "../../../../demo/src/stubs/todo";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("todo", "shopping_list", "2", {
@@ -47,6 +48,7 @@ class DemoTodoListEntity extends LitElement {
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
+    mockIcons(hass);
 
     mockTodo(hass);
   }

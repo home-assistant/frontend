@@ -27,6 +27,7 @@ import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
 import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
@@ -55,34 +56,36 @@ const UI_FEATURE_TYPES = [
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
   "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "numeric-input",
   "select-options",
   "target-humidity",
   "target-temperature",
-  "vacuum-commands",
   "update-actions",
+  "vacuum-commands",
   "water-heater-operation-modes",
-  "numeric-input",
 ] as const satisfies readonly FeatureType[];
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
-  "vacuum-commands",
   "alarm-modes",
   "climate-hvac-modes",
-  "humidifier-modes",
-  "water-heater-operation-modes",
-  "lawn-mower-commands",
   "climate-fan-modes",
   "climate-preset-modes",
+  "fan-preset-modes",
+  "humidifier-modes",
+  "lawn-mower-commands",
   "numeric-input",
   "update-actions",
+  "vacuum-commands",
+  "water-heater-operation-modes",
 ]);
 
 const SUPPORTS_FEATURE_TYPES: Record<
@@ -97,6 +100,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
@@ -104,12 +108,12 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
-  "select-options": supportsSelectOptionsCardFeature,
-  "update-actions": supportsUpdateActionsCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();

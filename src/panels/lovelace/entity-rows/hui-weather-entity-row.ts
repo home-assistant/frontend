@@ -260,11 +260,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           --mdc-icon-size: 40px;
         }
 
-        :host([rtl]) .flex {
-          margin-left: 0;
-          margin-right: 16px;
-        }
-
         .pointer {
           cursor: pointer;
         }

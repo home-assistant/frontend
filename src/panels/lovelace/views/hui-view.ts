@@ -31,13 +31,19 @@ import {
   LovelaceViewConfig,
   isStrategyView,
 } from "../../../data/lovelace/config/view";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "ll-create-card": undefined;
-    "ll-edit-card": { path: [number] | [number, number] };
-    "ll-delete-card": { path: [number] | [number, number]; confirm: boolean };
+    "ll-edit-card": { path: [number, number] };
+    "ll-delete-card": { path: [number, number]; confirm: boolean };
+  }
+  interface HTMLElementEventMap {
+    "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
+    "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
+    "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
   }
 }
 

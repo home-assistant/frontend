@@ -317,6 +317,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
@@ -2168,7 +2169,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2347,7 +2358,21 @@
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
-            "start_debug_run": "Start debug run"
+            "start_debug_run": "Start debug run",
+            "pipeline": {
+              "header": "Assist Pipeline",
+              "run_text_pipeline": "Run text pipeline",
+              "run_audio_pipeline": "Run audio pipeline",
+              "run_audio_with_wake": "Run audio pipeline with wake word detection",
+              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "send": "Send",
+              "continue_listening": "Continue listening for wake word",
+              "continue_talking": "Continue talking",
+              "continue_conversation": "Continue conversation",
+              "input_text": "Input text",
+              "run": "[%key:ui::card::service::run%]",
+              "error_starting": "Error starting pipeline"
+            }
           },
           "expose": {
             "caption": "Expose",
@@ -4625,7 +4650,7 @@
           "device_actions": {
             "reinterview_device": "Re-interview device",
             "ping_device": "Ping device",
-            "open_commissioning_window": "Enable commisisioning mode",
+            "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
             "view_thread_network": "View Thread network"
           },
@@ -4657,12 +4682,14 @@
             "ping_complete": "Ping device complete."
           },
           "open_commissioning_window": {
-            "title": "Enable commissioning mode",
+            "title": "Share device",
             "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
-            "start_commissioning": "Enable commissioning mode",
+            "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
-            "sharing_code": "Sharing code"
+            "success": "Your device is ready to be added to another Matter platform.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "copy_code": "Copy code"
           }
         },
         "tips": {
@@ -4741,8 +4768,8 @@
             "extra_information": "Size: {size}, S/N: {serial}",
             "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
-            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk.",
+            "moving_desc": "Rebooting and moving data disk. Please have patience.",
             "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
@@ -5597,6 +5624,15 @@
                   "icons": "Icons"
                 },
                 "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
@@ -6505,7 +6541,9 @@
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
         "remove_all": "Remove all selections",
-        "download_data": "Download data"
+        "download_data": "Download data",
+        "download_data_error": "Unable to download data",
+        "error_no_data": "You need to select data first."
       }
     },
     "tips": {

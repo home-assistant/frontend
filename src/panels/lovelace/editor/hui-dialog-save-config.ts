@@ -3,7 +3,6 @@ import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -64,7 +63,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
             target="_blank"
             rel="noreferrer"
-            dir=${computeRTLDirection(this.hass!)}
           >
             <ha-icon-button
               .path=${mdiHelpCircle}
@@ -88,7 +86,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
                   )}
-                  .dir=${computeRTLDirection(this.hass!)}
                 >
                   <ha-switch
                     .checked=${this._emptyConfig}
