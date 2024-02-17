@@ -13,7 +13,7 @@ import { URL_PREFIX } from "../../data/image_upload";
 
 @customElement("ha-selector-image")
 export class HaImageSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: any;
 
@@ -25,7 +25,7 @@ export class HaImageSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public selector!: ImageSelector;
+  @property({ attribute: false }) public selector!: ImageSelector;
 
   @property({ type: Boolean }) public disabled = false;
 
