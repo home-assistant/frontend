@@ -13,7 +13,7 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -262,6 +262,8 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  show_current_as_primary?: boolean;
+  features?: LovelaceCardFeatureConfig[];
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
@@ -294,6 +296,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   title?: string;
   aspect_ratio?: string;
   auto_fit?: boolean;
+  fit_zones?: boolean;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
@@ -321,6 +324,10 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   show_names?: boolean;
   logarithmic_scale?: boolean;
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
+  split_device_classes?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
@@ -452,7 +459,8 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
-  features?: LovelaceTileFeatureConfig[];
+  show_current_as_primary?: boolean;
+  features?: LovelaceCardFeatureConfig[];
 }
 
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
@@ -533,6 +541,8 @@ export interface TileCardConfig extends LovelaceCardConfig {
   show_entity_picture?: string;
   vertical?: boolean;
   tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
-  features?: LovelaceTileFeatureConfig[];
+  features?: LovelaceCardFeatureConfig[];
 }

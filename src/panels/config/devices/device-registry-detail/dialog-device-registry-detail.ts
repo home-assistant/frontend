@@ -90,28 +90,29 @@ class DialogDeviceRegistryDetail extends LitElement {
                 <div>
                   ${this.hass.localize(
                     "ui.dialogs.device-registry-detail.enabled_label",
-                    "type",
-                    this.hass.localize(
-                      `ui.dialogs.device-registry-detail.type.${
-                        device.entry_type || "device"
-                      }`
-                    )
+                    {
+                      type: this.hass.localize(
+                        `ui.dialogs.device-registry-detail.type.${
+                          device.entry_type || "device"
+                        }`
+                      ),
+                    }
                   )}
                 </div>
                 <div class="secondary">
                   ${this._disabledBy && this._disabledBy !== "user"
                     ? this.hass.localize(
                         "ui.dialogs.device-registry-detail.enabled_cause",
-                        "type",
-                        this.hass.localize(
-                          `ui.dialogs.device-registry-detail.type.${
-                            device.entry_type || "device"
-                          }`
-                        ),
-                        "cause",
-                        this.hass.localize(
-                          `config_entry.disabled_by.${this._disabledBy}`
-                        )
+                        {
+                          type: this.hass.localize(
+                            `ui.dialogs.device-registry-detail.type.${
+                              device.entry_type || "device"
+                            }`
+                          ),
+                          cause: this.hass.localize(
+                            `config_entry.disabled_by.${this._disabledBy}`
+                          ),
+                        }
                       )
                     : ""}
                   ${this.hass.localize(
@@ -178,6 +179,8 @@ class DialogDeviceRegistryDetail extends LitElement {
       css`
         mwc-button.warning {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
         ha-textfield {
           display: block;

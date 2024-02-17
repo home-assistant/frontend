@@ -42,8 +42,7 @@ import "./ha-full-calendar";
 class PanelCalendar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
@@ -64,8 +63,7 @@ class PanelCalendar extends LitElement {
   private _end?: Date;
 
   private _showPaneController = new ResizeController(this, {
-    callback: (entries: ResizeObserverEntry[]) =>
-      entries[0]?.contentRect.width > 750,
+    callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
   private _mql?: MediaQueryList;
@@ -114,7 +112,11 @@ class PanelCalendar extends LitElement {
           .value=${selCal.entity_id}
           .selected=${!this._deSelectedCalendars.includes(selCal.entity_id)}
         >
-          <ha-state-icon slot="graphic" .state=${selCal}></ha-state-icon>
+          <ha-state-icon
+            slot="graphic"
+            .hass=${this.hass}
+            .stateObj=${selCal}
+          ></ha-state-icon>
           ${selCal.name}
         </ha-check-list-item>
       `
@@ -148,11 +150,18 @@ class PanelCalendar extends LitElement {
                 ></ha-svg-icon>
               </ha-button>
               ${calendarItems}
-              <li divider role="separator"></li>
-              <ha-list-item graphic="icon" @click=${this._addCalendar}>
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                ${this.hass.localize("ui.components.calendar.create_calendar")}
-              </ha-list-item>
+              ${this.hass.user?.is_admin
+                ? html` <li divider role="separator"></li>
+                    <ha-list-item graphic="icon" @click=${this._addCalendar}>
+                      <ha-svg-icon
+                        .path=${mdiPlus}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.components.calendar.create_calendar"
+                      )}
+                    </ha-list-item>`
+                : nothing}
             </ha-button-menu>`
           : html`<div slot="title">
               ${this.hass.localize("ui.components.calendar.my_calendars")}
@@ -163,7 +172,7 @@ class PanelCalendar extends LitElement {
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane
+        ${showPane && this.hass.user?.is_admin
           ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>
               <ha-list-item
                 graphic="icon"

@@ -28,14 +28,13 @@ import {
   serviceCallWillDisconnect,
 } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
-import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 class HaPanelDevService extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _uiAvailable = true;
 
@@ -74,8 +73,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     } else if (!this._serviceData?.service) {
@@ -87,8 +86,8 @@ class HaPanelDevService extends LitElement {
         data: {},
       };
       if (this._yamlMode) {
-        this.updateComplete.then(
-          () => this._yamlEditor?.setValue(this._serviceData)
+        this.updateComplete.then(() =>
+          this._yamlEditor?.setValue(this._serviceData)
         );
       }
     }
@@ -185,6 +184,8 @@ class HaPanelDevService extends LitElement {
             >
               <div class="card-content">
                 <ha-yaml-editor
+                  .hass=${this.hass}
+                  copyClipboard
                   readOnly
                   autoUpdate
                   .value=${this._response}
@@ -332,8 +333,7 @@ class HaPanelDevService extends LitElement {
       ) {
         return localize(
           `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
-          "key",
-          field.key
+          { key: field.key }
         );
       }
     }
@@ -425,12 +425,23 @@ class HaPanelDevService extends LitElement {
       }
       forwardHaptic("failure");
       button.actionError();
+
+      let localizedErrorMessage: string | undefined;
+      if (err.translation_domain && err.translation_key) {
+        const lokalize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = lokalize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
+      }
       this._error =
-        this.hass.localize(
-          "ui.notification_toast.service_call_failed",
-          "service",
-          this._serviceData!.service!
-        ) + ` ${err.message}`;
+        localizedErrorMessage ||
+        this.hass.localize("ui.notification_toast.service_call_failed", {
+          service: this._serviceData!.service!,
+        }) + ` ${err.message}`;
       return;
     }
     button.actionSuccess();
@@ -569,19 +580,18 @@ class HaPanelDevService extends LitElement {
         }
         .switch-mode-container .error {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .attributes {
           width: 100%;
         }
 
         .attributes th {
-          text-align: left;
+          text-align: var(--float-start);
           background-color: var(--card-background-color);
           border-bottom: 1px solid var(--primary-text-color);
-        }
-
-        :host([rtl]) .attributes th {
-          text-align: right;
+          direction: var(--direction);
         }
 
         .attributes tr {

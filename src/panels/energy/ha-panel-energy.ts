@@ -34,7 +34,7 @@ const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _viewIndex = 0;
 
@@ -139,12 +139,15 @@ class PanelEnergy extends LitElement {
           width: 100%;
           padding-left: 32px;
           padding-inline-start: 32px;
+          padding-inline-end: initial;
           --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
           direction: var(--direction);
+          --date-range-picker-max-height: calc(100vh - 80px);
         }
         :host([narrow]) hui-energy-period-selector {
           padding-left: 0px;
           padding-inline-start: 0px;
+          padding-inline-end: initial;
         }
         :host {
           -ms-user-select: none;
@@ -188,7 +191,7 @@ class PanelEnergy extends LitElement {
           }
         }
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
@@ -199,7 +202,9 @@ class PanelEnergy extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-left: env(safe-area-inset-left);
+          padding-inline-start: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
         }
         hui-view {

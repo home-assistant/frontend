@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../resources/compatibility";
 import {
   Auth,
   Connection,
@@ -13,19 +11,22 @@ import {
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
-import { getRecorderInfo } from "../data/recorder";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
+import { MAIN_WINDOW_NAME } from "../data/main_window";
+import { WindowWithPreloads } from "../data/preloads";
+import { getRecorderInfo } from "../data/recorder";
+import { subscribeRepairsIssueRegistry } from "../data/repairs";
+import { subscribeAreaRegistry } from "../data/ws-area_registry";
+import { subscribeDeviceRegistry } from "../data/ws-device_registry";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
-import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/array.flat.polyfill";
 import "../resources/safari-14-attachshadow-patch";
-import { MAIN_WINDOW_NAME } from "../data/main_window";
-import { WindowWithPreloads } from "../data/preloads";
 
 window.name = MAIN_WINDOW_NAME;
 (window as any).frontendVersion = __VERSION__;
@@ -115,6 +116,9 @@ window.hassConnection.then(({ conn }) => {
     // do nothing
   };
   subscribeEntities(conn, noop);
+  subscribeEntityRegistryDisplay(conn, noop);
+  subscribeDeviceRegistry(conn, noop);
+  subscribeAreaRegistry(conn, noop);
   subscribeConfig(conn, noop);
   subscribeServices(conn, noop);
   subscribePanels(conn, noop);

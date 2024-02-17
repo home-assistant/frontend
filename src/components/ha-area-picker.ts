@@ -1,7 +1,6 @@
-import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -25,21 +24,26 @@ import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
-import { ValueChangedEvent, HomeAssistant } from "../types";
+import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
+import "./ha-list-item";
 import "./ha-svg-icon";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
-  html`<mwc-list-item
+  html`<ha-list-item
+    graphic="icon"
     class=${classMap({ "add-new": item.area_id === "add_new" })}
   >
+    ${item.icon
+      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+      : nothing}
     ${item.name}
-  </mwc-list-item>`;
+  </ha-list-item>`;
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
@@ -54,7 +58,7 @@ export class HaAreaPicker extends LitElement {
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
-  public noAdd?: boolean;
+  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -88,13 +92,15 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-areas" })
   public excludeAreas?: string[];
 
-  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  @property({ attribute: false })
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: HassEntity) => boolean;
+  @property({ attribute: false })
+  public entityFilter?: (entity: HassEntity) => boolean;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @state() private _opened?: boolean;
 
@@ -133,6 +139,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
+            icon: null,
             aliases: [],
           },
         ];
@@ -260,7 +267,9 @@ export class HaAreaPicker extends LitElement {
       }
 
       if (areaIds) {
-        outputAreas = areas.filter((area) => areaIds!.includes(area.area_id));
+        outputAreas = outputAreas.filter((area) =>
+          areaIds!.includes(area.area_id)
+        );
       }
 
       if (excludeAreas) {
@@ -275,6 +284,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_match"),
             picture: null,
+            icon: null,
             aliases: [],
           },
         ];
@@ -288,6 +298,7 @@ export class HaAreaPicker extends LitElement {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
               picture: null,
+              icon: "mdi:plus",
               aliases: [],
             },
           ];
@@ -446,6 +457,7 @@ export class HaAreaPicker extends LitElement {
       cancel: () => {
         this._setValue(undefined);
         this._suggestion = undefined;
+        this.comboBox.setInputValue("");
       },
     });
   }

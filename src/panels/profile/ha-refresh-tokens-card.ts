@@ -159,7 +159,8 @@ class HaRefreshTokens extends LitElement {
       return;
     }
     try {
-      await deleteAllRefreshTokens(this.hass);
+      await deleteAllRefreshTokens(this.hass, "normal", false);
+      fireEvent(this, "hass-refresh-tokens");
     } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(

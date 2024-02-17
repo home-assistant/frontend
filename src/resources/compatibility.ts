@@ -1,16 +1,9 @@
 // Caution before editing - For latest builds, this module is replaced with emptiness and thus not imported (see build-scripts/bundle.js)
-import "core-js";
 import "lit/polyfill-support";
 
-// To use comlink under ES5
-import "proxy-polyfill";
-import "unfetch/polyfill";
+import ResizeObserver from "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver";
 
-import ResizeObserver from "resize-observer-polyfill";
-
-if (!window.ResizeObserver) {
-  window.ResizeObserver = ResizeObserver;
-}
+window.ResizeObserver = ResizeObserver;
 
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
 (function (arr) {

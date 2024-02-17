@@ -179,10 +179,7 @@ class ErrorLogCard extends LitElement {
       } catch (err: any) {
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
-          "provider",
-          this.provider,
-          "error",
-          extractApiErrorMessage(err)
+          { provider: this.provider, error: extractApiErrorMessage(err) }
         );
         return;
       }

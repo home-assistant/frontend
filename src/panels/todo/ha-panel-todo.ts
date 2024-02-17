@@ -23,7 +23,14 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import {
+  createSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import "../../components/ha-button";
+import "../../components/ha-fab";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
@@ -33,7 +40,7 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
-import { getTodoLists } from "../../data/todo";
+import { TodoListEntityFeature, getTodoLists } from "../../data/todo";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import {
   showAlertDialog,
@@ -45,15 +52,14 @@ import { HomeAssistant } from "../../types";
 import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
 import { createCardElement } from "../lovelace/create-element/create-card-element";
 import { LovelaceCard } from "../lovelace/types";
-import { navigate } from "../../common/navigate";
-import { createSearchParam } from "../../common/url/search-params";
-import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
+import { supportsFeature } from "../../common/entity/supports-feature";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
@@ -68,8 +74,7 @@ class PanelTodo extends LitElement {
   private _headerHeight = 56;
 
   private _showPaneController = new ResizeController(this, {
-    callback: (entries: ResizeObserverEntry[]) =>
-      entries[0]?.contentRect.width > 750,
+    callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
   private _mql?: MediaQueryList;
@@ -106,18 +111,21 @@ class PanelTodo extends LitElement {
 
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+
+      const urlEntityId = extractSearchParam("entity_id");
+      if (urlEntityId) {
+        this._entityId = urlEntityId;
+      } else {
+        if (this._entityId && !(this._entityId in this.hass.states)) {
+          this._entityId = undefined;
+        }
+        if (!this._entityId) {
+          this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+        }
+      }
     }
 
-    if (!this.hasUpdated && !this._entityId) {
-      this._entityId = getTodoLists(this.hass)[0]?.entity_id;
-    } else if (!this.hasUpdated) {
-      this._setupTodoElement();
-    }
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("_entityId")) {
+    if (changedProperties.has("_entityId") || !this.hasUpdated) {
       this._setupTodoElement();
     }
 
@@ -147,6 +155,9 @@ class PanelTodo extends LitElement {
     const entityRegistryEntry = this._entityId
       ? this.hass.entities[this._entityId]
       : undefined;
+    const entityState = this._entityId
+      ? this.hass.states[this._entityId]
+      : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const listItems = getTodoLists(this.hass).map(
       (list) =>
@@ -156,7 +167,11 @@ class PanelTodo extends LitElement {
           .entityId=${list.entity_id}
           .activated=${list.entity_id === this._entityId}
         >
-          <ha-state-icon .state=${list} slot="graphic"></ha-state-icon
+          <ha-state-icon
+            .stateObj=${list}
+            .hass=${this.hass}
+            slot="graphic"
+          ></ha-state-icon
           >${list.name}
         </ha-list-item> `
     );
@@ -182,8 +197,8 @@ class PanelTodo extends LitElement {
                 <ha-button slot="trigger">
                   <div>
                     ${this._entityId
-                      ? this._entityId in this.hass.states
-                        ? computeStateName(this.hass.states[this._entityId])
+                      ? entityState
+                        ? computeStateName(entityState)
                         : this._entityId
                       : ""}
                   </div>
@@ -193,19 +208,30 @@ class PanelTodo extends LitElement {
                   ></ha-svg-icon>
                 </ha-button>
                 ${listItems}
-                <li divider role="separator"></li>
-                <ha-list-item graphic="icon" @click=${this._addList}>
-                  <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.todo.create_list")}
-                </ha-list-item>
+                ${this.hass.user?.is_admin
+                  ? html`<li divider role="separator"></li>
+                      <ha-list-item graphic="icon" @click=${this._addList}>
+                        <ha-svg-icon
+                          .path=${mdiPlus}
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.panel.todo.create_list")}
+                      </ha-list-item>`
+                  : nothing}
               </ha-button-menu>`
             : this.hass.localize("panel.todo")}
         </div>
         <mwc-list slot="pane" activatable>${listItems}</mwc-list>
-        <ha-list-item graphic="icon" slot="pane-footer" @click=${this._addList}>
-          <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-          ${this.hass.localize("ui.panel.todo.create_list")}
-        </ha-list-item>
+        ${showPane && this.hass.user?.is_admin
+          ? html`<ha-list-item
+              graphic="icon"
+              slot="pane-footer"
+              @click=${this._addList}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+              ${this.hass.localize("ui.panel.todo.create_list")}
+            </ha-list-item>`
+          : nothing}
         <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
@@ -250,6 +276,16 @@ class PanelTodo extends LitElement {
         <div id="columns">
           <div class="column">${this._card}</div>
         </div>
+        ${entityState &&
+        supportsFeature(entityState, TodoListEntityFeature.CREATE_TODO_ITEM)
+          ? html`<ha-fab
+              .label=${this.hass.localize("ui.panel.todo.add_item")}
+              extended
+              @click=${this._addItem}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-fab>`
+          : nothing}
       </ha-two-pane-top-app-bar-fixed>
     `;
   }
@@ -324,6 +360,10 @@ class PanelTodo extends LitElement {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   }
 
+  private _addItem() {
+    showTodoItemEditDialog(this, { entity: this._entityId! });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -336,6 +376,7 @@ class PanelTodo extends LitElement {
           flex-direction: row;
           justify-content: center;
           margin: 8px;
+          padding-bottom: 70px;
         }
         .column {
           flex: 1 0 0;
@@ -384,6 +425,13 @@ class PanelTodo extends LitElement {
           overflow: hidden;
           white-space: nowrap;
           display: block;
+        }
+        ha-fab {
+          position: fixed;
+          right: 16px;
+          bottom: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
         }
       `,
     ];

@@ -8,7 +8,6 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { computeCards } from "../../common/generate-lovelace-config";
 import { addCards } from "../config-util";
 import "./hui-card-preview";
 import { showCreateCardDialog } from "./show-create-card-dialog";
@@ -28,11 +27,7 @@ export class HuiDialogSuggestCard extends LitElement {
 
   public showDialog(params: SuggestCardDialogParams): void {
     this._params = params;
-    this._cardConfig =
-      params.cardConfig ||
-      computeCards(this.hass.states, params.entities, {
-        title: params.cardTitle,
-      });
+    this._cardConfig = params.cardConfig;
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -110,8 +105,8 @@ export class HuiDialogSuggestCard extends LitElement {
                 ${this._saving
                   ? html`
                       <ha-circular-progress
-                        active
-                        title="Saving"
+                        indeterminate
+                        aria-label="Saving"
                         size="small"
                       ></ha-circular-progress>
                     `

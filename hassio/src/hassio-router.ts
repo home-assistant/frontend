@@ -18,7 +18,7 @@ class HassioRouter extends HassRouterPage {
 
   @property({ attribute: false }) public panel!: HassioPanelInfo;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.

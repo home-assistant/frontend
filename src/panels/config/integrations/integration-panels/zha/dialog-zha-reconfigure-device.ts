@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
@@ -56,6 +57,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._stages = undefined;
     this._clusterConfigurationStatuses = undefined;
     this._showDetails = false;
+    this._allSuccessful = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -102,7 +104,7 @@ class DialogZHAReconfigureDevice extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
                 <div class="status">
                   <p>
                     <b>
@@ -278,7 +280,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                                       (attribute) => html`
                                         <span class="grid-item">
                                           ${attribute.name}:
-                                          ${attribute.success
+                                          ${attribute.status === "SUCCESS"
                                             ? html`
                                                 <span class="stage">
                                                   <ha-svg-icon
@@ -289,6 +291,12 @@ class DialogZHAReconfigureDevice extends LitElement {
                                               `
                                             : html`
                                                 <span class="stage">
+                                                  <simple-tooltip
+                                                    animation-delay="0"
+                                                    position="top"
+                                                  >
+                                                    ${attribute.status}
+                                                  </simple-tooltip>
                                                   <ha-svg-icon
                                                     .path=${mdiCloseCircle}
                                                     class="failed"
@@ -361,7 +369,12 @@ class DialogZHAReconfigureDevice extends LitElement {
         Object.keys(attributes).forEach((name) => {
           const attribute = attributes[name];
           clusterConfigurationStatus!.attributes.set(attribute.id, attribute);
-          this._allSuccessful = this._allSuccessful && attribute.success;
+          this._allSuccessful =
+            this._allSuccessful &&
+            !(
+              attribute.status in
+              ["FAILURE", "UNSUPPORTED_ATTRIBUTE", "UNREPORTABLE_ATTRIBUTE"]
+            );
         });
       }
       this.requestUpdate();
@@ -439,6 +452,8 @@ class DialogZHAReconfigureDevice extends LitElement {
         .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
         }
       `,
     ];

@@ -91,7 +91,7 @@ class DialogRestart extends LitElement {
         ${this._loadingHostInfo
           ? html`
               <div class="loader">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : html`
@@ -456,6 +456,8 @@ class DialogRestart extends LitElement {
           margin: 8px 0 4px 0;
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
+          padding-inline-start: var(--mdc-list-side-padding, 20px);
+          padding-inline-end: var(--mdc-list-side-padding, 20px);
         }
         .loader {
           display: flex;

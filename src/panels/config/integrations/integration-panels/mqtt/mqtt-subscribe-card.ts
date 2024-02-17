@@ -110,15 +110,15 @@ class MqttSubscribeCard extends LitElement {
           ${this._messages.map(
             (msg) => html`
               <div class="event">
-                ${this.hass.localize(
-                  "ui.panel.config.mqtt.message_received",
-                  "id",
-                  msg.id,
-                  "topic",
-                  msg.message.topic,
-                  "time",
-                  formatTime(msg.time, this.hass!.locale, this.hass!.config)
-                )}
+                ${this.hass.localize("ui.panel.config.mqtt.message_received", {
+                  id: msg.id,
+                  topic: msg.message.topic,
+                  time: formatTime(
+                    msg.time,
+                    this.hass!.locale,
+                    this.hass!.config
+                  ),
+                })}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">
                   QoS: ${msg.message.qos} - Retain:
@@ -226,6 +226,8 @@ class MqttSubscribeCard extends LitElement {
         ha-select {
           margin-left: 0px;
           margin-top: 8px;
+          margin-inline-start: 0px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           flex: auto;

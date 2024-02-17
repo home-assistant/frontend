@@ -1,4 +1,11 @@
-import { mdiArrowLeft } from "@mdi/js";
+import {
+  mdiGrid,
+  mdiListBoxOutline,
+  mdiArrowLeft,
+  mdiAlphaABoxOutline,
+  mdiDotsVertical,
+} from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-button";
 import {
   css,
@@ -26,6 +33,7 @@ import {
   MediaPickedEvent,
   MediaPlayerItem,
   mediaPlayerPlayMedia,
+  MediaPlayerLayoutType,
 } from "../../data/media-player";
 import {
   ResolvedMediaSource,
@@ -57,12 +65,13 @@ const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
 class PanelMediaBrowser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() _currentItem?: MediaPlayerItem;
+
+  @state() _preferredLayout: MediaPlayerLayoutType = "auto";
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
@@ -113,10 +122,48 @@ class PanelMediaBrowser extends LitElement {
           .currentItem=${this._currentItem}
           @media-refresh=${this._refreshMedia}
         ></ha-media-manage-button>
+        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <mwc-list-item graphic="icon">
+            ${this.hass.localize("ui.components.media-browser.auto")}
+            <ha-svg-icon
+              class=${this._preferredLayout === "auto"
+                ? "selected_menu_item"
+                : ""}
+              slot="graphic"
+              .path=${mdiAlphaABoxOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+          <mwc-list-item graphic="icon">
+            ${this.hass.localize("ui.components.media-browser.grid")}
+            <ha-svg-icon
+              class=${this._preferredLayout === "grid"
+                ? "selected_menu_item"
+                : ""}
+              slot="graphic"
+              .path=${mdiGrid}
+            ></ha-svg-icon>
+          </mwc-list-item>
+          <mwc-list-item graphic="icon">
+            ${this.hass.localize("ui.components.media-browser.list")}
+            <ha-svg-icon
+              slot="graphic"
+              class=${this._preferredLayout === "list"
+                ? "selected_menu_item"
+                : ""}
+              .path=${mdiListBoxOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
           .navigateIds=${this._navigateIds}
+          .preferredLayout=${this._preferredLayout}
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
@@ -128,6 +175,20 @@ class PanelMediaBrowser extends LitElement {
         @player-picked=${this._playerPicked}
       ></ha-bar-media-player>
     `;
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._preferredLayout = "auto";
+        break;
+      case 1:
+        this._preferredLayout = "grid";
+        break;
+      case 2:
+        this._preferredLayout = "list";
+        break;
+    }
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -287,6 +348,9 @@ class PanelMediaBrowser extends LitElement {
 
         :host([narrow]) ha-media-player-browse {
           height: calc(100vh - (57px + var(--header-height)));
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
         }
 
         ha-bar-media-player {

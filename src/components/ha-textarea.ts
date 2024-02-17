@@ -8,12 +8,6 @@ import { customElement, property } from "lit/decorators";
 export class HaTextArea extends TextAreaBase {
   @property({ type: Boolean, reflect: true }) autogrow = false;
 
-  firstUpdated() {
-    super.firstUpdated();
-
-    this.setAttribute("dir", document.dir);
-  }
-
   updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (this.autogrow && changedProperties.has("value")) {
@@ -53,9 +47,10 @@ export class HaTextArea extends TextAreaBase {
         margin-top: 16px;
         margin-bottom: 16px;
       }
-      :host([dir="rtl"]) .mdc-floating-label {
-        right: 16px;
-        left: initial;
+      .mdc-floating-label {
+        inset-inline-start: 16px !important;
+        inset-inline-end: initial !important;
+        transform-origin: var(--float-start) top;
       }
     `,
   ];

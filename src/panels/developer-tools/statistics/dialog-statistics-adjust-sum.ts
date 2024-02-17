@@ -1,6 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import { mdiChevronRight } from "@mdi/js";
 import formatISO9075 from "date-fns/formatISO9075";
 import {
   css,
@@ -21,6 +19,8 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import {
   adjustStatisticsSum,
   fetchStatistics,
@@ -136,7 +136,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     let stats: TemplateResult;
 
     if (!this._stats5min || !this._statsHour) {
-      stats = html`<ha-circular-progress active></ha-circular-progress>`;
+      stats = html`<ha-circular-progress indeterminate></ha-circular-progress>`;
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>
         ${this.hass.localize(
@@ -156,7 +156,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         const stat = data[i];
         const growth = Math.round(stat.change! * 100) / 100;
         rows.push(html`
-          <mwc-list-item
+          <ha-list-item
             twoline
             hasMeta
             .stat=${stat}
@@ -170,8 +170,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
                 this.hass.config
               )}
             </span>
-            <ha-svg-icon slot="meta" .path=${mdiChevronRight}></ha-svg-icon>
-          </mwc-list-item>
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
         `);
       }
       stats = html`${rows}`;
@@ -520,7 +520,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         ha-selector-number {
           margin-bottom: 20px;
         }
-        mwc-list-item {
+        ha-list-item {
           margin: 0 -24px;
           --mdc-list-side-padding: 24px;
         }

@@ -33,7 +33,7 @@ interface FilterValue {
 
 @customElement("ha-button-related-filter-menu")
 export class HaRelatedFilterButtonMenu extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public corner: Corner = "BOTTOM_START";
 
@@ -126,8 +126,11 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     }
     const filter = this.hass.localize(
       "ui.components.related-filter-menu.filtered_by_entity",
-      "entity_name",
-      computeStateName((ev.currentTarget as any).comboBox.selectedItem)
+      {
+        entity_name: computeStateName(
+          (ev.currentTarget as any).comboBox.selectedItem
+        ),
+      }
     );
     const items = await findRelated(this.hass, "entity", entityId);
     fireEvent(this, "related-changed", {
@@ -146,11 +149,12 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     }
     const filter = this.hass.localize(
       "ui.components.related-filter-menu.filtered_by_device",
-      "device_name",
-      computeDeviceName(
-        (ev.currentTarget as any).comboBox.selectedItem,
-        this.hass
-      )
+      {
+        device_name: computeDeviceName(
+          (ev.currentTarget as any).comboBox.selectedItem,
+          this.hass
+        ),
+      }
     );
     const items = await findRelated(this.hass, "device", deviceId);
 
@@ -170,8 +174,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     }
     const filter = this.hass.localize(
       "ui.components.related-filter-menu.filtered_by_area",
-      "area_name",
-      (ev.currentTarget as any).comboBox.selectedItem.name
+      { area_name: (ev.currentTarget as any).comboBox.selectedItem.name }
     );
     const items = await findRelated(this.hass, "area", areaId);
     fireEvent(this, "related-changed", {

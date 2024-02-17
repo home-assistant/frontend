@@ -127,8 +127,7 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
                   ${this._node.zwave_plus_version
                     ? this.hass.localize(
                         "ui.panel.config.zwave_js.device_info.zwave_plus_version",
-                        "version",
-                        this._node.zwave_plus_version
+                        { version: this._node.zwave_plus_version }
                       )
                     : this.hass.localize("ui.common.no")}
                 </div>

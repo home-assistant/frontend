@@ -16,9 +16,9 @@ import "./ha-integration-action-card";
 export class HaDisabledConfigEntryCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ConfigEntryExtended;
+  @property({ attribute: false }) public entry!: ConfigEntryExtended;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     return html`

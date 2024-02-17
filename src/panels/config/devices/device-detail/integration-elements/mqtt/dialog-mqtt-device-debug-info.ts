@@ -9,7 +9,6 @@ import {
 } from "lit";
 import { customElement, state } from "lit/decorators";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
-import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
@@ -51,16 +50,13 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       return nothing;
     }
 
-    const dir = computeRTLDirection(this.hass!);
-
     return html`
       <ha-dialog
         open
         @closed=${this._close}
         .heading=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
-          "device",
-          computeDeviceName(this._params.device, this.hass)
+          { device: computeDeviceName(this._params.device, this.hass) }
         )}
       >
         <h4>
@@ -73,7 +69,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.deserialize"
             )}
-            .dir=${dir}
           >
             <ha-switch
               .checked=${this._showDeserialized}
@@ -88,7 +83,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
             )}
-            .dir=${dir}
           >
             <ha-switch
               .checked=${this._showAsYaml}
@@ -179,11 +173,10 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-rx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -203,11 +196,10 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_tx_messages",
-                        "n",
-                        topic.messages.length
+                        { n: topic.messages.length }
                       )}
                     >
-                    </mqtt-tx-messages>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -270,6 +262,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           list-style-type: none;
           margin: 4px;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
         .entitylistitem {
           margin-bottom: 12px;

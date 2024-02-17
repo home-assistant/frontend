@@ -22,7 +22,7 @@ export class CloudWebhooks extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _cloudHooks?: {
     [webhookId: string]: CloudWebhook;
@@ -93,7 +93,7 @@ export class CloudWebhooks extends LitElement {
                         ? html`
                             <div class="progress">
                               <ha-circular-progress
-                                active
+                                indeterminate
                               ></ha-circular-progress>
                             </div>
                           `
@@ -223,6 +223,8 @@ export class CloudWebhooks extends LitElement {
         }
         .progress {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           display: flex;
           flex-direction: column;
           justify-content: center;

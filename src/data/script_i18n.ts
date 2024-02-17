@@ -27,6 +27,7 @@ import {
   PlayMediaAction,
   RepeatAction,
   SceneAction,
+  SetConversationResponseAction,
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
@@ -168,6 +169,18 @@ const tryDescribeAction = <T extends ActionType>(
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
+
+      if (config.metadata) {
+        return hass.localize(
+          `${actionTranslationBaseKey}.service.description.service_name`,
+          {
+            domain: domainToName(hass.localize, domain),
+            name: service || config.service,
+            targets: formatListWithAnds(hass.locale, targets),
+          }
+        );
+      }
+
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name`,
         {
@@ -259,9 +272,15 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.play_media.description.full`,
       {
-        hasMedia: config.metadata.title || config.data.media_content_id,
-        media: config.metadata.title || config.data.media_content_id,
-        hasMediaPlayer: mediaStateObj ? true : entityId !== undefined,
+        hasMedia:
+          config.metadata.title || config.data.media_content_id
+            ? "true"
+            : "false",
+        media:
+          (config.metadata.title as string | undefined) ||
+          config.data.media_content_id,
+        hasMediaPlayer:
+          mediaStateObj || entityId !== undefined ? "true" : "false",
         mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
       }
     );
@@ -317,7 +336,7 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "stop") {
     const config = action as StopAction;
     return hass.localize(`${actionTranslationBaseKey}.stop.description.full`, {
-      hasReason: config.stop !== undefined,
+      hasReason: config.stop !== undefined ? "true" : "false",
       reason: config.stop,
     });
   }
@@ -398,7 +417,9 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "device_action") {
     const config = action as DeviceAction;
     if (!config.device_id) {
-      return "Device action";
+      return hass.localize(
+        `${actionTranslationBaseKey}.device_id.description.no_device`
+      );
     }
     const localized = localizeDeviceAutomationAction(
       hass,
@@ -420,6 +441,14 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.parallel.description.full`,
       { number: numActions }
+    );
+  }
+
+  if (actionType === "set_conversation_response") {
+    const config = action as SetConversationResponseAction;
+    return hass.localize(
+      `${actionTranslationBaseKey}.set_conversation_response.description.full`,
+      { response: config.set_conversation_response }
     );
   }
 

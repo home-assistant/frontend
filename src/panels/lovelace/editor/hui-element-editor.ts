@@ -22,7 +22,7 @@ import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
@@ -37,7 +37,7 @@ export interface ConfigChangedEvent {
     | LovelaceCardConfig
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceTileFeatureConfig
+    | LovelaceCardFeatureConfig
     | LovelaceStrategyConfig;
   error?: string;
   guiModeAvailable?: boolean;
@@ -57,7 +57,7 @@ export interface UIConfigChangedEvent extends Event {
       | LovelaceCardConfig
       | LovelaceRowConfig
       | LovelaceHeaderFooterConfig
-      | LovelaceTileFeatureConfig;
+      | LovelaceCardFeatureConfig;
   };
 }
 
@@ -207,8 +207,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                 ${this._loading
                   ? html`
                       <ha-circular-progress
-                        active
-                        alt="Loading"
+                        indeterminate
                         class="center margin-bot"
                       ></ha-circular-progress>
                     `
@@ -234,11 +233,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
         ${this._guiSupported === false && this.configElementType
           ? html`
               <div class="info">
-                ${this.hass.localize(
-                  "ui.errors.config.editor_not_available",
-                  "type",
-                  this.configElementType
-                )}
+                ${this.hass.localize("ui.errors.config.editor_not_available", {
+                  type: this.configElementType,
+                })}
               </div>
             `
           : ""}

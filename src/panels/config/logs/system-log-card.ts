@@ -1,6 +1,5 @@
 import { mdiRefresh } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -10,6 +9,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import { domainToName } from "../../../data/integration";
 import {
   fetchSystemLog,
@@ -47,17 +47,14 @@ export class SystemLogCard extends LitElement {
   }
 
   private _multipleMessages(item: LoggedError): string {
-    return this.hass.localize(
-      "ui.panel.config.logs.multiple_messages",
-      "time",
-      formatSystemLogTime(
+    return this.hass.localize("ui.panel.config.logs.multiple_messages", {
+      time: formatSystemLogTime(
         item.first_occurred,
         this.hass.locale,
         this.hass.config
       ),
-      "counter",
-      item.count
-    );
+      counter: item.count,
+    });
   }
 
   private _getFilteredItems = memoizeOne(
@@ -100,7 +97,7 @@ export class SystemLogCard extends LitElement {
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
-                  <ha-circular-progress active></ha-circular-progress>
+                  <ha-circular-progress indeterminate></ha-circular-progress>
                 </div>
               `
             : html`
@@ -122,16 +119,19 @@ export class SystemLogCard extends LitElement {
                     ? html`<div class="card-content">
                         ${this.hass.localize(
                           "ui.panel.config.logs.no_issues_search",
-                          "term",
-                          this.filter
+                          { term: this.filter }
                         )}
                       </div>`
-                    : filteredItems.map(
-                        (item, idx) => html`
-                          <paper-item @click=${this._openLog} .logItem=${item}>
-                            <paper-item-body two-line>
-                              <div class="row">${item.message[0]}</div>
-                              <div class="row-secondary" secondary>
+                    : html`<mwc-list
+                        >${filteredItems.map(
+                          (item, idx) => html`
+                            <ha-list-item
+                              @click=${this._openLog}
+                              .logItem=${item}
+                              twoline
+                            >
+                              ${item.message[0]}
+                              <span slot="secondary" class="secondary">
                                 ${this._timestamp(item)} –
                                 ${html`(<span class=${item.level}
                                     >${this.hass.localize(
@@ -153,11 +153,11 @@ export class SystemLogCard extends LitElement {
                                 ${item.count > 1
                                   ? html` - ${this._multipleMessages(item)} `
                                   : nothing}
-                              </div>
-                            </paper-item-body>
-                          </paper-item>
-                        `
-                      )}
+                              </span>
+                            </ha-list-item>
+                          `
+                        )}</mwc-list
+                      >`}
 
                 <div class="card-actions">
                   <ha-call-service-button
@@ -221,10 +221,6 @@ export class SystemLogCard extends LitElement {
         margin-block-start: 0px;
         margin-block-end: 0px;
         font-weight: normal;
-      }
-
-      paper-item {
-        cursor: pointer;
       }
 
       .system-log-intro {

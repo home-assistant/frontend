@@ -75,8 +75,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
-  private _veryVeryNarrow = false;
+  // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
+  @property({ type: Boolean, reflect: true }) public veryVeryNarrow = false;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -155,7 +155,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
-      changedProps.has("forecastEvent")
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
     );
   }
 
@@ -212,11 +213,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (stateObj.state === UNAVAILABLE) {
       return html`
         <ha-card class="unavailable" @click=${this._handleAction}>
-          ${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_unavailable",
-            "entity",
-            `${computeStateName(stateObj)} (${this._config.entity})`
-          )}
+          ${this.hass.localize("ui.panel.lovelace.warning.entity_unavailable", {
+            entity: `${computeStateName(stateObj)} (${this._config.entity})`,
+          })}
         </ha-card>
       `;
     }
@@ -228,7 +227,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
-        ? forecastData.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
+        ? forecastData.forecast.slice(0, this.veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
@@ -257,7 +256,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   html`
                     <ha-state-icon
                       class="weather-icon"
-                      .state=${stateObj}
+                      .stateObj=${stateObj}
+                      .hass=${this.hass}
                     ></ha-state-icon>
                   `}
                 </div>
@@ -453,7 +453,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     } else {
       this.removeAttribute("verynarrow");
     }
-    this._veryVeryNarrow = card.offsetWidth < 245;
+    this.veryVeryNarrow = card.offsetWidth < 245;
   }
 
   private _showValue(item?: any): boolean {
@@ -487,6 +487,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           align-items: center;
           min-width: 64px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
 
         .icon-image > * {
@@ -506,7 +508,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .temp-attribute {
-          text-align: right;
+          text-align: var(--float-end);
         }
 
         .temp-attribute .temp {
@@ -536,6 +538,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .name-state {
           overflow: hidden;
           padding-right: 12px;
+          padding-inline-end: 12px;
+          padding-inline-start: initial;
           width: 100%;
         }
 
@@ -608,11 +612,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           text-align: center;
         }
 
-        /* ============= RTL ============= */
-        :host([rtl]) .temp-attribute {
-          text-align: left;
-        }
-
         /* ============= NARROW ============= */
 
         :host([narrow]) .icon-image {
@@ -635,6 +634,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         :host([narrow]) .temp-attribute .temp {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
 
         :host([narrow]) .temp span {
@@ -656,6 +657,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         :host([veryNarrow]) .name-state {
           padding-right: 0;
+          padding-inline-end: 0;
+          padding-inline-start: initial;
         }
 
         /* ============= VERY VERY NARROW ============= */
@@ -673,6 +676,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         :host([veryVeryNarrow]) .icon-image {
           margin-right: 0;
+          margin-inline-end: 0;
+          margin-inline-start: initial;
         }
       `,
     ];

@@ -18,6 +18,7 @@ export interface CloudPreferences {
   google_enabled: boolean;
   alexa_enabled: boolean;
   remote_enabled: boolean;
+  remote_allow_remote_enable: boolean;
   google_secure_devices_pin: string | undefined;
   cloudhooks: { [webhookId: string]: CloudWebhook };
   alexa_report_state: boolean;
@@ -139,6 +140,7 @@ export const updateCloudPref = (
     google_report_state?: CloudPreferences["google_report_state"];
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
+    remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
   }
 ) =>
   hass.callWS({

@@ -56,46 +56,40 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
   let tips = [
     {
-      content: hass.localize(
-        "ui.panel.config.tips.join",
-        "forums",
-        html`<a
+      content: hass.localize("ui.panel.config.tips.join", {
+        forums: html`<a
           href="https://community.home-assistant.io"
           target="_blank"
           rel="noreferrer"
           >Forums</a
         >`,
-        "twitter",
-        html`<a
+        twitter: html`<a
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
           >Twitter</a
         >`,
-        "discord",
-        html`<a
+        discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
           rel="noreferrer"
           >Chat</a
         >`,
-        "blog",
-        html`<a
+        blog: html`<a
           href=${documentationUrl(hass, `/blog`)}
           target="_blank"
           rel="noreferrer"
           >Blog</a
         >`,
-        "newsletter",
-        html`<span class="keep-together"
+        newsletter: html`<span class="keep-together"
           ><a
             href=${documentationUrl(hass, `/newsletter`)}
             target="_blank"
             rel="noreferrer"
             >Newsletter</a
           >
-        </span>`
-      ),
+        </span>`,
+      }),
       weight: 2,
       narrow: true,
     },
@@ -120,14 +114,13 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
 class HaConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public cloudStatus?: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _tip?: string;
 

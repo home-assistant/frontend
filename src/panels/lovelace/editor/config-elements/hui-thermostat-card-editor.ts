@@ -6,29 +6,34 @@ import {
   array,
   assert,
   assign,
+  boolean,
   object,
   optional,
   string,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { ThermostatCardConfig } from "../../cards/types";
 import {
-  LovelaceTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
-import "./hui-tile-card-features-editor";
-import type { FeatureType } from "./hui-tile-card-features-editor";
+import "./hui-card-features-editor";
+import type { FeatureType } from "./hui-card-features-editor";
 
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-fan-modes",
 ];
 
 const cardConfigStruct = assign(
@@ -37,6 +42,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     theme: optional(string()),
+    show_current_as_primary: optional(boolean()),
     features: optional(array(any())),
   })
 );
@@ -51,7 +57,13 @@ const SCHEMA = [
       { name: "theme", selector: { theme: {} } },
     ],
   },
-] as const;
+  {
+    name: "show_current_as_primary",
+    selector: {
+      boolean: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor
@@ -70,7 +82,7 @@ export class HuiThermostatCardEditor
   }
 
   private _context = memoizeOne(
-    (entity_id?: string): LovelaceTileFeatureContext => ({ entity_id })
+    (entity_id?: string): LovelaceCardFeatureContext => ({ entity_id })
   );
 
   protected render() {
@@ -103,14 +115,14 @@ export class HuiThermostatCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-tile-card-features-editor
+      <hui-card-features-editor
         .hass=${this.hass}
         .stateObj=${stateObj}
         .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
         .features=${this._config!.features ?? []}
         @features-changed=${this._featuresChanged}
         @edit-detail-element=${this._editDetailElement}
-      ></hui-tile-card-features-editor>
+      ></hui-card-features-editor>
     `;
   }
 
@@ -124,7 +136,7 @@ export class HuiThermostatCardEditor
       return;
     }
 
-    const features = ev.detail.features as LovelaceTileFeatureConfig[];
+    const features = ev.detail.features as LovelaceCardFeatureConfig[];
     const config: ThermostatCardConfig = {
       ...this._config,
       features,
@@ -175,9 +187,9 @@ export class HuiThermostatCardEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "entity") {
+    if (schema.name === "show_current_as_primary") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
+        "ui.panel.lovelace.editor.card.thermostat.show_current_as_primary"
       );
     }
 

@@ -161,6 +161,10 @@ gulp.task("fetch-lokalise", async function () {
             })
           );
         })
+        .catch((err) => {
+          console.error(err);
+          throw err;
+        })
     )
   );
 });

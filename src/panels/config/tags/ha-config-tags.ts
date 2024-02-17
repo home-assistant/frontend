@@ -44,11 +44,11 @@ export interface TagRowData extends Tag {
 export class HaConfigTags extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _tags: Tag[] = [];
 
@@ -207,11 +207,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private _handleAutomationClick = (ev: Event) => {
     const tag = (ev.currentTarget as any).tag;
     const data = {
-      alias: this.hass.localize(
-        "ui.panel.config.tag.automation_title",
-        "name",
-        tag.name || tag.id
-      ),
+      alias: this.hass.localize("ui.panel.config.tag.automation_title", {
+        name: tag.name || tag.id,
+      }),
       trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
     };
     showAutomationEditor(data);
@@ -225,18 +223,16 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       title: this.hass.localize("ui.panel.config.tag.caption"),
       text: html`
         <p>
-          ${this.hass.localize(
-            "ui.panel.config.tag.detail.usage",
-            "companion_link",
-            html`<a
+          ${this.hass.localize("ui.panel.config.tag.detail.usage", {
+            companion_link: html`<a
               href="https://companion.home-assistant.io/"
               target="_blank"
               rel="noreferrer"
               >${this.hass!.localize(
                 "ui.panel.config.tag.detail.companion_apps"
               )}</a
-            >`
-          )}
+            >`,
+          })}
         </p>
         <p>
           <a
@@ -302,11 +298,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass!.localize("ui.panel.config.tag.confirm_remove_title"),
-        text: this.hass.localize(
-          "ui.panel.config.tag.confirm_remove",
-          "tag",
-          selectedTag.name || selectedTag.id
-        ),
+        text: this.hass.localize("ui.panel.config.tag.confirm_remove", {
+          tag: selectedTag.name || selectedTag.id,
+        }),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.remove"),
       }))

@@ -101,6 +101,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    this.updateComplete.then(() => this._measureCard());
   }
 
   public connectedCallback(): void {
@@ -232,7 +234,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-state-icon class="icon" .state=${stateObj}></ha-state-icon>
+              <ha-state-icon
+                class="icon"
+                .stateObj=${stateObj}
+                .hass=${this.hass}
+              ></ha-state-icon>
               <div>
                 ${this._config!.name ||
                 computeStateName(this.hass!.states[this._config!.entity])}
@@ -330,19 +336,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected firstUpdated(): void {
     this._attachObserver();
+    this._measureCard();
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this._measureCard();
-    }
 
     if (
       !this._config ||
@@ -464,6 +471,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card");
+
     if (!card) {
       return;
     }

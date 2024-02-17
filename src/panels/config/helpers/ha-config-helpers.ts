@@ -81,11 +81,11 @@ const getConfigEntry = (
 export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _stateItems: HassEntity[] = [];
 
@@ -129,7 +129,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           type: "icon",
           template: (helper) =>
             helper.entity
-              ? html`<ha-state-icon .state=${helper.entity}></ha-state-icon>`
+              ? html`<ha-state-icon
+                  .hass=${this.hass}
+                  .stateObj=${helper.entity}
+                ></ha-state-icon>`
               : html`<ha-svg-icon
                   .path=${helper.icon}
                   style="color: var(--error-color)"
@@ -225,10 +228,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           entity: entityState,
         };
       });
-
-      if (!Object.keys(configEntriesCopy).length) {
-        return states;
-      }
 
       const entries = Object.values(configEntriesCopy).map((configEntry) => ({
         id: configEntry.entry_id,
@@ -420,5 +419,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _createHelpler() {
     showHelperDetailDialog(this, {});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-helpers": HaConfigHelpers;
   }
 }

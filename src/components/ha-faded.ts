@@ -17,7 +17,7 @@ class HaFaded extends LitElement {
         @click=${this._showContent}
       >
         <slot
-          @iron-resize=${
+          @content-resize=${
             // ha-markdown-element fire this when render is complete
             this._setShowContent
           }
@@ -78,5 +78,8 @@ class HaFaded extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-faded": HaFaded;
+  }
+  interface HASSDomEvents {
+    "content-resize": undefined;
   }
 }

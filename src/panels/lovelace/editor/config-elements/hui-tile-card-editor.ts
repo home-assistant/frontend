@@ -24,19 +24,19 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { TileCardConfig } from "../../cards/types";
 import {
-  LovelaceTileFeatureConfig,
-  LovelaceTileFeatureContext,
-} from "../../tile-features/types";
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
+import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-tile-card-features-editor";
-import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
+import "./hui-card-features-editor";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -87,6 +87,8 @@ const HIDDEN_ATTRIBUTES = [
   "unit_of_measurement",
   "visibility_unit",
   "wind_speed_unit",
+  "battery_icon",
+  "battery_level",
 ];
 
 const cardConfigStruct = assign(
@@ -246,7 +248,7 @@ export class HuiTileCardEditor
   );
 
   private _context = memoizeOne(
-    (entity_id?: string): LovelaceTileFeatureContext => ({ entity_id })
+    (entity_id?: string): LovelaceCardFeatureContext => ({ entity_id })
   );
 
   protected render() {
@@ -292,13 +294,13 @@ export class HuiTileCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-tile-card-features-editor
+      <hui-card-features-editor
         .hass=${this.hass}
         .stateObj=${stateObj}
         .features=${this._config!.features ?? []}
         @features-changed=${this._featuresChanged}
         @edit-detail-element=${this._editDetailElement}
-      ></hui-tile-card-features-editor>
+      ></hui-card-features-editor>
     `;
   }
 
@@ -336,7 +338,7 @@ export class HuiTileCardEditor
       return;
     }
 
-    const features = ev.detail.features as LovelaceTileFeatureConfig[];
+    const features = ev.detail.features as LovelaceCardFeatureConfig[];
     const config: TileCardConfig = {
       ...this._config,
       features,

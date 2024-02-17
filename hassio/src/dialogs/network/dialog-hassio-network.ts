@@ -4,7 +4,6 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -14,6 +13,7 @@ import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-radio";
@@ -34,6 +34,7 @@ import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioNetworkDialogParams } from "./show-dialog-network";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -145,8 +146,7 @@ export class DialogHassioNetwork
                   ? html`<p>
                       ${this.supervisor.localize(
                         "dialog.network.connected_to",
-                        "ssid",
-                        this._interface?.wifi?.ssid
+                        { ssid: this._interface?.wifi?.ssid }
                       )}
                     </p>`
                   : ""}
@@ -156,7 +156,11 @@ export class DialogHassioNetwork
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress active size="small">
+                    ? html`<ha-circular-progress
+                        aria-label="Scanning"
+                        indeterminate
+                        size="small"
+                      >
                       </ha-circular-progress>`
                     : this.supervisor.localize("dialog.network.scan_ap")}
                 </mwc-button>
@@ -242,7 +246,7 @@ export class DialogHassioNetwork
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <paper-input
+                            <ha-textfield
                               class="flex-auto"
                               type="password"
                               id="psk"
@@ -250,10 +254,9 @@ export class DialogHassioNetwork
                                 "dialog.network.wifi_password"
                               )}
                               version="wifi"
-                              @value-changed=${this
-                                ._handleInputValueChangedWifi}
+                              @change=${this._handleInputValueChangedWifi}
                             >
-                            </paper-input>
+                            </ha-textfield>
                           `
                         : ""}
                     `
@@ -275,7 +278,7 @@ export class DialogHassioNetwork
         </mwc-button>
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress active size="small">
+            ? html`<ha-circular-progress indeterminate size="small">
               </ha-circular-progress>`
             : this.supervisor.localize("common.save")}
         </mwc-button>
@@ -355,33 +358,33 @@ export class DialogHassioNetwork
         </div>
         ${this._interface![version].method === "static"
           ? html`
-              <paper-input
+              <ha-textfield
                 class="flex-auto"
                 id="address"
                 .label=${this.supervisor.localize("dialog.network.ip_netmask")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].address)}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
-              <paper-input
+              </ha-textfield>
+              <ha-textfield
                 class="flex-auto"
                 id="gateway"
                 .label=${this.supervisor.localize("dialog.network.gateway")}
                 .version=${version}
                 .value=${this._interface![version].gateway}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
-              <paper-input
+              </ha-textfield>
+              <ha-textfield
                 class="flex-auto"
                 id="nameservers"
                 .label=${this.supervisor.localize("dialog.network.dns_servers")}
                 .version=${version}
                 .value=${this._toString(this._interface![version].nameservers)}
-                @value-changed=${this._handleInputValueChanged}
+                @change=${this._handleInputValueChanged}
               >
-              </paper-input>
+              </ha-textfield>
             `
           : ""}
       </ha-expansion-panel>
@@ -514,11 +517,11 @@ export class DialogHassioNetwork
     this.requestUpdate("_wifiConfiguration");
   }
 
-  private _handleInputValueChanged(ev: CustomEvent): void {
-    const value: string | null | undefined = (ev.target as PaperInputElement)
-      .value;
+  private _handleInputValueChanged(ev: Event): void {
+    const source = ev.target as HaTextField;
+    const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
-    const id = (ev.target as PaperInputElement).id;
+    const id = source.id;
 
     if (
       !value ||
@@ -532,10 +535,10 @@ export class DialogHassioNetwork
     this._interface[version]![id] = value;
   }
 
-  private _handleInputValueChangedWifi(ev: CustomEvent): void {
-    const value: string | null | undefined = (ev.target as PaperInputElement)
-      .value;
-    const id = (ev.target as PaperInputElement).id;
+  private _handleInputValueChangedWifi(ev: Event): void {
+    const source = ev.target as HaTextField;
+    const value = source.value;
+    const id = source.id;
 
     if (
       !value ||
@@ -594,6 +597,8 @@ export class DialogHassioNetwork
 
         mwc-button.scan {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         .container {
@@ -627,7 +632,7 @@ export class DialogHassioNetwork
           --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;
         }
-        paper-input {
+        ha-textfield {
           padding: 0 14px;
         }
         mwc-list-item {

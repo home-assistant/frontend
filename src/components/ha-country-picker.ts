@@ -269,7 +269,7 @@ export class HaCountryPicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public countries?: string[];
+  @property({ type: Array }) public countries?: string[];
 
   @property() public helper?: string;
 

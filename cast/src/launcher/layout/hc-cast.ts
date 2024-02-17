@@ -31,11 +31,11 @@ import "./hc-layout";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
-  @property() public auth!: Auth;
+  @property({ attribute: false }) public auth!: Auth;
 
-  @property() public connection!: Connection;
+  @property({ attribute: false }) public connection!: Connection;
 
-  @property() public castManager!: CastManager;
+  @property({ attribute: false }) public castManager!: CastManager;
 
   @state() private askWrite = false;
 
@@ -241,6 +241,8 @@ class HcCast extends LitElement {
 
       mwc-button ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         height: 18px;
       }
 

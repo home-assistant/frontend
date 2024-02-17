@@ -3,7 +3,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
@@ -12,7 +11,7 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-display")
-export class StateCardDisplay extends LitElement {
+class StateCardDisplay extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -53,18 +52,6 @@ export class StateCardDisplay extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language !== this.hass.language) {
-      this.rtl = computeRTL(this.hass);
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -83,7 +70,6 @@ export class StateCardDisplay extends LitElement {
           word-break: break-word;
           display: flex;
           align-items: center;
-          direction: ltr;
           justify-content: flex-end;
         }
         .state.has-unit_of_measurement {
@@ -91,5 +77,11 @@ export class StateCardDisplay extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-display": StateCardDisplay;
   }
 }

@@ -1,4 +1,5 @@
 import IntlMessageFormat from "intl-messageformat";
+import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
 
@@ -40,9 +41,13 @@ export type FlattenObjectKeys<
     : `${Key}`
   : never;
 
+// Later, don't return string when HTML is passed, and don't allow undefined
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  ...args: any[]
+  values?: Record<
+    string,
+    string | number | HTMLTemplateResult | null | undefined
+  >
 ) => string;
 
 interface FormatType {
@@ -124,6 +129,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       argObject = args[0];
     } else {
       for (let i = 0; i < args.length; i += 2) {
+        // @ts-expect-error in some places the old format (key, value, key, value) is used
         argObject[args[i]] = args[i + 1];
       }
     }

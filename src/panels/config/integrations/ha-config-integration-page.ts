@@ -110,13 +110,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property() public domain!: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public configEntries?: ConfigEntry[];
+  @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
   @property({ attribute: false })
   public configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
@@ -306,8 +306,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           `ui.panel.config.integrations.config_entry.${
                             services ? "services" : "devices"
                           }`,
-                          "count",
-                          devices.length
+                          { count: devices.length }
                         )}
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
@@ -324,8 +323,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                         ${this.hass.localize(
                           `ui.panel.config.integrations.config_entry.entities`,
-                          "count",
-                          entities.length
+                          { count: entities.length }
                         )}
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
@@ -489,7 +487,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <h1 class="card-header">
                 ${this._manifest?.integration_type
                   ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries_${this._manifest?.integration_type}`
+                      `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
                     )
                   : this.hass.localize(
                       `ui.panel.config.integrations.integration_page.entries`
@@ -509,7 +507,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
                     ? this.hass.localize(
-                        `ui.panel.config.integrations.integration_page.add_${this._manifest?.integration_type}`
+                        `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                       )
                     : this.hass.localize(
                         `ui.panel.config.integrations.integration_page.add_entry`
@@ -606,8 +604,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           html`<a href=${url}
             >${this.hass.localize(
               `ui.panel.config.integrations.config_entry.${localizeKey}`,
-              "count",
-              items.length
+              { count: items.length }
             )}</a
           >`
         );
@@ -620,8 +617,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
             >${this.hass.localize(
               "ui.panel.config.integrations.config_entry.entities",
-              "count",
-              entities.length
+              { count: entities.length }
             )}</a
           >`
         );
@@ -730,8 +726,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-svg-icon .path=${mdiDevices} slot="graphic"></ha-svg-icon>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.devices`,
-                  "count",
-                  devices.length
+                  { count: devices.length }
                 )}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
@@ -750,8 +745,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ></ha-svg-icon>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.services`,
-                  "count",
-                  services.length
+                  { count: services.length }
                 )}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
@@ -768,8 +762,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ></ha-svg-icon>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entities`,
-                  "count",
-                  entities.length
+                  { count: entities.length }
                 )}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
@@ -1427,8 +1420,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .message div {
           flex: 1;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
           padding-top: 2px;
           padding-right: 2px;
+          padding-inline-end: 2px;
+          padding-inline-start: initial;
           overflow-wrap: break-word;
           display: -webkit-box;
           -webkit-box-orient: vertical;

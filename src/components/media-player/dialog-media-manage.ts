@@ -147,7 +147,7 @@ class DialogMediaManage extends LitElement {
         ${!this._currentItem
           ? html`
               <div class="refresh">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>
             `
           : !children.length
@@ -316,10 +316,6 @@ class DialogMediaManage extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
           margin: 6px;
           display: block;
-        }
-
-        mwc-list {
-          direction: ltr;
         }
 
         .danger {

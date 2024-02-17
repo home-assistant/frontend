@@ -113,11 +113,10 @@ export const haTheme = EditorView.theme({
     border: "0",
     background: "none",
     fontFamily: "Roboto",
-    borderBottom:
-      "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
+    borderBottom: "1px solid var(--secondary-text-color)",
     margin: "4px 4px 0",
     "& ::placeholder": {
-      color: "var(--paper-input-container-color, var(--secondary-text-color))",
+      color: "var(--secondary-text-color)",
     },
     "&:focus": {
       outline: "none",
@@ -185,13 +184,11 @@ export const haTheme = EditorView.theme({
       "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
     color: "var(--paper-dialog-color, var(--secondary-text-color))",
     border: "none",
-    borderRight:
-      "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
+    borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",
   },
   "&.cm-focused .cm-gutters": {
-    borderRight:
-      "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
+    borderRight: "2px solid var(--primary-color)",
     paddingRight: "0",
   },
   ".cm-gutterElement.lineNumber": { color: "inherit" },

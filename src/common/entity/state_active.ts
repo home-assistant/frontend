@@ -42,6 +42,8 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       return compareState !== "standby";
     case "vacuum":
       return !["idle", "docked", "paused"].includes(compareState);
+    case "valve":
+      return compareState !== "closed";
     case "plant":
       return compareState === "problem";
     case "group":

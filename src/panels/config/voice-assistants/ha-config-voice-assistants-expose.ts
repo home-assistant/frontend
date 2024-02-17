@@ -27,7 +27,6 @@ import {
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   DataTableRowData,
@@ -64,13 +63,13 @@ import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -137,7 +136,8 @@ export class VoiceAssistantsExpose extends LitElement {
         template: (entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
-            .state=${entry.entity}
+            .stateObj=${entry.entity}
+            .hass=${this.hass}
           ></ha-state-icon>
         `,
       },
@@ -430,23 +430,29 @@ export class VoiceAssistantsExpose extends LitElement {
     }
   );
 
-  public constructor() {
-    super();
-    window.addEventListener("location-changed", () => {
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
-    window.addEventListener("popstate", () => {
-      if (
-        window.location.search.substring(1) !== this._searchParms.toString()
-      ) {
-        this._searchParms = new URLSearchParams(window.location.search);
-      }
-    });
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
   }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+    }
+  };
 
   private async _fetchEntities() {
     this._extEntities = await getExtendedEntityRegistryEntries(
@@ -532,8 +538,7 @@ export class VoiceAssistantsExpose extends LitElement {
         )}
         .hiddenLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.filter.hidden_entities",
-          "number",
-          this._numHiddenEntities
+          { number: this._numHiddenEntities }
         )}
         .filter=${this._filter}
         selectable
@@ -557,8 +562,7 @@ export class VoiceAssistantsExpose extends LitElement {
                 <p class="selected-txt">
                   ${this.hass.localize(
                     "ui.panel.config.entities.picker.selected",
-                    "number",
-                    this._selectedEntities.length
+                    { number: this._selectedEntities.length }
                   )}
                 </p>
                 <div class="header-btns">
@@ -613,7 +617,6 @@ export class VoiceAssistantsExpose extends LitElement {
             "ui.panel.config.voice_assistants.expose.add"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._addEntry}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -819,6 +822,8 @@ export class VoiceAssistantsExpose extends LitElement {
         }
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

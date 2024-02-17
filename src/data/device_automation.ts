@@ -201,14 +201,14 @@ export const localizeDeviceAutomationAction = (
 ): string =>
   hass.localize(
     `component.${action.domain}.device_automation.action_type.${action.type}`,
-    "entity_name",
-    getEntityName(hass, entityRegistry, action.entity_id),
-    "subtype",
-    action.subtype
-      ? hass.localize(
-          `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
-        ) || action.subtype
-      : ""
+    {
+      entity_name: getEntityName(hass, entityRegistry, action.entity_id),
+      subtype: action.subtype
+        ? hass.localize(
+            `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
+          ) || action.subtype
+        : "",
+    }
   ) || (action.subtype ? `"${action.subtype}" ${action.type}` : action.type!);
 
 export const localizeDeviceAutomationCondition = (
@@ -218,14 +218,14 @@ export const localizeDeviceAutomationCondition = (
 ): string =>
   hass.localize(
     `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
-    "entity_name",
-    getEntityName(hass, entityRegistry, condition.entity_id),
-    "subtype",
-    condition.subtype
-      ? hass.localize(
-          `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
-        ) || condition.subtype
-      : ""
+    {
+      entity_name: getEntityName(hass, entityRegistry, condition.entity_id),
+      subtype: condition.subtype
+        ? hass.localize(
+            `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
+          ) || condition.subtype
+        : "",
+    }
   ) ||
   (condition.subtype
     ? `"${condition.subtype}" ${condition.type}`
@@ -238,14 +238,14 @@ export const localizeDeviceAutomationTrigger = (
 ): string =>
   hass.localize(
     `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
-    "entity_name",
-    getEntityName(hass, entityRegistry, trigger.entity_id),
-    "subtype",
-    trigger.subtype
-      ? hass.localize(
-          `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
-        ) || trigger.subtype
-      : ""
+    {
+      entity_name: getEntityName(hass, entityRegistry, trigger.entity_id),
+      subtype: trigger.subtype
+        ? hass.localize(
+            `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
+          ) || trigger.subtype
+        : "",
+    }
   ) ||
   (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!);
 

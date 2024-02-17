@@ -1,6 +1,4 @@
-// To use comlink under ES5
 import { expose } from "comlink";
-import "proxy-polyfill";
 import { stringCompare } from "../../common/string/compare";
 import type {
   ClonedDataTableColumnData,

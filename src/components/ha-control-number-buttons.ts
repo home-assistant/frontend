@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -14,6 +15,7 @@ import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { FrontendLocaleData } from "../data/translation";
+import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",
@@ -48,6 +50,13 @@ export class HaControlNumberButton extends LitElement {
   public formatOptions: Intl.NumberFormatOptions = {};
 
   @query("#input") _input!: HTMLDivElement;
+
+  private _hideUnit = new ResizeController(this, {
+    callback: (entries) => {
+      const width = entries[0]?.contentRect.width;
+      return width < 100;
+    },
+  });
 
   private boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
@@ -128,7 +137,9 @@ export class HaControlNumberButton extends LitElement {
       this.value != null
         ? formatNumber(this.value, this.locale, this.formatOptions)
         : "";
-    const unit = this.unit ? `${blankBeforeUnit(this.unit)}${this.unit}` : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
+      : "";
 
     return html`
       <div class="container">
@@ -136,16 +147,19 @@ export class HaControlNumberButton extends LitElement {
           id="input"
           class="value"
           role="spinbutton"
-          .tabIndex=${this.disabled ? "-1" : "0"}
-          aria-valuenow=${this.value}
+          tabindex=${this.disabled ? "-1" : "0"}
+          aria-valuenow=${ifDefined(this.value)}
           aria-valuetext=${`${value}${unit}`}
-          aria-valuemin=${this.min}
-          aria-valuemax=${this.max}
+          aria-valuemin=${ifDefined(this.min)}
+          aria-valuemax=${ifDefined(this.max)}
           aria-label=${ifDefined(this.label)}
           ?disabled=${this.disabled}
           @keydown=${this._handleKeyDown}
         >
-          ${value} ${unit ? html`<span class="unit">${unit}</span>` : nothing}
+          ${value}
+          ${unit && !this._hideUnit.value
+            ? html`<span class="unit">${unit}</span>`
+            : nothing}
         </div>
         <button
           class="button minus"
@@ -156,7 +170,7 @@ export class HaControlNumberButton extends LitElement {
           .disabled=${this.disabled ||
           (this.min != null && this._value <= this.min)}
         >
-          <ha-svg-icon aria-hidden .path=${mdiMinus}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </button>
         <button
           class="button plus"
@@ -167,7 +181,7 @@ export class HaControlNumberButton extends LitElement {
           .disabled=${this.disabled ||
           (this.max != null && this._value >= this.max)}
         >
-          <ha-svg-icon aria-hidden .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
         </button>
       </div>
     `;

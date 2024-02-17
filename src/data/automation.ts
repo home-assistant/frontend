@@ -74,8 +74,8 @@ export interface StateTrigger extends BaseTrigger {
   platform: "state";
   entity_id: string | string[];
   attribute?: string;
-  from?: string | number;
-  to?: string | string[] | number;
+  from?: string | string[];
+  to?: string | string[];
   for?: string | number | ForDict;
 }
 
@@ -273,6 +273,10 @@ export interface ShorthandOrCondition extends ShorthandBaseCondition {
 
 export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
+}
+
+export interface AutomationElementGroup {
+  [key: string]: { icon?: string; members?: AutomationElementGroup };
 }
 
 export type Condition =

@@ -17,7 +17,7 @@ let instance = 0;
 
 @customElement("ha-mfa-module-setup-flow")
 class HaMfaModuleSetupFlow extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogClosedCallback?: (params: {
     flowFinished: boolean;
@@ -83,7 +83,7 @@ class HaMfaModuleSetupFlow extends LitElement {
             : ""}
           ${!this._step
             ? html`<div class="init-spinner">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
               </div>`
             : html`${this._step.type === "abort"
                 ? html` <ha-markdown
@@ -97,8 +97,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.profile.mfa_setup.step_done",
-                        "step",
-                        this._step.title
+                        { step: this._step.title }
                       )}
                     </p>`
                   : this._step.type === "form"
@@ -167,12 +166,23 @@ class HaMfaModuleSetupFlow extends LitElement {
         ha-markdown a {
           color: var(--primary-color);
         }
+        ha-markdown-element p {
+          text-align: center;
+        }
+        ha-markdown-element code {
+          background-color: transparent;
+        }
+        ha-markdown-element > *:last-child {
+          margin-bottom: revert;
+        }
         .init-spinner {
           padding: 10px 100px 34px;
           text-align: center;
         }
         .submit-spinner {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
       `,
     ];

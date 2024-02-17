@@ -2,18 +2,19 @@ import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
 import { TemplateResult, html, PropertyValues, css } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextFieldBase {
-  @property({ type: Boolean }) public invalid?: boolean;
+  @property({ type: Boolean }) public invalid = false;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   // @ts-ignore
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
-  @property({ type: Boolean }) public iconTrailing?: boolean;
+  @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 
@@ -186,6 +187,8 @@ export class HaTextField extends TextFieldBase {
       }
       .mdc-text-field__affix--prefix {
         padding-right: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-end: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-start: initial;
       }
 
       .mdc-text-field:not(.mdc-text-field--disabled)
@@ -194,7 +197,7 @@ export class HaTextField extends TextFieldBase {
       }
     `,
     // safari workaround - must be explicit
-    document.dir === "rtl"
+    mainWindow.document.dir === "rtl"
       ? css`
           .mdc-text-field__affix--suffix,
           .mdc-text-field--with-leading-icon,

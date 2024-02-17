@@ -53,8 +53,8 @@ export class MoreInfoConfigurator extends LitElement {
               >
                 ${this._isConfiguring
                   ? html`<ha-circular-progress
-                      active
-                      alt="Configuring"
+                      indeterminate
+                      aria-label="Configuring"
                     ></ha-circular-progress>`
                   : ""}
                 ${this.stateObj.attributes.submit_caption}
@@ -118,6 +118,8 @@ export class MoreInfoConfigurator extends LitElement {
       width: 14px;
       height: 14px;
       margin-right: 20px;
+      margin-inline-end: 20px;
+      margin-inline-start: initial;
     }
   `;
 }

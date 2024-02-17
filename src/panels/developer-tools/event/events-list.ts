@@ -13,7 +13,7 @@ interface EventListenerCount {
 class EventsList extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public events: EventListenerCount[] = [];
+  @property({ attribute: false }) public events: EventListenerCount[] = [];
 
   protected render(): TemplateResult {
     return html`

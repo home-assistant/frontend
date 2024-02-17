@@ -52,7 +52,7 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
-  @property() public logInfo?: IntegrationLogInfo;
+  @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -140,8 +140,7 @@ export class HaIntegrationCard extends LitElement {
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
                   }`,
-                  "count",
-                  devices.length
+                  { count: devices.length }
                 )}
               </ha-button>
             </a>`
@@ -152,8 +151,7 @@ export class HaIntegrationCard extends LitElement {
                 <ha-button>
                   ${this.hass.localize(
                     `ui.panel.config.integrations.config_entry.entities`,
-                    "count",
-                    entities.length
+                    { count: entities.length }
                   )}
                 </ha-button>
               </a>`
@@ -161,8 +159,7 @@ export class HaIntegrationCard extends LitElement {
                 <ha-button>
                   ${this.hass.localize(
                     `ui.panel.config.integrations.config_entry.entries`,
-                    "count",
-                    this.items.length
+                    { count: this.items.length }
                   )}
                 </ha-button>
               </a>`}
@@ -344,6 +341,8 @@ export class HaIntegrationCard extends LitElement {
           color: var(--text-primary-color);
           padding: 4px;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .icon.cloud {
           background: var(--info-color);

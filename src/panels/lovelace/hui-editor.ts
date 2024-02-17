@@ -49,7 +49,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public closeEditor?: () => void;
+  @property({ attribute: false }) public closeEditor?: () => void;
 
   @state() private _saving?: boolean;
 
@@ -213,8 +213,7 @@ class LovelaceFullConfigEditor extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_remove",
-          "error",
-          err
+          { error: err }
         ),
       });
     }
@@ -263,8 +262,7 @@ class LovelaceFullConfigEditor extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
-          "error",
-          err
+          { error: err }
         ),
       });
       this._saving = false;
@@ -280,8 +278,7 @@ class LovelaceFullConfigEditor extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
-          "error",
-          err
+          { error: err }
         ),
       });
       return;
@@ -300,8 +297,7 @@ class LovelaceFullConfigEditor extends LitElement {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
-          "error",
-          err
+          { error: err }
         ),
       });
     }

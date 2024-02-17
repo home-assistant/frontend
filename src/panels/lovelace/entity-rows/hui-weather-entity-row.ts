@@ -10,7 +10,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
 import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
@@ -90,7 +89,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -141,7 +144,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         html`
           <ha-state-icon
             class="weather-icon"
-            .state=${stateObj}
+            .stateObj=${stateObj}
+            .hass=${this.hass}
           ></ha-state-icon>
         `}
       </div>
@@ -223,6 +227,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
         .info {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
           flex: 1 0 60px;
         }
 
@@ -254,11 +260,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           --mdc-icon-size: 40px;
         }
 
-        :host([rtl]) .flex {
-          margin-left: 0;
-          margin-right: 16px;
-        }
-
         .pointer {
           cursor: pointer;
         }
@@ -269,6 +270,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           justify-content: center;
           text-align: right;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         .secondary {
