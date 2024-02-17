@@ -23,7 +23,8 @@ export class HaPersistentNotificationTrigger
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: PersistentNotificationTrigger;
+  @property({ attribute: false })
+  public trigger!: PersistentNotificationTrigger;
 
   @property({ type: Boolean }) public disabled = false;
 

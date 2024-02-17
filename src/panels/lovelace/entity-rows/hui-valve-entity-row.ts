@@ -1,14 +1,7 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-valve-controls";
-import { ValveEntity } from "../../../data/valve";
+import "../../../components/entity/ha-entity-toggle";
+import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -37,7 +30,7 @@ class HuiValveEntityRow extends LitElement implements LovelaceRow {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as ValveEntity;
+    const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
       return html`
@@ -47,21 +40,30 @@ class HuiValveEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <ha-valve-controls
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-        ></ha-valve-controls>
-      </hui-generic-entity-row>
-    `;
-  }
+    const showToggle =
+      stateObj.state === "open" ||
+      stateObj.state === "closed" ||
+      isUnavailableState(stateObj.state);
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-valve-controls {
-        margin-right: -0.57em;
-      }
+    return html`
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .catchInteraction=${!showToggle}
+      >
+        ${showToggle
+          ? html`
+              <ha-entity-toggle
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-entity-toggle>
+            `
+          : html`
+              <div class="text-content">
+                ${this.hass.formatEntityState(stateObj)}
+              </div>
+            `}
+      </hui-generic-entity-row>
     `;
   }
 }

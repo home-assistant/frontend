@@ -51,11 +51,11 @@ export interface ConfigEntryExtended extends ConfigEntry {
 class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -72,8 +72,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @state() private _configEntries?: ConfigEntryExtended[];
 
-  @property()
-  private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
+  @state() private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
   private _loadTranslationsPromise?: Promise<LocalizeFunc>;
 

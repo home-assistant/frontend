@@ -324,6 +324,9 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   show_names?: boolean;
   logarithmic_scale?: boolean;
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
   split_device_classes?: boolean;
 }
 

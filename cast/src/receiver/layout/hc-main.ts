@@ -51,9 +51,9 @@ export class HcMain extends HassElement {
 
   @state() private _lovelacePath: string | number | null = null;
 
-  @state() private _error?: string;
-
   @state() private _urlPath?: string | null;
+
+  @state() private _error?: string;
 
   private _hassUUID?: string;
 
@@ -81,7 +81,7 @@ export class HcMain extends HassElement {
 
     if (
       !this._lovelaceConfig ||
-      this._lovelacePath === null ||
+      this._urlPath === undefined ||
       // Guard against part of HA not being loaded yet.
       !this.hass ||
       !this.hass.states ||
@@ -99,8 +99,8 @@ export class HcMain extends HassElement {
       <hc-lovelace
         .hass=${this.hass}
         .lovelaceConfig=${this._lovelaceConfig}
-        .viewPath=${this._lovelacePath}
         .urlPath=${this._urlPath}
+        .viewPath=${this._lovelacePath}
         @config-refresh=${this._generateDefaultLovelaceConfig}
       ></hc-lovelace>
     `;
@@ -205,7 +205,6 @@ export class HcMain extends HassElement {
           expires_in: 0,
         }),
       });
-      this._hassUUID = msg.hassUUID;
     } catch (err: any) {
       const errorMessage = this._getErrorMessage(err);
       this._error = errorMessage;
@@ -225,6 +224,17 @@ export class HcMain extends HassElement {
       this.hass.connection.close();
     }
     this.initializeHass(auth, connection);
+    if (this._hassUUID !== msg.hassUUID) {
+      this._hassUUID = msg.hassUUID;
+      this._lovelaceConfig = undefined;
+      this._urlPath = undefined;
+      this._lovelacePath = null;
+      if (this._unsubLovelace) {
+        this._unsubLovelace();
+        this._unsubLovelace = undefined;
+      }
+      resourcesLoaded = false;
+    }
     this._error = undefined;
     this._sendStatus();
   }
@@ -233,7 +243,7 @@ export class HcMain extends HassElement {
     this._showDemo = false;
     // We should not get this command before we are connected.
     // Means a client got out of sync. Let's send status to them.
-    if (!this.hass) {
+    if (!this.hass?.connected) {
       this._sendStatus(msg.senderId!);
       this._error = "Cannot show Lovelace because we're not connected.";
       this._sendError(
@@ -275,7 +285,7 @@ export class HcMain extends HassElement {
         ],
       };
       this._urlPath = "energy";
-      this._lovelacePath = 0;
+      this._lovelacePath = null;
       this._sendStatus();
       return;
     }
@@ -284,6 +294,7 @@ export class HcMain extends HassElement {
       this._lovelaceConfig = undefined;
       if (this._unsubLovelace) {
         this._unsubLovelace();
+        this._unsubLovelace = undefined;
       }
       const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
         ? getLovelaceCollection(this.hass.connection, msg.urlPath)

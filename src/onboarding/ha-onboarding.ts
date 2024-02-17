@@ -286,7 +286,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     try {
       const response = await (window.stepsPromise || fetchOnboardingOverview());
 
-      if (response.status === 404) {
+      if (response.status === 401 || response.status === 404) {
         // We don't load the component when onboarding is done
         document.location.assign("/");
         return;
@@ -518,6 +518,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       text-decoration: none;
       color: var(--primary-text-color);
       margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
     }
   `;
 }

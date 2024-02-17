@@ -11,14 +11,19 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
 import "../../components/ha-textarea";
+import "../../components/ha-textfield";
 import "../../components/ha-time-input";
 import {
   CalendarEntityFeature,
@@ -28,7 +33,6 @@ import {
   deleteCalendarEvent,
   updateCalendarEvent,
 } from "../../data/calendar";
-import { TimeZone } from "../../data/translation";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
@@ -64,7 +68,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
-  // Dates are manipulated and displayed in the browser timezone
+  // Dates are displayed in the timezone according to the user's profile
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
@@ -81,10 +85,10 @@ class DialogCalendarEventEditor extends LitElement {
           computeStateDomain(stateObj) === "calendar" &&
           supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
       )?.entity_id;
-    this._timeZone =
-      this.hass.locale.time_zone === TimeZone.local
-        ? Intl.DateTimeFormat().resolvedOptions().timeZone
-        : this.hass.config.time_zone;
+    this._timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
@@ -144,9 +148,9 @@ class DialogCalendarEventEditor extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          isCreate
-            ? this.hass.localize("ui.components.calendar.event.add")
-            : this._summary
+          this.hass.localize(
+            `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
+          )
         )}
       >
         <div class="content">
@@ -577,7 +581,7 @@ class DialogCalendarEventEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px and min-height: 500px) {
+        @media all and (min-width: 450px) and (min-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: min(600px, 95vw);
             --mdc-dialog-max-width: min(600px, 95vw);
@@ -606,6 +610,8 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-time-input {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-recurrence-rule-editor {
           display: block;
@@ -629,7 +635,7 @@ class DialogCalendarEventEditor extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 16px;
+          margin-inline-end: 8px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;

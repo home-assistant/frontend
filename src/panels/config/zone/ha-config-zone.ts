@@ -52,11 +52,11 @@ import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _storageItems?: Zone[];
 
@@ -546,5 +546,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         cursor: pointer;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-zone": HaConfigZone;
   }
 }

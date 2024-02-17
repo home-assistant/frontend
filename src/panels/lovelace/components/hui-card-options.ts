@@ -54,7 +54,7 @@ export class HuiCardOptions extends LitElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property() public path?: [number, number];
+  @property({ type: Array }) public path?: [number, number];
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
@@ -275,9 +275,9 @@ export class HuiCardOptions extends LitElement {
     const cardConfig = this._currentView.cards![path[1]];
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      cardConfig,
       saveConfig: this.lovelace!.saveConfig,
-      path: [path[0]],
+      path: [path[0], null],
+      newCardConfig: cardConfig,
     });
   }
 

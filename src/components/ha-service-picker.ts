@@ -1,5 +1,5 @@
-import { html, LitElement } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -7,16 +7,9 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { domainToName } from "../data/integration";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
-
-const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
-  item
-) =>
-  html`<mwc-list-item twoline>
-    <span>${item.name}</span>
-    <span slot="secondary"
-      >${item.name === item.service ? "" : item.service}</span
-    >
-  </mwc-list-item>`;
+import "./ha-list-item";
+import "./ha-service-icon";
+import { getServiceIcons } from "../data/icons";
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
@@ -31,8 +24,23 @@ class HaServicePicker extends LitElement {
   protected willUpdate() {
     if (!this.hasUpdated) {
       this.hass.loadBackendTranslation("services");
+      getServiceIcons(this.hass);
     }
   }
+
+  private _rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> =
+    (item) =>
+      html`<ha-list-item twoline graphic="icon">
+        <ha-service-icon
+          slot="graphic"
+          .hass=${this.hass}
+          .service=${item.service}
+        ></ha-service-icon>
+        <span>${item.name}</span>
+        <span slot="secondary"
+          >${item.name === item.service ? "" : item.service}</span
+        >
+      </ha-list-item>`;
 
   protected render() {
     return html`
@@ -46,7 +54,7 @@ class HaServicePicker extends LitElement {
         )}
         .value=${this.value}
         .disabled=${this.disabled}
-        .renderer=${rowRenderer}
+        .renderer=${this._rowRenderer}
         item-value-path="service"
         item-label-path="name"
         allow-custom-value

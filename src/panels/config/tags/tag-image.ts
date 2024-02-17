@@ -6,7 +6,7 @@ import { TagRowData } from "./ha-config-tags";
 
 @customElement("tag-image")
 export class HaTagImage extends LitElement {
-  @property() public tag?: TagRowData;
+  @property({ attribute: false }) public tag?: TagRowData;
 
   private _timeout?: number;
 

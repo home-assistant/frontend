@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
@@ -12,8 +12,7 @@ import type { CloudCertificateParams as CloudCertificateDialogParams } from "./s
 class DialogCloudCertificate extends LitElement {
   public hass!: HomeAssistant;
 
-  @property()
-  private _params?: CloudCertificateDialogParams;
+  @state() private _params?: CloudCertificateDialogParams;
 
   public showDialog(params: CloudCertificateDialogParams) {
     this._params = params;

@@ -1,16 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiDrag } from "@mdi/js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { SortableEvent } from "sortablejs";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
-import { sortableStyles } from "../../resources/ha-sortable-style";
-import { SortableInstance } from "../../resources/sortable";
 import type { HomeAssistant } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
@@ -21,6 +18,7 @@ import "../ha-formfield";
 import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
+import "../ha-sortable";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -34,7 +32,8 @@ export class HaSelectSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -42,50 +41,10 @@ export class HaSelectSelector extends LitElement {
 
   @query("ha-combo-box", true) private comboBox!: HaComboBox;
 
-  private _sortable?: SortableInstance;
-
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("value") || changedProps.has("selector")) {
-      const sortableNeeded =
-        this.selector.select?.multiple &&
-        this.selector.select.reorder &&
-        this.value?.length;
-      if (!this._sortable && sortableNeeded) {
-        this._createSortable();
-      } else if (this._sortable && !sortableNeeded) {
-        this._destroySortable();
-      }
-    }
-  }
-
-  private async _createSortable() {
-    const Sortable = (await import("../../resources/sortable")).default;
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector("ha-chip-set")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        draggable: "ha-input-chip",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._dragged(evt);
-        },
-      }
-    );
-  }
-
-  private _dragged(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) return;
-    this._move(ev.oldIndex!, ev.newIndex!);
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex!, newIndex);
   }
 
   private _move(index: number, newIndex: number) {
@@ -97,11 +56,6 @@ export class HaSelectSelector extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
-  }
-
-  private _destroySortable() {
-    this._sortable?.destroy();
-    this._sortable = undefined;
   }
 
   private _filter = "";
@@ -195,37 +149,43 @@ export class HaSelectSelector extends LitElement {
       return html`
         ${value?.length
           ? html`
-              <ha-chip-set>
-                ${repeat(
-                  value,
-                  (item) => item,
-                  (item, idx) => {
-                    const label =
-                      options.find((option) => option.value === item)?.label ||
-                      item;
-                    return html`
-                      <ha-input-chip
-                        .idx=${idx}
-                        @remove=${this._removeItem}
-                        .label=${label}
-                        selected
-                      >
-                        ${this.selector.select?.reorder
-                          ? html`
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiDrag}
-                                data-handle
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                        ${options.find((option) => option.value === item)
-                          ?.label || item}
-                      </ha-input-chip>
-                    `;
-                  }
-                )}
-              </ha-chip-set>
+              <ha-sortable
+                no-style
+                .disabled=${!this.selector.select.reorder}
+                @item-moved=${this._itemMoved}
+              >
+                <ha-chip-set>
+                  ${repeat(
+                    value,
+                    (item) => item,
+                    (item, idx) => {
+                      const label =
+                        options.find((option) => option.value === item)
+                          ?.label || item;
+                      return html`
+                        <ha-input-chip
+                          .idx=${idx}
+                          @remove=${this._removeItem}
+                          .label=${label}
+                          selected
+                        >
+                          ${this.selector.select?.reorder
+                            ? html`
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiDrag}
+                                  data-handle
+                                ></ha-svg-icon>
+                              `
+                            : nothing}
+                          ${options.find((option) => option.value === item)
+                            ?.label || item}
+                        </ha-input-chip>
+                      `;
+                    }
+                  )}
+                </ha-chip-set>
+              </ha-sortable>
             `
           : nothing}
 
@@ -419,25 +379,35 @@ export class HaSelectSelector extends LitElement {
     this.comboBox.filteredItems = filteredItems;
   }
 
-  static styles = [
-    sortableStyles,
-    css`
-      :host {
-        position: relative;
-      }
-      ha-select,
-      mwc-formfield,
-      ha-formfield {
-        display: block;
-      }
-      mwc-list-item[disabled] {
-        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-      }
-      ha-chip-set {
-        padding: 8px 0;
-      }
-    `,
-  ];
+  static styles = css`
+    :host {
+      position: relative;
+    }
+    ha-select,
+    mwc-formfield,
+    ha-formfield {
+      display: block;
+    }
+    mwc-list-item[disabled] {
+      --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+    }
+    ha-chip-set {
+      padding: 8px 0;
+    }
+
+    .sortable-fallback {
+      display: none;
+      opacity: 0;
+    }
+
+    .sortable-ghost {
+      opacity: 0.4;
+    }
+
+    .sortable-drag {
+      cursor: grabbing;
+    }
+  `;
 }
 
 declare global {
