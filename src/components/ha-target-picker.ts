@@ -65,7 +65,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
-  @property() public createDomains?: string[];
+  @property({ type: Array }) public createDomains?: string[];
 
   /**
    * Show only targets with entities from specific domains.
