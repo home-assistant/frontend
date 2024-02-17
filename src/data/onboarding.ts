@@ -84,5 +84,9 @@ export const fetchInstallationType = async (): Promise<InstallationType> => {
     throw Error("unauthorized");
   }
 
+  if (response.status === 404) {
+    throw Error("not_found");
+  }
+
   return response.json();
 };

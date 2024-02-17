@@ -23,6 +23,10 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
           var(--mdc-theme-primary)
         );
       }
+      .mdc-top-app-bar__title {
+        padding-inline-start: 20px;
+        padding-inline-end: initial;
+      }
     `,
   ];
 }

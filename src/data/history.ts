@@ -494,9 +494,15 @@ export const computeHistory = (
       }[domain];
     }
 
-    const deviceClass: string | undefined = (
-      currentState?.attributes || numericStateFromHistory?.a
-    )?.device_class;
+    const specialDomainClasses = {
+      climate: "temperature",
+      humidifier: "humidity",
+      water_heater: "temperature",
+    };
+
+    const deviceClass: string | undefined =
+      specialDomainClasses[domain] ||
+      (currentState?.attributes || numericStateFromHistory?.a)?.device_class;
 
     const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
 

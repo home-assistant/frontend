@@ -16,13 +16,13 @@ const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
 class HaConfigCloud extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "login",

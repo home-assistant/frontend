@@ -4,11 +4,12 @@ import { ConstantSelector } from "../../data/selector";
 
 @customElement("ha-selector-constant")
 export class HaSelectorConstant extends LitElement {
-  @property() public selector!: ConstantSelector;
+  @property({ attribute: false }) public selector!: ConstantSelector;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   protected render() {
     if (this.disabled) {

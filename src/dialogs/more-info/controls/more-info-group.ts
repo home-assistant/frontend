@@ -21,7 +21,7 @@ import {
 class MoreInfoGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: GroupEntity;
+  @property({ attribute: false }) public stateObj?: GroupEntity;
 
   @state() private _groupDomainStateObj?: HassEntity;
 

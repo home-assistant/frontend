@@ -64,6 +64,8 @@ class SupervisorMetric extends LitElement {
       .value {
         width: 48px;
         padding-right: 4px;
+        padding-inline-start: initial;
+        padding-inline-end: 4px;
         flex-shrink: 0;
       }
     `;

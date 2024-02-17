@@ -19,7 +19,6 @@ import {
   ConfigEntry,
   getConfigEntries,
 } from "../../../../../data/config_entries";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
@@ -68,19 +67,19 @@ export const zhaTabs: PageNavigation[] = [
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId?: string;
 
-  @property() private _configuration?: ZHAConfiguration;
+  @state() private _configuration?: ZHAConfiguration;
 
-  @property() private _networkSettings?: ZHANetworkSettings;
+  @state() private _networkSettings?: ZHANetworkSettings;
 
   @state() private _generatingBackup = false;
 
@@ -259,7 +258,6 @@ class ZHAConfigDashboard extends LitElement {
           <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}
             extended
-            ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </ha-fab>
@@ -379,6 +377,8 @@ class ZHAConfigDashboard extends LitElement {
         .network-settings ha-settings-row {
           padding-left: 0;
           padding-right: 0;
+          padding-inline-start: 0;
+          padding-inline-end: 0;
 
           --paper-item-body-two-line-min-height: 55px;
         }
@@ -388,6 +388,8 @@ class ZHAConfigDashboard extends LitElement {
           word-break: break-all;
           text-indent: -1em;
           padding-left: 1em;
+          padding-inline-start: 1em;
+          padding-inline-end: initial;
         }
 
         .network-settings ha-settings-row ha-icon-button {

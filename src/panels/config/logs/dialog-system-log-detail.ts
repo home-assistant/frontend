@@ -102,12 +102,17 @@ class DialogSystemLogDetail extends LitElement {
           : ""}
         <div class="contents" tabindex="-1" dialogInitialFocus>
           <p>
-            Logger: ${item.name}<br />
-            Source: ${item.source.join(":")}
+            ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
+            ${item.name}<br />
+            ${this.hass.localize("ui.panel.config.logs.detail.source")}:
+            ${item.source.join(":")}
             ${integration
               ? html`
                   <br />
-                  Integration: ${domainToName(this.hass.localize, integration)}
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.detail.integration"
+                  )}:
+                  ${domainToName(this.hass.localize, integration)}
                   ${!this._manifest ||
                   // Can happen with custom integrations
                   !showDocumentation
@@ -122,7 +127,9 @@ class DialogSystemLogDetail extends LitElement {
                             : this._manifest.documentation}
                           target="_blank"
                           rel="noreferrer"
-                          >documentation</a
+                          >${this.hass.localize(
+                            "ui.panel.config.logs.detail.documentation"
+                          )}</a
                         >${this._manifest.is_built_in ||
                         this._manifest.issue_tracker
                           ? html`,
@@ -133,7 +140,9 @@ class DialogSystemLogDetail extends LitElement {
                                 )}
                                 target="_blank"
                                 rel="noreferrer"
-                                >issues</a
+                                >${this.hass.localize(
+                                  "ui.panel.config.logs.detail.issues"
+                                )}</a
                               >`
                           : ""})
                       `}
@@ -142,16 +151,21 @@ class DialogSystemLogDetail extends LitElement {
             <br />
             ${item.count > 0
               ? html`
-                  First occurred:
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.detail.first_occurred"
+                  )}:
                   ${formatSystemLogTime(
                     item.first_occurred,
                     this.hass!.locale,
                     this.hass!.config
                   )}
-                  (${item.count} occurrences) <br />
+                  (${item.count}
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.detail.occurrences"
+                  )}) <br />
                 `
               : ""}
-            Last logged:
+            ${this.hass.localize("ui.panel.config.logs.detail.last_logged")}:
             ${formatSystemLogTime(
               item.timestamp,
               this.hass!.locale,

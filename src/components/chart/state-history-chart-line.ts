@@ -27,7 +27,7 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
-  @property() public names?: Record<string, string>;
+  @property({ attribute: false }) public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -46,6 +46,12 @@ export class StateHistoryChartLine extends LitElement {
   @property({ type: Number }) public chartIndex?;
 
   @property({ type: Boolean }) public logarithmicScale = false;
+
+  @property({ type: Number }) public minYAxis?: number;
+
+  @property({ type: Number }) public maxYAxis?: number;
+
+  @property({ type: Boolean }) public fitYData = false;
 
   @state() private _chartData?: ChartData<"line">;
 
@@ -84,7 +90,10 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("unit") ||
-      changedProps.has("logarithmicScale")
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData")
     ) {
       this._chartOptions = {
         parsing: false,
@@ -121,6 +130,10 @@ export class StateHistoryChartLine extends LitElement {
             },
           },
           y: {
+            suggestedMin: this.fitYData ? this.minYAxis : null,
+            suggestedMax: this.fitYData ? this.maxYAxis : null,
+            min: this.fitYData ? null : this.minYAxis,
+            max: this.fitYData ? null : this.maxYAxis,
             ticks: {
               maxTicksLimit: 7,
             },
@@ -207,7 +220,12 @@ export class StateHistoryChartLine extends LitElement {
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
         onClick: (e: any) => {
-          if (!this.clickForMoreInfo) {
+          if (
+            !this.clickForMoreInfo ||
+            !(e.native instanceof MouseEvent) ||
+            (e.native instanceof PointerEvent &&
+              e.native.pointerType !== "mouse")
+          ) {
             return;
           }
 

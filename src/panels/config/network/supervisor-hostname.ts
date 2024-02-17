@@ -24,7 +24,7 @@ import type { HomeAssistant } from "../../../types";
 export class HassioHostname extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _processing = false;
 

@@ -58,9 +58,9 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ type: Boolean }) public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -232,6 +232,7 @@ export class HaAutomationTrace extends LitElement {
                   <div class="main">
                     <div class="graph">
                       <hat-script-graph
+                        .hass=${this.hass}
                         .trace=${this._trace}
                         .selected=${this._selected?.path}
                         @graph-node-selected=${this._pickNode}

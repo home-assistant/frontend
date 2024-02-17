@@ -46,7 +46,7 @@ export interface RouterOptions {
 const LOADING_SCREEN_THRESHOLD = 400; // ms
 
 export class HassRouterPage extends ReactiveElement {
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
   protected routerOptions!: RouterOptions;
 
