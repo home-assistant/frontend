@@ -50,7 +50,7 @@ export class HaEntityPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public createDomains?: string[];
+  @property({ type: Array }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
