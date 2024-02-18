@@ -1370,7 +1370,11 @@
           "add_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::add_option%]",
           "remove_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::remove_option%]",
           "no_options": "There are no options yet.",
-          "add": "Add"
+          "add": "Add",
+          "confirm_delete": {
+            "delete": "[%key:ui::components::todo::item::confirm_delete::delete%]",
+            "prompt": "[%key:ui::components::todo::item::confirm_delete::prompt%]"
+          }
         },
         "counter": {
           "minimum": "Minimum value",
