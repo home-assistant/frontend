@@ -4082,6 +4082,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/expect@npm:^1.20.4":
+  version: 1.20.4
+  resolution: "@types/expect@npm:1.20.4"
+  checksum: 10/fa25b771c81fed431fdfe7c906ccdcb88af7aa4d06375a7798c317d8bcb2b3f78d132e358025d991ccd72083ffb743fd46e26427aa82dc69d7cdbc9b2e88ff3f
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.43
   resolution: "@types/express-serve-static-core@npm:4.17.43"
@@ -4136,6 +4143,27 @@ __metadata:
     "@types/minimatch": "npm:^5.1.2"
     "@types/node": "npm:*"
   checksum: 10/9101f3a9061e40137190f70626aa0e202369b5ec4012c3fabe6f5d229cce04772db9a94fa5a0eb39655e2e4ad105c38afbb4af56a56c0996a8c7d4fc72350e3d
+  languageName: node
+  linkType: hard
+
+"@types/gulp-if@npm:^3":
+  version: 3.0.4
+  resolution: "@types/gulp-if@npm:3.0.4"
+  dependencies:
+    "@types/gulp-match": "npm:*"
+    "@types/minimatch": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10/b00b971ee927df328fb0fb505ac5214c595e8975ba198a0c6dc713ad086879c6e51157ce50dc665cfafe6ad4199f8a7dc7ee78c14040eb7647fc801a85c0152f
+  languageName: node
+  linkType: hard
+
+"@types/gulp-match@npm:*":
+  version: 1.1.5
+  resolution: "@types/gulp-match@npm:1.1.5"
+  dependencies:
+    "@types/minimatch": "npm:*"
+    "@types/vinyl": "npm:*"
+  checksum: 10/3668c4063d25dac269f785ff5de934c67fdffeb03728ddcc1036a593ecd579f67c983c761fb2c2dedbced9d1a29c14c2714e4fa776beab38de282e706059149f
   languageName: node
   linkType: hard
 
@@ -4291,7 +4319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimatch@npm:^5.1.2":
+"@types/minimatch@npm:*, @types/minimatch@npm:^5.1.2":
   version: 5.1.2
   resolution: "@types/minimatch@npm:5.1.2"
   checksum: 10/94db5060d20df2b80d77b74dd384df3115f01889b5b6c40fa2dfa27cfc03a68fb0ff7c1f2a0366070263eb2e9d6bfd8c87111d4bc3ae93c3f291297c1bf56c85
@@ -4496,6 +4524,16 @@ __metadata:
   version: 0.7.39
   resolution: "@types/ua-parser-js@npm:0.7.39"
   checksum: 10/8d173a79b37f9404cda49e848d82694c4854828ff20d94ddfba53bf9ccd9b4df16bf28f72786cf253a73305e9a54d2f2bb54ebfc144fca2496d3f3f025a79cb5
+  languageName: node
+  linkType: hard
+
+"@types/vinyl@npm:*":
+  version: 2.0.11
+  resolution: "@types/vinyl@npm:2.0.11"
+  dependencies:
+    "@types/expect": "npm:^1.20.4"
+    "@types/node": "npm:*"
+  checksum: 10/0f69e2d44748d0e55c3fcd4c2b5b59f0dc70b46fd5b9081abb1b81045543fbeb16e33d6ba2a21fb61d2182d91d99ba1c78be65311d1095857834827e2084417c
   languageName: node
   linkType: hard
 
@@ -7495,6 +7533,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duplexify@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "duplexify@npm:4.1.2"
+  dependencies:
+    end-of-stream: "npm:^1.4.1"
+    inherits: "npm:^2.0.3"
+    readable-stream: "npm:^3.1.1"
+    stream-shift: "npm:^1.0.0"
+  checksum: 10/eeb4f362defa4da0b2474d853bc4edfa446faeb1bde76819a68035632c118de91f6a58e6fe05c84f6e6de2548f8323ec8473aa9fe37332c99e4d77539747193e
+  languageName: node
+  linkType: hard
+
 "each-props@npm:^1.3.2":
   version: 1.3.2
   resolution: "each-props@npm:1.3.2"
@@ -7509,6 +7559,13 @@ __metadata:
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
   checksum: 10/9b1d3e1baefeaf7d70799db8774149cef33b97183a6addceeba0cf6b85ba23ee2686f302f14482006df32df75d32b17c509c143a3689627929e4a8efaf483952
+  languageName: node
+  linkType: hard
+
+"easy-transform-stream@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "easy-transform-stream@npm:1.0.1"
+  checksum: 10/3d783ad3ffa21690c9e84ee54a9993a882f07e86416f15fe8dfcfb2c93ea28ce79f10775c2e56d846bba6a9e85e64f9f867c085d5906031c06c97c5a5234be46
   languageName: node
   linkType: hard
 
@@ -7588,7 +7645,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"end-of-stream@npm:^1.0.0, end-of-stream@npm:^1.1.0":
+"end-of-stream@npm:^1.0.0, end-of-stream@npm:^1.1.0, end-of-stream@npm:^1.4.1":
   version: 1.4.4
   resolution: "end-of-stream@npm:1.4.4"
   dependencies:
@@ -8767,6 +8824,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fork-stream@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "fork-stream@npm:0.0.4"
+  checksum: 10/8c80c34121e7fa96a8a46b5f20a3c0469c7d557e2303452317ada88f68195b64e4bea5596381bfaae7f800a57468867b34e4cf5acf0133da62bdd7ab0ab1fce8
+  languageName: node
+  linkType: hard
+
 "forwarded@npm:0.2.0":
   version: 0.2.0
   resolution: "forwarded@npm:0.2.0"
@@ -9305,6 +9369,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gulp-if@npm:3.0.0":
+  version: 3.0.0
+  resolution: "gulp-if@npm:3.0.0"
+  dependencies:
+    gulp-match: "npm:^1.1.0"
+    ternary-stream: "npm:^3.0.0"
+    through2: "npm:^3.0.1"
+  checksum: 10/dd7395ed28382c667a4330816a0ae02d7bb3c34f265115c38e6285e44e5a915dae231c6bc54ece6d104e5fe46f0a025c8779c6c86c243886f3a5947de4b16553
+  languageName: node
+  linkType: hard
+
 "gulp-json-transform@npm:0.4.8":
   version: 0.4.8
   resolution: "gulp-json-transform@npm:0.4.8"
@@ -9316,6 +9391,15 @@ __metadata:
     through2: "npm:^2.0.3"
     vinyl: "npm:^2.1.0"
   checksum: 10/5b117e59cd806e530cb4f67089e28eb1a6234bfb1461497e540be2a24cd94c5a8ce573d5ff9222c1481d951316054742a2212c044df0e047256ce10ce7bcd328
+  languageName: node
+  linkType: hard
+
+"gulp-match@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "gulp-match@npm:1.1.0"
+  dependencies:
+    minimatch: "npm:^3.0.3"
+  checksum: 10/c2e83c3795550b78a0a8d5c7c8eb09eff6ae61601f08c1b93c7aef030308c8a3b2943daba72545de6e2d8d2e3a3435a7936731beb9a8985f569d32f37e35b6b7
   languageName: node
   linkType: hard
 
@@ -9591,6 +9675,7 @@ __metadata:
     "@types/chromecast-caf-receiver": "npm:6.0.13"
     "@types/chromecast-caf-sender": "npm:1.0.8"
     "@types/glob": "npm:8.1.0"
+    "@types/gulp-if": "npm:^3"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.8"
@@ -9647,6 +9732,7 @@ __metadata:
     google-timezones-json: "npm:1.2.0"
     gulp: "npm:4.0.2"
     gulp-flatmap: "npm:1.0.2"
+    gulp-if: "npm:3.0.0"
     gulp-json-transform: "npm:0.4.8"
     gulp-merge-json: "npm:2.1.2"
     gulp-rename: "npm:2.0.0"
@@ -9705,6 +9791,7 @@ __metadata:
     ua-parser-js: "npm:1.0.37"
     unfetch: "npm:5.0.0"
     vinyl-buffer: "npm:1.0.1"
+    vinyl-paths: "npm:5.0.0"
     vinyl-source-stream: "npm:2.0.0"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
@@ -10060,7 +10147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:~2.0.3":
+"inherits@npm:2, inherits@npm:2.0.4, inherits@npm:^2.0.1, inherits@npm:^2.0.3, inherits@npm:^2.0.4, inherits@npm:~2.0.3":
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 10/cd45e923bee15186c07fa4c89db0aace24824c482fb887b528304694b2aa6ff8a898da8657046a5dcf3e46cd6db6c61629551f9215f208d7c3f157cf9b290521
@@ -11829,7 +11916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:3.1.2, minimatch@npm:^3.0.5, minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
+"minimatch@npm:3.1.2, minimatch@npm:^3.0.3, minimatch@npm:^3.0.5, minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
   dependencies:
@@ -13358,7 +13445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:3, readable-stream@npm:^3.0.6, readable-stream@npm:^3.6.0":
+"readable-stream@npm:2 || 3, readable-stream@npm:3, readable-stream@npm:^3.0.6, readable-stream@npm:^3.1.1, readable-stream@npm:^3.6.0":
   version: 3.6.2
   resolution: "readable-stream@npm:3.6.2"
   dependencies:
@@ -15005,6 +15092,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ternary-stream@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "ternary-stream@npm:3.0.0"
+  dependencies:
+    duplexify: "npm:^4.1.1"
+    fork-stream: "npm:^0.0.4"
+    merge-stream: "npm:^2.0.0"
+    through2: "npm:^3.0.1"
+  checksum: 10/7e9414f011f82d43695a2702110ad099d6587d773a0559439a252943b1a99509a26f4daf0877de9a547fb4d36a8cefe5756079cfa310885855a8923a17b10a46
+  languageName: node
+  linkType: hard
+
 "terser-webpack-plugin@npm:5.3.10, terser-webpack-plugin@npm:^5.3.10":
   version: 5.3.10
   resolution: "terser-webpack-plugin@npm:5.3.10"
@@ -15088,6 +15187,16 @@ __metadata:
     readable-stream: "npm:~2.3.6"
     xtend: "npm:~4.0.1"
   checksum: 10/cd71f7dcdc7a8204fea003a14a433ef99384b7d4e31f5497e1f9f622b3cf3be3691f908455f98723bdc80922a53af7fa10c3b7abbe51c6fd3d536dbc7850e2c4
+  languageName: node
+  linkType: hard
+
+"through2@npm:^3.0.1":
+  version: 3.0.2
+  resolution: "through2@npm:3.0.2"
+  dependencies:
+    inherits: "npm:^2.0.4"
+    readable-stream: "npm:2 || 3"
+  checksum: 10/98bdffba8e877fd8beb2154adc4eb0d52fad281130f56f6e5d18f85d1e1aa528a7b27317b302eb5443f6636ab045d3c272e6dffc61d984775db284823b90532d
   languageName: node
   linkType: hard
 
@@ -15907,6 +16016,15 @@ __metadata:
     vinyl: "npm:^2.0.0"
     vinyl-sourcemap: "npm:^1.1.0"
   checksum: 10/14fe1e7b32a70305222b5e66a837b78b71df89a84ef8ecd9a2ac348937bd9425a2eb38499a461dd745c12153acb689a81f98d461237060ba14a9e71c7ec3892f
+  languageName: node
+  linkType: hard
+
+"vinyl-paths@npm:5.0.0":
+  version: 5.0.0
+  resolution: "vinyl-paths@npm:5.0.0"
+  dependencies:
+    easy-transform-stream: "npm:^1.0.0"
+  checksum: 10/7158749480adf8bae349aaef79df123c9efd5fbb605437904c1d4649e378b2902e33ad58cdbc0ace639ece14d3cbaea5aaab2368ccf57026c2550db434efa86d
   languageName: node
   linkType: hard
 
