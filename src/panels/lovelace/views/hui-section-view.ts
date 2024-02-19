@@ -186,9 +186,9 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         --column-count: 3;
         display: grid;
         grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-        gap: 10px;
+        gap: 10px 20px;
         max-width: 1200px;
-        padding: 10px;
+        padding: 20px;
         margin: 0 auto;
       }
 
@@ -201,6 +201,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
       @media (max-width: 600px) {
         .container {
           --column-count: 1;
+          padding: 10px;
         }
       }
 
