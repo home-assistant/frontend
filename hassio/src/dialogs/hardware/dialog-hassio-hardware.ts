@@ -154,12 +154,19 @@ class HassioHardwareDialog extends LitElement {
         ha-icon-button {
           position: absolute;
           right: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
           top: 10px;
           text-decoration: none;
           color: var(--primary-text-color);
         }
         h2 {
-          margin: 18px 42px 0 18px;
+          margin-top: 18px;
+          margin-bottom: 0;
+          margin-right: 42px;
+          margin-left: 18px;
+          margin-inline-start: 18px;
+          margin-inline-end: 42px;
           color: var(--primary-text-color);
         }
 
