@@ -5985,7 +5985,8 @@
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",
-          "qr_code_image": "QR code for token {name}"
+          "qr_code_image": "QR code for token {name}",
+          "generate_qr_code": "Generate QR Code"
         }
       },
       "todo": {
