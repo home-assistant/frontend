@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HaSortableOptions } from "../../../components/ha-sortable";
 import { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -14,6 +15,13 @@ import { HuiErrorCard } from "../cards/hui-error-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { Lovelace, LovelaceCard } from "../types";
+
+const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
+  delay: 200,
+  delayOnTouchOnly: true,
+  direction: "vertical",
+  invertedSwapThreshold: 0.7,
+} as HaSortableOptions;
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,8 +83,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         draggable-selector=".card"
         .path=${[this.viewIndex, this.index]}
         .rollback=${false}
-        swap-threshold="0.7"
-        delay="200"
+        .options=${CARD_SORTABLE_OPTIONS}
+        invert-swap
       >
         <div class="container ${classMap({ "edit-mode": editMode })}">
           ${repeat(

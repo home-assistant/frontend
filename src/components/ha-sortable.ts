@@ -19,6 +19,11 @@ declare global {
   }
 }
 
+export type HaSortableOptions = Omit<
+  SortableInstance.SortableOptions,
+  "onStart" | "onChoose" | "onEnd"
+>;
+
 @customElement("ha-sortable")
 export class HaSortable extends LitElement {
   private _sortable?: SortableInstance;
@@ -41,17 +46,14 @@ export class HaSortable extends LitElement {
   @property({ type: String })
   public group?: string | SortableInstance.GroupOptions;
 
-  @property({ type: Number, attribute: "swap-threshold" })
-  public swapThreshold?: number;
-
   @property({ type: Boolean, attribute: "invert-swap" })
-  public invertSwap?: boolean;
+  public invertSwap: boolean = false;
+
+  @property({ attribute: false })
+  public options?: HaSortableOptions;
 
   @property({ type: Boolean })
   public rollback: boolean = true;
-
-  @property({ type: Number })
-  public delay?: number;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -122,7 +124,7 @@ export class HaSortable extends LitElement {
 
     const options: SortableInstance.Options = {
       animation: 150,
-      swapThreshold: 1,
+      ...this.options,
       onChoose: this._handleChoose,
       onStart: this._handleStart,
       onEnd: this._handleEnd,
@@ -131,25 +133,14 @@ export class HaSortable extends LitElement {
     if (this.draggableSelector) {
       options.draggable = this.draggableSelector;
     }
-
-    if (this.swapThreshold !== undefined) {
-      options.swapThreshold = this.swapThreshold;
+    if (this.handleSelector) {
+      options.handle = this.handleSelector;
     }
     if (this.invertSwap !== undefined) {
       options.invertSwap = this.invertSwap;
     }
-    if (this.handleSelector) {
-      options.handle = this.handleSelector;
-    }
-    if (this.draggableSelector) {
-      options.draggable = this.draggableSelector;
-    }
     if (this.group) {
       options.group = this.group;
-    }
-    if (this.delay) {
-      options.delay = this.delay;
-      options.delayOnTouchOnly = true;
     }
 
     this._sortable = new Sortable(container, options);
