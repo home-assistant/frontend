@@ -68,7 +68,6 @@ export class SectionView extends LitElement implements LovelaceViewElement {
             (sectionConfig) => this._getKey(sectionConfig),
             (_sectionConfig, idx) => {
               const section = this.sections[idx];
-              (section as any).editMode = editMode;
               (section as any).itemPath = [idx];
               return html`
                 <div class="section">
@@ -180,6 +179,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
 
       .section {
         position: relative;
+        border-radius: var(--ha-card-border-radius, 12px);
       }
 
       .container {
@@ -204,31 +204,28 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         }
       }
 
-      .section-overlay {
+      .section-actions {
         position: absolute;
         top: 0;
         right: 0;
+        opacity: 1;
         display: flex;
-        opacity: 0;
-        pointer-events: none;
         align-items: center;
         justify-content: center;
         transition: opacity 0.2s ease-in-out;
         background-color: rgba(var(--rgb-card-background-color), 0.3);
       }
 
-      .section:hover .section-overlay {
-        opacity: 1;
-        pointer-events: auto;
+      .section-actions ha-svg-icon {
+        padding: 4px;
       }
 
       .section-actions {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .section-actions ha-svg-icon {
-        padding: 4px;
+        border-radius: var(--ha-card-border-radius, 12px);
+        background: var(--secondary-background-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 24px;
+        color: var(--primary-text-color);
       }
       .handle {
         cursor: grab;
@@ -241,6 +238,10 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         min-height: 60px;
         order: 1;
         max-height: 200px;
+      }
+
+      .sortable-ghost {
+        border-radius: var(--ha-card-border-radius, 12px);
       }
     `;
   }

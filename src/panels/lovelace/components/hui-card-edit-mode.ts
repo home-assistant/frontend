@@ -207,9 +207,14 @@ export class HuiCardEditMode extends LitElement {
       haStyle,
       css`
         .card-overlay {
-          position: relative;
+          position: absolute;
           opacity: 0;
           pointer-events: none;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 180ms ease-in-out;
         }
 
         .card-overlay.visible {
@@ -220,15 +225,6 @@ export class HuiCardEditMode extends LitElement {
         .card-wrapper {
           position: relative;
           height: 100%;
-        }
-
-        .card-overlay {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: opacity 0.2s ease-in-out;
         }
 
         ha-button-menu {
@@ -249,8 +245,10 @@ export class HuiCardEditMode extends LitElement {
         .edit-overlay {
           position: absolute;
           inset: 0;
-          opacity: 0.6;
+          opacity: 0.8;
           background-color: var(--primary-background-color);
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-card-border-radius, 12px);
           z-index: 0;
         }
         .edit ha-svg-icon {

@@ -55,7 +55,13 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
 
     return html`
-      <h2 class="section-header">${this._config.title ?? "Unnamed section"}</h2>
+      ${this._config.title || this.lovelace?.editMode
+        ? html`
+            <h2 class="section-header">
+              ${this._config.title ?? "Unnamed section"}
+            </h2>
+          `
+        : nothing}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
