@@ -57,7 +57,11 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     return html`
       ${this._config.title || this.lovelace?.editMode
         ? html`
-            <h2 class="section-header">
+            <h2
+              class="title ${classMap({
+                placeholder: !this._config.title,
+              })}"
+            >
               ${this._config.title ?? "Unnamed section"}
             </h2>
           `
@@ -162,7 +166,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: 60px;
         }
 
-        .section-header {
+        .title {
           color: var(--ha-card-header-color, --primary-text-color);
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, 24px);
@@ -174,6 +178,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: 32px;
           display: block;
           padding: 24px 16px 16px;
+        }
+        .title.placeholder {
+          color: var(--secondary-text-color);
+          font-style: italic;
         }
 
         .card {
