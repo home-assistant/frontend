@@ -247,6 +247,7 @@ export class HuiCardEditMode extends LitElement {
         .card-wrapper {
           position: relative;
           height: 100%;
+          z-index: 0;
         }
 
         ha-button-menu {
