@@ -13,7 +13,10 @@ import type { HomeAssistant } from "../../../types";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
-import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
@@ -128,12 +131,14 @@ export class SectionView extends LitElement implements LovelaceViewElement {
       path
     ) as LovelaceRawSectionConfig;
 
+    const addTitle = !section.title;
+
     const title = await showPromptDialog(this, {
-      title: "Edit section title",
+      title: addTitle ? "Add section title" : "Change section title",
       inputLabel: "Title",
       inputType: "string",
       defaultValue: section.title,
-      confirmText: "Update",
+      confirmText: addTitle ? "Add" : "Update",
     });
 
     if (title === null) {
@@ -148,13 +153,35 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
-  private _deleteSection(ev): void {
-    const sectionIndex = ev.currentTarget.index;
-    const newConfig = deleteSection(
+  private async _deleteSection(ev) {
+    const index = ev.currentTarget.index;
+
+    const path = [this.index!, index] as [number, number];
+
+    const section = findLovelaceContainer(
       this.lovelace!.config,
-      this.index!,
-      sectionIndex
-    );
+      path
+    ) as LovelaceRawSectionConfig;
+
+    const title = section.title;
+    const cardCount = section.cards?.length;
+
+    let content = title ? `"${title}" section` : "This section";
+    if (cardCount) {
+      content += ` and ${cardCount} card${cardCount > 1 ? "s" : ""} in it will be deleted`;
+    }
+    content += ".";
+
+    const confirm = await showConfirmationDialog(this, {
+      title: "Delete section",
+      text: content,
+      confirmText: "Delete",
+      destructive: true,
+    });
+
+    if (!confirm) return;
+
+    const newConfig = deleteSection(this.lovelace!.config, this.index!, index);
     this.lovelace!.saveConfig(newConfig);
   }
 
