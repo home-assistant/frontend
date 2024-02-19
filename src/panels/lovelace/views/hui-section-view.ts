@@ -218,14 +218,14 @@ export class SectionView extends LitElement implements LovelaceViewElement {
       }
 
       .section-actions ha-svg-icon {
-        padding: 4px;
+        padding: 8px;
       }
 
       .section-actions {
         border-radius: var(--ha-card-border-radius, 12px);
         background: var(--secondary-background-color);
         --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 24px;
+        --mdc-icon-size: 20px;
         color: var(--primary-text-color);
       }
       .handle {
