@@ -46,6 +46,9 @@ export class HuiCardEditMode extends LitElement {
   @state()
   public _hover: boolean = false;
 
+  @state()
+  public _focused: boolean = false;
+
   @storage({
     key: "lovelaceClipboard",
     state: false,
@@ -62,6 +65,12 @@ export class HuiCardEditMode extends LitElement {
   private _touchStarted = false;
 
   protected firstUpdated(): void {
+    this.addEventListener("focus", () => {
+      this._focused = true;
+    });
+    this.addEventListener("blur", () => {
+      this._focused = false;
+    });
     this.addEventListener("touchstart", () => {
       this._touchStarted = true;
     });
@@ -95,12 +104,17 @@ export class HuiCardEditMode extends LitElement {
 
   protected render(): TemplateResult {
     const showOverlay =
-      (this._hover || this._menuOpened) && !this.hiddenOverlay;
+      (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
 
     return html`
       <div class="card-wrapper" .inert=${true}><slot></slot></div>
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
-        <div class="edit" @click=${this._editCard}>
+        <div
+          class="edit"
+          @click=${this._editCard}
+          @keydown=${this._editCard}
+          tabindex="0"
+        >
           <div class="edit-overlay"></div>
           <ha-svg-icon class="edit" .path=${mdiPencil}> </ha-svg-icon>
         </div>
@@ -183,7 +197,15 @@ export class HuiCardEditMode extends LitElement {
     });
   }
 
-  private _editCard(): void {
+  private _editCard(ev): void {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
     fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 
@@ -234,12 +256,14 @@ export class HuiCardEditMode extends LitElement {
         }
 
         .edit {
+          outline: none !important;
           cursor: pointer;
           position: absolute;
           inset: 0;
           display: flex;
           align-items: center;
           justify-content: center;
+          border-radius: var(--ha-card-border-radius, 12px);
           z-index: 0;
         }
         .edit-overlay {

@@ -71,7 +71,6 @@ export class SectionView extends LitElement implements LovelaceViewElement {
               (section as any).itemPath = [idx];
               return html`
                 <div class="section">
-                  <div class="section-wrapper">${section}</div>
                   ${editMode
                     ? html`
                         <div class="section-overlay">
@@ -94,6 +93,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
                         </div>
                       `
                     : nothing}
+                  <div class="section-wrapper">${section}</div>
                 </div>
               `;
             }
@@ -232,6 +232,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         cursor: grab;
       }
       .add {
+        outline: none;
         background: none;
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
@@ -239,6 +240,9 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         min-height: 60px;
         order: 1;
         max-height: 200px;
+      }
+      .add:focus {
+        border: 2px solid var(--primary-color);
       }
 
       .sortable-ghost {

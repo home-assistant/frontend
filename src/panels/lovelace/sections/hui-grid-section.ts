@@ -184,6 +184,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
 
         .add {
+          outline: none;
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 2);
           background: none;
@@ -193,7 +194,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: 60px;
           order: 1;
         }
-
+        .add:focus {
+          border-style: solid;
+        }
         .sortable-ghost {
           border-radius: var(--ha-card-border-radius, 12px);
         }
