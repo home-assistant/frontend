@@ -3185,6 +3185,25 @@
               "no_logbook_entries": "No Logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
+            },
+            "messages": {
+              "no_action_executed": "{name}: No action executed",
+              "default_action_executed": "{name}: Default action executed",
+              "action_executed": "{action} action executed",
+              "option_executed": "Option {option} executed",
+              "error": "Error: {error}",
+              "execute_in_parallel": "Execute in parallel",
+              "if": "If",
+              "choose": "Choose",
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished at {time} (runtime: {executiontime} seconds)",
+              "aborted": "Aborted at {time} (runtime: {executiontime} seconds)",
+              "cancelled": "Cancelled at {time} (runtime: {executiontime} seconds)",
+              "stopped": "Stopped because {reason, select, failed_conditions {a condition failed} \n failed_single {only a single execution is allowed} \n failed_max_runs {maximum number of parallel runs reached} \n error {an error was encountered} \n other {of unknown reason {reason}}} at {time} (runtime: {executiontime} seconds)",
+              "disabled": "(disabled)",
+              "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trace {by the {trace}}\n other {manually} \n} at {time}",
+              "path_error": "Unable to extract path {path}. Download trace and report as bug."
             }
           }
         },
