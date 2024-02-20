@@ -125,6 +125,7 @@ export class HuiCreateDialogCard
           this._currTabIndex === 0
             ? html`
                 <hui-card-picker
+                  .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
                   @config-changed=${this._handleCardPicked}

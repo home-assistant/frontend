@@ -1,3 +1,5 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiCheckDecagram, mdiPackageVariant } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import {
   CSSResultGroup,
@@ -15,6 +17,7 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
@@ -45,6 +48,8 @@ interface CardElement {
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public suggestedCards?: string[];
 
   @storage({
     key: "lovelaceClipboard",
@@ -218,8 +223,24 @@ export class HuiCardPicker extends LitElement {
       description: this.hass!.localize(
         `ui.panel.lovelace.editor.card.${card.type}.description`
       ),
+      isSuggested: this.suggestedCards?.includes(card.type) || false,
       ...card,
     }));
+
+    cards = cards.sort((a, b) => {
+      if (a.isSuggested && !b.isSuggested) {
+        return -1;
+      }
+      if (!a.isSuggested && b.isSuggested) {
+        return 1;
+      }
+      return stringCompare(
+        a.name || a.type,
+        b.name || b.type,
+        this.hass?.language
+      );
+    });
+
     if (customCards.length > 0) {
       cards = cards.concat(
         customCards.map((ccard: CustomCardEntry) => ({
@@ -312,7 +333,7 @@ export class HuiCardPicker extends LitElement {
     config?: LovelaceCardConfig
   ): Promise<TemplateResult> {
     let { type } = card;
-    const { showElement, isCustom, name, description } = card;
+    const { showElement, isCustom, isSuggested, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -348,25 +369,50 @@ export class HuiCardPicker extends LitElement {
           .config=${cardConfig}
         ></div>
         <div class="card-header">
-          ${customCard
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
-            : name}
-        </div>
-        <div
-          class="preview ${classMap({
-            description: !element || element.tagName === "HUI-ERROR-CARD",
-          })}"
-        >
-          ${element && element.tagName !== "HUI-ERROR-CARD"
-            ? element
-            : customCard
-              ? customCard.description ||
-                this.hass!.localize(
-                  `ui.panel.lovelace.editor.cardpicker.no_description`
-                )
-              : description}
+          ${customCard ? customCard.name || customCard.type : name}
+          ${
+            isCustom || isSuggested
+              ? html`
+                  <div class="icons">
+                    ${isCustom
+                      ? html`
+                          <span class="icon custom">
+                            <ha-svg-icon
+                              .path=${mdiPackageVariant}
+                            ></ha-svg-icon>
+                          </span>
+                        `
+                      : nothing}
+                    ${isSuggested
+                      ? html`
+                          <span class="icon suggested">
+                            <ha-svg-icon
+                              .path=${mdiCheckDecagram}
+                            ></ha-svg-icon>
+                          </span>
+                        `
+                      : nothing}
+                  </div>
+                `
+              : nothing
+          }
+            </div>
+          <div
+            class="preview ${classMap({
+              description: !element || element.tagName === "HUI-ERROR-CARD",
+            })}"
+          >
+            ${
+              element && element.tagName !== "HUI-ERROR-CARD"
+                ? element
+                : customCard
+                  ? customCard.description ||
+                    this.hass!.localize(
+                      `ui.panel.lovelace.editor.cardpicker.no_description`
+                    )
+                  : description
+            }
+          </div>
         </div>
       </div>
     `;
@@ -379,6 +425,13 @@ export class HuiCardPicker extends LitElement {
           display: block;
           --mdc-shape-small: var(--card-picker-search-shape);
           margin: var(--card-picker-search-margin);
+        }
+
+        .cards-container-header {
+          font-size: 16px;
+          font-weight: 500;
+          padding: 24px 8px 0 8px;
+          margin: 0;
         }
 
         .cards-container {
@@ -409,7 +462,7 @@ export class HuiCardPicker extends LitElement {
           font-weight: bold;
           letter-spacing: -0.012em;
           line-height: 20px;
-          padding: 12px 16px;
+          padding: 12px 32px;
           display: block;
           text-align: center;
           background: var(
@@ -454,6 +507,30 @@ export class HuiCardPicker extends LitElement {
 
         .manual {
           max-width: none;
+        }
+
+        .icons {
+          display: flex;
+          position: absolute;
+          top: 8px;
+          left: 8px
+          inset-inline-start: 8px;
+          inset-inline-end: 8px;
+          gap: 8px;
+        }
+        .icon {
+          border-radius: 50%;
+          --mdc-icon-size: 16px;
+          line-height: 16px;
+          box-sizing: border-box;
+          color: var(--text-primary-color);
+          padding: 4px;
+        }
+        .icon.custom {
+          background: var(--warning-color);
+        }
+        .icon.suggested {
+          background: var(--success-color);
         }
       `,
     ];

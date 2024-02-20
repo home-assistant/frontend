@@ -6,6 +6,7 @@ export interface CreateCardDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: LovelaceContainerPath;
+  suggestedCards?: string[];
   entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
 }
 

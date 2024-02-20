@@ -176,6 +176,7 @@ export class HuiSection extends ReactiveElement {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
         path: [this.viewIndex, this.index],
+        suggestedCards: ev.detail?.suggested,
       });
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
