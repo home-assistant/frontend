@@ -201,7 +201,6 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     return css`
       :host {
         display: block;
-        padding-top: 4px;
       }
 
       .section {
@@ -213,8 +212,8 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         --column-count: 3;
         display: grid;
         grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-        gap: 10px 20px;
-        max-width: 1200px;
+        gap: 8px 20px;
+        max-width: 1400px;
         padding: 20px;
         margin: 0 auto;
       }
@@ -228,7 +227,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
       @media (max-width: 600px) {
         .container {
           --column-count: 1;
-          padding: 10px;
+          padding: 8px;
         }
       }
 
@@ -259,14 +258,16 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         cursor: grab;
       }
       .add {
+        margin-top: calc(66px + 8px);
         outline: none;
         background: none;
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
-        min-height: 60px;
         order: 1;
-        max-height: 200px;
+        height: 66px;
+        padding: 8px;
+        box-sizing: content-box;
       }
       .add:focus {
         border: 2px solid var(--primary-color);

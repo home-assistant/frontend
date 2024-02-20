@@ -157,36 +157,40 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     return [
       haStyle,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
         .container {
           --column-count: 4;
           display: grid;
           grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-          grid-auto-rows: minmax(60px, auto);
-          gap: 10px;
+          grid-auto-rows: minmax(66px, auto);
+          gap: 8px;
           padding: 0;
           margin: 0 auto;
         }
 
         .container.edit-mode {
-          padding: 10px;
+          padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: 60px;
+          min-height: 66px;
         }
 
         .title {
-          color: var(--ha-card-header-color, --primary-text-color);
-          font-family: var(--ha-card-header-font-family, inherit);
-          font-size: var(--ha-card-header-font-size, 24px);
+          color: var(--primary-text-color);
+          font-size: 20px;
           font-weight: normal;
-          margin-block-start: 0px;
-          margin-block-end: 0px;
-          letter-spacing: -0.012em;
+          margin: 0px;
+          letter-spacing: 0.1px;
           line-height: 32px;
           min-height: 32px;
           display: block;
-          padding: 24px 16px 16px;
+          padding: 24px 10px 10px;
         }
+
         .title.placeholder {
           color: var(--secondary-text-color);
           font-style: italic;
@@ -207,7 +211,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          min-height: 60px;
+          height: 66px;
           order: 1;
         }
         .add:focus {
