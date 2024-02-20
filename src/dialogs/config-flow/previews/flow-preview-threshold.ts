@@ -9,7 +9,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 import { debounce } from "../../../common/util/debounce";
-import {fireEvent} from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("flow-preview-threshold")
 class FlowPreviewThreshold extends LitElement {
@@ -80,11 +80,11 @@ class FlowPreviewThreshold extends LitElement {
     }
     try {
       this._unsub = subscribePreviewThreshold(
-          this.hass,
-          this.flowId,
-          this.flowType,
-          this.stepData,
-          this._setPreview
+        this.hass,
+        this.flowId,
+        this.flowType,
+        this.stepData,
+        this._setPreview
       );
       await this._unsub;
       fireEvent(this, "set-flow-errors", { errors: {} });
