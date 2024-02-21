@@ -162,7 +162,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   }
 
   private _addCard() {
-    fireEvent(this, "ll-create-card", { suggested: ["tile", "sensor"] });
+    fireEvent(this, "ll-create-card", { suggested: ["tile"] });
   }
 
   static get styles(): CSSResultGroup {
