@@ -4,7 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { differenceInDays, endOfToday, startOfToday } from "date-fns/esm";
+import { endOfToday, startOfToday } from "date-fns/esm";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -27,11 +27,9 @@ import {
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
-  fetchStatistics,
   getStatisticLabel,
   Statistics,
   StatisticsMetaData,
-  StatisticsUnitConfiguration,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -40,6 +38,8 @@ import { LovelaceCard } from "../../types";
 import { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
+
+const UNIT = "kWh";
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
@@ -56,10 +56,6 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
-  @state() private _statistics?: Statistics;
-
-  @state() private _compareStatistics?: Statistics;
-
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -67,8 +63,6 @@ export class HuiEnergyDevicesDetailGraphCard
   @state() private _compareStart?: Date;
 
   @state() private _compareEnd?: Date;
-
-  @state() private _unit?: string;
 
   @state() private _hiddenStats = new Set<string>();
 
@@ -80,7 +74,6 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe(async (data) => {
         this._data = data;
-        await this._getStatistics(this._data);
         this._processStatistics();
       }),
     ];
@@ -103,7 +96,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_hiddenStats") && this._statistics) {
+    if (changedProps.has("_hiddenStats") && this._data) {
       this._processStatistics();
     }
   }
@@ -133,7 +126,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._end,
               this.hass.locale,
               this.hass.config,
-              this._unit,
+              UNIT,
               this._compareStart,
               this._compareEnd
             )}
@@ -201,57 +194,10 @@ export class HuiEnergyDevicesDetailGraphCard
     }
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
-    const devices = energyData.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
-
-    const period =
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
-
-    const lengthUnit = this.hass.config.unit_system.length || "";
-    const units: StatisticsUnitConfiguration = {
-      energy: "kWh",
-      volume: lengthUnit === "km" ? "m³" : "ft³",
-    };
-    this._unit = "kWh";
-
-    const statistics = await fetchStatistics(
-      this.hass,
-      energyData.start,
-      energyData.end,
-      devices,
-      period,
-      units,
-      ["change"]
-    );
-
-    let compareStatistics: Statistics | undefined;
-
-    if (energyData.startCompare && energyData.endCompare) {
-      compareStatistics = await fetchStatistics(
-        this.hass,
-        energyData.startCompare,
-        energyData.endCompare,
-        devices,
-        period,
-        units,
-        ["change"]
-      );
-    }
-    this._statistics = statistics;
-    this._compareStatistics = compareStatistics;
-  }
-
   private async _processStatistics() {
     const energyData = this._data!;
-    const data = this._statistics!;
-    const compareData = this._compareStatistics;
+    const data = energyData.stats;
+    const compareData = energyData.statsCompare;
 
     const growthValues = {};
     energyData.prefs.device_consumption.forEach((device) => {
