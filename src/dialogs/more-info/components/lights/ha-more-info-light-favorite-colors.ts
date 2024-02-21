@@ -322,6 +322,8 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         position: absolute;
         top: -6px;
         right: -6px;
+        inset-inline-end: -6px;
+        inset-inline-start: initial;
         width: 20px;
         height: 20px;
         outline: none;
