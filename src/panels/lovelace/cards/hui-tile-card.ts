@@ -117,7 +117,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 1;
+    return (
+      1 +
+      (this._config?.vertical ? 1 : 0) +
+      (this._config?.features?.length || 0)
+    );
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
