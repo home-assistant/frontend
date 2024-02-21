@@ -250,12 +250,6 @@ export class HuiCardEditMode extends LitElement {
           z-index: 0;
         }
 
-        ha-button-menu {
-          position: absolute;
-          right: 0;
-          top: 0;
-        }
-
         .edit {
           outline: none !important;
           cursor: pointer;
@@ -287,17 +281,15 @@ export class HuiCardEditMode extends LitElement {
         }
         .more {
           position: absolute;
-          right: 0;
-          top: 0;
+          right: -6px;
+          top: -6px;
         }
         .more ha-icon-button {
           cursor: pointer;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: 50%;
           background: var(--secondary-background-color);
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
-          border-bottom-right-radius: 0px;
-          border-top-left-radius: 0px;
         }
       `,
     ];

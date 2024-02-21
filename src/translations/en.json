@@ -5151,6 +5151,18 @@
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
           },
+          "delete_section": {
+            "title": "Delete section",
+            "named_section": "\"{name}\" section",
+            "unnamed_section": "This section",
+            "text_section_only": "{section} will be deleted.",
+            "text_section_and_cards": "{section} and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit title",
+            "title_new": "Add title",
+            "input_label": "Title"
+          },
           "suggest_card": {
             "header": "We created a suggestion for you",
             "create_own": "Pick different card",

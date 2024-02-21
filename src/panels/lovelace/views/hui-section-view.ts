@@ -79,15 +79,18 @@ export class SectionView extends LitElement implements LovelaceViewElement {
                         <div class="section-overlay">
                           <div class="section-actions">
                             <ha-svg-icon
+                              aria-hidden="true"
                               class="handle"
                               .path=${mdiArrowAll}
                             ></ha-svg-icon>
                             <ha-icon-button
+                              .label=${this.hass.localize("ui.common.edit")}
                               @click=${this._editSection}
                               .index=${idx}
                               .path=${mdiPencil}
                             ></ha-icon-button>
                             <ha-icon-button
+                              .label=${this.hass.localize("ui.common.delete")}
                               @click=${this._deleteSection}
                               .index=${idx}
                               .path=${mdiDelete}
@@ -131,14 +134,20 @@ export class SectionView extends LitElement implements LovelaceViewElement {
       path
     ) as LovelaceRawSectionConfig;
 
-    const addTitle = !section.title;
+    const newTitle = !section.title;
 
     const title = await showPromptDialog(this, {
-      title: addTitle ? "Add section title" : "Change section title",
-      inputLabel: "Title",
+      title: this.hass.localize(
+        `ui.panel.lovelace.editor.edit_section_title.${newTitle ? "title_new" : "title"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.lovelace.editor.edit_section_title.input_label"
+      ),
       inputType: "string",
       defaultValue: section.title,
-      confirmText: addTitle ? "Add" : "Update",
+      confirmText: newTitle
+        ? this.hass.localize("ui.common.add")
+        : this.hass.localize("ui.common.save"),
     });
 
     if (title === null) {
@@ -166,20 +175,41 @@ export class SectionView extends LitElement implements LovelaceViewElement {
     const title = section.title;
     const cardCount = section.cards?.length;
 
-    let content = title ? `"${title}" section` : "This section";
-    if (cardCount) {
-      content += ` and ${cardCount} card${cardCount > 1 ? "s" : ""} in it will be deleted`;
+    if (title || cardCount) {
+      const sectionName = title?.trim()
+        ? this.hass.localize(
+            "ui.panel.lovelace.editor.delete_section.named_section",
+            { name: title }
+          )
+        : this.hass.localize(
+            "ui.panel.lovelace.editor.delete_section.unnamed_section"
+          );
+
+      const content = cardCount
+        ? this.hass.localize(
+            "ui.panel.lovelace.editor.delete_section.text_section_and_cards",
+            {
+              section: sectionName,
+            }
+          )
+        : this.hass.localize(
+            "ui.panel.lovelace.editor.delete_section.text_section_only",
+            {
+              section: sectionName,
+            }
+          );
+
+      const confirm = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.delete_section.title"
+        ),
+        text: content,
+        confirmText: this.hass.localize("ui.common.delete"),
+        destructive: true,
+      });
+
+      if (!confirm) return;
     }
-    content += ".";
-
-    const confirm = await showConfirmationDialog(this, {
-      title: "Delete section",
-      text: content,
-      confirmText: "Delete",
-      destructive: true,
-    });
-
-    if (!confirm) return;
 
     const newConfig = deleteSection(this.lovelace!.config, this.index!, index);
     this.lovelace!.saveConfig(newConfig);
