@@ -1,5 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCheckDecagram, mdiPackageVariant } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import {
   CSSResultGroup,
@@ -97,6 +95,29 @@ export class HuiCardPicker extends LitElement {
     }
   );
 
+  private _suggestedCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) => cardElement.card.isSuggested
+      )
+  );
+
+  private _customCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) =>
+          cardElement.card.isCustom && !cardElement.card.isSuggested
+      )
+  );
+
+  private _otherCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) =>
+          !cardElement.card.isSuggested && !cardElement.card.isCustom
+      )
+  );
+
   protected render() {
     if (
       !this.hass ||
@@ -106,6 +127,14 @@ export class HuiCardPicker extends LitElement {
     ) {
       return nothing;
     }
+
+    const suggestedCards = this._suggestedCards(this._cards);
+    const othersCards = this._otherCards(this._cards);
+    const customCardsItems = this._customCards(this._cards);
+
+    const showSuggestedHeader = suggestedCards.length > 0;
+    const showOthersHeader = suggestedCards.length > 0;
+    const showCustomHeader = customCardsItems.length > 0;
 
     return html`
       <search-input
@@ -124,39 +153,49 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         <div class="cards-container">
-          ${this._clipboard && !this._filter
-            ? html`
-                ${until(
-                  this._renderCardElement(
-                    {
-                      type: this._clipboard.type,
-                      showElement: true,
-                      isCustom: false,
-                      name: this.hass!.localize(
-                        "ui.panel.lovelace.editor.card.generic.paste"
-                      ),
-                      description: `${this.hass!.localize(
-                        "ui.panel.lovelace.editor.card.generic.paste_description",
-                        {
-                          type: this._clipboard.type,
-                        }
-                      )}`,
-                    },
-                    this._clipboard
-                  ),
-                  html`
-                    <div class="card spinner">
-                      <ha-circular-progress
-                        indeterminate
-                      ></ha-circular-progress>
-                    </div>
-                  `
+          ${this._filter
+            ? this._filterCards(this._cards, this._filter).map(
+                (cardElement: CardElement) => cardElement.element
+              )
+            : html`
+                ${showSuggestedHeader
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.suggested_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${this._renderClipboardCard()}
+                ${suggestedCards.map(
+                  (cardElement: CardElement) => cardElement.element
                 )}
-              `
-            : nothing}
-          ${this._filterCards(this._cards, this._filter).map(
-            (cardElement: CardElement) => cardElement.element
-          )}
+                ${showOthersHeader
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.other_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${othersCards.map(
+                  (cardElement: CardElement) => cardElement.element
+                )}
+                ${showCustomHeader
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.custom_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${customCardsItems.map(
+                  (cardElement: CardElement) => cardElement.element
+                )}
+              `}
         </div>
         <div class="cards-container">
           <div
@@ -265,6 +304,37 @@ export class HuiCardPicker extends LitElement {
     }));
   }
 
+  private _renderClipboardCard() {
+    if (!this._clipboard) {
+      return nothing;
+    }
+
+    return html` ${until(
+      this._renderCardElement(
+        {
+          type: this._clipboard.type,
+          showElement: true,
+          isCustom: false,
+          name: this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.paste"
+          ),
+          description: `${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.paste_description",
+            {
+              type: this._clipboard.type,
+            }
+          )}`,
+        },
+        this._clipboard
+      ),
+      html`
+        <div class="card spinner">
+          <ha-circular-progress indeterminate></ha-circular-progress>
+        </div>
+      `
+    )}`;
+  }
+
   private _handleSearchChange(ev: CustomEvent) {
     const value = ev.detail.value;
 
@@ -333,7 +403,7 @@ export class HuiCardPicker extends LitElement {
     config?: LovelaceCardConfig
   ): Promise<TemplateResult> {
     let { type } = card;
-    const { showElement, isCustom, isSuggested, name, description } = card;
+    const { showElement, isCustom, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -369,50 +439,25 @@ export class HuiCardPicker extends LitElement {
           .config=${cardConfig}
         ></div>
         <div class="card-header">
-          ${customCard ? customCard.name || customCard.type : name}
-          ${
-            isCustom || isSuggested
-              ? html`
-                  <div class="icons">
-                    ${isCustom
-                      ? html`
-                          <span class="icon custom">
-                            <ha-svg-icon
-                              .path=${mdiPackageVariant}
-                            ></ha-svg-icon>
-                          </span>
-                        `
-                      : nothing}
-                    ${isSuggested
-                      ? html`
-                          <span class="icon suggested">
-                            <ha-svg-icon
-                              .path=${mdiCheckDecagram}
-                            ></ha-svg-icon>
-                          </span>
-                        `
-                      : nothing}
-                  </div>
-                `
-              : nothing
-          }
-            </div>
-          <div
-            class="preview ${classMap({
-              description: !element || element.tagName === "HUI-ERROR-CARD",
-            })}"
-          >
-            ${
-              element && element.tagName !== "HUI-ERROR-CARD"
-                ? element
-                : customCard
-                  ? customCard.description ||
-                    this.hass!.localize(
-                      `ui.panel.lovelace.editor.cardpicker.no_description`
-                    )
-                  : description
-            }
-          </div>
+          ${customCard
+            ? `${this.hass!.localize(
+                "ui.panel.lovelace.editor.cardpicker.custom_card"
+              )}: ${customCard.name || customCard.type}`
+            : name}
+        </div>
+        <div
+          class="preview ${classMap({
+            description: !element || element.tagName === "HUI-ERROR-CARD",
+          })}"
+        >
+          ${element && element.tagName !== "HUI-ERROR-CARD"
+            ? element
+            : customCard
+              ? customCard.description ||
+                this.hass!.localize(
+                  `ui.panel.lovelace.editor.cardpicker.no_description`
+                )
+              : description}
         </div>
       </div>
     `;
@@ -430,8 +475,9 @@ export class HuiCardPicker extends LitElement {
         .cards-container-header {
           font-size: 16px;
           font-weight: 500;
-          padding: 24px 8px 0 8px;
+          padding: 12px 8px 4px 8px;
           margin: 0;
+          grid-column: 1 / -1;
         }
 
         .cards-container {
@@ -462,7 +508,7 @@ export class HuiCardPicker extends LitElement {
           font-weight: bold;
           letter-spacing: -0.012em;
           line-height: 20px;
-          padding: 12px 32px;
+          padding: 12px 16px;
           display: block;
           text-align: center;
           background: var(
@@ -509,16 +555,12 @@ export class HuiCardPicker extends LitElement {
           max-width: none;
         }
 
-        .icons {
-          display: flex;
+        .icon {
           position: absolute;
           top: 8px;
-          left: 8px
+          right: 8px
           inset-inline-start: 8px;
           inset-inline-end: 8px;
-          gap: 8px;
-        }
-        .icon {
           border-radius: 50%;
           --mdc-icon-size: 16px;
           line-height: 16px;
@@ -528,9 +570,6 @@ export class HuiCardPicker extends LitElement {
         }
         .icon.custom {
           background: var(--warning-color);
-        }
-        .icon.suggested {
-          background: var(--success-color);
         }
       `,
     ];

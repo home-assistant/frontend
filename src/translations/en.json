@@ -5473,7 +5473,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
