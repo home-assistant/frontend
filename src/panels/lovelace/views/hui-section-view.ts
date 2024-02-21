@@ -1,7 +1,6 @@
-import { mdiArrowAll, mdiDelete, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
@@ -9,18 +8,18 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import { LovelaceSectionConfig as LovelaceRawSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../types";
-import { addSection, deleteSection, moveSection } from "../editor/config-util";
-import { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
 import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../types";
+import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
 } from "../editor/lovelace-path";
+import { HuiSection } from "../sections/hui-section";
+import type { Lovelace } from "../types";
 
 @customElement("hui-section-view")
 export class SectionView extends LitElement implements LovelaceViewElement {
@@ -65,7 +64,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         draggable-selector=".section"
         .rollback=${false}
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div class="container">
           ${repeat(
             sectionsConfig,
             (sectionConfig) => this._getKey(sectionConfig),
@@ -106,8 +105,17 @@ export class SectionView extends LitElement implements LovelaceViewElement {
           )}
           ${editMode
             ? html`
-                <button class="add" @click=${this._addSection}>
-                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                <button
+                  class="add"
+                  @click=${this._addSection}
+                  aria-label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_section"
+                  )}
+                  .title=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_section"
+                  )}
+                >
+                  <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
                 </button>
               `
             : nothing}
@@ -271,22 +279,18 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         justify-content: center;
         transition: opacity 0.2s ease-in-out;
         background-color: rgba(var(--rgb-card-background-color), 0.3);
-      }
-
-      .section-actions ha-svg-icon {
-        padding: 8px;
-      }
-
-      .section-actions {
-        border-radius: var(--ha-card-border-radius, 12px);
+        border-radius: 18px;
         background: var(--secondary-background-color);
         --mdc-icon-button-size: 36px;
         --mdc-icon-size: 20px;
         color: var(--primary-text-color);
       }
+
       .handle {
         cursor: grab;
+        padding: 8px;
       }
+
       .add {
         margin-top: calc(66px + 8px);
         outline: none;
@@ -299,6 +303,7 @@ export class SectionView extends LitElement implements LovelaceViewElement {
         padding: 8px;
         box-sizing: content-box;
       }
+
       .add:focus {
         border: 2px solid var(--primary-color);
       }

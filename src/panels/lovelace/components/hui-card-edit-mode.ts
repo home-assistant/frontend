@@ -32,7 +32,7 @@ import { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
@@ -134,21 +134,21 @@ export class HuiCardEditMode extends LitElement {
               slot="graphic"
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
-            ${this.hass?.localize(
+            ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
             )}
           </ha-list-item>
           <ha-list-item graphic="icon">
             <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass?.localize("ui.panel.lovelace.editor.edit_card.copy")}
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
           </ha-list-item>
           <ha-list-item graphic="icon">
             <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass?.localize("ui.panel.lovelace.editor.edit_card.cut")}
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
           </ha-list-item>
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" class="warning">
-            ${this.hass?.localize("ui.panel.lovelace.editor.edit_card.delete")}
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
               slot="graphic"

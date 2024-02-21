@@ -5151,6 +5151,11 @@
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
           },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "add_section": "Add section"
+          },
           "delete_section": {
             "title": "Delete section",
             "named_section": "\"{name}\" section",
@@ -5159,9 +5164,9 @@
             "text_section_and_cards": "{section} and all its cards will be deleted."
           },
           "edit_section_title": {
-            "title": "Edit title",
-            "title_new": "Add title",
-            "input_label": "Title"
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",

@@ -70,7 +70,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                 placeholder: !this._config.title,
               })}"
             >
-              ${this._config.title ?? "Unnamed section"}
+              ${this._config.title ||
+              this.hass.localize(
+                "ui.panel.lovelace.editor.section.unnamed_section"
+              )}
             </h2>
           `
         : nothing}
@@ -120,7 +123,16 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           )}
           ${editMode
             ? html`
-                <button class="add" @click=${this._addCard}>
+                <button
+                  class="add"
+                  @click=${this._addCard}
+                  aria-label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_card"
+                  )}
+                  .title=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_card"
+                  )}
+                >
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                 </button>
               `
