@@ -132,10 +132,6 @@ export class HuiCardPicker extends LitElement {
     const othersCards = this._otherCards(this._cards);
     const customCardsItems = this._customCards(this._cards);
 
-    const showSuggestedHeader = suggestedCards.length > 0;
-    const showOthersHeader = suggestedCards.length > 0;
-    const showCustomHeader = customCardsItems.length > 0;
-
     return html`
       <search-input
         .hass=${this.hass}
@@ -158,7 +154,7 @@ export class HuiCardPicker extends LitElement {
                 (cardElement: CardElement) => cardElement.element
               )
             : html`
-                ${showSuggestedHeader
+                ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
                         ${this.hass!.localize(
@@ -171,7 +167,7 @@ export class HuiCardPicker extends LitElement {
                 ${suggestedCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
-                ${showOthersHeader
+                ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
                         ${this.hass!.localize(
@@ -183,7 +179,7 @@ export class HuiCardPicker extends LitElement {
                 ${othersCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
-                ${showCustomHeader
+                ${customCardsItems.length > 0
                   ? html`
                       <div class="cards-container-header">
                         ${this.hass!.localize(
