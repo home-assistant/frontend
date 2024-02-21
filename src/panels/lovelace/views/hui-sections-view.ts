@@ -21,8 +21,8 @@ import {
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
-@customElement("hui-section-view")
-export class SectionView extends LitElement implements LovelaceViewElement {
+@customElement("hui-sections-view")
+export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -317,6 +317,6 @@ export class SectionView extends LitElement implements LovelaceViewElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-section-view": SectionView;
+    "hui-sections-view": SectionsView;
   }
 }
