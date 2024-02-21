@@ -72,7 +72,7 @@ export class HuiEnergyDevicesDetailGraphCard
     return [
       getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
-      }).subscribe(async (data) => {
+      }).subscribe((data) => {
         this._data = data;
         this._processStatistics();
       }),
@@ -194,7 +194,7 @@ export class HuiEnergyDevicesDetailGraphCard
     }
   );
 
-  private async _processStatistics() {
+  private _processStatistics() {
     const energyData = this._data!;
     const data = energyData.stats;
     const compareData = energyData.statsCompare;

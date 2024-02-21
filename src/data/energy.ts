@@ -331,11 +331,7 @@ export const getReferencedStatisticIds = (
       }
     }
   }
-  if (
-    includeTypes &&
-    includeTypes.includes("device") &&
-    prefs.device_consumption
-  ) {
+  if (!(includeTypes && !includeTypes.includes("device"))) {
     statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
   }
 
