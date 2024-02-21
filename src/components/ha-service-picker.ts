@@ -118,7 +118,9 @@ class HaServicePicker extends LitElement {
       return processedServices.filter((service) => {
         const lower_service_name = service.name.toLowerCase();
         const lower_service = service.service.toLowerCase();
-        return split_filter.every((f) => lower_service_name.includes(f) || lower_service.includes(f))
+        return split_filter.every(
+          (f) => lower_service_name.includes(f) || lower_service.includes(f)
+        );
       });
     }
   );
