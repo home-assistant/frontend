@@ -191,7 +191,7 @@ export class HuiDialogSuggestCard extends LitElement {
     await this._params!.saveConfig(
       addCards(
         this._params!.lovelaceConfig,
-        this._params!.path as [number],
+        this._params!.path,
         this._cardConfig
       )
     );
