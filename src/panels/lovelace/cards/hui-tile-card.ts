@@ -453,12 +453,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .secondary=${localizedState}
           ></ha-tile-info>
         </div>
-        <hui-card-features
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .color=${this._config.color}
-          .features=${this._config.features}
-        ></hui-card-features>
+        ${this._config.features
+          ? html`
+              <hui-card-features
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                .color=${this._config.color}
+                .features=${this._config.features}
+              ></hui-card-features>
+            `
+          : nothing}
       </ha-card>
     `;
   }
