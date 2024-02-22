@@ -124,7 +124,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getSize(): [number, number] {
+  public getGridSize(): [number, number] {
     const width = 2;
     let height = 1;
     if (this._config?.features?.length) {
