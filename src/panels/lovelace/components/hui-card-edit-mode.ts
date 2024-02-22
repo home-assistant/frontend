@@ -107,7 +107,7 @@ export class HuiCardEditMode extends LitElement {
       (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
 
     return html`
-      <div class="card-wrapper" .inert=${true}><slot></slot></div>
+      <div class="card-wrapper" inert><slot></slot></div>
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
