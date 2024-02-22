@@ -52,10 +52,17 @@ export const showOptionsFlowDialog = (
       deleteFlow: deleteOptionsFlow,
 
       renderAbortDescription(hass, step) {
-        const description = hass.localize(
-          `component.${configEntry.domain}.options.abort.${step.reason}`,
-          step.description_placeholders
-        );
+        let description: string | undefined;
+        if (step.reason === "not_implemented") {
+          description = hass.localize(
+            "ui.panel.config.integrations.config_flow.no_config_flow"
+          );
+        } else {
+          description = hass.localize(
+            `component.${configEntry.domain}.options.abort.${step.reason}`,
+            step.description_placeholders
+          );
+        }
 
         return description
           ? html`
