@@ -15,6 +15,7 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
@@ -45,6 +46,8 @@ interface CardElement {
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public suggestedCards?: string[];
 
   @storage({
     key: "lovelaceClipboard",
@@ -92,6 +95,29 @@ export class HuiCardPicker extends LitElement {
     }
   );
 
+  private _suggestedCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) => cardElement.card.isSuggested
+      )
+  );
+
+  private _customCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) =>
+          cardElement.card.isCustom && !cardElement.card.isSuggested
+      )
+  );
+
+  private _otherCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) =>
+          !cardElement.card.isSuggested && !cardElement.card.isCustom
+      )
+  );
+
   protected render() {
     if (
       !this.hass ||
@@ -101,6 +127,10 @@ export class HuiCardPicker extends LitElement {
     ) {
       return nothing;
     }
+
+    const suggestedCards = this._suggestedCards(this._cards);
+    const othersCards = this._otherCards(this._cards);
+    const customCardsItems = this._customCards(this._cards);
 
     return html`
       <search-input
@@ -119,39 +149,49 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         <div class="cards-container">
-          ${this._clipboard && !this._filter
-            ? html`
-                ${until(
-                  this._renderCardElement(
-                    {
-                      type: this._clipboard.type,
-                      showElement: true,
-                      isCustom: false,
-                      name: this.hass!.localize(
-                        "ui.panel.lovelace.editor.card.generic.paste"
-                      ),
-                      description: `${this.hass!.localize(
-                        "ui.panel.lovelace.editor.card.generic.paste_description",
-                        {
-                          type: this._clipboard.type,
-                        }
-                      )}`,
-                    },
-                    this._clipboard
-                  ),
-                  html`
-                    <div class="card spinner">
-                      <ha-circular-progress
-                        indeterminate
-                      ></ha-circular-progress>
-                    </div>
-                  `
+          ${this._filter
+            ? this._filterCards(this._cards, this._filter).map(
+                (cardElement: CardElement) => cardElement.element
+              )
+            : html`
+                ${suggestedCards.length > 0
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.suggested_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${this._renderClipboardCard()}
+                ${suggestedCards.map(
+                  (cardElement: CardElement) => cardElement.element
                 )}
-              `
-            : nothing}
-          ${this._filterCards(this._cards, this._filter).map(
-            (cardElement: CardElement) => cardElement.element
-          )}
+                ${suggestedCards.length > 0
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.other_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${othersCards.map(
+                  (cardElement: CardElement) => cardElement.element
+                )}
+                ${customCardsItems.length > 0
+                  ? html`
+                      <div class="cards-container-header">
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.generic.custom_cards`
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${customCardsItems.map(
+                  (cardElement: CardElement) => cardElement.element
+                )}
+              `}
         </div>
         <div class="cards-container">
           <div
@@ -218,8 +258,24 @@ export class HuiCardPicker extends LitElement {
       description: this.hass!.localize(
         `ui.panel.lovelace.editor.card.${card.type}.description`
       ),
+      isSuggested: this.suggestedCards?.includes(card.type) || false,
       ...card,
     }));
+
+    cards = cards.sort((a, b) => {
+      if (a.isSuggested && !b.isSuggested) {
+        return -1;
+      }
+      if (!a.isSuggested && b.isSuggested) {
+        return 1;
+      }
+      return stringCompare(
+        a.name || a.type,
+        b.name || b.type,
+        this.hass?.language
+      );
+    });
+
     if (customCards.length > 0) {
       cards = cards.concat(
         customCards.map((ccard: CustomCardEntry) => ({
@@ -242,6 +298,37 @@ export class HuiCardPicker extends LitElement {
         `
       )}`,
     }));
+  }
+
+  private _renderClipboardCard() {
+    if (!this._clipboard) {
+      return nothing;
+    }
+
+    return html` ${until(
+      this._renderCardElement(
+        {
+          type: this._clipboard.type,
+          showElement: true,
+          isCustom: false,
+          name: this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.paste"
+          ),
+          description: `${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.paste_description",
+            {
+              type: this._clipboard.type,
+            }
+          )}`,
+        },
+        this._clipboard
+      ),
+      html`
+        <div class="card spinner">
+          <ha-circular-progress indeterminate></ha-circular-progress>
+        </div>
+      `
+    )}`;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -381,6 +468,14 @@ export class HuiCardPicker extends LitElement {
           margin: var(--card-picker-search-margin);
         }
 
+        .cards-container-header {
+          font-size: 16px;
+          font-weight: 500;
+          padding: 12px 8px 4px 8px;
+          margin: 0;
+          grid-column: 1 / -1;
+        }
+
         .cards-container {
           display: grid;
           grid-gap: 8px 8px;
@@ -454,6 +549,23 @@ export class HuiCardPicker extends LitElement {
 
         .manual {
           max-width: none;
+        }
+
+        .icon {
+          position: absolute;
+          top: 8px;
+          right: 8px
+          inset-inline-start: 8px;
+          inset-inline-end: 8px;
+          border-radius: 50%;
+          --mdc-icon-size: 16px;
+          line-height: 16px;
+          box-sizing: border-box;
+          color: var(--text-primary-color);
+          padding: 4px;
+        }
+        .icon.custom {
+          background: var(--warning-color);
         }
       `,
     ];
