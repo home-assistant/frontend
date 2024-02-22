@@ -24,6 +24,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "entity-button",
   "glance",
   "grid",
+  "section",
   "light",
   "sensor",
   "thermostat",

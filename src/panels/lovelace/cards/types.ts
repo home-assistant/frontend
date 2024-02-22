@@ -545,7 +545,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   state_content?: string | string[];
   icon?: string;
   color?: string;
-  show_entity_picture?: string;
+  show_entity_picture?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

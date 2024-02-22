@@ -5096,7 +5096,8 @@
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "sections": "Sections (experimental)"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5112,7 +5113,7 @@
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
             "pick_card": "Which card would you like to add?",
-            "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
@@ -5149,6 +5150,23 @@
             "views_label": "View",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
+          },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "add_section": "Add section"
+          },
+          "delete_section": {
+            "title": "Delete section",
+            "named_section": "\"{name}\" section",
+            "unnamed_section": "This section",
+            "text_section_only": "{section} will be deleted.",
+            "text_section_and_cards": "{section} and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5455,7 +5473,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
