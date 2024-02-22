@@ -203,12 +203,14 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _moveUp(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index + 1;
     this._move(index, newIndex);

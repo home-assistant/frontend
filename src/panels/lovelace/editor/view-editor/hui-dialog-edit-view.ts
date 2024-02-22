@@ -313,9 +313,6 @@ export class HuiDialogEditView extends LitElement {
               </mwc-button>
             `
           : ""}
-        <mwc-button @click=${this.closeDialog} slot="primaryAction"
-          >${this.hass!.localize("ui.common.cancel")}</mwc-button
-        >
         <mwc-button
           slot="primaryAction"
           ?disabled=${!this._config || this._saving || !this._dirty}
