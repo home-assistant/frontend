@@ -29,8 +29,7 @@ const HEADERS = {
 export const createConfigFlow = (
   hass: HomeAssistant,
   handler: string,
-  source?: string,
-  entryId?: string
+  entry_id?: string
 ) =>
   hass.callApi<DataEntryFlowStep>(
     "POST",
@@ -38,8 +37,7 @@ export const createConfigFlow = (
     {
       handler,
       show_advanced_options: Boolean(hass.userData?.showAdvanced),
-      source: source,
-      entry_id: entryId,
+      entry_id,
     },
     HEADERS
   );

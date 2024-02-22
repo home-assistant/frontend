@@ -808,7 +808,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </a>`
           : ""}
         ${!item.disabled_by &&
-        RECOVERABLE_STATES.includes(item.state) &&
         item.supports_reconfigure &&
         item.source !== "system"
           ? html`<ha-list-item
@@ -1288,7 +1287,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       startFlowHandler: configEntry.domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
-      source: "reconfigure",
       entryId: configEntry.entry_id,
     });
   }
