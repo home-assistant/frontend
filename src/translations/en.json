@@ -6513,6 +6513,18 @@
         }
       },
       "energy": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
+        "download": {
+          "grid_consumption": "[%key:ui::panel::config::energy::grid::grid_consumption%]",
+          "return_to_grid": "[%key:ui::panel::config::energy::grid::return_to_grid%]",
+          "battery_systems": "[%key:ui::panel::config::energy::battery::battery_systems%]",
+          "energy_into_battery": "[%key:ui::panel::config::energy::battery::dialog::energy_into_battery%]",
+          "energy_out_of_battery": "[%key:ui::panel::config::energy::battery::dialog::energy_out_of_battery%]",
+          "solar_production": "[%key:ui::panel::config::energy::solar::solar_production%]",
+          "gas_consumption": "[%key:ui::panel::config::energy::gas::gas_consumption%]",
+          "water_consumption": "[%key:ui::panel::config::energy::water::water_consumption%]",
+          "device_consumption": "[%key:ui::panel::config::energy::device_consumption::title%]"
+        },
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
