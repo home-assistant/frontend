@@ -364,7 +364,6 @@ export class HUIView extends ReactiveElement {
     this._sections = config.sections.map((sectionConfig, index) => {
       const element = this.createSectionElement(sectionConfig);
       element.index = index;
-      element.hass = this.hass;
       return element;
     });
   }
