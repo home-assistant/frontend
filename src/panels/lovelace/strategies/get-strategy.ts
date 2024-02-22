@@ -176,7 +176,7 @@ export const generateLovelaceSectionStrategy = async (
       cards: [
         {
           type: "markdown",
-          content: `Error loading the view strategy:\n> ${err}`,
+          content: `Error loading the section strategy:\n> ${err}`,
         },
       ],
     }),
