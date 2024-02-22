@@ -29,8 +29,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean, attribute: "edit-mode", reflect: true })
-  public editMode = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() protected _cards?: LovelaceCard[];
 
