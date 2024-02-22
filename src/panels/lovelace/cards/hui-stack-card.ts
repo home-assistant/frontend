@@ -7,6 +7,7 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";
@@ -111,6 +112,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       (ev) => {
         ev.stopPropagation();
         this._rebuildCard(element, cardConfig);
+        fireEvent(this, "ll-rebuild");
       },
       { once: true }
     );
