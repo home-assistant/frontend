@@ -12,18 +12,27 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import {
+  isStrategySection,
+  LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { computeCards } from "../../common/generate-lovelace-config";
+import {
+  computeCards,
+  computeSection,
+} from "../../common/generate-lovelace-config";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
 import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
-import { findLovelaceContainer } from "../lovelace-path";
+import {
+  findLovelaceContainer,
+  parseLovelaceContainerPath,
+} from "../lovelace-path";
 
 declare global {
   interface HASSDomEvents {
@@ -262,12 +271,36 @@ export class HuiCreateDialogCard
       this._selectedEntities,
       {}
     );
+
+    let sectionOptions: Partial<LovelaceSectionConfig> = {};
+
+    const { sectionIndex } = parseLovelaceContainerPath(this._params!.path);
+    const isSection = sectionIndex !== undefined;
+
+    // If we are in a section, we want to keep the section options for the preview
+    if (isSection) {
+      const containerConfig = findLovelaceContainer(
+        this._params!.lovelaceConfig!,
+        this._params!.path!
+      ) as LovelaceSectionConfig;
+      if (!isStrategySection(containerConfig)) {
+        const { cards, title, ...rest } = containerConfig;
+        sectionOptions = rest;
+      }
+    }
+
+    const sectionConfig = computeSection(
+      this._selectedEntities,
+      sectionOptions
+    );
+
     showSuggestCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path as [number],
       entities: this._selectedEntities,
       cardConfig,
+      sectionConfig,
     });
 
     this.closeDialog();

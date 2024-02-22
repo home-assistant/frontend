@@ -28,9 +28,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index!: number;
+  @property({ type: Number }) public index?: number;
 
-  @property({ type: Number }) public viewIndex!: number;
+  @property({ type: Number }) public viewIndex?: number;
 
   @property({ type: Boolean }) public isStrategy = false;
 
