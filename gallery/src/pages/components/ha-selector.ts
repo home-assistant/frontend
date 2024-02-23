@@ -9,6 +9,7 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
 import { BlueprintInput } from "../../../../src/data/blueprint";
 import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
@@ -93,22 +94,25 @@ const DEVICES = [
   },
 ];
 
-const AREAS = [
+const AREAS: AreaRegistryEntry[] = [
   {
     area_id: "backyard",
     name: "Backyard",
+    icon: null,
     picture: null,
     aliases: [],
   },
   {
     area_id: "bedroom",
     name: "Bedroom",
+    icon: "mdi:bed",
     picture: null,
     aliases: [],
   },
   {
     area_id: "livingroom",
     name: "Livingroom",
+    icon: "mdi:sofa",
     picture: null,
     aliases: [],
   },
@@ -271,6 +275,14 @@ const SCHEMAS: {
         selector: { color_temp: {} },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },
+      qr_code: {
+        name: "QR Code",
+        selector: { qr_code: { data: "https://home-assistant.io" } },
+      },
+      constant: {
+        name: "Constant",
+        selector: { constant: { value: true, label: "Yes!" } },
+      },
     },
   },
   {
@@ -497,7 +509,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           this.requestUpdate();
         };
         return html`
-          <demo-black-white-row .title=${info.name} .value=${this.data[idx]}>
+          <demo-black-white-row .title=${info.name}>
             ${["light", "dark"].map((slot) =>
               Object.entries(info.input).map(
                 ([key, value]) => html`
@@ -530,8 +542,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   }
 
   static styles = css`
-    ha-selector {
-      width: 60;
+    ha-settings-row {
+      --paper-item-body-two-line-min-height: 0;
     }
     .options {
       max-width: 800px;

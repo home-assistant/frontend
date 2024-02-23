@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import formatISO9075 from "date-fns/formatISO9075";
 import {
   css,
@@ -21,6 +20,7 @@ import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import {
   adjustStatisticsSum,
   fetchStatistics,
@@ -151,7 +151,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         const stat = data[i];
         const growth = Math.round(stat.change! * 100) / 100;
         rows.push(html`
-          <mwc-list-item
+          <ha-list-item
             twoline
             hasMeta
             .stat=${stat}
@@ -166,7 +166,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
               )}
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
-          </mwc-list-item>
+          </ha-list-item>
         `);
       }
       stats = html`${rows}`;
@@ -413,7 +413,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         ha-selector-number {
           margin-bottom: 20px;
         }
-        mwc-list-item {
+        ha-list-item {
           margin: 0 -24px;
           --mdc-list-side-padding: 24px;
         }

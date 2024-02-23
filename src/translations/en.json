@@ -317,6 +317,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
@@ -1771,6 +1772,7 @@
             "update_area": "Update area",
             "delete": "Delete",
             "name": "Name",
+            "icon": "Icon",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
@@ -2167,7 +2169,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2346,7 +2358,21 @@
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
-            "start_debug_run": "Start debug run"
+            "start_debug_run": "Start debug run",
+            "pipeline": {
+              "header": "Assist Pipeline",
+              "run_text_pipeline": "Run text pipeline",
+              "run_audio_pipeline": "Run audio pipeline",
+              "run_audio_with_wake": "Run audio pipeline with wake word detection",
+              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "send": "Send",
+              "continue_listening": "Continue listening for wake word",
+              "continue_talking": "Continue talking",
+              "continue_conversation": "Continue conversation",
+              "input_text": "Input text",
+              "run": "[%key:ui::card::service::run%]",
+              "error_starting": "Error starting pipeline"
+            }
           },
           "expose": {
             "caption": "Expose",
@@ -2569,7 +2595,8 @@
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
-                    "picker": "When the state of an entity (or attribute) changes."
+                    "picker": "When the state of an entity (or attribute) changes.",
+                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "homeassistant": {
@@ -4596,6 +4623,75 @@
             "download_logs": "Download logs"
           }
         },
+        "matter": {
+          "network_type": {
+            "thread": "Thread",
+            "wifi": "Wi-Fi",
+            "ethernet": "Ethernet",
+            "unknown": "Unknown"
+          },
+          "node_type": {
+            "end_device": "End-device",
+            "sleepy_end_device": "Sleepy end device",
+            "routing_end_device": "Routing end device",
+            "bridge": "Bridge",
+            "unknown": "Unknown"
+          },
+          "device_info": {
+            "device_info": "Device info",
+            "node_id": "Node ID",
+            "network_type": "Network Type",
+            "node_type": "Device type",
+            "network_name": "Network name",
+            "ip_adresses": "IP Address(es)",
+            "mac_address": "MAC address",
+            "available": "Available?"
+          },
+          "device_actions": {
+            "reinterview_device": "Re-interview device",
+            "ping_device": "Ping device",
+            "open_commissioning_window": "Share device",
+            "manage_fabrics": "Manage fabrics",
+            "view_thread_network": "View Thread network"
+          },
+          "manage_fabrics": {
+            "title": "Connected fabrics",
+            "fabrics": "Manage the fabrics that have access to this device.",
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
+            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_failed_header": "Remove {fabric} fabric failed",
+            "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
+          },
+          "reinterview_node": {
+            "title": "Re-interview a Matter device",
+            "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
+            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "run_in_background": "You can close this dialog and the interview will continue in the background.",
+            "start_reinterview": "Start re-interview",
+            "in_progress": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "interview_complete": "Device interview complete."
+          },
+          "ping_node": {
+            "title": "Ping a Matter device",
+            "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to up powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "start_ping": "Start ping",
+            "in_progress": "The device is being pinged. This may take some time.",
+            "ping_failed": "The device ping failed. Additional information may be available in the logs.",
+            "ping_complete": "Ping device complete."
+          },
+          "open_commissioning_window": {
+            "title": "Share device",
+            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "start_commissioning": "Share device",
+            "in_progress": "We're communicating with the device. This may take some time.",
+            "failed": "The command failed. Additional information may be available in the logs.",
+            "success": "Your device is ready to be added to another Matter platform.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "copy_code": "Copy code"
+          }
+        },
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
@@ -4672,8 +4768,8 @@
             "extra_information": "Size: {size}, S/N: {serial}",
             "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
-            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk.",
+            "moving_desc": "Rebooting and moving data disk. Please have patience.",
             "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
@@ -5000,7 +5096,8 @@
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "sections": "Sections (experimental)"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5016,7 +5113,7 @@
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
             "pick_card": "Which card would you like to add?",
-            "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
@@ -5053,6 +5150,23 @@
             "views_label": "View",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
+          },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "add_section": "Add section"
+          },
+          "delete_section": {
+            "title": "Delete section",
+            "named_section": "\"{name}\" section",
+            "unnamed_section": "This section",
+            "text_section_only": "{section} will be deleted.",
+            "text_section_and_cards": "{section} and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5253,7 +5367,10 @@
             "history-graph": {
               "name": "History graph",
               "description": "The History graph card allows you to display a graph for each of the entities listed.",
-              "logarithmic_scale": "Logarithmic scale"
+              "logarithmic_scale": "Logarithmic scale",
+              "min_y_axis": "Y axis minimum",
+              "max_y_axis": "Y axis maximum",
+              "fit_y_data": "Extend Y axis limits to fit data"
             },
             "statistics-graph": {
               "name": "Statistics graph",
@@ -5356,7 +5473,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
@@ -5525,6 +5645,15 @@
                   "icons": "Icons"
                 },
                 "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
@@ -5877,7 +6006,8 @@
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",
-          "qr_code_image": "QR code for token {name}"
+          "qr_code_image": "QR code for token {name}",
+          "generate_qr_code": "Generate QR Code"
         }
       },
       "todo": {
@@ -6426,14 +6556,17 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Monitor individual devices"
+          "energy_devices_graph_title": "Individual devices total usage",
+          "energy_devices_detail_graph_title": "Individual devices detail usage"
         }
       },
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
         "remove_all": "Remove all selections",
-        "download_data": "Download data"
+        "download_data": "Download data",
+        "download_data_error": "Unable to download data",
+        "error_no_data": "You need to select data first."
       }
     },
     "tips": {

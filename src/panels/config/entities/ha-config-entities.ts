@@ -25,6 +25,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { until } from "lit/directives/until";
 import memoize from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -35,7 +36,6 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -43,6 +43,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
@@ -54,6 +55,7 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { entryIcon } from "../../../data/icons";
 import { domainToName } from "../../../data/integration";
 import {
   showAlertDialog,
@@ -208,14 +210,23 @@ export class HaConfigEntities extends LitElement {
         title: "",
         label: localize("ui.panel.config.entities.picker.headers.state_icon"),
         type: "icon",
-        template: (entry) => html`
-          <ha-state-icon
-            title=${ifDefined(entry.entity?.state)}
-            slot="item-icon"
-            .hass=${this.hass}
-            .stateObj=${entry.entity}
-          ></ha-state-icon>
-        `,
+        template: (entry) =>
+          entry.icon
+            ? html`
+                <ha-state-icon
+                  title=${ifDefined(entry.entity?.state)}
+                  slot="item-icon"
+                  .hass=${this.hass}
+                  .stateObj=${entry.entity}
+                ></ha-state-icon>
+              `
+            : html`
+                <ha-icon
+                  icon=${until(
+                    entryIcon(this.hass, entry as EntityRegistryEntry)
+                  )}
+                ></ha-icon>
+              `,
       },
       name: {
         main: true,
@@ -680,7 +691,6 @@ export class HaConfigEntities extends LitElement {
               extended
               @click=${this._addDevice}
               slot="fab"
-              ?rtl=${computeRTL(this.hass)}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </ha-fab>`

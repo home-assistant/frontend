@@ -3,7 +3,6 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -33,7 +32,6 @@ export class HuiEntityPickerTable extends LitElement {
         .id=${"entity_id"}
         .columns=${this._columns(this.narrow!)}
         .data=${this.entities}
-        .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.search"
         )}

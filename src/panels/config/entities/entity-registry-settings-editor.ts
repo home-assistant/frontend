@@ -31,11 +31,11 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-state-icon";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -52,10 +52,6 @@ import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
-import {
-  createOptionsFlow,
-  handleOptionsFlowStep,
-} from "../../../data/options_flow";
 import { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
@@ -70,9 +66,13 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { entityIcon } from "../../../data/icons";
+import { entityIcon, entryIcon } from "../../../data/icons";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
+import {
+  createOptionsFlow,
+  handleOptionsFlowStep,
+} from "../../../data/options_flow";
 import {
   getSensorDeviceClassConvertibleUnits,
   getSensorNumericDeviceClasses,
@@ -392,7 +392,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
               .placeholder=${this.entry.original_icon ||
               stateObj?.attributes.icon ||
-              (stateObj && until(entityIcon(this.hass, stateObj)))}
+              (stateObj && until(entityIcon(this.hass, stateObj))) ||
+              until(entryIcon(this.hass, this.entry))}
               .disabled=${this.disabled}
             >
               ${!this._icon && !stateObj?.attributes.icon && stateObj
@@ -938,9 +939,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <ha-switch
           .checked=${!this._disabledBy && !this._hiddenBy}
-          .disabled=${this.disabled ||
-          this._disabledBy ||
-          (this._hiddenBy && this._hiddenBy !== "user")}
+          .disabled=${this.disabled || this._disabledBy}
           @change=${this._hiddenChanged}
         ></ha-switch>
       </ha-settings-row>
