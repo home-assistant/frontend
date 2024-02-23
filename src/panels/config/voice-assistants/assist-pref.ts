@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import { mdiHelpCircle, mdiPlus, mdiStar } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatLanguageCode } from "../../../common/language/format_language";
 import "../../../components/ha-alert";
@@ -12,9 +12,11 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import {
+  AssistDevice,
   AssistPipeline,
   createAssistPipeline,
   deleteAssistPipeline,
+  listAssistDevices,
   listAssistPipelines,
   setAssistPipelinePreferred,
   updateAssistPipeline,
@@ -24,9 +26,10 @@ import { ExposeEntitySettings } from "../../../data/expose";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 
+@customElement("assist-pref")
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -35,11 +38,13 @@ export class AssistPref extends LitElement {
     ExposeEntitySettings
   >;
 
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
   @state() private _pipelines: AssistPipeline[] = [];
 
   @state() private _preferred: string | null = null;
 
-  @property() public cloudStatus?: CloudStatus;
+  @state() private _devices: AssistDevice[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -47,6 +52,9 @@ export class AssistPref extends LitElement {
     listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
+    });
+    listAssistDevices(this.hass).then((devices) => {
+      this._devices = devices;
     });
   }
 
@@ -132,6 +140,18 @@ export class AssistPref extends LitElement {
               )}
             </ha-button>
           </a>
+          ${this._devices?.length
+            ? html`
+                <a href="/config/voice-assistants/assist/devices">
+                  <ha-button>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
+                      { number: this._devices.length }
+                    )}
+                  </ha-button>
+                </a>
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -205,19 +225,17 @@ export class AssistPref extends LitElement {
       .header-actions {
         position: absolute;
         right: 0px;
+        inset-inline-end: 0px;
+        inset-inline-start: initial;
         top: 24px;
         display: flex;
         flex-direction: row;
       }
-      :host([dir="rtl"]) .header-actions {
-        right: auto;
-        left: 0;
-      }
       .header-actions .icon-link {
         margin-top: -16px;
-        margin-inline-end: 8px;
-        margin-inline-start: 8px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         direction: var(--direction);
         color: var(--secondary-text-color);
       }
@@ -258,5 +276,3 @@ declare global {
     "assist-pref": AssistPref;
   }
 }
-
-customElements.define("assist-pref", AssistPref);

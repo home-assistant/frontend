@@ -38,7 +38,7 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public _config!: LovelaceViewConfig;
+  @state() private _config!: LovelaceViewConfig;
 
   @state() private _users!: User[];
 

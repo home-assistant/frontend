@@ -2,6 +2,7 @@ import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import "../../resources/intl-polyfill";
+import { resolveTimeZone } from "./resolve-time-zone";
 import { useAmPm } from "./use_am_pm";
 
 // 9:15 PM || 21:15
@@ -17,7 +18,7 @@ const formatTimeMem = memoizeOne(
       hour: "numeric",
       minute: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -35,7 +36,7 @@ const formatTimeWithSecondsMem = memoizeOne(
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -53,7 +54,7 @@ const formatTimeWeekdayMem = memoizeOne(
       hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -71,6 +72,6 @@ const formatTime24hMem = memoizeOne(
       hour: "numeric",
       minute: "2-digit",
       hour12: false,
-      timeZone: locale.time_zone === "server" ? serverTimeZone : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );

@@ -9,7 +9,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoTimer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: TimerEntity;
+  @property({ attribute: false }) public stateObj?: TimerEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {

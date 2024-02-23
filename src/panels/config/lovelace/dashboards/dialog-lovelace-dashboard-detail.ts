@@ -169,7 +169,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         },
         {
           name: "icon",
-          required: true,
+          required: false,
           selector: {
             icon: {},
           },

@@ -300,7 +300,7 @@ export class HaDataTable extends LitElement {
               };
               return html`
                 <div
-                  aria-label=${column.label}
+                  aria-label=${ifDefined(column.label)}
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({
@@ -688,14 +688,11 @@ export class HaDataTable extends LitElement {
           padding-left: 16px;
           /* @noflip */
           padding-right: 0;
+          /* @noflip */
+          padding-inline-start: 16px;
+          /* @noflip */
+          padding-inline-end: initial;
           width: 60px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
-        :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
-          /* @noflip */
-          padding-left: 0;
-          /* @noflip */
-          padding-right: 16px;
         }
 
         .mdc-data-table__table {
@@ -723,11 +720,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__cell--numeric {
-          text-align: right;
-        }
-        :host([dir="rtl"]) .mdc-data-table__cell--numeric {
-          /* @noflip */
-          text-align: left;
+          text-align: var(--float-end);
         }
 
         .mdc-data-table__cell--icon {
@@ -753,43 +746,24 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(
             .not-sorted
           ) {
-          text-align: left;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(
-            .not-sorted
-          ) {
-          text-align: right;
+          text-align: var(--float-start);
         }
 
-        .mdc-data-table__cell--icon:first-child ha-icon,
         .mdc-data-table__cell--icon:first-child img,
+        .mdc-data-table__cell--icon:first-child ha-icon,
+        .mdc-data-table__cell--icon:first-child ha-svg-icon,
         .mdc-data-table__cell--icon:first-child ha-state-icon,
-        .mdc-data-table__cell--icon:first-child ha-svg-icon {
+        .mdc-data-table__cell--icon:first-child ha-domain-icon,
+        .mdc-data-table__cell--icon:first-child ha-service-icon {
           margin-left: 8px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon,
-        :host([dir="rtl"])
-          .mdc-data-table__cell--icon:first-child
-          ha-state-icon,
-        :host([dir="rtl"])
-          .mdc-data-table__cell--icon:first-child
-          ha-svg-icon
-          :host([dir="rtl"])
-          .mdc-data-table__cell--icon:first-child
-          img {
-          margin-left: auto;
-          margin-right: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         .mdc-data-table__cell--icon:first-child state-badge {
           margin-right: -8px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child state-badge {
-          margin-right: auto;
-          margin-left: -8px;
+          margin-inline-end: -8px;
+          margin-inline-start: initial;
         }
 
         .mdc-data-table__cell--overflow-menu,
@@ -822,15 +796,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--icon-button:first-child,
         .mdc-data-table__cell--icon-button:first-child {
           padding-left: 16px;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell--overflow-menu:first-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child,
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell--overflow-menu:first-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child {
-          padding-left: 8px;
-          padding-right: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
         }
 
         .mdc-data-table__cell--overflow-menu:last-child,
@@ -838,14 +805,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--icon-button:last-child,
         .mdc-data-table__cell--icon-button:last-child {
           padding-right: 16px;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell--overflow-menu:last-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:last-child,
-        :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
-          padding-right: 8px;
-          padding-left: 16px;
+          padding-inline-end: 16px;
+          padding-inline-start: initial;
         }
         .mdc-data-table__cell--overflow-menu,
         .mdc-data-table__header-cell--overflow-menu {
@@ -865,28 +826,15 @@ export class HaDataTable extends LitElement {
           letter-spacing: 0.0071428571em;
           text-decoration: inherit;
           text-transform: inherit;
-          text-align: left;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell {
-          /* @noflip */
-          text-align: right;
+          text-align: var(--float-start);
         }
 
         .mdc-data-table__header-cell--numeric {
-          text-align: right;
+          text-align: var(--float-end);
         }
         .mdc-data-table__header-cell--numeric.sortable:hover,
         .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
-          text-align: left;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell--numeric {
-          /* @noflip */
-          text-align: left;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell--numeric.sortable:hover,
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
-          text-align: right;
+          text-align: var(--float-start);
         }
 
         /* custom from here */
@@ -907,20 +855,15 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell span {
           position: relative;
           left: 0px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell span {
-          left: auto;
-          right: 0px;
+          inset-inline-start: 0px;
+          inset-inline-end: initial;
         }
 
         .mdc-data-table__header-cell.sortable {
           cursor: pointer;
         }
         .mdc-data-table__header-cell > * {
-          transition: left 0.2s ease;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell > * {
-          transition: right 0.2s ease;
+          transition: var(--float-start) 0.2s ease;
         }
         .mdc-data-table__header-cell ha-svg-icon {
           top: -3px;
@@ -928,35 +871,20 @@ export class HaDataTable extends LitElement {
         }
         .mdc-data-table__header-cell.not-sorted ha-svg-icon {
           left: -20px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-svg-icon {
-          right: -20px;
+          inset-inline-start: -20px;
+          inset-inline-end: initial;
         }
         .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
         .mdc-data-table__header-cell.sortable.not-sorted:hover span {
           left: 24px;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable:not(.not-sorted)
-          span,
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable.not-sorted:hover
-          span {
-          left: auto;
-          right: 24px;
+          inset-inline-start: 24px;
+          inset-inline-end: initial;
         }
         .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-svg-icon,
         .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon {
           left: 12px;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable:not(.not-sorted)
-          ha-svg-icon,
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable:hover.not-sorted
-          ha-svg-icon {
-          left: auto;
-          right: 12px;
+          inset-inline-start: 12px;
+          inset-inline-end: initial;
         }
         .table-header {
           border-bottom: 1px solid var(--divider-color);
@@ -964,6 +892,8 @@ export class HaDataTable extends LitElement {
         search-input {
           display: block;
           flex: 1;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: transparent;
         }
         slot[name="header"] {
           display: block;

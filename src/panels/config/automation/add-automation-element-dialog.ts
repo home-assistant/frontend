@@ -1,22 +1,36 @@
 import "@material/mwc-list/mwc-list";
+import "@material/web/divider/divider";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { domainIcon } from "../../../common/entity/domain_icon";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
-import "../../../components/ha-header-bar";
+import "../../../components/ha-dialog-header";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
+import "../../../components/ha-list-item-new";
+import "../../../components/ha-list-new";
+import "../../../components/ha-service-icon";
 import "../../../components/search-input";
 import {
   ACTION_GROUPS,
@@ -27,6 +41,7 @@ import {
 } from "../../../data/action";
 import { AutomationElementGroup } from "../../../data/automation";
 import { CONDITION_GROUPS, CONDITION_ICONS } from "../../../data/condition";
+import { getServiceIcons } from "../../../data/icons";
 import {
   IntegrationManifest,
   domainToName,
@@ -57,7 +72,8 @@ interface ListItem {
   key: string;
   name: string;
   description: string;
-  icon: string;
+  iconPath?: string;
+  icon?: TemplateResult;
   group: boolean;
 }
 
@@ -77,6 +93,8 @@ const ENTITY_DOMAINS_OTHER = new Set([
   "image_processing",
 ]);
 
+const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -91,7 +109,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
 
   @state() private _manifests?: DomainManifestLookup;
 
+  @state() private _domains?: Set<string>;
+
   @query("ha-dialog") private _dialog?: HaDialog;
+
+  private _fullScreen = false;
+
+  @state() private _width?: number;
+
+  @state() private _height?: number;
 
   public showDialog(params): void {
     this._params = params;
@@ -99,19 +125,37 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
       this._fetchManifests();
+      this._calculateUsedDomains();
+      getServiceIcons(this.hass);
     }
+    this._fullScreen = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
   }
 
   public closeDialog(): void {
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
+    this._height = undefined;
+    this._width = undefined;
     this._params = undefined;
     this._group = undefined;
     this._prev = undefined;
     this._filter = "";
     this._manifests = undefined;
+    this._domains = undefined;
   }
+
+  private _getGroups = (
+    type: AddAutomationElementDialogParams["type"],
+    group: string | undefined
+  ): AutomationElementGroup =>
+    group
+      ? isService(group)
+        ? {}
+        : TYPES[type].groups[group].members!
+      : TYPES[type].groups;
 
   private _convertToItem = (
     key: string,
@@ -133,7 +177,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         options.members ? "groups" : "type"
       }.${key}.description${options.members ? "" : ".picker"}`
     ),
-    icon: options.icon || TYPES[type].icons[key],
+    iconPath: options.icon || TYPES[type].icons[key],
   });
 
   private _getFilteredItems = memoizeOne(
@@ -145,11 +189,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
-      const groups: AutomationElementGroup = group
-        ? isService(group)
-          ? {}
-          : TYPES[type].groups[group].members!
-        : TYPES[type].groups;
+      const groups = this._getGroups(type, group);
 
       const flattenGroups = (grp: AutomationElementGroup) =>
         Object.entries(grp).map(([key, options]) =>
@@ -179,21 +219,23 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     (
       type: AddAutomationElementDialogParams["type"],
       group: string | undefined,
+      domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
     ): ListItem[] => {
       if (type === "action" && isService(group)) {
-        const result = this._services(localize, services, manifests, group);
-        if (group === "service_media_player") {
-          result.unshift(this._convertToItem("play_media", {}, type, localize));
+        let result = this._services(localize, services, manifests, group);
+        if (group === `${SERVICE_PREFIX}media_player`) {
+          result = [
+            this._convertToItem("play_media", {}, type, localize),
+            ...result,
+          ];
         }
         return result;
       }
 
-      const groups: AutomationElementGroup = group
-        ? TYPES[type].groups[group].members!
-        : TYPES[type].groups;
+      const groups = this._getGroups(type, group);
 
       const result = Object.entries(groups).map(([key, options]) =>
         this._convertToItem(key, options, type, localize)
@@ -202,15 +244,33 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       if (type === "action") {
         if (!this._group) {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, undefined)
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              undefined
+            )
           );
         } else if (this._group === "helpers") {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, "helper")
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              "helper"
+            )
           );
         } else if (this._group === "other") {
           result.unshift(
-            ...this._serviceGroups(localize, services, manifests, "other")
+            ...this._serviceGroups(
+              localize,
+              services,
+              manifests,
+              domains,
+              "other"
+            )
           );
         }
       }
@@ -230,44 +290,52 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     }
   );
 
-  private _serviceGroups = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      manifests: DomainManifestLookup | undefined,
-      type: "helper" | "other" | undefined
-    ): ListItem[] => {
-      if (!services || !manifests) {
-        return [];
-      }
-      const result: ListItem[] = [];
-      Object.keys(services)
-        .sort()
-        .forEach((domain) => {
-          const manifest = manifests[domain];
-          if (
-            (type === undefined &&
-              manifest?.integration_type === "entity" &&
-              !ENTITY_DOMAINS_OTHER.has(domain)) ||
-            (type === "helper" && manifest?.integration_type === "helper") ||
-            (type === "other" &&
-              (ENTITY_DOMAINS_OTHER.has(domain) ||
-                !["helper", "entity"].includes(
-                  manifest?.integration_type || ""
-                )))
-          ) {
-            result.push({
-              group: true,
-              icon: domainIcon(domain),
-              key: `${SERVICE_PREFIX}${domain}`,
-              name: domainToName(localize, domain, manifest),
-              description: "",
-            });
-          }
-        });
-      return result;
+  private _serviceGroups = (
+    localize: LocalizeFunc,
+    services: HomeAssistant["services"],
+    manifests: DomainManifestLookup | undefined,
+    domains: Set<string> | undefined,
+    type: "helper" | "other" | undefined
+  ): ListItem[] => {
+    if (!services || !manifests) {
+      return [];
     }
-  );
+    const result: ListItem[] = [];
+    Object.keys(services).forEach((domain) => {
+      const manifest = manifests[domain];
+      const domainUsed = !domains ? true : domains.has(domain);
+      if (
+        (type === undefined &&
+          (ENTITY_DOMAINS_MAIN.has(domain) ||
+            (manifest?.integration_type === "entity" &&
+              domainUsed &&
+              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
+        (type === "helper" && manifest?.integration_type === "helper") ||
+        (type === "other" &&
+          !ENTITY_DOMAINS_MAIN.has(domain) &&
+          (ENTITY_DOMAINS_OTHER.has(domain) ||
+            (!domainUsed && manifest?.integration_type === "entity") ||
+            !["helper", "entity"].includes(manifest?.integration_type || "")))
+      ) {
+        result.push({
+          group: true,
+          icon: html`
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              brandFallback
+            ></ha-domain-icon>
+          `,
+          key: `${SERVICE_PREFIX}${domain}`,
+          name: domainToName(localize, domain, manifest),
+          description: "",
+        });
+      }
+    });
+    return result.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    );
+  };
 
   private _services = memoizeOne(
     (
@@ -293,7 +361,12 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         for (const service of services_keys) {
           result.push({
             group: false,
-            icon: domainIcon(dmn),
+            icon: html`
+              <ha-service-icon
+                .hass=${this.hass}
+                .service=${`${dmn}.${service}`}
+              ></ha-service-icon>
+            `,
             key: `${SERVICE_PREFIX}${dmn}.${service}`,
             name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
@@ -349,6 +422,31 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._manifests = manifests;
   }
 
+  private _calculateUsedDomains() {
+    const domains = new Set(Object.keys(this.hass.states).map(computeDomain));
+    if (!deepEqual(domains, this._domains)) {
+      this._domains = domains;
+    }
+  }
+
+  protected _opened(): void {
+    // Store the width and height so that when we search, box doesn't jump
+    const boundingRect =
+      this.shadowRoot!.querySelector("ha-list-new")?.getBoundingClientRect();
+    this._width = boundingRect?.width;
+    this._height = boundingRect?.height;
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (
+      this._params?.type === "action" &&
+      changedProperties.has("hass") &&
+      changedProperties.get("hass")?.states !== this.hass.states
+    ) {
+      this._calculateUsedDomains();
+    }
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -366,6 +464,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       : this._getGroupItems(
           this._params.type,
           this._group,
+          this._domains,
           this.hass.localize,
           this.hass.services,
           this._manifests
@@ -383,9 +482,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         );
 
     return html`
-      <ha-dialog open hideActions @closed=${this.closeDialog} .heading=${true}>
+      <ha-dialog
+        open
+        hideActions
+        @opened=${this._opened}
+        @closed=${this.closeDialog}
+        .heading=${true}
+      >
         <div slot="heading">
-          <ha-header-bar>
+          <ha-dialog-header>
             <span slot="title"
               >${this._group
                 ? groupName
@@ -403,8 +508,9 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   slot="navigationIcon"
                   dialogAction="cancel"
                 ></ha-icon-button>`}
-          </ha-header-bar>
+          </ha-dialog-header>
           <search-input
+            dialogInitialFocus=${ifDefined(this._fullScreen ? undefined : "")}
             .hass=${this.hass}
             .filter=${this._filter}
             @value-changed=${this._filterChanged}
@@ -418,23 +524,21 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 )}
           ></search-input>
         </div>
-        <mwc-list
-          innerRole="listbox"
-          itemRoles="option"
-          rootTabbable
-          dialogInitialFocus
+        <ha-list-new
+          dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
+          style=${styleMap({
+            width: this._width ? `${this._width}px` : "auto",
+            height: this._height ? `${Math.min(468, this._height)}px` : "auto",
+          })}
         >
           ${this._params.clipboardItem &&
           !this._filter &&
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
-            ? html`<ha-list-item
-                  twoline
+            ? html`<ha-list-item-new
                   class="paste"
                   .value=${PASTE_VALUE}
-                  graphic="icon"
-                  hasMeta
-                  @request-selected=${this._selected}
+                  @click=${this._selected}
                 >
                   ${this.hass.localize(
                     `ui.panel.config.automation.editor.${this._params.type}s.paste`
@@ -446,43 +550,50 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                     )}</span
                   >
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="start"
                     .path=${mdiContentPaste}
                   ></ha-svg-icon
-                  ><ha-svg-icon slot="meta" .path=${mdiPlus}></ha-svg-icon>
-                </ha-list-item>
-                <li divider role="separator"></li>`
+                  ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
+                </ha-list-item-new>
+                <md-divider></md-divider>`
             : ""}
           ${repeat(
             items,
             (item) => item.key,
             (item) => html`
-              <ha-list-item
-                .twoline=${Boolean(item.description)}
+              <ha-list-item-new
+                interactive
+                type="button"
                 .value=${item.key}
                 .group=${item.group}
-                graphic="icon"
-                hasMeta
-                @request-selected=${this._selected}
+                @click=${this._selected}
               >
-                ${item.name}
-                <span slot="secondary">${item.description}</span>
-                <ha-svg-icon slot="graphic" .path=${item.icon}></ha-svg-icon>
+                <div slot="headline">${item.name}</div>
+                <div slot="supporting-text">${item.description}</div>
+                ${item.icon
+                  ? html`<span slot="start">${item.icon}</span>`
+                  : item.iconPath
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${item.iconPath}
+                      ></ha-svg-icon>`
+                    : nothing}
                 ${item.group
-                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
                   : html`<ha-svg-icon
-                      slot="meta"
+                      slot="end"
                       .path=${mdiPlus}
                     ></ha-svg-icon>`}
-              </ha-list-item>
+              </ha-list-item-new>
             `
           )}
-        </mwc-list>
+        </ha-list-new>
       </ha-dialog>
     `;
   }
 
   private _back() {
+    this._dialog!.scrollToPos(0, 0);
     if (this._filter) {
       this._filter = "";
       return;
@@ -496,9 +607,6 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   }
 
   private _selected(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
     this._dialog!.scrollToPos(0, 0);
     const item = ev.currentTarget;
     if (item.group) {
@@ -528,13 +636,16 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             --mdc-dialog-min-width: 500px;
           }
         }
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          margin-top: 8px;
-          display: block;
-        }
         ha-icon-next {
+          width: 24px;
+        }
+        ha-list-new {
+          max-height: 468px;
+          max-width: 100vw;
+          --md-list-item-leading-space: 24px;
+          --md-list-item-trailing-space: 24px;
+        }
+        ha-list-item-new img {
           width: 24px;
         }
         search-input {

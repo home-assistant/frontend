@@ -18,9 +18,9 @@ import "./zha-device-card";
 class ZHADevicePairingStatusCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device?: ZHADevice;
+  @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _showHelp = false;
 

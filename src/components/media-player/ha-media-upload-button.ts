@@ -24,7 +24,7 @@ declare global {
 class MediaUploadButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() currentItem?: MediaPlayerItem;
+  @property({ attribute: false }) currentItem?: MediaPlayerItem;
 
   @state() _uploading = 0;
 
@@ -53,7 +53,7 @@ class MediaUploadButton extends LitElement {
         ${this._uploading > 0
           ? html`
               <ha-circular-progress
-                size="tiny"
+                size="small"
                 indeterminate
                 area-label="Uploading"
                 slot="icon"

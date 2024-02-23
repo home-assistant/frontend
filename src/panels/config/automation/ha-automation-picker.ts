@@ -73,15 +73,15 @@ type AutomationItem = AutomationEntity & {
 class HaAutomationPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public automations!: AutomationEntity[];
+  @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property() private _activeFilters?: string[];
+  @state() private _activeFilters?: string[];
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -123,7 +123,8 @@ class HaAutomationPicker extends LitElement {
           type: "icon",
           template: (automation) =>
             html`<ha-state-icon
-              .state=${automation}
+              .hass=${this.hass}
+              .stateObj=${automation}
               style=${styleMap({
                 color:
                   automation.state === UNAVAILABLE
@@ -328,7 +329,7 @@ class HaAutomationPicker extends LitElement {
         >
         </ha-button-related-filter-menu>
         ${!this.automations.length
-          ? html` <div class="empty" slot="empty">
+          ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
               <h1>
                 ${this.hass.localize(
@@ -338,9 +339,12 @@ class HaAutomationPicker extends LitElement {
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.empty_text_1"
-                )}<br />
+                )}
+              </p>
+              <p>
                 ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_text_2"
+                  "ui.panel.config.automation.picker.empty_text_2",
+                  { user: this.hass.user?.name || "Alice" }
                 )}
               </p>
               <a
@@ -349,9 +353,7 @@ class HaAutomationPicker extends LitElement {
                 rel="noreferrer"
               >
                 <ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.learn_more"
-                  )}
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
                 </ha-button>
               </a>
             </div>`

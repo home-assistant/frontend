@@ -17,7 +17,7 @@ export class HuiColorPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: string;
 

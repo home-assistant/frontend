@@ -19,10 +19,14 @@ export const hassioStyle = css`
     letter-spacing: var(--paper-font-headline_-_letter-spacing);
     line-height: var(--paper-font-headline_-_line-height);
     padding-left: 8px;
+    padding-inline-start: 8px;
+    padding-inline-end: initial;
   }
   .description {
     margin-top: 4px;
     padding-left: 8px;
+    padding-inline-start: 8px;
+    padding-inline-end: initial;
   }
   .card-group {
     display: grid;

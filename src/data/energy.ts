@@ -331,6 +331,9 @@ export const getReferencedStatisticIds = (
       }
     }
   }
+  if (!(includeTypes && !includeTypes.includes("device"))) {
+    statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
+  }
 
   return statIDs;
 };
@@ -383,6 +386,7 @@ const getEnergyData = async (
     "solar",
     "battery",
     "gas",
+    "device",
   ]);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 

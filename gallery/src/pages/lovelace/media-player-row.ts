@@ -55,7 +55,7 @@ const CONFIGS = [
 ];
 
 @customElement("demo-lovelace-media-player-row")
-class DemoHuiMediaPlayerRow extends LitElement {
+export class DemoLovelaceMediaPlayerRow extends LitElement {
   @query("#demos") private _demoRoot!: HTMLElement;
 
   protected render(): TemplateResult {
@@ -73,6 +73,6 @@ class DemoHuiMediaPlayerRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-lovelace-media-player-rows": DemoHuiMediaPlayerRow;
+    "demo-lovelace-media-player-row": DemoLovelaceMediaPlayerRow;
   }
 }

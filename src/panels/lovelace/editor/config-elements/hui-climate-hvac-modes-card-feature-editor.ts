@@ -58,8 +58,8 @@ export class HuiClimateHvacModesCardFeatureEditor
             select: {
               multiple: true,
               mode: "list",
-              options: HVAC_MODES.filter(
-                (mode) => stateObj?.attributes.hvac_modes?.includes(mode)
+              options: HVAC_MODES.filter((mode) =>
+                stateObj?.attributes.hvac_modes?.includes(mode)
               ).map((mode) => ({
                 value: mode,
                 label: stateObj ? formatEntityState(stateObj, mode) : mode,

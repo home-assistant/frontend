@@ -59,7 +59,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 class PanelTodo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
@@ -167,7 +167,11 @@ class PanelTodo extends LitElement {
           .entityId=${list.entity_id}
           .activated=${list.entity_id === this._entityId}
         >
-          <ha-state-icon .state=${list} slot="graphic"></ha-state-icon
+          <ha-state-icon
+            .stateObj=${list}
+            .hass=${this.hass}
+            slot="graphic"
+          ></ha-state-icon
           >${list.name}
         </ha-list-item> `
     );
@@ -204,19 +208,30 @@ class PanelTodo extends LitElement {
                   ></ha-svg-icon>
                 </ha-button>
                 ${listItems}
-                <li divider role="separator"></li>
-                <ha-list-item graphic="icon" @click=${this._addList}>
-                  <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.todo.create_list")}
-                </ha-list-item>
+                ${this.hass.user?.is_admin
+                  ? html`<li divider role="separator"></li>
+                      <ha-list-item graphic="icon" @click=${this._addList}>
+                        <ha-svg-icon
+                          .path=${mdiPlus}
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.panel.todo.create_list")}
+                      </ha-list-item>`
+                  : nothing}
               </ha-button-menu>`
             : this.hass.localize("panel.todo")}
         </div>
         <mwc-list slot="pane" activatable>${listItems}</mwc-list>
-        <ha-list-item graphic="icon" slot="pane-footer" @click=${this._addList}>
-          <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-          ${this.hass.localize("ui.panel.todo.create_list")}
-        </ha-list-item>
+        ${showPane && this.hass.user?.is_admin
+          ? html`<ha-list-item
+              graphic="icon"
+              slot="pane-footer"
+              @click=${this._addList}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+              ${this.hass.localize("ui.panel.todo.create_list")}
+            </ha-list-item>`
+          : nothing}
         <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
@@ -361,6 +376,7 @@ class PanelTodo extends LitElement {
           flex-direction: row;
           justify-content: center;
           margin: 8px;
+          padding-bottom: 70px;
         }
         .column {
           flex: 1 0 0;
@@ -411,9 +427,11 @@ class PanelTodo extends LitElement {
           display: block;
         }
         ha-fab {
-          position: absolute;
+          position: fixed;
           right: 16px;
           bottom: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
         }
       `,
     ];

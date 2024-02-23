@@ -30,9 +30,16 @@ export class HaCheckListItem extends CheckListItemBase {
       }
       .mdc-deprecated-list-item__meta {
         flex-shrink: 0;
+        direction: var(--direction);
+        margin-inline-start: auto;
+        margin-inline-end: 0;
       }
       .mdc-deprecated-list-item__graphic {
         margin-top: var(--check-list-item-graphic-margin-top);
+      }
+      :host([graphic="icon"]) .mdc-deprecated-list-item__graphic {
+        margin-inline-start: 0;
+        margin-inline-end: var(--mdc-list-item-graphic-margin, 32px);
       }
     `,
   ];

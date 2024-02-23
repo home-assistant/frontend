@@ -2,9 +2,9 @@ import { mdiShieldOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-outlined-button";
+import "../../../components/ha-state-icon";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
@@ -59,9 +59,8 @@ class MoreInfoAlarmControlPanel extends LitElement {
               <div class="status">
                 <span></span>
                 <div class="icon">
-                  <ha-svg-icon
-                    .path=${domainIcon("alarm_control_panel", this.stateObj)}
-                  ></ha-svg-icon>
+                  <ha-state-icon .hass=${this.hass} .stateObj=${this.stateObj}>
+                  </ha-state-icon>
                 </div>
                 <ha-outlined-button @click=${this._disarm}>
                   ${this.hass.localize("ui.card.alarm_control_panel.disarm")}
