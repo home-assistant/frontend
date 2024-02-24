@@ -224,9 +224,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config"}
-        .tabs=${this._searchParms.has("noTabs")
-          ? configSections.areas.filter((page) => page.component === "zone")
-          : configSections.areas}
+        .tabs=${configSections.areas}
       >
         ${this.narrow
           ? html`
