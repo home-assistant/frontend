@@ -6,13 +6,14 @@ import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
+  SECTION_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -53,6 +54,7 @@ export class HuiViewEditor extends LitElement {
                   DEFAULT_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
+                  SECTION_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,
