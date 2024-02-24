@@ -34,6 +34,7 @@ import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-hum
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
@@ -54,8 +55,8 @@ const UI_FEATURE_TYPES = [
   "climate-preset-modes",
   "cover-open-close",
   "cover-position",
-  "cover-tilt-position",
   "cover-tilt",
+  "cover-tilt-position",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -63,6 +64,7 @@ const UI_FEATURE_TYPES = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "lock-commands",
   "numeric-input",
   "select-options",
   "target-humidity",
@@ -107,6 +109,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
+  "lock-commands": supportsLockCommandsCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
