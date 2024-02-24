@@ -5587,6 +5587,9 @@
               "light-color-temp": {
                 "label": "Light color temperature"
               },
+              "lock-commands": {
+                "label": "Lock commands"
+              },
               "vacuum-commands": {
                 "label": "Vacuum commands",
                 "commands": "Commands",

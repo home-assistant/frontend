@@ -5,9 +5,7 @@ import {
 import { getExtendedEntityRegistryEntry } from "./entity_registry";
 import { showEnterCodeDialogDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../types";
-
-export const FORMAT_TEXT = "text";
-export const FORMAT_NUMBER = "number";
+import { UNAVAILABLE } from "./entity";
 
 export const enum LockEntityFeature {
   OPEN = 1,
@@ -23,6 +21,29 @@ export interface LockEntity extends HassEntityBase {
 }
 
 type ProtectedLockService = "lock" | "unlock" | "open";
+
+export function isUnlocking(stateObj: LockEntity) {
+  return stateObj.state === "unlocking";
+}
+
+export function isLocking(stateObj: LockEntity) {
+  return stateObj.state === "locking";
+}
+
+export function isJammed(stateObj: LockEntity) {
+  return stateObj.state === "jammed";
+}
+
+export function isAvailable(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return (
+    assumedState ||
+    (!isLocking(stateObj) && !isUnlocking(stateObj) && !isJammed(stateObj))
+  );
+}
 
 export const callProtectedLockService = async (
   element: HTMLElement,
