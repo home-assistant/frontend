@@ -52,6 +52,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     target: optional(targetStruct),
     data: optional(object()),
     response_variable: optional(string()),
+    metadata: optional(object()),
   })
 );
 
@@ -133,6 +134,7 @@ export interface ServiceAction extends BaseAction {
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
   response_variable?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface DeviceAction extends BaseAction {
@@ -246,6 +248,10 @@ export interface ParallelAction extends BaseAction {
   parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
 
+export interface SetConversationResponseAction extends BaseAction {
+  set_conversation_response: string;
+}
+
 interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
@@ -290,6 +296,7 @@ export interface ActionTypes {
   play_media: PlayMediaAction;
   stop: StopAction;
   parallel: ParallelAction;
+  set_conversation_response: SetConversationResponseAction;
   unknown: UnknownAction;
 }
 
@@ -380,6 +387,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("parallel" in action) {
     return "parallel";
+  }
+  if ("set_conversation_response" in action) {
+    return "set_conversation_response";
   }
   if ("service" in action) {
     if ("metadata" in action) {

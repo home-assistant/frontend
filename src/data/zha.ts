@@ -73,7 +73,7 @@ export interface ClusterAttributeData {
 export interface AttributeConfigurationStatus {
   id: number;
   name: string;
-  success: boolean | undefined;
+  status: string;
   min: number;
   max: number;
   change: number;

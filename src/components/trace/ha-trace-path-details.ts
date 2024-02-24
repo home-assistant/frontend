@@ -35,7 +35,7 @@ const TRACE_PATH_TABS = [
 export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public trace!: TraceExtended;
 
@@ -43,9 +43,10 @@ export class HaTracePathDetails extends LitElement {
 
   @property({ attribute: false }) public selected!: NodeInfo;
 
-  @property() public renderedNodes: Record<string, any> = {};
+  @property({ attribute: false })
+  public renderedNodes: Record<string, any> = {};
 
-  @property() public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
@@ -133,7 +134,7 @@ export class HaTracePathDetails extends LitElement {
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
-              "ui.panel.config.automation.trace.path.disabled_node"
+              "ui.panel.config.automation.trace.path.disabled_step"
             )}`;
           }
 
@@ -208,11 +209,19 @@ export class HaTracePathDetails extends LitElement {
     const paths = this.trace.trace;
     const data: ActionTraceStep[] = paths[this.selected.path];
 
+    if (data === undefined) {
+      return html`<div class="padded-box">
+        ${this.hass!.localize(
+          "ui.panel.config.automation.trace.path.step_not_executed"
+        )}
+      </div>`;
+    }
+
     return html`
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${idx > 0
+            ${data.length > 1
               ? html`<p>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
@@ -240,7 +249,7 @@ export class HaTracePathDetails extends LitElement {
     if (index === -1) {
       return html`<div class="padded-box">
         ${this.hass!.localize(
-          "ui.panel.config.automation.trace.path.node_not_tracked"
+          "ui.panel.config.automation.trace.path.step_not_executed"
         )}
       </div>`;
     }

@@ -5,8 +5,10 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 import {
   Condition,
   ManualAutomationConfig,
@@ -24,9 +26,9 @@ import "./trigger/ha-automation-trigger";
 export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -43,7 +45,7 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
             </mwc-button>
           </ha-alert>`
-        : ""}
+        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -84,8 +86,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.trigger)?.length
+      ${!ensureArray(this.config.trigger)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.description"
@@ -97,7 +98,9 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.trigger}
+        .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
+        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-trigger>
@@ -124,12 +127,11 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.condition)?.length
+      ${!ensureArray(this.config.condition)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.description",
-              { user: this.hass.user?.name }
+              { user: this.hass.user?.name || "Alice" }
             )}
           </p>`
         : nothing}
@@ -138,7 +140,9 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.condition || []}
+        .path=${["condition"]}
         @value-changed=${this._conditionChanged}
+        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-condition>
@@ -164,8 +168,7 @@ export class HaManualAutomationEditor extends LitElement {
           </a>
         </div>
       </div>
-      ${!this.hass.userData?.showAdvanced &&
-      !ensureArray(this.config.action)?.length
+      ${!ensureArray(this.config.action)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.actions.description"
@@ -177,7 +180,9 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.action}
+        .path=${["action"]}
         @value-changed=${this._actionChanged}
+        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -206,6 +211,21 @@ export class HaManualAutomationEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, action: ev.detail.value as Action[] },
+    });
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const updatedConfig = nestedArrayMove(
+      this.config,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+    fireEvent(this, "value-changed", {
+      value: updatedConfig,
     });
   }
 
@@ -259,6 +279,12 @@ export class HaManualAutomationEditor extends LitElement {
           font-size: small;
           font-weight: normal;
           line-height: 0;
+        }
+        ha-alert.re-order {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
       `,
     ];

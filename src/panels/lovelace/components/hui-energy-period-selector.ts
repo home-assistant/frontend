@@ -627,6 +627,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       :host([narrow]) .time-handle {
         margin-left: auto;
+        margin-inline-start: auto;
+        margin-inline-end: initial;
       }
       .label {
         display: flex;
@@ -634,12 +636,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         justify-content: flex-end;
         font-size: 20px;
         margin-left: auto;
+        margin-inline-start: auto;
+        margin-inline-end: initial;
       }
       :host([narrow]) .label {
         margin-left: unset;
+        margin-inline-start: unset;
+        margin-inline-end: initial;
       }
       mwc-button {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         flex-shrink: 0;
         --mdc-button-outline-color: currentColor;
         --primary-color: currentColor;

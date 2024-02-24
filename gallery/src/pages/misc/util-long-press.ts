@@ -59,3 +59,9 @@ export class DemoUtilLongPress extends LitElement {
     }
   `;
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-misc-util-long-press": DemoUtilLongPress;
+  }
+}

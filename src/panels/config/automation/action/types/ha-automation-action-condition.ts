@@ -18,7 +18,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public action!: Condition;
+  @property({ attribute: false }) public action!: Condition;
 
   public static get defaultConfig() {
     return { condition: "state" };

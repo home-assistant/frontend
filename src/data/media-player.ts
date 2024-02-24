@@ -90,7 +90,7 @@ export const enum MediaPlayerEntityFeature {
   TURN_ON = 128,
   TURN_OFF = 256,
   PLAY_MEDIA = 512,
-  VOLUME_BUTTONS = 1024,
+  VOLUME_STEP = 1024,
   SELECT_SOURCE = 2048,
   STOP = 4096,
   CLEAR_PLAYLIST = 8192,

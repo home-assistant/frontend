@@ -16,12 +16,19 @@ import {
   nothing,
   svg,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { clamp } from "../common/number/clamp";
 import { svgArc } from "../resources/svg-arc";
+import { isTouch } from "../util/is_touch";
 
 const MAX_ANGLE = 270;
 const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
@@ -64,68 +71,49 @@ export type ControlCircularSliderMode = "start" | "end" | "full";
 
 @customElement("ha-control-circular-slider")
 export class HaControlCircularSlider extends LitElement {
-  @property({ type: Boolean, reflect: true })
-  public disabled = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true })
-  public readonly = false;
+  @property({ type: Boolean, reflect: true }) public readonly = false;
 
-  @property({ type: Boolean })
-  public dual?: boolean;
+  @property({ type: Boolean }) public dual = false;
 
-  @property({ type: String })
-  public mode?: ControlCircularSliderMode;
+  @property({ type: String }) public mode?: ControlCircularSliderMode;
 
-  @property({ type: Boolean })
-  public inactive?: boolean;
+  @property({ type: Boolean }) public inactive = false;
 
-  @property({ type: String })
-  public label?: string;
+  @property({ type: String }) public label?: string;
 
-  @property({ type: String, attribute: "low-label" })
-  public lowLabel?: string;
+  @property({ type: String, attribute: "low-label" }) public lowLabel?: string;
 
   @property({ type: String, attribute: "high-label" })
   public highLabel?: string;
 
-  @property({ type: Number })
-  public value?: number;
+  @property({ type: Number }) public value?: number;
 
-  @property({ type: Number })
-  public low?: number;
+  @property({ type: Number }) public low?: number;
 
-  @property({ type: Number })
-  public high?: number;
+  @property({ type: Number }) public high?: number;
 
-  @property({ type: Number })
-  public current?: number;
+  @property({ type: Number }) public current?: number;
 
-  @property({ type: Number })
-  public step = 1;
+  @property({ type: Number }) public step = 1;
 
-  @property({ type: Number })
-  public min = 0;
+  @property({ type: Number }) public min = 0;
 
-  @property({ type: Number })
-  public max = 100;
+  @property({ type: Number }) public max = 100;
 
   @property({ type: Boolean, attribute: "prevent-interaction-on-scroll" })
-  public preventInteractionOnScroll?: boolean;
+  public preventInteractionOnScroll = false;
 
-  @state()
-  public _localValue?: number = this.value;
+  @state() public _localValue?: number = this.value;
 
-  @state()
-  public _localLow?: number = this.low;
+  @state() public _localLow?: number = this.low;
 
-  @state()
-  public _localHigh?: number = this.high;
+  @state() public _localHigh?: number = this.high;
 
-  @state()
-  public _activeSlider?: ActiveSlider;
+  @state() public _activeSlider?: ActiveSlider;
 
-  @state()
-  public _lastSlider?: ActiveSlider;
+  @state() public _lastSlider?: ActiveSlider;
 
   private _valueToPercentage(value: number) {
     return (
@@ -153,11 +141,6 @@ export class HaControlCircularSlider extends LitElement {
     return Math.min(Math.max(value, min), max);
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._setupListeners();
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._activeSlider) {
@@ -171,6 +154,19 @@ export class HaControlCircularSlider extends LitElement {
         this._localHigh = this.high;
       }
     }
+
+    if (
+      (changedProps.has("_localValue") &&
+        changedProps.get("_localValue") == null) ||
+      (changedProps.has("_localLow") &&
+        changedProps.get("_localLow") == null) ||
+      (changedProps.has("_localHigh") &&
+        changedProps.get("_localHigh") == null) ||
+      changedProps.has("preventInteractionOnScroll")
+    ) {
+      this._destroyListeners();
+      this._setupListeners();
+    }
   }
 
   connectedCallback(): void {
@@ -182,7 +178,7 @@ export class HaControlCircularSlider extends LitElement {
     super.disconnectedCallback();
   }
 
-  private _mc?: HammerManager;
+  private _managers: HammerManager[] = [];
 
   private _getPercentageFromEvent = (e: HammerInput) => {
     const bound = this._slider.getBoundingClientRect();
@@ -201,8 +197,8 @@ export class HaControlCircularSlider extends LitElement {
   @query("#slider")
   private _slider;
 
-  @query("#interaction")
-  private _interaction;
+  @queryAll("[data-interaction]")
+  private _interactions?: HTMLElement[];
 
   private _findActiveSlider(value: number): ActiveSlider {
     if (!this.dual) return "value";
@@ -245,135 +241,148 @@ export class HaControlCircularSlider extends LitElement {
     return undefined;
   }
 
-  _setupListeners() {
-    if (this._interaction && !this._mc) {
-      this._mc = new Manager(this._interaction, {
-        inputClass: TouchMouseInput,
-      });
+  private _setupListeners() {
+    if (this._interactions && this._managers.length === 0) {
+      this._interactions.forEach((interaction) => {
+        const mc = new Manager(interaction, {
+          inputClass: TouchMouseInput,
+        });
 
-      const pressToActivate =
-        this.preventInteractionOnScroll && "ontouchstart" in window;
+        this._managers.push(mc);
 
-      // If press to activate is true, a 60ms press is required to activate the slider
-      this._mc.add(
-        new Press({
-          enable: pressToActivate,
-          pointers: 1,
-          time: 60,
-        })
-      );
+        const pressToActivate = this.preventInteractionOnScroll && isTouch;
 
-      const panRecognizer = new Pan({
-        direction: DIRECTION_ALL,
-        enable: !pressToActivate,
-        threshold: 0,
-      });
+        // If press to activate is true, a 50ms press is required to activate the slider
+        mc.add(
+          new Press({
+            enable: pressToActivate,
+            pointers: 1,
+            time: 50,
+          })
+        );
 
-      this._mc.add(panRecognizer);
+        const panRecognizer = new Pan({
+          direction: DIRECTION_ALL,
+          enable: !pressToActivate,
+          threshold: 0,
+        });
 
-      this._mc.add(new Tap({ event: "singletap" }));
+        mc.add(panRecognizer);
 
-      this._mc.on("press", (e) => {
-        e.srcEvent.stopPropagation();
-        e.srcEvent.preventDefault();
-        if (this.disabled || this.readonly) return;
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        this._activeSlider = this._findActiveSlider(raw);
-        const bounded = this._boundedValue(raw);
-        this._setActiveValue(bounded);
-        const stepped = this._steppedValue(bounded);
-        if (this._activeSlider) {
-          fireEvent(this, `${this._activeSlider}-changing`, { value: stepped });
-        }
-        panRecognizer.set({ enable: true });
-      });
+        mc.add(new Tap({ event: "singletap" }));
 
-      this._mc.on("pressup", (e) => {
-        e.srcEvent.stopPropagation();
-        e.srcEvent.preventDefault();
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        const bounded = this._boundedValue(raw);
-        const stepped = this._steppedValue(bounded);
-        this._setActiveValue(stepped);
-        if (this._activeSlider) {
-          fireEvent(this, `${this._activeSlider}-changing`, {
-            value: undefined,
-          });
-          fireEvent(this, `${this._activeSlider}-changed`, { value: stepped });
-        }
-        this._activeSlider = undefined;
-      });
+        mc.on("press", (e) => {
+          e.srcEvent.stopPropagation();
+          e.srcEvent.preventDefault();
+          if (this.disabled || this.readonly) return;
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          this._activeSlider = this._findActiveSlider(raw);
+          const bounded = this._boundedValue(raw);
+          this._setActiveValue(bounded);
+          const stepped = this._steppedValue(bounded);
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: stepped,
+            });
+          }
+          panRecognizer.set({ enable: true });
+        });
 
-      this._mc.on("pan", (e) => {
-        e.srcEvent.stopPropagation();
-        e.srcEvent.preventDefault();
-      });
-      this._mc.on("panstart", (e) => {
-        if (this.disabled || this.readonly) return;
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        this._activeSlider = this._findActiveSlider(raw);
-        this._lastSlider = this._activeSlider;
-        this.shadowRoot?.getElementById("#slider")?.focus();
-      });
-      this._mc.on("pancancel", () => {
-        if (this.disabled || this.readonly) return;
-        this._activeSlider = undefined;
-        if (pressToActivate) {
-          panRecognizer.set({ enable: false });
-        }
-      });
-      this._mc.on("panmove", (e) => {
-        if (this.disabled || this.readonly) return;
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        const bounded = this._boundedValue(raw);
-        this._setActiveValue(bounded);
-        const stepped = this._steppedValue(bounded);
-        if (this._activeSlider) {
-          fireEvent(this, `${this._activeSlider}-changing`, { value: stepped });
-        }
-      });
-      this._mc.on("panend", (e) => {
-        if (this.disabled || this.readonly) return;
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        const bounded = this._boundedValue(raw);
-        const stepped = this._steppedValue(bounded);
-        this._setActiveValue(stepped);
-        if (this._activeSlider) {
-          fireEvent(this, `${this._activeSlider}-changing`, {
-            value: undefined,
-          });
-          fireEvent(this, `${this._activeSlider}-changed`, { value: stepped });
-        }
-        this._activeSlider = undefined;
-        if (pressToActivate) {
-          panRecognizer.set({ enable: false });
-        }
-      });
-      this._mc.on("singletap", (e) => {
-        if (this.disabled || this.readonly) return;
-        const percentage = this._getPercentageFromEvent(e);
-        const raw = this._percentageToValue(percentage);
-        this._activeSlider = this._findActiveSlider(raw);
-        const bounded = this._boundedValue(raw);
-        const stepped = this._steppedValue(bounded);
-        this._setActiveValue(stepped);
-        if (this._activeSlider) {
-          fireEvent(this, `${this._activeSlider}-changing`, {
-            value: undefined,
-          });
-          fireEvent(this, `${this._activeSlider}-changed`, { value: stepped });
-        }
-        this._lastSlider = this._activeSlider;
-        this.shadowRoot?.getElementById("#slider")?.focus();
-        this._activeSlider = undefined;
-        if (pressToActivate) {
-          panRecognizer.set({ enable: false });
-        }
+        mc.on("pressup", (e) => {
+          e.srcEvent.stopPropagation();
+          e.srcEvent.preventDefault();
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          const bounded = this._boundedValue(raw);
+          const stepped = this._steppedValue(bounded);
+          this._setActiveValue(stepped);
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: undefined,
+            });
+            fireEvent(this, `${this._activeSlider}-changed`, {
+              value: stepped,
+            });
+          }
+          this._activeSlider = undefined;
+        });
+
+        mc.on("pan", (e) => {
+          e.srcEvent.stopPropagation();
+          e.srcEvent.preventDefault();
+        });
+        mc.on("panstart", (e) => {
+          if (this.disabled || this.readonly) return;
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          this._activeSlider = this._findActiveSlider(raw);
+          this._lastSlider = this._activeSlider;
+          this.shadowRoot?.getElementById("#slider")?.focus();
+        });
+        mc.on("pancancel", () => {
+          if (this.disabled || this.readonly) return;
+          this._activeSlider = undefined;
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        });
+        mc.on("panmove", (e) => {
+          if (this.disabled || this.readonly) return;
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          const bounded = this._boundedValue(raw);
+          this._setActiveValue(bounded);
+          const stepped = this._steppedValue(bounded);
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: stepped,
+            });
+          }
+        });
+        mc.on("panend", (e) => {
+          if (this.disabled || this.readonly) return;
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          const bounded = this._boundedValue(raw);
+          const stepped = this._steppedValue(bounded);
+          this._setActiveValue(stepped);
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: undefined,
+            });
+            fireEvent(this, `${this._activeSlider}-changed`, {
+              value: stepped,
+            });
+          }
+          this._activeSlider = undefined;
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        });
+        mc.on("singletap", (e) => {
+          if (this.disabled || this.readonly) return;
+          const percentage = this._getPercentageFromEvent(e);
+          const raw = this._percentageToValue(percentage);
+          this._activeSlider = this._findActiveSlider(raw);
+          const bounded = this._boundedValue(raw);
+          const stepped = this._steppedValue(bounded);
+          this._setActiveValue(stepped);
+          if (this._activeSlider) {
+            fireEvent(this, `${this._activeSlider}-changing`, {
+              value: undefined,
+            });
+            fireEvent(this, `${this._activeSlider}-changed`, {
+              value: stepped,
+            });
+          }
+          this._lastSlider = this._activeSlider;
+          this.shadowRoot?.getElementById("#slider")?.focus();
+          this._activeSlider = undefined;
+          if (pressToActivate) {
+            panRecognizer.set({ enable: false });
+          }
+        });
       });
     }
   }
@@ -447,10 +456,10 @@ export class HaControlCircularSlider extends LitElement {
     this._activeSlider = undefined;
   }
 
-  destroyListeners() {
-    if (this._mc) {
-      this._mc.destroy();
-      this._mc = undefined;
+  private _destroyListeners() {
+    if (this._managers.length > 0) {
+      this._managers.forEach((manager) => manager.destroy());
+      this._managers = [];
     }
   }
 
@@ -485,6 +494,9 @@ export class HaControlCircularSlider extends LitElement {
       end: MAX_ANGLE,
       r: RADIUS,
     });
+
+    const angle =
+      value != null ? this._valueToPercentage(value) * MAX_ANGLE : undefined;
 
     const limit = mode === "end" ? this.max : this.min;
 
@@ -526,6 +538,9 @@ export class HaControlCircularSlider extends LitElement {
       (showActive || this.mode === "full")
         ? this._strokeCircleDashArc(this.current)
         : undefined;
+
+    const onlyDotInteraction =
+      (this.preventInteractionOnScroll && isTouch) || false;
 
     return svg`
       <g class=${classMap({ inactive: Boolean(this.inactive) })}>
@@ -583,6 +598,18 @@ export class HaControlCircularSlider extends LitElement {
         ${
           targetCircle
             ? svg`
+              <!-- Use circle instead of path for interaction (Safari doesn't support well pointer-events with stroke-dasharray) -->
+              <circle
+                transform="rotate(${angle} 0 0)"
+                ?data-interaction=${onlyDotInteraction}
+                cx=${RADIUS}
+                cy="0"
+                />
+              <path
+                d=${path}
+                stroke-dasharray=${targetCircle[0]}
+                stroke-dashoffset=${targetCircle[1]}
+              />
               <path
                 class="target-border ${classMap({ [id]: true })}"
                 d=${path}
@@ -619,6 +646,9 @@ export class HaControlCircularSlider extends LitElement {
       ? this._strokeCircleDashArc(current)
       : undefined;
 
+    const onlyDotInteraction =
+      (this.preventInteractionOnScroll && isTouch) || false;
+
     return html`
       <svg
         id="slider"
@@ -634,13 +664,10 @@ export class HaControlCircularSlider extends LitElement {
           id="container"
           transform="translate(160 160) rotate(${ROTATE_ANGLE})"
         >
-          <g id="interaction">
-            <path d=${trackPath} />
-          </g>
-          <g id="display">
-            <path class="background" d=${trackPath} />
-            ${currentStroke
-              ? svg`
+          <path d=${trackPath} ?data-interaction=${!onlyDotInteraction} />
+          <path class="background" d=${trackPath} />
+          ${currentStroke
+            ? svg`
                   <path
                     class="current"
                     d=${trackPath}
@@ -648,18 +675,17 @@ export class HaControlCircularSlider extends LitElement {
                     stroke-dashoffset=${currentStroke[1]}
                   />
                 `
-              : nothing}
-            ${lowValue != null || this.mode === "full"
-              ? this.renderArc(
-                  this.dual ? "low" : "value",
-                  lowValue,
-                  (!this.dual && this.mode) || "start"
-                )
-              : nothing}
-            ${this.dual && highValue != null
-              ? this.renderArc("high", highValue, "end")
-              : nothing}
-          </g>
+            : nothing}
+          ${lowValue != null || this.mode === "full"
+            ? this.renderArc(
+                this.dual ? "low" : "value",
+                lowValue,
+                (!this.dual && this.mode) || "start"
+              )
+            : nothing}
+          ${this.dual && highValue != null
+            ? this.renderArc("high", highValue, "end")
+            : nothing}
         </g>
       </svg>
     `;
@@ -684,26 +710,34 @@ export class HaControlCircularSlider extends LitElement {
       svg {
         width: 100%;
         display: block;
+        pointer-events: none;
+      }
+      g {
+        fill: none;
       }
       #slider {
         outline: none;
       }
-      #interaction {
-        display: flex;
+      path[data-interaction] {
         fill: none;
+        cursor: pointer;
+        pointer-events: auto;
         stroke: transparent;
         stroke-linecap: round;
         stroke-width: calc(
           24px + 2 * var(--control-circular-slider-interaction-margin)
         );
+      }
+      circle[data-interaction] {
+        r: calc(12px + var(--control-circular-slider-interaction-margin));
+        fill: transparent;
         cursor: pointer;
+        pointer-events: auto;
       }
-      #display {
-        pointer-events: none;
-      }
-      :host([disabled]) #interaction,
-      :host([readonly]) #interaction {
+      :host([disabled]) [data-interaction],
+      :host([readonly]) [data-interaction] {
         cursor: initial;
+        pointer-events: none;
       }
 
       .background {

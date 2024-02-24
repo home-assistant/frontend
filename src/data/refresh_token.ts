@@ -4,6 +4,8 @@ declare global {
   }
 }
 
+export type RefreshTokenType = "normal" | "long_lived_access_token";
+
 export interface RefreshToken {
   client_icon?: string;
   client_id: string;
@@ -13,5 +15,5 @@ export interface RefreshToken {
   is_current: boolean;
   last_used_at?: string;
   last_used_ip?: string;
-  type: "normal" | "long_lived_access_token";
+  type: RefreshTokenType;
 }

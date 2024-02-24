@@ -42,6 +42,14 @@ const renderMarkdown = async (
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
       "ha-alert": ["alert-type", "title"],
+      "ha-qr-code": [
+        "data",
+        "scale",
+        "width",
+        "margin",
+        "error-correction-level",
+        "center-image",
+      ],
     };
   }
 

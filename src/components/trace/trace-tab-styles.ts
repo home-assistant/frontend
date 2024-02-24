@@ -7,6 +7,8 @@ export const traceTabStyles = css`
     border-bottom: 1px solid var(--divider-color);
     display: flex;
     padding-left: 4px;
+    padding-inline-start: 4px;
+    padding-inline-end: initial;
   }
 
   .tabs.top {

@@ -8,9 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -44,7 +42,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Number }) public index?: number;
 
@@ -97,9 +95,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
               )}
               extended
               @click=${this._addCard}
-              class=${classMap({
-                rtl: computeRTL(this.hass!),
-              })}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
             </ha-fab>
@@ -338,12 +333,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         position: fixed;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
+        inset-inline-end: calc(16px + env(safe-area-inset-right));
+        inset-inline-start: initial;
         z-index: 1;
-      }
-
-      ha-fab.rtl {
-        right: auto;
-        left: calc(16px + env(safe-area-inset-left));
       }
 
       @media (max-width: 500px) {

@@ -1,8 +1,8 @@
 import "@material/mwc-button";
-import { mdiCalendarClock, mdiClose } from "@mdi/js";
+import { mdiCalendarClock } from "@mdi/js";
 import { toDate } from "date-fns-tz";
 import { addDays, isSameDay } from "date-fns/esm";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -10,7 +10,9 @@ import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
+import "../../components/ha-alert";
 import "../../components/ha-date-input";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
 import {
   CalendarEventMutableParams,
@@ -23,6 +25,7 @@ import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -65,15 +68,7 @@ class DialogCalendarEventDetail extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${html`
-          <div class="header_title">${this._data!.summary}</div>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            class="header_button"
-          ></ha-icon-button>
-        `}
+        .heading=${createCloseHeading(this.hass, this._data!.summary)}
       >
         <div class="content">
           ${this._error
@@ -144,8 +139,10 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   private _formatDateRange() {
-    // Parse a dates in the browser timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZone = resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
     const start = toDate(this._data!.dtstart, { timeZone: timeZone });
     const endValue = toDate(this._data!.dtend, { timeZone: timeZone });
     // All day events should be displayed as a day earlier
@@ -244,7 +241,7 @@ class DialogCalendarEventDetail extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 16px;
+          margin-inline-end: 8px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;
