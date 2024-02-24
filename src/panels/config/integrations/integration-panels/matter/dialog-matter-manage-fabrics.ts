@@ -20,8 +20,6 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { MatterManageFabricsDialogParams } from "./show-dialog-matter-manage-fabrics";
 
-const NABUCASA_FABRIC = 4939;
-
 @customElement("dialog-matter-manage-fabrics")
 class DialogMatterManageFabrics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,8 +59,9 @@ class DialogMatterManageFabrics extends LitElement {
                 (fabric) =>
                   html`<ha-list-item
                     noninteractive
-                    .hasMeta=${this._nodeDiagnostics?.available &&
-                    fabric.vendor_id !== NABUCASA_FABRIC}
+                    .hasMeta=${this._nodeDiagnostics!.available &&
+                    fabric.fabric_index !==
+                      this._nodeDiagnostics!.active_fabric_index}
                     >${fabric.vendor_name ||
                     fabric.fabric_label ||
                     fabric.vendor_id}
@@ -99,6 +98,9 @@ class DialogMatterManageFabrics extends LitElement {
 
   private async _removeFabric(ev) {
     const fabric: MatterFabricData = ev.target.fabric;
+    if (this._nodeDiagnostics!.active_fabric_index === fabric.fabric_index) {
+      return;
+    }
     const fabricName =
       fabric.vendor_name || fabric.fabric_label || fabric.vendor_id.toString();
     const confirm = await showConfirmationDialog(this, {

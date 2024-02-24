@@ -317,6 +317,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
@@ -2168,7 +2169,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2347,7 +2358,21 @@
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
-            "start_debug_run": "Start debug run"
+            "start_debug_run": "Start debug run",
+            "pipeline": {
+              "header": "Assist Pipeline",
+              "run_text_pipeline": "Run text pipeline",
+              "run_audio_pipeline": "Run audio pipeline",
+              "run_audio_with_wake": "Run audio pipeline with wake word detection",
+              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "send": "Send",
+              "continue_listening": "Continue listening for wake word",
+              "continue_talking": "Continue talking",
+              "continue_conversation": "Continue conversation",
+              "input_text": "Input text",
+              "run": "[%key:ui::card::service::run%]",
+              "error_starting": "Error starting pipeline"
+            }
           },
           "expose": {
             "caption": "Expose",
@@ -5071,7 +5096,8 @@
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "sections": "Sections (experimental)"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5087,7 +5113,7 @@
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
             "pick_card": "Which card would you like to add?",
-            "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
@@ -5124,6 +5150,23 @@
             "views_label": "View",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
+          },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "add_section": "Add section"
+          },
+          "delete_section": {
+            "title": "Delete section",
+            "named_section": "\"{name}\" section",
+            "unnamed_section": "This section",
+            "text_section_only": "{section} will be deleted.",
+            "text_section_and_cards": "{section} and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5430,7 +5473,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
@@ -5599,6 +5645,15 @@
                   "icons": "Icons"
                 },
                 "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
@@ -5951,7 +6006,8 @@
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",
-          "qr_code_image": "QR code for token {name}"
+          "qr_code_image": "QR code for token {name}",
+          "generate_qr_code": "Generate QR Code"
         }
       },
       "todo": {
@@ -6500,7 +6556,8 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Monitor individual devices"
+          "energy_devices_graph_title": "Individual devices total usage",
+          "energy_devices_detail_graph_title": "Individual devices detail usage"
         }
       },
       "history": {

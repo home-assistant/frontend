@@ -21,6 +21,10 @@ import "../card-editor/hui-entity-picker-table";
 import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import {
+  computeCards,
+  computeSection,
+} from "../../common/generate-lovelace-config";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -126,12 +130,21 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _addToLovelaceView(): void {
+    const cardConfig = computeCards(
+      this.hass.states,
+      this._selectedEntities,
+      {}
+    );
+    const sectionConfig = computeSection(this._selectedEntities, {});
+
     if (this.lovelace.config.views.length === 1) {
       showSuggestCardDialog(this, {
         lovelaceConfig: this.lovelace.config!,
         saveConfig: this.lovelace.saveConfig,
         path: [0],
         entities: this._selectedEntities,
+        cardConfig,
+        sectionConfig,
       });
       return;
     }
@@ -144,6 +157,8 @@ export class HuiUnusedEntities extends LitElement {
           saveConfig: this.lovelace.saveConfig,
           path: [viewIndex],
           entities: this._selectedEntities,
+          cardConfig,
+          sectionConfig,
         });
       },
     });

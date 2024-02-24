@@ -9,6 +9,7 @@ import {
   EntityRegistryEntry,
 } from "./entity_registry";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { atLeastVersion } from "../common/config/version";
 
 const resources: {
   entity: Record<string, Promise<PlatformIcons>>;
@@ -46,10 +47,10 @@ interface PlatformIcons {
   };
 }
 
-interface ComponentIcons {
+export interface ComponentIcons {
   [device_class: string]: {
-    state: Record<string, string>;
-    state_attributes: Record<
+    state?: Record<string, string>;
+    state_attributes?: Record<
       string,
       {
         state: Record<string, string>;
@@ -91,7 +92,10 @@ export const getPlatformIcons = async (
   if (!force && integration in resources.entity) {
     return resources.entity[integration];
   }
-  if (!isComponentLoaded(hass, integration)) {
+  if (
+    !isComponentLoaded(hass, integration) ||
+    !atLeastVersion(hass.connection.haVersion, 2024, 2)
+  ) {
     return undefined;
   }
   const result = getHassIcons(hass, "entity", integration).then(
@@ -106,6 +110,16 @@ export const getComponentIcons = async (
   domain: string,
   force = false
 ): Promise<ComponentIcons | undefined> => {
+  // For Cast, old instances can connect to it.
+  if (
+    __BACKWARDS_COMPAT__ &&
+    !atLeastVersion(hass.connection.haVersion, 2024, 2)
+  ) {
+    return import("../fake_data/entity_component_icons")
+      .then((mod) => mod.ENTITY_COMPONENT_ICONS)
+      .then((res) => res[domain]);
+  }
+
   if (
     !force &&
     resources.entity_component.resources &&
@@ -113,6 +127,7 @@ export const getComponentIcons = async (
   ) {
     return resources.entity_component.resources.then((res) => res[domain]);
   }
+
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
@@ -183,8 +198,9 @@ export const entryIcon = async (
   if (entry.icon) {
     return entry.icon;
   }
+  const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
   const domain = computeDomain(entry.entity_id);
-  return getEntityIcon(hass, domain, undefined, undefined, entry);
+  return getEntityIcon(hass, domain, stateObj, undefined, entry);
 };
 
 const getEntityIcon = async (
