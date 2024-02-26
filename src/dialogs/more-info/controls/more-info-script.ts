@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   nothing,
-  PropertyValueMap,
+  PropertyValues,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-relative-time";
@@ -98,10 +98,13 @@ class MoreInfoScript extends LitElement {
     `;
   }
 
-  protected override willUpdate(
-    changedProperties: PropertyValues
-  ): void {
+  protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
+
+    if (!changedProperties.has("stateObj")) {
+      return;
+    }
+
     const oldState = changedProperties.get("stateObj") as
       | HassEntity
       | undefined;
