@@ -297,6 +297,7 @@ const processTimelineEntity = (
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         locale,
+        [], // numeric device classes not used for Timeline
         config,
         entities[entityId],
         entityId,

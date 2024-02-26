@@ -18,16 +18,20 @@ export type SensorNumericDeviceClasses = {
   numeric_device_classes: string[];
 };
 
-let sensorNumericDeviceClassesCache: SensorNumericDeviceClasses | undefined;
+let sensorNumericDeviceClassesCache:
+  | Promise<SensorNumericDeviceClasses>
+  | undefined;
 
 export const getSensorNumericDeviceClasses = async (
   hass: HomeAssistant
 ): Promise<SensorNumericDeviceClasses> => {
   if (sensorNumericDeviceClassesCache) {
-    return sensorNumericDeviceClassesCache;
+    const classes = await sensorNumericDeviceClassesCache;
+    return classes;
   }
-  sensorNumericDeviceClassesCache = await hass.callWS({
+  sensorNumericDeviceClassesCache = hass.callWS({
     type: "sensor/numeric_device_classes",
   });
-  return sensorNumericDeviceClassesCache!;
+  const classes = await sensorNumericDeviceClassesCache!;
+  return classes;
 };

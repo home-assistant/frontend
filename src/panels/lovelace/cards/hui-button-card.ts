@@ -23,7 +23,6 @@ import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplaySingleEntity } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
@@ -243,13 +242,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
-              ${computeStateDisplaySingleEntity(
-                this._localize,
-                stateObj,
-                this._locale,
-                this._hassConfig,
-                this._entity
-              )}
+              ${this.hass.formatEntityState(stateObj)}
             </span>`
           : ""}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
