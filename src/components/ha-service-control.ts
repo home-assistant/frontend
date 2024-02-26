@@ -408,7 +408,7 @@ export class HaServiceControl extends LitElement {
                       class="help-icon"
                     ></ha-icon-button>
                   </a>`
-                : ""}
+                : nothing}
             </div>
           `}
       ${serviceData && "target" in serviceData
