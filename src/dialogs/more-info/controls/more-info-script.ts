@@ -53,7 +53,7 @@ class MoreInfoScript extends LitElement {
                   })
                 : this.hass.localize("ui.card.script.cancel")}
             </mwc-button>`
-          : ""}
+          : nothing}
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<mwc-button
               @click=${this._runScript}
@@ -62,7 +62,7 @@ class MoreInfoScript extends LitElement {
             >
               ${this.hass!.localize("ui.card.script.run")}
             </mwc-button>`
-          : ""}
+          : nothing}
       </div>
 
       ${hasFields
@@ -76,7 +76,7 @@ class MoreInfoScript extends LitElement {
               @value-changed=${this._scriptDataChanged}
             ></ha-service-control>
           `
-        : ""}
+        : nothing}
 
       <hr />
       <div class="flex">
@@ -99,7 +99,7 @@ class MoreInfoScript extends LitElement {
   }
 
   protected override willUpdate(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+    changedProperties: PropertyValues
   ): void {
     super.willUpdate(changedProperties);
     const oldState = changedProperties.get("stateObj") as

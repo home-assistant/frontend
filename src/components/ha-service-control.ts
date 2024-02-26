@@ -93,7 +93,7 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public hidePicker = false;
 
-  @property({ type: Boolean, reflect: true }) public hideDescription = false;
+  @property({ type: Boolean }) public hideDescription = false;
 
   @state() private _value!: this["value"];
 
