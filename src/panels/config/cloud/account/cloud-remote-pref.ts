@@ -226,6 +226,8 @@ export class CloudRemotePref extends LitElement {
         position: absolute;
         right: 24px;
         top: 24px;
+        inset-inline-end: 24px;
+        inset-inline-start: initial;
       }
       .card-actions {
         display: flex;

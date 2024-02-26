@@ -172,6 +172,8 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
           position: absolute;
           right: 16px;
           top: 10px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
           text-decoration: none;
           color: var(--primary-text-color);
         }
