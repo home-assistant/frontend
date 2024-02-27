@@ -74,7 +74,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "areas",
       iconPath: mdiSofa,
       iconColor: "#E48629",
-      component: ["zone"],
+      component: "zone",
     },
     {
       path: "/hassio",
