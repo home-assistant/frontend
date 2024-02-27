@@ -167,32 +167,28 @@ class PanelEnergy extends LitElement {
     const stats = energyData.state.stats;
 
     const timeSet = new Set<number>();
-    const endTimes: Record<number, number> = {};
     Object.values(stats).forEach((stat) => {
       stat.forEach((datapoint) => {
         timeSet.add(datapoint.start);
-        endTimes[datapoint.start] = datapoint.end;
       });
     });
     const times = Array.from(timeSet).sort();
 
     const headers =
-      ",," +
+      "entity_id,type,unit," +
       times.map((t) => new Date(t).toISOString()).join(",") +
-      "\n" +
-      ",," +
-      times.map((t) => new Date(endTimes[t]).toISOString()).join(",") +
       "\n";
     const csv: string[] = [];
     csv[0] = headers;
 
-    const processStat = function (stat: string, unit: string) {
+    const processStat = function (stat: string, type: string, unit: string) {
       let n = 0;
       const row: string[] = [];
       if (!stats[stat]) {
         return;
       }
       row.push(stat);
+      row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
         if (stats[stat][n].start > t) {
@@ -210,19 +206,18 @@ class PanelEnergy extends LitElement {
     const currency = this.hass.config.currency;
 
     const printCategory = function (
-      header: string,
+      type: string,
       statIds: string[],
       unit: string,
       hasCost?: boolean
     ) {
       if (statIds.length) {
-        csv.push(`${header}:\n`);
-        statIds.forEach((stat) => processStat(stat, unit));
+        statIds.forEach((stat) => processStat(stat, type, unit));
         if (hasCost) {
           statIds.forEach((stat) => {
             const costStat = energyData.state.info.cost_sensors[stat];
             if (energyData.state.info.cost_sensors[stat]) {
-              processStat(costStat, currency);
+              processStat(costStat, type, currency);
             }
           });
         }
@@ -243,18 +238,8 @@ class PanelEnergy extends LitElement {
         });
       });
 
-    printCategory(
-      this.hass.localize("ui.panel.energy.download.grid_consumption"),
-      grid_consumptions,
-      electricUnit,
-      true
-    );
-    printCategory(
-      this.hass.localize("ui.panel.energy.download.return_to_grid"),
-      grid_productions,
-      electricUnit,
-      true
-    );
+    printCategory("grid_consumption", grid_consumptions, electricUnit, true);
+    printCategory("grid_return", grid_productions, electricUnit, true);
 
     const battery_ins: string[] = [];
     const battery_outs: string[] = [];
@@ -266,20 +251,8 @@ class PanelEnergy extends LitElement {
         battery_outs.push(source.stat_energy_from);
       });
 
-    printCategory(
-      `\n${this.hass.localize("ui.panel.energy.download.battery_systems")} - ${this.hass.localize(
-        "ui.panel.energy.download.energy_into_battery"
-      )}`,
-      battery_ins,
-      electricUnit
-    );
-    printCategory(
-      `${this.hass.localize("ui.panel.energy.download.battery_systems")} - ${this.hass.localize(
-        "ui.panel.energy.download.energy_out_of_battery"
-      )}`,
-      battery_outs,
-      electricUnit
-    );
+    printCategory("battery_in", battery_ins, electricUnit);
+    printCategory("battery_out", battery_outs, electricUnit);
 
     const solar_productions: string[] = [];
     energy_sources
@@ -289,11 +262,7 @@ class PanelEnergy extends LitElement {
         solar_productions.push(source.stat_energy_from);
       });
 
-    printCategory(
-      `\n${this.hass.localize("ui.panel.energy.download.solar_production")}`,
-      solar_productions,
-      electricUnit
-    );
+    printCategory("solar_production", solar_productions, electricUnit);
 
     const gas_consumptions: string[] = [];
     energy_sources
@@ -303,12 +272,7 @@ class PanelEnergy extends LitElement {
         gas_consumptions.push(source.stat_energy_from);
       });
 
-    printCategory(
-      `\n${this.hass.localize("ui.panel.energy.download.gas_consumption")}`,
-      gas_consumptions,
-      gasUnit,
-      true
-    );
+    printCategory("gas_consumption", gas_consumptions, gasUnit, true);
 
     const water_consumptions: string[] = [];
     energy_sources
@@ -318,12 +282,7 @@ class PanelEnergy extends LitElement {
         water_consumptions.push(source.stat_energy_from);
       });
 
-    printCategory(
-      `\n${this.hass.localize("ui.panel.energy.download.water_consumption")}`,
-      water_consumptions,
-      waterUnit,
-      true
-    );
+    printCategory("water_consumption", water_consumptions, waterUnit, true);
 
     const devices: string[] = [];
     device_consumption.forEach((source) => {
@@ -331,11 +290,7 @@ class PanelEnergy extends LitElement {
       devices.push(source.stat_consumption);
     });
 
-    printCategory(
-      `\n${this.hass.localize("ui.panel.energy.download.device_consumption")}`,
-      devices,
-      electricUnit
-    );
+    printCategory("device_consumption", devices, electricUnit);
 
     const blob = new Blob(csv, {
       type: "text/csv",
