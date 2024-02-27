@@ -26,8 +26,7 @@ export interface PageNavigation {
   component?: string;
   components?: string[];
   name?: string;
-  not_component?: string;
-  not_components?: string[];
+  not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
