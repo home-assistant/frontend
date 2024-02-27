@@ -25,6 +25,7 @@ export interface PageNavigation {
   translationKey?: string;
   component?: string | string[];
   name?: string;
+  not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
