@@ -1,7 +1,8 @@
 import { mdiDoorOpen, mdiLock, mdiLockOpen } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -11,6 +12,9 @@ import {
   LockEntityFeature,
   callProtectedLockService,
   isAvailable,
+  isLocking,
+  isUnlocking,
+  isLocked,
 } from "../../../data/lock";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
@@ -46,27 +50,14 @@ class HuiLockCommandsCardFeature
     this._config = config;
   }
 
-  private _onToggleTap(ev): void {
+  private _onTap(ev): void {
     ev.stopPropagation();
-    if (!this.hass || !this.stateObj) {
+    const service = ev.target.dataset.service;
+    if (!this.hass || !this.stateObj || !service) {
       return;
     }
     forwardHaptic("light");
-    callProtectedLockService(
-      this,
-      this.hass,
-      this.stateObj,
-      this.stateObj.state === "locked" ? "unlock" : "lock"
-    );
-  }
-
-  private _onOpenTap(ev): void {
-    ev.stopPropagation();
-    if (!this.hass || !this.stateObj) {
-      return;
-    }
-    forwardHaptic("light");
-    callProtectedLockService(this, this.hass, this.stateObj, "open");
+    callProtectedLockService(this, this.hass, this.stateObj, service);
   }
 
   protected render() {
@@ -78,23 +69,28 @@ class HuiLockCommandsCardFeature
     ) {
       return nothing;
     }
-    const isLocked = this.stateObj.state === "locked";
 
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .label=${isLocked
+          .label=${isLocked(this.stateObj)
             ? this.hass.localize("ui.card.lock.unlock")
             : this.hass.localize("ui.card.lock.lock")}
-          @click=${this._onToggleTap}
           .disabled=${!isAvailable(this.stateObj)}
+          @click=${this._onTap}
+          data-service=${isLocked(this.stateObj) ? "unlock" : "lock"}
+          class=${classMap({
+            pulse: isLocking(this.stateObj) || isUnlocking(this.stateObj),
+          })}
         >
-          <ha-svg-icon .path=${isLocked ? mdiLockOpen : mdiLock}></ha-svg-icon>
+          <ha-svg-icon .path=${isLocked(this.stateObj) ? mdiLockOpen : mdiLock}>
+          </ha-svg-icon>
         </ha-control-button>
         <ha-control-button
-          .label=${this.hass.localize("ui.card.lock.unlock")}
-          @click=${this._onOpenTap}
+          .label=${this.hass.localize("ui.card.lock.open")}
           .disabled=${!isAvailable(this.stateObj)}
+          @click=${this._onTap}
+          data-service="open"
         >
           <ha-svg-icon .path=${mdiDoorOpen}></ha-svg-icon>
         </ha-control-button>
@@ -102,8 +98,22 @@ class HuiLockCommandsCardFeature
     `;
   }
 
-  static get styles() {
+  static get styles(): CSSResultGroup {
     return css`
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .pulse {
+        animation: pulse 1s infinite;
+      }
       ha-control-button-group {
         margin: 0 12px 12px 12px;
         --control-button-group-spacing: 12px;
