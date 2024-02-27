@@ -1368,7 +1368,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: block;
           margin-top: 4px;
         }
-        .overview ha-alert:first-of-type {
+        ha-alert:first-of-type {
           margin-top: 16px;
         }
         ha-list-item.discovered {
