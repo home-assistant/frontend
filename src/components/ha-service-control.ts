@@ -93,6 +93,8 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public hidePicker = false;
 
+  @property({ type: Boolean }) public hideDescription = false;
+
   @state() private _value!: this["value"];
 
   @state() private _checkedKeys = new Set();
@@ -373,7 +375,8 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
-    return html`${this.hidePicker
+    return html`
+      ${this.hidePicker
         ? nothing
         : html`<ha-service-picker
             .hass=${this.hass}
@@ -381,29 +384,33 @@ export class HaServiceControl extends LitElement {
             .disabled=${this.disabled}
             @value-changed=${this._serviceChanged}
           ></ha-service-picker>`}
-      <div class="description">
-        ${description ? html`<p>${description}</p>` : ""}
-        ${this._manifest
-          ? html` <a
-              href=${this._manifest.is_built_in
-                ? documentationUrl(
-                    this.hass,
-                    `/integrations/${this._manifest.domain}`
-                  )
-                : this._manifest.documentation}
-              title=${this.hass.localize(
-                "ui.components.service-control.integration_doc"
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <ha-icon-button
-                .path=${mdiHelpCircle}
-                class="help-icon"
-              ></ha-icon-button>
-            </a>`
-          : ""}
-      </div>
+      ${this.hideDescription
+        ? nothing
+        : html`
+            <div class="description">
+              ${description ? html`<p>${description}</p>` : ""}
+              ${this._manifest
+                ? html` <a
+                    href=${this._manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this._manifest.domain}`
+                        )
+                      : this._manifest.documentation}
+                    title=${this.hass.localize(
+                      "ui.components.service-control.integration_doc"
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ha-icon-button
+                      .path=${mdiHelpCircle}
+                      class="help-icon"
+                    ></ha-icon-button>
+                  </a>`
+                : nothing}
+            </div>
+          `}
       ${serviceData && "target" in serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
             ${hasOptional
@@ -517,7 +524,8 @@ export class HaServiceControl extends LitElement {
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
-          })}`;
+          })}
+    `;
   }
 
   private _localizeValueCallback = (key: string) => {
