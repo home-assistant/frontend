@@ -125,7 +125,7 @@ class MoreInfoScript extends LitElement {
     this.hass.callService(
       "script",
       computeObjectId(this.stateObj!.entity_id),
-      this._scriptData
+      this._scriptData.data
     );
   }
 
