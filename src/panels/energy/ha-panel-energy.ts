@@ -209,15 +209,15 @@ class PanelEnergy extends LitElement {
       type: string,
       statIds: string[],
       unit: string,
-      hasCost?: boolean
+      costType?: string
     ) {
       if (statIds.length) {
         statIds.forEach((stat) => processStat(stat, type, unit));
-        if (hasCost) {
+        if (costType) {
           statIds.forEach((stat) => {
             const costStat = energyData.state.info.cost_sensors[stat];
             if (energyData.state.info.cost_sensors[stat]) {
-              processStat(costStat, type, currency);
+              processStat(costStat, costType, currency);
             }
           });
         }
@@ -238,8 +238,18 @@ class PanelEnergy extends LitElement {
         });
       });
 
-    printCategory("grid_consumption", grid_consumptions, electricUnit, true);
-    printCategory("grid_return", grid_productions, electricUnit, true);
+    printCategory(
+      "grid_consumption",
+      grid_consumptions,
+      electricUnit,
+      "grid_consumption_cost"
+    );
+    printCategory(
+      "grid_return",
+      grid_productions,
+      electricUnit,
+      "grid_return_compensation"
+    );
 
     const battery_ins: string[] = [];
     const battery_outs: string[] = [];
@@ -272,7 +282,12 @@ class PanelEnergy extends LitElement {
         gas_consumptions.push(source.stat_energy_from);
       });
 
-    printCategory("gas_consumption", gas_consumptions, gasUnit, true);
+    printCategory(
+      "gas_consumption",
+      gas_consumptions,
+      gasUnit,
+      "gas_consumption_cost"
+    );
 
     const water_consumptions: string[] = [];
     energy_sources
@@ -282,7 +297,12 @@ class PanelEnergy extends LitElement {
         water_consumptions.push(source.stat_energy_from);
       });
 
-    printCategory("water_consumption", water_consumptions, waterUnit, true);
+    printCategory(
+      "water_consumption",
+      water_consumptions,
+      waterUnit,
+      "water_consumption_cost"
+    );
 
     const devices: string[] = [];
     device_consumption.forEach((source) => {
