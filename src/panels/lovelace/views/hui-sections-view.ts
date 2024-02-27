@@ -193,19 +193,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             "ui.panel.lovelace.editor.delete_section.unnamed_section"
           );
 
-      const content = cardCount
-        ? this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.text_section_and_cards",
-            {
-              section: sectionName,
-            }
-          )
-        : this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.text_section_only",
-            {
-              section: sectionName,
-            }
-          );
+      const content = this.hass.localize(
+        cardCount
+          ? "ui.panel.lovelace.editor.delete_section.text_section_and_cards"
+          : "ui.panel.lovelace.editor.delete_section.text_section_only",
+        {
+          section: sectionName,
+        }
+      );
 
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(

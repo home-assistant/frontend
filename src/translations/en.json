@@ -5022,10 +5022,12 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
-          "confirm_delete": "Delete view?",
-          "confirm_delete_text": "Are you sure you want to delete your ''{name}'' view?",
-          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
-          "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
+          "delete_title": "Delete view",
+          "delete_named_view": "\"{name}\" view",
+          "delete_unnamed_view": "This view",
+          "delete_text_view_only": "{view} will be deleted.",
+          "delete_text_view_and_cards": "{view} and all its cards will be deleted.",
+          "delete_text_view_and_sections": "{view} and all its sections will be deleted."
         },
         "menu": {
           "configure_ui": "Edit dashboard",
