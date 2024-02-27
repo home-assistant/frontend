@@ -5854,13 +5854,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asap@npm:~2.0.6":
-  version: 2.0.6
-  resolution: "asap@npm:2.0.6"
-  checksum: 10/b244c0458c571945e4b3be0b14eb001bea5596f9868cc50cc711dc03d58a7e953517d3f0dad81ccde3ff37d1f074701fa76a6f07d41aaa992d7204a37b915dda
-  languageName: node
-  linkType: hard
-
 "assertion-error@npm:^2.0.1":
   version: 2.0.1
   resolution: "assertion-error@npm:2.0.1"
@@ -9305,17 +9298,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-json-transform@npm:0.4.8":
-  version: 0.4.8
-  resolution: "gulp-json-transform@npm:0.4.8"
+"gulp-json-transform@npm:0.5.0":
+  version: 0.5.0
+  resolution: "gulp-json-transform@npm:0.5.0"
   dependencies:
     ansi-colors: "npm:^1.0.1"
     fancy-log: "npm:^1.3.2"
     plugin-error: "npm:^1.0.1"
-    promise: "npm:^8.0.1"
     through2: "npm:^2.0.3"
     vinyl: "npm:^2.1.0"
-  checksum: 10/5b117e59cd806e530cb4f67089e28eb1a6234bfb1461497e540be2a24cd94c5a8ce573d5ff9222c1481d951316054742a2212c044df0e047256ce10ce7bcd328
+  checksum: 10/0879149337450e4ada1363fa72c351d2386b249df31aa8313c699c267cae3ece14ff1ab77dc7bb6a67827902db68ee0e0232d67ebfca55900dc17f3cfe219c42
   languageName: node
   linkType: hard
 
@@ -9647,7 +9639,7 @@ __metadata:
     google-timezones-json: "npm:1.2.0"
     gulp: "npm:4.0.2"
     gulp-flatmap: "npm:1.0.2"
-    gulp-json-transform: "npm:0.4.8"
+    gulp-json-transform: "npm:0.5.0"
     gulp-merge-json: "npm:2.1.2"
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.1"
@@ -13190,15 +13182,6 @@ __metadata:
     err-code: "npm:^2.0.2"
     retry: "npm:^0.12.0"
   checksum: 10/96e1a82453c6c96eef53a37a1d6134c9f2482f94068f98a59145d0986ca4e497bf110a410adf73857e588165eab3899f0ebcf7b3890c1b3ce802abc0d65967d4
-  languageName: node
-  linkType: hard
-
-"promise@npm:^8.0.1":
-  version: 8.3.0
-  resolution: "promise@npm:8.3.0"
-  dependencies:
-    asap: "npm:~2.0.6"
-  checksum: 10/55e9d0d723c66810966bc055c6c77a3658c0af7e4a8cc88ea47aeaf2949ca0bd1de327d9c631df61236f5406ad478384fa19a77afb3f88c0303eba9e5eb0a8d8
   languageName: node
   linkType: hard
 
