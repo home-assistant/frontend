@@ -17,7 +17,7 @@ import { moveCard } from "../editor/config-util";
 import type { Lovelace, LovelaceCard } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
-  delay: 200,
+  delay: 100,
   delayOnTouchOnly: true,
   direction: "vertical",
   invertedSwapThreshold: 0.7,
