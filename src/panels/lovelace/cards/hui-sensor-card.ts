@@ -72,7 +72,7 @@ class HuiSensorCard extends HuiEntityCard {
     super.setConfig(entityCardConfig);
   }
 
-  public getSize(): [number, number] {
+  public getGridSize(): [number, number] {
     return [2, 2];
   }
 
