@@ -131,7 +131,12 @@ export class CloudRemotePref extends LitElement {
             @click=${this._copyURL}
             .path=${mdiContentCopy}
           ></ha-svg-icon>
-          <ha-expansion-panel outlined .header=${"Advanced options"}>
+          <ha-expansion-panel
+            outlined
+            .header=${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.advanced_options"
+            )}
+          >
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
