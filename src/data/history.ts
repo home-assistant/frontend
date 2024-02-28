@@ -430,7 +430,8 @@ export const computeHistory = (
   const localStateHistory: HistoryStates = {};
 
   // Create a limited history from stateObj if entity has no recorded history.
-  entityIds.forEach((entity) => {
+  const allEntities = new Set([...entityIds, ...Object.keys(stateHistory)]);
+  allEntities.forEach((entity) => {
     if (entity in stateHistory) {
       localStateHistory[entity] = stateHistory[entity];
     } else if (hass.states[entity]) {
@@ -441,11 +442,6 @@ export const computeHistory = (
           lu: new Date(hass.states[entity].last_updated).getTime() / 1000,
         },
       ];
-    }
-  });
-  Object.keys(stateHistory).forEach((entityId) => {
-    if (!(entityId in localStateHistory)) {
-      localStateHistory[entityId] = stateHistory[entityId];
     }
   });
 
