@@ -114,7 +114,7 @@ export class StateHistoryChartTimeline extends LitElement {
               config: this.hass.config,
             },
           },
-          suggestedMin: this.startTime,
+          min: this.startTime,
           suggestedMax: this.endTime,
           ticks: {
             autoSkip: true,
