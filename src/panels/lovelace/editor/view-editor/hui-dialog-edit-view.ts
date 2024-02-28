@@ -356,7 +356,7 @@ export class HuiDialogEditView extends LitElement {
     }
   }
 
-  private _deleteConfirm(): void {
+  private async _deleteConfirm() {
     const type = this._config?.sections?.length
       ? "sections"
       : this._config?.cards?.length
@@ -365,18 +365,19 @@ export class HuiDialogEditView extends LitElement {
 
     const named = this._config?.title ? "named" : "unnamed";
 
-    const content = this.hass!.localize(
-      `ui.panel.lovelace.views.delete_${named}_view_${type}`,
-      { name: this._config?.title }
-    );
-
-    showConfirmationDialog(this, {
+    const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize("ui.panel.lovelace.views.delete_title"),
-      text: content,
-      destructive: true,
+      text: this.hass!.localize(
+        `ui.panel.lovelace.views.delete_${named}_view_${type}`,
+        { name: this._config?.title }
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
-      confirm: () => this._delete(),
+      destructive: true,
     });
+
+    if (!confirm) return;
+
+    this._delete();
   }
 
   private _handleTabSelected(ev: CustomEvent): void {
