@@ -207,7 +207,7 @@
         "media_volume_unmute": "Volume unmute",
         "repeat_set": "Repeat mode",
         "shuffle_set": "Shuffle",
-        "text_to_speak": "Text to speak",
+        "text_to_speak": "Text to peak",
         "nothing_playing": "Nothing playing"
       },
       "persistent_notification": {
@@ -218,8 +218,13 @@
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
+        "running_single": "Running …",
+        "running_queued": "{queued} in queue",
+        "running_parallel": "{active} Running …",
         "cancel": "Cancel",
-        "cancel_multiple": "Cancel {number}"
+        "cancel_all": "Cancel all",
+        "idle": "Idle",
+        "run_script": "Run script"
       },
       "service": {
         "run": "Run"
