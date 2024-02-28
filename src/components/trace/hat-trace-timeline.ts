@@ -336,8 +336,8 @@ class ActionRenderer {
             ? "alias"
             : "other",
           alias: triggerStep.changed_variables.trigger?.alias,
-          triggeredPath: triggerStep.path === "trigger" ? "other" : "trace",
-          trace: this.trace.trigger,
+          triggeredPath: triggerStep.path === "trigger" ? "manual" : "trigger",
+          trigger: this.trace.trigger,
           time: formatDateTimeWithSeconds(
             new Date(triggerStep.timestamp),
             this.hass.locale,

@@ -3201,8 +3201,10 @@
               "aborted": "Aborted at {time} (runtime: {executiontime} seconds)",
               "cancelled": "Cancelled at {time} (runtime: {executiontime} seconds)",
               "stopped": "Stopped because {reason, select, failed_conditions {a condition failed} \n failed_single {only a single execution is allowed} \n failed_max_runs {maximum number of parallel runs reached} \n error {an error was encountered} \n other {of unknown reason {reason}}} at {time} (runtime: {executiontime} seconds)",
+              "stopped_a_condition_failed": "Stopped because a condition failed at {time} (runtime: {executiontime} seconds)",
+              "stopped": "Stopped because {reason, select, failed_conditions {a condition failed} \n failed_single {only a single execution is allowed} \n failed_max_runs {maximum number of parallel runs reached} \n error {an error was encountered} \n other {of unknown reason {reason}}} at {time} (runtime: {executiontime} seconds)",
               "disabled": "(disabled)",
-              "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trace {by the {trace}}\n other {manually} \n} at {time}",
+              "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug."
             }
           }
