@@ -435,15 +435,14 @@ export class HaConfigDevicePage extends LitElement {
                                   : undefined
                               )}
                             >
-                              <paper-item
+                              <ha-list-item
+                                hasMeta
                                 .automation=${entityState}
                                 .disabled=${!entityState.attributes.id}
                               >
-                                <paper-item-body>
-                                  ${computeStateName(entityState)}
-                                </paper-item-body>
-                                <ha-icon-next></ha-icon-next>
-                              </paper-item>
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                             </a>
                             ${!entityState.attributes.id
                               ? html`
@@ -528,15 +527,14 @@ export class HaConfigDevicePage extends LitElement {
                                       : undefined
                                   )}
                                 >
-                                  <paper-item
+                                  <ha-list-item
+                                    hasMeta
                                     .scene=${entityState}
                                     .disabled=${!entityState.attributes.id}
                                   >
-                                    <paper-item-body>
-                                      ${computeStateName(entityState)}
-                                    </paper-item-body>
-                                    <ha-icon-next></ha-icon-next>
-                                  </paper-item>
+                                    ${computeStateName(entityState)}
+                                    <ha-icon-next slot="meta"></ha-icon-next>
+                                  </ha-list-item>
                                 </a>
                                 ${!entityState.attributes.id
                                   ? html`
@@ -623,12 +621,10 @@ export class HaConfigDevicePage extends LitElement {
                       return entityState
                         ? html`
                             <a href=${url}>
-                              <paper-item .script=${script}>
-                                <paper-item-body>
-                                  ${computeStateName(entityState)}
-                                </paper-item-body>
-                                <ha-icon-next></ha-icon-next>
-                              </paper-item>
+                              <ha-list-item hasMeta .script=${script}>
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                             </a>
                           `
                         : "";
@@ -1099,6 +1095,17 @@ export class HaConfigDevicePage extends LitElement {
       );
       deviceActions.push(...actions);
     }
+    if (domains.includes("matter")) {
+      const matter = await import(
+        "./device-detail/integration-elements/matter/device-actions"
+      );
+      const actions = await matter.getMatterDeviceActions(
+        this,
+        this.hass,
+        device
+      );
+      deviceActions.push(...actions);
+    }
 
     this._deviceActions = deviceActions;
   }
@@ -1202,6 +1209,17 @@ export class HaConfigDevicePage extends LitElement {
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zwave_js>
+      `);
+    }
+    if (domains.includes("matter")) {
+      import(
+        "./device-detail/integration-elements/matter/ha-device-info-matter"
+      );
+      deviceInfo.push(html`
+        <ha-device-info-matter
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-matter>
       `);
     }
   }
@@ -1494,11 +1512,6 @@ export class HaConfigDevicePage extends LitElement {
 
         :host([narrow]) .container {
           margin-top: 0;
-        }
-
-        paper-item {
-          cursor: pointer;
-          font-size: var(--paper-font-body1_-_font-size);
         }
 
         a {

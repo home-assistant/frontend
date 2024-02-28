@@ -9,6 +9,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-textfield";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -32,6 +33,8 @@ class DialogAreaDetail extends LitElement {
 
   @state() private _picture!: string | null;
 
+  @state() private _icon!: string | null;
+
   @state() private _error?: string;
 
   @state() private _params?: AreaRegistryDetailDialogParams;
@@ -46,6 +49,7 @@ class DialogAreaDetail extends LitElement {
     this._name = this._params.entry ? this._params.entry.name : "";
     this._aliases = this._params.entry ? this._params.entry.aliases : [];
     this._picture = this._params.entry?.picture || null;
+    this._icon = this._params.entry?.icon || null;
     await this.updateComplete;
   }
 
@@ -101,6 +105,13 @@ class DialogAreaDetail extends LitElement {
               dialogInitialFocus
             ></ha-textfield>
 
+            <ha-icon-picker
+              .hass=${this.hass}
+              .value=${this._icon}
+              @value-changed=${this._iconChanged}
+              .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
+            ></ha-icon-picker>
+
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -152,23 +163,30 @@ class DialogAreaDetail extends LitElement {
     this._name = ev.target.value;
   }
 
+  private _iconChanged(ev) {
+    this._error = undefined;
+    this._icon = ev.detail.value;
+  }
+
   private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
   }
 
   private async _updateEntry() {
+    const create = !this._params!.entry;
     this._submitting = true;
     try {
       const values: AreaRegistryEntryMutableParams = {
         name: this._name.trim(),
-        picture: this._picture,
+        picture: this._picture || (create ? undefined : null),
+        icon: this._icon || (create ? undefined : null),
         aliases: this._aliases,
       };
-      if (this._params!.entry) {
-        await this._params!.updateEntry!(values);
-      } else {
+      if (create) {
         await this._params!.createEntry!(values);
+      } else {
+        await this._params!.updateEntry!(values);
       }
       this.closeDialog();
     } catch (err: any) {
@@ -189,6 +207,7 @@ class DialogAreaDetail extends LitElement {
       haStyleDialog,
       css`
         ha-textfield,
+        ha-icon-picker,
         ha-picture-upload {
           display: block;
           margin-bottom: 16px;

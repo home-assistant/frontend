@@ -1,18 +1,16 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
-import { AreaRegistryEntry } from "./area_registry";
 import { debounce } from "../common/util/debounce";
+import { AreaRegistryEntry } from "./area_registry";
 
 const fetchAreaRegistry = (conn: Connection) =>
   conn
-    .sendMessagePromise({
+    .sendMessagePromise<AreaRegistryEntry[]>({
       type: "config/area_registry/list",
     })
     .then((areas) =>
-      (areas as AreaRegistryEntry[]).sort((ent1, ent2) =>
-        stringCompare(ent1.name, ent2.name)
-      )
+      areas.sort((ent1, ent2) => stringCompare(ent1.name, ent2.name))
     );
 
 const subscribeAreaRegistryUpdates = (

@@ -430,6 +430,8 @@ class PanelTodo extends LitElement {
           position: fixed;
           right: 16px;
           bottom: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
         }
       `,
     ];

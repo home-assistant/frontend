@@ -4,8 +4,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
 import { ForecastType } from "../../../data/weather";
 import { FullCalendarView, TranslationDict } from "../../../types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
 import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
+import { TimestampRenderingFormat } from "../components/types";
 import { LovelaceElementConfig } from "../elements/types";
 import {
   EntityConfig,
@@ -13,7 +15,6 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -159,6 +160,13 @@ export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   max_devices?: number;
 }
 
+export interface EnergyDevicesDetailGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-devices-detail-graph";
+  title?: string;
+  collection_key?: string;
+  max_devices?: number;
+}
+
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   type: "energy-sources-table";
   title?: string;
@@ -245,6 +253,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
+  format: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -253,7 +262,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_icon?: boolean;
   title?: string;
   theme?: string;
-  entities: Array<string | ConfigEntity>;
+  entities: (string | GlanceConfigEntity)[];
   columns?: number;
   state_color?: boolean;
 }
@@ -538,7 +547,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   state_content?: string | string[];
   icon?: string;
   color?: string;
-  show_entity_picture?: string;
+  show_entity_picture?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

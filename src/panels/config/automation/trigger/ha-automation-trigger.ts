@@ -74,10 +74,12 @@ export default class HaAutomationTrigger extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        .disabled=${!this._showReorder}
+        draggable-selector="ha-automation-trigger-row"
+        .disabled=${!this._showReorder || this.disabled}
         @item-moved=${this._triggerMoved}
         group="triggers"
         .path=${this.path}
+        invert-swap
       >
         <div class="triggers">
           ${repeat(
@@ -97,7 +99,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
               >
-                ${this._showReorder
+                ${this._showReorder && !this.disabled
                   ? html`
                       <div class="handle" slot="icons">
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
@@ -107,18 +109,20 @@ export default class HaAutomationTrigger extends LitElement {
               </ha-automation-trigger-row>
             `
           )}
+          <div class="buttons">
+            <ha-button
+              outlined
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.add"
+              )}
+              .disabled=${this.disabled}
+              @click=${this._addTriggerDialog}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </ha-button>
+          </div>
         </div>
       </ha-sortable>
-      <ha-button
-        outlined
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.add"
-        )}
-        .disabled=${this.disabled}
-        @click=${this._addTriggerDialog}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
     `;
   }
 
@@ -176,12 +180,14 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private _moveUp(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index - 1;
     this._move(index, newIndex);
   }
 
   private _moveDown(ev) {
+    ev.stopPropagation();
     const index = (ev.target as any).index;
     const newIndex = index + 1;
     this._move(index, newIndex);
@@ -240,28 +246,41 @@ export default class HaAutomationTrigger extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .triggers {
+        padding: 16px;
+        margin: -16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .sortable-ghost {
+        background: none;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+      .sortable-drag {
+        background: none;
+      }
       ha-automation-trigger-row {
         display: block;
-        margin-bottom: 16px;
         scroll-margin-top: 48px;
       }
       ha-svg-icon {
         height: 20px;
       }
-      ha-alert {
-        display: block;
-        margin-bottom: 16px;
-        border-radius: var(--ha-card-border-radius, 16px);
-        overflow: hidden;
-      }
       .handle {
-        padding: 12px 4px;
+        padding: 12px;
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
       }
       .handle ha-svg-icon {
         pointer-events: none;
         height: 24px;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        order: 1;
       }
     `;
   }

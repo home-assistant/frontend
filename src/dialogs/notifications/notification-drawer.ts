@@ -14,6 +14,7 @@ import "./notification-item";
 import "../../components/ha-header-bar";
 import "../../components/ha-drawer";
 import type { HaDrawer } from "../../components/ha-drawer";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
 export class HuiNotificationDrawer extends LitElement {
@@ -92,7 +93,12 @@ export class HuiNotificationDrawer extends LitElement {
     });
 
     return html`
-      <ha-drawer type="modal" open @MDCDrawer:closed=${this._dialogClosed}>
+      <ha-drawer
+        type="modal"
+        open
+        @MDCDrawer:closed=${this._dialogClosed}
+        .direction=${computeRTLDirection(this.hass)}
+      >
         <ha-header-bar>
           <div slot="title">
             ${this.hass.localize("ui.notification_drawer.title")}

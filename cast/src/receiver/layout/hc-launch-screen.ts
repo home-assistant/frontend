@@ -28,7 +28,6 @@ class HcLaunchScreen extends LitElement {
       :host {
         display: block;
         height: 100vh;
-        padding-top: 64px;
         background-color: white;
         font-size: 24px;
       }
@@ -36,17 +35,13 @@ class HcLaunchScreen extends LitElement {
         display: flex;
         flex-direction: column;
         text-align: center;
+        align-items: center;
+        height: 100%;
+        justify-content: space-evenly;
       }
       img {
-        width: 717px;
-        height: 376px;
-        display: block;
-        margin: 0 auto;
-      }
-      .status {
-        padding-right: 54px;
-        padding-inline-end: 54px;
-        padding-inline-start: initial;
+        max-width: 80%;
+        object-fit: cover;
       }
     `;
   }
