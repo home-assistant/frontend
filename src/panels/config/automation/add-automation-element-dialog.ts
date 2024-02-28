@@ -536,6 +536,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
             ? html`<ha-list-item-new
+                  interactive
                   class="paste"
                   .value=${PASTE_VALUE}
                   @click=${this._selected}
