@@ -2,6 +2,7 @@ import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -64,7 +65,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         draggable-selector=".section"
         .rollback=${false}
       >
-        <div class="container">
+        <div
+          class="container"
+          style=${styleMap({
+            "--cell-count": String(
+              (this._config?.sections?.length ?? 0) + (editMode ? 1 : 0)
+            ),
+          })}
+        >
           ${repeat(
             sectionsConfig,
             (sectionConfig) => this._getKey(sectionConfig),
@@ -230,25 +238,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
-        --column-count: 3;
+        --grid-gap: 20px;
+        --grid-max-width: 1400px;
+        --grid-cell-max-width: 500px;
+        --grid-cell-min-width: 320px;
         display: grid;
-        grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-        gap: 8px 20px;
-        max-width: 1400px;
-        padding: 20px;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--grid-cell-min-width), 1fr)
+        );
+        justify-content: center;
+        gap: 8px var(--grid-gap);
+        padding: var(--grid-gap);
+        box-sizing: border-box;
+        max-width: min(
+          calc(
+            var(--cell-count) * (var(--grid-cell-max-width) + var(--grid-gap)) +
+              var(--grid-gap)
+          ),
+          var(--grid-max-width)
+        );
         margin: 0 auto;
-      }
-
-      @media (max-width: 1200px) {
-        .container {
-          --column-count: 2;
-        }
       }
 
       @media (max-width: 600px) {
         .container {
-          --column-count: 1;
-          padding: 8px;
+          grid-template-columns: 1fr;
+          --grid-gap: 8px;
         }
       }
 
