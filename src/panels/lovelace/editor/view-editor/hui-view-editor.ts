@@ -5,14 +5,18 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
+  SECTION_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -33,7 +37,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, currentType: string, isNew: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -53,12 +57,18 @@ export class HuiViewEditor extends LitElement {
                   DEFAULT_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
+                  SECTION_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,
                 label: localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`
                 ),
+                disabled:
+                  !isNew &&
+                  (currentType === SECTION_VIEW_LAYOUT
+                    ? type !== SECTION_VIEW_LAYOUT
+                    : type === SECTION_VIEW_LAYOUT),
               })),
             },
           },
@@ -69,7 +79,7 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
 
   set config(config: LovelaceViewConfig) {
@@ -90,7 +100,7 @@ export class HuiViewEditor extends LitElement {
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass.localize, this._type, this.isNew);
 
     const data = {
       ...this._config,
@@ -154,6 +164,15 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.subview_helper"
         );
+      case "type":
+        if (this.isNew) return undefined;
+        return this._type === "sections"
+          ? this.hass.localize(
+              "ui.panel.lovelace.editor.edit_view.type_helper_others"
+            )
+          : this.hass.localize(
+              "ui.panel.lovelace.editor.edit_view.type_helper_sections"
+            );
       default:
         return undefined;
     }

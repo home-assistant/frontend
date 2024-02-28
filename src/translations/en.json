@@ -1371,7 +1371,11 @@
           "add_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::add_option%]",
           "remove_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::remove_option%]",
           "no_options": "There are no options yet.",
-          "add": "Add"
+          "add": "Add",
+          "confirm_delete": {
+            "delete": "[%key:ui::components::todo::item::confirm_delete::delete%]",
+            "prompt": "[%key:ui::components::todo::item::confirm_delete::prompt%]"
+          }
         },
         "counter": {
           "minimum": "Minimum value",
@@ -2503,7 +2507,7 @@
             "triggers": {
               "name": "Triggers",
               "header": "When",
-              "description": "This list of triggers is what starts your automation. A trigger is a specific event happening in or around your home, for example: ''When the sun sets''.",
+              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger listed here will start your automation.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
@@ -4123,6 +4127,7 @@
           "other_networks": "Other networks",
           "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
+          "more_info": "More Info",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
           "add_to_my_network": "Add to preferred network",
@@ -5022,10 +5027,13 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
-          "confirm_delete": "Delete view?",
-          "confirm_delete_text": "Are you sure you want to delete your ''{name}'' view?",
-          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
-          "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
+          "delete_title": "Delete view",
+          "delete_named_view_only": "''{name}'' view will be deleted.",
+          "delete_unnamed_view_only": "This view will be deleted.",
+          "delete_named_view_cards": "''{name}'' view and all its cards will be deleted.",
+          "delete_unnamed_view_cards": "This view and all its cards will be deleted.",
+          "delete_named_view_sections": "''{name}'' view and all its sections will be deleted.",
+          "delete_unnamed_view_sections": "This view and all its sections will be deleted."
         },
         "menu": {
           "configure_ui": "Edit dashboard",
@@ -5093,10 +5101,14 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
+            "type_helper_sections": "You can not change your view to use the 'sections' view type, because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
+            "type_helper_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "sections": "Sections (experimental)"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5112,7 +5124,7 @@
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
             "pick_card": "Which card would you like to add?",
-            "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
@@ -5149,6 +5161,23 @@
             "views_label": "View",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard."
+          },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "add_section": "Add section"
+          },
+          "delete_section": {
+            "title": "Delete section",
+            "text_named_section_only": "''{name}'' section will be deleted.",
+            "text_unnamed_section_only": "This section will be deleted.",
+            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
+            "text_unnamed_section_cards": "This section and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5455,7 +5484,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
@@ -5985,7 +6017,8 @@
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",
-          "qr_code_image": "QR code for token {name}"
+          "qr_code_image": "QR code for token {name}",
+          "generate_qr_code": "Generate QR Code"
         }
       },
       "todo": {
@@ -6322,6 +6355,7 @@
                 "end": "End",
                 "new_value": "New value",
                 "adjust": "Adjust",
+                "outliers": "Outliers",
                 "sum_adjusted": "Statistic sum adjusted",
                 "error_sum_adjusted": "Error adjusting sum: {message}"
               }
@@ -6512,6 +6546,7 @@
         }
       },
       "energy": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
@@ -6534,7 +6569,8 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Monitor individual devices"
+          "energy_devices_graph_title": "Individual devices total usage",
+          "energy_devices_detail_graph_title": "Individual devices detail usage"
         }
       },
       "history": {

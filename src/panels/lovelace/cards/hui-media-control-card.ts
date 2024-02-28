@@ -726,6 +726,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         position: absolute;
         right: 4px;
         --mdc-icon-size: 24px;
+        inset-inline-end: 4px;
+        inset-inline-start: initial;
       }
 
       .top-info {

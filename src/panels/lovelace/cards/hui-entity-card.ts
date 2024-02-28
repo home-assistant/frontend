@@ -75,11 +75,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return (
-      config &&
-      (config.state_color ||
-        (domain === "light" && config.state_color !== false))
-    );
+    return config && (config.state_color ?? domain === "light");
   }
 
   public setConfig(config: EntityCardConfig): void {

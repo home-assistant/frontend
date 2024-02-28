@@ -117,7 +117,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 1;
+    return (
+      1 +
+      (this._config?.vertical ? 1 : 0) +
+      (this._config?.features?.length || 0)
+    );
+  }
+
+  public getGridSize(): [number, number] {
+    const width = 2;
+    let height = 1;
+    if (this._config?.features?.length) {
+      height += Math.ceil((this._config.features.length * 2) / 3);
+    }
+    if (this._config?.vertical) {
+      height++;
+    }
+    return [width, height];
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -437,12 +453,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .secondary=${localizedState}
           ></ha-tile-info>
         </div>
-        <hui-card-features
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .color=${this._config.color}
-          .features=${this._config.features}
-        ></hui-card-features>
+        ${this._config.features
+          ? html`
+              <hui-card-features
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                .color=${this._config.color}
+                .features=${this._config.features}
+              ></hui-card-features>
+            `
+          : nothing}
       </ha-card>
     `;
   }
@@ -465,6 +485,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         transition:
           box-shadow 180ms ease-in-out,
           border-color 180ms ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);

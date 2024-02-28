@@ -6,7 +6,6 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -31,10 +30,7 @@ import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
-  fetchStatistics,
   getStatisticLabel,
-  Statistics,
-  StatisticsUnitConfiguration,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -186,47 +182,8 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
-    const devices = energyData.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
-
-    const period =
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
-
-    const lengthUnit = this.hass.config.unit_system.length || "";
-    const units: StatisticsUnitConfiguration = {
-      energy: "kWh",
-      volume: lengthUnit === "km" ? "m³" : "ft³",
-    };
-
-    const data = await fetchStatistics(
-      this.hass,
-      energyData.start,
-      energyData.end,
-      devices,
-      period,
-      units,
-      ["change"]
-    );
-
-    let compareData: Statistics | undefined;
-
-    if (energyData.startCompare && energyData.endCompare) {
-      compareData = await fetchStatistics(
-        this.hass,
-        energyData.startCompare,
-        energyData.endCompare,
-        devices,
-        period,
-        units,
-        ["change"]
-      );
-    }
+    const data = energyData.stats;
+    const compareData = energyData.statsCompare;
 
     const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
       [];

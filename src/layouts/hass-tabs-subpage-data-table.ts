@@ -377,6 +377,8 @@ export class HaTabsSubpageDataTable extends LitElement {
         color: var(--text-primary-color);
         position: absolute;
         right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
         top: 4px;
         font-size: 0.65em;
       }

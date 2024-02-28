@@ -177,8 +177,13 @@ class HaInputSelectForm extends LitElement {
     const index = (ev.target as any).index;
     if (
       !(await showConfirmationDialog(this, {
-        title: "Delete this item?",
-        text: "Are you sure you want to delete this item?",
+        title: this.hass.localize(
+          "ui.dialogs.helper_settings.input_select.confirm_delete.delete"
+        ),
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.input_select.confirm_delete.prompt"
+        ),
+        destructive: true,
       }))
     ) {
       return;

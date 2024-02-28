@@ -499,6 +499,8 @@ class OnboardingLocation extends LitElement {
           position: absolute;
           top: 10px;
           right: 10px;
+          inset-inline-end: 10px;
+          inset-inline-start: initial;
           --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
@@ -509,6 +511,8 @@ class OnboardingLocation extends LitElement {
         ha-textfield > ha-circular-progress {
           position: relative;
           left: 12px;
+          inset-inline-start: 12px;
+          inset-inline-end: initial;
         }
         ha-locations-editor {
           display: block;
