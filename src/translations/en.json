@@ -3200,7 +3200,6 @@
               "finished": "Finished at {time} (runtime: {executiontime} seconds)",
               "aborted": "Aborted at {time} (runtime: {executiontime} seconds)",
               "cancelled": "Cancelled at {time} (runtime: {executiontime} seconds)",
-              "stopped": "Stopped because {reason, select, failed_conditions {a condition failed} \n failed_single {only a single execution is allowed} \n failed_max_runs {maximum number of parallel runs reached} \n error {an error was encountered} \n other {of unknown reason {reason}}} at {time} (runtime: {executiontime} seconds)",
               "stopped_failed_conditions": "Stopped because a condition failed at {time} (runtime: {executiontime} seconds)",
               "stopped_failed_single": "Stopped because only a single execution is allowed at {time} (runtime: {executiontime} seconds)",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
