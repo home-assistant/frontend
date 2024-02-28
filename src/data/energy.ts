@@ -781,7 +781,7 @@ export const getEnergyGasUnit = (
       : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
+export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
 
 export const energyStatisticHelpUrl =
