@@ -332,10 +332,10 @@ class ActionRenderer {
       this.hass.localize(
         "ui.panel.config.automation.trace.messages.triggered_by",
         {
-          triggeredBy: triggerStep.changed_variables?.trigger.alias
+          triggeredBy: triggerStep.changed_variables.trigger?.alias
             ? "alias"
             : "other",
-          alias: triggerStep.changed_variables?.trigger.alias,
+          alias: triggerStep.changed_variables.trigger?.alias,
           triggeredPath: triggerStep.path === "trigger" ? "other" : "trace",
           trace: this.trace.trigger,
           time: formatDateTimeWithSeconds(
