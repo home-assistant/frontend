@@ -5098,7 +5098,7 @@
             },
             "type": "View type",
             "type_helper_sections": "You can not convert your view to 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment 'sections' view.",
-            "type_helper_others": "You can not convert your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another type.",
+            "type_helper_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
 
             "types": {
               "masonry": "Masonry (default)",
