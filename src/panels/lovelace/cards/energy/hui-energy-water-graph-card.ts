@@ -17,13 +17,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import {
-  hex2rgb,
-  lab2rgb,
-  rgb2hex,
-  rgb2lab,
-} from "../../../../common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../common/color/lab";
+import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -202,16 +196,12 @@ export class HuiEnergyWaterGraphCard
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     const computedStyles = getComputedStyle(this);
-    const waterColor = computedStyles
-      .getPropertyValue("--energy-water-color")
-      .trim();
 
     datasets.push(
       ...this._processDataSet(
         energyData.stats,
         energyData.statsMetadata,
         waterSources,
-        waterColor,
         computedStyles
       )
     );
@@ -233,7 +223,6 @@ export class HuiEnergyWaterGraphCard
           energyData.statsCompare,
           energyData.statsMetadata,
           waterSources,
-          waterColor,
           computedStyles,
           true
         )
@@ -255,28 +244,12 @@ export class HuiEnergyWaterGraphCard
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
     waterSources: WaterSourceTypeEnergyPreference[],
-    waterColor: string,
     computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     waterSources.forEach((source, idx) => {
-      let borderColor = computedStyles
-        .getPropertyValue("--energy-water-color-" + idx)
-        .trim();
-      if (borderColor.length === 0) {
-        const modifiedColor =
-          idx > 0
-            ? this.hass.themes.darkMode
-              ? labBrighten(rgb2lab(hex2rgb(waterColor)), idx)
-              : labDarken(rgb2lab(hex2rgb(waterColor)), idx)
-            : undefined;
-        borderColor = modifiedColor
-          ? rgb2hex(lab2rgb(modifiedColor))
-          : waterColor;
-      }
-
       let prevStart: number | null = null;
 
       const waterConsumptionData: ScatterDataPoint[] = [];
@@ -315,8 +288,22 @@ export class HuiEnergyWaterGraphCard
           source.stat_energy_from,
           statisticsMetaData[source.stat_energy_from]
         ),
-        borderColor: compare ? borderColor + "7F" : borderColor,
-        backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
+        borderColor: getEnergyColor(
+          computedStyles,
+          this.hass.themes.darkMode,
+          false,
+          compare,
+          "--energy-water-color",
+          idx
+        ),
+        backgroundColor: getEnergyColor(
+          computedStyles,
+          this.hass.themes.darkMode,
+          true,
+          compare,
+          "--energy-water-color",
+          idx
+        ),
         data: waterConsumptionData,
         order: 1,
         stack: "water",
