@@ -34,6 +34,11 @@ import { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
 
+interface CombinedStat {
+  hour: StatisticValue | null;
+  fiveMin: StatisticValue[];
+}
+
 @customElement("dialog-statistics-adjust-sum")
 export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -197,6 +202,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       ></ha-selector-datetime>
       <div class="stat-list">${stats}</div>
       <mwc-button
+        slot="secondaryAction"
+        .label=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
+        )}
+        @click=${this._fetchOutliers}
+      ></mwc-button>
+      <mwc-button
         slot="primaryAction"
         dialogAction="cancel"
         .label=${this.hass.localize("ui.common.close")}
@@ -347,6 +359,101 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
     this._stats5min =
       statId in stats5MinData ? stats5MinData[statId].slice(0, 5) : [];
+  }
+
+  private async _fetchOutliers(): Promise<void> {
+    this._stats5min = undefined;
+    this._statsHour = undefined;
+    const statId = this._params!.statistic.statistic_id;
+
+    // Get all the data
+    const start = new Date(0);
+    const end = new Date();
+
+    const statsHourData = await fetchStatistics(
+      this.hass,
+      start,
+      end,
+      [statId],
+      "hour"
+    );
+
+    const statsHour = statId in statsHourData ? statsHourData[statId] : [];
+    if (statsHour.length === 0) {
+      return;
+    }
+
+    const stats5MinData = await fetchStatistics(
+      this.hass,
+      start,
+      end,
+      [statId],
+      "5minute"
+    );
+
+    const stats5Min = statId in stats5MinData ? stats5MinData[statId] : [];
+    // First datapoint of 5 minute data in the history is always junk since it counts the entire sum
+    // as the change, which we don't want here.
+    stats5Min.shift();
+
+    const combinedStatsData: CombinedStat[] = [];
+    statsHour.forEach((s) => {
+      combinedStatsData.push({ hour: s, fiveMin: [] });
+    });
+
+    const lasthour: CombinedStat = { hour: null, fiveMin: [] };
+
+    let i = 0;
+    stats5Min.forEach((s) => {
+      let matched = false;
+      for (i; i < combinedStatsData.length; i++) {
+        const hour = combinedStatsData[i].hour;
+        if (hour && s.start >= hour.start && s.end <= hour.end) {
+          combinedStatsData[i].fiveMin.push(s);
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        lasthour.fiveMin.push(s);
+      }
+    });
+
+    combinedStatsData.push(lasthour);
+
+    let statsOutliers: StatisticValue[] = [];
+    let min = 0;
+    const numOutliers = 10;
+
+    // Track the top 10 values.
+    const addOutlier = (s) => {
+      const val = Math.abs(s.change ?? 0);
+      if (statsOutliers.length < numOutliers || val > min) {
+        statsOutliers.push(s);
+        statsOutliers = statsOutliers.sort(
+          (a, b) => Math.abs(b.change ?? 0) - Math.abs(a.change ?? 0)
+        );
+        statsOutliers = statsOutliers.slice(0, numOutliers);
+        min = statsOutliers[statsOutliers.length - 1].change ?? 0;
+      }
+    };
+
+    // If an hour has no five minute data, add the hour value
+    // Otherwise, add the 5 minute values and ignore the hour value
+    combinedStatsData.forEach((c) => {
+      if (c.fiveMin.length === 0 && c.hour) {
+        addOutlier(c.hour);
+      } else {
+        c.fiveMin.forEach((s) => {
+          addOutlier(s);
+        });
+      }
+    });
+
+    // Outliers are a possible mix of hour/5minute data, but the distinction
+    // is not relevant here, as long as only one array is populated.
+    this._statsHour = statsOutliers;
+    this._stats5min = [];
   }
 
   private async _fixIssue(): Promise<void> {
