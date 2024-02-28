@@ -5026,10 +5026,13 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
-          "confirm_delete": "Delete view?",
-          "confirm_delete_text": "Are you sure you want to delete your ''{name}'' view?",
-          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
-          "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
+          "delete_title": "Delete view",
+          "delete_named_view_only": "''{name}'' view will be deleted.",
+          "delete_unnamed_view_only": "This view will be deleted.",
+          "delete_named_view_cards": "''{name}'' view and all its cards will be deleted.",
+          "delete_unnamed_view_cards": "This view and all its cards will be deleted.",
+          "delete_named_view_sections": "''{name}'' view and all its sections will be deleted.",
+          "delete_unnamed_view_sections": "This view and all its sections will be deleted."
         },
         "menu": {
           "configure_ui": "Edit dashboard",
@@ -5162,10 +5165,10 @@
           },
           "delete_section": {
             "title": "Delete section",
-            "named_section": "\"{name}\" section",
-            "unnamed_section": "This section",
-            "text_section_only": "{section} will be deleted.",
-            "text_section_and_cards": "{section} and all its cards will be deleted."
+            "text_named_section_only": "''{name}'' section will be deleted.",
+            "text_unnamed_section_only": "This section will be deleted.",
+            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
+            "text_unnamed_section_cards": "This section and all its cards will be deleted."
           },
           "edit_section_title": {
             "title": "Edit name",
