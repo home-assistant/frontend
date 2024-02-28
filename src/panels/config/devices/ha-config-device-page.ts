@@ -431,7 +431,7 @@ export class HaConfigDevicePage extends LitElement {
                             <a
                               href=${ifDefined(
                                 entityState.attributes.id
-                                  ? `/config/automation/edit/${entityState.attributes.id}`
+                                  ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
                                   : undefined
                               )}
                             >
