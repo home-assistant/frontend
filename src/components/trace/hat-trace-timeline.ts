@@ -741,27 +741,39 @@ export class HaAutomationTracer extends LitElement {
         icon: mdiAlertCircle,
       };
     } else {
+      let message:
+        | "stopped_failed_conditions"
+        | "stopped_failed_single"
+        | "stopped_failed_max_runs"
+        | "stopped_error"
+        | "stopped_unknown_reason";
       let isError = false;
       let extra: TemplateResult | undefined;
 
       switch (this.trace.script_execution) {
         case "failed_conditions":
+          message = "stopped_failed_conditions";
+          break;
         case "failed_single":
+          message = "stopped_failed_single";
+          break;
         case "failed_max_runs":
+          message = "stopped_failed_max_runs";
           break;
         case "error":
           isError = true;
+          message = "stopped_error";
           extra = html`<br /><br />${this.trace.error!}`;
           break;
         default:
           isError = true;
+          message = "stopped_unknown_reason";
       }
 
       entry = {
         description: html`${this.hass.localize(
-          "ui.panel.config.automation.trace.messages.stopped",
+          `ui.panel.config.automation.trace.messages.${message}`,
           {
-            reason: this.trace.script_execution,
             time: renderFinishedAt(),
             executiontime: renderRuntime(),
           }
