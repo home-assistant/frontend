@@ -113,20 +113,18 @@ class MoreInfoScript extends LitElement {
         : nothing}
 
       <ha-control-button-group>
-        ${current
-          ? html`<ha-control-button
-              @click=${this._cancelScript}
-              class="cancel-button"
-            >
-              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              ${(isQueued || isParallel) && current > 1
-                ? this.hass.localize("ui.card.script.cancel_all")
-                : this.hass.localize("ui.card.script.cancel")}
-            </ha-control-button>`
-          : nothing}
+        <ha-control-button
+          @click=${this._cancelScript}
+          .disabled=${!current}
+          class="cancel-button"
+        >
+          <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+          ${(isQueued || isParallel) && current > 1
+            ? this.hass.localize("ui.card.script.cancel_all")
+            : this.hass.localize("ui.card.script.cancel")}
+        </ha-control-button>
         <ha-control-button
           class="run-button"
-          raised
           @click=${this._runScript}
           .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
         >
