@@ -5023,11 +5023,12 @@
         },
         "views": {
           "delete_title": "Delete view",
-          "delete_named_view": "\"{name}\" view",
-          "delete_unnamed_view": "This view",
-          "delete_text_view_only": "{view} will be deleted.",
-          "delete_text_view_and_cards": "{view} and all its cards will be deleted.",
-          "delete_text_view_and_sections": "{view} and all its sections will be deleted."
+          "delete_named_view_only": "''{name}'' view will be deleted.",
+          "delete_unnamed_view_only": "This view will be deleted.",
+          "delete_named_view_cards": "''{name}'' view and all its cards will be deleted.",
+          "delete_unnamed_view_cards": "This view and all its cards will be deleted.",
+          "delete_named_view_sections": "''{name}'' view and all its sections will be deleted.",
+          "delete_unnamed_view_sections": "This view and all its sections will be deleted."
         },
         "menu": {
           "configure_ui": "Edit dashboard",

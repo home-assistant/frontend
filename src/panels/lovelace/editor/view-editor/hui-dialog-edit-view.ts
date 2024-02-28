@@ -357,24 +357,24 @@ export class HuiDialogEditView extends LitElement {
   }
 
   private _deleteConfirm(): void {
-    const viewName = this._config?.title
-      ? this.hass!.localize("ui.panel.lovelace.views.delete_named_view", {
-          name: this._config?.title,
-        })
-      : this.hass!.localize("ui.panel.lovelace.views.delete_unnamed_view");
+    const type = this._config?.sections?.length
+      ? "sections"
+      : this._config?.cards?.length
+        ? "cards"
+        : "only";
+
+    const named = this._config?.title ? "named" : "unnamed";
 
     const content = this.hass!.localize(
-      this._config?.sections?.length
-        ? "ui.panel.lovelace.views.delete_text_view_and_sections"
-        : this._config?.cards?.length
-          ? "ui.panel.lovelace.views.delete_text_view_and_cards"
-          : "ui.panel.lovelace.views.delete_text_view_only",
-      { view: viewName }
+      `ui.panel.lovelace.views.delete_${named}_view_${type}`,
+      { name: this._config?.title }
     );
 
     showConfirmationDialog(this, {
       title: this.hass!.localize("ui.panel.lovelace.views.delete_title"),
       text: content,
+      destructive: true,
+      confirmText: this.hass!.localize("ui.common.delete"),
       confirm: () => this._delete(),
     });
   }
