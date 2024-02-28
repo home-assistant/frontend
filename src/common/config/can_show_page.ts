@@ -9,13 +9,10 @@ export const canShowPage = (hass: HomeAssistant, page: PageNavigation) =>
   isNotLoadedIntegration(hass, page);
 
 const isLoadedIntegration = (hass: HomeAssistant, page: PageNavigation) =>
-  page.component
-    ? isComponentLoaded(hass, page.component)
-    : page.components
-      ? page.components.some((integration) =>
-          isComponentLoaded(hass, integration)
-        )
-      : true;
+  !page.component ||
+  ensureArray(page.component).some((integration) =>
+    isComponentLoaded(hass, integration)
+  );
 
 const isNotLoadedIntegration = (hass: HomeAssistant, page: PageNavigation) =>
   !page.not_component ||
