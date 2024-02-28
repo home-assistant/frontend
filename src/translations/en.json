@@ -3508,7 +3508,11 @@
               "instance_will_be_available": "Your instance will be available at your",
               "link_learn_how_it_works": "Learn how it works",
               "nabu_casa_url": "Nabu Casa URL",
-              "certificate_info": "Certificate info"
+              "external_activation": "Allow external activation",
+              "external_activation_secondary": "Should you be able to turn on remote control from your Nabu Casa account page.",
+              "certificate_info": "Certificate info",
+              "certificate_expire": "Will be renewed at {date}",
+              "more_info": "More info"
             },
             "alexa": {
               "title": "Alexa",
