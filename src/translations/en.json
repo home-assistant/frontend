@@ -207,7 +207,7 @@
         "media_volume_unmute": "Volume unmute",
         "repeat_set": "Repeat mode",
         "shuffle_set": "Shuffle",
-        "text_to_speak": "Text to peak",
+        "text_to_speak": "Text to speak",
         "nothing_playing": "Nothing playing"
       },
       "persistent_notification": {
@@ -222,6 +222,7 @@
         "running_queued": "{queued} in queue",
         "running_parallel": "{active} Running …",
         "cancel": "Cancel",
+        "cancel_multiple": "Cancel {number}",
         "cancel_all": "Cancel all",
         "idle": "Idle",
         "run_script": "Run script"

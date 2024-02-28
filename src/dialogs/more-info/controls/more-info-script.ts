@@ -202,7 +202,7 @@ class MoreInfoScript extends LitElement {
     return css`
       .state {
         text-align: center;
-        margin: 2em 16px 1em;
+        margin: 0 16px 16px;
       }
       .state .queue {
         visibility: hidden;
