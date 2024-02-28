@@ -34,7 +34,6 @@ class MoreInfoPerson extends LitElement {
         : ""}
       ${!__DEMO__ &&
       this.hass.user?.is_admin &&
-      this.stateObj.state === "not_home" &&
       this.stateObj.attributes.latitude &&
       this.stateObj.attributes.longitude
         ? html`

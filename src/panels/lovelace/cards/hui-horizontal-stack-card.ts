@@ -28,26 +28,11 @@ export class HuiHorizontalStackCard extends HuiStackCard {
         #root {
           display: flex;
           height: 100%;
+          gap: var(--horizontal-stack-card-gap, var(--stack-card-gap, 8px));
         }
         #root > * {
           flex: 1 1 0;
-          margin: var(
-            --horizontal-stack-card-margin,
-            var(--stack-card-margin, 0 4px)
-          );
           min-width: 0;
-        }
-        #root[dir="ltr"] > *:first-child {
-          margin-left: 0;
-        }
-        #root[dir="ltr"] > *:last-child {
-          margin-right: 0;
-        }
-        #root[dir="rtl"] > *:first-child {
-          margin-right: 0;
-        }
-        #root[dir="rtl"] > *:last-child {
-          margin-left: 0;
         }
       `,
     ];

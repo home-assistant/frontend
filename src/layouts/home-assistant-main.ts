@@ -15,6 +15,7 @@ import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 
 declare global {
   // for fire event
@@ -61,6 +62,7 @@ export class HomeAssistantMain extends LitElement {
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .direction=${computeRTLDirection(this.hass)}
         @MDCDrawer:closed=${this._drawerClosed}
       >
         <ha-sidebar

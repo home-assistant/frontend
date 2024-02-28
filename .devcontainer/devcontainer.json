@@ -2,12 +2,13 @@
   "name": "Home Assistant Frontend",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": "..",
+    "context": ".."
   },
   "appPort": "8124:8123",
+  "postCreateCommand": "sudo apt update && sudo apt upgrade -y && sudo apt install -y libpcap-dev",
   "postStartCommand": "script/bootstrap",
   "containerEnv": {
-    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}",
+    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
   },
   "customizations": {
     "vscode": {
@@ -16,7 +17,7 @@
         "esbenp.prettier-vscode",
         "runem.lit-plugin",
         "github.vscode-pull-request-github",
-        "eamodio.gitlens",
+        "eamodio.gitlens"
       ],
       "settings": {
         "files.eol": "\n",
@@ -27,17 +28,17 @@
         "editor.renderWhitespace": "boundary",
         "editor.rulers": [80],
         "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "files.trimTrailingWhitespace": true,
         "terminal.integrated.shell.linux": "/usr/bin/zsh",
         "gitlens.showWelcomeOnInstall": false,
         "gitlens.showWhatsNewAfterUpgrades": false,
-        "workbench.startupEditor": "none",
-      },
-    },
-  },
+        "workbench.startupEditor": "none"
+      }
+    }
+  }
 }

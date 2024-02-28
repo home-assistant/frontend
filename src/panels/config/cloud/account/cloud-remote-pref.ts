@@ -1,18 +1,22 @@
-import "@material/mwc-button";
 import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
+import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import {
   CloudStatusLoggedIn,
   connectCloudRemote,
   disconnectCloudRemote,
+  updateCloudPref,
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -29,7 +33,8 @@ export class CloudRemotePref extends LitElement {
       return nothing;
     }
 
-    const { remote_enabled } = this.cloudStatus.prefs;
+    const { remote_enabled, remote_allow_remote_enable } =
+      this.cloudStatus.prefs;
 
     const {
       remote_connected,
@@ -123,16 +128,60 @@ export class CloudRemotePref extends LitElement {
           >.
           <ha-svg-icon
             .url=${`https://${remote_domain}`}
-            .path=${mdiContentCopy}
             @click=${this._copyURL}
+            .path=${mdiContentCopy}
           ></ha-svg-icon>
-        </div>
-        <div class="card-actions">
-          <mwc-button @click=${this._openCertInfo}>
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.certificate_info"
+          <ha-expansion-panel
+            outlined
+            .header=${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.advanced_options"
             )}
-          </mwc-button>
+          >
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.external_activation"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.external_activation_secondary"
+                )}</span
+              >
+              <ha-switch
+                .checked=${remote_allow_remote_enable}
+                @change=${this._toggleAllowRemoteEnabledChanged}
+              ></ha-switch>
+            </ha-settings-row>
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.certificate_info"
+                )}</span
+              >
+              <span slot="description"
+                >${this.cloudStatus!.remote_certificate
+                  ? this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.certificate_expire",
+                      {
+                        date: formatDate(
+                          new Date(
+                            this.cloudStatus.remote_certificate.expire_date
+                          ),
+                          this.hass.locale,
+                          this.hass.config
+                        ),
+                      }
+                    )
+                  : nothing}</span
+              >
+              <ha-button @click=${this._openCertInfo}>
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.more_info"
+                )}
+              </ha-button>
+            </ha-settings-row>
+          </ha-expansion-panel>
         </div>
       </ha-card>
     `;
@@ -153,6 +202,20 @@ export class CloudRemotePref extends LitElement {
       } else {
         await disconnectCloudRemote(this.hass);
       }
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(err.message);
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _toggleAllowRemoteEnabledChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+
+    try {
+      await updateCloudPref(this.hass, {
+        remote_allow_remote_enable: toggle.checked,
+      });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
       alert(err.message);
@@ -204,6 +267,8 @@ export class CloudRemotePref extends LitElement {
         position: absolute;
         right: 24px;
         top: 24px;
+        inset-inline-end: 24px;
+        inset-inline-start: initial;
       }
       .card-actions {
         display: flex;
@@ -215,6 +280,12 @@ export class CloudRemotePref extends LitElement {
         --mdc-icon-size: 18px;
         color: var(--secondary-text-color);
         cursor: pointer;
+      }
+      ha-formfield {
+        margin-top: 8px;
+      }
+      ha-expansion-panel {
+        margin-top: 8px;
       }
     `;
   }

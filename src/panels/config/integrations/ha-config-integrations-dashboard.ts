@@ -877,6 +877,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
+          inset-inline-end: 0px;
+          inset-inline-start: initial;
           top: 4px;
           font-size: 0.65em;
         }
@@ -884,7 +886,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           position: relative;
         }
         h1 {
-          margin: 8px 0 0 16px;
+          margin-top: 8px;
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-button-menu {
           color: var(--primary-text-color);

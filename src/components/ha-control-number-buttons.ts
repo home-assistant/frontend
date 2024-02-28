@@ -273,9 +273,13 @@ export class HaControlNumberButton extends LitElement {
       }
       .button.minus {
         left: 0;
+        inset-inline-start: 0;
+        inset-inline-end: initial;
       }
       .button.plus {
         right: 0;
+        inset-inline-start: initial;
+        inset-inline-end: 0;
       }
       .unit {
         white-space: pre;
