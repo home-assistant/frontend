@@ -6358,6 +6358,7 @@
                 "end": "End",
                 "new_value": "New value",
                 "adjust": "Adjust",
+                "outliers": "Outliers",
                 "sum_adjusted": "Statistic sum adjusted",
                 "error_sum_adjusted": "Error adjusting sum: {message}"
               }
