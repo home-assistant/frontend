@@ -27,16 +27,16 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
-    // Can happen on initial load
-    if (!this._toast) {
+    if (this._parameters) {
+      this._parameters = undefined;
       await this.updateComplete;
     }
-    this._toast?.close("dismiss");
-    this._parameters = parameters;
-    if (!this._parameters || this._parameters.duration === 0) {
-      this._parameters = undefined;
+
+    if (!parameters || parameters.duration === 0) {
       return;
     }
+
+    this._parameters = parameters;
 
     if (
       this._parameters.duration === undefined ||
@@ -50,12 +50,6 @@ class NotificationManager extends LitElement {
     return !this._toast || changedProperties.has("_parameters");
   }
 
-  public updated() {
-    if (this._parameters) {
-      this._toast?.show();
-    }
-  }
-
   private _toastClosed() {
     this._parameters = undefined;
   }
@@ -67,6 +61,7 @@ class NotificationManager extends LitElement {
     return html`
       <ha-toast
         leading
+        open
         dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
         .labelText=${this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
