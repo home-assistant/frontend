@@ -205,7 +205,9 @@ export class TimelineController extends BarController {
 
       const y = vScale.getPixelForValue(this.index);
 
-      const xStart = iScale.getPixelForValue(data.start.getTime());
+      const xStart = iScale.getPixelForValue(
+        Math.max(iScale.min, data.start.getTime())
+      );
       const xEnd = iScale.getPixelForValue(data.end.getTime());
       const width = xEnd - xStart;
 
