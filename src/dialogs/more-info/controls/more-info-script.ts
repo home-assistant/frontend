@@ -210,12 +210,6 @@ class MoreInfoScript extends LitElement {
       .fields .title {
         font-weight: bold;
       }
-      .run-button {
-        --control-button-background-color: var(--success-color);
-      }
-      .cancel-button {
-        --control-button-background-color: var(--error-color);
-      }
       ha-control-button ha-svg-icon {
         z-index: -1;
         margin-right: 4px;
