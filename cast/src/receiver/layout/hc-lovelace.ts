@@ -93,7 +93,7 @@ class HcLovelace extends LitElement {
   }
 
   private get _viewIndex() {
-    if (this.viewPath === null || this.viewPath === undefined) {
+    if (this.viewPath === null) {
       return 0;
     }
     const selectedView = this.viewPath;

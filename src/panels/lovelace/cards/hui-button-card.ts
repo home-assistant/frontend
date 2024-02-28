@@ -134,17 +134,23 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   private getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return (
-      config &&
-      (config.state_color ||
-        (domain === "light" && config.state_color !== false))
-    );
+    return config && (config.state_color ?? domain === "light");
   }
 
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
     );
+  }
+
+  public getGridSize(): [number, number] {
+    if (
+      this._config?.show_icon &&
+      (this._config?.show_name || this._config?.show_state)
+    ) {
+      return [2, 2];
+    }
+    return [1, 1];
   }
 
   public setConfig(config: ButtonCardConfig): void {

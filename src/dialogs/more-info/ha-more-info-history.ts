@@ -228,6 +228,7 @@ export class MoreInfoHistory extends LitElement {
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
+          [this.entityId],
           this.hass!.localize,
           sensorNumericDeviceClasses
         );

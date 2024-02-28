@@ -15,6 +15,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -92,7 +94,15 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
   private _runScript(ev): void {
     ev.stopPropagation();
-    this._callService("turn_on");
+
+    const fields =
+      this.hass!.services.script[computeObjectId(this._config!.entity)]?.fields;
+
+    if (fields && Object.keys(fields).length > 0) {
+      showMoreInfoDialog(this, { entityId: this._config!.entity });
+    } else {
+      this._callService("turn_on");
+    }
   }
 
   private _callService(service: string): void {

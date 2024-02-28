@@ -12,16 +12,27 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import {
+  isStrategySection,
+  LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import {
+  computeCards,
+  computeSection,
+} from "../../common/generate-lovelace-config";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
 import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
-import { computeCards } from "../../common/generate-lovelace-config";
+import {
+  findLovelaceContainer,
+  parseLovelaceContainerPath,
+} from "../lovelace-path";
 
 declare global {
   interface HASSDomEvents {
@@ -42,7 +53,9 @@ export class HuiCreateDialogCard
 
   @state() private _params?: CreateCardDialogParams;
 
-  @state() private _viewConfig!: LovelaceViewConfig;
+  @state() private _containerConfig!:
+    | LovelaceViewConfig
+    | LovelaceSectionConfig;
 
   @state() private _selectedEntities: string[] = [];
 
@@ -50,8 +63,17 @@ export class HuiCreateDialogCard
 
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
-    const [view] = params.path;
-    this._viewConfig = params.lovelaceConfig.views[view];
+
+    const containerConfig = findLovelaceContainer(
+      params.lovelaceConfig,
+      params.path
+    );
+
+    if ("strategy" in containerConfig) {
+      throw new Error("Can't edit strategy");
+    }
+
+    this._containerConfig = containerConfig;
   }
 
   public closeDialog(): boolean {
@@ -67,10 +89,10 @@ export class HuiCreateDialogCard
       return nothing;
     }
 
-    const title = this._viewConfig.title
+    const title = this._containerConfig.title
       ? this.hass!.localize(
-          "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-          { name: `"${this._viewConfig.title}"` }
+          "ui.panel.lovelace.editor.edit_card.pick_card_title",
+          { name: `"${this._containerConfig.title}"` }
         )
       : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
 
@@ -112,6 +134,7 @@ export class HuiCreateDialogCard
           this._currTabIndex === 0
             ? html`
                 <hui-card-picker
+                  .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
                   @config-changed=${this._handleCardPicked}
@@ -248,12 +271,36 @@ export class HuiCreateDialogCard
       this._selectedEntities,
       {}
     );
+
+    let sectionOptions: Partial<LovelaceSectionConfig> = {};
+
+    const { sectionIndex } = parseLovelaceContainerPath(this._params!.path);
+    const isSection = sectionIndex !== undefined;
+
+    // If we are in a section, we want to keep the section options for the preview
+    if (isSection) {
+      const containerConfig = findLovelaceContainer(
+        this._params!.lovelaceConfig!,
+        this._params!.path!
+      ) as LovelaceSectionConfig;
+      if (!isStrategySection(containerConfig)) {
+        const { cards, title, ...rest } = containerConfig;
+        sectionOptions = rest;
+      }
+    }
+
+    const sectionConfig = computeSection(
+      this._selectedEntities,
+      sectionOptions
+    );
+
     showSuggestCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
       path: this._params!.path as [number],
       entities: this._selectedEntities,
       cardConfig,
+      sectionConfig,
     });
 
     this.closeDialog();
