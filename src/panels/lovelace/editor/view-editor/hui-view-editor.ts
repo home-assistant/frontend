@@ -95,12 +95,16 @@ export class HuiViewEditor extends LitElement {
       : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
+  private get _isEmpty(): boolean {
+    return !this._config.sections?.length && !this._config.cards?.length;
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize, this._type, this.isNew);
+    const schema = this._schema(this.hass.localize, this._type, this._isEmpty);
 
     const data = {
       ...this._config,
@@ -165,7 +169,7 @@ export class HuiViewEditor extends LitElement {
           "ui.panel.lovelace.editor.edit_view.subview_helper"
         );
       case "type":
-        if (this.isNew) return undefined;
+        if (this._isEmpty) return undefined;
         return this._type === "sections"
           ? this.hass.localize(
               "ui.panel.lovelace.editor.edit_view.type_helper_others"
