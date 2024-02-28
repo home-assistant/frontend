@@ -811,7 +811,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           "ui.panel.config.script.editor.id_already_exists_save_error"
         ),
         dismissable: false,
-        duration: 0,
+        duration: -1,
         action: {
           action: () => {},
           text: this.hass.localize("ui.dialogs.generic.ok"),
