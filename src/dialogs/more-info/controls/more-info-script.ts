@@ -1,4 +1,4 @@
-import { mdiPlay } from "@mdi/js";
+import { mdiPlay, mdiStop } from "@mdi/js";
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -12,13 +12,15 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
-import "../../../components/ha-button";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/entity/state-info";
 import { HomeAssistant } from "../../../types";
 import { canRun, ScriptEntity } from "../../../data/script";
 import { isUnavailableState } from "../../../data/entity";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
+import "../components/ha-more-info-state-header";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -68,46 +70,35 @@ class MoreInfoScript extends LitElement {
     const hasQueue = isQueued && current > 1;
 
     return html`
-      <div class="state">
-        <h2>
-          ${current > 0
-            ? html`
-                ${isParallel && current > 1
-                  ? this.hass.localize("ui.card.script.running_parallel", {
-                      active: current,
-                    })
-                  : this.hass.localize("ui.card.script.running_single")}
-              `
-            : this.hass.localize("ui.card.script.idle")}
-        </h2>
-        <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
-          ${hasQueue
-            ? html`
-                ${this.hass.localize("ui.card.script.running_queued", {
-                  queued: current - 1,
-                })}
-              `
-            : "&nbsp;"}
-        </div>
+      <ha-more-info-state-header
+        .stateObj=${stateObj}
+        .hass=${this.hass}
+        .stateOverride=${current > 0
+          ? isParallel && current > 1
+            ? this.hass.localize("ui.card.script.running_parallel", {
+                active: current,
+              })
+            : this.hass.localize("ui.card.script.running_single")
+          : this.hass.localize("ui.card.script.idle")}
+        .changedOverride=${this.stateObj.attributes.last_triggered || 0}
+      ></ha-more-info-state-header>
 
-        <ha-button
-          class=${current > 0 ? "can-cancel" : ""}
-          raised
-          @click=${this._cancelScript}
-        >
-          ${(isQueued || isParallel) && current > 1
-            ? this.hass.localize("ui.card.script.cancel_all")
-            : this.hass.localize("ui.card.script.cancel")}
-        </ha-button>
+      <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
+        ${hasQueue
+          ? html`
+              ${this.hass.localize("ui.card.script.running_queued", {
+                queued: current - 1,
+              })}
+            `
+          : ""}
       </div>
 
-      <div class="run">
-        <div class="title">
-          ${this.hass.localize("ui.card.script.run_script")}
-        </div>
-
-        ${hasFields
-          ? html`
+      ${hasFields
+        ? html`
+            <div class="fields">
+              <div class="title">
+                ${this.hass.localize("ui.card.script.run_script")}
+              </div>
               <ha-service-control
                 hidePicker
                 hideDescription
@@ -117,32 +108,32 @@ class MoreInfoScript extends LitElement {
                 .narrow=${this.narrow}
                 @value-changed=${this._scriptDataChanged}
               ></ha-service-control>
-            `
+            </div>
+          `
+        : nothing}
+
+      <ha-control-button-group>
+        ${current
+          ? html`<ha-control-button
+              @click=${this._cancelScript}
+              class="cancel-button"
+            >
+              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+              ${(isQueued || isParallel) && current > 1
+                ? this.hass.localize("ui.card.script.cancel_all")
+                : this.hass.localize("ui.card.script.cancel")}
+            </ha-control-button>`
           : nothing}
-
-        <div class="run-button">
-          <ha-button
-            raised
-            @click=${this._runScript}
-            .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
-          >
-            <ha-svg-icon .path=${mdiPlay} slot="icon"></ha-svg-icon>
-            ${this.hass!.localize("ui.card.script.run")}
-          </ha-button>
-        </div>
-      </div>
-
-      <div class="footer">
-        ${this.stateObj.attributes.last_triggered
-          ? html`
-              <ha-relative-time
-                .hass=${this.hass}
-                .datetime=${this.stateObj.attributes.last_triggered}
-                capitalize
-              ></ha-relative-time>
-            `
-          : this.hass.localize("ui.components.relative_time.never")}
-      </div>
+        <ha-control-button
+          class="run-button"
+          raised
+          @click=${this._runScript}
+          .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
+        >
+          <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
+          ${this.hass!.localize("ui.card.script.run")}
+        </ha-control-button>
+      </ha-control-button-group>
     `;
   }
 
@@ -200,51 +191,34 @@ class MoreInfoScript extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .state {
-        text-align: center;
-        margin: 0 16px 16px;
-      }
-      .state .queue {
+      .queue {
         visibility: hidden;
         color: var(--secondary-text-color);
+        text-align: center;
+        margin-bottom: 16px;
+        height: 21px;
       }
-      .state .queue.has-queue {
+      .queue.has-queue {
         visibility: visible;
       }
-      .state ha-button {
-        margin-top: 16px;
-        --mdc-theme-primary: var(--error-color);
-        visibility: hidden;
-      }
-      .state ha-button.can-cancel {
-        visibility: visible;
-      }
-      .run {
-        margin: 8px;
+      .fields {
         padding: 16px;
         border: 1px solid var(--divider-color);
         border-radius: 8px;
+        margin-bottom: 16px;
       }
-      .run .title {
+      .fields .title {
         font-weight: bold;
       }
       .run-button {
-        margin-top: 16px;
-        text-align: center;
+        --control-button-background-color: var(--success-color);
       }
-      .footer {
-        margin-top: 24px;
-        text-align: center;
+      .cancel-button {
+        --control-button-background-color: var(--error-color);
       }
-      .flex {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 16px;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
+      ha-control-button ha-svg-icon {
+        z-index: -1;
+        margin-right: 4px;
       }
       ha-service-control {
         --service-control-padding: 0;

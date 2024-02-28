@@ -218,9 +218,9 @@
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
-        "running_single": "Running …",
+        "running_single": "Running…",
         "running_queued": "{queued} in queue",
-        "running_parallel": "{active} Running …",
+        "running_parallel": "{active} Running…",
         "cancel": "Cancel",
         "cancel_multiple": "Cancel {number}",
         "cancel_all": "Cancel all",
