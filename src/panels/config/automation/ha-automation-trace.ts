@@ -106,7 +106,7 @@ export class HaAutomationTrace extends LitElement {
           ? html`
               <a
                 class="trace-link"
-                href="/config/automation/edit/${encodeURI(
+                href="/config/automation/edit/${encodeURIComponent(
                   stateObj.attributes.id
                 )}"
                 slot="toolbar-icon"
@@ -142,7 +142,7 @@ export class HaAutomationTrace extends LitElement {
             ? html`
                 <a
                   class="trace-link"
-                  href="/config/automation/edit/${encodeURI(
+                  href="/config/automation/edit/${encodeURIComponent(
                     stateObj.attributes.id
                   )}"
                 >
