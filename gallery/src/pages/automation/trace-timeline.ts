@@ -55,6 +55,7 @@ export class DemoAutomationTraceTimeline extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
   }
 
   static get styles() {
