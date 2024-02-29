@@ -1,11 +1,30 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { any, assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { ImageElementConfig } from "../../../elements/types";
+import { actionConfigStruct } from "../../structs/action-struct";
+
+const imageElementConfigStruct = object({
+  type: literal("image"),
+  entity: optional(string()),
+  image: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+  camera_image: optional(string()),
+  camera_view: optional(string()),
+  state_image: optional(any()),
+  filter: optional(string()),
+  state_filter: optional(any()),
+  aspect_ratio: optional(string()),
+});
 
 const SCHEMA = [
   { name: "entity", selector: { entity: {} } },
@@ -45,6 +64,7 @@ export class HuiImageElementEditor
   @state() private _config?: ImageElementConfig;
 
   public setConfig(config: ImageElementConfig): void {
+    assert(config, imageElementConfigStruct);
     this._config = config;
   }
 

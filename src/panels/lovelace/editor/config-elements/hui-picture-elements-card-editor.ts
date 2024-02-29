@@ -5,12 +5,10 @@ import {
   array,
   assert,
   assign,
-  boolean,
-  dynamic,
-  literal,
   object,
   optional,
   string,
+  type,
 } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -22,7 +20,6 @@ import type { HomeAssistant } from "../../../../types";
 import type { PictureElementsCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
-import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -31,112 +28,8 @@ import { LovelaceElementConfig } from "../../elements/types";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 
-const stateBadgeElementConfigStruct = object({
-  type: literal("state-badge"),
-  entity: optional(string()),
-  style: optional(any()),
-  title: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
-
-const stateIconElementConfigStruct = object({
-  type: literal("state-icon"),
-  entity: optional(string()),
-  icon: optional(string()),
-  state_color: optional(boolean()),
-  style: optional(any()),
-  title: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
-
-const stateLabelElementConfigStruct = object({
-  type: literal("state-label"),
-  entity: optional(string()),
-  attribute: optional(string()),
-  prefix: optional(string()),
-  suffix: optional(string()),
-  style: optional(any()),
-  title: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
-
-const serviceButtonElementConfigStruct = object({
-  type: literal("service-button"),
-  style: optional(any()),
-  title: optional(string()),
-  service: optional(string()),
-  service_data: optional(any()),
-});
-
-const iconElementConfigStruct = object({
-  type: literal("icon"),
-  entity: optional(string()),
-  icon: optional(string()),
-  style: optional(any()),
-  title: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
-
-const imageElementConfigStruct = object({
-  type: literal("image"),
-  entity: optional(string()),
-  image: optional(string()),
-  style: optional(any()),
-  title: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-  camera_image: optional(string()),
-  camera_view: optional(string()),
-  state_image: optional(any()),
-  filter: optional(string()),
-  state_filter: optional(any()),
-  aspect_ratio: optional(string()),
-});
-
-const conditionalElementConfigStruct = object({
-  type: literal("conditional"),
-  conditions: optional(array(any())),
-  elements: optional(array(any())),
-  title: optional(string()),
-});
-
-const elementRowConfigStruct = dynamic<any>((value) => {
-  if (value && typeof value === "object" && "type" in value) {
-    switch ((value as LovelaceElementConfig).type!) {
-      case "state-badge": {
-        return stateBadgeElementConfigStruct;
-      }
-      case "state-icon": {
-        return stateIconElementConfigStruct;
-      }
-      case "state-label": {
-        return stateLabelElementConfigStruct;
-      }
-      case "service-button": {
-        return serviceButtonElementConfigStruct;
-      }
-      case "icon": {
-        return iconElementConfigStruct;
-      }
-      case "image": {
-        return imageElementConfigStruct;
-      }
-      case "conditional": {
-        return conditionalElementConfigStruct;
-      }
-    }
-  }
-
-  return stateBadgeElementConfigStruct;
+const genericElementConfigStruct = type({
+  type: string(),
 });
 
 const cardConfigStruct = assign(
@@ -145,7 +38,7 @@ const cardConfigStruct = assign(
     image: optional(string()),
     camera_image: optional(string()),
     camera_view: optional(string()),
-    elements: array(elementRowConfigStruct),
+    elements: array(genericElementConfigStruct),
     title: optional(string()),
     state_filter: optional(any()),
     theme: optional(string()),

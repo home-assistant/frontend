@@ -1,5 +1,14 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  any,
+  array,
+  assert,
+  literal,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
@@ -15,6 +24,13 @@ import { EditSubElementEvent, SubElementEditorConfig } from "../../types";
 import "../../hui-sub-element-editor";
 import { SchemaUnion } from "../../../../../components/ha-form/types";
 
+const conditionalElementConfigStruct = object({
+  type: literal("conditional"),
+  conditions: optional(array(any())),
+  elements: optional(array(any())),
+  title: optional(string()),
+});
+
 const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
 
 @customElement("hui-conditional-element-editor")
@@ -29,6 +45,7 @@ export class HuiConditionalElementEditor
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: ConditionalElementConfig): void {
+    assert(config, conditionalElementConfigStruct);
     this._config = config;
   }
 

@@ -1,11 +1,24 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { any, assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { IconElementConfig } from "../../../elements/types";
+import { actionConfigStruct } from "../../structs/action-struct";
+
+const iconElementConfigStruct = object({
+  type: literal("icon"),
+  entity: optional(string()),
+  icon: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
 
 const SCHEMA = [
   { name: "icon", selector: { icon: {} } },
@@ -36,6 +49,7 @@ export class HuiIconElementEditor
   @state() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {
+    assert(config, iconElementConfigStruct);
     this._config = config;
   }
 

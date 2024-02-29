@@ -1,11 +1,26 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { any, assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { StateLabelElementConfig } from "../../../elements/types";
+import { actionConfigStruct } from "../../structs/action-struct";
+
+const stateLabelElementConfigStruct = object({
+  type: literal("state-label"),
+  entity: optional(string()),
+  attribute: optional(string()),
+  prefix: optional(string()),
+  suffix: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
 
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
@@ -44,6 +59,7 @@ export class HuiStateLabelElementEditor
   @state() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {
+    assert(config, stateLabelElementConfigStruct);
     this._config = config;
   }
 

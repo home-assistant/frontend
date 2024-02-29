@@ -1,11 +1,23 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { any, assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { StateBadgeElementConfig } from "../../../elements/types";
+import { actionConfigStruct } from "../../structs/action-struct";
+
+const stateBadgeElementConfigStruct = object({
+  type: literal("state-badge"),
+  entity: optional(string()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
 
 const SCHEMA = [
   { name: "entity", selector: { entity: {} } },
@@ -35,6 +47,7 @@ export class HuiStateBadgeElementEditor
   @state() private _config?: StateBadgeElementConfig;
 
   public setConfig(config: StateBadgeElementConfig): void {
+    assert(config, stateBadgeElementConfigStruct);
     this._config = config;
   }
 

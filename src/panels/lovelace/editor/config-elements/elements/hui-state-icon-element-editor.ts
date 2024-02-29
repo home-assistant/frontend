@@ -1,11 +1,33 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  any,
+  assert,
+  boolean,
+  literal,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { StateIconElementConfig } from "../../../elements/types";
+import { actionConfigStruct } from "../../structs/action-struct";
+
+const stateIconElementConfigStruct = object({
+  type: literal("state-icon"),
+  entity: optional(string()),
+  icon: optional(string()),
+  state_color: optional(boolean()),
+  style: optional(any()),
+  title: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
 
 const SCHEMA = [
   { name: "entity", selector: { entity: {} } },
@@ -37,6 +59,7 @@ export class HuiStateIconElementEditor
   @state() private _config?: StateIconElementConfig;
 
   public setConfig(config: StateIconElementConfig): void {
+    assert(config, stateIconElementConfigStruct);
     this._config = config;
   }
 

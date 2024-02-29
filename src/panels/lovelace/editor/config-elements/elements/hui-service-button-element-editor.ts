@@ -1,5 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { any, assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
@@ -7,6 +8,14 @@ import "../../../../../components/ha-form/ha-form";
 import { LovelacePictureElementEditor } from "../../../types";
 import { ServiceButtonElementConfig } from "../../../elements/types";
 // import { UiAction } from "../../components/hui-action-editor";
+
+const serviceButtonElementConfigStruct = object({
+  type: literal("service-button"),
+  style: optional(any()),
+  title: optional(string()),
+  service: optional(string()),
+  service_data: optional(any()),
+});
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
@@ -31,6 +40,7 @@ export class HuiServiceButtonElementEditor
   @state() private _config?: ServiceButtonElementConfig;
 
   public setConfig(config: ServiceButtonElementConfig): void {
+    assert(config, serviceButtonElementConfigStruct);
     this._config = config;
   }
 
