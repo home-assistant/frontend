@@ -20,6 +20,7 @@ import {
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
   LovelaceRowConstructor,
+  LovelaceElementConstructor,
   LovelaceCardFeature,
   LovelaceCardFeatureConstructor,
 } from "../types";
@@ -40,7 +41,7 @@ interface CreateElementConfigTypes {
   element: {
     config: LovelaceElementConfig;
     element: LovelaceElement;
-    constructor: unknown;
+    constructor: LovelaceElementConstructor;
   };
   row: {
     config: LovelaceRowConfig;

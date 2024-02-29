@@ -18,10 +18,18 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateIconElementConfig } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-state-icon-element-editor"
+    );
+    return document.createElement("hui-state-icon-element-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: StateIconElementConfig;

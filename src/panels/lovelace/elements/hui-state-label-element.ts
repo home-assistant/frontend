@@ -18,9 +18,17 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateLabelElementConfig } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-state-label-element-editor"
+    );
+    return document.createElement("hui-state-label-element-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: StateLabelElementConfig;

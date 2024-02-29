@@ -12,12 +12,20 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement
   extends LitElement
   implements LovelaceElement
 {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-state-badge-element-editor"
+    );
+    return document.createElement("hui-state-badge-element-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: StateBadgeElementConfig;
