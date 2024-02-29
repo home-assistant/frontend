@@ -67,7 +67,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
                         <span>
                           ${this.hass?.localize(
                             `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
-                          )}
+                          ) || element.type}
                         </span>
                         <span class="secondary"
                           >${this._getSecondaryDescription(element)}</span
@@ -158,7 +158,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           `${((element as ConditionalElementConfig).elements || []).length.toString()} ${this.hass?.localize("ui.panel.lovelace.editor.card.picture-elements.elements")}`
         );
     }
-    return "";
+    return "Unknown type";
   }
 
   private async _addElement(ev): Promise<void> {
