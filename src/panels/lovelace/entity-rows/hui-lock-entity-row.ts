@@ -14,6 +14,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
+import { callProtectedLockService } from "../../../data/lock";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {
@@ -75,10 +76,11 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
   private _callService(ev): void {
     ev.stopPropagation();
     const stateObj = this.hass!.states[this._config!.entity];
-    this.hass!.callService(
-      "lock",
-      stateObj.state === "locked" ? "unlock" : "lock",
-      { entity_id: stateObj.entity_id }
+    callProtectedLockService(
+      this,
+      this.hass!,
+      stateObj,
+      stateObj.state === "locked" ? "unlock" : "lock"
     );
   }
 }

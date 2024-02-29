@@ -1,12 +1,12 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -16,6 +16,14 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import {
+  getCustomCardEntry,
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -24,18 +32,12 @@ import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
+import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import {
-  getCustomCardEntry,
-  isCustomType,
-  stripCustomPrefix,
-} from "../../../../data/lovelace_custom_cards";
 
 declare global {
   // for fire event
@@ -61,7 +63,9 @@ export class HuiDialogEditCard
 
   @state() private _cardConfig?: LovelaceCardConfig;
 
-  @state() private _viewConfig!: LovelaceViewConfig;
+  @state() private _containerConfig!:
+    | LovelaceViewConfig
+    | LovelaceSectionConfig;
 
   @state() private _saving = false;
 
@@ -84,16 +88,28 @@ export class HuiDialogEditCard
     this._params = params;
     this._GUImode = true;
     this._guiModeAvailable = true;
-    const [view, card] = params.path;
-    this._viewConfig = params.lovelaceConfig.views[view];
-    this._cardConfig =
-      card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+
+    const containerConfig = findLovelaceContainer(
+      params.lovelaceConfig,
+      params.path
+    );
+
+    if ("strategy" in containerConfig) {
+      throw new Error("Can't edit strategy");
+    }
+
+    this._containerConfig = containerConfig;
+
+    if ("cardConfig" in params) {
+      this._cardConfig = params.cardConfig;
+      this._dirty = true;
+    } else {
+      this._cardConfig = this._containerConfig.cards?.[params.cardIndex];
+    }
+
     this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
-    }
-    if (params.cardConfig) {
-      this._dirty = true;
     }
   }
 
@@ -170,10 +186,10 @@ export class HuiDialogEditCard
         { type: cardName }
       );
     } else if (!this._cardConfig) {
-      heading = this._viewConfig.title
+      heading = this._containerConfig.title
         ? this.hass!.localize(
             "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-            { name: this._viewConfig.title }
+            { name: this._containerConfig.title }
           )
         : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {
@@ -368,16 +384,13 @@ export class HuiDialogEditCard
       return;
     }
     this._saving = true;
+    const path = this._params!.path;
     await this._params!.saveConfig(
-      this._params!.path.length === 1
-        ? addCard(
-            this._params!.lovelaceConfig,
-            this._params!.path as [number],
-            this._cardConfig!
-          )
+      "cardConfig" in this._params!
+        ? addCard(this._params!.lovelaceConfig, path, this._cardConfig!)
         : replaceCard(
             this._params!.lovelaceConfig,
-            this._params!.path as [number, number],
+            [...path, this._params!.cardIndex],
             this._cardConfig!
           )
     );

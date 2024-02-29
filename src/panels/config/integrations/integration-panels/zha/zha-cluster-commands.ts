@@ -241,6 +241,8 @@ export class ZHAClusterCommands extends LitElement {
           float: right;
           top: -6px;
           right: 0;
+          inset-inline-end: 0;
+          inset-inline-start: initial;
           padding-right: 0px;
           padding-inline-end: 0px;
           padding-inline-start: initial;

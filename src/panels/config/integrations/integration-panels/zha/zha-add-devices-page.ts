@@ -269,6 +269,8 @@ class ZHAAddDevicesPage extends LitElement {
           margin-inline-start: initial;
           top: -6px;
           right: 0;
+          inset-inline-end: 0;
+          inset-inline-start: initial;
           color: var(--primary-color);
         }
         .search-button {

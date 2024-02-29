@@ -446,6 +446,8 @@ class LightRgbColorPicker extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
+          inset-inline-end: 0;
+          inset-inline-start: initial;
           z-index: 1;
         }
 

@@ -879,6 +879,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           flex-direction: column;
           position: relative;
+          direction: ltr;
         }
 
         ha-circular-progress {
