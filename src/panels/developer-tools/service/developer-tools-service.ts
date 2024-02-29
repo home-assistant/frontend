@@ -588,13 +588,10 @@ class HaPanelDevService extends LitElement {
         }
 
         .attributes th {
-          text-align: left;
+          text-align: var(--float-start);
           background-color: var(--card-background-color);
           border-bottom: 1px solid var(--primary-text-color);
-        }
-
-        :host([rtl]) .attributes th {
-          text-align: right;
+          direction: var(--direction);
         }
 
         .attributes tr {

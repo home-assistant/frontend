@@ -27,18 +27,7 @@ class HuiVerticalStackCard extends HuiStackCard {
           display: flex;
           flex-direction: column;
           height: 100%;
-        }
-        #root > * {
-          margin: var(
-            --vertical-stack-card-margin,
-            var(--stack-card-margin, 4px 0)
-          );
-        }
-        #root > *:first-child {
-          margin-top: 0;
-        }
-        #root > *:last-child {
-          margin-bottom: 0;
+          gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
         }
       `,
     ];

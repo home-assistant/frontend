@@ -138,10 +138,14 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                 tabindex="0"
                 .value=${item}
               >
-                <div>
-                  <ha-svg-icon
-                    .path=${this.computeIcon(item, stateObj.attributes.battery)}
-                  ></ha-svg-icon>
+                <div class="icon">
+                  ${item === "battery"
+                    ? html`<ha-icon
+                        .icon=${batteryLevelIcon(stateObj.attributes.battery)}
+                      ></ha-icon>`
+                    : html`<ha-svg-icon
+                        .path=${SENSOR_ICONS[item]}
+                      ></ha-svg-icon>`}
                 </div>
                 <div
                   class=${stateObj.attributes.problem.indexOf(item) === -1
@@ -214,9 +218,13 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
         padding-bottom: 16px;
       }
 
+      .icon {
+        margin-bottom: 8px;
+      }
+
+      ha-icon,
       ha-svg-icon {
         color: var(--paper-item-icon-color);
-        margin-bottom: 8px;
       }
 
       .attributes {
@@ -248,13 +256,6 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return Object.keys(SENSOR_ICONS).filter(
       (key) => key in stateObj.attributes
     );
-  }
-
-  private computeIcon(attr: string, batLvl: number): string {
-    if (attr === "battery") {
-      return batteryLevelIcon(batLvl);
-    }
-    return SENSOR_ICONS[attr];
   }
 
   private _handleMoreInfo(ev: Event): void {

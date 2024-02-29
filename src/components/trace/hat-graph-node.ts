@@ -5,6 +5,7 @@ import {
   html,
   TemplateResult,
   svg,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { NODE_SIZE, SPACING } from "./hat-graph-const";
@@ -51,7 +52,7 @@ export class HatGraphNode extends LitElement {
           : Math.ceil((NODE_SIZE + SPACING * 2) / 2)} ${width} ${height}"
       >
         ${this.graphStart
-          ? ``
+          ? nothing
           : svg`
           <path
             class="connector"
@@ -64,7 +65,6 @@ export class HatGraphNode extends LitElement {
           `}
         <g class="node">
           <circle cx="0" cy="0" r=${NODE_SIZE / 2} />
-          }
           ${this.badge
             ? svg`
         <g class="number">
@@ -81,9 +81,11 @@ export class HatGraphNode extends LitElement {
           >${this.badge > 9 ? "9+" : this.badge}</text>
         </g>
       `
-            : ""}
+            : nothing}
           <g style="pointer-events: none" transform="translate(${-12} ${-12})">
-            ${this.iconPath ? svg`<path class="icon" d=${this.iconPath}/>` : ""}
+            ${this.iconPath
+              ? svg`<path class="icon" d=${this.iconPath}/>`
+              : svg`<foreignObject><span class="icon"><slot name="icon"></slot></span></foreignObject>`}
           </g>
         </g>
       </svg>
@@ -151,6 +153,13 @@ export class HatGraphNode extends LitElement {
       }
       path.icon {
         fill: var(--icon-clr);
+      }
+      foreignObject {
+        width: 24px;
+        height: 24px;
+      }
+      .icon {
+        color: var(--icon-clr);
       }
     `;
   }

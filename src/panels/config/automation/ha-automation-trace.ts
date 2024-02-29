@@ -106,7 +106,9 @@ export class HaAutomationTrace extends LitElement {
           ? html`
               <a
                 class="trace-link"
-                href="/config/automation/edit/${stateObj.attributes.id}"
+                href="/config/automation/edit/${encodeURIComponent(
+                  stateObj.attributes.id
+                )}"
                 slot="toolbar-icon"
               >
                 <mwc-button>
@@ -140,7 +142,9 @@ export class HaAutomationTrace extends LitElement {
             ? html`
                 <a
                   class="trace-link"
-                  href="/config/automation/edit/${stateObj.attributes.id}"
+                  href="/config/automation/edit/${encodeURIComponent(
+                    stateObj.attributes.id
+                  )}"
                 >
                   <mwc-list-item graphic="icon">
                     ${this.hass.localize(
@@ -232,6 +236,7 @@ export class HaAutomationTrace extends LitElement {
                   <div class="main">
                     <div class="graph">
                       <hat-script-graph
+                        .hass=${this.hass}
                         .trace=${this._trace}
                         .selected=${this._selected?.path}
                         @graph-node-selected=${this._pickNode}

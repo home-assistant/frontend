@@ -114,7 +114,7 @@ export class StateHistoryChartTimeline extends LitElement {
               config: this.hass.config,
             },
           },
-          suggestedMin: this.startTime,
+          min: this.startTime,
           suggestedMax: this.endTime,
           ticks: {
             autoSkip: true,
@@ -224,7 +224,11 @@ export class StateHistoryChartTimeline extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (!this.clickForMoreInfo) {
+        if (
+          !this.clickForMoreInfo ||
+          !(e.native instanceof MouseEvent) ||
+          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
+        ) {
           return;
         }
 

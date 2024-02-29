@@ -40,14 +40,20 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (!this._config) {
+      return;
+    }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass");
+      const stateObj = this.hass?.states[this._config.entity] as
+        | InputSelectEntity
+        | undefined;
+      const oldStateObj = oldHass?.states[this._config.entity] as
+        | InputSelectEntity
+        | undefined;
       if (
-        this.hass &&
-        oldHass &&
-        this._config?.entity &&
-        this.hass.states[this._config.entity].attributes.options !==
-          oldHass.states[this._config.entity].attributes.options
+        stateObj &&
+        stateObj.attributes.options !== oldStateObj?.attributes.options
       ) {
         this._haSelect.layoutOptions();
       }

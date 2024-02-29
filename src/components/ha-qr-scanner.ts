@@ -186,6 +186,8 @@ class HaQrScanner extends LitElement {
       position: absolute;
       bottom: 8px;
       right: 8px;
+      inset-inline-end: 8px;
+      inset-inline-start: initial;
       background: #727272b2;
       color: white;
       border-radius: 50%;

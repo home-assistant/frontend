@@ -10,23 +10,22 @@ import {
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { LocalizeFunc } from "../common/translations/localize";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { HomeAssistant, Route } from "../types";
 import { haStyleScrollbar } from "../resources/styles";
+import { canShowPage } from "../common/config/can_show_page";
 
 export interface PageNavigation {
   path: string;
   translationKey?: string;
-  component?: string;
-  components?: string[];
+  component?: string | string[];
   name?: string;
+  not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
@@ -58,8 +57,6 @@ class HassTabsSubpage extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
 
-  @property({ type: Boolean, reflect: true }) public rtl = false;
-
   @state() private _activeTab?: PageNavigation;
 
   // @ts-ignore
@@ -69,19 +66,12 @@ class HassTabsSubpage extends LitElement {
     (
       tabs: PageNavigation[],
       activeTab: PageNavigation | undefined,
-      showAdvanced: boolean | undefined,
       _components,
       _language,
       _narrow,
       localizeFunc
     ) => {
-      const shownTabs = tabs.filter(
-        (page) =>
-          (!page.component ||
-            page.core ||
-            isComponentLoaded(this.hass, page.component)) &&
-          (!page.advancedOnly || showAdvanced)
-      );
+      const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
       if (shownTabs.length < 2) {
         if (shownTabs.length === 1) {
@@ -123,14 +113,6 @@ class HassTabsSubpage extends LitElement {
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
-    if (changedProperties.has("hass")) {
-      const oldHass = changedProperties.get("hass") as
-        | HomeAssistant
-        | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this.rtl = computeRTL(this.hass);
-      }
-    }
     super.willUpdate(changedProperties);
   }
 
@@ -138,7 +120,6 @@ class HassTabsSubpage extends LitElement {
     const tabs = this._getTabs(
       this.tabs,
       this._activeTab,
-      this.hass.userData?.showAdvanced,
       this.hass.config.components,
       this.hass.language,
       this.narrow,
@@ -334,6 +315,8 @@ class HassTabsSubpage extends LitElement {
         #fab {
           position: fixed;
           right: calc(16px + env(safe-area-inset-right));
+          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          inset-inline-start: initial;
           bottom: calc(16px + env(safe-area-inset-bottom));
           z-index: 1;
         }
@@ -343,15 +326,8 @@ class HassTabsSubpage extends LitElement {
         #fab[is-wide] {
           bottom: 24px;
           right: 24px;
-        }
-        :host([rtl]) #fab {
-          right: auto;
-          left: calc(16px + env(safe-area-inset-left));
-        }
-        :host([rtl][is-wide]) #fab {
-          bottom: 24px;
-          left: 24px;
-          right: auto;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
         }
       `,
     ];
