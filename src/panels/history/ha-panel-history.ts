@@ -781,7 +781,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _suggestCard() {
     const entities = this._getEntityIds();
-    if (!entities || !this._mungedStateHistory) {
+    if (entities.length === 0 || !this._mungedStateHistory) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.history.add_card_error"),
         text: this.hass.localize("ui.panel.history.error_no_data"),
