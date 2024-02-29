@@ -26,6 +26,7 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
+  isExternalStatistic,
   Statistics,
   statisticsHaveType,
   StatisticsMetaData,
@@ -268,10 +269,11 @@ export class StatisticsChart extends LitElement {
 
         if (points.length) {
           const firstPoint = points[0];
-          fireEvent(this, "hass-more-info", {
-            entityId: this._statisticIds[firstPoint.datasetIndex],
-          });
-          chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+          const enittyId = this._statisticIds[firstPoint.datasetIndex];
+          if (!isExternalStatistic(enittyId)) {
+            fireEvent(this, "hass-more-info", { entityId: enittyId });
+            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+          }
         }
       },
     };
