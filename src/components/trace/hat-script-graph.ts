@@ -93,6 +93,7 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
         .notEnabled=${config.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -171,6 +172,7 @@ export class HatScriptGraph extends LitElement {
           ?track=${trace !== undefined}
           ?active=${this.selected === path}
           .notEnabled=${disabled || config.enabled === false}
+          .error=${this.trace.trace[path]?.some((tr) => tr.error)}
           slot="head"
           nofocus
         ></hat-graph-node>
@@ -424,6 +426,7 @@ export class HatScriptGraph extends LitElement {
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       >
         ${node.service
@@ -451,6 +454,7 @@ export class HatScriptGraph extends LitElement {
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -517,6 +521,7 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         .notEnabled=${disabled || node.enabled === false}
       ></hat-graph-node>
     `;
