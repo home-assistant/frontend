@@ -153,7 +153,7 @@ class LogbookRenderer {
 
     const parts: TemplateResult[] = [];
 
-    let i;
+    let i: number;
 
     for (
       i = 0;
@@ -232,7 +232,7 @@ class ActionRenderer {
     const value = this._getItem(index);
 
     if (renderAllIterations) {
-      let i;
+      let i: number = 0;
       value.forEach((item) => {
         i = this._renderIteration(index, item, actionType);
       });
@@ -270,7 +270,12 @@ class ActionRenderer {
     } catch (err: any) {
       this._renderEntry(
         path,
-        `Unable to extract path ${path}. Download trace and report as bug`
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.path_error",
+          {
+            path: path,
+          }
+        )
       );
       return index + 1;
     }
@@ -324,20 +329,22 @@ class ActionRenderer {
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
     this._renderEntry(
       triggerStep.path,
-      `${
-        triggerStep.changed_variables.trigger.alias
-          ? `${triggerStep.changed_variables.trigger.alias} triggered`
-          : "Triggered"
-      } ${
-        triggerStep.path === "trigger"
-          ? "manually"
-          : `by the ${this.trace.trigger}`
-      } at
-    ${formatDateTimeWithSeconds(
-      new Date(triggerStep.timestamp),
-      this.hass.locale,
-      this.hass.config
-    )}`,
+      this.hass.localize(
+        "ui.panel.config.automation.trace.messages.triggered_by",
+        {
+          triggeredBy: triggerStep.changed_variables.trigger?.alias
+            ? "alias"
+            : "other",
+          alias: triggerStep.changed_variables.trigger?.alias,
+          triggeredPath: triggerStep.path === "trigger" ? "manual" : "trigger",
+          trigger: this.trace.trigger,
+          time: formatDateTimeWithSeconds(
+            new Date(triggerStep.timestamp),
+            this.hass.locale,
+            this.hass.config
+          ),
+        }
+      ),
       mdiCircle
     );
     return index + 1;
@@ -367,12 +374,17 @@ class ActionRenderer {
       this.keys[index]
     ) as ChooseAction;
     const disabled = chooseConfig.enabled === false;
-    const name = chooseConfig.alias || "Choose";
+    const name =
+      chooseConfig.alias ||
+      this.hass.localize("ui.panel.config.automation.trace.messages.choose");
 
     if (defaultExecuted) {
       this._renderEntry(
         choosePath,
-        `${name}: Default action executed`,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.default_action_executed",
+          { name: name }
+        ),
         undefined,
         disabled
       );
@@ -385,8 +397,17 @@ class ActionRenderer {
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
-        ? `${choiceConfig.alias || `Option ${choiceNumeric}`} executed`
-        : `Error: ${chooseTrace.error}`;
+        ? `${
+            choiceConfig.alias ||
+            this.hass.localize(
+              "ui.panel.config.automation.trace.messages.option_executed",
+              { option: choiceNumeric }
+            )
+          }`
+        : this.hass.localize(
+            "ui.panel.config.automation.trace.messages.error",
+            { error: chooseTrace.error }
+          );
       this._renderEntry(
         choosePath,
         `${name}: ${choiceName}`,
@@ -396,13 +417,16 @@ class ActionRenderer {
     } else {
       this._renderEntry(
         choosePath,
-        `${name}: No action taken`,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.no_action_executed",
+          { name: name }
+        ),
         undefined,
         disabled
       );
     }
 
-    let i;
+    let i: number;
 
     // Skip over conditions
     for (i = index + 1; i < this.keys.length; i++) {
@@ -479,26 +503,38 @@ class ActionRenderer {
     const ifTrace = this._getItem(index)[0] as IfActionTraceStep;
     const ifConfig = this._getDataFromPath(this.keys[index]) as IfAction;
     const disabled = ifConfig.enabled === false;
-    const name = ifConfig.alias || "If";
+    const name =
+      ifConfig.alias ||
+      this.hass.localize("ui.panel.config.automation.trace.messages.if");
 
     if (ifTrace.result?.choice) {
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/${ifTrace.result.choice}/`
       ) as any;
       const choiceName = choiceConfig
-        ? `${choiceConfig.alias || `${ifTrace.result.choice} action executed`}`
-        : `Error: ${ifTrace.error}`;
+        ? choiceConfig.alias ||
+          this.hass.localize(
+            "ui.panel.config.automation.trace.messages.action_executed",
+            { action: ifTrace.result.choice }
+          )
+        : this.hass.localize(
+            "ui.panel.config.automation.trace.messages.error",
+            { error: ifTrace.error }
+          );
       this._renderEntry(ifPath, `${name}: ${choiceName}`, undefined, disabled);
     } else {
       this._renderEntry(
         ifPath,
-        `${name}: No action taken`,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.no_action_executed",
+          { name: name }
+        ),
         undefined,
         disabled
       );
     }
 
-    let i;
+    let i: number;
 
     // Skip over conditions
     for (i = index + 1; i < this.keys.length; i++) {
@@ -534,7 +570,11 @@ class ActionRenderer {
 
     const disabled = parallelConfig.enabled === false;
 
-    const name = parallelConfig.alias || "Execute in parallel";
+    const name =
+      parallelConfig.alias ||
+      this.hass.localize(
+        "ui.panel.config.automation.trace.messages.execute_in_parallel"
+      );
 
     this._renderEntry(parallelPath, name, undefined, disabled);
 
@@ -564,7 +604,11 @@ class ActionRenderer {
     this.entries.push(html`
       <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
         ${description}${disabled
-          ? html`<span class="disabled"> (disabled)</span>`
+          ? html`<span class="disabled">
+              ${this.hass.localize(
+                "ui.panel.config.automation.trace.messages.disabled"
+              )}</span
+            >`
           : ""}
       </ha-timeline>
     `);
@@ -636,13 +680,12 @@ export class HaAutomationTracer extends LitElement {
         this.hass.locale,
         this.hass.config
       );
-    const renderRuntime = () => `(runtime:
-      ${(
+    const renderRuntime = () =>
+      (
         (new Date(this.trace!.timestamp.finish!).getTime() -
           new Date(this.trace!.timestamp.start).getTime()) /
         1000
-      ).toFixed(2)}
-      seconds)`;
+      ).toFixed(2);
 
     let entry: {
       description: TemplateResult | string;
@@ -652,57 +695,90 @@ export class HaAutomationTracer extends LitElement {
 
     if (this.trace.state === "running") {
       entry = {
-        description: "Still running",
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.still_running"
+        ),
         icon: mdiProgressClock,
       };
     } else if (this.trace.state === "debugged") {
       entry = {
-        description: "Debugged",
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.debugged"
+        ),
         icon: mdiProgressWrench,
       };
     } else if (this.trace.script_execution === "finished") {
       entry = {
-        description: `Finished at ${renderFinishedAt()} ${renderRuntime()}`,
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.finished",
+          {
+            time: renderFinishedAt(),
+            executiontime: renderRuntime(),
+          }
+        ),
         icon: mdiCircle,
       };
     } else if (this.trace.script_execution === "aborted") {
       entry = {
-        description: `Aborted at ${renderFinishedAt()} ${renderRuntime()}`,
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.aborted",
+          {
+            time: renderFinishedAt(),
+            executiontime: renderRuntime(),
+          }
+        ),
         icon: mdiAlertCircle,
       };
     } else if (this.trace.script_execution === "cancelled") {
       entry = {
-        description: `Cancelled at ${renderFinishedAt()} ${renderRuntime()}`,
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.cancelled",
+          {
+            time: renderFinishedAt(),
+            executiontime: renderRuntime(),
+          }
+        ),
         icon: mdiAlertCircle,
       };
     } else {
-      let reason: string;
+      let message:
+        | "stopped_failed_conditions"
+        | "stopped_failed_single"
+        | "stopped_failed_max_runs"
+        | "stopped_error"
+        | "stopped_unknown_reason";
       let isError = false;
       let extra: TemplateResult | undefined;
 
       switch (this.trace.script_execution) {
         case "failed_conditions":
-          reason = "a condition failed";
+          message = "stopped_failed_conditions";
           break;
         case "failed_single":
-          reason = "only a single execution is allowed";
+          message = "stopped_failed_single";
           break;
         case "failed_max_runs":
-          reason = "maximum number of parallel runs reached";
+          message = "stopped_failed_max_runs";
           break;
         case "error":
-          reason = "an error was encountered";
           isError = true;
+          message = "stopped_error";
           extra = html`<br /><br />${this.trace.error!}`;
           break;
         default:
-          reason = `of unknown reason "${this.trace.script_execution}"`;
           isError = true;
+          message = "stopped_unknown_reason";
       }
 
       entry = {
-        description: html`Stopped because ${reason} at ${renderFinishedAt()}
-        ${renderRuntime()}${extra || ""}`,
+        description: html`${this.hass.localize(
+          `ui.panel.config.automation.trace.messages.${message}`,
+          {
+            time: renderFinishedAt(),
+            executiontime: renderRuntime(),
+          }
+        )}
+        ${extra || ""}`,
         icon: mdiAlertCircle,
         className: isError ? "error" : undefined,
       };
