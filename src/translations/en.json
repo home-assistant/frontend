@@ -218,8 +218,14 @@
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
+        "running_single": "Running…",
+        "running_queued": "{queued} queued",
+        "running_parallel": "{active} Running…",
         "cancel": "Cancel",
-        "cancel_multiple": "Cancel {number}"
+        "cancel_multiple": "Cancel {number}",
+        "cancel_all": "Cancel all",
+        "idle": "Idle",
+        "run_script": "Run script"
       },
       "service": {
         "run": "Run"
@@ -5106,7 +5112,7 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
-            "type_helper_sections": "You can not change your view to use the 'sections' view type, because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
+            "type_helper_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
             "type_helper_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
 
             "types": {

@@ -5,7 +5,7 @@ import { computeGroupDomain, GroupEntity } from "../../data/group";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
-export const DOMAINS_NO_INFO = ["camera", "configurator", "script"];
+export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
  * Entity domains that should be editable *if* they have an id present;
  * {@see shouldShowEditIcon}.
@@ -26,6 +26,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "light",
   "lock",
   "siren",
+  "script",
   "switch",
   "valve",
   "water_heater",
