@@ -83,7 +83,7 @@ export class HaSortable extends LitElement {
     super.connectedCallback();
     this._shouldBeDestroy = false;
     if (this.hasUpdated) {
-      this.performUpdate();
+      this.requestUpdate();
     }
   }
 
