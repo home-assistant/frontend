@@ -68,8 +68,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
-            "--cell-count": String(
-              (this._config?.sections?.length ?? 0) + (editMode ? 1 : 0)
+            "--section-count": String(
+              sectionsConfig.length + (editMode ? 1 : 0)
             ),
           })}
         >
@@ -238,26 +238,28 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
+        /* Inputs */
         --grid-gap: 20px;
-        --grid-max-width: 1400px;
-        --grid-cell-max-width: 500px;
-        --grid-cell-min-width: 320px;
+        --grid-max-section-count: 4;
+        --grid-section-min-width: 320px;
+
+        /* Calculated */
+        --max-count: min(var(--section-count), var(--grid-max-section-count));
+        --grid-max-width: calc(
+          (var(--max-count) + 1) * var(--grid-section-min-width) +
+            (var(--max-count) + 2) * var(--grid-gap) - 1px
+        );
+
         display: grid;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(var(--grid-cell-min-width), 1fr)
+          minmax(var(--grid-section-min-width), 1fr)
         );
+        grid-gap: 8px var(--grid-gap);
         justify-content: center;
-        gap: 8px var(--grid-gap);
         padding: var(--grid-gap);
         box-sizing: border-box;
-        max-width: min(
-          calc(
-            var(--cell-count) * (var(--grid-cell-max-width) + var(--grid-gap)) +
-              var(--grid-gap)
-          ),
-          var(--grid-max-width)
-        );
+        max-width: var(--grid-max-width);
         margin: 0 auto;
       }
 
