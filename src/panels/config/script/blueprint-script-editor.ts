@@ -4,7 +4,6 @@ import "../../../components/ha-alert";
 import { BlueprintScriptConfig } from "../../../data/script";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
-import "../ha-config-section";
 
 @customElement("blueprint-script-editor")
 export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
