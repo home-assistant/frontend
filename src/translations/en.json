@@ -5135,8 +5135,8 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
-            "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
-            "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+            "type_helper_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
+            "type_helper_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
 
             "types": {
               "masonry": "Masonry (default)",
