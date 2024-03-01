@@ -29,9 +29,10 @@ export interface BlueprintInput {
 }
 
 export interface BlueprintInputSection {
-  name: string;
+  name?: string;
   icon?: string;
-  default_collapsed?: boolean;
+  description?: string;
+  collapsed?: boolean;
 }
 
 export interface BlueprintImportResult {

@@ -126,7 +126,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     const blueprint = this._blueprint as Blueprint;
     const section = blueprint?.metadata?.input_sections?.[sectionKey];
     const title = section?.name || sectionKey;
-    const expanded = !section?.default_collapsed;
+    const expanded = !section?.collapsed;
 
     return html` <ha-expansion-panel outlined .expanded=${expanded}>
       <div slot="header" role="heading" aria-level="3" class="section-header">
