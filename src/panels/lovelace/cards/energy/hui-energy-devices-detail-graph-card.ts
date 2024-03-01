@@ -96,7 +96,10 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_hiddenStats") && this._data) {
+    if (
+      (changedProps.has("_hiddenStats") || changedProps.has("_config")) &&
+      this._data
+    ) {
       this._processStatistics();
     }
   }
