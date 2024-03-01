@@ -34,7 +34,7 @@ import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
-import { lovelaceTabs } from "../ha-config-lovelace";
+import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 
 @customElement("ha-config-lovelace-resources")
@@ -117,7 +117,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${lovelaceTabs}
+        .tabs=${lovelaceResourcesTabs}
         .columns=${this._columns(this.hass.language)}
         .data=${this._resources}
         .noDataText=${this.hass.localize(

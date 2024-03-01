@@ -306,6 +306,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
+          border-top: 1px solid var(--divider-color);
         }
         ha-settings-row.border {
           border-top: 1px solid var(--divider-color);

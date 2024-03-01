@@ -1,12 +1,6 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
-import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
-import "../../../components/ha-markdown";
-import "../../../components/ha-selector/ha-selector";
-import "../../../components/ha-settings-row";
 import { BlueprintScriptConfig } from "../../../data/script";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";

@@ -44,6 +44,8 @@ class HaDataTableIcon extends LitElement {
       div {
         position: absolute;
         right: 28px;
+        inset-inline-end: 28px;
+        inset-inline-start: initial;
         z-index: 1002;
         outline: none;
         font-size: 10px;

@@ -343,7 +343,6 @@ class PanelMediaBrowser extends LitElement {
 
         ha-media-player-browse {
           height: calc(100vh - (100px + var(--header-height)));
-          direction: ltr;
         }
 
         :host([narrow]) ha-media-player-browse {

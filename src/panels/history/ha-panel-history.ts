@@ -433,6 +433,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._statisticsHistory = computeHistory(
       this.hass,
       statsHistoryStates,
+      [],
       this.hass.localize,
       sensorNumericDeviceClasses,
       true
@@ -472,6 +473,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         this._stateHistory = computeHistory(
           this.hass,
           history,
+          entityIds,
           this.hass.localize,
           sensorNumericDeviceClasses,
           true

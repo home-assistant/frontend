@@ -3,16 +3,9 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
-import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
-import "../../../components/ha-markdown";
-import "../../../components/ha-selector/ha-selector";
-import "../../../components/ha-settings-row";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
-import "../ha-config-section";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {

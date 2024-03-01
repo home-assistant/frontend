@@ -62,6 +62,7 @@ export interface Card {
   description?: string;
   showElement?: boolean;
   isCustom?: boolean;
+  isSuggested?: boolean;
 }
 
 export interface HeaderFooter {

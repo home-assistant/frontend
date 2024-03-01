@@ -33,6 +33,7 @@ export interface DataEntryFlowStepForm {
   description_placeholders?: Record<string, string>;
   last_step: boolean | null;
   preview?: string;
+  translation_domain?: string;
 }
 
 export interface DataEntryFlowStepExternal {
@@ -42,6 +43,7 @@ export interface DataEntryFlowStepExternal {
   step_id: string;
   url: string;
   description_placeholders: Record<string, string>;
+  translation_domain?: string;
 }
 
 export interface DataEntryFlowStepCreateEntry {
@@ -53,6 +55,7 @@ export interface DataEntryFlowStepCreateEntry {
   result?: ConfigEntry;
   description: string;
   description_placeholders?: Record<string, string>;
+  translation_domain?: string;
 }
 
 export interface DataEntryFlowStepAbort {
@@ -61,6 +64,7 @@ export interface DataEntryFlowStepAbort {
   handler: string;
   reason: string;
   description_placeholders?: Record<string, string>;
+  translation_domain?: string;
 }
 
 export interface DataEntryFlowStepProgress {
@@ -70,6 +74,7 @@ export interface DataEntryFlowStepProgress {
   step_id: string;
   progress_action: string;
   description_placeholders?: Record<string, string>;
+  translation_domain?: string;
 }
 
 export interface DataEntryFlowStepMenu {
@@ -80,6 +85,7 @@ export interface DataEntryFlowStepMenu {
   /** If array, use value to lookup translations in strings.json */
   menu_options: string[] | Record<string, string>;
   description_placeholders?: Record<string, string>;
+  translation_domain?: string;
 }
 
 export type DataEntryFlowStep =

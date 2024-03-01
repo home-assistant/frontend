@@ -58,6 +58,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state() private _storageItems?: Zone[];
 
   @state() private _stateItems?: HassEntity[];
@@ -219,7 +221,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .tabs=${configSections.areas}
       >
         ${this.narrow
