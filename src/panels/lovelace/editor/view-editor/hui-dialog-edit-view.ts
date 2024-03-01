@@ -57,8 +57,6 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _currentType?: string;
-
   @state() private _params?: EditViewDialogParams;
 
   @state() private _config?: LovelaceViewConfig;
@@ -113,7 +111,6 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       return;
     }
-    this._currentType = view.type;
     const { badges, ...viewConfig } = view;
     this._config = viewConfig;
     this._badges = badges ? processEditorEntities(badges) : [];
@@ -214,15 +211,6 @@ export class HuiDialogEditView extends LitElement {
       }
     }
 
-    const isEmpty =
-      !this._config?.cards?.length && !this._config?.sections?.length;
-
-    const isCompatibleViewType =
-      isEmpty ||
-      (this._currentType === SECTION_VIEW_LAYOUT
-        ? this._config?.type === SECTION_VIEW_LAYOUT
-        : this._config?.type !== SECTION_VIEW_LAYOUT);
-
     return html`
       <ha-dialog
         open
@@ -320,25 +308,9 @@ export class HuiDialogEditView extends LitElement {
               </mwc-button>
             `
           : nothing}
-        ${!isCompatibleViewType
-          ? html`
-              <ha-alert class="incompatible" alert-type="warning">
-                ${this._config?.type === SECTION_VIEW_LAYOUT
-                  ? this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_sections"
-                    )
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_others"
-                    )}
-              </ha-alert>
-            `
-          : nothing}
         <mwc-button
           slot="primaryAction"
-          ?disabled=${!this._config ||
-          this._saving ||
-          !this._dirty ||
-          !isCompatibleViewType}
+          ?disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
         >
           ${this._saving
@@ -581,10 +553,6 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
-        }
-        .incompatible {
-          display: block;
-          margin-top: 16px;
         }
 
         @media all and (min-width: 600px) {
