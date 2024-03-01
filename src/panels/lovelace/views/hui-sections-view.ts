@@ -20,7 +20,7 @@ import {
   updateLovelaceContainer,
 } from "../editor/lovelace-path";
 import { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceBadge } from "../types";
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -33,6 +33,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
+
+  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -57,6 +59,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
 
     return html`
+      ${this.badges.length > 0
+        ? html`<div class="badges">${this.badges}</div>`
+        : ""}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -230,6 +235,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return css`
       :host {
         display: block;
+      }
+
+      .badges {
+        margin: 12px 8px 16px 8px;
+        font-size: 85%;
+        text-align: center;
       }
 
       .section {
