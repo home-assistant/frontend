@@ -1,4 +1,11 @@
-import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
+import {
+  mdiArrowAll,
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiDelete,
+  mdiPencil,
+  mdiViewGridPlus,
+} from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -21,6 +28,8 @@ import {
 } from "../editor/lovelace-path";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace, LovelaceBadge } from "../types";
+import { isTouch } from "../../../util/is_touch";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -37,6 +46,23 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
+
+  @state() private _narrow = false;
+
+  private _unsubMql?: () => void;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(max-width: 600px)", (matches) => {
+      this._narrow = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
+  }
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
@@ -58,12 +84,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const editMode = this.lovelace.editMode;
 
+    const supportDnD = !(isTouch && this._narrow);
+
     return html`
       ${this.badges.length > 0
         ? html`<div class="badges">${this.badges}</div>`
         : ""}
       <ha-sortable
-        .disabled=${!editMode}
+        .disabled=${!editMode && !supportDnD}
         @item-moved=${this._sectionMoved}
         group="section"
         handle-selector=".handle"
@@ -90,11 +118,28 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     ? html`
                         <div class="section-overlay">
                           <div class="section-actions">
-                            <ha-svg-icon
-                              aria-hidden="true"
-                              class="handle"
-                              .path=${mdiArrowAll}
-                            ></ha-svg-icon>
+                            ${supportDnD
+                              ? html`
+                                  <ha-svg-icon
+                                    aria-hidden="true"
+                                    class="handle"
+                                    .path=${mdiArrowAll}
+                                  ></ha-svg-icon>
+                                `
+                              : html`
+                                  <ha-icon-button
+                                    .label=${"Down"}
+                                    @click=${this._moveDown}
+                                    .index=${idx}
+                                    .path=${mdiArrowDown}
+                                  ></ha-icon-button>
+                                  <ha-icon-button
+                                    .label=${"Up"}
+                                    @click=${this._moveUp}
+                                    .index=${idx}
+                                    .path=${mdiArrowUp}
+                                  ></ha-icon-button>
+                                `}
                             <ha-icon-button
                               .label=${this.hass.localize("ui.common.edit")}
                               @click=${this._editSection}
@@ -231,6 +276,30 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
+  private _moveDown(ev) {
+    ev.stopPropagation();
+    const { index } = ev.currentTarget;
+
+    const newConfig = moveSection(
+      this.lovelace!.config,
+      [this.index!, index],
+      [this.index!, index + 1]
+    );
+    this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _moveUp(ev) {
+    ev.stopPropagation();
+    const { index } = ev.currentTarget;
+
+    const newConfig = moveSection(
+      this.lovelace!.config,
+      [this.index!, index],
+      [this.index!, index - 1]
+    );
+    this.lovelace!.saveConfig(newConfig);
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -283,7 +352,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .section-actions {
         position: absolute;
-        top: 0;
+        top: 20px;
         right: 0;
         opacity: 1;
         display: flex;
