@@ -437,6 +437,7 @@
           "was_opened": "was opened",
           "was_closed": "was closed",
           "is_opening": "is opening",
+          "is_opened": "is opened",
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
