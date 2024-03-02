@@ -13,6 +13,7 @@ import "../../../components/ha-settings-row";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   Blueprint,
+  BlueprintInput,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
@@ -32,9 +33,28 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   @state() protected _blueprints?: Blueprints;
 
+  private _sections: Record<string, { key: string; input: BlueprintInput }[]> =
+    {};
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._getBlueprints();
+  }
+
+  protected willUpdate(changedProps) {
+    if (changedProps.has("config") || changedProps.has("_blueprints")) {
+      const blueprint = this._blueprint;
+      this._sections = {};
+      if (blueprint && !("error" in blueprint) && blueprint?.metadata?.input) {
+        Object.entries(blueprint.metadata.input).forEach(([key, value]) => {
+          if (value?.section) {
+            const sectionId = value.section;
+            this._sections[sectionId] = this._sections[sectionId] || [];
+            this._sections[sectionId].push({ key, input: value });
+          }
+        });
+      }
+    }
   }
 
   protected get _blueprint(): BlueprintOrError | undefined {
@@ -125,9 +145,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     const blueprint = this._blueprint as Blueprint;
     const section = blueprint?.metadata?.input_sections?.[sectionKey];
     const title = section?.name || sectionKey;
-    const expanded = !section?.collapsed;
+    const anyRequired = this._sections[sectionKey].some(
+      (item) => item.input.default === undefined
+    );
+    const expanded = !section?.collapsed || anyRequired;
 
-    return html` <ha-expansion-panel outlined .expanded=${expanded}>
+    return html` <ha-expansion-panel
+      outlined
+      .expanded=${expanded}
+      .noCollapse=${anyRequired}
+    >
       <div slot="header" role="heading" aria-level="3" class="section-header">
         ${section?.icon
           ? html` <ha-icon
@@ -141,15 +168,9 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         ${section?.description
           ? html`<ha-markdown .content=${section.description}></ha-markdown>`
           : nothing}
-        ${blueprint?.metadata?.input &&
-        Object.keys(blueprint?.metadata?.input).length
-          ? Object.entries(blueprint?.metadata?.input).map(([key, value]) => {
-              if (value?.section === sectionKey) {
-                return this.renderSettingRow(key, value, true);
-              }
-              return nothing;
-            })
-          : nothing}
+        ${this._sections[sectionKey].map((item) =>
+          this.renderSettingRow(item.key, item.input, true)
+        )}
       </div>
     </ha-expansion-panel>`;
   }
@@ -305,7 +326,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
-          border-top: 1px solid var(--divider-color);
         }
         ha-settings-row.border {
           border-top: 1px solid var(--divider-color);
