@@ -3234,15 +3234,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-oauth-device@npm:7.0.0":
-  version: 7.0.0
-  resolution: "@octokit/auth-oauth-device@npm:7.0.0"
+"@octokit/auth-oauth-device@npm:7.0.1":
+  version: 7.0.1
+  resolution: "@octokit/auth-oauth-device@npm:7.0.1"
   dependencies:
     "@octokit/oauth-methods": "npm:^5.0.0"
     "@octokit/request": "npm:^9.0.0"
     "@octokit/types": "npm:^12.0.0"
     universal-user-agent: "npm:^7.0.0"
-  checksum: 10/74124b097c6af43e23b84012257210e6c1cc08c97620b5861d45661d52b448bc5e8d3c78309c7a7e878627ceac12e125b7bfe20a11e1ed8754afb90410737f9e
+  checksum: 10/410051ec666bc9792a9080f9c15c035adda113539db6bd9783e30046bae0297b92b8faab83e04e8ae5c0d9f7260fd516de733b6a4f3ac0cce80fa7462e2b322b
   languageName: node
   linkType: hard
 
@@ -3357,16 +3357,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:7.0.1":
-  version: 7.0.1
-  resolution: "@octokit/plugin-retry@npm:7.0.1"
+"@octokit/plugin-retry@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@octokit/plugin-retry@npm:7.0.2"
   dependencies:
     "@octokit/request-error": "npm:^5.0.0"
     "@octokit/types": "npm:^12.0.0"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/38182a9b537d39692302e7595e286e05435556fefc74daa5125e1369fe8256a9dd8c2423f7138ee881f36d404caf53b43f6d4be0821bb7ed095cb99979b558a9
+  checksum: 10/dfb753fb3c51c02458d24be95599c69620f29a8304e6dc1b0a7ac024fed28ed96a001639f65e8ceb36557cbc57d968c60eba4288e281ad111eb15956c9c3c199
   languageName: node
   linkType: hard
 
@@ -9655,8 +9655,8 @@ __metadata:
     "@material/web": "npm:=1.3.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
-    "@octokit/auth-oauth-device": "npm:7.0.0"
-    "@octokit/plugin-retry": "npm:7.0.1"
+    "@octokit/auth-oauth-device": "npm:7.0.1"
+    "@octokit/plugin-retry": "npm:7.0.2"
     "@octokit/rest": "npm:20.0.2"
     "@open-wc/dev-server-hmr": "npm:0.1.4"
     "@polymer/paper-item": "npm:3.0.1"
