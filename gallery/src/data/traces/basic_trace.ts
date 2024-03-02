@@ -17,6 +17,7 @@ export const basicTrace: DemoTrace = {
         {
           path: "trigger/0",
           timestamp: "2021-03-25T04:36:51.223693+00:00",
+          changed_variables: {},
         },
       ],
       "condition/0": [

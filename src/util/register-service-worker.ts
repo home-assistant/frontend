@@ -48,7 +48,7 @@ export const registerServiceWorker = async (
           action: () => installingWorker.postMessage({ type: "skipWaiting" }),
           text: "reload",
         },
-        duration: 0,
+        duration: -1,
         dismissable: false,
       });
     });

@@ -5,7 +5,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -71,7 +74,7 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
 
   set config(config: LovelaceViewConfig) {

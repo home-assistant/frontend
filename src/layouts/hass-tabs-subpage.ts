@@ -10,7 +10,6 @@ import {
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
@@ -19,13 +18,14 @@ import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { HomeAssistant, Route } from "../types";
 import { haStyleScrollbar } from "../resources/styles";
+import { canShowPage } from "../common/config/can_show_page";
 
 export interface PageNavigation {
   path: string;
   translationKey?: string;
-  component?: string;
-  components?: string[];
+  component?: string | string[];
   name?: string;
+  not_component?: string | string[];
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
@@ -66,19 +66,12 @@ class HassTabsSubpage extends LitElement {
     (
       tabs: PageNavigation[],
       activeTab: PageNavigation | undefined,
-      showAdvanced: boolean | undefined,
       _components,
       _language,
       _narrow,
       localizeFunc
     ) => {
-      const shownTabs = tabs.filter(
-        (page) =>
-          (!page.component ||
-            page.core ||
-            isComponentLoaded(this.hass, page.component)) &&
-          (!page.advancedOnly || showAdvanced)
-      );
+      const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
       if (shownTabs.length < 2) {
         if (shownTabs.length === 1) {
@@ -127,7 +120,6 @@ class HassTabsSubpage extends LitElement {
     const tabs = this._getTabs(
       this.tabs,
       this._activeTab,
-      this.hass.userData?.showAdvanced,
       this.hass.config.components,
       this.hass.language,
       this.narrow,

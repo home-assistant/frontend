@@ -536,6 +536,8 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
             ? html`<ha-list-item-new
+                  interactive
+                  type="button"
                   class="paste"
                   .value=${PASTE_VALUE}
                   @click=${this._selected}
@@ -543,7 +545,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ${this.hass.localize(
                     `ui.panel.config.automation.editor.${this._params.type}s.paste`
                   )}
-                  <span slot="secondary"
+                  <span slot="supporting-text"
                     >${this.hass.localize(
                       // @ts-ignore
                       `ui.panel.config.automation.editor.${this._params.type}s.type.${this._params.clipboardItem}.label`

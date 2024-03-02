@@ -2,6 +2,7 @@ import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -19,7 +20,7 @@ import {
   updateLovelaceContainer,
 } from "../editor/lovelace-path";
 import { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceBadge } from "../types";
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -32,6 +33,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
+
+  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -56,6 +59,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
 
     return html`
+      ${this.badges.length > 0
+        ? html`<div class="badges">${this.badges}</div>`
+        : ""}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -64,7 +70,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         draggable-selector=".section"
         .rollback=${false}
       >
-        <div class="container">
+        <div
+          class="container"
+          style=${styleMap({
+            "--section-count": String(
+              sectionsConfig.length + (editMode ? 1 : 0)
+            ),
+          })}
+        >
           ${repeat(
             sectionsConfig,
             (sectionConfig) => this._getKey(sectionConfig),
@@ -180,38 +193,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       path
     ) as LovelaceRawSectionConfig;
 
-    const title = section.title;
+    const title = section.title?.trim();
     const cardCount = section.cards?.length;
 
     if (title || cardCount) {
-      const sectionName = title?.trim()
-        ? this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.named_section",
-            { name: title }
-          )
-        : this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.unnamed_section"
-          );
-
-      const content = cardCount
-        ? this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.text_section_and_cards",
-            {
-              section: sectionName,
-            }
-          )
-        : this.hass.localize(
-            "ui.panel.lovelace.editor.delete_section.text_section_only",
-            {
-              section: sectionName,
-            }
-          );
+      const named = title ? "named" : "unnamed";
+      const type = cardCount ? "cards" : "only";
 
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.lovelace.editor.delete_section.title"
         ),
-        text: content,
+        text: this.hass.localize(
+          `ui.panel.lovelace.editor.delete_section.text_${named}_section_${type}`,
+          { name: title }
+        ),
         confirmText: this.hass.localize("ui.common.delete"),
         destructive: true,
       });
@@ -241,31 +237,47 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
       }
 
+      .badges {
+        margin: 12px 8px 16px 8px;
+        font-size: 85%;
+        text-align: center;
+      }
+
       .section {
         position: relative;
         border-radius: var(--ha-card-border-radius, 12px);
       }
 
       .container {
-        --column-count: 3;
-        display: grid;
-        grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-        gap: 8px 20px;
-        max-width: 1400px;
-        padding: 20px;
-        margin: 0 auto;
-      }
+        /* Inputs */
+        --grid-gap: 20px;
+        --grid-max-section-count: 4;
+        --grid-section-min-width: 320px;
 
-      @media (max-width: 1200px) {
-        .container {
-          --column-count: 2;
-        }
+        /* Calculated */
+        --max-count: min(var(--section-count), var(--grid-max-section-count));
+        --grid-max-width: calc(
+          (var(--max-count) + 1) * var(--grid-section-min-width) +
+            (var(--max-count) + 2) * var(--grid-gap) - 1px
+        );
+
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--grid-section-min-width), 1fr)
+        );
+        grid-gap: 8px var(--grid-gap);
+        justify-content: center;
+        padding: var(--grid-gap);
+        box-sizing: border-box;
+        max-width: var(--grid-max-width);
+        margin: 0 auto;
       }
 
       @media (max-width: 600px) {
         .container {
-          --column-count: 1;
-          padding: 8px;
+          grid-template-columns: 1fr;
+          --grid-gap: 8px;
         }
       }
 

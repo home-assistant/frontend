@@ -32,7 +32,9 @@ export class StateBadge extends LitElement {
 
   @property() public overrideImage?: string;
 
-  @property({ type: Boolean }) public stateColor = false;
+  // Cannot be a boolean attribute because undefined is treated different than
+  // false.  When it is undefined, state is still colored for light entities.
+  @property({ attribute: false }) public stateColor?: boolean;
 
   @property() public color?: string;
 
@@ -70,7 +72,7 @@ export class StateBadge extends LitElement {
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
       : undefined;
-    return this.stateColor || (domain === "light" && this.stateColor !== false);
+    return this.stateColor ?? domain === "light";
   }
 
   protected render() {

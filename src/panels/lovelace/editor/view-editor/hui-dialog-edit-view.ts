@@ -4,16 +4,16 @@ import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
@@ -23,6 +23,11 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../../data/lovelace/config/view";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -33,6 +38,7 @@ import "../../components/hui-entity-editor";
 import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
+  SECTION_VIEW_LAYOUT,
   VIEWS_NO_BADGE_SUPPORT,
 } from "../../views/const";
 import { addView, deleteView, replaceView } from "../config-util";
@@ -46,24 +52,18 @@ import {
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
-import {
-  LovelaceViewConfig,
-  isStrategyView,
-} from "../../../../data/lovelace/config/view";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _currentType?: string;
 
   @state() private _params?: EditViewDialogParams;
 
   @state() private _config?: LovelaceViewConfig;
 
   @state() private _badges?: LovelaceBadgeConfig[];
-
-  @state() private _cards?: LovelaceCardConfig[];
 
   @state() private _saving = false;
 
@@ -102,7 +102,6 @@ export class HuiDialogEditView extends LitElement {
     if (this._params.viewIndex === undefined) {
       this._config = {};
       this._badges = [];
-      this._cards = [];
       this._dirty = false;
       return;
     }
@@ -112,13 +111,12 @@ export class HuiDialogEditView extends LitElement {
       const { strategy, ...viewConfig } = view;
       this._config = viewConfig;
       this._badges = [];
-      this._cards = [];
       return;
     }
-    const { cards, badges, ...viewConfig } = view;
+    this._currentType = view.type;
+    const { badges, ...viewConfig } = view;
     this._config = viewConfig;
     this._badges = badges ? processEditorEntities(badges) : [];
-    this._cards = cards;
   }
 
   public closeDialog(): void {
@@ -181,7 +179,7 @@ export class HuiDialogEditView extends LitElement {
                           )}
                         </ha-alert>
                       `
-                    : ""}
+                    : nothing}
                   <div class="preview-badges">
                     ${this._badges.map(
                       (badgeConfig) => html`
@@ -193,7 +191,7 @@ export class HuiDialogEditView extends LitElement {
                     )}
                   </div>
                 `
-              : ""}
+              : nothing}
             <hui-entity-editor
               .hass=${this.hass}
               .entities=${this._badges}
@@ -215,6 +213,15 @@ export class HuiDialogEditView extends LitElement {
           break;
       }
     }
+
+    const isEmpty =
+      !this._config?.cards?.length && !this._config?.sections?.length;
+
+    const isCompatibleViewType =
+      isEmpty ||
+      (this._currentType === SECTION_VIEW_LAYOUT
+        ? this._config?.type === SECTION_VIEW_LAYOUT
+        : this._config?.type !== SECTION_VIEW_LAYOUT);
 
     return html`
       <ha-dialog
@@ -297,7 +304,7 @@ export class HuiDialogEditView extends LitElement {
                   )}</paper-tab
                 >
               </paper-tabs>`
-            : ""}
+            : nothing}
         </ha-dialog-header>
         ${content}
         ${this._params.viewIndex !== undefined
@@ -312,10 +319,26 @@ export class HuiDialogEditView extends LitElement {
                 )}
               </mwc-button>
             `
-          : ""}
+          : nothing}
+        ${!isCompatibleViewType
+          ? html`
+              <ha-alert class="incompatible" alert-type="warning">
+                ${this._config?.type === SECTION_VIEW_LAYOUT
+                  ? this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.type_warning_sections"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.type_warning_others"
+                    )}
+              </ha-alert>
+            `
+          : nothing}
         <mwc-button
           slot="primaryAction"
-          ?disabled=${!this._config || this._saving || !this._dirty}
+          ?disabled=${!this._config ||
+          this._saving ||
+          !this._dirty ||
+          !isCompatibleViewType}
           @click=${this._save}
         >
           ${this._saving
@@ -324,7 +347,7 @@ export class HuiDialogEditView extends LitElement {
                 size="small"
                 aria-label="Saving"
               ></ha-circular-progress>`
-            : ""}
+            : nothing}
           ${this.hass!.localize("ui.common.save")}</mwc-button
         >
       </ha-dialog>
@@ -361,24 +384,28 @@ export class HuiDialogEditView extends LitElement {
     }
   }
 
-  private _deleteConfirm(): void {
-    showConfirmationDialog(this, {
-      title: this.hass!.localize(
-        `ui.panel.lovelace.views.confirm_delete${
-          this._cards?.length ? `_existing_cards` : ""
-        }`
-      ),
+  private async _deleteConfirm() {
+    const type = this._config?.sections?.length
+      ? "sections"
+      : this._config?.cards?.length
+        ? "cards"
+        : "only";
+
+    const named = this._config?.title ? "named" : "unnamed";
+
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass!.localize("ui.panel.lovelace.views.delete_title"),
       text: this.hass!.localize(
-        `ui.panel.lovelace.views.confirm_delete${
-          this._cards?.length ? "_existing_cards" : ""
-        }_text`,
-        {
-          name: this._config?.title || "Unnamed view",
-          number: this._cards?.length || 0,
-        }
+        `ui.panel.lovelace.views.delete_${named}_view_${type}`,
+        { name: this._config?.title }
       ),
-      confirm: () => this._delete(),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      destructive: true,
     });
+
+    if (!confirm) return;
+
+    this._delete();
   }
 
   private _handleTabSelected(ev: CustomEvent): void {
@@ -402,8 +429,17 @@ export class HuiDialogEditView extends LitElement {
     const viewConf: LovelaceViewConfig = {
       ...this._config,
       badges: this._badges,
-      cards: this._cards,
     };
+
+    if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
+      viewConf.sections = [{ cards: [] }];
+    } else if (!viewConf.cards?.length) {
+      viewConf.cards = [];
+    }
+
+    if (!viewConf.badges?.length) {
+      delete viewConf.badges;
+    }
 
     const lovelace = this._params.lovelace!;
 
@@ -469,7 +505,7 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    const { badges = [], ...config } = ev.detail.value;
+    const { badges, ...config } = ev.detail.value;
     this._config = config;
     this._badges = badges;
     this._dirty = true;
@@ -545,6 +581,10 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
+        }
+        .incompatible {
+          display: block;
+          margin-top: 16px;
         }
 
         @media all and (min-width: 600px) {
