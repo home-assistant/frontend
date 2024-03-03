@@ -1,7 +1,5 @@
+import "@material/mwc-list/mwc-list";
 import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -47,6 +45,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import "../../../components/ha-list-item";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -143,50 +142,54 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <paper-listbox
-              attr-for-selected="data-id"
-              .selected=${this._activeEntry || ""}
-            >
+            <mwc-list>
               ${this._storageItems.map(
                 (entry) => html`
-                  <paper-icon-item
+                  <ha-list-item
                     data-id=${entry.id}
                     @click=${this._itemClicked}
                     .entry=${entry}
+                    graphic="icon"
+                    hasMeta
+                    selected=${this._activeEntry === entry.id}
                   >
-                    <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
-                    <paper-item-body>${entry.name}</paper-item-body>
+                    <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
+                    ${entry.name}
                     ${!this.narrow
                       ? html`
-                          <ha-icon-button
-                            .entry=${entry}
-                            @click=${this._openEditEntry}
-                            .path=${mdiPencil}
-                            .label=${hass.localize(
-                              "ui.panel.config.zone.edit_zone"
-                            )}
-                          ></ha-icon-button>
+                          <div slot="meta">
+                            <ha-icon-button
+                              .entry=${entry}
+                              @click=${this._openEditEntry}
+                              .path=${mdiPencil}
+                              .label=${hass.localize(
+                                "ui.panel.config.zone.edit_zone"
+                              )}
+                            ></ha-icon-button>
+                          </div>
                         `
                       : ""}
-                  </paper-icon-item>
+                  </ha-list-item>
                 `
               )}
               ${this._stateItems.map(
                 (stateObject) => html`
-                  <paper-icon-item
+                  <ha-list-item
                     data-id=${stateObject.entity_id}
                     @click=${this._stateItemClicked}
+                    graphic="icon"
+                    hasMeta
+                    selected=${this._activeEntry === stateObject.entity_id}
                   >
                     <ha-icon
                       .icon=${stateObject.attributes.icon}
-                      slot="item-icon"
+                      slot="graphic"
                     >
                     </ha-icon>
-                    <paper-item-body>
-                      ${stateObject.attributes.friendly_name ||
-                      stateObject.entity_id}
-                    </paper-item-body>
-                    <div style="display:inline-block">
+
+                    ${stateObject.attributes.friendly_name ||
+                    stateObject.entity_id}
+                    <div slot="meta">
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
                         .noEdit=${stateObject.entity_id !== "zone.home" ||
@@ -210,10 +213,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                           `
                         : ""}
                     </div>
-                  </paper-icon-item>
+                  </ha-list-item>
                 `
               )}
-            </paper-listbox>
+            </mwc-list>
           `;
 
     return html`
@@ -398,6 +401,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private _openEditEntry(ev: Event) {
     const entry: Zone = (ev.currentTarget! as any).entry;
     this._openDialog(entry);
+    ev.stopPropagation();
   }
 
   private async _openCoreConfig(ev) {
@@ -515,39 +519,23 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         flex-grow: 1;
         height: 100%;
       }
-      .flex paper-listbox,
+      .flex mwc-list,
       .flex .empty {
         border-left: 1px solid var(--divider-color);
         width: 250px;
         min-height: 100%;
         box-sizing: border-box;
       }
-      paper-icon-item {
-        padding-top: 4px;
-        padding-bottom: 4px;
-        cursor: pointer;
-      }
-      .overflow paper-icon-item:last-child {
-        margin-bottom: 80px;
-      }
-      paper-icon-item.iron-selected:before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        pointer-events: none;
-        content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-        transition: opacity 15ms linear;
-        will-change: opacity;
-      }
       ha-card {
         margin-bottom: 100px;
       }
       ha-card paper-item {
         cursor: pointer;
+      }
+      div[slot="meta"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     `;
   }
