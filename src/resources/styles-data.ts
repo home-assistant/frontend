@@ -77,8 +77,6 @@ export const derivedStyles = {
   "label-badge-background-color": "var(--card-background-color)",
   "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
   "paper-listbox-background-color": "var(--card-background-color)",
-  "paper-item-icon-color": "var(--state-icon-color)",
-  "paper-item-icon-active-color": "var(--state-icon-active-color)",
   "table-header-background-color": "var(--input-fill-color)",
   "table-row-background-color": "var(--primary-background-color)",
   "table-row-alternative-background-color": "var(--secondary-background-color)",

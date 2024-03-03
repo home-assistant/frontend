@@ -687,7 +687,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           text-decoration: none;
         }
 
