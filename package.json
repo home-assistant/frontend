@@ -210,7 +210,7 @@
     "gulp": "4.0.2",
     "gulp-flatmap": "1.0.2",
     "gulp-json-transform": "0.5.0",
-    "gulp-merge-json": "2.1.2",
+    "gulp-merge-json": "2.2.1",
     "gulp-rename": "2.0.0",
     "gulp-zopfli-green": "6.0.1",
     "html-minifier-terser": "7.2.0",
