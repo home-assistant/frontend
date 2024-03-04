@@ -112,9 +112,9 @@ export const computeSection = (
       ({
         type: "tile",
         entity,
-        show_entity_picture: ["person", "camera", "image"].includes(
-          computeDomain(entity)
-        ),
+        show_entity_picture:
+          ["person", "camera", "image"].includes(computeDomain(entity)) ||
+          undefined,
       }) as TileCardConfig
   ),
   ...sectionOptions,
