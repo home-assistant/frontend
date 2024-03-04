@@ -48,6 +48,7 @@ import {
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
+  hasScriptFields,
   isMaxMode,
   showScriptEditor,
   triggerScript,
@@ -63,7 +64,6 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -614,10 +614,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
 
-    const fields =
-      this.hass!.services.script[computeObjectId(this._entityId!)]?.fields;
-
-    if (fields && Object.keys(fields).length > 0) {
+    if (hasScriptFields(this.hass, this._entityId!)) {
       showMoreInfoDialog(this, {
         entityId: this._entityId!,
       });
