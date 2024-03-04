@@ -5176,7 +5176,7 @@
           "section": {
             "unnamed_section": "Unnamed section",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
-            "add_section": "Add section"
+            "create_section": "Create section"
           },
           "delete_section": {
             "title": "Delete section",
