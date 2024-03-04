@@ -116,7 +116,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
             {
               type: "tile",
               entity: "sensor.tesla_wall_connector_session_energy",
-              name: "EV last charge",
+              name: "Last charge",
               color: "green",
             },
             {
@@ -155,9 +155,8 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
             },
             {
               type: "tile",
-              entity: "sensor.moon_phase",
-              color: "indigo",
-              name: "Moon",
+              entity: "sensor.rain",
+              color: "blue",
             },
             {
               features: [
@@ -166,6 +165,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
                 },
               ],
               type: "tile",
+              name: "Downstairs",
               entity: "climate.ground_floor",
               state_content: ["preset_mode", "current_temperature"],
             },
@@ -176,6 +176,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
                 },
               ],
               type: "tile",
+              name: "Upstairs",
               entity: "climate.first_floor",
               state_content: ["preset_mode", "current_temperature"],
             },
