@@ -119,13 +119,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           ${editMode
             ? html`
                 <button
-                  class="add"
-                  @click=${this._addSection}
+                  class="create"
+                  @click=${this._createSection}
                   aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                   .title=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                 >
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
@@ -137,7 +137,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _addSection(): void {
+  private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
       type: "grid",
       cards: [],
