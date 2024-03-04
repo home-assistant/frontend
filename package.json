@@ -160,7 +160,7 @@
     "@koa/cors": "5.0.0",
     "@lokalise/node-api": "12.1.0",
     "@octokit/auth-oauth-device": "7.0.1",
-    "@octokit/plugin-retry": "7.0.2",
+    "@octokit/plugin-retry": "7.0.3",
     "@octokit/rest": "20.0.2",
     "@open-wc/dev-server-hmr": "0.1.4",
     "@rollup/plugin-babel": "6.0.4",
