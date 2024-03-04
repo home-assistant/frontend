@@ -23,6 +23,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiWrench,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -806,6 +807,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </ha-list-item>
             </a>`
           : ""}
+        ${!item.disabled_by &&
+        item.supports_reconfigure &&
+        item.source !== "system"
+          ? html`<ha-list-item
+              @request-selected=${this._handleReconfigure}
+              graphic="icon"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.reconfigure"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiWrench}></ha-svg-icon>
+            </ha-list-item>`
+          : ""}
 
         <ha-list-item
           @request-selected=${this._handleSystemOptions}
@@ -1040,6 +1054,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _handleReconfigure(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._reconfigureIntegration(
+      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
+    );
+  }
+
   private _handleDelete(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -1256,6 +1279,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         `ui.panel.config.integrations.config_entry.${locale_key}`
       ),
+    });
+  }
+
+  private async _reconfigureIntegration(configEntry: ConfigEntry) {
+    showConfigFlowDialog(this, {
+      startFlowHandler: configEntry.domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
+      entryId: configEntry.entry_id,
     });
   }
 
