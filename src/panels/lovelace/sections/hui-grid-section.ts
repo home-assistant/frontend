@@ -219,7 +219,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           display: block;
         }
 
-        .card:not(:has(> *:not([hidden]))) {
+        .card:has(> *[hidden]) {
           display: none;
         }
 
