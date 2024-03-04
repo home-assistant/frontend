@@ -269,9 +269,9 @@ export class StatisticsChart extends LitElement {
 
         if (points.length) {
           const firstPoint = points[0];
-          const enittyId = this._statisticIds[firstPoint.datasetIndex];
-          if (!isExternalStatistic(enittyId)) {
-            fireEvent(this, "hass-more-info", { entityId: enittyId });
+          const statisticId = this._statisticIds[firstPoint.datasetIndex];
+          if (!isExternalStatistic(statisticId)) {
+            fireEvent(this, "hass-more-info", { entityId: statisticId });
             chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
           }
         }
