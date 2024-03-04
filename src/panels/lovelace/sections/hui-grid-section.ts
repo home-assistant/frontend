@@ -96,6 +96,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (_cardConfig, idx) => {
               const card = this.cards![idx];
               (card as any).editMode = editMode;
+              (card as any).lovelace = this.lovelace;
               const size = card && (card as any).getGridSize?.();
               return html`
                 <div
