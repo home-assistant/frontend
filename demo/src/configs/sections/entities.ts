@@ -232,6 +232,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = () =>
         unit_of_measurement: "gCO2eq/kWh",
         attribution: "Data provided by Electricity Maps",
         friendly_name: "Electricity Maps CO2 intensity",
+        icon: "mdi:molecule-co2",
       },
     },
     "sun.sun": {
@@ -250,23 +251,14 @@ export const demoEntitiesSections: DemoConfig["entities"] = () =>
         friendly_name: "Sun",
       },
     },
-    "sensor.moon_phase": {
+    "sensor.rain": {
       entity_id: "sensor.moon_phase",
-      state: "waning_crescent",
+      state: "7.2",
       attributes: {
-        options: [
-          "new_moon",
-          "waxing_crescent",
-          "first_quarter",
-          "waxing_gibbous",
-          "full_moon",
-          "waning_gibbous",
-          "last_quarter",
-          "waning_crescent",
-        ],
-        device_class: "enum",
-        icon: "mdi:moon-waning-crescent",
-        friendly_name: "Moon Phase",
+        state_class: "total_increasing",
+        unit_of_measurement: "mm",
+        device_class: "precipitation",
+        friendly_name: "Rain",
       },
     },
     "climate.ground_floor": {
