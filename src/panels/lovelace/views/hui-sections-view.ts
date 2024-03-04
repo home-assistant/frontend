@@ -303,7 +303,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         padding: 8px;
       }
 
-      .add {
+      .create {
         margin-top: calc(66px + 8px);
         outline: none;
         background: none;
@@ -316,7 +316,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         box-sizing: content-box;
       }
 
-      .add:focus {
+      .create:focus {
         border: 2px solid var(--primary-color);
       }
 
