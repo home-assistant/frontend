@@ -215,6 +215,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span var(--column-size, 4);
         }
 
+        .card:has(> *) {
+          display: block;
+        }
+
+        .card:has(> *[hidden]) {
+          display: none;
+        }
+
         .add {
           outline: none;
           grid-row: span var(--row-size, 1);
