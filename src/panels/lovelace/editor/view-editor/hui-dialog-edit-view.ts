@@ -57,8 +57,6 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _currentType?: string;
-
   @state() private _params?: EditViewDialogParams;
 
   @state() private _config?: LovelaceViewConfig;
@@ -113,7 +111,6 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       return;
     }
-    this._currentType = view.type;
     const { badges, ...viewConfig } = view;
     this._config = viewConfig;
     this._badges = badges ? processEditorEntities(badges) : [];
@@ -214,14 +211,12 @@ export class HuiDialogEditView extends LitElement {
       }
     }
 
-    const isEmpty =
-      !this._config?.cards?.length && !this._config?.sections?.length;
-
     const isCompatibleViewType =
-      isEmpty ||
-      (this._currentType === SECTION_VIEW_LAYOUT
-        ? this._config?.type === SECTION_VIEW_LAYOUT
-        : this._config?.type !== SECTION_VIEW_LAYOUT);
+      this._config?.type === SECTION_VIEW_LAYOUT
+        ? this._config?.type === SECTION_VIEW_LAYOUT &&
+          !this._config?.cards?.length
+        : this._config?.type !== SECTION_VIEW_LAYOUT &&
+          !this._config?.sections?.length;
 
     return html`
       <ha-dialog
@@ -281,6 +276,19 @@ export class HuiDialogEditView extends LitElement {
                 : ``}
             </mwc-list-item>
           </ha-button-menu>
+          ${!isCompatibleViewType
+            ? html`
+                <ha-alert class="incompatible" alert-type="warning">
+                  ${this._config?.type === SECTION_VIEW_LAYOUT
+                    ? this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_view.type_warning_sections"
+                      )
+                    : this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_view.type_warning_others"
+                      )}
+                </ha-alert>
+              `
+            : nothing}
           ${!this._yamlMode
             ? html`<paper-tabs
                 scrollable
@@ -318,19 +326,6 @@ export class HuiDialogEditView extends LitElement {
                   "ui.panel.lovelace.editor.edit_view.delete"
                 )}
               </mwc-button>
-            `
-          : nothing}
-        ${!isCompatibleViewType
-          ? html`
-              <ha-alert class="incompatible" alert-type="warning">
-                ${this._config?.type === SECTION_VIEW_LAYOUT
-                  ? this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_sections"
-                    )
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_others"
-                    )}
-              </ha-alert>
             `
           : nothing}
         <mwc-button
@@ -425,14 +420,13 @@ export class HuiDialogEditView extends LitElement {
     }
 
     this._saving = true;
-
     const viewConf: LovelaceViewConfig = {
       ...this._config,
       badges: this._badges,
     };
 
     if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
-      viewConf.sections = [{ cards: [] }];
+      viewConf.sections = [{ type: "grid", cards: [] }];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
     }
@@ -584,7 +578,6 @@ export class HuiDialogEditView extends LitElement {
         }
         .incompatible {
           display: block;
-          margin-top: 16px;
         }
 
         @media all and (min-width: 600px) {
