@@ -253,12 +253,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --grid-gap: 20px;
         --grid-max-section-count: 4;
         --grid-section-min-width: 320px;
+        --grid-section-max-width: 500px;
 
         /* Calculated */
         --max-count: min(var(--section-count), var(--grid-max-section-count));
-        --grid-max-width: calc(
-          (var(--max-count) + 1) * var(--grid-section-min-width) +
-            (var(--max-count) + 2) * var(--grid-gap) - 1px
+        --grid-max-width: min(
+          calc(
+            (var(--max-count) + 1) * var(--grid-section-min-width) +
+              (var(--max-count) + 2) * var(--grid-gap) - 1px
+          ),
+          calc(
+            var(--max-count) * var(--grid-section-max-width) +
+              (var(--max-count) + 1) * var(--grid-gap)
+          )
         );
 
         display: grid;
