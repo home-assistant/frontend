@@ -6220,7 +6220,7 @@
             }
           },
           "sections": {
-            "description": "This dashboard is using the new Home Assistant grid system. Learn more about it in the {blog_post}.",
+            "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
             "description_blog_post": "blog post"
           }
         }
