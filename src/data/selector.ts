@@ -251,7 +251,11 @@ export interface LanguageSelector {
 }
 
 export interface LocationSelector {
-  location: { radius?: boolean; icon?: string } | null;
+  location: {
+    radius?: boolean;
+    radius_readonly?: boolean;
+    icon?: string;
+  } | null;
 }
 
 export interface LocationSelectorValue {
