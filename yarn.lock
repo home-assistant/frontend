@@ -9597,6 +9597,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hls.js@patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch":
+  version: 1.5.7
+  resolution: "hls.js@patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch::version=1.5.7&hash=77028d"
+  checksum: 10/8c3eadf08e2486d2de9323c6b7cad38c1aa809f2dd7f799f437a7bbca617ff43b8833fb56e33f324f94609d6a949fb34609a25de6dcebcc5365e297e1b53b977
+  languageName: node
+  linkType: hard
+
 "home-assistant-frontend@workspace:.":
   version: 0.0.0-use.local
   resolution: "home-assistant-frontend@workspace:."
@@ -9749,7 +9756,7 @@ __metadata:
     gulp-merge-json: "npm:2.2.1"
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.1"
-    hls.js: "npm:1.5.7"
+    hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
     home-assistant-js-websocket: "npm:9.1.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.0.11"
