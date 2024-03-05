@@ -250,7 +250,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .container {
         /* Inputs */
-        --grid-gap: 20px;
+        --grid-gap: 32px;
         --grid-max-section-count: 4;
         --grid-section-min-width: 320px;
 
@@ -264,11 +264,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: grid;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(var(--grid-section-min-width), 1fr)
+          minmax(min(var(--grid-section-min-width), 100%), 1fr)
         );
         grid-gap: 8px var(--grid-gap);
-        justify-content: center;
-        padding: var(--grid-gap);
+        padding: 8px var(--grid-gap);
         box-sizing: border-box;
         max-width: var(--grid-max-width);
         margin: 0 auto;
@@ -276,7 +275,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       @media (max-width: 600px) {
         .container {
-          grid-template-columns: 1fr;
           --grid-gap: 8px;
         }
       }
