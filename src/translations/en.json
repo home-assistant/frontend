@@ -6218,6 +6218,10 @@
               "watching": "watching",
               "minutes_abbr": "min"
             }
+          },
+          "sections": {
+            "description": "This dashboard is using the new Home Assistant grid system. Learn more about it in the {blog_post}.",
+            "description_blog_post": "blog post"
           }
         }
       },
