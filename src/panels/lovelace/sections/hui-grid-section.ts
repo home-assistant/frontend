@@ -110,11 +110,13 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
               return html`
                 <div
-                  class="card"
                   style=${styleMap({
                     "--column-size": options.columns,
                     "--row-size": options.rows,
                   })}
+                  class="card ${classMap({
+                    "fixed-height": typeof options?.rows === "number",
+                  })}"
                 >
                   ${editMode
                     ? html`
@@ -224,6 +226,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           position: relative;
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 4);
+        }
+
+        .card.fixed-height {
+          height: calc((var(--row-size, 1) * (66px + 8px)) - 8px);
         }
 
         .card:has(> *) {
