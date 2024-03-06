@@ -46,6 +46,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 import "../../../components/ha-list-item";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -146,12 +147,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
-                    data-id=${entry.id}
-                    @click=${this._itemClicked}
                     .entry=${entry}
                     graphic="icon"
-                    hasMeta
-                    selected=${this._activeEntry === entry.id}
+                    .hasMeta=${!this.narrow}
+                    @request-selected=${this._itemClicked}
+                    .value=${entry.id}
                   >
                     <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
                     ${entry.name}
@@ -175,11 +175,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               ${this._stateItems.map(
                 (stateObject) => html`
                   <ha-list-item
-                    data-id=${stateObject.entity_id}
-                    @click=${this._stateItemClicked}
                     graphic="icon"
                     hasMeta
-                    selected=${this._activeEntry === stateObject.entity_id}
+                    .value=${stateObject.entity_id}
+                    @request-selected=${this._stateItemClicked}
                   >
                     <ha-icon
                       .icon=${stateObject.attributes.icon}
@@ -378,20 +377,26 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog();
   }
 
-  private _itemClicked(ev: Event) {
+  private _itemClicked(ev: CustomEvent) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
     if (this.narrow) {
       this._openEditEntry(ev);
       return;
     }
-    const entry: Zone = (ev.currentTarget! as any).entry;
-    this._zoomZone(entry.id);
+    const entryId: string = (ev.currentTarget! as any).value;
+    this._zoomZone(entryId);
   }
 
-  private _stateItemClicked(ev: Event) {
-    const entityId = (ev.currentTarget! as HTMLElement).getAttribute(
-      "data-id"
-    )!;
-    this._zoomZone(entityId);
+  private _stateItemClicked(ev: CustomEvent) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    const entryId: string = (ev.currentTarget! as any).value;
+    this._zoomZone(entryId);
   }
 
   private async _zoomZone(id: string) {
