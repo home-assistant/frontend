@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceCard, LovelaceGridOptions } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -97,13 +97,23 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               const card = this.cards![idx];
               (card as any).editMode = editMode;
               (card as any).lovelace = this.lovelace;
-              const size = card && (card as any).getGridSize?.();
+
+              const configOptions = _cardConfig.grid_options;
+              const cardOptions = (card as any)?.getGridOptions?.() as
+                | LovelaceGridOptions
+                | undefined;
+
+              const options = {
+                ...cardOptions,
+                ...configOptions,
+              } as LovelaceGridOptions;
+
               return html`
                 <div
                   class="card"
                   style=${styleMap({
-                    "--column-size": size?.[0],
-                    "--row-size": size?.[1],
+                    "--column-size": options.columns,
+                    "--row-size": options.rows,
                   })}
                 >
                   ${editMode
