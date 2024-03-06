@@ -152,6 +152,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .hasMeta=${!this.narrow}
                     @request-selected=${this._itemClicked}
                     .value=${entry.id}
+                    ?selected=${this._activeEntry === entry.id}
                   >
                     <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
                     ${entry.name}
@@ -179,6 +180,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     hasMeta
                     .value=${stateObject.entity_id}
                     @request-selected=${this._stateItemClicked}
+                    ?selected=${this._activeEntry === stateObject.entity_id}
                   >
                     <ha-icon
                       .icon=${stateObject.attributes.icon}
@@ -388,6 +390,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
     const entryId: string = (ev.currentTarget! as any).value;
     this._zoomZone(entryId);
+    this._activeEntry = entryId;
   }
 
   private _stateItemClicked(ev: CustomEvent) {
@@ -397,6 +400,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
     const entryId: string = (ev.currentTarget! as any).value;
     this._zoomZone(entryId);
+    this._activeEntry = entryId;
   }
 
   private async _zoomZone(id: string) {
