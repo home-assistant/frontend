@@ -290,6 +290,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         position: absolute;
         top: 0;
         right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
         opacity: 1;
         display: flex;
         align-items: center;
