@@ -234,11 +234,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        --grid-gap: 32px;
+        --grid-max-section-count: 4;
+        --grid-section-min-width: 320px;
+        --grid-section-max-width: 500px;
         display: block;
       }
 
       .badges {
-        margin: 12px 8px 16px 8px;
+        margin: 12px 8px 4px 8px;
         font-size: 85%;
         text-align: center;
       }
@@ -246,18 +250,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       .section {
         position: relative;
         border-radius: var(--ha-card-border-radius, 12px);
+        max-width: var(--grid-section-max-width);
+        width: 100%;
       }
 
       .container {
-        /* Inputs */
-        --grid-gap: 32px;
-        --grid-max-section-count: 4;
-        --grid-section-min-width: 320px;
-        --grid-section-max-width: 500px;
-
-        /* Calculated */
         --max-count: min(var(--section-count), var(--grid-max-section-count));
-        --grid-max-width: min(
+        --max-width: min(
           calc(
             (var(--max-count) + 1) * var(--grid-section-min-width) +
               (var(--max-count) + 2) * var(--grid-gap) - 1px
@@ -267,8 +266,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               (var(--max-count) + 1) * var(--grid-gap)
           )
         );
-
         display: grid;
+        align-items: start;
+        justify-items: center;
         grid-template-columns: repeat(
           auto-fit,
           minmax(min(var(--grid-section-min-width), 100%), 1fr)
@@ -276,7 +276,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         grid-gap: 8px var(--grid-gap);
         padding: 8px var(--grid-gap);
         box-sizing: border-box;
-        max-width: var(--grid-max-width);
+        max-width: var(--max-width);
         margin: 0 auto;
       }
 

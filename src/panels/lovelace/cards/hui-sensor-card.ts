@@ -1,11 +1,11 @@
-import { css, CSSResultGroup } from "lit";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { css, CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { GraphHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardEditor } from "../types";
+import { LovelaceCardEditor, LovelaceLayoutOptions } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
 
@@ -72,8 +72,11 @@ class HuiSensorCard extends HuiEntityCard {
     super.setConfig(entityCardConfig);
   }
 
-  public getGridSize(): [number, number] {
-    return [2, 2];
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 2,
+      grid_rows: 2,
+    };
   }
 
   static get styles(): CSSResultGroup {
