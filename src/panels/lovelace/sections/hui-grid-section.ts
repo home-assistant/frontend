@@ -99,7 +99,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               (card as any).lovelace = this.lovelace;
 
               const configOptions = _cardConfig.layout_options;
-              const cardOptions = (card as any)?.getGridOptions?.() as
+              const cardOptions = (card as any)?.getLayoutOptions?.() as
                 | LovelaceLayoutOptions
                 | undefined;
 

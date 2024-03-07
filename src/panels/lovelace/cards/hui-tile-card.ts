@@ -51,7 +51,7 @@ import "../components/hui-timestamp-display";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceGridOptions,
+  LovelaceLayoutOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
@@ -128,16 +128,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getGridOptions(): LovelaceGridOptions {
+  public getLayoutOptions(): LovelaceLayoutOptions {
     const options = {
-      columns: 2,
-      rows: 1,
+      grid_columns: 2,
+      grid_rows: 1,
     };
     if (this._config?.features?.length) {
-      options.rows += Math.ceil((this._config.features.length * 2) / 3);
+      options.grid_rows += Math.ceil((this._config.features.length * 2) / 3);
     }
     if (this._config?.vertical) {
-      options.rows++;
+      options.grid_rows++;
     }
     return options;
   }

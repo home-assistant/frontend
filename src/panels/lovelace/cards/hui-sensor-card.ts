@@ -5,7 +5,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { GraphHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardEditor, LovelaceGridOptions } from "../types";
+import { LovelaceCardEditor, LovelaceLayoutOptions } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
 
@@ -72,10 +72,10 @@ class HuiSensorCard extends HuiEntityCard {
     super.setConfig(entityCardConfig);
   }
 
-  public getGridOptions(): LovelaceGridOptions {
+  public getLayoutOptions(): LovelaceLayoutOptions {
     return {
-      columns: 2,
-      rows: 2,
+      grid_columns: 2,
+      grid_rows: 2,
     };
   }
 

@@ -49,7 +49,7 @@ export interface LovelaceCard extends HTMLElement {
   isPanel?: boolean;
   editMode?: boolean;
   getCardSize(): number | Promise<number>;
-  getGridOptions?(): LovelaceLayoutOptions;
+  getLayoutOptions?(): LovelaceLayoutOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 
