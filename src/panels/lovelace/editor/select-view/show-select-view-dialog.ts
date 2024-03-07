@@ -5,6 +5,7 @@ import { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 export interface SelectViewDialogParams {
   lovelaceConfig: LovelaceConfig;
   allowDashboardChange: boolean;
+  includeStrategyViews?: boolean;
   dashboards?: LovelaceDashboard[];
   urlPath?: string | null;
   header?: string;
