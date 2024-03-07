@@ -472,7 +472,10 @@ export class HuiDialogEditView extends LitElement {
     ev: HASSDomEvent<ViewVisibilityChangeEvent>
   ): void {
     if (ev.detail.visible && this._config) {
-      this._config.visible = ev.detail.visible;
+      this._config = {
+        ...this._config,
+        visible: ev.detail.visible,
+      };
     }
     this._dirty = true;
   }
