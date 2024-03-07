@@ -3,5 +3,5 @@ import { object, string, any } from "superstruct";
 export const baseLovelaceCardConfig = object({
   type: string(),
   view_layout: any(),
-  grid_options: any(),
+  layout_options: any(),
 });

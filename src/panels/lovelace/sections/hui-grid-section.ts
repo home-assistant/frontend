@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceCard, LovelaceGridOptions } from "../types";
+import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -98,24 +98,24 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               (card as any).editMode = editMode;
               (card as any).lovelace = this.lovelace;
 
-              const configOptions = _cardConfig.grid_options;
+              const configOptions = _cardConfig.layout_options;
               const cardOptions = (card as any)?.getGridOptions?.() as
-                | LovelaceGridOptions
+                | LovelaceLayoutOptions
                 | undefined;
 
               const options = {
                 ...cardOptions,
                 ...configOptions,
-              } as LovelaceGridOptions;
+              } as LovelaceLayoutOptions;
 
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": options.columns,
-                    "--row-size": options.rows,
+                    "--column-size": options.grid_columns,
+                    "--row-size": options.grid_rows,
                   })}
                   class="card ${classMap({
-                    "fit-row": typeof options?.rows === "number",
+                    "fit-rows": typeof options?.grid_rows === "number",
                   })}"
                 >
                   ${editMode
@@ -230,7 +230,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span var(--column-size, 4);
         }
 
-        .card.fit-row {
+        .card.fit-rows {
           height: calc(
             (var(--row-size, 1) * (var(--grid-row-height) + var(--grid-gap))) - var(
                 --grid-gap
