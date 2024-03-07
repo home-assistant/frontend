@@ -157,7 +157,6 @@ export class HuiDialogEditView extends LitElement {
           break;
         case "tab-badges":
           content = html`
-            ${this._config?.badges?.length}
             ${this._config?.badges?.length
               ? html`
                   ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
