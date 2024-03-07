@@ -115,7 +115,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "--row-size": options.rows,
                   })}
                   class="card ${classMap({
-                    "fixed-height": typeof options?.rows === "number",
+                    "fit-row": typeof options?.rows === "number",
                   })}"
                 >
                   ${editMode
@@ -185,14 +185,16 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         :host {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          --grid-gap: 8px;
+          --grid-row-height: 66px;
+          gap: var(--grid-gap);
         }
         .container {
           --column-count: 4;
           display: grid;
           grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-          grid-auto-rows: minmax(66px, auto);
-          gap: 8px;
+          grid-auto-rows: minmax(var(--grid-row-height), auto);
+          gap: var(--grid-gap);
           padding: 0;
           margin: 0 auto;
         }
@@ -201,7 +203,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: 66px;
+          min-height: var(var(--grid-row-height));
         }
 
         .title {
@@ -228,8 +230,12 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span var(--column-size, 4);
         }
 
-        .card.fixed-height {
-          height: calc((var(--row-size, 1) * (66px + 8px)) - 8px);
+        .card.fit-row {
+          height: calc(
+            (var(--row-size, 1) * (var(--grid-row-height) + var(--grid-gap))) - var(
+                --grid-gap
+              )
+          );
         }
 
         .card:has(> *) {
@@ -248,7 +254,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          height: 66px;
+          height: var(--grid-row-height);
           order: 1;
         }
         .add:focus {
