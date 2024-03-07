@@ -157,6 +157,7 @@ export class HuiDialogEditView extends LitElement {
           break;
         case "tab-badges":
           content = html`
+            ${this._config?.badges?.length}
             ${this._config?.badges?.length
               ? html`
                   ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
@@ -493,8 +494,7 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    const { badges, ...config } = ev.detail.value;
-    this._config = config;
+    this._config = ev.detail.value;
     this._dirty = true;
   }
 
