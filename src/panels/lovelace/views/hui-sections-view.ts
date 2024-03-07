@@ -247,11 +247,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         text-align: center;
       }
 
-      .section {
+      .container > * {
         position: relative;
-        border-radius: var(--ha-card-border-radius, 12px);
         max-width: var(--grid-section-max-width);
         width: 100%;
+      }
+
+      .section {
+        border-radius: var(--ha-card-border-radius, 12px);
       }
 
       .container {
@@ -318,9 +321,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         order: 1;
-        height: 66px;
+        height: calc(66px + (8px + 2px) * 2);
         padding: 8px;
-        box-sizing: content-box;
+        box-sizing: border-box;
       }
 
       .create:focus {
