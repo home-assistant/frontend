@@ -283,6 +283,8 @@ export class HuiCardEditMode extends LitElement {
           position: absolute;
           right: -6px;
           top: -6px;
+          inset-inline-end: -6px;
+          inset-inline-start: initial;
         }
         .more ha-icon-button {
           cursor: pointer;
