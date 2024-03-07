@@ -496,8 +496,7 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    const { badges, ...config } = ev.detail.value;
-    this._config = config;
+    this._config = ev.detail.value;
     this._dirty = true;
   }
 
