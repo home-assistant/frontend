@@ -183,10 +183,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          display: flex;
-          flex-direction: column;
           --grid-gap: 8px;
           --grid-row-height: 66px;
+          display: flex;
+          flex-direction: column;
           gap: var(--grid-gap);
         }
         .container {
