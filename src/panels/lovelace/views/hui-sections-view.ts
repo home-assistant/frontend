@@ -250,6 +250,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       .section {
         position: relative;
         border-radius: var(--ha-card-border-radius, 12px);
+        max-width: var(--grid-section-max-width);
+        width: 100%;
       }
 
       .container {
@@ -266,6 +268,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         );
         display: grid;
         align-items: start;
+        justify-items: center;
         grid-template-columns: repeat(
           auto-fit,
           minmax(min(var(--grid-section-min-width), 100%), 1fr)
