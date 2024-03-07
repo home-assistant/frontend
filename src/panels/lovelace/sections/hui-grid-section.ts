@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -97,14 +97,26 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               const card = this.cards![idx];
               (card as any).editMode = editMode;
               (card as any).lovelace = this.lovelace;
-              const size = card && (card as any).getGridSize?.();
+
+              const configOptions = _cardConfig.layout_options;
+              const cardOptions = (card as any)?.getLayoutOptions?.() as
+                | LovelaceLayoutOptions
+                | undefined;
+
+              const options = {
+                ...cardOptions,
+                ...configOptions,
+              } as LovelaceLayoutOptions;
+
               return html`
                 <div
-                  class="card"
                   style=${styleMap({
-                    "--column-size": size?.[0],
-                    "--row-size": size?.[1],
+                    "--column-size": options.grid_columns,
+                    "--row-size": options.grid_rows,
                   })}
+                  class="card ${classMap({
+                    "fit-rows": typeof options?.grid_rows === "number",
+                  })}"
                 >
                   ${editMode
                     ? html`
@@ -171,16 +183,18 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
+          --grid-gap: 8px;
+          --grid-row-height: 66px;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: var(--grid-gap);
         }
         .container {
           --column-count: 4;
           display: grid;
           grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-          grid-auto-rows: minmax(66px, auto);
-          gap: 8px;
+          grid-auto-rows: minmax(var(--grid-row-height), auto);
+          gap: var(--grid-gap);
           padding: 0;
           margin: 0 auto;
         }
@@ -189,7 +203,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: 66px;
+          min-height: var(var(--grid-row-height));
         }
 
         .title {
@@ -216,6 +230,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span var(--column-size, 4);
         }
 
+        .card.fit-rows {
+          height: calc(
+            (var(--row-size, 1) * (var(--grid-row-height) + var(--grid-gap))) - var(
+                --grid-gap
+              )
+          );
+        }
+
         .card:has(> *) {
           display: block;
         }
@@ -232,7 +254,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          height: 66px;
+          height: var(--grid-row-height);
           order: 1;
         }
         .add:focus {

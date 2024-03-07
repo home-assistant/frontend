@@ -48,7 +48,11 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-timestamp-display";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
 
@@ -124,16 +128,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getGridSize(): [number, number] {
-    const width = 2;
-    let height = 1;
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    const options = {
+      grid_columns: 2,
+      grid_rows: 1,
+    };
     if (this._config?.features?.length) {
-      height += Math.ceil((this._config.features.length * 2) / 3);
+      options.grid_rows += Math.ceil((this._config.features.length * 2) / 3);
     }
     if (this._config?.vertical) {
-      height++;
+      options.grid_rows++;
     }
-    return [width, height];
+    return options;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {

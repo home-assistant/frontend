@@ -52,7 +52,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { ButtonCardConfig } from "./types";
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
@@ -143,14 +147,14 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getGridSize(): [number, number] {
+  public getLayoutOptions(): LovelaceLayoutOptions {
     if (
       this._config?.show_icon &&
       (this._config?.show_name || this._config?.show_state)
     ) {
-      return [2, 2];
+      return { grid_rows: 2, grid_columns: 2 };
     }
-    return [1, 1];
+    return { grid_rows: 1, grid_columns: 1 };
   }
 
   public setConfig(config: ButtonCardConfig): void {
