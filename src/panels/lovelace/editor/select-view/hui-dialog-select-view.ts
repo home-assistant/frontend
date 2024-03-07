@@ -21,6 +21,7 @@ import {
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -117,8 +118,10 @@ export class HuiDialogSelectView extends LitElement {
           : this._config.views.length > 1
             ? html`
                 <mwc-list dialogInitialFocus>
-                  ${this._config.views.map(
-                    (view, idx) => html`
+                  ${this._config.views.map((view, idx) => {
+                    const isStrategy = isStrategyView(view);
+
+                    return html`
                       <mwc-radio-list-item
                         .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
@@ -126,12 +129,19 @@ export class HuiDialogSelectView extends LitElement {
                         @click=${this._viewChanged}
                         .value=${idx.toString()}
                         .selected=${this._selectedViewIdx === idx}
+                        .disabled=${isStrategy &&
+                        !this._params?.includeStrategyViews}
                       >
-                        <span>${view.title}</span>
+                        <span>
+                          ${view.title}${isStrategy
+                            ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
+                            : nothing}
+                        </span>
+
                         <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
                       </mwc-radio-list-item>
-                    `
-                  )}
+                    `;
+                  })}
                 </mwc-list>
               `
             : ""}

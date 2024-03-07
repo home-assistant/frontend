@@ -5160,7 +5160,9 @@
             "search_cards": "Search cards"
           },
           "move_card": {
-            "header": "Choose a view to move the card to"
+            "header": "Choose a view to move the card to",
+            "error_title": "Impossible to move the card",
+            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
           },
           "change_position": {
             "title": "Change card position",
@@ -5171,7 +5173,8 @@
             "dashboard_label": "Dashboard",
             "views_label": "View",
             "no_config": "No config found.",
-            "no_views": "No views in this dashboard."
+            "no_views": "No views in this dashboard.",
+            "strategy_type": "strategy"
           },
           "section": {
             "unnamed_section": "Unnamed section",
