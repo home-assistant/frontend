@@ -2005,6 +2005,7 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
+              "display_name": "Display name",
               "device_consumption_energy": "Device consumption energy",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
