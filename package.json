@@ -239,7 +239,7 @@
     "terser-webpack-plugin": "5.3.10",
     "transform-async-modules-webpack-plugin": "1.0.2",
     "ts-lit-plugin": "2.0.2",
-    "typescript": "5.3.3",
+    "typescript": "5.4.2",
     "vinyl-buffer": "1.0.1",
     "vinyl-source-stream": "2.0.0",
     "webpack": "5.90.3",
