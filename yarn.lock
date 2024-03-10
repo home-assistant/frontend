@@ -2158,21 +2158,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lrnwebcomponents/simple-tooltip@npm:8.0.0":
-  version: 8.0.0
-  resolution: "@lrnwebcomponents/simple-tooltip@npm:8.0.0"
+"@lrnwebcomponents/simple-tooltip@npm:8.0.2":
+  version: 8.0.2
+  resolution: "@lrnwebcomponents/simple-tooltip@npm:8.0.2"
   dependencies:
-    lit: "npm:^3.1.0"
-  checksum: 10/d70ab59f32f9b3461b3dc24a41f2d18f8c3b48def9a53b040ff5f2161875a6ee40544982488fef826865758d2055d5286dff5d99ff6a9e6b9952ffb7eb0cba3a
-  languageName: node
-  linkType: hard
-
-"@lrnwebcomponents/simple-tooltip@patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch":
-  version: 8.0.0
-  resolution: "@lrnwebcomponents/simple-tooltip@patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch::version=8.0.0&hash=91f01a"
-  dependencies:
-    lit: "npm:^3.1.0"
-  checksum: 10/25e2ec2e7379004784ede67419da99a57c2aeb5f7c5747069682b0ca4f28a4e4aaec03a6946d17b33b85407b625d9747af7d0e576f2f1172f8b57090f425fbf9
+    lit: "npm:^3.1.2"
+  checksum: 10/cc432c516ed176f1b99a04071f500bea2c1620a2b505e60867f3464e2a9cf54b78b4c84ac3ed85ac34e3579d8671112953d085bb37c2ff7202a1639e6ae0db4e
   languageName: node
   linkType: hard
 
@@ -9646,7 +9637,7 @@ __metadata:
     "@lit-labs/observers": "npm:2.0.2"
     "@lit-labs/virtualizer": "npm:2.0.12"
     "@lokalise/node-api": "npm:12.1.0"
-    "@lrnwebcomponents/simple-tooltip": "patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.0#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.0-77591f2e0c.patch"
+    "@lrnwebcomponents/simple-tooltip": "npm:8.0.2"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
