@@ -89,7 +89,8 @@ export class EnergyDeviceSettings extends LitElement {
                   .stateObj=${entityState}
                 ></ha-state-icon>
                 <span class="content"
-                  >${getStatisticLabel(
+                  >${device.name ||
+                  getStatisticLabel(
                     this.hass,
                     device.stat_consumption,
                     this.statsMetadata?.[device.stat_consumption]
