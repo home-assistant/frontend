@@ -3496,6 +3496,7 @@
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
+            "reset": "Reset",
             "reset_data_failed": "Failed to reset cloud data",
             "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
             "nabu_casa_account": "Nabu Casa Account",

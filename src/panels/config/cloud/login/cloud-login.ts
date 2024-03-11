@@ -303,6 +303,7 @@ export class CloudLogin extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.cloud.account.reset_data_confirm_text"
       ),
+      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
       destructive: true,
     });
     if (!confirm) {
