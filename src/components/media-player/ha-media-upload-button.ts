@@ -24,7 +24,7 @@ declare global {
 class MediaUploadButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() currentItem?: MediaPlayerItem;
+  @property({ attribute: false }) currentItem?: MediaPlayerItem;
 
   @state() _uploading = 0;
 

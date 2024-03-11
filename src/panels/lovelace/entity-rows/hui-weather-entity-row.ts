@@ -227,6 +227,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
         .info {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
           flex: 1 0 60px;
         }
 
@@ -258,11 +260,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           --mdc-icon-size: 40px;
         }
 
-        :host([rtl]) .flex {
-          margin-left: 0;
-          margin-right: 16px;
-        }
-
         .pointer {
           cursor: pointer;
         }
@@ -273,6 +270,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           justify-content: center;
           text-align: right;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         .secondary {

@@ -84,6 +84,8 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
         position: relative;
         height: 24px;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
       }
       .unsupported {
         color: var(--error-color);
@@ -91,6 +93,8 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
         --mdc-icon-size: 16px;
         right: 10px;
         top: -7px;
+        inset-inline-end: 10px;
+        inset-inline-start: initial;
       }
     `;
   }

@@ -150,7 +150,7 @@ class HuiEnergySelfSufficiencyGaugeCard
       if (hasBattery) {
         batteryFromGrid = solarConsumption * -1;
         if (batteryFromGrid > totalFromGrid) {
-          batteryToGrid = Math.min(0, batteryFromGrid - totalFromGrid);
+          batteryToGrid = batteryFromGrid - totalFromGrid;
           batteryFromGrid = totalFromGrid;
         }
       }
@@ -255,6 +255,8 @@ class HuiEnergySelfSufficiencyGaugeCard
       ha-svg-icon {
         position: absolute;
         right: 4px;
+        inset-inline-end: 4px;
+        inset-inline-start: initial;
         top: 4px;
         color: var(--secondary-text-color);
       }

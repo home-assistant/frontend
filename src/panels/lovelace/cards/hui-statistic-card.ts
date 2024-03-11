@@ -299,6 +299,8 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         .value {
           font-size: 28px;
           margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .measurement {

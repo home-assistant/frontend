@@ -790,7 +790,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           grid-column-end: -1;
         }
         .empty-message h1 {
-          margin-bottom: 0;
+          margin: 0;
         }
         search-input {
           --mdc-text-field-fill-color: var(--sidebar-background-color);
@@ -877,6 +877,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
+          inset-inline-end: 0px;
+          inset-inline-start: initial;
           top: 4px;
           font-size: 0.65em;
         }
@@ -884,7 +886,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           position: relative;
         }
         h1 {
-          margin: 8px 0 0 16px;
+          margin-top: 8px;
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-button-menu {
           color: var(--primary-text-color);

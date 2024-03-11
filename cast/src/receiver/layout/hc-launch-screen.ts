@@ -28,23 +28,23 @@ class HcLaunchScreen extends LitElement {
       :host {
         display: block;
         height: 100vh;
-        padding-top: 64px;
-        background-color: white;
+        background-color: #f2f4f9;
         font-size: 24px;
       }
       .container {
         display: flex;
         flex-direction: column;
         text-align: center;
+        align-items: center;
+        height: 100%;
+        justify-content: space-evenly;
       }
       img {
-        width: 717px;
-        height: 376px;
-        display: block;
-        margin: 0 auto;
+        max-width: 80%;
+        object-fit: cover;
       }
       .status {
-        padding-right: 54px;
+        color: #1d2126;
       }
     `;
   }

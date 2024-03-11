@@ -243,6 +243,8 @@ export class HassioAddonStore extends LitElement {
       }
       .advanced a {
         margin-left: 0.5em;
+        margin-inline-start: 0.5em;
+        margin-inline-end: initial;
         color: var(--primary-color);
       }
     `;

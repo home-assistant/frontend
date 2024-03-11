@@ -20,7 +20,6 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -66,13 +65,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property({ type: Boolean }) public isWide = false;
 
-  @property() public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries!: ConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   entities!: EntityRegistryEntry[];
 
-  @property() public manifests!: IntegrationManifest[];
+  @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
   @property({ attribute: false }) public route!: Route;
 
@@ -488,7 +487,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           .label=${this.hass.localize("ui.panel.config.devices.add_device")}
           extended
           @click=${this._addDevice}
-          ?rtl=${computeRTL(this.hass)}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
@@ -605,6 +603,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       css`
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

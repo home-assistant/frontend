@@ -42,6 +42,8 @@ class HaMfaModulesCard extends LitElement {
     return css`
       mwc-button {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
       ha-list-item {
         --mdc-list-item-meta-size: auto;

@@ -1,15 +1,6 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import { toggleAttribute } from "../common/dom/toggle_attribute";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { HomeAssistant } from "../types";
@@ -25,7 +16,7 @@ class HassSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
-  @property() public backCallback?: () => void;
+  @property({ attribute: false }) public backCallback?: () => void;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -33,17 +24,6 @@ class HassSubpage extends LitElement {
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
-      toggleAttribute(this, "rtl", computeRTL(this.hass));
-    }
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -143,7 +123,7 @@ class HassSubpage extends LitElement {
         }
 
         .main-title {
-          margin: 0 0 0 24px;
+          margin: var(--margin-title);
           line-height: 20px;
           flex-grow: 1;
         }
@@ -160,6 +140,9 @@ class HassSubpage extends LitElement {
         #fab {
           position: absolute;
           right: calc(16px + env(safe-area-inset-right));
+          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          inset-inline-start: initial;
+
           bottom: calc(16px + env(safe-area-inset-bottom));
           z-index: 1;
         }
@@ -169,15 +152,8 @@ class HassSubpage extends LitElement {
         #fab[is-wide] {
           bottom: 24px;
           right: 24px;
-        }
-        :host([rtl]) #fab {
-          right: auto;
-          left: calc(16px + env(safe-area-inset-left));
-        }
-        :host([rtl][is-wide]) #fab {
-          bottom: 24px;
-          left: 24px;
-          right: auto;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
         }
       `,
     ];

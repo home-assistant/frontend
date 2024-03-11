@@ -610,6 +610,8 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-time-input {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-recurrence-rule-editor {
           display: block;
@@ -633,7 +635,7 @@ class DialogCalendarEventEditor extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 16px;
+          margin-inline-end: 8px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;

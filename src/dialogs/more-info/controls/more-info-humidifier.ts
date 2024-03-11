@@ -110,17 +110,21 @@ class MoreInfoHumidifier extends LitElement {
                 @closed=${stopPropagation}
               >
                 ${stateObj.attributes.mode
-                  ? html`<ha-attribute-icon
-                      slot="icon"
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      attribute="mode"
-                      .attributeValue=${stateObj.attributes.mode}
-                    ></ha-attribute-icon>`
-                  : html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiTuneVariant}
-                    ></ha-svg-icon>`}
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="mode"
+                        .attributeValue=${stateObj.attributes.mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">

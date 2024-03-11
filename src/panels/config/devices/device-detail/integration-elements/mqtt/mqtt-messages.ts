@@ -10,7 +10,7 @@ import { HomeAssistant } from "../../../../../../types";
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public messages!: MQTTMessage[];
+  @property({ attribute: false }) public messages!: MQTTMessage[];
 
   @property() public direction!: string;
 
@@ -135,6 +135,8 @@ class MQTTMessages extends LitElement {
         position: relative;
         padding: 8px;
         padding-left: 29px;
+        padding-inline-start: 29px
+        padding-inline-end: initial;
         border: 1px solid var(--divider-color);
       }
       .expander:before {
@@ -159,6 +161,8 @@ class MQTTMessages extends LitElement {
         border: 1px solid var(--divider-color);
         border-top: 0;
         padding-left: 28px;
+        padding-inline-start: 28px;
+        padding-inline-end: initial;
         margin: 0;
       }
       pre {
@@ -167,6 +171,8 @@ class MQTTMessages extends LitElement {
         margin: 0;
         padding-left: 4px;
         padding-right: 4px;
+        padding-inline-start: 4px;
+        padding-inline-end: 4px;
         font-family: var(--code-font-family, monospace);
       }
     `;

@@ -2,7 +2,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { stateIconPath } from "../common/entity/state_icon_path";
+import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { entityIcon } from "../data/icons";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -13,6 +14,8 @@ export class HaStateIcon extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property({ attribute: false }) public stateValue?: string;
 
   @property() public icon?: string;
 
@@ -30,19 +33,25 @@ export class HaStateIcon extends LitElement {
     if (!this.hass) {
       return this._renderFallback();
     }
-    const icon = entityIcon(this.hass, this.stateObj).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
+    const icon = entityIcon(this.hass, this.stateObj, this.stateValue).then(
+      (icn) => {
+        if (icn) {
+          return html`<ha-icon .icon=${icn}></ha-icon>`;
+        }
+        return this._renderFallback();
       }
-      return this._renderFallback();
-    });
+    );
     return html`${until(icon)}`;
   }
 
   private _renderFallback() {
-    return html`<ha-svg-icon
-      .path=${stateIconPath(this.stateObj)}
-    ></ha-svg-icon>`;
+    const domain = computeStateDomain(this.stateObj!);
+
+    return html`
+      <ha-svg-icon
+        .path=${FIXED_DOMAIN_ICONS[domain] || DEFAULT_DOMAIN_ICON}
+      ></ha-svg-icon>
+    `;
   }
 }
 

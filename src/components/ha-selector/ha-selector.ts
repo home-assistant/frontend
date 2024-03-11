@@ -34,6 +34,7 @@ const LOAD_ELEMENTS = {
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
   object: () => import("./ha-selector-object"),
+  qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
   selector: () => import("./ha-selector-selector"),
   state: () => import("./ha-selector-state"),
@@ -71,7 +72,8 @@ export class HaSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property() public placeholder?: any;
 
@@ -79,7 +81,7 @@ export class HaSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: Record<string, any>;
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   public async focus() {
     await this.updateComplete;

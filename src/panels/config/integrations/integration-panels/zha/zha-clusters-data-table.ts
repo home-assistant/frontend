@@ -1,7 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -22,7 +21,7 @@ export class ZHAClustersDataTable extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public clusters: Cluster[] = [];
+  @property({ attribute: false }) public clusters: Cluster[] = [];
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
@@ -82,7 +81,6 @@ export class ZHAClustersDataTable extends LitElement {
         .id=${"cluster_id"}
         selectable
         auto-height
-        .dir=${computeRTLDirection(this.hass)}
         .searchLabel=${this.hass.localize("ui.components.data-table.search")}
         .noDataText=${this.hass.localize("ui.components.data-table.no-data")}
       ></ha-data-table>

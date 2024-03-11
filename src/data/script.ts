@@ -26,6 +26,7 @@ import {
   Trigger,
 } from "./automation";
 import { BlueprintInput } from "./blueprint";
+import { computeObjectId } from "../common/entity/compute_object_id";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -248,6 +249,10 @@ export interface ParallelAction extends BaseAction {
   parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
 
+export interface SetConversationResponseAction extends BaseAction {
+  set_conversation_response: string;
+}
+
 interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
@@ -292,6 +297,7 @@ export interface ActionTypes {
   play_media: PlayMediaAction;
   stop: StopAction;
   parallel: ParallelAction;
+  set_conversation_response: SetConversationResponseAction;
   unknown: UnknownAction;
 }
 
@@ -383,6 +389,9 @@ export const getActionType = (action: Action): ActionType => {
   if ("parallel" in action) {
     return "parallel";
   }
+  if ("set_conversation_response" in action) {
+    return "set_conversation_response";
+  }
   if ("service" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
@@ -395,4 +404,12 @@ export const getActionType = (action: Action): ActionType => {
     return "service";
   }
   return "unknown";
+};
+
+export const hasScriptFields = (
+  hass: HomeAssistant,
+  entityId: string
+): boolean => {
+  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  return fields !== undefined && Object.keys(fields).length > 0;
 };

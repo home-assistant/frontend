@@ -1,5 +1,6 @@
 import { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
+import { RefreshTokenType } from "./refresh_token";
 
 export interface AuthUrlSearchParams {
   client_id?: string;
@@ -137,7 +138,13 @@ export const adminChangePassword = (
     password,
   });
 
-export const deleteAllRefreshTokens = (hass: HomeAssistant) =>
+export const deleteAllRefreshTokens = (
+  hass: HomeAssistant,
+  token_type?: RefreshTokenType,
+  delete_current_token?: boolean
+) =>
   hass.callWS({
     type: "auth/delete_all_refresh_tokens",
+    token_type,
+    delete_current_token,
   });

@@ -11,7 +11,7 @@ import "./demo-more-info";
 class DemoMoreInfos extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: [];
+  @property({ type: Array }) public entities!: string[];
 
   @state() private _showConfig = false;
 

@@ -17,7 +17,7 @@ import "../components/ha-button";
 class OnboardingWelcome extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ type: Boolean }) public supervisor = false;
 

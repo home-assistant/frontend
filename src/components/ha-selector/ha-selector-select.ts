@@ -32,7 +32,8 @@ export class HaSelectSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -101,7 +102,10 @@ export class HaSelectSelector extends LitElement {
             ${this.label}
             ${options.map(
               (item: SelectOption) => html`
-                <ha-formfield .label=${item.label}>
+                <ha-formfield
+                  .label=${item.label}
+                  .disabled=${item.disabled || this.disabled}
+                >
                   <ha-radio
                     .checked=${item.value === this.value}
                     .value=${item.value}

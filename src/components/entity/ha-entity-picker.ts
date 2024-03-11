@@ -92,7 +92,8 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-entities" })
   public excludeEntities?: string[];
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean }) public hideClearIcon = false;
 

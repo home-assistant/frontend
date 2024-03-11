@@ -411,6 +411,8 @@ class DialogTodoItemEditor extends LitElement {
         }
         ha-time-input {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         .flex {
           display: flex;

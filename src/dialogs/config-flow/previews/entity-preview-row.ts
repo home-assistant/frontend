@@ -51,6 +51,8 @@ class EntityPreviewRow extends LitElement {
       .name {
         margin-left: 16px;
         margin-right: 8px;
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
         flex: 1 1 30%;
       }
       .value {

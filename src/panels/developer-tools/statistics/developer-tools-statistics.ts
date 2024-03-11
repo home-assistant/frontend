@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiSlopeUphill } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -26,7 +26,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { documentationUrl } from "../../../util/documentation-url";
 
 const FIX_ISSUES_ORDER = {
@@ -183,7 +182,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
-        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }
@@ -411,45 +409,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   };
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .content {
-          padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
-        }
-
-        th {
-          padding: 0 8px;
-          text-align: left;
-        }
-
-        :host([rtl]) th {
-          text-align: right;
-        }
-
-        tr {
-          vertical-align: top;
-          direction: ltr;
-        }
-
-        tr:nth-child(odd) {
-          background-color: var(--table-row-background-color, #fff);
-        }
-
-        tr:nth-child(even) {
-          background-color: var(--table-row-alternative-background-color, #eee);
-        }
-        td {
-          padding: 4px;
-          min-width: 200px;
-          word-break: break-word;
-        }
-      `,
-    ];
+    return haStyle;
   }
 }
 

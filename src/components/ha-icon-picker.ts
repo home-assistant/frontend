@@ -84,8 +84,6 @@ export class HaIconPicker extends LitElement {
 
   @property() public placeholder?: string;
 
-  @property() public fallbackPath?: string;
-
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   @property({ type: Boolean }) public disabled = false;
@@ -120,12 +118,7 @@ export class HaIconPicker extends LitElement {
               <ha-icon .icon=${this._value || this.placeholder} slot="icon">
               </ha-icon>
             `
-          : this.fallbackPath
-            ? html`<ha-svg-icon
-                .path=${this.fallbackPath}
-                slot="icon"
-              ></ha-svg-icon>`
-            : ""}
+          : html`<slot name="fallback"></slot>`}
       </ha-combo-box>
     `;
   }
@@ -213,6 +206,8 @@ export class HaIconPicker extends LitElement {
       }
       *[slot="prefix"] {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
     `;
   }

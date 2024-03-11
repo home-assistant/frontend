@@ -177,8 +177,13 @@ class HaInputSelectForm extends LitElement {
     const index = (ev.target as any).index;
     if (
       !(await showConfirmationDialog(this, {
-        title: "Delete this item?",
-        text: "Are you sure you want to delete this item?",
+        title: this.hass.localize(
+          "ui.dialogs.helper_settings.input_select.confirm_delete.delete"
+        ),
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.input_select.confirm_delete.prompt"
+        ),
+        destructive: true,
       }))
     ) {
       return;
@@ -231,6 +236,8 @@ class HaInputSelectForm extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;
@@ -247,6 +254,8 @@ class HaInputSelectForm extends LitElement {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
           padding-right: 12px;
+          padding-inline-end: 12px;
+          padding-inline-start: initial;
         }
         .handle ha-svg-icon {
           pointer-events: none;
