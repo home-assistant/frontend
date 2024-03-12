@@ -25,12 +25,14 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     "original-states": () =>
       import("./original-states/original-states-dashboard-strategy"),
     map: () => import("./map/map-dashboard-strategy"),
+    iframe: () => import("./iframe/iframe-dashboard-strategy"),
   },
   view: {
     "original-states": () =>
       import("./original-states/original-states-view-strategy"),
     energy: () => import("../../energy/strategies/energy-view-strategy"),
     map: () => import("./map/map-view-strategy"),
+    iframe: () => import("./iframe/iframe-view-strategy"),
   },
   section: {},
 };

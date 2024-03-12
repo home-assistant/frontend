@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import { mdiMap, mdiPencilOutline, mdiShape } from "@mdi/js";
+import { mdiMap, mdiPencilOutline, mdiShape, mdiWeb } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -24,6 +24,10 @@ const STRATEGIES = [
   {
     type: "map",
     iconPath: mdiMap,
+  },
+  {
+    type: "iframe",
+    iconPath: mdiWeb,
   },
 ] as const satisfies Strategy[];
 

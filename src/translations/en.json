@@ -2212,6 +2212,10 @@
                 "map": {
                   "title": "[%key:panel::map%]",
                   "description": "Display people and your devices on a map"
+                },
+                "iframe": {
+                  "title": "Web page",
+                  "description": "Integrate a web page into your dashboard"
                 }
               }
             },
@@ -5780,6 +5784,10 @@
               "areas": "Areas",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
+            },
+            "iframe": {
+              "title": "Title",
+              "url": "URL"
             }
           },
           "view": {
