@@ -22,10 +22,12 @@ const CUSTOM_PREFIX = "custom:";
 
 const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   dashboard: {
-    "original-states": () => import("./original-states-dashboard-strategy"),
+    "original-states": () =>
+      import("./original-states/original-states-dashboard-strategy"),
   },
   view: {
-    "original-states": () => import("./original-states-view-strategy"),
+    "original-states": () =>
+      import("./original-states/original-states-view-strategy"),
     energy: () => import("../../energy/strategies/energy-view-strategy"),
   },
   section: {},
