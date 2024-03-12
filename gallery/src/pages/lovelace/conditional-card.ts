@@ -34,7 +34,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "If 1 is on and 2 is not off",
+    heading: "Demo",
     config: `
 - type: conditional
   conditions:
@@ -42,22 +42,6 @@ const CONFIGS = [
       state: "on"
     - entity: light.controller_2
       state_not: "off"
-  card:
-    type: entities
-    entities:
-      - light.controller_1
-      - light.controller_2
-      - light.floor
-      - light.kitchen
-    `,
-  },
-  {
-    heading: "If 1 and 2 have the same state",
-    config: `
-- type: conditional
-  conditions:
-    - entity: light.controller_1
-      state: light.controller_2
   card:
     type: entities
     entities:
