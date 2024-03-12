@@ -7139,12 +7139,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:2.0.0":
-  version: 2.0.0
-  resolution: "date-fns-tz@npm:2.0.0"
+"date-fns-tz@npm:2.0.1":
+  version: 2.0.1
+  resolution: "date-fns-tz@npm:2.0.1"
   peerDependencies:
-    date-fns: ">=2.0.0"
-  checksum: 10/31ff66d49fc54ff7e3521297ed5e792d1edb51be0afb83a8aab0493154fbe654b72c6ba8e5c4ca12e845957781a24904afdcd48060aba9fe86ad04a5a36793a0
+    date-fns: 2.x
+  checksum: 10/f12e684bc13c9fe7ef7910c5b25437e15290a655d45102b7420f046cecdf9fa5715bf333d6dfb6bab6c382c7abc6b58241a50c216e9ab0b60d6fdb388f473d6b
   languageName: node
   linkType: hard
 
@@ -9735,7 +9735,7 @@ __metadata:
     core-js: "npm:3.36.0"
     cropperjs: "npm:1.6.1"
     date-fns: "npm:2.30.0"
-    date-fns-tz: "npm:2.0.0"
+    date-fns-tz: "npm:2.0.1"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
