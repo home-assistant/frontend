@@ -6,6 +6,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import {
   addEntityToCondition,
   checkConditionsMet,
+  extractConditionEntityIds,
 } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
@@ -155,8 +156,24 @@ export class HuiEntityFilterBadge
       if (this.hass.states[config.entity] !== oldHass.states[config.entity]) {
         return true;
       }
+      if (config.conditions) {
+        const entityIds = extractConditionEntityIds(config.conditions);
+        for (const entityId of entityIds) {
+          if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+            return true;
+          }
+        }
+      }
     }
 
+    if (this._config?.conditions) {
+      const entityIds = extractConditionEntityIds(this._config?.conditions);
+      for (const entityId of entityIds) {
+        if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+          return true;
+        }
+      }
+    }
     return false;
   }
 }

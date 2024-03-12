@@ -180,6 +180,23 @@ export function checkConditionsMet(
   });
 }
 
+export function extractConditionEntityIds(conditions: Condition[]): string[] {
+  const entityIds: string[] = [];
+  for (const condition of conditions) {
+    if (condition.condition === "numeric_state") {
+      if (typeof condition.above === "string") {
+        entityIds.push(condition.above);
+      }
+      if (typeof condition.below === "string") {
+        entityIds.push(condition.below);
+      }
+    } else if ("conditions" in condition && condition.conditions) {
+      entityIds.push(...extractConditionEntityIds(condition.conditions));
+    }
+  }
+  return entityIds;
+}
+
 function validateStateCondition(condition: StateCondition | LegacyCondition) {
   return (
     condition.entity != null &&

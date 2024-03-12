@@ -9,6 +9,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import {
   addEntityToCondition,
   checkConditionsMet,
+  extractConditionEntityIds,
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
@@ -211,6 +212,23 @@ export class HuiEntityFilterCard
     for (const config of this._configEntities) {
       if (this.hass.states[config.entity] !== oldHass.states[config.entity]) {
         return true;
+      }
+      if (config.conditions) {
+        const entityIds = extractConditionEntityIds(config.conditions);
+        for (const entityId of entityIds) {
+          if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+            return true;
+          }
+        }
+      }
+    }
+
+    if (this._config?.conditions) {
+      const entityIds = extractConditionEntityIds(this._config?.conditions);
+      for (const entityId of entityIds) {
+        if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+          return true;
+        }
       }
     }
 
