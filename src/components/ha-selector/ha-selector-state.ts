@@ -21,7 +21,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: {
+  @property({ attribute: false }) public context?: {
     filter_attribute?: string;
     filter_entity?: string;
   };

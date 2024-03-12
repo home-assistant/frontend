@@ -563,6 +563,8 @@ export class HassioNetwork extends LitElement {
 
         mwc-button.scan {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 16px;
@@ -571,6 +573,9 @@ export class HassioNetwork extends LitElement {
         ha-textfield {
           display: block;
           margin-top: 16px;
+        }
+        ha-expansion-panel ha-textfield:last-child {
+          margin-bottom: 16px;
         }
         mwc-list-item {
           --mdc-list-side-padding: 10px;

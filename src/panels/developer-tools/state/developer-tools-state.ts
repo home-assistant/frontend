@@ -16,9 +16,7 @@ import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
@@ -68,8 +66,6 @@ class HaPanelDevState extends LitElement {
   private _showAttributes = true;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
-
-  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -323,14 +319,6 @@ class HaPanelDevState extends LitElement {
         </table>
       </div>
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
-      toggleAttribute(this, "rtl", computeRTL(this.hass));
-    }
   }
 
   private _copyEntity(ev) {
@@ -626,7 +614,8 @@ class HaPanelDevState extends LitElement {
 
         .entities th {
           padding: 0 8px;
-          text-align: left;
+          text-align: var(--float-start);
+          direction: var(--direction);
         }
 
         .filters th {
@@ -652,15 +641,6 @@ class HaPanelDevState extends LitElement {
           bottom: -8px;
         }
 
-        :host([rtl]) .entities th {
-          text-align: right;
-          direction: rtl;
-        }
-
-        :host([rtl]) .filters {
-          direction: rtl;
-        }
-
         .entities tr {
           vertical-align: top;
           direction: ltr;
@@ -684,6 +664,8 @@ class HaPanelDevState extends LitElement {
           cursor: pointer;
           flex-shrink: 0;
           margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
         }
         .entities td:nth-child(1) {
           min-width: 300px;

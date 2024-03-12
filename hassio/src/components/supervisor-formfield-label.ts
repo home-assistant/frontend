@@ -37,6 +37,8 @@ class SupervisorFormfieldLabel extends LitElement {
       }
       .label {
         margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
       }
       .version {
         color: var(--secondary-text-color);
@@ -45,6 +47,8 @@ class SupervisorFormfieldLabel extends LitElement {
         max-height: 22px;
         max-width: 22px;
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
       }
     `;
   }

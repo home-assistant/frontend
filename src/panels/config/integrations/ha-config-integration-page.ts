@@ -23,6 +23,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiWrench,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -116,7 +117,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public configEntries?: ConfigEntry[];
+  @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
   @property({ attribute: false })
   public configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
@@ -806,6 +807,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </ha-list-item>
             </a>`
           : ""}
+        ${!item.disabled_by &&
+        item.supports_reconfigure &&
+        item.source !== "system"
+          ? html`<ha-list-item
+              @request-selected=${this._handleReconfigure}
+              graphic="icon"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.reconfigure"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiWrench}></ha-svg-icon>
+            </ha-list-item>`
+          : ""}
 
         <ha-list-item
           @request-selected=${this._handleSystemOptions}
@@ -1040,6 +1054,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _handleReconfigure(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._reconfigureIntegration(
+      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
+    );
+  }
+
   private _handleDelete(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -1259,6 +1282,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     });
   }
 
+  private async _reconfigureIntegration(configEntry: ConfigEntry) {
+    showConfigFlowDialog(this, {
+      startFlowHandler: configEntry.domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
+      entryId: configEntry.entry_id,
+    });
+  }
+
   private async _editEntryName(configEntry: ConfigEntry) {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
@@ -1420,8 +1452,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .message div {
           flex: 1;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
           padding-top: 2px;
           padding-right: 2px;
+          padding-inline-end: 2px;
+          padding-inline-start: initial;
           overflow-wrap: break-word;
           display: -webkit-box;
           -webkit-box-orient: vertical;

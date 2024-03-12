@@ -133,9 +133,9 @@ export class HaStateLabelBadge extends LitElement {
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.showName === false
-          ? undefined
-          : this.name ?? computeStateName(entityState)}
+        .description=${this.showName
+          ? this.name ?? computeStateName(entityState)
+          : undefined}
       >
         ${!image && showIcon
           ? html`<ha-state-icon
@@ -174,7 +174,6 @@ export class HaStateLabelBadge extends LitElement {
       case "scene":
       case "sun":
       case "timer":
-      case "updater":
         return null;
       // @ts-expect-error we don't break and go to default
       case "sensor":
@@ -208,7 +207,6 @@ export class HaStateLabelBadge extends LitElement {
       case "alarm_control_panel":
       case "binary_sensor":
       case "device_tracker":
-      case "updater":
       case "person":
       case "scene":
       case "sun":
@@ -285,8 +283,7 @@ export class HaStateLabelBadge extends LitElement {
         --ha-label-badge-label-text-transform: none;
       }
 
-      ha-label-badge.binary_sensor,
-      ha-label-badge.updater {
+      ha-label-badge.binary_sensor {
         --ha-label-badge-color: var(--label-badge-blue);
       }
 

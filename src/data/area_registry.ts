@@ -9,6 +9,7 @@ export interface AreaRegistryEntry {
   area_id: string;
   name: string;
   picture: string | null;
+  icon: string | null;
   aliases: string[];
 }
 
@@ -23,6 +24,7 @@ export interface AreaDeviceLookup {
 export interface AreaRegistryEntryMutableParams {
   name: string;
   picture?: string | null;
+  icon?: string | null;
   aliases?: string[];
 }
 

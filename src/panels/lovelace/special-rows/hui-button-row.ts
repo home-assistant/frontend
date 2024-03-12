@@ -89,6 +89,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         flex: 1;
         overflow: hidden;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -100,6 +102,8 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       }
       mwc-button {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }

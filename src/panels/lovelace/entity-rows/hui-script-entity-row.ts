@@ -9,12 +9,13 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { canRun, ScriptEntity } from "../../../data/script";
+import { canRun, hasScriptFields, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -79,6 +80,8 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     return css`
       mwc-button:last-child {
         margin-right: -0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
       }
     `;
   }
@@ -90,7 +93,12 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
   private _runScript(ev): void {
     ev.stopPropagation();
-    this._callService("turn_on");
+
+    if (hasScriptFields(this.hass!, this._config!.entity)) {
+      showMoreInfoDialog(this, { entityId: this._config!.entity });
+    } else {
+      this._callService("turn_on");
+    }
   }
 
   private _callService(service: string): void {

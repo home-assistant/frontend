@@ -14,8 +14,15 @@ declare global {
       oldPath?: ItemPath;
       newPath?: ItemPath;
     };
+    "drag-start": undefined;
+    "drag-end": undefined;
   }
 }
+
+export type HaSortableOptions = Omit<
+  SortableInstance.SortableOptions,
+  "onStart" | "onChoose" | "onEnd"
+>;
 
 @customElement("ha-sortable")
 export class HaSortable extends LitElement {
@@ -24,7 +31,7 @@ export class HaSortable extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
-  @property({ type: Boolean })
+  @property({ type: Array })
   public path?: ItemPath;
 
   @property({ type: Boolean, attribute: "no-style" })
@@ -36,8 +43,17 @@ export class HaSortable extends LitElement {
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
 
-  @property({ type: String, attribute: "group" })
-  public group?: string;
+  @property({ type: String })
+  public group?: string | SortableInstance.GroupOptions;
+
+  @property({ type: Boolean, attribute: "invert-swap" })
+  public invertSwap: boolean = false;
+
+  @property({ attribute: false })
+  public options?: HaSortableOptions;
+
+  @property({ type: Boolean })
+  public rollback: boolean = true;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {
@@ -66,6 +82,9 @@ export class HaSortable extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._shouldBeDestroy = false;
+    if (this.hasUpdated) {
+      this.requestUpdate();
+    }
   }
 
   protected createRenderRoot() {
@@ -77,12 +96,11 @@ export class HaSortable extends LitElement {
     return html`
       <style>
         .sortable-fallback {
-          display: none;
-          opacity: 0;
+          display: none !important;
         }
 
         .sortable-ghost {
-          border: 2px solid var(--primary-color);
+          box-shadow: 0 0 0 2px var(--primary-color);
           background: rgba(var(--rgb-primary-color), 0.25);
           border-radius: 4px;
           opacity: 0.4;
@@ -109,8 +127,9 @@ export class HaSortable extends LitElement {
 
     const options: SortableInstance.Options = {
       animation: 150,
-      swapThreshold: 0.75,
+      ...this.options,
       onChoose: this._handleChoose,
+      onStart: this._handleStart,
       onEnd: this._handleEnd,
     };
 
@@ -120,8 +139,8 @@ export class HaSortable extends LitElement {
     if (this.handleSelector) {
       options.handle = this.handleSelector;
     }
-    if (this.draggableSelector) {
-      options.draggable = this.draggableSelector;
+    if (this.invertSwap !== undefined) {
+      options.invertSwap = this.invertSwap;
     }
     if (this.group) {
       options.group = this.group;
@@ -131,8 +150,9 @@ export class HaSortable extends LitElement {
   }
 
   private _handleEnd = async (evt: SortableEvent) => {
+    fireEvent(this, "drag-end");
     // put back in original location
-    if ((evt.item as any).placeholder) {
+    if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
@@ -158,7 +178,12 @@ export class HaSortable extends LitElement {
     });
   };
 
+  private _handleStart = () => {
+    fireEvent(this, "drag-start");
+  };
+
   private _handleChoose = (evt: SortableEvent) => {
+    if (!this.rollback) return;
     (evt.item as any).placeholder = document.createComment("sort-placeholder");
     evt.item.after((evt.item as any).placeholder);
   };

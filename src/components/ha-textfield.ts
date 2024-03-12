@@ -90,7 +90,7 @@ export class HaTextField extends TextFieldBase {
         padding-right: var(--text-field-suffix-padding-right, 0px);
         padding-inline-start: var(--text-field-suffix-padding-left, 12px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
-        direction: var(--direction);
+        direction: ltr;
       }
       .mdc-text-field--with-leading-icon {
         padding-inline-start: var(--text-field-suffix-padding-left, 0px);
@@ -187,6 +187,8 @@ export class HaTextField extends TextFieldBase {
       }
       .mdc-text-field__affix--prefix {
         padding-right: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-end: var(--text-field-prefix-padding-right, 2px);
+        padding-inline-start: initial;
       }
 
       .mdc-text-field:not(.mdc-text-field--disabled)
@@ -197,7 +199,6 @@ export class HaTextField extends TextFieldBase {
     // safari workaround - must be explicit
     mainWindow.document.dir === "rtl"
       ? css`
-          .mdc-text-field__affix--suffix,
           .mdc-text-field--with-leading-icon,
           .mdc-text-field__icon--leading,
           .mdc-floating-label,

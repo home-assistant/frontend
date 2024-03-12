@@ -30,7 +30,7 @@ class HaConfigScene extends HassRouterPage {
 
   @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public scenes: SceneEntity[] = [];
+  @property({ attribute: false }) public scenes: SceneEntity[] = [];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

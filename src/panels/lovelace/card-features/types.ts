@@ -26,6 +26,12 @@ export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
 
+export interface FanPresetModesCardFeatureConfig {
+  type: "fan-preset-modes";
+  style?: "dropdown" | "icons";
+  preset_modes?: string[];
+}
+
 export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
 }
@@ -39,6 +45,12 @@ export interface ClimateFanModesCardFeatureConfig {
   type: "climate-fan-modes";
   style?: "dropdown" | "icons";
   fan_modes?: string[];
+}
+
+export interface ClimateSwingModesCardFeatureConfig {
+  type: "climate-swing-modes";
+  style?: "dropdown" | "icons";
+  swing_modes?: string[];
 }
 
 export interface ClimateHvacModesCardFeatureConfig {
@@ -117,25 +129,27 @@ export interface UpdateActionsCardFeatureConfig {
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
+  | ClimateSwingModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
-  | VacuumCommandsCardFeatureConfig
+  | NumericInputCardFeatureConfig
+  | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
-  | WaterHeaterOperationModesCardFeatureConfig
-  | SelectOptionsCardFeatureConfig
-  | NumericInputCardFeatureConfig
-  | UpdateActionsCardFeatureConfig;
+  | UpdateActionsCardFeatureConfig
+  | VacuumCommandsCardFeatureConfig
+  | WaterHeaterOperationModesCardFeatureConfig;
 
 export type LovelaceCardFeatureContext = {
   entity_id?: string;

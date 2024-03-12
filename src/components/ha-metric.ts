@@ -19,7 +19,9 @@ class HaMetric extends LitElement {
       <ha-settings-row>
         <span slot="heading"> ${this.heading} </span>
         <div slot="description" .title=${this.tooltip ?? ""}>
-          <span class="value"> ${roundedValue} % </span>
+          <span class="value">
+            <div>${roundedValue} %</div>
+          </span>
           <ha-bar
             class=${classMap({
               "target-warning": roundedValue > 50,
@@ -66,7 +68,13 @@ class HaMetric extends LitElement {
       .value {
         width: 48px;
         padding-right: 4px;
+        padding-inline-end: 4px;
+        padding-inline-start: initial;
         flex-shrink: 0;
+      }
+      .value > div {
+        direction: ltr;
+        text-align: var(--float-start);
       }
     `;
   }

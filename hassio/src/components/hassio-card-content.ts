@@ -60,6 +60,10 @@ class HassioCardContent extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        direction: ltr;
+      }
+
       ha-svg-icon {
         margin-right: 24px;
         margin-left: 8px;

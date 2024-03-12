@@ -81,7 +81,7 @@ export interface EntityHistoryState {
   /** attributes */
   a: { [key: string]: any };
   /** last_changed; if set, also applies to lu */
-  lc: number;
+  lc?: number;
   /** last_updated */
   lu: number;
 }
@@ -419,17 +419,37 @@ const BLANK_UNIT = " ";
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
+  entityIds: string[],
   localize: LocalizeFunc,
   sensorNumericalDeviceClasses: string[],
   splitDeviceClasses = false
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
-  if (!stateHistory) {
+
+  const localStateHistory: HistoryStates = {};
+
+  // Create a limited history from stateObj if entity has no recorded history.
+  const allEntities = new Set([...entityIds, ...Object.keys(stateHistory)]);
+  allEntities.forEach((entity) => {
+    if (entity in stateHistory) {
+      localStateHistory[entity] = stateHistory[entity];
+    } else if (hass.states[entity]) {
+      localStateHistory[entity] = [
+        {
+          s: hass.states[entity].state,
+          a: hass.states[entity].attributes,
+          lu: new Date(hass.states[entity].last_updated).getTime() / 1000,
+        },
+      ];
+    }
+  });
+
+  if (!localStateHistory) {
     return { line: [], timeline: [] };
   }
-  Object.keys(stateHistory).forEach((entityId) => {
-    const stateInfo = stateHistory[entityId];
+  Object.keys(localStateHistory).forEach((entityId) => {
+    const stateInfo = localStateHistory[entityId];
     if (stateInfo.length === 0) {
       return;
     }
@@ -470,9 +490,15 @@ export const computeHistory = (
       }[domain];
     }
 
-    const deviceClass: string | undefined = (
-      currentState?.attributes || numericStateFromHistory?.a
-    )?.device_class;
+    const specialDomainClasses = {
+      climate: "temperature",
+      humidifier: "humidity",
+      water_heater: "temperature",
+    };
+
+    const deviceClass: string | undefined =
+      specialDomainClasses[domain] ||
+      (currentState?.attributes || numericStateFromHistory?.a)?.device_class;
 
     const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
 

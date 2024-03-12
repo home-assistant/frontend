@@ -8,6 +8,7 @@ import { LovelaceCardFeatureConfig } from "../card-features/types";
 import { LegacyStateFilter } from "../common/evaluate-filter";
 import { Condition, LegacyCondition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
+import { TimestampRenderingFormat } from "../components/types";
 import { LovelaceElementConfig } from "../elements/types";
 import {
   EntityConfig,
@@ -160,6 +161,13 @@ export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   max_devices?: number;
 }
 
+export interface EnergyDevicesDetailGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-devices-detail-graph";
+  title?: string;
+  collection_key?: string;
+  max_devices?: number;
+}
+
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   type: "energy-sources-table";
   title?: string;
@@ -247,6 +255,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
+  format: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -255,7 +264,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_icon?: boolean;
   title?: string;
   theme?: string;
-  entities: Array<string | ConfigEntity>;
+  entities: (string | GlanceConfigEntity)[];
   columns?: number;
   state_color?: boolean;
 }
@@ -326,6 +335,9 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   show_names?: boolean;
   logarithmic_scale?: boolean;
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
   split_device_classes?: boolean;
 }
 
@@ -537,7 +549,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   state_content?: string | string[];
   icon?: string;
   color?: string;
-  show_entity_picture?: string;
+  show_entity_picture?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

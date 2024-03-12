@@ -11,7 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 export class AssistPipelineDetailConversation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public data?: Partial<AssistPipeline>;
+  @property({ attribute: false }) public data?: Partial<AssistPipeline>;
 
   @state() private _supportedLanguages?: "*" | string[];
 

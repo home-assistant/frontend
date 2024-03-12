@@ -1188,11 +1188,13 @@ class HassioAddonInfo extends LitElement {
         }
         .addon-header {
           padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: initial;
           font-size: 24px;
           color: var(--ha-card-header-color, --primary-text-color);
         }
         .addon-version {
-          float: right;
+          float: var(--float-end);
           font-size: 15px;
           vertical-align: middle;
         }
@@ -1261,6 +1263,7 @@ class HassioAddonInfo extends LitElement {
         .card-actions {
           justify-content: space-between;
           display: flex;
+          direction: var(--direction);
         }
         .changelog {
           display: contents;

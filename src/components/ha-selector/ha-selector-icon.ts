@@ -1,13 +1,12 @@
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { entityIcon } from "../../data/icons";
 import { IconSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-picker";
+import "../ha-state-icon";
 
 @customElement("ha-selector-icon")
 export class HaIconSelector extends LitElement {
@@ -25,7 +24,7 @@ export class HaIconSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: {
+  @property({ attribute: false }) public context?: {
     icon_entity?: string;
   };
 
@@ -39,11 +38,6 @@ export class HaIconSelector extends LitElement {
       stateObj?.attributes.icon ||
       (stateObj && until(entityIcon(this.hass, stateObj)));
 
-    const fallbackPath =
-      !placeholder && stateObj
-        ? domainIcon(computeDomain(iconEntity!), stateObj)
-        : undefined;
-
     return html`
       <ha-icon-picker
         .hass=${this.hass}
@@ -52,10 +46,19 @@ export class HaIconSelector extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
-        .fallbackPath=${this.selector.icon?.fallbackPath ?? fallbackPath}
         .placeholder=${this.selector.icon?.placeholder ?? placeholder}
         @value-changed=${this._valueChanged}
-      ></ha-icon-picker>
+      >
+        ${!placeholder && stateObj
+          ? html`
+              <ha-state-icon
+                slot="fallback"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-state-icon>
+            `
+          : nothing}
+      </ha-icon-picker>
     `;
   }
 

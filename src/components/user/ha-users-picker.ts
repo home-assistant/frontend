@@ -13,7 +13,7 @@ import "./ha-user-picker";
 class HaUsersPickerLight extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ attribute: false }) public value?: string[];
 
   @property({ attribute: "picked-user-label" })
   public pickedUserLabel?: string;
@@ -23,6 +23,8 @@ class HaUsersPickerLight extends LitElement {
 
   @property({ attribute: false })
   public users?: User[];
+
+  @property({ type: Boolean }) public disabled = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -57,6 +59,7 @@ class HaUsersPickerLight extends LitElement {
                   this.users,
                   notSelectedUsers
                 )}
+                .disabled=${this.disabled}
                 @value-changed=${this._userChanged}
               ></ha-user-picker>
               <ha-icon-button
@@ -78,7 +81,7 @@ class HaUsersPickerLight extends LitElement {
         this.hass!.localize("ui.components.user-picker.add_user")}
         .hass=${this.hass}
         .users=${notSelectedUsers}
-        .disabled=${!notSelectedUsers?.length}
+        .disabled=${this.disabled || !notSelectedUsers?.length}
         @value-changed=${this._addUser}
       ></ha-user-picker>
     `;

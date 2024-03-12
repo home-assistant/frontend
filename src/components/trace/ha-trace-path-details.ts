@@ -43,9 +43,10 @@ export class HaTracePathDetails extends LitElement {
 
   @property({ attribute: false }) public selected!: NodeInfo;
 
-  @property() public renderedNodes: Record<string, any> = {};
+  @property({ attribute: false })
+  public renderedNodes: Record<string, any> = {};
 
-  @property() public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
@@ -162,21 +163,22 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
+            ${error
+              ? html`<div class="error">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.error",
+                    {
+                      error: error,
+                    }
+                  )}
+                </div>`
+              : nothing}
             ${result
               ? html`${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.result"
                   )}
                   <pre>${dump(result)}</pre>`
-              : error
-                ? html`<div class="error">
-                    ${this.hass!.localize(
-                      "ui.panel.config.automation.trace.path.error",
-                      {
-                        error: error,
-                      }
-                    )}
-                  </div>`
-                : nothing}
+              : nothing}
             ${Object.keys(rest).length === 0
               ? nothing
               : html`<pre>${dump(rest)}</pre>`}

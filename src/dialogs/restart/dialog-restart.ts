@@ -341,7 +341,7 @@ class DialogRestart extends LitElement {
 
     showToast(this, {
       message: this.hass.localize("ui.dialogs.restart.reboot.rebooting"),
-      duration: 0,
+      duration: -1,
     });
 
     try {
@@ -380,7 +380,7 @@ class DialogRestart extends LitElement {
 
     showToast(this, {
       message: this.hass.localize("ui.dialogs.restart.shutdown.shutting_down"),
-      duration: 0,
+      duration: -1,
     });
 
     try {
@@ -456,6 +456,8 @@ class DialogRestart extends LitElement {
           margin: 8px 0 4px 0;
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
+          padding-inline-start: var(--mdc-list-side-padding, 20px);
+          padding-inline-end: var(--mdc-list-side-padding, 20px);
         }
         .loader {
           display: flex;

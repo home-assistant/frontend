@@ -34,7 +34,7 @@ export class HaAuthFlow extends LitElement {
 
   @property() public oauth2State?: string;
 
-  @property() public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
@@ -93,6 +93,8 @@ export class HaAuthFlow extends LitElement {
       <style>
         ha-auth-flow .store-token {
           margin-left: -16px;
+          margin-inline-start: -16px;
+          margin-inline-end: initial;
         }
         a.forgot-password {
           color: var(--primary-color);

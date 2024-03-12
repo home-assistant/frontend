@@ -8,9 +8,8 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
@@ -19,6 +18,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../../data/entity_registry";
+import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
@@ -27,6 +27,10 @@ import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities
 import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import {
+  computeCards,
+  computeSection,
+} from "../../../lovelace/common/generate-lovelace-config";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -36,7 +40,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities!: EntityRegistryStateEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
   @property({ type: Boolean }) public showHidden = false;
 
@@ -198,6 +202,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       entry.name ||
       (entry as ExtEntityRegistryEntry).original_name;
 
+    const icon = until(entryIcon(this.hass, entry));
+
     return html`
       <ha-list-item
         graphic="icon"
@@ -205,10 +211,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         .entry=${entry}
         @click=${this._openEditEntry}
       >
-        <ha-svg-icon
-          slot="graphic"
-          .path=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-svg-icon>
+        <ha-icon slot="graphic" .icon=${icon}></ha-icon>
         <div class="name">
           ${name
             ? stripPrefixFromEntityName(name, this.deviceName.toLowerCase()) ||
@@ -225,13 +228,20 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _addToLovelaceView(): void {
+    const entities = this.entities
+      .filter((entity) => !entity.disabled_by)
+      .map((entity) => entity.entity_id);
+
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      this.entities
-        .filter((entity) => !entity.disabled_by)
-        .map((entity) => entity.entity_id),
-      this.deviceName
+      computeCards(this.hass.states, entities, {
+        title: this.deviceName,
+      }),
+      computeSection(entities, {
+        title: this.deviceName,
+      }),
+      entities
     );
   }
 
@@ -242,6 +252,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-icon {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .entity-id {
         color: var(--secondary-text-color);

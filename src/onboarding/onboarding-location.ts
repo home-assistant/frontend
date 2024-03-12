@@ -48,7 +48,7 @@ const LOCATION_MARKER_ID = "location";
 class OnboardingLocation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public onboardingLocalize!: LocalizeFunc;
+  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
 
   @state() private _working = false;
 
@@ -295,8 +295,10 @@ class OnboardingLocation extends LitElement {
     if (ev.detail.id === LOCATION_MARKER_ID) {
       return;
     }
-    this._highlightedMarker = ev.detail.id;
-    const place = this._places!.find((plc) => plc.place_id === ev.detail.id)!;
+    this._highlightedMarker = Number(ev.detail.id);
+    const place = this._places!.find(
+      (plc) => plc.place_id === Number(ev.detail.id)
+    )!;
     this._location = [Number(place.lat), Number(place.lon)];
     this._country = place.address.country_code.toUpperCase();
   }
@@ -497,6 +499,8 @@ class OnboardingLocation extends LitElement {
           position: absolute;
           top: 10px;
           right: 10px;
+          inset-inline-end: 10px;
+          inset-inline-start: initial;
           --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
@@ -507,6 +511,8 @@ class OnboardingLocation extends LitElement {
         ha-textfield > ha-circular-progress {
           position: relative;
           left: 12px;
+          inset-inline-start: 12px;
+          inset-inline-end: initial;
         }
         ha-locations-editor {
           display: block;

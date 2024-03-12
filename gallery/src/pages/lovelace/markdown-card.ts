@@ -80,6 +80,9 @@ const CONFIGS = [
     > [!CAUTION]
     > This is a GitHub caution alert
 
+    > [!TIP]
+    > - This is a list entry in GitHub tip alert
+
     ## Lists
 
     Unordered

@@ -3,6 +3,7 @@ import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("climate", "ecobee", "auto", {
@@ -45,7 +46,9 @@ const ENTITIES = [
     friendly_name: "Sensibo purifier",
     fan_modes: ["low", "high"],
     fan_mode: "low",
-    supported_features: 9,
+    swing_modes: ["on", "off", "both", "vertical", "horizontal"],
+    swing_mode: "vertical",
+    supported_features: 41,
   }),
   getEntity("climate", "unavailable", "unavailable", {
     supported_features: 43,
@@ -84,6 +87,14 @@ const CONFIGS = [
       fan_modes:
         - low
         - high
+    - type: climate-swing-modes
+      style: icons
+      swing_modes:
+        - 'on'
+        - 'off'
+        - 'both'
+        - 'vertical'
+        - 'horizontal'
     `,
   },
   {
@@ -116,6 +127,7 @@ class DemoThermostatEntity extends LitElement {
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
+    mockIcons(hass);
   }
 }
 

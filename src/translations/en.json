@@ -218,8 +218,14 @@
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
+        "running_single": "Running…",
+        "running_queued": "{queued} queued",
+        "running_parallel": "{active} Running…",
         "cancel": "Cancel",
-        "cancel_multiple": "Cancel {number}"
+        "cancel_multiple": "Cancel {number}",
+        "cancel_all": "Cancel all",
+        "idle": "Idle",
+        "run_script": "Run script"
       },
       "service": {
         "run": "Run"
@@ -317,6 +323,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
@@ -1031,6 +1038,7 @@
           "last_triggered": "Last triggered"
         },
         "sun": {
+          "azimuth": "Azimuth",
           "elevation": "Elevation",
           "rising": "Rising",
           "setting": "Setting"
@@ -1149,6 +1157,14 @@
           "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
           "switch_as_x": "Show switch as",
+          "invert": {
+            "label": "Invert state",
+            "descriptions": {
+              "cover": "Show as open when the switch is off",
+              "lock": "Show as locked when the switch is off",
+              "valve": "[%key:ui::dialogs::entity_registry::editor::invert::descriptions::cover%]"
+            }
+          },
           "device_classes": {
             "binary_sensor": {
               "door": "Door",
@@ -1362,7 +1378,11 @@
           "add_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::add_option%]",
           "remove_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::remove_option%]",
           "no_options": "There are no options yet.",
-          "add": "Add"
+          "add": "Add",
+          "confirm_delete": {
+            "delete": "[%key:ui::components::todo::item::confirm_delete::delete%]",
+            "prompt": "[%key:ui::components::todo::item::confirm_delete::prompt%]"
+          }
         },
         "counter": {
           "minimum": "Minimum value",
@@ -1763,6 +1783,7 @@
             "update_area": "Update area",
             "delete": "Delete",
             "name": "Name",
+            "icon": "Icon",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
@@ -2159,7 +2180,17 @@
           "show_full_logs": "Show full logs",
           "download_full_log": "Download full log",
           "provider_not_found": "Log provider not found",
-          "provider_not_available": "Logs for ''{provider}'' are not available on your system."
+          "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "detail": {
+            "logger": "Logger",
+            "source": "Source",
+            "integration": "[%key:ui::panel::config::integrations::integration%]",
+            "documentation": "documentation",
+            "issues": "issues",
+            "first_occurred": "First occurred",
+            "occurrences": "occurrences",
+            "last_logged": "Last logged"
+          }
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2338,7 +2369,21 @@
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
-            "start_debug_run": "Start debug run"
+            "start_debug_run": "Start debug run",
+            "pipeline": {
+              "header": "Assist Pipeline",
+              "run_text_pipeline": "Run text pipeline",
+              "run_audio_pipeline": "Run audio pipeline",
+              "run_audio_with_wake": "Run audio pipeline with wake word detection",
+              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "send": "Send",
+              "continue_listening": "Continue listening for wake word",
+              "continue_talking": "Continue talking",
+              "continue_conversation": "Continue conversation",
+              "input_text": "Input text",
+              "run": "[%key:ui::card::service::run%]",
+              "error_starting": "Error starting pipeline"
+            }
           },
           "expose": {
             "caption": "Expose",
@@ -2438,15 +2483,6 @@
             "automation_settings": "Automation settings",
             "move_up": "Move up",
             "move_down": "Move down",
-            "re_order": "Re-order",
-            "re_order_mode": {
-              "title": "Re-order mode",
-              "description_triggers": "You are in re-order mode, you can re-order your triggers.",
-              "description_conditions": "You are in re-order mode, you can re-order your conditions.",
-              "description_actions": "You are in re-order mode, you can re-order your actions.",
-              "description_all": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
-              "exit": "Exit"
-            },
             "description": {
               "label": "Description",
               "placeholder": "Optional description",
@@ -2478,7 +2514,7 @@
             "triggers": {
               "name": "Triggers",
               "header": "When",
-              "description": "This list of triggers is what starts your automation. A trigger is a specific event happening in or around your home, for example: ''When the sun sets''.",
+              "description": "A trigger is a specific event happening in or around your home, for example: ''When the sun sets''. Any trigger listed here will start your automation.",
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
@@ -2508,7 +2544,9 @@
                   "label": "Time and location",
                   "description": "When someone enters or leaves a zone, or at a specific time."
                 },
-                "other": { "label": "Other triggers" }
+                "other": {
+                  "label": "Other triggers"
+                }
               },
               "type": {
                 "calendar": {
@@ -2568,7 +2606,8 @@
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
-                    "picker": "When the state of an entity (or attribute) changes."
+                    "picker": "When the state of an entity (or attribute) changes.",
+                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "homeassistant": {
@@ -2748,7 +2787,9 @@
                   "label": "Time and location",
                   "description": "If someone is in a zone or if the current time is before or after a specified time."
                 },
-                "other": { "label": "Other conditions" },
+                "other": {
+                  "label": "Other conditions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex conditions."
@@ -2828,7 +2869,8 @@
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
-                    "picker": "If the sun is above or below the horizon."
+                    "picker": "If the sun is above or below the horizon.",
+                    "full": "Confirm sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -2912,8 +2954,12 @@
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "groups": {
-                "helpers": { "label": "Helpers" },
-                "other": { "label": "Other actions" },
+                "helpers": {
+                  "label": "Helpers"
+                },
+                "other": {
+                  "label": "Other actions"
+                },
                 "building_blocks": {
                   "label": "Building blocks",
                   "description": "Build more complex sequences of actions."
@@ -3108,6 +3154,13 @@
                     "full": "Test {condition}"
                   }
                 },
+                "set_conversation_response": {
+                  "label": "Set conversation response",
+                  "description": {
+                    "picker": "Set response of conversation when automation was triggered by conversation trigger.",
+                    "full": "Set response of conversation to {response}"
+                  }
+                },
                 "unknown": {
                   "label": "Unknown"
                 }
@@ -3143,6 +3196,29 @@
               "no_logbook_entries": "No Logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
+            },
+            "messages": {
+              "no_action_executed": "{name}: No action executed",
+              "default_action_executed": "{name}: Default action executed",
+              "action_executed": "{action} action executed",
+              "option_executed": "Option {option} executed",
+              "error": "Error: {error}",
+              "execute_in_parallel": "Execute in parallel",
+              "if": "If",
+              "choose": "Choose",
+              "still_running": "Still running",
+              "debugged": "Debugged",
+              "finished": "Finished at {time} (runtime: {executiontime} seconds)",
+              "aborted": "Aborted at {time} (runtime: {executiontime} seconds)",
+              "cancelled": "Cancelled at {time} (runtime: {executiontime} seconds)",
+              "stopped_failed_conditions": "Stopped because a condition failed at {time} (runtime: {executiontime} seconds)",
+              "stopped_failed_single": "Stopped because only a single execution is allowed at {time} (runtime: {executiontime} seconds)",
+              "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
+              "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
+              "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "disabled": "(disabled)",
+              "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
+              "path_error": "Unable to extract path {path}. Download trace and report as bug."
             }
           }
         },
@@ -3462,7 +3538,12 @@
               "instance_will_be_available": "Your instance will be available at your",
               "link_learn_how_it_works": "Learn how it works",
               "nabu_casa_url": "Nabu Casa URL",
-              "certificate_info": "Certificate info"
+              "advanced_options": "Advanced options",
+              "external_activation": "Allow external activation of remote control",
+              "external_activation_secondary": "Allows you to turn on remote control from your Nabu Casa account page, even if you're outside your local network",
+              "certificate_info": "Certificate info",
+              "certificate_expire": "Will be renewed at {date}",
+              "more_info": "More info"
             },
             "alexa": {
               "title": "Alexa",
@@ -3879,6 +3960,7 @@
             "delete_confirm_title": "Delete {title}?",
             "delete_confirm_text": "Its devices and entities will be permanently deleted.",
             "enable_debug_logging": "Enable debug logging",
+            "reconfigure": "Reconfigure",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -4081,21 +4163,22 @@
           "other_networks": "Other networks",
           "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
+          "more_info": "More Info",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
           "add_to_my_network": "Add to preferred network",
           "default_router_not_found": "The border router used for Android + iOS credentials for this network could not be found.",
           "default_router": "Used for Android + iOS credentials",
           "set_default_router": "Use router for Android + iOS credentials",
-          "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
+          "no_routers_otbr_network": "No border routers were found. Check your border router is configured correctly or reset it to factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
           "add_dataset_label": "Operational dataset TLV",
           "add_dataset_button": "Add dataset",
           "confirm_reset_border_router": "Reset border router?",
-          "confirm_reset_border_router_text": "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_reset_border_router_text": "Home Assistant will create a new Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "confirm_set_dataset_border_router": "Reconfigure border router?",
-          "confirm_set_dataset_border_router_text": "This will reconfigure the Home Assistant border router to use a different Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_set_dataset_border_router_text": "Home Assistant will join an existing Thread network. Any devices that are currently joined on this Home Assistant Thread network will need to be re-joined.",
           "otbr_config_failed": "Failed to configure the border router",
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
@@ -4111,7 +4194,7 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiate a channel change for your Thread networks. This is an advanced operation and can leave your Thread networks inoperable if the new channel is congested. Depending on existing network conditions, many of your devices may not migrate to the new channel and will require re-joining before they start working again. Use with caution."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
         },
         "zha": {
           "common": {
@@ -4133,7 +4216,8 @@
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
-            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
+            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
+            "pairing_mode_link": "the documentation",
             "discovered_text": "Devices will show up here once discovered.",
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
@@ -4580,6 +4664,75 @@
             "download_logs": "Download logs"
           }
         },
+        "matter": {
+          "network_type": {
+            "thread": "Thread",
+            "wifi": "Wi-Fi",
+            "ethernet": "Ethernet",
+            "unknown": "Unknown"
+          },
+          "node_type": {
+            "end_device": "End-device",
+            "sleepy_end_device": "Sleepy end device",
+            "routing_end_device": "Routing end device",
+            "bridge": "Bridge",
+            "unknown": "Unknown"
+          },
+          "device_info": {
+            "device_info": "Device info",
+            "node_id": "Node ID",
+            "network_type": "Network Type",
+            "node_type": "Device type",
+            "network_name": "Network name",
+            "ip_adresses": "IP Address(es)",
+            "mac_address": "MAC address",
+            "available": "Available?"
+          },
+          "device_actions": {
+            "reinterview_device": "Re-interview device",
+            "ping_device": "Ping device",
+            "open_commissioning_window": "Share device",
+            "manage_fabrics": "Manage fabrics",
+            "view_thread_network": "View Thread network"
+          },
+          "manage_fabrics": {
+            "title": "Connected fabrics",
+            "fabrics": "Manage the fabrics that have access to this device.",
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
+            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_failed_header": "Remove {fabric} fabric failed",
+            "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
+          },
+          "reinterview_node": {
+            "title": "Re-interview a Matter device",
+            "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
+            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "run_in_background": "You can close this dialog and the interview will continue in the background.",
+            "start_reinterview": "Start re-interview",
+            "in_progress": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "interview_complete": "Device interview complete."
+          },
+          "ping_node": {
+            "title": "Ping a Matter device",
+            "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to up powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "start_ping": "Start ping",
+            "in_progress": "The device is being pinged. This may take some time.",
+            "ping_failed": "The device ping failed. Additional information may be available in the logs.",
+            "ping_complete": "Ping device complete."
+          },
+          "open_commissioning_window": {
+            "title": "Share device",
+            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "start_commissioning": "Share device",
+            "in_progress": "We're communicating with the device. This may take some time.",
+            "failed": "The command failed. Additional information may be available in the logs.",
+            "success": "Your device is ready to be added to another Matter platform.",
+            "scan_code": "With their app, scan the QR code or enter the sharing code below to finish set up.",
+            "copy_code": "Copy code"
+          }
+        },
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
@@ -4656,8 +4809,8 @@
             "extra_information": "Size: {size}, S/N: {serial}",
             "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
-            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk.",
+            "moving_desc": "Rebooting and moving data disk. Please have patience.",
             "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
@@ -4910,10 +5063,13 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
-          "confirm_delete": "Delete view?",
-          "confirm_delete_text": "Are you sure you want to delete your ''{name}'' view?",
-          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
-          "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone."
+          "delete_title": "Delete view",
+          "delete_named_view_only": "''{name}'' view will be deleted.",
+          "delete_unnamed_view_only": "This view will be deleted.",
+          "delete_named_view_cards": "''{name}'' view and all its cards will be deleted.",
+          "delete_unnamed_view_cards": "This view and all its cards will be deleted.",
+          "delete_named_view_sections": "''{name}'' view and all its sections will be deleted.",
+          "delete_unnamed_view_sections": "This view and all its sections will be deleted."
         },
         "menu": {
           "configure_ui": "Edit dashboard",
@@ -4981,10 +5137,14 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
+            "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
+            "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)"
+              "panel": "Panel (1 card)",
+              "sections": "Sections (experimental)"
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5000,7 +5160,7 @@
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
             "pick_card": "Which card would you like to add?",
-            "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
             "confirm_cancel": "Are you sure you want to cancel?",
@@ -5025,7 +5185,9 @@
             "search_cards": "Search cards"
           },
           "move_card": {
-            "header": "Choose a view to move the card to"
+            "header": "Choose a view to move the card to",
+            "error_title": "Impossible to move the card",
+            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
           },
           "change_position": {
             "title": "Change card position",
@@ -5036,7 +5198,25 @@
             "dashboard_label": "Dashboard",
             "views_label": "View",
             "no_config": "No config found.",
-            "no_views": "No views in this dashboard."
+            "no_views": "No views in this dashboard.",
+            "strategy_type": "strategy"
+          },
+          "section": {
+            "unnamed_section": "Unnamed section",
+            "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "create_section": "Create section"
+          },
+          "delete_section": {
+            "title": "Delete section",
+            "text_named_section_only": "''{name}'' section will be deleted.",
+            "text_unnamed_section_only": "This section will be deleted.",
+            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
+            "text_unnamed_section_cards": "This section and all its cards will be deleted."
+          },
+          "edit_section_title": {
+            "title": "Edit name",
+            "title_new": "Add name",
+            "input_label": "Name"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5237,7 +5417,10 @@
             "history-graph": {
               "name": "History graph",
               "description": "The History graph card allows you to display a graph for each of the entities listed.",
-              "logarithmic_scale": "Logarithmic scale"
+              "logarithmic_scale": "Logarithmic scale",
+              "min_y_axis": "Y axis minimum",
+              "max_y_axis": "Y axis maximum",
+              "fit_y_data": "Extend Y axis limits to fit data"
             },
             "statistics-graph": {
               "name": "Statistics graph",
@@ -5340,7 +5523,10 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?"
+              "state_color": "Color icons based on state?",
+              "suggested_cards": "Suggested cards",
+              "other_cards": "Other cards",
+              "custom_cards": "Custom cards"
             },
             "map": {
               "name": "Map",
@@ -5492,6 +5678,15 @@
                 },
                 "fan_modes": "Fan modes"
               },
+              "climate-swing-modes": {
+                "label": "Climate swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "swing_modes": "Swing modes"
+              },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",
@@ -5509,6 +5704,15 @@
                   "icons": "Icons"
                 },
                 "preset_modes": "Preset modes"
+              },
+              "fan-preset-modes": {
+                "label": "Fan preset modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
@@ -5837,14 +6041,14 @@
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
-          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Unused refresh tokens will be automatically removed after 90 days. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
           "created_at": "Created {date}",
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_all_tokens": "Delete all tokens",
-          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? You will be logged out as part of this operation.",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -5861,7 +6065,8 @@
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",
-          "qr_code_image": "QR code for token {name}"
+          "qr_code_image": "QR code for token {name}",
+          "generate_qr_code": "Generate QR Code"
         }
       },
       "todo": {
@@ -6026,6 +6231,10 @@
               "watching": "watching",
               "minutes_abbr": "min"
             }
+          },
+          "sections": {
+            "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
+            "description_blog_post": "blog post"
           }
         }
       },
@@ -6198,6 +6407,7 @@
                 "end": "End",
                 "new_value": "New value",
                 "adjust": "Adjust",
+                "outliers": "Outliers",
                 "sum_adjusted": "Statistic sum adjusted",
                 "error_sum_adjusted": "Error adjusting sum: {message}"
               }
@@ -6388,6 +6598,7 @@
         }
       },
       "energy": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "compare": {
           "info": "You are comparing the period {start} with the period {end}"
@@ -6410,14 +6621,17 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Monitor individual devices"
+          "energy_devices_graph_title": "Individual devices total usage",
+          "energy_devices_detail_graph_title": "Individual devices detail usage"
         }
       },
       "history": {
         "start_search": "Start by selecting an area, device or entity above",
         "add_all": "Add all entities",
         "remove_all": "Remove all selections",
-        "download_data": "Download data"
+        "download_data": "Download data",
+        "download_data_error": "Unable to download data",
+        "error_no_data": "You need to select data first."
       }
     },
     "tips": {

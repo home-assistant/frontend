@@ -11,6 +11,7 @@ import "../../../../src/components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../src/components/data-table/ha-data-table";
 import "../../../../src/components/entity/state-badge";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { HomeAssistant } from "../../../../src/types";
 
 const SENSOR_DEVICE_CLASSES = [
@@ -53,6 +54,7 @@ const SENSOR_DEVICE_CLASSES = [
   "volatile_organic_compounds_parts",
   "voltage",
   "volume",
+  "volume_flow_rate",
   "water",
   "weight",
   "wind_speed",
@@ -290,6 +292,7 @@ const ENTITIES: HassEntity[] = [
   createEntity("water_heater.high_demand", "high_demand"),
   createEntity("water_heater.heat_pump", "heat_pump"),
   createEntity("water_heater.gas", "gas"),
+  createEntity("select.speed", "ridiculous_speed"),
 ];
 
 function createEntity(
@@ -396,6 +399,16 @@ export class DemoEntityState extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
+    mockIcons(hass);
+    hass.updateHass({
+      entities: {
+        "select.speed": {
+          entity_id: "select.speed",
+          translation_key: "speed",
+          platform: "demo",
+        },
+      },
+    });
     hass.updateTranslations(null, "en");
     hass.updateTranslations("config", "en");
   }

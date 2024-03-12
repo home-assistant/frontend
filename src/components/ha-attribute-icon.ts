@@ -6,11 +6,10 @@ import { attributeIcon } from "../data/icons";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
-import { attributeIconPath } from "../common/entity/attribute_icon_path";
 
 @customElement("ha-attribute-icon")
 export class HaAttributeIcon extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -30,7 +29,7 @@ export class HaAttributeIcon extends LitElement {
     }
 
     if (!this.hass) {
-      return this._renderFallback();
+      return nothing;
     }
 
     const icon = attributeIcon(
@@ -42,22 +41,10 @@ export class HaAttributeIcon extends LitElement {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }
-      return this._renderFallback();
+      return nothing;
     });
 
     return html`${until(icon)}`;
-  }
-
-  private _renderFallback() {
-    return html`
-      <ha-svg-icon
-        .path=${attributeIconPath(
-          this.stateObj!,
-          this.attribute!,
-          this.attributeValue!
-        )}
-      ></ha-svg-icon>
-    `;
   }
 }
 

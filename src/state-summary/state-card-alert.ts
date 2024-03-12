@@ -2,7 +2,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stateActive } from "../common/entity/state_active";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
@@ -15,9 +14,6 @@ class StateCardAlert extends LitElement {
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
-
-  // property used only in CSS
-  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   protected render(): TemplateResult {
     return html`
@@ -40,18 +36,6 @@ class StateCardAlert extends LitElement {
     `;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language !== this.hass.language) {
-      this.rtl = computeRTL(this.hass);
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -69,7 +53,6 @@ class StateCardAlert extends LitElement {
           overflow-wrap: break-word;
           display: flex;
           align-items: center;
-          direction: ltr;
         }
         ha-entity-toggle {
           margin: -4px -16px -4px 0;
