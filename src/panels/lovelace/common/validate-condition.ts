@@ -178,10 +178,16 @@ export function extractConditionEntityIds(conditions: Condition[]): string[] {
   const entityIds: string[] = [];
   for (const condition of conditions) {
     if (condition.condition === "numeric_state") {
-      if (typeof condition.above === "string") {
+      if (
+        typeof condition.above === "string" &&
+        isValidEntityId(condition.above)
+      ) {
         entityIds.push(condition.above);
       }
-      if (typeof condition.below === "string") {
+      if (
+        typeof condition.below === "string" &&
+        isValidEntityId(condition.below)
+      ) {
         entityIds.push(condition.below);
       }
     } else if ("conditions" in condition && condition.conditions) {
