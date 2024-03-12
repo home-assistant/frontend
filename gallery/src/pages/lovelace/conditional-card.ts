@@ -34,7 +34,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Displays only if controllers are on",
+    heading: "If 1 is on and 2 is not off",
     config: `
 - type: conditional
   conditions:
@@ -52,7 +52,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Displays only if controller 1 == controller 2",
+    heading: "If 1 and 2 have the same state",
     config: `
 - type: conditional
   conditions:
