@@ -1,5 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -7,60 +8,52 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { OriginalStatesDashboardStrategyConfig } from "../../strategies/original-states/original-states-dashboard-strategy";
+import { getMapEntities } from "../../strategies/map/map-view-strategy";
 import { LovelaceStrategyEditor } from "../../strategies/types";
+import { MapDashboardStrategyConfig } from "../../strategies/map/map-dashboard-strategy";
 
-const SCHEMA = [
-  {
-    name: "areas",
-    selector: {
-      area_filter: {},
-    },
-  },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "hide_entities_without_area",
-        selector: {
-          boolean: {},
-        },
-      },
-      {
-        name: "hide_energy",
-        selector: {
-          boolean: {},
-        },
-      },
-    ],
-  },
-] as const satisfies readonly HaFormSchema[];
-
-@customElement("hui-original-states-dashboard-strategy-editor")
-export class HuiOriginalStatesDashboardStrategyEditor
+@customElement("hui-map-dashboard-strategy-editor")
+export class HuiMapDashboardStrategyEditor
   extends LitElement
   implements LovelaceStrategyEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state()
-  private _config?: OriginalStatesDashboardStrategyConfig;
+  private _config?: MapDashboardStrategyConfig;
 
-  public setConfig(config: OriginalStatesDashboardStrategyConfig): void {
+  public setConfig(config: MapDashboardStrategyConfig): void {
     this._config = config;
   }
+
+  private _schema = memoizeOne(
+    () =>
+      [
+        {
+          name: "hidden_entities",
+          required: false,
+          selector: {
+            entity: {
+              include_entities: getMapEntities(this.hass!),
+              multiple: true,
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
+    const schema = this._schema();
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -72,13 +65,13 @@ export class HuiOriginalStatesDashboardStrategyEditor
     fireEvent(this, "config-changed", { config: data });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
-      case "areas":
-      case "hide_energy":
-      case "hide_entities_without_area":
+      case "hidden_entities":
         return this.hass?.localize(
-          `ui.panel.lovelace.editor.strategy.original-states.${schema.name}`
+          `ui.panel.lovelace.editor.strategy.map.${schema.name}`
         );
       default:
         return "";
@@ -88,6 +81,6 @@ export class HuiOriginalStatesDashboardStrategyEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-original-states-dashboard-strategy-editor": HuiOriginalStatesDashboardStrategyEditor;
+    "hui-map-dashboard-strategy-editor": HuiMapDashboardStrategyEditor;
   }
 }

@@ -2206,7 +2206,13 @@
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
               "default": "Default dashboard",
-              "default_description": "Display your devices grouped by area"
+              "default_description": "Display your devices grouped by area",
+              "strategy": {
+                "map": {
+                  "title": "Map",
+                  "description": "Display people and your devices on a map"
+                }
+              }
             },
             "picker": {
               "headers": {
@@ -5762,6 +5768,9 @@
               "areas": "Areas",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
+            },
+            "map": {
+              "hidden_entities": "Hidden entities"
             }
           },
           "view": {
