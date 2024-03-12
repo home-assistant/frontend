@@ -25,8 +25,8 @@ interface BaseCondition {
 export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
-  below?: string | number;
-  above?: string | number;
+  below?: string | number; // string for entity_id
+  above?: string | number; // string for entity_id
 }
 
 export interface StateCondition extends BaseCondition {
@@ -80,16 +80,10 @@ function checkStateCondition(
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].state
       : UNAVAILABLE;
-  let value = condition.state ?? condition.state_not;
-
-  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (Array.isArray(value) || typeof value === "string") {
-    value = getValueFromEntityId(hass, value);
-  }
 
   return condition.state != null
-    ? ensureArray(value).includes(state)
-    : !ensureArray(value).includes(state);
+    ? ensureArray(condition.state).includes(state)
+    : !ensureArray(condition.state_not).includes(state);
 }
 
 function checkStateNumericCondition(
