@@ -5875,6 +5875,10 @@
       "profile": {
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
+        "user_settings_header": "User settings",
+        "user_settings_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "client_settings_header": "Client settings",
+        "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",
         "logout": "Log out",
         "logout_title": "Log out?",
         "logout_text": "Are you sure you want to log out?",
