@@ -2214,8 +2214,8 @@
                   "description": "Display people and your devices on a map"
                 },
                 "iframe": {
-                  "title": "Web page",
-                  "description": "Integrate a web page into your dashboard"
+                  "title": "Webpage",
+                  "description": "Integrate a webpage into Home Assistant."
                 }
               }
             },
