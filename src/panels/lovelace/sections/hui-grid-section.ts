@@ -202,6 +202,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: 32px;
           display: block;
           padding: 24px 10px 10px;
+          cursor: default;
         }
 
         .title.placeholder {
