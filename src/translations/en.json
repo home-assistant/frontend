@@ -1038,6 +1038,7 @@
           "last_triggered": "Last triggered"
         },
         "sun": {
+          "azimuth": "Azimuth",
           "elevation": "Elevation",
           "rising": "Rising",
           "setting": "Setting"
@@ -5676,6 +5677,15 @@
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
                 "fan_modes": "Fan modes"
+              },
+              "climate-swing-modes": {
+                "label": "Climate swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "swing_modes": "Swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
