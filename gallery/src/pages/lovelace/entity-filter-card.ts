@@ -39,29 +39,34 @@ const ENTITIES = [
   getEntity("light", "ceiling_lights", "off", {
     friendly_name: "Ceiling Lights",
   }),
-  getEntity("sensor", "gas_station_1", 1.712, {
-    device_class: "monetary",
-    icon: "mdi:gas-station",
-    friendly_name: "Gas station 1",
-    unit_of_measurement: "€",
+  getEntity("sensor", "battery_1", 20, {
+    device_class: "battery",
+    friendly_name: "Battery 1",
+    unit_of_measurement: "%",
   }),
-  getEntity("sensor", "gas_station_2", 1.724, {
-    device_class: "monetary",
-    icon: "mdi:gas-station",
-    friendly_name: "Gas station 2",
-    unit_of_measurement: "€",
+  getEntity("sensor", "battery_2", 35, {
+    device_class: "battery",
+    friendly_name: "Battery 2",
+    unit_of_measurement: "%",
   }),
-  getEntity("sensor", "gas_station_3", 1.751, {
-    device_class: "monetary",
-    icon: "mdi:gas-station",
-    friendly_name: "Gas station 3",
-    unit_of_measurement: "€",
+  getEntity("sensor", "battery_3", 40, {
+    device_class: "battery",
+    friendly_name: "Battery 3",
+    unit_of_measurement: "%",
   }),
-  getEntity("sensor", "gas_station_lowest_price", 1.712, {
-    state_class: "measurement",
-    icon: "mdi:gas-station-in-use",
-    friendly_name: "Gas station Lowest Price",
-    unit_of_measurement: "€",
+  getEntity("sensor", "battery_4", 80, {
+    device_class: "battery",
+    friendly_name: "Battery 4",
+    unit_of_measurement: "%",
+  }),
+  getEntity("input_number", "min_battery_level", 30, {
+    mode: "slider",
+    step: 10,
+    min: 0,
+    max: 100,
+    icon: "mdi:battery-alert-variant",
+    friendly_name: "Minimum Battery Level",
+    unit_of_measurement: "%",
   }),
 ];
 
@@ -80,7 +85,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Filtered entities (== on || home) [legacy syntax]",
+    heading: "Filtered entities (== on || home)",
     config: `
 - type: entity-filter
   entities:
@@ -90,26 +95,15 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
-    - "on"
-    - home
+  conditions:
+    - condition: state
+      state:
+        - "on"
+        - home
     `,
   },
   {
-    heading: "Filtered entities (contained in 'homework') [legacy syntax]",
-    config: `
-- type: entity-filter
-  entities:
-    - device_tracker.demo_anne_therese
-    - device_tracker.demo_home_boy
-    - device_tracker.demo_paulus
-  state_filter:
-    - operator: in
-      value: "homework"
-    `,
-  },
-  {
-    heading: 'With "entities" card config (== on || not_home) [legacy syntax]',
+    heading: 'With "entities" card config (== on || not_home)',
     config: `
 - type: entity-filter
   entities:
@@ -119,9 +113,11 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
-    - "on"
-    - not_home
+  conditions:
+    - condition: state
+      state:
+        - "on"
+        - home
   card:
     type: entities
     title: Custom Title
@@ -139,9 +135,11 @@ const CONFIGS = [
     - light.bed_light
     - light.ceiling_lights
     - light.kitchen_lights
-  state_filter:
-    - "on"
-    - not_home
+  conditions:
+    - condition: state
+      state:
+        - "on"
+        - home
   card:
     type: glance
     show_state: true
@@ -149,7 +147,8 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Filtered entities by attribute (< '30') [legacy syntax]",
+    heading:
+      "Filtered entities by battery attribute (< '30') using state filter",
     config: `
 - type: entity-filter
   entities:
@@ -167,83 +166,54 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-    - sensor.gas_station_lowest_price
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
+    - input_number.min_battery_level
+    - sensor.battery_1
+    - sensor.battery_3
+    - sensor.battery_2
+    - sensor.battery_4
     `,
   },
   {
-    heading: "Filtered entities by operator & number (<= 1.73) [legacy syntax]",
+    heading: "Battery lower than 50%",
     config: `
 - type: entity-filter
   entities:
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
-  state_filter:
-    - operator: <=
-      value: 1.73
-    `,
-  },
-  {
-    heading:
-      "Filtered entities by operator in (== 1.724 || 1.712 (lowest_price)) [legacy syntax]",
-    config: `
-- type: entity-filter
-  entities:
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
-  state_filter:
-    - operator: in
-      value:
-        - 1.724
-        - "1.712" # sensor.gas_station_lowest_price
-    `,
-  },
-  {
-    heading: "Filtered entities by condition state (== lowest_price)",
-    config: `
-- type: entity-filter
-  entities:
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
-  conditions:
-    - condition: state
-      state: sensor.gas_station_lowest_price
-    `,
-  },
-  {
-    heading:
-      "Filtered entities by condition state_not array (!= 1.724 & lowest_price)",
-    config: `
-- type: entity-filter
-  entities:
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
-  conditions:
-    - condition: state
-      state_not:
-        - "1.724"
-        - sensor.gas_station_lowest_price
-    `,
-  },
-  {
-    heading:
-      "Filtered entities by condition above (between 1.73 & lowest_price)",
-    config: `
-- type: entity-filter
-  entities:
-    - sensor.gas_station_1
-    - sensor.gas_station_2
-    - sensor.gas_station_3
+    - sensor.battery_1
+    - sensor.battery_3
+    - sensor.battery_2
+    - sensor.battery_4
   conditions:
     - condition: numeric_state
-      above: sensor.gas_station_lowest_price
-      below: 1.73
+      below: 50
+    `,
+  },
+  {
+    heading: "Battery lower than min battery level",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.battery_1
+    - sensor.battery_3
+    - sensor.battery_2
+    - sensor.battery_4
+  conditions:
+    - condition: numeric_state
+      below: input_number.min_battery_level
+    `,
+  },
+  {
+    heading: "Battery between min battery level and 70%",
+    config: `
+- type: entity-filter
+  entities:
+    - sensor.battery_1
+    - sensor.battery_3
+    - sensor.battery_2
+    - sensor.battery_4
+  conditions:
+    - condition: numeric_state
+      above: input_number.min_battery_level
+      below: 70
     `,
   },
   {
