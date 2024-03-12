@@ -3980,7 +3980,7 @@
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
-            "single_config_entry": "The {integration_name} supports only one configuration. Adding additional ones is not needed."
+            "single_config_entry": "{integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },
         "users": {
