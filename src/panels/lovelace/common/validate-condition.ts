@@ -180,24 +180,38 @@ export function checkConditionsMet(
   });
 }
 
-export function extractConditionEntityIds(conditions: Condition[]): string[] {
-  const entityIds: string[] = [];
+export function extractConditionEntityIds(
+  conditions: Condition[]
+): Set<string> {
+  const entityIds: Set<string> = new Set();
   for (const condition of conditions) {
     if (condition.condition === "numeric_state") {
       if (
         typeof condition.above === "string" &&
         isValidEntityId(condition.above)
       ) {
-        entityIds.push(condition.above);
+        entityIds.add(condition.above);
       }
       if (
         typeof condition.below === "string" &&
         isValidEntityId(condition.below)
       ) {
-        entityIds.push(condition.below);
+        entityIds.add(condition.below);
       }
+    } else if (condition.condition === "state") {
+      [
+        ...ensureArray(condition.state),
+        ...ensureArray(condition.state_not),
+      ].forEach((state) => {
+        if (!!state && isValidEntityId(state)) {
+          entityIds.add(state);
+        }
+      });
     } else if ("conditions" in condition && condition.conditions) {
-      entityIds.push(...extractConditionEntityIds(condition.conditions));
+      return new Set([
+        ...entityIds,
+        ...extractConditionEntityIds(condition.conditions),
+      ]);
     }
   }
   return entityIds;
