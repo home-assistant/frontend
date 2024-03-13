@@ -4043,7 +4043,9 @@
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
             "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
-            "proceed": "Proceed"
+            "proceed": "Proceed",
+            "single_config_entry_title": "This integration allows only one configuration",
+            "single_config_entry": "{integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },
         "users": {
