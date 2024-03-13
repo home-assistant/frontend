@@ -25,6 +25,7 @@ import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
 import { AddUserDialogParams } from "./show-dialog-add-user";
 import "../../../components/ha-textfield";
+import "../../../auth/ha-auth-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("dialog-add-user")
@@ -127,19 +128,20 @@ export class DialogAddUser extends LitElement {
             dialogInitialFocus
           ></ha-textfield>
 
-          <ha-textfield
+          <ha-auth-textfield
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
+            style="display: block"
             type="password"
             name="password"
             .value=${this._password}
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-          ></ha-textfield>
+          ></ha-auth-textfield>
 
-          <ha-textfield
+          <ha-auth-textfield
             label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
             )}
@@ -147,6 +149,7 @@ export class DialogAddUser extends LitElement {
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
+            style="display: block"
             type="password"
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
@@ -154,7 +157,7 @@ export class DialogAddUser extends LitElement {
             .validationMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-          ></ha-textfield>
+          ></ha-auth-textfield>
           <div class="row">
             <ha-formfield
               .label=${this.hass.localize(
