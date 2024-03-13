@@ -1318,6 +1318,26 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _addIntegration() {
+    if (this._manifest?.single_config_entry) {
+      const entries = this._domainConfigEntries(
+        this.domain,
+        this._extraConfigEntries || this.configEntries
+      );
+      if (entries.length > 0) {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry",
+            {
+              integration_name: this._manifest.name,
+            }
+          ),
+        });
+        return;
+      }
+    }
     showAddIntegrationDialog(this, {
       domain: this.domain,
     });
