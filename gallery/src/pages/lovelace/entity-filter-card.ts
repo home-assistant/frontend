@@ -85,7 +85,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Filtered entities (== on || home)",
+    heading: "On and home entities",
     config: `
 - type: entity-filter
   entities:
@@ -103,7 +103,24 @@ const CONFIGS = [
     `,
   },
   {
-    heading: 'With "entities" card config (== on || not_home)',
+    heading: "Same state as Bed Light",
+    config: `
+- type: entity-filter
+  entities:
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+    - light.bed_light
+    - light.ceiling_lights
+    - light.kitchen_lights
+  conditions:
+    - condition: state
+      state:
+        - light.bed_light
+    `,
+  },
+  {
+    heading: 'With "entities" card config',
     config: `
 - type: entity-filter
   entities:
@@ -125,7 +142,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: 'With "glance" card config (== on || not_home)',
+    heading: 'With "glance" card config',
     config: `
 - type: entity-filter
   entities:

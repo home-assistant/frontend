@@ -200,8 +200,8 @@ export function extractConditionEntityIds(
       }
     } else if (condition.condition === "state") {
       [
-        ...ensureArray(condition.state),
-        ...ensureArray(condition.state_not),
+        ...(ensureArray(condition.state) ?? []),
+        ...(ensureArray(condition.state_not) ?? []),
       ].forEach((state) => {
         if (!!state && isValidEntityId(state)) {
           entityIds.add(state);
