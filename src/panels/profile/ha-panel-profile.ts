@@ -134,7 +134,9 @@ class HaPanelProfile extends LitElement {
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
-              "ui.panel.profile.client_settings_header"
+              isExternal
+                ? "ui.panel.profile.mobile_app_settings"
+                : "ui.panel.profile.browser_settings"
             )}
           >
             <div class="card-content">
