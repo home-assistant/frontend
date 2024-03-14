@@ -8,6 +8,7 @@ import { LovelaceGenericElementEditor } from "../types";
 export type LovelaceStrategy<T = any> = {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;
   getConfigElement?: () => LovelaceStrategyEditor;
+  noEditor?: boolean;
 };
 
 export interface LovelaceDashboardStrategy
