@@ -79,7 +79,7 @@ const testReviver = (_key, value) =>
  * be included in src/translations/en.json, but still be usable while
  * developing locally.
  *
- * @link https://docs.lokalise.co/article/KO5SZWLLsy-key-referencing
+ * @link https://docs.lokalise.com/en/articles/1400528-key-referencing
  */
 const KEY_REFERENCE = /\[%key:([^%]+)%\]/;
 const lokaliseTransform = (data, path, original = data) => {
