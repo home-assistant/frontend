@@ -12,12 +12,6 @@ import { LovelaceStrategyEditor } from "../../strategies/types";
 
 const SCHEMA = [
   {
-    name: "title",
-    selector: {
-      text: {},
-    },
-  },
-  {
     name: "url",
     selector: {
       text: {
@@ -64,7 +58,6 @@ export class HuiIframeDashboarStrategyEditor
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
-      case "title":
       case "url":
         return this.hass?.localize(
           `ui.panel.lovelace.editor.strategy.iframe.${schema.name}`
