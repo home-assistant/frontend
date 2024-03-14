@@ -74,7 +74,6 @@ class HaPanelProfile extends LitElement {
           .narrow=${this.narrow}
         ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.profile")}</div>
-
         <div class="content">
           <ha-card .header=${this.hass.user!.name}>
             <div class="card-content">
@@ -85,7 +84,20 @@ class HaPanelProfile extends LitElement {
                 ? this.hass.localize("ui.panel.profile.is_owner")
                 : ""}
             </div>
-
+            <div class="card-actions">
+              <mwc-button class="warning" @click=${this._handleLogOut}>
+                ${this.hass.localize("ui.panel.profile.logout")}
+              </mwc-button>
+            </div>
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.profile.user_settings_header"
+            )}
+          >
+            <div class="card-content">
+              ${this.hass.localize("ui.panel.profile.user_settings_detail")}
+            </div>
             <ha-pick-language-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -110,6 +122,26 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-advanced-mode-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-advanced-mode-row>
+                `
+              : ""}
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              isExternal
+                ? "ui.panel.profile.mobile_app_settings"
+                : "ui.panel.profile.browser_settings"
+            )}
+          >
+            <div class="card-content">
+              ${this.hass.localize("ui.panel.profile.client_settings_detail")}
+            </div>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -159,15 +191,6 @@ class HaPanelProfile extends LitElement {
                   ></ha-push-notifications-row>
                 `
               : ""}
-            ${this.hass.user!.is_admin
-              ? html`
-                  <ha-advanced-mode-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .coreUserData=${this._coreUserData}
-                  ></ha-advanced-mode-row>
-                `
-              : ""}
             <ha-set-suspend-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -176,11 +199,6 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-enable-shortcuts-row>
-            <div class="card-actions">
-              <mwc-button class="warning" @click=${this._handleLogOut}>
-                ${this.hass.localize("ui.panel.profile.logout")}
-              </mwc-button>
-            </div>
           </ha-card>
 
           ${this.hass.user!.credentials.some(
