@@ -9,7 +9,7 @@ export type MapViewStrategyConfig = {
   type: "map";
 };
 
-export const getMapEntities = (hass: HomeAssistant) => {
+const getMapEntities = (hass: HomeAssistant) => {
   const personSources = new Set<string>();
   const locationEntities: string[] = [];
   Object.values(hass.states).forEach((entity) => {
