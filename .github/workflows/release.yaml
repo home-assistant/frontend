@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.12"
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
