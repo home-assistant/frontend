@@ -2207,7 +2207,13 @@
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
               "default": "Default dashboard",
-              "default_description": "Display your devices grouped by area"
+              "default_description": "Display your devices grouped by area",
+              "strategy": {
+                "map": {
+                  "title": "[%key:panel::map%]",
+                  "description": "Display people and your devices on a map"
+                }
+              }
             },
             "picker": {
               "headers": {
