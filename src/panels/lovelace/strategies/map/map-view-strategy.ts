@@ -1,19 +1,15 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import { MapCardConfig } from "../../cards/types";
-import { HomeAssistant } from "../../../../types";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { HomeAssistant } from "../../../../types";
+import { MapCardConfig } from "../../cards/types";
 
 export type MapViewStrategyConfig = {
   type: "map";
-  hidden_entities: string[];
 };
 
-export const getMapEntities = (
-  hass: HomeAssistant,
-  hidden_entities: string[] = []
-) => {
+export const getMapEntities = (hass: HomeAssistant) => {
   const personSources = new Set<string>();
   const locationEntities: string[] = [];
   Object.values(hass.states).forEach((entity) => {
@@ -30,18 +26,16 @@ export const getMapEntities = (
     }
   });
 
-  return locationEntities.filter(
-    (entity) => !personSources.has(entity) && !hidden_entities.includes(entity)
-  );
+  return locationEntities.filter((entity) => !personSources.has(entity));
 };
 
 @customElement("map-view-strategy")
 export class MapViewStrategy extends ReactiveElement {
   static async generate(
-    config: MapViewStrategyConfig,
+    _config: MapViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const entities = getMapEntities(hass, config.hidden_entities);
+    const entities = getMapEntities(hass);
     return {
       type: "panel",
       title: hass.localize("panel.map"),
