@@ -21,6 +21,8 @@ export class MapDashboardStrategy extends ReactiveElement {
       ],
     };
   }
+
+  static noEditor = true;
 }
 
 declare global {

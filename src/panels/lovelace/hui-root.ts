@@ -75,6 +75,7 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import { LocalizeKeys } from "../../common/translations/localize";
+import { getLovelaceStrategy } from "./strategies/get-strategy";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -709,7 +710,7 @@ class HUIRoot extends LitElement {
     this._enableEditMode();
   }
 
-  private _enableEditMode(): void {
+  private async _enableEditMode() {
     if (this._yamlMode) {
       showAlertDialog(this, {
         text: this.hass!.localize("ui.panel.lovelace.editor.yaml_unsupported"),
@@ -720,6 +721,18 @@ class HUIRoot extends LitElement {
       isStrategyDashboard(this.lovelace!.rawConfig) &&
       !isLegacyStrategyConfig(this.lovelace!.rawConfig.strategy)
     ) {
+      const strategyClass = await getLovelaceStrategy(
+        "dashboard",
+        this.lovelace!.rawConfig.strategy.type
+      );
+      if (strategyClass.noEditor) {
+        showSaveDialog(this, {
+          lovelace: this.lovelace!,
+          mode: "storage",
+          narrow: this.narrow!,
+        });
+        return;
+      }
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,
