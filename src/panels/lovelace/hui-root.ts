@@ -724,8 +724,8 @@ class HUIRoot extends LitElement {
       const strategyClass = await getLovelaceStrategy(
         "dashboard",
         this.lovelace!.rawConfig.strategy.type
-      );
-      if (strategyClass.noEditor) {
+      ).catch((_err) => undefined);
+      if (strategyClass?.noEditor) {
         showSaveDialog(this, {
           lovelace: this.lovelace!,
           mode: "storage",
