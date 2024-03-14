@@ -2209,7 +2209,7 @@
               "default_description": "Display your devices grouped by area",
               "strategy": {
                 "map": {
-                  "title": "Map",
+                  "title": "[%key:panel::map%]",
                   "description": "Display people and your devices on a map"
                 }
               }
@@ -5768,9 +5768,6 @@
               "areas": "Areas",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
-            },
-            "map": {
-              "hidden_entities": "Hidden entities"
             }
           },
           "view": {
