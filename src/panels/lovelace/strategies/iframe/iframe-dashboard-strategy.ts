@@ -27,6 +27,8 @@ export class IframeDashboardStrategy extends ReactiveElement {
     );
     return document.createElement("hui-iframe-dashboard-strategy-editor");
   }
+
+  static configRequired = true;
 }
 
 declare global {
