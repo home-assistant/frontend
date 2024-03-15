@@ -3413,6 +3413,8 @@
           },
           "editor": {
             "default_name": "New scene",
+            "capture": "Capture",
+            "capture_all": "Capture all",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
