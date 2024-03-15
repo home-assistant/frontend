@@ -203,7 +203,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: var(var(--grid-row-height));
+          min-height: var(--grid-row-height);
         }
 
         .title {
