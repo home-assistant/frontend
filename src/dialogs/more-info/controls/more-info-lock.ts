@@ -1,10 +1,12 @@
-import { mdiDoorOpen, mdiLock, mdiLockOff } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -15,8 +17,11 @@ import {
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+
+const OPEN_TIMEOUT_SECOND = 5;
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -24,8 +29,30 @@ class MoreInfoLock extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LockEntity;
 
+  @state() public _confirmOpen = false;
+
+  _confirmOpenTimeout?: number;
+
   private async _open() {
+    if (!this._confirmOpen) {
+      this._confirmOpen = true;
+      this._confirmOpenTimeout = window.setTimeout(() => {
+        this._confirmOpen = false;
+      }, OPEN_TIMEOUT_SECOND * 1000);
+      return;
+    }
+    this._confirmOpen = false;
+    clearTimeout(this._confirmOpenTimeout);
     callProtectedLockService(this, this.hass, this.stateObj!, "open");
+    showToast(this, {
+      message: this.hass.localize("ui.card.lock.opening_door"),
+      duration: 3000,
+    });
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearTimeout(this._confirmOpenTimeout);
   }
 
   private async _lock() {
@@ -45,7 +72,7 @@ class MoreInfoLock extends LitElement {
 
     const color = stateColorCss(this.stateObj);
     const style = {
-      "--icon-color": color,
+      "--state-color": color,
     };
 
     const isJammed = this.stateObj.state === "jammed";
@@ -56,74 +83,66 @@ class MoreInfoLock extends LitElement {
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
       <div class="controls" style=${styleMap(style)}>
-        ${
-          this.stateObj.state === "jammed"
-            ? html`
-                <div class="status">
-                  <span></span>
-                  <div class="icon">
-                    <ha-state-icon
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj}
-                    ></ha-state-icon>
-                  </div>
+        ${this.stateObj.state === "jammed"
+          ? html`
+              <div class="status">
+                <span></span>
+                <div class="icon">
+                  <ha-state-icon
+                    .hass=${this.hass}
+                    .stateObj=${this.stateObj}
+                  ></ha-state-icon>
                 </div>
-              `
-            : html`
-                <ha-state-control-lock-toggle
-                  .stateObj=${this.stateObj}
-                  .hass=${this.hass}
-                >
-                </ha-state-control-lock-toggle>
-              `
-        }
-        ${
-          supportsOpen || isJammed
-            ? html`
-                <div class="buttons">
-                  ${supportsOpen
-                    ? html`
-                        <ha-outlined-icon-button
-                          .disabled=${this.stateObj.state === UNAVAILABLE}
-                          .title=${this.hass.localize("ui.card.lock.open")}
-                          .ariaLabel=${this.hass.localize("ui.card.lock.open")}
-                          @click=${this._open}
-                        >
-                          <ha-svg-icon .path=${mdiDoorOpen}></ha-svg-icon>
-                        </ha-outlined-icon-button>
-                      `
-                    : nothing}
-                  ${isJammed
-                    ? html`
-                        <ha-outlined-icon-button
-                          .title=${this.hass.localize("ui.card.lock.lock")}
-                          .ariaLabel=${this.hass.localize("ui.card.lock.lock")}
-                          @click=${this._lock}
-                        >
-                          <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
-                        </ha-outlined-icon-button>
-                        <ha-outlined-icon-button
-                          .title=${this.hass.localize("ui.card.lock.unlock")}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.card.lock.unlock"
-                          )}
-                          @click=${this._unlock}
-                        >
-                          <ha-svg-icon .path=${mdiLockOff}></ha-svg-icon>
-                        </ha-outlined-icon-button>
-                      `
-                    : nothing}
-                </div>
-              `
-            : nothing
-        }
-          </div>
+              </div>
+            `
+          : html`
+              <ha-state-control-lock-toggle
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+              >
+              </ha-state-control-lock-toggle>
+            `}
+        ${supportsOpen || isJammed
+          ? html`
+              <div class="buttons">
+                ${supportsOpen
+                  ? html`
+                      <ha-control-button
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        class="open ${classMap({
+                          confirm: this._confirmOpen,
+                        })}"
+                        @click=${this._open}
+                      >
+                        ${this._confirmOpen
+                          ? this.hass.localize("ui.card.lock.open_door_confirm")
+                          : this.hass.localize("ui.card.lock.open_door")}
+                      </ha-control-button>
+                    `
+                  : nothing}
+              </div>
+            `
+          : nothing}
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="code_format"
-      ></ha-attributes>
+      <div>
+        ${isJammed
+          ? html`
+              <ha-control-button-group class="jammed">
+                <ha-control-button @click=${this._unlock}>
+                  ${this.hass.localize("ui.card.lock.unlock")}
+                </ha-control-button>
+                <ha-control-button @click=${this._lock}>
+                  ${this.hass.localize("ui.card.lock.lock")}
+                </ha-control-button>
+              </ha-control-button-group>
+            `
+          : nothing}
+        <ha-attributes
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          extra-filters="code_format"
+        ></ha-attributes>
+      </div>
     `;
   }
 
@@ -131,6 +150,27 @@ class MoreInfoLock extends LitElement {
     return [
       moreInfoControlStyle,
       css`
+        ha-control-button {
+          font-size: 14px;
+          height: 60px;
+          --control-button-border-radius: 24px;
+        }
+        ha-control-button.open {
+          width: 100px;
+          --control-button-background-color: var(--state-color);
+        }
+        ha-control-button.confirm {
+          --control-button-background-color: var(--warning-color);
+        }
+        ha-control-button-group.jammed {
+          --control-button-group-thickness: 60px;
+          width: 100%;
+          max-width: 400px;
+          margin: 0 auto;
+        }
+        ha-control-button-group + ha-attributes:not([empty]) {
+          margin-top: 16px;
+        }
         @keyframes pulse {
           0% {
             opacity: 1;
@@ -155,7 +195,7 @@ class MoreInfoLock extends LitElement {
           position: relative;
           --mdc-icon-size: 80px;
           animation: pulse 1s infinite;
-          color: var(--icon-color);
+          color: var(--state-color);
           border-radius: 50%;
           width: 144px;
           height: 144px;
@@ -171,7 +211,7 @@ class MoreInfoLock extends LitElement {
           height: 100%;
           width: 100%;
           border-radius: 50%;
-          background-color: var(--icon-color);
+          background-color: var(--state-color);
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;
         }
