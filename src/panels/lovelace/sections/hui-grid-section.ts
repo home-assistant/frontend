@@ -183,18 +183,20 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --grid-gap: 8px;
-          --grid-row-height: 66px;
+          --column-count: 4;
+          --row-gap: var(--ha-section-grid-row-gap, 8px);
+          --column-gap: var(--ha-section-grid-column-gap, 8px);
+          --row-height: 66px;
           display: flex;
           flex-direction: column;
-          gap: var(--grid-gap);
+          gap: var(--row-gap);
         }
         .container {
-          --column-count: 4;
           display: grid;
           grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
-          grid-auto-rows: minmax(var(--grid-row-height), auto);
-          gap: var(--grid-gap);
+          grid-auto-rows: minmax(var(--row-height), auto);
+          row-gap: var(--row-gap);
+          column-gap: var(--column-gap);
           padding: 0;
           margin: 0 auto;
         }
@@ -203,7 +205,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: var(--grid-row-height);
+          min-height: var(--row-height);
         }
 
         .title {
@@ -232,8 +234,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
         .card.fit-rows {
           height: calc(
-            (var(--row-size, 1) * (var(--grid-row-height) + var(--grid-gap))) - var(
-                --grid-gap
+            (var(--row-size, 1) * (var(--row-height) + var(--row-gap))) - var(
+                --row-gap
               )
           );
         }
@@ -254,7 +256,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          height: var(--grid-row-height);
+          height: var(--row-height);
           order: 1;
         }
         .add:focus {
