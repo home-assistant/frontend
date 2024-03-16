@@ -9,13 +9,12 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { canRun, ScriptEntity } from "../../../data/script";
+import { canRun, hasScriptFields, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("hui-script-entity-row")
@@ -95,10 +94,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   private _runScript(ev): void {
     ev.stopPropagation();
 
-    const fields =
-      this.hass!.services.script[computeObjectId(this._config!.entity)]?.fields;
-
-    if (fields && Object.keys(fields).length > 0) {
+    if (hasScriptFields(this.hass!, this._config!.entity)) {
       showMoreInfoDialog(this, { entityId: this._config!.entity });
     } else {
       this._callService("turn_on");

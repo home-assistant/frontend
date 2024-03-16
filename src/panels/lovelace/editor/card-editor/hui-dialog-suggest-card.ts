@@ -131,11 +131,15 @@ export class HuiDialogSuggestCard extends LitElement {
         </mwc-button>
         ${!this._params.yaml
           ? html`
-              <mwc-button slot="primaryAction" @click=${this._pickCard}
-                >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.suggest_card.create_own"
-                )}</mwc-button
-              >
+              ${!(this._sectionConfig && this._viewSupportsSection)
+                ? html`
+                    <mwc-button slot="primaryAction" @click=${this._pickCard}>
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.suggest_card.create_own"
+                      )}
+                    </mwc-button>
+                  `
+                : nothing}
               <mwc-button
                 slot="primaryAction"
                 .disabled=${this._saving}
@@ -154,7 +158,7 @@ export class HuiDialogSuggestCard extends LitElement {
                     )}
               </mwc-button>
             `
-          : ""}
+          : nothing}
       </ha-dialog>
     `;
   }

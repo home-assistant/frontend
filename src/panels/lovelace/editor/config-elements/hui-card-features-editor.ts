@@ -21,6 +21,7 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
@@ -51,6 +52,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "climate-fan-modes",
+  "climate-swing-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
   "cover-open-close",
@@ -80,6 +82,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "climate-hvac-modes",
   "climate-fan-modes",
+  "climate-swing-modes",
   "climate-preset-modes",
   "fan-preset-modes",
   "humidifier-modes",
@@ -96,6 +99,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
+  "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,

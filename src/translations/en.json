@@ -1038,6 +1038,7 @@
           "last_triggered": "Last triggered"
         },
         "sun": {
+          "azimuth": "Azimuth",
           "elevation": "Elevation",
           "rising": "Rising",
           "setting": "Setting"
@@ -2142,7 +2143,7 @@
             "more_info": "more info"
           },
           "items": {
-            "change_log": "Change log",
+            "change_log": "Changelog",
             "thanks": "Thanks to",
             "merch": "Merchandise",
             "feature": "Feature requests",
@@ -2206,7 +2207,13 @@
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
               "default": "Default dashboard",
-              "default_description": "Display your devices grouped by area"
+              "default_description": "Display your devices grouped by area",
+              "strategy": {
+                "map": {
+                  "title": "[%key:panel::map%]",
+                  "description": "Display people and your devices on a map"
+                }
+              }
             },
             "picker": {
               "headers": {
@@ -3959,6 +3966,7 @@
             "delete_confirm_title": "Delete {title}?",
             "delete_confirm_text": "Its devices and entities will be permanently deleted.",
             "enable_debug_logging": "Enable debug logging",
+            "reconfigure": "Reconfigure",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -4041,7 +4049,9 @@
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
             "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
-            "proceed": "Proceed"
+            "proceed": "Proceed",
+            "single_config_entry_title": "This integration allows only one configuration",
+            "single_config_entry": "{integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },
         "users": {
@@ -5135,8 +5145,8 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
-            "type_helper_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
-            "type_helper_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+            "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
+            "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
 
             "types": {
               "masonry": "Masonry (default)",
@@ -5183,7 +5193,9 @@
             "search_cards": "Search cards"
           },
           "move_card": {
-            "header": "Choose a view to move the card to"
+            "header": "Choose a view to move the card to",
+            "error_title": "Impossible to move the card",
+            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
           },
           "change_position": {
             "title": "Change card position",
@@ -5194,12 +5206,13 @@
             "dashboard_label": "Dashboard",
             "views_label": "View",
             "no_config": "No config found.",
-            "no_views": "No views in this dashboard."
+            "no_views": "No views in this dashboard.",
+            "strategy_type": "strategy"
           },
           "section": {
             "unnamed_section": "Unnamed section",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
-            "add_section": "Add section"
+            "create_section": "Create section"
           },
           "delete_section": {
             "title": "Delete section",
@@ -5676,6 +5689,15 @@
                 },
                 "fan_modes": "Fan modes"
               },
+              "climate-swing-modes": {
+                "label": "Climate swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "swing_modes": "Swing modes"
+              },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",
@@ -5874,6 +5896,11 @@
       "profile": {
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
+        "user_settings_header": "User settings",
+        "user_settings_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "mobile_app_settings": "Mobile app settings",
+        "browser_settings": "Browser settings",
+        "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",
         "logout": "Log out",
         "logout_title": "Log out?",
         "logout_text": "Are you sure you want to log out?",
@@ -6220,6 +6247,10 @@
               "watching": "watching",
               "minutes_abbr": "min"
             }
+          },
+          "sections": {
+            "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
+            "description_blog_post": "blog post"
           }
         }
       },
