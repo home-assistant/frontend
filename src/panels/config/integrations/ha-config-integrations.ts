@@ -119,6 +119,9 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
             }
           });
           if (!newEntries.length && !fullUpdate) {
+            if (!this._configEntries) {
+              this._configEntries = [];
+            }
             return;
           }
           const existingEntries = fullUpdate ? [] : this._configEntries;
