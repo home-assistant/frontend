@@ -132,8 +132,8 @@ export class HaStateControlToggle extends LitElement {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
-        --control-switch-thickness: 100px;
-        --control-switch-border-radius: 24px;
+        --control-switch-thickness: 130px;
+        --control-switch-border-radius: 48px;
         --control-switch-padding: 6px;
         --mdc-icon-size: 24px;
       }
