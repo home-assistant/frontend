@@ -17,6 +17,13 @@ import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { callProtectedLockService, LockEntity } from "../../data/lock";
 import { HomeAssistant } from "../../types";
+import { fireEvent } from "../../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "lock-service-called": undefined;
+  }
+}
 
 @customElement("ha-state-control-lock-toggle")
 export class HaStateControlLockToggle extends LitElement {
@@ -67,6 +74,7 @@ export class HaStateControlLockToggle extends LitElement {
       return;
     }
     forwardHaptic("light");
+    fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,
       this.hass,

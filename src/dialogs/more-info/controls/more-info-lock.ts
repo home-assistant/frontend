@@ -41,8 +41,7 @@ class MoreInfoLock extends LitElement {
       }, OPEN_TIMEOUT_SECOND * 1000);
       return;
     }
-    this._confirmOpen = false;
-    clearTimeout(this._confirmOpenTimeout);
+    this._resetConfirmOpen();
     callProtectedLockService(this, this.hass, this.stateObj!, "open");
     showToast(this, {
       message: this.hass.localize("ui.card.lock.opening_door"),
@@ -50,9 +49,14 @@ class MoreInfoLock extends LitElement {
     });
   }
 
+  private _resetConfirmOpen() {
+    this._confirmOpen = false;
+    clearTimeout(this._confirmOpenTimeout);
+  }
+
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    clearTimeout(this._confirmOpenTimeout);
+    this._resetConfirmOpen();
   }
 
   private async _lock() {
@@ -97,6 +101,7 @@ class MoreInfoLock extends LitElement {
             `
           : html`
               <ha-state-control-lock-toggle
+                @lock-service-called=${this._resetConfirmOpen}
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
               >
