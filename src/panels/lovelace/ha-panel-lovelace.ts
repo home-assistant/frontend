@@ -221,7 +221,7 @@ export class LovelacePanel extends LitElement {
         action: () => this._fetchConfig(false),
         text: this.hass!.localize("ui.common.refresh"),
       },
-      duration: 0,
+      duration: -1,
       dismissable: false,
     });
   }

@@ -139,6 +139,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
       }
       ha-textfield {
         text-align: end;
+        direction: ltr !important;
       }
       ha-slider {
         width: 100%;

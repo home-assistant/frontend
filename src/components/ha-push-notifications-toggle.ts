@@ -17,7 +17,7 @@ export const pushSupported =
 class HaPushNotificationsToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _disabled: boolean = false;
+  @property({ type: Boolean }) public disabled!: boolean;
 
   @state() private _pushChecked: boolean =
     "Notification" in window && Notification.permission === "granted";
@@ -27,7 +27,7 @@ class HaPushNotificationsToggle extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-switch
-        .disabled=${this._disabled || this._loading}
+        .disabled=${this.disabled || this._loading}
         .checked=${this._pushChecked}
         @change=${this._handlePushChange}
       ></ha-switch>

@@ -1263,6 +1263,7 @@ class HassioAddonInfo extends LitElement {
         .card-actions {
           justify-content: space-between;
           display: flex;
+          direction: var(--direction);
         }
         .changelog {
           display: contents;

@@ -93,6 +93,8 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
         --mdc-icon-size: 16px;
         right: 10px;
         top: -7px;
+        inset-inline-end: 10px;
+        inset-inline-start: initial;
       }
     `;
   }

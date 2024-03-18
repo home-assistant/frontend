@@ -39,11 +39,17 @@ export interface LovelaceBadge extends HTMLElement {
   setConfig(config: LovelaceBadgeConfig): void;
 }
 
+export type LovelaceLayoutOptions = {
+  grid_columns?: number;
+  grid_rows?: number;
+};
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
   editMode?: boolean;
   getCardSize(): number | Promise<number>;
+  getLayoutOptions?(): LovelaceLayoutOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 

@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import { mdiDelete } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
 import {
   CSSResultGroup,
   LitElement,
@@ -32,6 +31,8 @@ import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
+import "@material/mwc-list/mwc-list";
+import "../../../../../components/ha-list-item";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -131,20 +132,24 @@ export class ZHAGroupPage extends LitElement {
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
           <ha-card>
-            ${this.group.members.length
-              ? this.group.members.map(
-                  (member) =>
-                    html`<a
-                      href="/config/devices/device/${member.device
-                        .device_reg_id}"
-                    >
-                      <paper-item
-                        >${member.device.user_given_name ||
-                        member.device.name}</paper-item
+            <mwc-list>
+              ${this.group.members.length
+                ? this.group.members.map(
+                    (member) =>
+                      html`<a
+                        href="/config/devices/device/${member.device
+                          .device_reg_id}"
                       >
-                    </a>`
-                )
-              : html` <paper-item> This group has no members </paper-item> `}
+                        <ha-list-item
+                          >${member.device.user_given_name ||
+                          member.device.name}</ha-list-item
+                        >
+                      </a>`
+                  )
+                : html`
+                    <ha-list-item> This group has no members </ha-list-item>
+                  `}
+            </mwc-list>
           </ha-card>
           ${this.group.members.length
             ? html`

@@ -46,7 +46,7 @@ class HaPanelMap extends LitElement {
   }
 
   private _openZonesEditor() {
-    navigate("/config/zone");
+    navigate("/config/zone?historyBack=1");
   }
 
   public willUpdate(changedProps: PropertyValues) {

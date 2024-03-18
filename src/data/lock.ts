@@ -3,7 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { getExtendedEntityRegistryEntry } from "./entity_registry";
-import { showEnterCodeDialogDialog } from "../dialogs/enter-code/show-enter-code-dialog";
+import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../types";
 
 export const FORMAT_TEXT = "text";
@@ -38,7 +38,7 @@ export const callProtectedLockService = async (
   const defaultCode = lockRegistryEntry?.options?.lock?.default_code;
 
   if (stateObj!.attributes.code_format && !defaultCode) {
-    const response = await showEnterCodeDialogDialog(element, {
+    const response = await showEnterCodeDialog(element, {
       codeFormat: "text",
       codePattern: stateObj!.attributes.code_format,
       title: hass.localize(`ui.card.lock.${service}`),

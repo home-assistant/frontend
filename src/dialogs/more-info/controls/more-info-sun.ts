@@ -58,6 +58,14 @@ class MoreInfoSun extends LitElement {
           ${this.hass.formatEntityAttributeValue(this.stateObj, "elevation")}
         </div>
       </div>
+      <div class="row">
+        <div class="key">
+          ${this.hass.localize("ui.dialogs.more_info_control.sun.azimuth")}
+        </div>
+        <div class="value">
+          ${this.hass.formatEntityAttributeValue(this.stateObj, "azimuth")}
+        </div>
+      </div>
     `;
   }
 

@@ -89,7 +89,12 @@ class DialogBox extends LitElement {
         </div>
         ${confirmPrompt &&
         html`
-          <mwc-button @click=${this._dismiss} slot="secondaryAction">
+          <mwc-button
+            @click=${this._dismiss}
+            slot="secondaryAction"
+            ?dialogInitialFocus=${!this._params.prompt &&
+            this._params.destructive}
+          >
             ${this._params.dismissText
               ? this._params.dismissText
               : this.hass.localize("ui.dialogs.generic.cancel")}
@@ -97,7 +102,8 @@ class DialogBox extends LitElement {
         `}
         <mwc-button
           @click=${this._confirm}
-          ?dialogInitialFocus=${!this._params.prompt}
+          ?dialogInitialFocus=${!this._params.prompt &&
+          !this._params.destructive}
           slot="primaryAction"
           class=${classMap({
             destructive: this._params.destructive || false,

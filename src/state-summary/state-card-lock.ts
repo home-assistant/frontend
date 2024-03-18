@@ -11,7 +11,7 @@ import {
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
-import { LockEntityFeature } from "../data/lock";
+import { callProtectedLockService, LockEntityFeature } from "../data/lock";
 import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
@@ -56,10 +56,10 @@ class StateCardLock extends LitElement {
   private async _callService(ev) {
     ev.stopPropagation();
     const service = ev.target.dataset.service;
-    const data = {
-      entity_id: this.stateObj.entity_id,
-    };
-    await this.hass.callService("lock", service, data);
+    if (!this.hass || !this.stateObj) {
+      return;
+    }
+    await callProtectedLockService(this, this.hass, this.stateObj, service);
   }
 
   static get styles(): CSSResultGroup {

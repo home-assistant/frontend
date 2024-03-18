@@ -54,6 +54,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
+import { documentationUrl } from "../../../../../util/documentation-url";
 
 interface ThreadNetwork {
   name: string;
@@ -123,11 +124,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-                  <mwc-button @click=${this._addOTBR}
-                    >${this.hass.localize(
-                      "ui.panel.config.thread.add_open_thread_border_router"
-                    )}</mwc-button
+                  <a
+                    href=${documentationUrl(this.hass, `/integrations/thread`)}
+                    target="_blank"
                   >
+                    <mwc-button
+                      >${this.hass.localize(
+                        "ui.panel.config.thread.more_info"
+                      )}</mwc-button
+                    >
+                  </a>
                 </div>
               </ha-card>`}
           ${networks.networks.length

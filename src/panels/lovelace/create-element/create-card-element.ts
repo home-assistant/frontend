@@ -24,6 +24,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "entity-button",
   "glance",
   "grid",
+  "section",
   "light",
   "sensor",
   "thermostat",
@@ -44,6 +45,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-date-selection-card"),
   "energy-devices-graph": () =>
     import("../cards/energy/hui-energy-devices-graph-card"),
+  "energy-devices-detail-graph": () =>
+    import("../cards/energy/hui-energy-devices-detail-graph-card"),
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),

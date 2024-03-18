@@ -38,7 +38,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             message:
               this.hass!.localize("ui.notification_toast.starting") ||
               "Home Assistant is starting, not everything will be available until it is finished.",
-            duration: 0,
+            duration: -1,
             dismissable: false,
             action: {
               text:
@@ -97,7 +97,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       showToast(this, {
         message: "",
-        duration: 1,
+        duration: 0,
       });
     }
 
@@ -108,7 +108,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._disconnectedTimeout = undefined;
         showToast(this, {
           message: this.hass!.localize("ui.notification_toast.connection_lost"),
-          duration: 0,
+          duration: -1,
           dismissable: false,
         });
       }, 1000);
@@ -124,7 +124,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           message:
             this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
             `Wrapping up startup, not everything will be available until it is finished.`,
-          duration: 0,
+          duration: -1,
           dismissable: false,
           action: {
             text:
@@ -148,7 +148,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             integration: domainToName(this.hass!.localize, integration),
           }) ||
           `Starting ${integration}, not everything will be available until it is finished.`,
-        duration: 0,
+        duration: -1,
         dismissable: false,
         action: {
           text:

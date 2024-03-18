@@ -270,7 +270,7 @@ export class HcMain extends HassElement {
     }
 
     this._error = undefined;
-    if (msg.urlPath === "lovelace") {
+    if (msg.urlPath === "lovelace" || msg.urlPath === undefined) {
       msg.urlPath = null;
     }
     this._lovelacePath = msg.viewPath;

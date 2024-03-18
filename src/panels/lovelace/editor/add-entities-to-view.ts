@@ -1,5 +1,6 @@
 import { LovelacePanelConfig } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import {
   LovelaceConfig,
   fetchConfig,
@@ -15,6 +16,7 @@ export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
   hass: HomeAssistant,
   cardConfig: LovelaceCardConfig[],
+  sectionConfig?: LovelaceSectionConfig,
   entities?: string[]
 ) => {
   hass.loadFragmentTranslation("lovelace");
@@ -71,6 +73,7 @@ export const addEntitiesToLovelaceView = async (
       // all storage dashboards are generated, but we have YAML dashboards just show the YAML config
       showSuggestCardDialog(element, {
         cardConfig,
+        sectionConfig,
         entities,
         yaml: true,
       });
@@ -93,6 +96,7 @@ export const addEntitiesToLovelaceView = async (
   if (!storageDashs.length && lovelaceConfig.views.length === 1) {
     showSuggestCardDialog(element, {
       cardConfig,
+      sectionConfig,
       lovelaceConfig: lovelaceConfig!,
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
@@ -116,6 +120,7 @@ export const addEntitiesToLovelaceView = async (
     viewSelectedCallback: (newUrlPath, selectedDashConfig, viewIndex) => {
       showSuggestCardDialog(element, {
         cardConfig,
+        sectionConfig,
         lovelaceConfig: selectedDashConfig,
         saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
           try {

@@ -53,7 +53,7 @@ export const showOptionsFlowDialog = (
 
       renderAbortDescription(hass, step) {
         const description = hass.localize(
-          `component.${configEntry.domain}.options.abort.${step.reason}`,
+          `component.${step.translation_domain || configEntry.domain}.options.abort.${step.reason}`,
           step.description_placeholders
         );
 
@@ -71,7 +71,7 @@ export const showOptionsFlowDialog = (
       renderShowFormStepHeader(hass, step) {
         return (
           hass.localize(
-            `component.${configEntry.domain}.options.step.${step.step_id}.title`,
+            `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.title`,
             step.description_placeholders
           ) || hass.localize(`ui.dialogs.options_flow.form.header`)
         );
@@ -79,7 +79,7 @@ export const showOptionsFlowDialog = (
 
       renderShowFormStepDescription(hass, step) {
         const description = hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.description`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.description`,
           step.description_placeholders
         );
         return description
@@ -101,7 +101,7 @@ export const showOptionsFlowDialog = (
 
       renderShowFormStepFieldHelper(hass, step, field) {
         const description = hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`,
           step.description_placeholders
         );
         return description
@@ -112,7 +112,7 @@ export const showOptionsFlowDialog = (
       renderShowFormStepFieldError(hass, step, error) {
         return (
           hass.localize(
-            `component.${configEntry.domain}.options.error.${error}`,
+            `component.${step.translation_domain || configEntry.domain}.options.error.${error}`,
             step.description_placeholders
           ) || error
         );
@@ -159,7 +159,7 @@ export const showOptionsFlowDialog = (
 
       renderShowFormProgressDescription(hass, step) {
         const description = hass.localize(
-          `component.${configEntry.domain}.options.progress.${step.progress_action}`,
+          `component.${step.translation_domain || configEntry.domain}.options.progress.${step.progress_action}`,
           step.description_placeholders
         );
         return description
@@ -183,7 +183,7 @@ export const showOptionsFlowDialog = (
 
       renderMenuDescription(hass, step) {
         const description = hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.description`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.description`,
           step.description_placeholders
         );
         return description
@@ -199,7 +199,7 @@ export const showOptionsFlowDialog = (
 
       renderMenuOption(hass, step, option) {
         return hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.menu_options.${option}`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.menu_options.${option}`,
           step.description_placeholders
         );
       },

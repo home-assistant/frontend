@@ -647,6 +647,8 @@ export class HaVoiceCommandDialog extends LitElement {
           position: absolute;
           --mdc-icon-size: 16px;
           right: 5px;
+          inset-inline-end: 5px;
+          inset-inline-start: initial;
           top: 0px;
         }
 

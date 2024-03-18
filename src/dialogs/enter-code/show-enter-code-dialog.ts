@@ -10,7 +10,7 @@ export interface EnterCodeDialogParams {
   cancel?: () => void;
 }
 
-export const showEnterCodeDialogDialog = (
+export const showEnterCodeDialog = (
   element: HTMLElement,
   dialogParams: EnterCodeDialogParams
 ) =>

@@ -139,6 +139,7 @@ export interface DataEntryFlowDialogParams {
   }) => void;
   flowConfig: FlowConfig;
   showAdvanced?: boolean;
+  entryId?: string;
   dialogParentElement?: HTMLElement;
 }
 

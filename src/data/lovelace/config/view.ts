@@ -1,5 +1,6 @@
 import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
+import type { LovelaceSectionRawConfig } from "./section";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface ShowViewConfig {
@@ -23,6 +24,7 @@ export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   type?: string;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
+  sections?: LovelaceSectionRawConfig[];
 }
 
 export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {

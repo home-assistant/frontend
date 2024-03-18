@@ -188,7 +188,7 @@ export class HAFullCalendar extends LitElement {
                         </ha-icon-button-next>
                       </div>
                     </div>
-                    <div class="controls">
+                    <div class="controls buttons">
                       <mwc-button
                         outlined
                         class="today"
@@ -478,6 +478,16 @@ export class HAFullCalendar extends LitElement {
           justify-content: space-between;
           align-items: center;
           width: 100%;
+        }
+
+        .buttons {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .buttons > * {
+          margin-bottom: 5px;
+          box-sizing: border-box;
         }
 
         .today {

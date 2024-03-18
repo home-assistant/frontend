@@ -8,7 +8,7 @@ import "../../../components/ha-state-icon";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
-import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
+import { showEnterCodeDialog } from "../../enter-code/show-enter-code-dialog";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -22,7 +22,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
     let code: string | undefined;
 
     if (this.stateObj!.attributes.code_format) {
-      const response = await showEnterCodeDialogDialog(this, {
+      const response = await showEnterCodeDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
         title: this.hass.localize("ui.card.alarm_control_panel.disarm"),
         submitText: this.hass.localize("ui.card.alarm_control_panel.disarm"),

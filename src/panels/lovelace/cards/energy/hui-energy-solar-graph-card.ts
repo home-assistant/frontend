@@ -22,13 +22,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import {
-  hex2rgb,
-  lab2rgb,
-  rgb2hex,
-  rgb2lab,
-} from "../../../../common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../common/color/lab";
+import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -226,16 +220,12 @@ export class HuiEnergySolarGraphCard
     const datasets: ChartDataset<"bar" | "line">[] = [];
 
     const computedStyles = getComputedStyle(this);
-    const solarColor = computedStyles
-      .getPropertyValue("--energy-solar-color")
-      .trim();
 
     datasets.push(
       ...this._processDataSet(
         energyData.stats,
         energyData.statsMetadata,
         solarSources,
-        solarColor,
         computedStyles
       )
     );
@@ -257,7 +247,6 @@ export class HuiEnergySolarGraphCard
           energyData.statsCompare,
           energyData.statsMetadata,
           solarSources,
-          solarColor,
           computedStyles,
           true
         )
@@ -292,28 +281,12 @@ export class HuiEnergySolarGraphCard
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
     solarSources: SolarSourceTypeEnergyPreference[],
-    solarColor: string,
     computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     solarSources.forEach((source, idx) => {
-      let borderColor = computedStyles
-        .getPropertyValue("--energy-solar-color-" + idx)
-        .trim();
-      if (borderColor.length === 0) {
-        const modifiedColor =
-          idx > 0
-            ? this.hass.themes.darkMode
-              ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
-              : labDarken(rgb2lab(hex2rgb(solarColor)), idx)
-            : undefined;
-        borderColor = modifiedColor
-          ? rgb2hex(lab2rgb(modifiedColor))
-          : solarColor;
-      }
-
       let prevStart: number | null = null;
 
       const solarProductionData: ScatterDataPoint[] = [];
@@ -357,8 +330,22 @@ export class HuiEnergySolarGraphCard
             ),
           }
         ),
-        borderColor: compare ? borderColor + "7F" : borderColor,
-        backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
+        borderColor: getEnergyColor(
+          computedStyles,
+          this.hass.themes.darkMode,
+          false,
+          compare,
+          "--energy-solar-color",
+          idx
+        ),
+        backgroundColor: getEnergyColor(
+          computedStyles,
+          this.hass.themes.darkMode,
+          true,
+          compare,
+          "--energy-solar-color",
+          idx
+        ),
         data: solarProductionData,
         order: 1,
         stack: "solar",

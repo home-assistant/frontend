@@ -939,9 +939,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <ha-switch
           .checked=${!this._disabledBy && !this._hiddenBy}
-          .disabled=${this.disabled ||
-          this._disabledBy ||
-          (this._hiddenBy && this._hiddenBy !== "user")}
+          .disabled=${this.disabled || this._disabledBy}
           @change=${this._hiddenChanged}
         ></ha-switch>
       </ha-settings-row>

@@ -49,7 +49,7 @@ export class TimeLineScale extends TimeScale {
     max = isFinite(max) && !isNaN(max) ? max : +adapter.endOf(Date.now(), unit);
 
     // Make sure that max is strictly higher than min (required by the lookup table)
-    this.min = Math.min(min, max - 1);
-    this.max = Math.max(min + 1, max);
+    this.min = adapter.parse(options.min, this) ?? Math.min(min, max - 1);
+    this.max = adapter.parse(options.max, this) ?? Math.max(min + 1, max);
   }
 }

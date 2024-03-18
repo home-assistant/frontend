@@ -127,9 +127,11 @@ export class HaControlButton extends LitElement {
           opacity 180ms ease-in-out;
         opacity: var(--control-button-background-opacity);
       }
-      .button ::slotted(*) {
+      .button {
         transition: color 180ms ease-in-out;
         color: var(--control-button-icon-color);
+      }
+      .button ::slotted(*) {
         pointer-events: none;
       }
       .button:disabled {

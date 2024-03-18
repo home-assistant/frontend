@@ -8,12 +8,14 @@ import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_f
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreaFilterValue } from "../../../components/ha-area-filter";
+import { areaCompare } from "../../../data/area_registry";
 import {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { computeUserInitials } from "../../../data/user";
 import { HomeAssistant } from "../../../types";
@@ -25,10 +27,10 @@ import {
   PictureCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
+  TileCardConfig,
 } from "../cards/types";
 import { EntityConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
-import { areaCompare } from "../../../data/area_registry";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -99,6 +101,24 @@ const splitByAreaDevice = (
     otherEntities: allEntities,
   };
 };
+
+export const computeSection = (
+  entityIds: string[],
+  sectionOptions?: Partial<LovelaceSectionConfig>
+): LovelaceSectionConfig => ({
+  type: "grid",
+  cards: entityIds.map(
+    (entity) =>
+      ({
+        type: "tile",
+        entity,
+        show_entity_picture:
+          ["person", "camera", "image"].includes(computeDomain(entity)) ||
+          undefined,
+      }) as TileCardConfig
+  ),
+  ...sectionOptions,
+});
 
 export const computeCards = (
   states: HassEntities,

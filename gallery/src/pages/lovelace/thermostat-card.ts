@@ -46,7 +46,9 @@ const ENTITIES = [
     friendly_name: "Sensibo purifier",
     fan_modes: ["low", "high"],
     fan_mode: "low",
-    supported_features: 9,
+    swing_modes: ["on", "off", "both", "vertical", "horizontal"],
+    swing_mode: "vertical",
+    supported_features: 41,
   }),
   getEntity("climate", "unavailable", "unavailable", {
     supported_features: 43,
@@ -85,6 +87,14 @@ const CONFIGS = [
       fan_modes:
         - low
         - high
+    - type: climate-swing-modes
+      style: icons
+      swing_modes:
+        - 'on'
+        - 'off'
+        - 'both'
+        - 'vertical'
+        - 'horizontal'
     `,
   },
   {

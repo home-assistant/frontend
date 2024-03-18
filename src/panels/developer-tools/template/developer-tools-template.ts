@@ -290,6 +290,8 @@ class HaPanelDevTemplate extends LitElement {
           position: absolute;
           top: 8px;
           right: 8px;
+          inset-inline-end: 8px;
+          inset-inline-start: initial;
         }
 
         ha-alert {

@@ -16,6 +16,8 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @property({ attribute: false }) public stateOverride?: string;
 
+  @property({ attribute: false }) public changedOverride?: number;
+
   @state() private _absoluteTime = false;
 
   private _localizeState(): TemplateResult | string {
@@ -50,13 +52,13 @@ export class HaMoreInfoStateHeader extends LitElement {
           ? html`
               <ha-absolute-time
                 .hass=${this.hass}
-                .datetime=${this.stateObj.last_changed}
+                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
               ></ha-absolute-time>
             `
           : html`
               <ha-relative-time
                 .hass=${this.hass}
-                .datetime=${this.stateObj.last_changed}
+                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
             `}

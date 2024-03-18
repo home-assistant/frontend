@@ -21,7 +21,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { AlarmModesCardFeatureConfig } from "./types";
-import { showEnterCodeDialogDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
+import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -131,7 +131,7 @@ class HuiAlarmModeCardFeature
     ) {
       const disarm = mode === "disarmed";
 
-      const response = await showEnterCodeDialogDialog(this, {
+      const response = await showEnterCodeDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
         title: this.hass!.localize(
           `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`

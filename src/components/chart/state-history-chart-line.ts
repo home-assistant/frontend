@@ -111,7 +111,7 @@ export class StateHistoryChartLine extends LitElement {
                 config: this.hass.config,
               },
             },
-            suggestedMin: this.startTime,
+            min: this.startTime,
             suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,

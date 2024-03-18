@@ -39,32 +39,51 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html`<ha-circular-progress
-                  indeterminate
-                ></ha-circular-progress>`
+              ? html`
+                  <ha-circular-progress indeterminate></ha-circular-progress>
+                `
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`
                       ${conf.name}
                       <small>
-                        <a target="_blank" href=${conf.authorUrl}>
-                          ${this.hass.localize(
-                            "ui.panel.page-demo.cards.demo.demo_by",
-                            { name: conf.authorName }
-                          )}
-                        </a>
+                        ${this.hass.localize(
+                          "ui.panel.page-demo.cards.demo.demo_by",
+                          {
+                            name: html`
+                              <a target="_blank" href=${conf.authorUrl}>
+                                ${conf.authorName}
+                              </a>
+                            `,
+                          }
+                        )}
                       </small>
                     `
                   ),
                   ""
                 )}
           </div>
+
           <mwc-button @click=${this._nextConfig} .disabled=${this._switching}>
             ${this.hass.localize("ui.panel.page-demo.cards.demo.next_demo")}
           </mwc-button>
         </div>
-        <div class="content small-hidden">
-          ${this.hass.localize("ui.panel.page-demo.cards.demo.introduction")}
+        <div class="content">
+          <p class="small-hidden">
+            ${this.hass.localize("ui.panel.page-demo.cards.demo.introduction")}
+          </p>
+          ${until(
+            selectedDemoConfig.then((conf) => {
+              if (typeof conf.description === "function") {
+                return conf.description(this.hass.localize);
+              }
+              if (conf.description) {
+                return html`<p>${conf.description}</p>`;
+              }
+              return nothing;
+            }),
+            nothing
+          )}
         </div>
         <div class="actions small-hidden">
           <a href="https://www.home-assistant.io" target="_blank">
@@ -108,6 +127,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
       css`
         a {
           color: var(--primary-color);
+          display: inline-block;
         }
 
         .actions a {
@@ -115,7 +135,11 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .content {
-          padding: 16px;
+          padding: 0 16px;
+        }
+
+        .content p {
+          margin: 16px 0;
         }
 
         .picker {
@@ -138,9 +162,8 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .actions {
-          padding-left: 8px;
+          padding: 0px 8px 4px 8px;
         }
-
         @media only screen and (max-width: 500px) {
           .small-hidden {
             display: none;

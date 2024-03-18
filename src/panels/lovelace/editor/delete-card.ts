@@ -1,22 +1,29 @@
-import { isStrategyView } from "../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showDeleteSuccessToast } from "../../../util/toast-deleted-success";
 import { Lovelace } from "../types";
 import { showDeleteCardDialog } from "./card-editor/show-delete-card-dialog";
 import { deleteCard, insertCard } from "./config-util";
+import {
+  LovelaceCardPath,
+  findLovelaceContainer,
+  getLovelaceContainerPath,
+  parseLovelaceCardPath,
+} from "./lovelace-path";
 
 export async function confDeleteCard(
   element: HTMLElement,
   hass: HomeAssistant,
   lovelace: Lovelace,
-  path: [number, number]
+  path: LovelaceCardPath
 ): Promise<void> {
-  const view = lovelace.config.views[path[0]];
-  if (isStrategyView(view)) {
-    throw new Error("Deleting cards in a strategy view is not supported.");
+  const containerPath = getLovelaceContainerPath(path);
+  const { cardIndex } = parseLovelaceCardPath(path);
+  const containerConfig = findLovelaceContainer(lovelace.config, containerPath);
+  if ("strategy" in containerConfig) {
+    throw new Error("Deleting cards in a strategy is not supported.");
   }
-  const cardConfig = view.cards![path[1]];
+  const cardConfig = containerConfig.cards![cardIndex];
   showDeleteCardDialog(element, {
     cardConfig,
     deleteCard: async () => {

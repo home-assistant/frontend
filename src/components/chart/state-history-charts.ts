@@ -233,16 +233,32 @@ export class StateHistoryCharts extends LitElement {
           new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
         );
       } else {
-        this._computedStartTime = new Date(
-          (this.historyData?.timeline ?? []).reduce(
-            (minTime, stateInfo) =>
-              Math.min(
-                minTime,
-                new Date(stateInfo.data[0].last_changed).getTime()
-              ),
-            new Date().getTime()
-          )
+        let minTimeAll = (this.historyData?.timeline ?? []).reduce(
+          (minTime, stateInfo) =>
+            Math.min(
+              minTime,
+              new Date(stateInfo.data[0].last_changed).getTime()
+            ),
+          new Date().getTime()
         );
+
+        minTimeAll = (this.historyData?.line ?? []).reduce(
+          (minTimeLine, line) =>
+            Math.min(
+              minTimeLine,
+              line.data.reduce(
+                (minTimeData, data) =>
+                  Math.min(
+                    minTimeData,
+                    new Date(data.states[0].last_changed).getTime()
+                  ),
+                minTimeLine
+              )
+            ),
+          minTimeAll
+        );
+
+        this._computedStartTime = new Date(minTimeAll);
       }
     }
   }

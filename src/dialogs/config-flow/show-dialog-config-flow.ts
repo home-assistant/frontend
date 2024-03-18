@@ -23,7 +23,7 @@ export const showConfigFlowDialog = (
     loadDevicesAndAreas: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createConfigFlow(hass, handler),
+        createConfigFlow(hass, handler, dialogParams.entryId),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
@@ -44,7 +44,7 @@ export const showConfigFlowDialog = (
 
     renderAbortDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.abort.${step.reason}`,
+        `component.${step.translation_domain || step.handler}.config.abort.${step.reason}`,
         step.description_placeholders
       );
 
@@ -58,7 +58,7 @@ export const showConfigFlowDialog = (
     renderShowFormStepHeader(hass, step) {
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.title`,
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.title`,
           step.description_placeholders
         ) || hass.localize(`component.${step.handler}.title`)
       );
@@ -66,7 +66,7 @@ export const showConfigFlowDialog = (
 
     renderShowFormStepDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.description`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.description`,
         step.description_placeholders
       );
       return description
@@ -84,7 +84,7 @@ export const showConfigFlowDialog = (
 
     renderShowFormStepFieldHelper(hass, step, field) {
       const description = hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.data_description.${field.name}`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.data_description.${field.name}`,
         step.description_placeholders
       );
       return description
@@ -95,7 +95,7 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldError(hass, step, error) {
       return (
         hass.localize(
-          `component.${step.handler}.config.error.${error}`,
+          `component.${step.translation_domain || step.translation_domain || step.handler}.config.error.${error}`,
           step.description_placeholders
         ) || error
       );
@@ -131,7 +131,7 @@ export const showConfigFlowDialog = (
 
     renderExternalStepDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.${step.step_id}.description`,
+        `component.${step.translation_domain || step.handler}.config.${step.step_id}.description`,
         step.description_placeholders
       );
 
@@ -155,7 +155,7 @@ export const showConfigFlowDialog = (
 
     renderCreateEntryDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.create_entry.${
+        `component.${step.translation_domain || step.handler}.config.create_entry.${
           step.description || "default"
         }`,
         step.description_placeholders
@@ -190,7 +190,7 @@ export const showConfigFlowDialog = (
 
     renderShowFormProgressDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.progress.${step.progress_action}`,
+        `component.${step.translation_domain || step.handler}.config.progress.${step.progress_action}`,
         step.description_placeholders
       );
       return description
@@ -210,7 +210,7 @@ export const showConfigFlowDialog = (
 
     renderMenuDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.description`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.description`,
         step.description_placeholders
       );
       return description
@@ -222,7 +222,7 @@ export const showConfigFlowDialog = (
 
     renderMenuOption(hass, step, option) {
       return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.menu_options.${option}`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.menu_options.${option}`,
         step.description_placeholders
       );
     },

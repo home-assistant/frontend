@@ -156,6 +156,7 @@ class HaClimateState extends LitElement {
 
       .current {
         color: var(--secondary-text-color);
+        direction: var(--direction);
       }
 
       .state-label {

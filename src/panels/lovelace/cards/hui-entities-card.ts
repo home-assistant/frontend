@@ -297,9 +297,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
       (!("type" in entityConf) || entityConf.type === "conditional") &&
-        this._config!.state_color
+        "state_color" in this._config!
         ? ({
-            state_color: true,
+            state_color: this._config.state_color,
             ...(entityConf as EntityConfig),
           } as EntityConfig)
         : entityConf

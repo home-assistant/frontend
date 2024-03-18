@@ -418,15 +418,24 @@ export class HuiAreaCard
         })}
       >
         ${area.picture || cameraEntityId
-          ? html`<hui-image
-              .config=${this._config}
-              .hass=${this.hass}
-              .image=${area.picture ? area.picture : undefined}
-              .cameraImage=${cameraEntityId}
-              .cameraView=${this._config.camera_view}
-              .aspectRatio=${this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
-            ></hui-image>`
-          : ""}
+          ? html`
+              <hui-image
+                .config=${this._config}
+                .hass=${this.hass}
+                .image=${area.picture ? area.picture : undefined}
+                .cameraImage=${cameraEntityId}
+                .cameraView=${this._config.camera_view}
+                .aspectRatio=${this._config.aspect_ratio ||
+                DEFAULT_ASPECT_RATIO}
+              ></hui-image>
+            `
+          : area.icon
+            ? html`
+                <div class="icon-container">
+                  <ha-icon icon=${area.icon}></ha-icon>
+                </div>
+              `
+            : nothing}
 
         <div
           class="container ${classMap({
@@ -557,6 +566,22 @@ export class HuiAreaCard
         height: 100%;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
+      }
+
+      .icon-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-container ha-icon {
+        --mdc-icon-size: 60px;
+        color: var(--sidebar-selected-icon-color);
       }
 
       .sensors {

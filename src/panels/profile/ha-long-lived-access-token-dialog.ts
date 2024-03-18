@@ -74,7 +74,9 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
               ? this._qrCode
               : html`
                   <mwc-button @click=${this._generateQR}>
-                    Generate QR code
+                    ${this.hass.localize(
+                      "ui.panel.profile.long_lived_access_tokens.generate_qr_code"
+                    )}
                   </mwc-button>
                 `}
           </div>

@@ -12,14 +12,8 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import {
-  hex2rgb,
-  lab2rgb,
-  rgb2hex,
-  rgb2lab,
-} from "../../../../common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatNumber } from "../../../../common/number/format_number";
+import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
 import {
   EnergyData,
@@ -37,6 +31,16 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySourcesTableCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+
+const colorPropertyMap = {
+  grid_return: "--energy-grid-return-color",
+  grid_consumption: "--energy-grid-consumption-color",
+  battery_in: "--energy-battery-in-color",
+  battery_out: "--energy-battery-out-color",
+  solar: "--energy-solar-color",
+  gas: "--energy-gas-color",
+  water: "--energy-water-color",
+};
 
 @customElement("hui-energy-sources-table-card")
 export class HuiEnergySourcesTableCard
@@ -77,27 +81,6 @@ export class HuiEnergySourcesTableCard
     );
   }
 
-  private _getColor(
-    computedStyles: CSSStyleDeclaration,
-    propertyName: string,
-    baseColor: string,
-    idx: number
-  ): string {
-    let color = computedStyles
-      .getPropertyValue(propertyName + "-" + idx)
-      .trim();
-    if (color.length === 0) {
-      const modifiedColor =
-        idx > 0
-          ? this.hass.themes.darkMode
-            ? labBrighten(rgb2lab(hex2rgb(baseColor)), idx)
-            : labDarken(rgb2lab(hex2rgb(baseColor)), idx)
-          : undefined;
-      color = modifiedColor ? rgb2hex(lab2rgb(modifiedColor)) : baseColor;
-    }
-    return color;
-  }
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -133,38 +116,7 @@ export class HuiEnergySourcesTableCard
 
     const types = energySourcesByType(this._data.prefs);
 
-    const colorPropertyMap = {
-      grid_return: "--energy-grid-return-color",
-      grid_consumption: "--energy-grid-consumption-color",
-      battery_in: "--energy-battery-in-color",
-      battery_out: "--energy-battery-out-color",
-      solar: "--energy-solar-color",
-      gas: "--energy-gas-color",
-      water: "--energy-water-color",
-    };
-
     const computedStyles = getComputedStyle(this);
-    const solarColor = computedStyles
-      .getPropertyValue(colorPropertyMap.solar)
-      .trim();
-    const batteryFromColor = computedStyles
-      .getPropertyValue(colorPropertyMap.battery_out)
-      .trim();
-    const batteryToColor = computedStyles
-      .getPropertyValue(colorPropertyMap.battery_in)
-      .trim();
-    const returnColor = computedStyles
-      .getPropertyValue(colorPropertyMap.grid_return)
-      .trim();
-    const consumptionColor = computedStyles
-      .getPropertyValue(colorPropertyMap.grid_consumption)
-      .trim();
-    const gasColor = computedStyles
-      .getPropertyValue(colorPropertyMap.gas)
-      .trim();
-    const waterColor = computedStyles
-      .getPropertyValue(colorPropertyMap.water)
-      .trim();
 
     const showCosts =
       types.grid?.[0].flow_from.some(
@@ -273,20 +225,27 @@ export class HuiEnergySourcesTableCard
                   0;
                 totalSolarCompare += compareEnergy;
 
-                const color = this._getColor(
-                  computedStyles,
-                  colorPropertyMap.solar,
-                  solarColor,
-                  idx
-                );
-
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: color,
-                        backgroundColor: color + "7F",
+                        borderColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          false,
+                          false,
+                          colorPropertyMap.solar,
+                          idx
+                        ),
+                        backgroundColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          true,
+                          false,
+                          colorPropertyMap.solar,
+                          idx
+                        ),
                       })}
                     ></div>
                   </td>
@@ -371,26 +330,27 @@ export class HuiEnergySourcesTableCard
                   0;
                 totalBatteryCompare += energyFromCompare - energyToCompare;
 
-                const fromColor = this._getColor(
-                  computedStyles,
-                  colorPropertyMap.battery_out,
-                  batteryFromColor,
-                  idx
-                );
-                const toColor = this._getColor(
-                  computedStyles,
-                  colorPropertyMap.battery_in,
-                  batteryToColor,
-                  idx
-                );
-
                 return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: fromColor,
-                          backgroundColor: fromColor + "7F",
+                          borderColor: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            false,
+                            false,
+                            colorPropertyMap.battery_out,
+                            idx
+                          ),
+                          backgroundColor: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            true,
+                            false,
+                            colorPropertyMap.battery_out,
+                            idx
+                          ),
                         })}
                       ></div>
                     </td>
@@ -426,8 +386,22 @@ export class HuiEnergySourcesTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: toColor,
-                          backgroundColor: toColor + "7F",
+                          borderColor: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            false,
+                            false,
+                            colorPropertyMap.battery_in,
+                            idx
+                          ),
+                          backgroundColor: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            true,
+                            false,
+                            colorPropertyMap.battery_in,
+                            idx
+                          ),
                         })}
                       ></div>
                     </td>
@@ -534,20 +508,27 @@ export class HuiEnergySourcesTableCard
                       totalGridCostCompare += costCompare;
                     }
 
-                    const color = this._getColor(
-                      computedStyles,
-                      colorPropertyMap.grid_consumption,
-                      consumptionColor,
-                      idx
-                    );
-
                     return html`<tr class="mdc-data-table__row">
                       <td class="mdc-data-table__cell cell-bullet">
                         <div
                           class="bullet"
                           style=${styleMap({
-                            borderColor: color,
-                            backgroundColor: color + "7F",
+                            borderColor: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              false,
+                              false,
+                              colorPropertyMap.grid_consumption,
+                              idx
+                            ),
+                            backgroundColor: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              true,
+                              false,
+                              colorPropertyMap.grid_consumption,
+                              idx
+                            ),
                           })}
                         ></div>
                       </td>
@@ -638,20 +619,27 @@ export class HuiEnergySourcesTableCard
                       totalGridCostCompare += costCompare;
                     }
 
-                    const color = this._getColor(
-                      computedStyles,
-                      colorPropertyMap.grid_return,
-                      returnColor,
-                      idx
-                    );
-
                     return html`<tr class="mdc-data-table__row">
                       <td class="mdc-data-table__cell cell-bullet">
                         <div
                           class="bullet"
                           style=${styleMap({
-                            borderColor: color,
-                            backgroundColor: color + "7F",
+                            borderColor: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              false,
+                              false,
+                              colorPropertyMap.grid_return,
+                              idx
+                            ),
+                            backgroundColor: getEnergyColor(
+                              computedStyles,
+                              this.hass.themes.darkMode,
+                              true,
+                              false,
+                              colorPropertyMap.grid_return,
+                              idx
+                            ),
                           })}
                         ></div>
                       </td>
@@ -794,20 +782,27 @@ export class HuiEnergySourcesTableCard
                   totalGasCostCompare += costCompare;
                 }
 
-                const color = this._getColor(
-                  computedStyles,
-                  colorPropertyMap.gas,
-                  gasColor,
-                  idx
-                );
-
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: color,
-                        backgroundColor: color + "7F",
+                        borderColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          false,
+                          false,
+                          colorPropertyMap.gas,
+                          idx
+                        ),
+                        backgroundColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          true,
+                          false,
+                          colorPropertyMap.gas,
+                          idx
+                        ),
                       })}
                     ></div>
                   </td>
@@ -945,20 +940,27 @@ export class HuiEnergySourcesTableCard
                   totalWaterCostCompare += costCompare;
                 }
 
-                const color = this._getColor(
-                  computedStyles,
-                  colorPropertyMap.water,
-                  waterColor,
-                  idx
-                );
-
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: color,
-                        backgroundColor: color + "7F",
+                        borderColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          false,
+                          false,
+                          colorPropertyMap.water,
+                          idx
+                        ),
+                        backgroundColor: getEnergyColor(
+                          computedStyles,
+                          this.hass.themes.darkMode,
+                          true,
+                          false,
+                          colorPropertyMap.water,
+                          idx
+                        ),
                       })}
                     ></div>
                   </td>

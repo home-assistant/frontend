@@ -171,12 +171,18 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
         ha-icon-button {
           position: absolute;
           right: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
           top: 10px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
           text-decoration: none;
           color: var(--primary-text-color);
         }
         h2 {
           margin: 18px 42px 0 18px;
+          margin-inline-start: 18px;
+          margin-inline-end: 42px;
           color: var(--primary-text-color);
         }
         ha-expansion-panel {

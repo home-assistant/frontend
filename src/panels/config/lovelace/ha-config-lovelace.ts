@@ -8,9 +8,16 @@ import { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
   {
-    component: "lovelace",
     path: "/config/lovelace/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
+    iconPath: mdiViewDashboard,
+  },
+];
+
+export const lovelaceResourcesTabs = [
+  {
+    path: "/config/lovelace/resources",
+    translationKey: "ui.panel.config.lovelace.resources.caption",
     iconPath: mdiViewDashboard,
   },
 ];

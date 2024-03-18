@@ -97,7 +97,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                   ? html`<p>
                       ${this.hass.localize(
                         "ui.panel.profile.mfa_setup.step_done",
-                        { step: this._step.title }
+                        { step: this._step.title || this._step.handler }
                       )}
                     </p>`
                   : this._step.type === "form"
