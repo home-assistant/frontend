@@ -149,7 +149,7 @@ export class HaStateControlCoverToggle extends LitElement {
       .buttons {
         display: flex;
         flex-direction: column;
-        width: 100px;
+        width: 130px;
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
@@ -159,7 +159,7 @@ export class HaStateControlCoverToggle extends LitElement {
       ha-control-button {
         flex: 1;
         width: 100%;
-        --control-button-border-radius: 18px;
+        --control-button-border-radius: 48px;
         --mdc-icon-size: 24px;
       }
       ha-control-button.active {
