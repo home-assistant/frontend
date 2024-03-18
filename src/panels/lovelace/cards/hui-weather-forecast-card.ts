@@ -12,6 +12,9 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
+import { endOfDay, endOfToday, startOfDay, startOfToday } from "date-fns";
+import memoizeOne from "memoize-one";
+import { HassConfig } from "home-assistant-js-websocket";
 import "../../../components/chart/ha-chart-base";
 
 import { customElement, property, state } from "lit/decorators";
@@ -28,7 +31,9 @@ import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import {
+  ForecastAttribute,
   ForecastEvent,
+  ForecastType,
   WeatherEntity,
   getForecast,
   getSecondaryWeatherAttribute,
@@ -53,6 +58,7 @@ import { getEnergyColor } from "./energy/common/color";
 
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { getCommonOptions } from "./energy/common/energy-chart-options";
+import { FrontendLocaleData } from "../../../data/translation";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard
@@ -252,70 +258,40 @@ class HuiWeatherForecastCard
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this._config.name ?? computeStateName(stateObj);
 
-    const precipData: ScatterDataPoint[] = [];
-    // Array<
-    //   ChartDataset<"bar", ParsedDataType<"bar">>["data"]
-    // > = [];
-    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [
-      {
-        label: "precip",
-        data: precipData,
-        borderColor: getEnergyColor(
-          getComputedStyle(this),
-          this.hass.themes.darkMode,
-          false,
-          false,
-          "--energy-water-color"
-        ),
-        backgroundColor: getEnergyColor(
-          getComputedStyle(this),
-          this.hass.themes.darkMode,
-          true,
-          false,
-          "--energy-water-color"
-        ),
-      },
-    ];
+    const precipitationForecast =
+      this._config?.show_forecast !== false && forecastData?.forecast?.length
+        ? forecastData.forecast.slice(0, hourly ? 24 : undefined)
+        : [];
+
+    let showPrecipitationForecast = false;
 
     const _chartData: ChartData = {
       datasets: [],
     };
-    let _config: ChartOptions = {};
 
-    if (forecastData) {
-      const forecastSplit = forecastData?.forecast || [];
-      forecastSplit.forEach((forecastEntry) => {
-        precipData.push({
-          x: new Date(forecastEntry.datetime).getTime(),
-          y: forecastEntry.precipitation!,
-        });
-      });
-
-      _chartData.datasets = datasets;
-
-      const commonOptions = getCommonOptions(
-        new Date(forecastSplit[0].datetime),
-        new Date(forecastSplit[forecastSplit.length - 1].datetime),
-        this.hass.locale,
-        this.hass.config,
-        "mm"
+    let _start: Date;
+    let _end: Date;
+    if (precipitationForecast.length) {
+      _start = this._findPrecipitationForecastStart(
+        precipitationForecast,
+        forecastData!.type
+      );
+      _end = this._findPrecipitationForecastEnd(
+        precipitationForecast,
+        forecastData!.type
+      );
+      const _precipitationChartDataset = this._processPrecipitationForecast(
+        precipitationForecast,
+        forecastData!.type
       );
 
-      _config = {
-        ...commonOptions,
-        interaction: {
-          ...commonOptions.interaction,
-          intersect: false,
-        },
-        plugins: {
-          ...commonOptions.plugins,
-          tooltip: {
-            ...commonOptions.plugins!.tooltip,
-            filter: undefined,
-          },
-        },
-      };
+      _chartData.datasets = _precipitationChartDataset;
+      if (_precipitationChartDataset[0].data.length !== 0) {
+        showPrecipitationForecast = true;
+      }
     }
+
+    const _unit = getWeatherUnit(this.hass.config, stateObj, "precipitation");
 
     return html`
       <ha-card
@@ -489,15 +465,129 @@ class HuiWeatherForecastCard
               </div>
             `
           : ""}
-
-        <ha-chart-base
-          .hass=${this.hass}
-          .data=${_chartData}
-          .options=${_config}
-          chart-type="bar"
-        ></ha-chart-base>
+        ${showPrecipitationForecast
+          ? html`
+              <ha-chart-base
+                .hass=${this.hass}
+                .data=${_chartData}
+                .options=${this._createOptions(
+                  _start!,
+                  _end!,
+                  this.hass.locale,
+                  this.hass.config,
+                  _unit
+                )}
+                chart-type="bar"
+              >
+              </ha-chart-base>
+            `
+          : ""}
       </ha-card>
     `;
+  }
+
+  private _createOptions = memoizeOne(
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      config: HassConfig,
+      unit?: string
+    ): ChartOptions => {
+      const commonOptions = getCommonOptions(start, end, locale, config, unit);
+      const options: ChartOptions = {
+        ...commonOptions,
+        interaction: {
+          ...commonOptions.interaction,
+          intersect: false,
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            ...commonOptions.plugins!.tooltip,
+            filter: undefined,
+          },
+        },
+      };
+      return options;
+    }
+  );
+
+  private _findPrecipitationForecastStart(
+    precipitationForecast: ForecastAttribute[],
+    forecast_type: ForecastType
+  ) {
+    const _start = precipitationForecast.length
+      ? forecast_type === "daily"
+        ? startOfDay(new Date(precipitationForecast[0].datetime))
+        : new Date(precipitationForecast[0].datetime)
+      : startOfToday();
+
+    return _start;
+  }
+
+  private _findPrecipitationForecastEnd(
+    precipitationForecast: ForecastAttribute[],
+    forecast_type: ForecastType
+  ) {
+    const _end = precipitationForecast.length
+      ? forecast_type === "daily"
+        ? endOfDay(
+            new Date(
+              precipitationForecast[precipitationForecast.length - 1].datetime
+            )
+          )
+        : new Date(
+            precipitationForecast[precipitationForecast.length - 1].datetime
+          )
+      : endOfToday();
+
+    return _end;
+  }
+
+  private _processPrecipitationForecast(
+    precipitationForecast: ForecastAttribute[],
+    forecast_type: ForecastType
+  ) {
+    const precipitationChartData: ScatterDataPoint[] = [];
+
+    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [
+      {
+        label: "precip",
+        data: precipitationChartData,
+        borderColor: getEnergyColor(
+          getComputedStyle(this),
+          this.hass!.themes.darkMode,
+          false,
+          false,
+          "--energy-water-color"
+        ),
+        backgroundColor: getEnergyColor(
+          getComputedStyle(this),
+          this.hass!.themes.darkMode,
+          true,
+          false,
+          "--energy-water-color"
+        ),
+      },
+    ];
+
+    if (precipitationForecast.length !== 0) {
+      precipitationForecast.forEach((forecastEntry) => {
+        if (!forecastEntry.precipitation) {
+          return;
+        }
+        precipitationChartData.push({
+          x:
+            forecast_type === "daily"
+              ? startOfDay(new Date(forecastEntry.datetime)).getTime()
+              : new Date(forecastEntry.datetime).getTime(),
+          y: forecastEntry.precipitation,
+        });
+      });
+    }
+
+    return datasets;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
