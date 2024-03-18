@@ -6,6 +6,14 @@ import {
   html,
   nothing,
 } from "lit";
+import {
+  ChartData,
+  ChartDataset,
+  ChartOptions,
+  ScatterDataPoint,
+} from "chart.js";
+import "../../../components/chart/ha-chart-base";
+
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
@@ -41,9 +49,16 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
+import { getEnergyColor } from "./energy/common/color";
+
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { getCommonOptions } from "./energy/common/energy-chart-options";
 
 @customElement("hui-weather-forecast-card")
-class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
+class HuiWeatherForecastCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-weather-forecast-card-editor");
     return document.createElement("hui-weather-forecast-card-editor");
@@ -237,6 +252,71 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this._config.name ?? computeStateName(stateObj);
 
+    const precipData: ScatterDataPoint[] = [];
+    // Array<
+    //   ChartDataset<"bar", ParsedDataType<"bar">>["data"]
+    // > = [];
+    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [
+      {
+        label: "precip",
+        data: precipData,
+        borderColor: getEnergyColor(
+          getComputedStyle(this),
+          this.hass.themes.darkMode,
+          false,
+          false,
+          "--energy-water-color"
+        ),
+        backgroundColor: getEnergyColor(
+          getComputedStyle(this),
+          this.hass.themes.darkMode,
+          true,
+          false,
+          "--energy-water-color"
+        ),
+      },
+    ];
+
+    const _chartData: ChartData = {
+      datasets: [],
+    };
+    let _config: ChartOptions = {};
+
+    if (forecastData) {
+      const forecastSplit = forecastData?.forecast || [];
+      forecastSplit.forEach((forecastEntry) => {
+        precipData.push({
+          x: new Date(forecastEntry.datetime).getTime(),
+          y: forecastEntry.precipitation!,
+        });
+      });
+
+      _chartData.datasets = datasets;
+
+      const commonOptions = getCommonOptions(
+        new Date(forecastSplit[0].datetime),
+        new Date(forecastSplit[forecastSplit.length - 1].datetime),
+        this.hass.locale,
+        this.hass.config,
+        "mm"
+      );
+
+      _config = {
+        ...commonOptions,
+        interaction: {
+          ...commonOptions.interaction,
+          intersect: false,
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            ...commonOptions.plugins!.tooltip,
+            filter: undefined,
+          },
+        },
+      };
+    }
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -409,6 +489,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
               </div>
             `
           : ""}
+
+        <ha-chart-base
+          .hass=${this.hass}
+          .data=${_chartData}
+          .options=${_config}
+          chart-type="bar"
+        ></ha-chart-base>
       </ha-card>
     `;
   }
