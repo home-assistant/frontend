@@ -13,7 +13,7 @@ class HaPushNotificationsRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
-    const platformLoaded = isComponentLoaded(this.hass, "notify.html5");
+    const platformLoaded = isComponentLoaded(this.hass, "html5.notify");
     let descriptionKey:
       | "error_use_https"
       | "error_load_platform"
