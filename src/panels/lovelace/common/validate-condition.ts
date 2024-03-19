@@ -56,18 +56,9 @@ export interface AndCondition extends BaseCondition {
   conditions?: Condition[];
 }
 
-function getValueFromEntityId(
-  hass: HomeAssistant,
-  value: string | string[]
-): string | string[] {
-  if (
-    typeof value === "string" &&
-    isValidEntityId(value) &&
-    hass.states[value]
-  ) {
-    value = hass.states[value]?.state;
-  } else if (Array.isArray(value)) {
-    value = value.map((v) => getValueFromEntityId(hass, v) as string);
+function getValueFromEntityId(hass: HomeAssistant, value: string): string {
+  if (isValidEntityId(value) && hass.states[value]) {
+    return hass.states[value]?.state;
   }
   return value;
 }
@@ -83,8 +74,11 @@ function checkStateCondition(
   let value = condition.state ?? condition.state_not;
 
   // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (Array.isArray(value) || typeof value === "string") {
+  if (typeof value === "string") {
     value = getValueFromEntityId(hass, value);
+  }
+  if (Array.isArray(value)) {
+    value = value.map((val) => getValueFromEntityId(hass, val));
   }
 
   return condition.state != null
