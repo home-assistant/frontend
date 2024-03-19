@@ -151,6 +151,7 @@ export class HuiEntityFilterCard
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {
       this.style.display = "none";
+      this.toggleAttribute("hidden", true);
       return;
     }
 
@@ -181,6 +182,7 @@ export class HuiEntityFilterCard
     }
 
     this.style.display = "block";
+    this.toggleAttribute("hidden", false);
   }
 
   private _haveEntitiesChanged(oldHass: HomeAssistant | null): boolean {
