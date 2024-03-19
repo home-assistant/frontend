@@ -8,7 +8,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { ScreenCondition } from "../../../common/validate-condition";
+import { LovelaceScreenCondition } from "../../../common/conditions/types";
 
 const BREAKPOINT_VALUES = [0, 768, 1024, 1280, Infinity];
 const BREAKPOINTS = ["mobile", "tablet", "desktop", "wide"] as const;
@@ -95,16 +95,16 @@ type ScreenConditionData = {
 export class HaCardConditionScreen extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: ScreenCondition;
+  @property({ attribute: false }) public condition!: LovelaceScreenCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): ScreenCondition {
+  public static get defaultConfig(): LovelaceScreenCondition {
     return { condition: "screen", media_query: "" };
   }
 
   protected static validateUIConfig(
-    condition: ScreenCondition,
+    condition: LovelaceScreenCondition,
     hass: HomeAssistant
   ) {
     const valid =
@@ -174,7 +174,7 @@ export class HaCardConditionScreen extends LitElement {
 
     const { breakpoints } = data;
 
-    const condition: ScreenCondition = {
+    const condition: LovelaceScreenCondition = {
       condition: "screen",
       media_query: mediaQueryMap.get(computeBreakpointsKey(breakpoints)) ?? "",
     };

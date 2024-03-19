@@ -5,10 +5,9 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../../types";
 import {
-  AndCondition,
-  Condition,
-  StateCondition,
-} from "../../../common/validate-condition";
+  LovelaceAndCondition,
+  LovelaceCondition,
+} from "../../../common/conditions/types";
 import "../ha-card-conditions-editor";
 
 const andConditionStruct = object({
@@ -20,15 +19,15 @@ const andConditionStruct = object({
 export class HaCardConditionNumericAnd extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: AndCondition;
+  @property({ attribute: false }) public condition!: LovelaceAndCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): AndCondition {
+  public static get defaultConfig(): LovelaceAndCondition {
     return { condition: "and", conditions: [] };
   }
 
-  protected static validateUIConfig(condition: StateCondition) {
+  protected static validateUIConfig(condition: LovelaceAndCondition) {
     return assert(condition, andConditionStruct);
   }
 
@@ -46,7 +45,7 @@ export class HaCardConditionNumericAnd extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as LovelaceCondition[];
     const condition = {
       ...this.condition,
       conditions,

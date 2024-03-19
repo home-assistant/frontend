@@ -16,17 +16,18 @@ import "../../../../components/ha-list-item";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
+import { LovelaceCondition } from "../../common/conditions/types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import { Condition, LegacyCondition } from "../../common/validate-condition";
+import { LegacyCondition } from "../../common/validate-condition";
 import "./ha-card-condition-editor";
 import type { HaCardConditionEditor } from "./ha-card-condition-editor";
 import { LovelaceConditionEditorConstructor } from "./types";
+import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-numeric_state";
+import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
-import "./types/ha-card-condition-or";
-import "./types/ha-card-condition-and";
 
 const UI_CONDITION = [
   "numeric_state",
@@ -35,14 +36,14 @@ const UI_CONDITION = [
   "user",
   "and",
   "or",
-] as const satisfies readonly Condition["condition"][];
+] as const satisfies readonly LovelaceCondition["condition"][];
 
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public conditions!: (
-    | Condition
+    | LovelaceCondition
     | LegacyCondition
   )[];
 
@@ -138,7 +139,7 @@ export class HaCardConditionsEditor extends LitElement {
 
   private _addCondition(ev: CustomEvent): void {
     const condition = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as Condition["condition"];
+      .value as LovelaceCondition["condition"];
     const conditions = [...this.conditions];
 
     const elClass = customElements.get(`ha-card-condition-${condition}`) as

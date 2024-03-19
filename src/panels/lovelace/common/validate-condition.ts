@@ -1,146 +1,17 @@
 import { ensureArray } from "../../../common/array/ensure-array";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-
-export type Condition =
-  | NumericStateCondition
-  | StateCondition
-  | ScreenCondition
-  | UserCondition
-  | OrCondition
-  | AndCondition;
+import {
+  checkCondition,
+  validateCondition,
+} from "./conditions/handle-condition";
+import { LovelaceCondition } from "./conditions/types";
 
 // Legacy conditional card condition
 export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-}
-
-interface BaseCondition {
-  condition: string;
-}
-
-export interface NumericStateCondition extends BaseCondition {
-  condition: "numeric_state";
-  entity?: string;
-  below?: string | number;
-  above?: string | number;
-}
-
-export interface StateCondition extends BaseCondition {
-  condition: "state";
-  entity?: string;
-  state?: string | string[];
-  state_not?: string | string[];
-}
-
-export interface ScreenCondition extends BaseCondition {
-  condition: "screen";
-  media_query?: string;
-}
-
-export interface UserCondition extends BaseCondition {
-  condition: "user";
-  users?: string[];
-}
-
-export interface OrCondition extends BaseCondition {
-  condition: "or";
-  conditions?: Condition[];
-}
-
-export interface AndCondition extends BaseCondition {
-  condition: "and";
-  conditions?: Condition[];
-}
-
-function getValueFromEntityId(hass: HomeAssistant, value: string): string {
-  if (isValidEntityId(value) && hass.states[value]) {
-    return hass.states[value]?.state;
-  }
-  return value;
-}
-
-function checkStateCondition(
-  condition: StateCondition | LegacyCondition,
-  hass: HomeAssistant
-) {
-  const state =
-    condition.entity && hass.states[condition.entity]
-      ? hass.states[condition.entity].state
-      : UNAVAILABLE;
-  let value = condition.state ?? condition.state_not;
-
-  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (typeof value === "string") {
-    value = getValueFromEntityId(hass, value);
-  }
-  if (Array.isArray(value)) {
-    value = value.map((val) => getValueFromEntityId(hass, val));
-  }
-
-  return condition.state != null
-    ? ensureArray(value).includes(state)
-    : !ensureArray(value).includes(state);
-}
-
-function checkStateNumericCondition(
-  condition: NumericStateCondition,
-  hass: HomeAssistant
-) {
-  const state = (condition.entity ? hass.states[condition.entity] : undefined)
-    ?.state;
-  let above = condition.above;
-  let below = condition.below;
-
-  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (typeof above === "string") {
-    above = getValueFromEntityId(hass, above) as string;
-  }
-  if (typeof below === "string") {
-    below = getValueFromEntityId(hass, below) as string;
-  }
-
-  const numericState = Number(state);
-  const numericAbove = Number(above);
-  const numericBelow = Number(below);
-
-  if (isNaN(numericState)) {
-    return false;
-  }
-
-  return (
-    (condition.above == null ||
-      isNaN(numericAbove) ||
-      numericAbove < numericState) &&
-    (condition.below == null ||
-      isNaN(numericBelow) ||
-      numericBelow > numericState)
-  );
-}
-
-function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
-  return condition.media_query
-    ? matchMedia(condition.media_query).matches
-    : false;
-}
-
-function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
-  return condition.users && hass.user?.id
-    ? condition.users.includes(hass.user.id)
-    : false;
-}
-
-function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
-  if (!condition.conditions) return true;
-  return checkConditionsMet(condition.conditions, hass);
-}
-
-function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
-  if (!condition.conditions) return true;
-  return condition.conditions.some((c) => checkConditionsMet([c], hass));
 }
 
 /**
@@ -150,32 +21,25 @@ function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
  * @returns true if conditions are respected
  */
 export function checkConditionsMet(
-  conditions: (Condition | LegacyCondition)[],
+  conditions: (LovelaceCondition | LegacyCondition)[],
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
-      switch (c.condition) {
-        case "screen":
-          return checkScreenCondition(c, hass);
-        case "user":
-          return checkUserCondition(c, hass);
-        case "numeric_state":
-          return checkStateNumericCondition(c, hass);
-        case "and":
-          return checkAndCondition(c, hass);
-        case "or":
-          return checkOrCondition(c, hass);
-        default:
-          return checkStateCondition(c, hass);
-      }
+      return checkCondition(c, hass);
     }
-    return checkStateCondition(c, hass);
+    return checkCondition(
+      {
+        condition: "state",
+        ...c,
+      },
+      hass
+    );
   });
 }
 
 export function extractConditionEntityIds(
-  conditions: Condition[]
+  conditions: LovelaceCondition[]
 ): Set<string> {
   const entityIds: Set<string> = new Set();
   for (const condition of conditions) {
@@ -211,61 +75,22 @@ export function extractConditionEntityIds(
   return entityIds;
 }
 
-function validateStateCondition(condition: StateCondition | LegacyCondition) {
-  return (
-    condition.entity != null &&
-    (condition.state != null || condition.state_not != null)
-  );
-}
-
-function validateScreenCondition(condition: ScreenCondition) {
-  return condition.media_query != null;
-}
-
-function validateUserCondition(condition: UserCondition) {
-  return condition.users != null;
-}
-
-function validateAndCondition(condition: AndCondition) {
-  return condition.conditions != null;
-}
-
-function validateOrCondition(condition: OrCondition) {
-  return condition.conditions != null;
-}
-
-function validateNumericStateCondition(condition: NumericStateCondition) {
-  return (
-    condition.entity != null &&
-    (condition.above != null || condition.below != null)
-  );
-}
 /**
  * Validate the conditions config for the UI
  * @param conditions conditions to apply
  * @returns true if conditions are validated
  */
 export function validateConditionalConfig(
-  conditions: (Condition | LegacyCondition)[]
+  conditions: (LovelaceCondition | LegacyCondition)[]
 ): boolean {
   return conditions.every((c) => {
     if ("condition" in c) {
-      switch (c.condition) {
-        case "screen":
-          return validateScreenCondition(c);
-        case "user":
-          return validateUserCondition(c);
-        case "numeric_state":
-          return validateNumericStateCondition(c);
-        case "and":
-          return validateAndCondition(c);
-        case "or":
-          return validateOrCondition(c);
-        default:
-          return validateStateCondition(c);
-      }
+      return validateCondition(c);
     }
-    return validateStateCondition(c);
+    return validateCondition({
+      condition: "state",
+      ...c,
+    });
   });
 }
 
@@ -276,9 +101,9 @@ export function validateConditionalConfig(
  * @returns a new condition with entity id
  */
 export function addEntityToCondition(
-  condition: Condition,
+  condition: LovelaceCondition,
   entityId: string
-): Condition {
+): LovelaceCondition {
   if ("conditions" in condition && condition.conditions) {
     return {
       ...condition,

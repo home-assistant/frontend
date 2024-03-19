@@ -10,7 +10,7 @@ import "../../../../../components/ha-switch";
 import "../../../../../components/user/ha-user-badge";
 import { User, fetchUsers } from "../../../../../data/user";
 import type { HomeAssistant } from "../../../../../types";
-import { UserCondition } from "../../../common/validate-condition";
+import { LovelaceUserCondition } from "../../../common/conditions/types";
 
 const userConditionStruct = object({
   condition: literal("user"),
@@ -21,17 +21,17 @@ const userConditionStruct = object({
 export class HaCardConditionUser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: UserCondition;
+  @property({ attribute: false }) public condition!: LovelaceUserCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): UserCondition {
+  public static get defaultConfig(): LovelaceUserCondition {
     return { condition: "user", users: [] };
   }
 
   @state() private _users: User[] = [];
 
-  protected static validateUIConfig(condition: UserCondition) {
+  protected static validateUIConfig(condition: LovelaceUserCondition) {
     return assert(condition, userConditionStruct);
   }
 
@@ -95,7 +95,7 @@ export class HaCardConditionUser extends LitElement {
       users = users.filter((user) => user !== userId);
     }
 
-    const condition: UserCondition = {
+    const condition: LovelaceUserCondition = {
       ...this.condition,
       users,
     };

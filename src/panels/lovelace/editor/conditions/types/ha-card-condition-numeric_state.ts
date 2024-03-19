@@ -8,10 +8,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import {
-  NumericStateCondition,
-  StateCondition,
-} from "../../../common/validate-condition";
+import { LovelaceNumericStateCondition } from "../../../common/conditions/types";
 
 const numericStateConditionStruct = object({
   condition: literal("numeric_state"),
@@ -24,15 +21,16 @@ const numericStateConditionStruct = object({
 export class HaCardConditionNumericState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: NumericStateCondition;
+  @property({ attribute: false })
+  public condition!: LovelaceNumericStateCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): NumericStateCondition {
+  public static get defaultConfig(): LovelaceNumericStateCondition {
     return { condition: "numeric_state", entity: "" };
   }
 
-  protected static validateUIConfig(condition: StateCondition) {
+  protected static validateUIConfig(condition: LovelaceNumericStateCondition) {
     return assert(condition, numericStateConditionStruct);
   }
 
@@ -88,7 +86,7 @@ export class HaCardConditionNumericState extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const condition = ev.detail.value as NumericStateCondition;
+    const condition = ev.detail.value as LovelaceNumericStateCondition;
     fireEvent(this, "value-changed", { value: condition });
   }
 

@@ -8,7 +8,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { StateCondition } from "../../../common/validate-condition";
+import { LovelaceStateCondition } from "../../../common/conditions/types";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -28,15 +28,15 @@ type StateConditionData = {
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: StateCondition;
+  @property({ attribute: false }) public condition!: LovelaceStateCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): StateCondition {
+  public static get defaultConfig(): LovelaceStateCondition {
     return { condition: "state", entity: "", state: "" };
   }
 
-  protected static validateUIConfig(condition: StateCondition) {
+  protected static validateUIConfig(condition: LovelaceStateCondition) {
     return assert(condition, stateConditionStruct);
   }
 
@@ -124,7 +124,7 @@ export class HaCardConditionState extends LitElement {
 
     const { invert, state, condition: _, ...content } = data;
 
-    const condition: StateCondition = {
+    const condition: LovelaceStateCondition = {
       condition: "state",
       ...content,
       state: invert === "false" ? state ?? "" : undefined,

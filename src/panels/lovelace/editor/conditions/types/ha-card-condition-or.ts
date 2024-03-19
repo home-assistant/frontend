@@ -5,10 +5,9 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../../types";
 import {
-  Condition,
-  OrCondition,
-  StateCondition,
-} from "../../../common/validate-condition";
+  LovelaceCondition,
+  LovelaceOrCondition,
+} from "../../../common/conditions/types";
 import "../ha-card-conditions-editor";
 
 const orConditionStruct = object({
@@ -20,15 +19,15 @@ const orConditionStruct = object({
 export class HaCardConditionOr extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: OrCondition;
+  @property({ attribute: false }) public condition!: LovelaceOrCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): OrCondition {
+  public static get defaultConfig(): LovelaceOrCondition {
     return { condition: "or", conditions: [] };
   }
 
-  protected static validateUIConfig(condition: StateCondition) {
+  protected static validateUIConfig(condition: LovelaceOrCondition) {
     return assert(condition, orConditionStruct);
   }
 
@@ -46,7 +45,7 @@ export class HaCardConditionOr extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as LovelaceCondition[];
     const condition = {
       ...this.condition,
       conditions,

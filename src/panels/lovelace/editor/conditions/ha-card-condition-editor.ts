@@ -19,9 +19,9 @@ import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { LovelaceCondition } from "../../common/conditions/types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import {
-  Condition,
   LegacyCondition,
   checkConditionsMet,
   validateConditionalConfig,
@@ -32,7 +32,9 @@ import type { LovelaceConditionEditorConstructor } from "./types";
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition | LegacyCondition;
+  @property({ attribute: false }) condition!:
+    | LovelaceCondition
+    | LegacyCondition;
 
   @state() public _yamlMode = false;
 
@@ -40,7 +42,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @state() public _uiWarnings: string[] = [];
 
-  @state() _condition?: Condition;
+  @state() _condition?: LovelaceCondition;
 
   @state() private _testingResult?: boolean;
 
