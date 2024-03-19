@@ -130,6 +130,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         height: 100%;
+        --ha-card-border-radius: 0;
       }
 
       ha-fab {
