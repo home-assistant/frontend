@@ -1,8 +1,13 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
-import { evaluateFilter } from "../common/evaluate-filter";
+import { evaluateStateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
+import {
+  addEntityToCondition,
+  checkConditionsMet,
+  extractConditionEntityIds,
+} from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
@@ -29,7 +34,10 @@ export class HuiEntityFilterBadge
     }
 
     if (
-      !(config.state_filter && Array.isArray(config.state_filter)) &&
+      !(
+        (config.conditions && Array.isArray(config.conditions)) ||
+        (config.state_filter && Array.isArray(config.state_filter))
+      ) &&
       !config.entities.every(
         (entity) =>
           typeof entity === "object" &&
@@ -81,23 +89,19 @@ export class HuiEntityFilterBadge
 
     const entitiesList = this._configEntities.filter((entityConf) => {
       const stateObj = this.hass.states[entityConf.entity];
+      if (!stateObj) return false;
 
-      if (!stateObj) {
-        return false;
+      const conditions = entityConf.conditions ?? this._config!.conditions;
+      if (conditions) {
+        const conditionWithEntity = conditions.map((condition) =>
+          addEntityToCondition(condition, entityConf.entity)
+        );
+        return checkConditionsMet(conditionWithEntity, this.hass!);
       }
 
-      if (entityConf.state_filter) {
-        for (const filter of entityConf.state_filter) {
-          if (evaluateFilter(stateObj, filter)) {
-            return true;
-          }
-        }
-      } else {
-        for (const filter of this._config!.state_filter) {
-          if (evaluateFilter(stateObj, filter)) {
-            return true;
-          }
-        }
+      const filters = entityConf.state_filter ?? this._config!.state_filter;
+      if (filters) {
+        return filters.some((filter) => evaluateStateFilter(stateObj, filter));
       }
 
       return false;
@@ -152,8 +156,24 @@ export class HuiEntityFilterBadge
       if (this.hass.states[config.entity] !== oldHass.states[config.entity]) {
         return true;
       }
+      if (config.conditions) {
+        const entityIds = extractConditionEntityIds(config.conditions);
+        for (const entityId of entityIds) {
+          if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+            return true;
+          }
+        }
+      }
     }
 
+    if (this._config?.conditions) {
+      const entityIds = extractConditionEntityIds(this._config?.conditions);
+      for (const entityId of entityIds) {
+        if (this.hass.states[entityId] !== oldHass.states[entityId]) {
+          return true;
+        }
+      }
+    }
     return false;
   }
 }

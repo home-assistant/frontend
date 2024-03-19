@@ -21,10 +21,10 @@ const ENTITIES = [
   }),
 ];
 
-const conditions = [
-  { condition: "and" },
-  { condition: "not" },
-  { condition: "or" },
+const conditions: Condition[] = [
+  { condition: "and", conditions: [] },
+  { condition: "not", conditions: [] },
+  { condition: "or", conditions: [] },
   { condition: "state", entity_id: "light.kitchen", state: "on" },
   {
     condition: "numeric_state",
@@ -34,11 +34,11 @@ const conditions = [
     above: 20,
   },
   { condition: "sun", after: "sunset" },
-  { condition: "sun", after: "sunrise", offset: "-01:00" },
+  { condition: "sun", after: "sunrise", before_offset: 3600 },
   { condition: "zone", entity_id: "device_tracker.person", zone: "zone.home" },
   { condition: "trigger", id: "motion" },
   { condition: "time" },
-  { condition: "template" },
+  { condition: "template", value_template: "" },
 ];
 
 const initialCondition: Condition = {
