@@ -2215,7 +2215,7 @@
                 },
                 "iframe": {
                   "title": "Webpage",
-                  "description": "Integrate a webpage into Home Assistant."
+                  "description": "Integrate a webpage as a dashboard."
                 }
               }
             },
