@@ -190,7 +190,7 @@
         "open": "Open",
         "open_door": "Open door",
         "open_door_confirm": "Really open?",
-        "opening_door": "Opening the door..."
+        "open_door_success": "Door open"
       },
       "media_player": {
         "source": "Source",

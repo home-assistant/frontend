@@ -1,6 +1,6 @@
+import { mdiCheck } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -17,11 +17,13 @@ import {
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
 import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
-const OPEN_TIMEOUT_SECOND = 5;
+const CONFIRM_TIMEOUT_SECOND = 5;
+const OPENED_TIMEOUT_SECOND = 3;
+
+type ButtonState = "normal" | "confirm" | "success";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -29,34 +31,38 @@ class MoreInfoLock extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LockEntity;
 
-  @state() public _confirmOpen = false;
+  @state() public _buttonState: ButtonState = "normal";
 
-  _confirmOpenTimeout?: number;
+  private _buttonTimeout?: number;
 
-  private async _open() {
-    if (!this._confirmOpen) {
-      this._confirmOpen = true;
-      this._confirmOpenTimeout = window.setTimeout(() => {
-        this._confirmOpen = false;
-      }, OPEN_TIMEOUT_SECOND * 1000);
-      return;
+  private _setButtonState(buttonState: ButtonState, timeoutSecond?: number) {
+    clearTimeout(this._buttonTimeout);
+    this._buttonState = buttonState;
+    if (timeoutSecond) {
+      this._buttonTimeout = window.setTimeout(() => {
+        this._buttonState = "normal";
+      }, timeoutSecond * 1000);
     }
-    this._resetConfirmOpen();
-    callProtectedLockService(this, this.hass, this.stateObj!, "open");
-    showToast(this, {
-      message: this.hass.localize("ui.card.lock.opening_door"),
-      duration: 3000,
-    });
   }
 
-  private _resetConfirmOpen() {
-    this._confirmOpen = false;
-    clearTimeout(this._confirmOpenTimeout);
+  private async _open() {
+    if (this._buttonState !== "confirm") {
+      this._setButtonState("confirm", CONFIRM_TIMEOUT_SECOND);
+      return;
+    }
+
+    callProtectedLockService(this, this.hass, this.stateObj!, "open");
+
+    this._setButtonState("success", OPENED_TIMEOUT_SECOND);
+  }
+
+  private _resetButtonState() {
+    this._setButtonState("normal");
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._resetConfirmOpen();
+    this._resetButtonState();
   }
 
   private async _lock() {
@@ -101,30 +107,33 @@ class MoreInfoLock extends LitElement {
             `
           : html`
               <ha-state-control-lock-toggle
-                @lock-service-called=${this._resetConfirmOpen}
+                @lock-service-called=${this._resetButtonState}
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
               >
               </ha-state-control-lock-toggle>
             `}
-        ${supportsOpen || isJammed
+        ${supportsOpen
           ? html`
               <div class="buttons">
-                ${supportsOpen
+                ${this._buttonState === "success"
                   ? html`
+                      <p class="open-success">
+                        <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
+                        ${this.hass.localize("ui.card.lock.open_door_success")}
+                      </p>
+                    `
+                  : html`
                       <ha-control-button
                         .disabled=${this.stateObj.state === UNAVAILABLE}
-                        class="open ${classMap({
-                          confirm: this._confirmOpen,
-                        })}"
+                        class="open-button ${this._buttonState}"
                         @click=${this._open}
                       >
-                        ${this._confirmOpen
+                        ${this._buttonState === "confirm"
                           ? this.hass.localize("ui.card.lock.open_door_confirm")
                           : this.hass.localize("ui.card.lock.open_door")}
                       </ha-control-button>
-                    `
-                  : nothing}
+                    `}
               </div>
             `
           : nothing}
@@ -160,12 +169,21 @@ class MoreInfoLock extends LitElement {
           height: 60px;
           --control-button-border-radius: 24px;
         }
-        ha-control-button.open {
+        .open-button {
           width: 100px;
           --control-button-background-color: var(--state-color);
         }
-        ha-control-button.confirm {
+        .open-button.confirm {
           --control-button-background-color: var(--warning-color);
+        }
+        .open-success {
+          line-height: 60px;
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          gap: 8px;
+          font-weight: 500;
+          color: var(--success-color);
         }
         ha-control-button-group.jammed {
           --control-button-group-thickness: 60px;
