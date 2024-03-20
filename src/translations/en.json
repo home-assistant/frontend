@@ -3524,7 +3524,7 @@
               "title": "Text-to-speech",
               "info": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
-              "default_gender": "Default gender to use",
+              "default_voice": "Default voice to use",
               "try": "Try",
               "dialog": {
                 "header": "Try text-to-speech",
