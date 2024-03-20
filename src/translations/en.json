@@ -5167,6 +5167,7 @@
               "sections": "Sections (experimental)"
             },
             "subview": "Subview",
+            "max_columns": "Max number of columns",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",

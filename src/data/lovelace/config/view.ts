@@ -18,6 +18,7 @@ export interface LovelaceBaseViewConfig {
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;
+  max_columns?: number; // Only used for section view
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
