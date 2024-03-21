@@ -11,7 +11,7 @@ class HaPanelIframe extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) panel!: PanelInfo<{ url: string }>;
+  @property({ attribute: false }) panel!: PanelInfo<{ url: string, allow?: string }>;
 
   render() {
     if (
@@ -41,7 +41,7 @@ class HaPanelIframe extends LitElement {
           )}
           src=${this.panel.config.url}
           sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts allow-modals allow-downloads"
-          allow="fullscreen"
+          allow=${this.panel.config.allow ?? 'fullscreen'}
         ></iframe>
       </hass-subpage>
     `;
