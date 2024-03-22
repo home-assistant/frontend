@@ -35,6 +35,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../common/decorators/storage";
+import { navigate } from "../common/navigate";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
@@ -49,6 +50,7 @@ import { UpdateEntity, updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
+import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -224,6 +226,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   })
   private _hiddenPanels: string[] = [];
 
+  @storage({
+    key: "pageDirty",
+    state: false,
+    subscribe: true,
+  })
+  private _pageDirty = false;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return this.hass.user?.is_admin
       ? [
@@ -289,6 +298,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this._pageDirty = false;
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
@@ -430,6 +440,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             href=${`/${urlPath}`}
             data-panel=${urlPath}
             tabindex="-1"
+            @click=${this._confirmNavigate}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
           >
@@ -545,6 +556,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       href="/config"
       data-panel="config"
       tabindex="-1"
+      @click=${this._confirmNavigate}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
     >
@@ -615,6 +627,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       tabindex="-1"
       role="option"
       aria-label=${this.hass.localize("panel.profile")}
+      @click=${this._confirmNavigate}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
     >
@@ -661,11 +674,39 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       : ""}`;
   }
 
-  private _handleExternalAppConfiguration(ev: Event) {
+  private async _handleExternalAppConfiguration(ev: Event) {
     ev.preventDefault();
+    if (this._pageDirty && !(await this._confirmDirty())) {
+      return;
+    }
     this.hass.auth.external!.fireMessage({
       type: "config_screen/show",
     });
+  }
+
+  private async _confirmDirty(): Promise<boolean> {
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass!.localize("ui.sidebar.confirm_unsaved"),
+      confirmText: this.hass!.localize("ui.common.leave"),
+      dismissText: this.hass!.localize("ui.common.stay"),
+      destructive: true,
+    });
+    if (confirmed) {
+      this._pageDirty = false;
+    }
+    return confirmed;
+  }
+
+  private async _confirmNavigate(ev: CustomEvent) {
+    if (!this._pageDirty) {
+      return;
+    }
+    const url = (ev.currentTarget as any).href;
+    ev.preventDefault();
+    const leave = await this._confirmDirty();
+    if (leave) {
+      navigate(url);
+    }
   }
 
   private get _tooltip() {

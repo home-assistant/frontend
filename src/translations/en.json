@@ -1634,7 +1634,8 @@
       "sidebar_toggle": "Sidebar toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
-      "show_panel": "Show panel"
+      "show_panel": "Show panel",
+      "confirm_unsaved": "[%key:ui::panel::config::common::editor::confirm_unsaved%]"
     },
     "panel": {
       "my": {
