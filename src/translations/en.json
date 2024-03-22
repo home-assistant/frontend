@@ -1595,6 +1595,29 @@
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
         "create": "Create"
+      },
+      "matter-add-device": {
+        "main": {
+          "header": "Add Matter device"
+        },
+        "new": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]"
+        },
+        "existing": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]"
+        },
+        "google_home_link": {
+          "header": "Link Matter app"
+        },
+        "google_home_code": {
+          "header": "Enter Setup Code"
+        },
+        "apple_home_code": {
+          "header": "Enter Pairing Code"
+        },
+        "others_code": {
+          "header": "Enter Pairing Code"
+        }
       }
     },
     "weekdays": {
