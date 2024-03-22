@@ -54,6 +54,7 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
@@ -108,13 +109,15 @@ class HaScriptPicker extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow, _locale): DataTableColumnContainer<ScriptItem> => {
+    (
+      narrow,
+      _locale,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<ScriptItem> => {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
-          label: this.hass.localize(
-            "ui.panel.config.script.picker.headers.state"
-          ),
+          label: localize("ui.panel.config.script.picker.headers.state"),
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
@@ -127,9 +130,7 @@ class HaScriptPicker extends LitElement {
             ></ha-state-icon>`,
         },
         name: {
-          title: this.hass.localize(
-            "ui.panel.config.script.picker.headers.name"
-          ),
+          title: localize("ui.panel.config.script.picker.headers.name"),
           main: true,
           sortable: true,
           filterable: true,
@@ -163,7 +164,7 @@ class HaScriptPicker extends LitElement {
         columns.last_triggered = {
           sortable: true,
           width: "40%",
-          title: this.hass.localize("ui.card.automation.last_triggered"),
+          title: localize("ui.card.automation.last_triggered"),
           template: (script) => {
             const date = new Date(script.last_triggered);
             const now = new Date();
@@ -247,7 +248,11 @@ class HaScriptPicker extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.narrow, this.hass.locale)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.locale,
+          this.hass.localize
+        )}
         .data=${this._scripts(this.scripts, this._filteredScripts)}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}

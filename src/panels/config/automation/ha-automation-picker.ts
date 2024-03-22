@@ -56,6 +56,7 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
@@ -113,13 +114,15 @@ class HaAutomationPicker extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean, _locale): DataTableColumnContainer => {
+    (
+      narrow: boolean,
+      _locale,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
-          label: this.hass.localize(
-            "ui.panel.config.automation.picker.headers.state"
-          ),
+          label: localize("ui.panel.config.automation.picker.headers.state"),
           type: "icon",
           template: (automation) =>
             html`<ha-state-icon
@@ -134,9 +137,7 @@ class HaAutomationPicker extends LitElement {
             ></ha-state-icon>`,
         },
         name: {
-          title: this.hass.localize(
-            "ui.panel.config.automation.picker.headers.name"
-          ),
+          title: localize("ui.panel.config.automation.picker.headers.name"),
           main: true,
           sortable: true,
           filterable: true,
@@ -170,7 +171,7 @@ class HaAutomationPicker extends LitElement {
         columns.last_triggered = {
           sortable: true,
           width: "20%",
-          title: this.hass.localize("ui.card.automation.last_triggered"),
+          title: localize("ui.card.automation.last_triggered"),
           template: (automation) => {
             if (!automation.last_triggered) {
               return this.hass.localize("ui.components.relative_time.never");
@@ -302,7 +303,11 @@ class HaAutomationPicker extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automations}
         .activeFilters=${this._activeFilters}
-        .columns=${this._columns(this.narrow, this.hass.locale)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.locale,
+          this.hass.localize
+        )}
         .data=${this._automations(this.automations, this._filteredAutomations)}
         .empty=${!this.automations.length}
         @row-click=${this._handleRowClicked}

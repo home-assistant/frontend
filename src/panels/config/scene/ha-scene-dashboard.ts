@@ -49,6 +49,7 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
@@ -95,13 +96,11 @@ class HaSceneDashboard extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (_language, narrow): DataTableColumnContainer => {
+    (_language, narrow, localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
-          label: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.state"
-          ),
+          label: localize("ui.panel.config.scene.picker.headers.state"),
           type: "icon",
           template: (scene) => html`
             <ha-state-icon
@@ -111,9 +110,7 @@ class HaSceneDashboard extends LitElement {
           `,
         },
         name: {
-          title: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.name"
-          ),
+          title: localize("ui.panel.config.scene.picker.headers.name"),
           main: true,
           sortable: true,
           filterable: true,
@@ -123,7 +120,7 @@ class HaSceneDashboard extends LitElement {
       };
       if (!narrow) {
         columns.state = {
-          title: this.hass.localize(
+          title: localize(
             "ui.panel.config.scene.picker.headers.last_activated"
           ),
           sortable: true,
@@ -223,7 +220,11 @@ class HaSceneDashboard extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.hass.locale, this.narrow)}
+        .columns=${this._columns(
+          this.hass.locale,
+          this.narrow,
+          this.hass.localize
+        )}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}
         .empty=${!this.scenes.length}
