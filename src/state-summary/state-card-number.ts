@@ -120,8 +120,9 @@ class StateCardNumber extends LitElement {
   }
 
   private async _selectedValueChanged(ev: Event) {
-    const value = (ev.target as HTMLInputElement).value;
-    if (value === this.stateObj.state) {
+    const target = ev.target as HTMLInputElement;
+    const value = target.value;
+    if (value === this.stateObj.state || target.validity.stepMismatch) {
       return;
     }
     await this.hass.callService("number", "set_value", {
