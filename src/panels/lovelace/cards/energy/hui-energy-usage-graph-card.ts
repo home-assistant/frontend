@@ -17,13 +17,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import {
-  hex2rgb,
-  lab2rgb,
-  rgb2hex,
-  rgb2lab,
-} from "../../../../common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../common/color/lab";
+import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -41,10 +35,14 @@ import { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 
-interface ColorSet {
-  base: string;
-  overrides?: Record<string, string>;
-}
+const colorPropertyMap = {
+  to_grid: "--energy-grid-return-color",
+  to_battery: "--energy-battery-in-color",
+  from_grid: "--energy-grid-consumption-color",
+  used_grid: "--energy-grid-consumption-color",
+  used_solar: "--energy-solar-color",
+  used_battery: "--energy-battery-out-color",
+};
 
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
@@ -263,47 +261,9 @@ export class HuiEnergyUsageGraphCard
 
     const computedStyles = getComputedStyle(this);
 
-    const colorPropertyMap = {
-      to_grid: "--energy-grid-return-color",
-      to_battery: "--energy-battery-in-color",
-      from_grid: "--energy-grid-consumption-color",
-      used_grid: "--energy-grid-consumption-color",
-      used_solar: "--energy-solar-color",
-      used_battery: "--energy-battery-out-color",
-    };
-
-    const colors = {
-      to_grid: {
-        base: computedStyles.getPropertyValue(colorPropertyMap.to_grid).trim(),
-      },
-      to_battery: {
-        base: computedStyles
-          .getPropertyValue(colorPropertyMap.to_battery)
-          .trim(),
-      },
-      from_grid: {
-        base: computedStyles
-          .getPropertyValue(colorPropertyMap.from_grid)
-          .trim(),
-      },
-      used_grid: {
-        base: computedStyles
-          .getPropertyValue(colorPropertyMap.used_grid)
-          .trim(),
-      },
-      used_solar: {
-        base: computedStyles
-          .getPropertyValue(colorPropertyMap.used_solar)
-          .trim(),
-      },
-      used_battery: {
-        base: computedStyles
-          .getPropertyValue(colorPropertyMap.used_battery)
-          .trim(),
-      },
-    };
-
-    Object.entries(colorPropertyMap).forEach(([key, colorProp]) => {
+    const colorIndices: Record<string, Record<string, number>> = {};
+    Object.keys(colorPropertyMap).forEach((key) => {
+      colorIndices[key] = {};
       if (
         key === "used_grid" ||
         key === "used_solar" ||
@@ -311,15 +271,9 @@ export class HuiEnergyUsageGraphCard
       ) {
         return;
       }
-      colors[key].overrides = [];
       if (statIds[key]) {
         Object.values(statIds[key]).forEach((id, idx) => {
-          const override = computedStyles
-            .getPropertyValue(colorProp + "-" + idx)
-            .trim();
-          if (override.length > 0) {
-            colors[key].overrides[id] = override;
-          }
+          colorIndices[key][id as string] = idx;
         });
       }
     });
@@ -347,7 +301,8 @@ export class HuiEnergyUsageGraphCard
         energyData.stats,
         energyData.statsMetadata,
         statIds,
-        colors,
+        colorIndices,
+        computedStyles,
         labels,
         false
       )
@@ -370,7 +325,8 @@ export class HuiEnergyUsageGraphCard
           energyData.statsCompare,
           energyData.statsMetadata,
           statIds,
-          colors,
+          colorIndices,
+          computedStyles,
           labels,
           true
         )
@@ -392,14 +348,8 @@ export class HuiEnergyUsageGraphCard
       to_battery?: string[] | undefined;
       from_battery?: string[] | undefined;
     },
-    colors: {
-      to_grid: ColorSet;
-      to_battery: ColorSet;
-      from_grid: ColorSet;
-      used_grid: ColorSet;
-      used_solar: ColorSet;
-      used_battery: ColorSet;
-    },
+    colorIndices: Record<string, Record<string, number>>,
+    computedStyles: CSSStyleDeclaration,
     labels: {
       used_grid: string;
       used_solar: string;
@@ -484,10 +434,8 @@ export class HuiEnergyUsageGraphCard
           if (summedData.to_battery) {
             grid_to_battery[start] = used_solar[start] * -1;
             if (grid_to_battery[start] > (summedData.from_grid?.[start] || 0)) {
-              battery_to_grid[start] = Math.min(
-                0,
-                grid_to_battery[start] - (summedData.from_grid?.[start] || 0)
-              );
+              battery_to_grid[start] =
+                grid_to_battery[start] - (summedData.from_grid?.[start] || 0);
               grid_to_battery[start] = summedData.from_grid?.[start];
             }
           }
@@ -553,19 +501,6 @@ export class HuiEnergyUsageGraphCard
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {
-        let borderColor = colors[type].overrides?.[statId];
-        if (!borderColor) {
-          const modifiedColor =
-            idx > 0
-              ? this.hass.themes.darkMode
-                ? labBrighten(rgb2lab(hex2rgb(colors[type].base)), idx)
-                : labDarken(rgb2lab(hex2rgb(colors[type].base)), idx)
-              : undefined;
-          borderColor = modifiedColor
-            ? rgb2hex(lab2rgb(modifiedColor))
-            : colors[type].base;
-        }
-
         const points: ScatterDataPoint[] = [];
         // Process chart data.
         for (const key of uniqueKeys) {
@@ -600,8 +535,22 @@ export class HuiEnergyUsageGraphCard
               : type === "to_battery"
                 ? Object.keys(combinedData).length
                 : idx + 2,
-          borderColor: compare ? borderColor + "7F" : borderColor,
-          backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
+          borderColor: getEnergyColor(
+            computedStyles,
+            this.hass.themes.darkMode,
+            false,
+            compare,
+            colorPropertyMap[type],
+            colorIndices[type]?.[statId]
+          ),
+          backgroundColor: getEnergyColor(
+            computedStyles,
+            this.hass.themes.darkMode,
+            true,
+            compare,
+            colorPropertyMap[type],
+            colorIndices[type]?.[statId]
+          ),
           stack: "stack",
           data: points,
           xAxisID: compare ? "xAxisCompare" : undefined,

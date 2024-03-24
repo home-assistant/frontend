@@ -172,7 +172,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           </ha-list-item>
 
           ${stateObj && this._config && this.narrow
-            ? html`<a href="/config/automation/trace/${this._config.id}">
+            ? html`<a
+                href="/config/automation/trace/${encodeURIComponent(
+                  this._config.id!
+                )}"
+              >
                 <ha-list-item graphic="icon">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
@@ -563,7 +567,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (this._config?.id) {
       const result = await this.confirmUnsavedChanged();
       if (result) {
-        navigate(`/config/automation/trace/${this._config.id}`);
+        navigate(
+          `/config/automation/trace/${encodeURIComponent(this._config.id)}`
+        );
       }
     }
   }

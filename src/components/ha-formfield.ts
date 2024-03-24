@@ -1,11 +1,13 @@
 import { FormfieldBase } from "@material/mwc-formfield/mwc-formfield-base";
 import { styles } from "@material/mwc-formfield/mwc-formfield.css";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-formfield")
 export class HaFormfield extends FormfieldBase {
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
   protected _labelClick() {
     const input = this.input as HTMLInputElement | undefined;
     if (!input) return;
@@ -43,6 +45,9 @@ export class HaFormfield extends FormfieldBase {
         margin-inline-end: auto;
         padding-inline-start: 4px;
         padding-inline-end: 0;
+      }
+      :host([disabled]) label {
+        color: var(--disabled-text-color);
       }
     `,
   ];

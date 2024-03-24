@@ -198,8 +198,9 @@ export const entryIcon = async (
   if (entry.icon) {
     return entry.icon;
   }
+  const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
   const domain = computeDomain(entry.entity_id);
-  return getEntityIcon(hass, domain, undefined, undefined, entry);
+  return getEntityIcon(hass, domain, stateObj, undefined, entry);
 };
 
 const getEntityIcon = async (

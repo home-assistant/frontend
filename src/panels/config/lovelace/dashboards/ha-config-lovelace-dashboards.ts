@@ -24,7 +24,8 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import { LovelacePanelConfig } from "../../../../data/lovelace";
 import {
-  LovelaceConfig,
+  LovelaceRawConfig,
+  isStrategyDashboard,
   saveConfig,
 } from "../../../../data/lovelace/config/types";
 import {
@@ -39,8 +40,10 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
+import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
+import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
 type DataTableItem = Pick<
@@ -63,6 +66,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _dashboards: LovelaceDashboard[] = [];
+
+  public willUpdate() {
+    if (!this.hasUpdated) {
+      this.hass.loadFragmentTranslation("lovelace");
+    }
+  }
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
@@ -339,7 +348,25 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private async _addDashboard() {
     showNewDashboardDialog(this, {
-      selectConfig: (config) => {
+      selectConfig: async (config) => {
+        if (config && isStrategyDashboard(config)) {
+          const strategyType = config.strategy.type;
+          const strategyClass = await getLovelaceStrategy(
+            "dashboard",
+            strategyType
+          );
+
+          if (strategyClass.configRequired) {
+            showDashboardConfigureStrategyDialog(this, {
+              config: config,
+              saveConfig: async (updatedConfig) => {
+                this._openDetailDialog(undefined, undefined, updatedConfig);
+              },
+            });
+            return;
+          }
+        }
+
         this._openDetailDialog(undefined, undefined, config);
       },
     });
@@ -348,7 +375,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private async _openDetailDialog(
     dashboard?: LovelaceDashboard,
     urlPath?: string,
-    defaultConfig?: LovelaceConfig
+    defaultConfig?: LovelaceRawConfig
   ): Promise<void> {
     showDashboardDetailDialog(this, {
       dashboard,

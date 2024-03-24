@@ -48,6 +48,7 @@ import {
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
+  hasScriptFields,
   isMaxMode,
   showScriptEditor,
   triggerScript,
@@ -62,6 +63,7 @@ import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -611,6 +613,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
+
+    if (hasScriptFields(this.hass, this._entityId!)) {
+      showMoreInfoDialog(this, {
+        entityId: this._entityId!,
+      });
+      return;
+    }
+
     await triggerScript(this.hass, this.scriptId!);
     showToast(this, {
       message: this.hass.localize("ui.notification_toast.triggered", {
@@ -811,7 +821,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           "ui.panel.config.script.editor.id_already_exists_save_error"
         ),
         dismissable: false,
-        duration: 0,
+        duration: -1,
         action: {
           action: () => {},
           text: this.hass.localize("ui.dialogs.generic.ok"),

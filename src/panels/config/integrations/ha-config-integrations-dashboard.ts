@@ -29,7 +29,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
@@ -658,6 +658,24 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
+      if (integration.single_config_entry) {
+        const configEntries = await getConfigEntries(this.hass, { domain });
+        if (configEntries.length > 0) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry",
+              {
+                integration_name: integration.name,
+              }
+            ),
+          });
+          return;
+        }
+      }
+
       // Integration exists, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",
@@ -877,6 +895,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
+          inset-inline-end: 0px;
+          inset-inline-start: initial;
           top: 4px;
           font-size: 0.65em;
         }
@@ -884,7 +904,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           position: relative;
         }
         h1 {
-          margin: 8px 0 0 16px;
+          margin-top: 8px;
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-button-menu {
           color: var(--primary-text-color);
