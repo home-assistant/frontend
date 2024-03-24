@@ -4,6 +4,7 @@ import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
+import { LovelacePictureElementEditor } from "../types";
 import {
   ConditionalElementConfig,
   LovelaceElement,
@@ -11,6 +12,13 @@ import {
 } from "./types";
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-conditional-element-editor"
+    );
+    return document.createElement("hui-conditional-element-editor");
+  }
+
   public _hass?: HomeAssistant;
 
   private _config?: ConditionalElementConfig;

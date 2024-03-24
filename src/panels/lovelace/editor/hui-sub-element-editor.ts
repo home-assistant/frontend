@@ -1,6 +1,13 @@
 import "@material/mwc-button";
 import { mdiCodeBraces, mdiListBoxOutline } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
@@ -13,6 +20,7 @@ import "./header-footer-editor/hui-header-footer-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
+import "./picture-element-editor/hui-picture-element-element-editor";
 
 declare global {
   interface HASSDomEvents {
@@ -95,7 +103,18 @@ export class HuiSubElementEditor extends LitElement {
                   @GUImode-changed=${this._handleGUIModeChanged}
                 ></hui-card-feature-element-editor>
               `
-            : ""}
+            : this.config.type === "element"
+              ? html`
+                  <hui-picture-element-element-editor
+                    class="editor"
+                    .hass=${this.hass}
+                    .value=${this.config.elementConfig}
+                    .context=${this.context}
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
+                  ></hui-picture-element-element-editor>
+                `
+              : nothing}
     `;
   }
 

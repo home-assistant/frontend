@@ -10,9 +10,15 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-image";
 import { ImageElementConfig, LovelaceElement } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import("../editor/config-elements/elements/hui-image-element-editor");
+    return document.createElement("hui-image-element-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ImageElementConfig;
