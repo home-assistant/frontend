@@ -177,7 +177,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private _selectedValueChanged(ev): void {
+  private _selectedValueChanged(ev: Event): void {
     const stateObj = this.hass!.states[this._config!.entity];
     const target = ev.target as HTMLInputElement;
 

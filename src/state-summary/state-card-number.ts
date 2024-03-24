@@ -75,6 +75,7 @@ class StateCardNumber extends LitElement {
           `
         : html` <div class="flex state">
             <ha-textfield
+              autoValidate
               .disabled=${isUnavailableState(this.stateObj.state)}
               pattern="[0-9]+([\\.][0-9]+)?"
               .step=${Number(this.stateObj.attributes.step)}
