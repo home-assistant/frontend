@@ -187,7 +187,10 @@
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
         "unlock": "Unlock",
-        "open": "Open"
+        "open": "Open",
+        "open_door": "Open door",
+        "open_door_confirm": "Really open?",
+        "open_door_success": "Door open"
       },
       "media_player": {
         "source": "Source",
