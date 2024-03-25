@@ -1598,6 +1598,11 @@
       },
       "matter-add-device": {
         "add_device": "Add device",
+        "add_device_failed": "Failed to add the device",
+        "commissioning": {
+          "header": "Add Matter device",
+          "note": "Adding the device, this may take a minute or two."
+        },
         "main": {
           "header": "Add Matter device",
           "question": "Is your device already added to another Matter controller?",
@@ -1627,7 +1632,7 @@
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
         "google_home_fallback": {
-          "header": "Copy setup code",
+          "header": "Copy pairing code",
           "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
           "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
           "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",

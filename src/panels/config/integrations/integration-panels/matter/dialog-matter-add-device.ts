@@ -9,7 +9,6 @@ import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import {
-  canCommissionMatterExternal,
   commissionMatterDevice,
   redirectOnNewMatterDevice,
 } from "../../../../../data/matter";
@@ -22,6 +21,8 @@ import "./matter-add-device/matter-add-device-google-home";
 import "./matter-add-device/matter-add-device-google-home-fallback";
 import "./matter-add-device/matter-add-device-main";
 import "./matter-add-device/matter-add-device-new";
+import "./matter-add-device/matter-add-device-commissioning";
+import { showToast } from "../../../../../util/toast";
 
 export type MatterAddDeviceStep =
   | "main"
@@ -30,7 +31,8 @@ export type MatterAddDeviceStep =
   | "google_home"
   | "google_home_fallback"
   | "apple_home"
-  | "generic";
+  | "generic"
+  | "commissioning";
 
 declare global {
   interface HASSDomEvents {
@@ -48,6 +50,7 @@ const BACK_STEP: Record<MatterAddDeviceStep, MatterAddDeviceStep | undefined> =
     google_home_fallback: "google_home",
     apple_home: "existing",
     generic: "existing",
+    commissioning: undefined,
   };
 
 @customElement("dialog-matter-add-device")
@@ -58,17 +61,12 @@ class DialogMatterAddDevice extends LitElement {
 
   @state() _pairingCode = "";
 
-  @state() _step: MatterAddDeviceStep = "main";
-
-  @state() _isSubmitting = false;
+  @state() _step: MatterAddDeviceStep = "commissioning";
 
   private _unsub?: UnsubscribeFunc;
 
   public showDialog(): void {
     this._open = true;
-    if (!canCommissionMatterExternal(this.hass)) {
-      return;
-    }
     this._unsub = redirectOnNewMatterDevice(this.hass, () =>
       this.closeDialog()
     );
@@ -78,7 +76,6 @@ class DialogMatterAddDevice extends LitElement {
     this._open = false;
     this._step = "main";
     this._pairingCode = "";
-    this._isSubmitting = false;
     this._unsub?.();
     this._unsub = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -116,10 +113,21 @@ class DialogMatterAddDevice extends LitElement {
     `;
   }
 
-  private _addDevice() {
+  private async _addDevice() {
     const code = this._pairingCode;
-    commissionMatterDevice(this.hass, code);
-    this._isSubmitting = true;
+    const savedStep = this._step;
+    try {
+      this._step = "commissioning";
+      await commissionMatterDevice(this.hass, code);
+    } catch (err) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.matter-add-device.add_device_failed"
+        ),
+        duration: 2000,
+      });
+    }
+    this._step = savedStep;
   }
 
   private _renderActions() {
@@ -167,6 +175,8 @@ class DialogMatterAddDevice extends LitElement {
         @closed=${this.closeDialog}
         .heading=${title}
         ?hideActions=${actions === nothing}
+        scrimClickAction
+        escapeKeyAction
       >
         <ha-dialog-header slot="heading">
           ${hasBackStep
@@ -221,8 +231,11 @@ class DialogMatterAddDevice extends LitElement {
       div {
         display: grid;
       }
-      ha-circular-progress {
-        justify-self: center;
+      .loading {
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     `,
   ];
