@@ -5903,6 +5903,10 @@
         "edit_zones": "Edit zones"
       },
       "profile": {
+        "tabs": {
+          "general": "General",
+          "security": "Security"
+        },
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
         "user_settings_header": "User settings",
