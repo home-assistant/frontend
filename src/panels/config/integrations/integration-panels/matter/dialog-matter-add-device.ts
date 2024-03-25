@@ -9,19 +9,19 @@ import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import {
-  acceptSharedMatterDevice,
   canCommissionMatterExternal,
+  commissionMatterDevice,
   redirectOnNewMatterDevice,
 } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./matter-add-device/matter-add-device-apple-home";
 import "./matter-add-device/matter-add-device-existing";
-import "./matter-add-device/matter-add-device-google-home-fallback";
+import "./matter-add-device/matter-add-device-generic";
 import "./matter-add-device/matter-add-device-google-home";
+import "./matter-add-device/matter-add-device-google-home-fallback";
 import "./matter-add-device/matter-add-device-main";
 import "./matter-add-device/matter-add-device-new";
-import "./matter-add-device/matter-add-device-generic";
 
 export type MatterAddDeviceStep =
   | "main"
@@ -117,11 +117,8 @@ class DialogMatterAddDevice extends LitElement {
   }
 
   private _addDevice() {
-    const pin = Number(this._pairingCode.replaceAll("-", ""));
-    if (isNaN(pin)) {
-      throw new Error("Invalid pin format");
-    }
-    acceptSharedMatterDevice(this.hass, pin);
+    const code = this._pairingCode;
+    commissionMatterDevice(this.hass, code);
     this._isSubmitting = true;
   }
 
