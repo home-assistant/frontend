@@ -1598,25 +1598,58 @@
       },
       "matter-add-device": {
         "main": {
-          "header": "Add Matter device"
+          "header": "Add Matter device",
+          "question": "Is your device already added to another Matter controller?",
+          "answer_new": "No. It’s new.",
+          "answer_new_description": "My device is brand new or factory reset.",
+          "answer_existing": "Yes. It’s already in use.",
+          "answer_existing_description": "My device is connected to another controller."
         },
         "new": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]"
         },
         "existing": {
-          "header": "[%key:ui::dialogs::matter-add-device::main::header%]"
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "question": "Which controller is it connected to?",
+          "answer_google_home": "Google Home",
+          "answer_apple_home": "Apple Home",
+          "answer_generic": "Other controllers"
         },
-        "google_home_link": {
-          "header": "Link Matter app"
+        "google_home": {
+          "header": "Link Matter app",
+          "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
+          "step_2": "Tap {linked_matter_apps_services}.",
+          "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
+          "linked_matter_apps_services": "Linked Matter apps & services",
+          "link_apps_services": "Link apps & services",
+          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
-        "google_home_code": {
-          "header": "Enter Setup Code"
+        "google_home_fallback": {
+          "header": "Copy setup code",
+          "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
+          "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
+          "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
+          "use_pairing_code": "Use Pairing Code",
+          "pairing_code": "Pairing code",
+          "code_instructions": "Paste the code you just received from the other controller."
         },
-        "apple_home_code": {
-          "header": "Enter Pairing Code"
+        "apple_home": {
+          "header": "Copy setup code",
+          "step_1": "Find your device in Apple Home and open {accessory_details}.",
+          "step_2": "Scroll all the way down and tap {turn_on_pairing_mode}.",
+          "step_3": "You now see the setup code.",
+          "accessory_details": "Accessory Details",
+          "turn_on_pairing_mode": "Turn On Pairing Mode",
+          "setup_code": "Setup code",
+          "code_instructions": "Paste the code you just received from the other controller."
         },
-        "others_code": {
-          "header": "Enter Pairing Code"
+        "generic": {
+          "header": "Copy setup code",
+          "code_instructions": "Paste the code you just received from the other controller.",
+          "setup_code": "Setup code"
         }
       }
     },

@@ -1,6 +1,7 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../../../../types";
+import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-new")
 class MatterAddDeviceNew extends LitElement {
@@ -18,16 +19,7 @@ class MatterAddDeviceNew extends LitElement {
     `;
   }
 
-  static styles = [
-    css`
-      .content {
-        padding: 8px 24px 0 24px;
-      }
-      p {
-        margin: 0 0 8px 0;
-      }
-    `,
-  ];
+  static styles = [sharedStyles];
 }
 
 declare global {

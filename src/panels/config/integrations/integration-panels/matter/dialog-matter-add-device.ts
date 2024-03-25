@@ -15,22 +15,22 @@ import {
 } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "./matter-add-device/matter-add-device-apple-home-code";
+import "./matter-add-device/matter-add-device-apple-home";
 import "./matter-add-device/matter-add-device-existing";
-import "./matter-add-device/matter-add-device-google-home-code";
-import "./matter-add-device/matter-add-device-google-home-link";
+import "./matter-add-device/matter-add-device-google-home-fallback";
+import "./matter-add-device/matter-add-device-google-home";
 import "./matter-add-device/matter-add-device-main";
 import "./matter-add-device/matter-add-device-new";
-import "./matter-add-device/matter-add-device-others-code";
+import "./matter-add-device/matter-add-device-generic";
 
 export type MatterAddDeviceStep =
   | "main"
   | "new"
   | "existing"
-  | "google_home_link"
-  | "google_home_code"
-  | "apple_home_code"
-  | "others_code";
+  | "google_home"
+  | "google_home_fallback"
+  | "apple_home"
+  | "generic";
 
 declare global {
   interface HASSDomEvents {
@@ -44,10 +44,10 @@ const BACK_STEP: Record<MatterAddDeviceStep, MatterAddDeviceStep | undefined> =
     main: undefined,
     new: "main",
     existing: "main",
-    google_home_link: "existing",
-    google_home_code: "google_home_link",
-    apple_home_code: "existing",
-    others_code: "existing",
+    google_home: "existing",
+    google_home_fallback: "google_home",
+    apple_home: "existing",
+    generic: "existing",
   };
 
 @customElement("dialog-matter-add-device")
@@ -127,9 +127,9 @@ class DialogMatterAddDevice extends LitElement {
 
   private _renderActions() {
     if (
-      this._step === "apple_home_code" ||
-      this._step === "google_home_code" ||
-      this._step === "others_code"
+      this._step === "apple_home" ||
+      this._step === "google_home_fallback" ||
+      this._step === "generic"
     ) {
       return html`
         <ha-button slot="primaryAction" @click=${this._addDevice}>
@@ -194,6 +194,9 @@ class DialogMatterAddDevice extends LitElement {
   static styles = [
     haStyleDialog,
     css`
+      :host {
+        --horizontal-padding: 24px;
+      }
       ha-dialog {
         --dialog-content-padding: 0;
       }
@@ -202,6 +205,9 @@ class DialogMatterAddDevice extends LitElement {
         --mdc-dialog-max-width: 450px;
       }
       @media all and (max-width: 450px), all and (max-height: 500px) {
+        :host {
+          --horizontal-padding: 16px;
+        }
         ha-dialog {
           --mdc-dialog-min-width: calc(
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)

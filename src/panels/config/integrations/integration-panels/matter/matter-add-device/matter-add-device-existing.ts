@@ -7,6 +7,7 @@ import "../../../../../../components/ha-list-item-new";
 import "../../../../../../components/ha-list-new";
 import { HomeAssistant } from "../../../../../../types";
 import { MatterAddDeviceStep } from "../dialog-matter-add-device";
+import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-existing")
 class MatterAddDeviceExisting extends LitElement {
@@ -15,14 +16,18 @@ class MatterAddDeviceExisting extends LitElement {
   render() {
     return html`
       <div class="content">
-        <p class="text">Which controller is it connected to?</p>
+        <p class="text">
+          ${this.hass.localize(
+            `ui.dialogs.matter-add-device.existing.question`
+          )}
+        </p>
       </div>
 
       <ha-list-new>
         <ha-list-item-new
           interactive
           type="button"
-          .step=${"google_home_link"}
+          .step=${"google_home"}
           @click=${this._onItemClick}
           @keydown=${this._onItemClick}
         >
@@ -32,13 +37,17 @@ class MatterAddDeviceExisting extends LitElement {
             class="logo"
             slot="start"
           />
-          <span slot="headline">Google Home</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.existing.answer_google_home`
+            )}
+          </span>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-new>
         <ha-list-item-new
           interactive
           type="button"
-          .step=${"apple_home_code"}
+          .step=${"apple_home"}
           @click=${this._onItemClick}
           @keydown=${this._onItemClick}
         >
@@ -48,20 +57,28 @@ class MatterAddDeviceExisting extends LitElement {
             class="logo"
             slot="start"
           />
-          <span slot="headline">Apple Home</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.existing.answer_apple_home`
+            )}
+          </span>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-new>
         <ha-list-item-new
           interactive
           type="button"
-          .step=${"others_code"}
+          .step=${"generic"}
           @click=${this._onItemClick}
           @keydown=${this._onItemClick}
         >
           <div class="logo" slot="start">
             <ha-svg-icon path=${mdiHomeAutomation}></ha-svg-icon>
           </div>
-          <span slot="headline">Others controllers</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.existing.answer_generic`
+            )}
+          </span>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-new>
       </ha-list-new>
@@ -78,17 +95,8 @@ class MatterAddDeviceExisting extends LitElement {
   }
 
   static styles = [
+    sharedStyles,
     css`
-      .content {
-        padding: 8px 24px 0 24px;
-      }
-      p {
-        margin: 0 0 8px 0;
-      }
-      ha-list-new {
-        --md-list-item-leading-space: 24px;
-        --md-list-item-trailing-space: 24px;
-      }
       .logo {
         width: 48px;
         height: 48px;

@@ -1,10 +1,11 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import "../../../../../../components/ha-icon-next";
 import "../../../../../../components/ha-list-item-new";
 import "../../../../../../components/ha-list-new";
-import "../../../../../../components/ha-icon-next";
 import { HomeAssistant } from "../../../../../../types";
-import { fireEvent } from "../../../../../../common/dom/fire_event";
+import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-main")
 class MatterAddDeviceMain extends LitElement {
@@ -14,7 +15,7 @@ class MatterAddDeviceMain extends LitElement {
     return html`
       <div class="content">
         <p class="text">
-          Is your device already added to another Matter controller?
+          ${this.hass.localize(`ui.dialogs.matter-add-device.main.question`)}
         </p>
       </div>
       <ha-list-new>
@@ -25,9 +26,15 @@ class MatterAddDeviceMain extends LitElement {
           @click=${this._onItemClick}
           @keydown=${this._onItemClick}
         >
-          <span slot="headline">It’s new</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.main.answer_new`
+            )}
+          </span>
           <span slot="supporting-text">
-            My device is brand new or is factory reset.
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.main.answer_new_description`
+            )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-new>
@@ -38,9 +45,15 @@ class MatterAddDeviceMain extends LitElement {
           @click=${this._onItemClick}
           @keydown=${this._onItemClick}
         >
-          <span slot="headline">It’s already in use</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.main.answer_existing`
+            )}
+          </span>
           <span slot="supporting-text">
-            My device is connected to another controller.
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.main.answer_existing_description`
+            )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-list-item-new>
@@ -57,20 +70,7 @@ class MatterAddDeviceMain extends LitElement {
     fireEvent(this, "step-selected", { step });
   }
 
-  static styles = [
-    css`
-      .content {
-        padding: 8px 24px 0 24px;
-      }
-      p {
-        margin: 0 0 8px 0;
-      }
-      ha-list-new {
-        --md-list-item-leading-space: 24px;
-        --md-list-item-trailing-space: 24px;
-      }
-    `,
-  ];
+  static styles = [sharedStyles];
 }
 
 declare global {
