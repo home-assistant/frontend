@@ -36,8 +36,8 @@ const createConfigEntry = (
   pref_disable_new_entities: false,
   pref_disable_polling: false,
   reason: null,
-  reason_translation_key: null,
-  reason_translation_placeholders: null,
+  error_reason_translation_key: null,
+  error_reason_translation_placeholders: null,
   ...override,
 });
 
