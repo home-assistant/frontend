@@ -738,7 +738,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
-        csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+        const safeState = /,|"/.test(s.state)
+          ? `"${s.state.replaceAll('"', '""')}"`
+          : s.state;
+        csv.push(`${entityId},${safeState},${formatDate(s.last_changed)}\n`);
       }
     }
     csv[0] = headers.join(",") + "\n";
