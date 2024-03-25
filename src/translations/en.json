@@ -377,6 +377,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "image": {
+          "select_image": "Select image",
+          "upload": "Upload picture",
+          "url": "Local path or web URL"
+        },
         "selector": {
           "options": "Selector Options",
           "types": {

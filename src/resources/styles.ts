@@ -82,6 +82,7 @@ export const haStyle = css`
     color: var(--error-color);
   }
 
+  ha-button.warning,
   mwc-button.warning {
     --mdc-theme-primary: var(--error-color);
   }
