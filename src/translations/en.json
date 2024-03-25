@@ -1597,6 +1597,7 @@
         "create": "Create"
       },
       "matter-add-device": {
+        "add_device": "Add device",
         "main": {
           "header": "Add Matter device",
           "question": "Is your device already added to another Matter controller?",

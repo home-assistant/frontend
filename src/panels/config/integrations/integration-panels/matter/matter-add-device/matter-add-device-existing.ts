@@ -16,7 +16,7 @@ class MatterAddDeviceExisting extends LitElement {
   render() {
     return html`
       <div class="content">
-        <p class="text">
+        <p>
           ${this.hass.localize(
             `ui.dialogs.matter-add-device.existing.question`
           )}

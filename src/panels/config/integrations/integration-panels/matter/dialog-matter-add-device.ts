@@ -132,8 +132,12 @@ class DialogMatterAddDevice extends LitElement {
       this._step === "generic"
     ) {
       return html`
-        <ha-button slot="primaryAction" @click=${this._addDevice}>
-          Add device
+        <ha-button
+          slot="primaryAction"
+          @click=${this._addDevice}
+          .disabled=${!this._pairingCode}
+        >
+          ${this.hass.localize("ui.dialogs.matter-add-device.add_device")}
         </ha-button>
       `;
     }

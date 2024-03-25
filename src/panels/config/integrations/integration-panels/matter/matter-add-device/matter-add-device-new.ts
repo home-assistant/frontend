@@ -10,7 +10,7 @@ class MatterAddDeviceNew extends LitElement {
   render() {
     return html`
       <div class="content">
-        <p class="text">
+        <p>
           ${this.hass.localize(
             "ui.panel.config.integrations.config_flow.matter_mobile_app"
           )}
