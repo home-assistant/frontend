@@ -219,8 +219,8 @@ export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity_id: string;
   attribute?: string;
-  above?: number;
-  below?: number;
+  above?: string | number;
+  below?: string | number;
   value_template?: string;
 }
 

@@ -54,6 +54,7 @@ import {
   AddIntegrationDialogParams,
   showYamlIntegrationDialog,
 } from "./show-add-integration-dialog";
+import { getConfigEntries } from "../../../data/config_entries";
 
 export interface IntegrationListItem {
   name: string;
@@ -67,6 +68,7 @@ export interface IntegrationListItem {
   cloud?: boolean;
   is_built_in?: boolean;
   is_add?: boolean;
+  single_config_entry?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -208,6 +210,7 @@ class AddIntegrationDialog extends LitElement {
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
+            single_config_entry: integration.single_config_entry,
           });
         } else if (
           !("integration_type" in integration) &&
@@ -570,6 +573,27 @@ class AddIntegrationDialog extends LitElement {
     if (integration.iot_standards) {
       this._pickedBrand = integration.domain;
       return;
+    }
+
+    if (integration.single_config_entry) {
+      const configEntries = await getConfigEntries(this.hass, {
+        domain: integration.domain,
+      });
+      if (configEntries.length > 0) {
+        this.closeDialog();
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry",
+            {
+              integration_name: integration.name,
+            }
+          ),
+        });
+        return;
+      }
     }
 
     if (integration.config_flow) {

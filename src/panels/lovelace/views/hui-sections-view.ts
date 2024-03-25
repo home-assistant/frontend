@@ -20,7 +20,7 @@ import {
   updateLovelaceContainer,
 } from "../editor/lovelace-path";
 import { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceBadge } from "../types";
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -33,6 +33,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
+
+  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -57,6 +59,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
 
     return html`
+      ${this.badges.length > 0
+        ? html`<div class="badges">${this.badges}</div>`
+        : ""}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -68,8 +73,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
-            "--cell-count": String(
-              (this._config?.sections?.length ?? 0) + (editMode ? 1 : 0)
+            "--section-count": String(
+              sectionsConfig.length + (editMode ? 1 : 0)
             ),
           })}
         >
@@ -114,13 +119,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           ${editMode
             ? html`
                 <button
-                  class="add"
-                  @click=${this._addSection}
+                  class="create"
+                  @click=${this._createSection}
                   aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                   .title=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                 >
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
@@ -132,7 +137,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _addSection(): void {
+  private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
       type: "grid",
       cards: [],
@@ -229,41 +234,57 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        --grid-gap: 32px;
+        --grid-max-section-count: 4;
+        --grid-section-min-width: 320px;
+        --grid-section-max-width: 500px;
         display: block;
       }
 
-      .section {
+      .badges {
+        margin: 12px 8px 4px 8px;
+        font-size: 85%;
+        text-align: center;
+      }
+
+      .container > * {
         position: relative;
+        max-width: var(--grid-section-max-width);
+        width: 100%;
+      }
+
+      .section {
         border-radius: var(--ha-card-border-radius, 12px);
       }
 
       .container {
-        --grid-gap: 20px;
-        --grid-max-width: 1400px;
-        --grid-cell-max-width: 500px;
-        --grid-cell-min-width: 320px;
+        --max-count: min(var(--section-count), var(--grid-max-section-count));
+        --max-width: min(
+          calc(
+            (var(--max-count) + 1) * var(--grid-section-min-width) +
+              (var(--max-count) + 2) * var(--grid-gap) - 1px
+          ),
+          calc(
+            var(--max-count) * var(--grid-section-max-width) +
+              (var(--max-count) + 1) * var(--grid-gap)
+          )
+        );
         display: grid;
+        align-items: start;
+        justify-items: center;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(var(--grid-cell-min-width), 1fr)
+          minmax(min(var(--grid-section-min-width), 100%), 1fr)
         );
-        justify-content: center;
-        gap: 8px var(--grid-gap);
-        padding: var(--grid-gap);
+        grid-gap: 8px var(--grid-gap);
+        padding: 8px var(--grid-gap);
         box-sizing: border-box;
-        max-width: min(
-          calc(
-            var(--cell-count) * (var(--grid-cell-max-width) + var(--grid-gap)) +
-              var(--grid-gap)
-          ),
-          var(--grid-max-width)
-        );
+        max-width: var(--max-width);
         margin: 0 auto;
       }
 
       @media (max-width: 600px) {
         .container {
-          grid-template-columns: 1fr;
           --grid-gap: 8px;
         }
       }
@@ -272,6 +293,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         position: absolute;
         top: 0;
         right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
         opacity: 1;
         display: flex;
         align-items: center;
@@ -290,7 +313,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         padding: 8px;
       }
 
-      .add {
+      .create {
         margin-top: calc(66px + 8px);
         outline: none;
         background: none;
@@ -298,12 +321,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         order: 1;
-        height: 66px;
+        height: calc(66px + (8px + 2px) * 2);
         padding: 8px;
-        box-sizing: content-box;
+        box-sizing: border-box;
       }
 
-      .add:focus {
+      .create:focus {
         border: 2px solid var(--primary-color);
       }
 

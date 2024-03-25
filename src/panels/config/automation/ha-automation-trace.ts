@@ -93,7 +93,7 @@ export class HaAutomationTrace extends LitElement {
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
-      devButtons = html`<div style="position: absolute; right: 0;">
+      devButtons = html`<div style="position: absolute; right: 0; z-index: 1;">
         <button @click=${this._importTrace}>Import trace</button>
         <button @click=${this._loadLocalStorageTrace}>Load stored trace</button>
       </div>`;

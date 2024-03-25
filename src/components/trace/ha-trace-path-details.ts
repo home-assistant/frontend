@@ -163,21 +163,22 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
+            ${error
+              ? html`<div class="error">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.error",
+                    {
+                      error: error,
+                    }
+                  )}
+                </div>`
+              : nothing}
             ${result
               ? html`${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.result"
                   )}
                   <pre>${dump(result)}</pre>`
-              : error
-                ? html`<div class="error">
-                    ${this.hass!.localize(
-                      "ui.panel.config.automation.trace.path.error",
-                      {
-                        error: error,
-                      }
-                    )}
-                  </div>`
-                : nothing}
+              : nothing}
             ${Object.keys(rest).length === 0
               ? nothing
               : html`<pre>${dump(rest)}</pre>`}

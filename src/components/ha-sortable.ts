@@ -82,6 +82,9 @@ export class HaSortable extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._shouldBeDestroy = false;
+    if (this.hasUpdated) {
+      this._createSortable();
+    }
   }
 
   protected createRenderRoot() {
