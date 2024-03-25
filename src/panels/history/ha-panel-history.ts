@@ -1,5 +1,6 @@
 import { mdiDownload, mdiFilterRemove } from "@mdi/js";
 import { differenceInHours } from "date-fns/esm";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -48,7 +49,11 @@ import {
   computeGroupKey,
   LineChartState,
 } from "../../data/history";
-import { fetchStatistics, Statistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  Statistics,
+  getRecordedExcludedEntities,
+} from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
@@ -98,6 +103,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _interval?: number;
+
+  private _excludedEntities?: string[];
 
   public constructor() {
     super();
@@ -191,6 +198,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
+              .entityFilter=${this._entityFilter}
               addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
@@ -216,6 +224,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       </ha-top-app-bar-fixed>
     `;
   }
+
+  private _entityFilter = (entity: HassEntity): boolean =>
+    !this._excludedEntities ||
+    !this._excludedEntities.includes(entity.entity_id);
 
   private mergeHistoryResults(
     ltsResult: HistoryResult,
@@ -358,8 +370,17 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
   }
 
+  private async _getRecordedExcludedEntities() {
+    const { recorded_ids: _recordedIds, excluded_ids: excludedIds } =
+      await getRecordedExcludedEntities(this.hass);
+    this._excludedEntities = excludedIds;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    this._getRecordedExcludedEntities();
+
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
