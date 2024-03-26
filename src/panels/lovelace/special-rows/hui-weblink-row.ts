@@ -50,7 +50,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
       }
       ha-icon {
         padding: 8px;
-        color: var(--paper-item-icon-color);
+        color: var(--state-icon-color);
       }
       div {
         flex: 1;

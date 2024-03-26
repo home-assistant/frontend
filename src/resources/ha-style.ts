@@ -57,7 +57,7 @@ const mainStyles = css`
     --label-badge-grey: #9e9e9e;
 
     /* states icon */
-    --state-icon-color: #44739e;
+    --state-icon-color: var(--paper-item-icon-color, #44739e);
     /* an error state is anything that would be considered an error */
     /* --state-icon-error-color: #db4437; derived from error-color */
 
