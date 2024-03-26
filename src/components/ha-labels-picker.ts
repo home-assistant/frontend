@@ -3,7 +3,6 @@ import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { computeCssColor } from "../common/color/compute-color";
-import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   LabelRegistryEntry,
@@ -109,18 +108,9 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 const label = this._labels?.find(
                   (lbl) => lbl.label_id === item
                 );
-                let color = label?.color
+                const color = label?.color
                   ? computeCssColor(label.color)
                   : undefined;
-                if (color?.startsWith("var(")) {
-                  const computedStyles = getComputedStyle(this);
-                  color = computedStyles.getPropertyValue(
-                    color.substring(4, color.length - 1)
-                  );
-                }
-                if (color?.startsWith("#")) {
-                  color = hex2rgb(color).join(",");
-                }
                 return html`
                   <ha-input-chip
                     .idx=${idx}
@@ -129,9 +119,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                     @click=${this._openDetail}
                     .label=${label?.name}
                     selected
-                    style=${color
-                      ? `--md-input-chip-selected-container-color: rgba(${color}, .3); --color: rgb(${color});`
-                      : ""}
+                    style=${color ? `--color: ${color}` : ""}
                   >
                     ${label?.icon
                       ? html`<ha-icon
@@ -212,6 +200,8 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     }
     ha-input-chip {
       border: 1px solid var(--color);
+      --md-input-chip-selected-container-color: var(--color);
+      --ha-input-chip-selected-container-opacity: 0.3;
     }
   `;
 }
