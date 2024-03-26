@@ -167,7 +167,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       ) {
         deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
         inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.area_id);
+        inputEntities = entities.filter((entity) => entity.labels.length > 0);
 
         if (includeDomains) {
           inputDevices = inputDevices!.filter((device) => {
