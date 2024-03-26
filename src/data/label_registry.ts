@@ -9,14 +9,12 @@ export interface LabelRegistryEntry {
   name: string;
   icon: string | null;
   color: string | null;
-  aliases: string[];
 }
 
 export interface LabelRegistryEntryMutableParams {
   name: string;
   icon?: string | null;
   color?: string | null;
-  aliases?: string[];
 }
 
 export const fetchLabelRegistry = (conn: Connection) =>

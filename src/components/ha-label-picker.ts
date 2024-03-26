@@ -150,7 +150,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
             name: this.hass.localize("ui.components.label-picker.no_labels"),
             icon: null,
             color: null,
-            aliases: [],
           },
         ];
       }
@@ -310,7 +309,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
             name: this.hass.localize("ui.components.label-picker.no_match"),
             icon: null,
             color: null,
-            aliases: [],
           },
         ];
       }
@@ -324,7 +322,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
               name: this.hass.localize("ui.components.label-picker.add_new"),
               icon: "mdi:plus",
               color: null,
-              aliases: [],
             },
           ];
     }
@@ -350,8 +347,9 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         this.excludeLabels
       ).map((label) => ({
         ...label,
-        strings: [label.label_id, label.name, ...label.aliases],
+        strings: [label.label_id, label.name],
       }));
+
       this.comboBox.items = labels;
       this.comboBox.filteredItems = labels;
     }
