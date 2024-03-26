@@ -30,6 +30,7 @@ import {
   entityMeetsTargetSelector,
   expandAreaTarget,
   expandDeviceTarget,
+  expandFloorTarget,
   Selector,
 } from "../data/selector";
 import { HomeAssistant, ValueChangedEvent } from "../types";
@@ -58,20 +59,12 @@ const showOptionalToggle = (field) =>
   !("boolean" in field.selector && field.default);
 
 interface ExtHassService extends Omit<HassService, "fields"> {
-  fields: {
-    key: string;
-    name?: string;
-    description: string;
-    required?: boolean;
-    advanced?: boolean;
-    default?: any;
-    example?: any;
-    filter?: {
-      supported_features?: number[];
-      attribute?: Record<string, any[]>;
-    };
-    selector?: Selector;
-  }[];
+  fields: Array<
+    Omit<HassService["fields"][string], "selector"> & {
+      key: string;
+      selector?: Selector;
+    }
+  >;
   hasSelector: string[];
 }
 
@@ -275,10 +268,24 @@ export class HaServiceControl extends LitElement {
       ensureArray(
         value?.target?.device_id || value?.data?.device_id
       )?.slice() || [];
-    const targetAreas = ensureArray(
-      value?.target?.area_id || value?.data?.area_id
+    const targetAreas =
+      ensureArray(value?.target?.area_id || value?.data?.area_id)?.slice() ||
+      [];
+    const targetFloors = ensureArray(
+      value?.target?.floor_id || value?.data?.floor_id
     )?.slice();
-    if (targetAreas) {
+    if (targetFloors) {
+      targetFloors.forEach((floorId) => {
+        const expanded = expandFloorTarget(
+          this.hass,
+          floorId,
+          this.hass.areas,
+          targetSelector
+        );
+        targetAreas.push(...expanded.areas);
+      });
+    }
+    if (targetAreas.length) {
       targetAreas.forEach((areaId) => {
         const expanded = expandAreaTarget(
           this.hass,
