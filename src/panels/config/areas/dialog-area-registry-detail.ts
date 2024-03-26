@@ -120,20 +120,18 @@ class DialogAreaDetail extends LitElement {
               .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
             ></ha-icon-picker>
 
-            <<<<<<< HEAD
             <ha-floor-picker
               .hass=${this.hass}
               .value=${this._floor}
               @value-changed=${this._floorChanged}
               .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
             ></ha-floor-picker>
-            =======
+
             <ha-labels-picker
               .hass=${this.hass}
               .value=${this._labels}
               @value-changed=${this._labelsChanged}
             ></ha-labels-picker>
-            >>>>>>> 9ab747481 (Add support for labels)
 
             <ha-picture-upload
               .hass=${this.hass}
@@ -243,9 +241,9 @@ class DialogAreaDetail extends LitElement {
       css`
         ha-textfield,
         ha-icon-picker,
-        <<<<<<< HEAD ha-floor-picker,
-        ======= ha-labels-picker,
-        >>>>>>>9ab747481 (Add support for labels) ha-picture-upload {
+        ha-floor-picker,
+        ha-labels-picker,
+        ha-picture-upload {
           display: block;
           margin-bottom: 16px;
         }
