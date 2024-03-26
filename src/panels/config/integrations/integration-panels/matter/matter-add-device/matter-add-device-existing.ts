@@ -102,11 +102,12 @@ class MatterAddDeviceExisting extends LitElement {
         height: 48px;
         border-radius: 12px;
         border: 1px solid var(--divider-color);
-        padding: 6px;
+        padding: 10px;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: center;
+        object-fit: contain;
       }
       .logo ha-svg-icon {
         --mdc-icon-size: 36px;

@@ -61,7 +61,7 @@ class DialogMatterAddDevice extends LitElement {
 
   @state() _pairingCode = "";
 
-  @state() _step: MatterAddDeviceStep = "commissioning";
+  @state() _step: MatterAddDeviceStep = "main";
 
   private _unsub?: UnsubscribeFunc;
 
@@ -227,9 +227,6 @@ class DialogMatterAddDevice extends LitElement {
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
           );
         }
-      }
-      div {
-        display: grid;
       }
       .loading {
         padding: 24px;
