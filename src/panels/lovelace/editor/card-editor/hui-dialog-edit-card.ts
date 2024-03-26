@@ -220,7 +220,6 @@ export class HuiDialogEditCard
             ? html`
                 <a
                   slot="actionItems"
-                  class="header_button"
                   href=${this._documentationURL}
                   title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
@@ -518,7 +517,7 @@ export class HuiDialogEditCard
           align-items: center;
           justify-content: space-between;
         }
-        .header_button {
+        ha-dialog-header a {
           color: inherit;
           text-decoration: none;
         }

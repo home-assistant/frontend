@@ -187,7 +187,10 @@
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
         "unlock": "Unlock",
-        "open": "Open"
+        "open": "Open",
+        "open_door": "Open door",
+        "open_door_confirm": "Really open?",
+        "open_door_success": "Door open"
       },
       "media_player": {
         "source": "Source",
@@ -481,15 +484,20 @@
       },
       "target-picker": {
         "expand": "Expand",
+        "expand_floor_id": "Split this floor into separate areas.",
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
+        "expand_label_id": "Split this label into separate area, devices and entities.",
         "remove": "Remove",
+        "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
+        "remove_label_id": "Remove label",
         "add_area_id": "Choose area",
         "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity"
+        "add_entity_id": "Choose entity",
+        "add_label_id": "Choose label"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -539,6 +547,23 @@
         "device": "Device",
         "no_area": "No area"
       },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "labels": "Labels",
+        "add_label": "Add label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found",
+        "add_dialog": {
+          "title": "Add new label",
+          "text": "Enter the name of the new label.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_label": "Failed to create label."
+        }
+      },
       "area-picker": {
         "clear": "Clear",
         "show_areas": "Show areas",
@@ -547,12 +572,29 @@
         "add_new": "Add new area…",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
+        "unassigned_areas": "Unassigned areas",
         "add_dialog": {
           "title": "Add new area",
           "text": "Enter the name of the new area.",
           "name": "Name",
           "add": "Add",
           "failed_create_area": "Failed to create area."
+        }
+      },
+      "floor-picker": {
+        "clear": "Clear",
+        "show_floors": "Show floors",
+        "floor": "Floor",
+        "add_new_sugestion": "Add new floor ''{name}''",
+        "add_new": "Add new floor…",
+        "no_floors": "You don't have any floors",
+        "no_match": "No matching floors found",
+        "add_dialog": {
+          "title": "Add new floor",
+          "text": "Enter the name of the new floor.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_floor": "Failed to create floor."
         }
       },
       "area-filter": {
@@ -562,6 +604,16 @@
         "all_areas": "All areas",
         "show": "Show {area}",
         "hide": "Hide {area}"
+      },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "label": "Label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "add_label": "Add label",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found"
       },
       "statistic-picker": {
         "statistic": "Statistic",
@@ -611,6 +663,38 @@
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
+      "color-picker": {
+        "default_color": "Default color (state)",
+        "colors": {
+          "primary": "Primary",
+          "accent": "Accent",
+          "disabled": "Disabled",
+          "inactive": "Inactive",
+          "red": "Red",
+          "pink": "Pink",
+          "purple": "Purple",
+          "deep-purple": "Deep purple",
+          "indigo": "Indigo",
+          "blue": "Blue",
+          "light-blue": "Light blue",
+          "cyan": "Cyan",
+          "teal": "Teal",
+          "green": "Green",
+          "light-green": "Light Green",
+          "lime": "Lime",
+          "yellow": "Yellow",
+          "amber": "Amber",
+          "orange": "Orange",
+          "deep-orange": "Deep orange",
+          "brown": "Brown",
+          "light-grey": "Light grey",
+          "grey": "Grey",
+          "dark-grey": "Dark grey",
+          "blue-grey": "Blue grey",
+          "black": "Black",
+          "white": "White"
+        }
       },
       "date-range-picker": {
         "start_date": "Start date",
@@ -1573,6 +1657,72 @@
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
         "create": "Create"
+      },
+      "matter-add-device": {
+        "add_device": "Add device",
+        "add_device_failed": "Failed to add the device",
+        "commissioning": {
+          "header": "Add Matter device",
+          "note": "Adding the device, this may take a minute or two."
+        },
+        "main": {
+          "header": "Add Matter device",
+          "question": "Is your device already added to another Matter controller?",
+          "answer_new": "No. It’s new.",
+          "answer_new_description": "My device is brand new or factory reset.",
+          "answer_existing": "Yes. It’s already in use.",
+          "answer_existing_description": "My device is connected to another controller."
+        },
+        "new": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+          "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
+        },
+        "existing": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "question": "Which controller is it connected to?",
+          "answer_google_home": "Google Home",
+          "answer_apple_home": "Apple Home",
+          "answer_generic": "Other controllers"
+        },
+        "google_home": {
+          "header": "Link Matter app",
+          "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
+          "step_2": "Tap {linked_matter_apps_services}.",
+          "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
+          "linked_matter_apps_services": "Linked Matter apps & services",
+          "link_apps_services": "Link apps & services",
+          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
+        },
+        "google_home_fallback": {
+          "header": "Copy pairing code",
+          "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
+          "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
+          "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
+          "use_pairing_code": "Use Pairing Code",
+          "pairing_code": "Pairing code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "apple_home": {
+          "header": "Copy setup code",
+          "step_1": "Find your device in Apple Home and open {accessory_details}.",
+          "step_2": "Scroll all the way down and tap {turn_on_pairing_mode}.",
+          "step_3": "You now see the setup code.",
+          "accessory_details": "Accessory Details",
+          "turn_on_pairing_mode": "Turn On Pairing Mode",
+          "setup_code": "Setup code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "generic": {
+          "header": "Copy setup code",
+          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a sharing code, enter that below.",
+          "setup_code": "Setup code"
+        }
       }
     },
     "weekdays": {
@@ -1687,7 +1837,7 @@
             "secondary": "Manage who can access your home"
           },
           "areas": {
-            "main": "Areas & zones",
+            "main": "Areas, labels & zones",
             "secondary": "Manage locations in and around your house"
           },
           "companion": {
@@ -1757,6 +1907,45 @@
             "ignored_in_version": "This issue was ignored in version {version}."
           }
         },
+        "floors": {
+          "editor": {
+            "create_floor": "Create floor",
+            "update_floor": "Update floor",
+            "delete": "Delete",
+            "name": "Name",
+            "icon": "Icon",
+            "level": "Level",
+            "name_required": "Name is required",
+            "floor_id": "Floor ID",
+            "unknown_error": "Unknown error",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+          }
+        },
+        "labels": {
+          "caption": "Labels",
+          "description": "Group devices and entities",
+          "headers": { "name": "Name", "icon": "Icon", "color": "Color" },
+          "add_label": "Add label",
+          "no_labels": "You don't have any labels",
+          "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
+          "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
+          "confirm_remove_title": "Remove label?",
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
+          "detail": {
+            "new_label": "New label",
+            "name": "Name",
+            "icon": "Icon",
+            "color": "Color",
+            "description": "Description",
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create",
+            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
+          }
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
@@ -1776,7 +1965,9 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "create_area": "Create Area"
+            "unassigned_areas": "Unassigned areas",
+            "create_area": "Create Area",
+            "create_floor": "Create floor"
           },
           "editor": {
             "create_area": "Create area",
@@ -1784,6 +1975,7 @@
             "delete": "Delete",
             "name": "Name",
             "icon": "Icon",
+            "floor": "Floor",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
@@ -4056,7 +4248,6 @@
             "missing_zwave_zigbee_title": "{integration} is not setup",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
-            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
@@ -5799,38 +5990,6 @@
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
-          "color-picker": {
-            "default_color": "Default color (state)",
-            "colors": {
-              "primary": "Primary",
-              "accent": "Accent",
-              "disabled": "Disabled",
-              "inactive": "Inactive",
-              "red": "Red",
-              "pink": "Pink",
-              "purple": "Purple",
-              "deep-purple": "Deep purple",
-              "indigo": "Indigo",
-              "blue": "Blue",
-              "light-blue": "Light blue",
-              "cyan": "Cyan",
-              "teal": "Teal",
-              "green": "Green",
-              "light-green": "Light Green",
-              "lime": "Lime",
-              "yellow": "Yellow",
-              "amber": "Amber",
-              "orange": "Orange",
-              "deep-orange": "Deep orange",
-              "brown": "Brown",
-              "light-grey": "Light grey",
-              "grey": "Grey",
-              "dark-grey": "Dark grey",
-              "blue-grey": "Blue grey",
-              "black": "Black",
-              "white": "White"
-            }
-          },
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",
@@ -6529,7 +6688,9 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "playstore": "Get it on Google Play",
+          "appstore": "Download on the App Store"
         },
         "user": {
           "header": "Create user",
