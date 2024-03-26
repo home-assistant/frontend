@@ -403,7 +403,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     if (type === "area_id") {
       value = ev.detail.value.id;
-      type = ev.detail.value.type;
+      type = `${ev.detail.value.type}_id`;
     }
 
     target.value = "";

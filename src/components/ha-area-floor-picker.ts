@@ -422,8 +422,8 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
       <ha-combo-box
         .hass=${this.hass}
         .helper=${this.helper}
-        item-value-path="area_id"
-        item-id-path="area_id"
+        item-value-path="id"
+        item-id-path="id"
         item-label-path="name"
         .value=${this._value}
         .disabled=${this.disabled}
@@ -479,8 +479,8 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
 
     fireEvent(this, "value-changed", {
       value: {
-        id: selected.area_id,
-        type: selected.floor ? "floor_id" : "area_id",
+        id: selected.id,
+        type: selected.type,
       },
     });
   }
