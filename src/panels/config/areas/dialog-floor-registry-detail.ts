@@ -7,53 +7,40 @@ import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
-import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-floor-picker";
 import "../../../components/ha-textfield";
-import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
-import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import "../../../components/ha-icon-picker";
+import { FloorRegistryEntryMutableParams } from "../../../data/floor_registry";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import { HomeAssistant } from "../../../types";
+import { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 
-const cropOptions: CropOptions = {
-  round: false,
-  type: "image/jpeg",
-  quality: 0.75,
-  aspectRatio: 1.78,
-};
-
-class DialogAreaDetail extends LitElement {
+class DialogFloorDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
 
   @state() private _aliases!: string[];
 
-  @state() private _picture!: string | null;
-
   @state() private _icon!: string | null;
 
-  @state() private _floor!: string | null;
+  @state() private _level!: number;
 
   @state() private _error?: string;
 
-  @state() private _params?: AreaRegistryDetailDialogParams;
+  @state() private _params?: FloorRegistryDetailDialogParams;
 
   @state() private _submitting?: boolean;
 
   public async showDialog(
-    params: AreaRegistryDetailDialogParams
+    params: FloorRegistryDetailDialogParams
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry ? this._params.entry.name : "";
-    this._aliases = this._params.entry ? this._params.entry.aliases : [];
-    this._picture = this._params.entry?.picture || null;
+    this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
-    this._floor = this._params.entry?.floor_id || null;
+    this._level = this._params.entry?.level ?? 0;
     await this.updateComplete;
   }
 
@@ -76,8 +63,8 @@ class DialogAreaDetail extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           entry
-            ? this.hass.localize("ui.panel.config.areas.editor.update_area")
-            : this.hass.localize("ui.panel.config.areas.editor.create_area")
+            ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
+            : this.hass.localize("ui.panel.config.floors.editor.create_floor")
         )}
       >
         <div>
@@ -90,10 +77,10 @@ class DialogAreaDetail extends LitElement {
                   <ha-settings-row>
                     <span slot="heading">
                       ${this.hass.localize(
-                        "ui.panel.config.areas.editor.area_id"
+                        "ui.panel.config.floors.editor.floor_id"
                       )}
                     </span>
-                    <span slot="description"> ${entry.area_id} </span>
+                    <span slot="description">${entry.floor_id}</span>
                   </ha-settings-row>
                 `
               : nothing}
@@ -101,12 +88,21 @@ class DialogAreaDetail extends LitElement {
             <ha-textfield
               .value=${this._name}
               @input=${this._nameChanged}
-              .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
+              .label=${this.hass.localize("ui.panel.config.floors.editor.name")}
               .validationMessage=${this.hass.localize(
-                "ui.panel.config.areas.editor.name_required"
+                "ui.panel.config.floors.editor.name_required"
               )}
               required
               dialogInitialFocus
+            ></ha-textfield>
+
+            <ha-textfield
+              .value=${this._level}
+              @input=${this._levelChanged}
+              .label=${this.hass.localize(
+                "ui.panel.config.floors.editor.level"
+              )}
+              type="number"
             ></ha-textfield>
 
             <ha-icon-picker
@@ -116,30 +112,15 @@ class DialogAreaDetail extends LitElement {
               .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
             ></ha-icon-picker>
 
-            <ha-floor-picker
-              .hass=${this.hass}
-              .value=${this._floor}
-              @value-changed=${this._floorChanged}
-              .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
-            ></ha-floor-picker>
-
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this._picture}
-              crop
-              .cropOptions=${cropOptions}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
-
             <h3 class="header">
               ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_section"
+                "ui.panel.config.floors.editor.aliases_section"
               )}
             </h3>
 
             <p class="description">
               ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_description"
+                "ui.panel.config.floors.editor.aliases_description"
               )}
             </p>
             <ha-aliases-editor
@@ -174,9 +155,9 @@ class DialogAreaDetail extends LitElement {
     this._name = ev.target.value;
   }
 
-  private _floorChanged(ev) {
+  private _levelChanged(ev) {
     this._error = undefined;
-    this._floor = ev.detail.value;
+    this._level = Number(ev.target.value);
   }
 
   private _iconChanged(ev) {
@@ -184,20 +165,14 @@ class DialogAreaDetail extends LitElement {
     this._icon = ev.detail.value;
   }
 
-  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
-    this._error = undefined;
-    this._picture = (ev.target as HaPictureUpload).value;
-  }
-
   private async _updateEntry() {
-    const create = !this._params!.entry;
     this._submitting = true;
+    const create = !this._params!.entry;
     try {
-      const values: AreaRegistryEntryMutableParams = {
+      const values: FloorRegistryEntryMutableParams = {
         name: this._name.trim(),
-        picture: this._picture || (create ? undefined : null),
         icon: this._icon || (create ? undefined : null),
-        floor_id: this._floor || (create ? undefined : null),
+        level: this._level,
         aliases: this._aliases,
       };
       if (create) {
@@ -209,7 +184,7 @@ class DialogAreaDetail extends LitElement {
     } catch (err: any) {
       this._error =
         err.message ||
-        this.hass.localize("ui.panel.config.areas.editor.unknown_error");
+        this.hass.localize("ui.panel.config.floors.editor.unknown_error");
     } finally {
       this._submitting = false;
     }
@@ -223,10 +198,7 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
-        ha-icon-picker,
-        ha-floor-picker,
-        ha-picture-upload {
+        ha-textfield {
           display: block;
           margin-bottom: 16px;
         }
@@ -237,8 +209,8 @@ class DialogAreaDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-area-registry-detail": DialogAreaDetail;
+    "dialog-floor-registry-detail": DialogFloorDetail;
   }
 }
 
-customElements.define("dialog-area-registry-detail", DialogAreaDetail);
+customElements.define("dialog-floor-registry-detail", DialogFloorDetail);

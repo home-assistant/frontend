@@ -424,6 +424,32 @@ export interface UiColorSelector {
   ui_color: {} | null;
 }
 
+export const expandFloorTarget = (
+  hass: HomeAssistant,
+  floorId: string,
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newAreas: string[] = [];
+  Object.values(areas).forEach((area) => {
+    if (
+      area.floor_id === floorId &&
+      areaMeetsTargetSelector(
+        hass,
+        hass.entities,
+        hass.devices,
+        area.area_id,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newAreas.push(area.area_id);
+    }
+  });
+  return { areas: newAreas };
+};
+
 export const expandAreaTarget = (
   hass: HomeAssistant,
   areaId: string,
