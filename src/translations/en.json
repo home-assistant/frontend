@@ -1657,6 +1657,72 @@
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
         "create": "Create"
+      },
+      "matter-add-device": {
+        "add_device": "Add device",
+        "add_device_failed": "Failed to add the device",
+        "commissioning": {
+          "header": "Add Matter device",
+          "note": "Adding the device, this may take a minute or two."
+        },
+        "main": {
+          "header": "Add Matter device",
+          "question": "Is your device already added to another Matter controller?",
+          "answer_new": "No. It’s new.",
+          "answer_new_description": "My device is brand new or factory reset.",
+          "answer_existing": "Yes. It’s already in use.",
+          "answer_existing_description": "My device is connected to another controller."
+        },
+        "new": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+          "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
+        },
+        "existing": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "question": "Which controller is it connected to?",
+          "answer_google_home": "Google Home",
+          "answer_apple_home": "Apple Home",
+          "answer_generic": "Other controllers"
+        },
+        "google_home": {
+          "header": "Link Matter app",
+          "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
+          "step_2": "Tap {linked_matter_apps_services}.",
+          "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
+          "linked_matter_apps_services": "Linked Matter apps & services",
+          "link_apps_services": "Link apps & services",
+          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
+        },
+        "google_home_fallback": {
+          "header": "Copy pairing code",
+          "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
+          "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
+          "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
+          "use_pairing_code": "Use Pairing Code",
+          "pairing_code": "Pairing code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "apple_home": {
+          "header": "Copy setup code",
+          "step_1": "Find your device in Apple Home and open {accessory_details}.",
+          "step_2": "Scroll all the way down and tap {turn_on_pairing_mode}.",
+          "step_3": "You now see the setup code.",
+          "accessory_details": "Accessory Details",
+          "turn_on_pairing_mode": "Turn On Pairing Mode",
+          "setup_code": "Setup code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "generic": {
+          "header": "Copy setup code",
+          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a sharing code, enter that below.",
+          "setup_code": "Setup code"
+        }
       }
     },
     "weekdays": {
@@ -4182,7 +4248,6 @@
             "missing_zwave_zigbee_title": "{integration} is not setup",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
-            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
@@ -6623,7 +6688,9 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "playstore": "Get it on Google Play",
+          "appstore": "Download on the App Store"
         },
         "user": {
           "header": "Create user",
