@@ -1,4 +1,4 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../../components/ha-circular-progress";
 import {
@@ -7,7 +7,6 @@ import {
 } from "../../../../../../data/matter";
 import { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
-import { isComponentLoaded } from "../../../../../../common/config/is_component_loaded";
 
 @customElement("matter-add-device-new")
 class MatterAddDeviceNew extends LitElement {
@@ -35,54 +34,53 @@ class MatterAddDeviceNew extends LitElement {
     return html`
       <div class="content">
         <p>${this.hass.localize("ui.dialogs.matter-add-device.new.note")}</p>
-        ${!isComponentLoaded(this.hass, "mobile_app")
-          ? html`
-              <div class="app-qr">
-                <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://apps.apple.com/app/home-assistant/id1099568401?mt=8"
-                >
-                  <img
-                    loading="lazy"
-                    src="/static/images/appstore.svg"
-                    alt=${this.hass.localize(
-                      "ui.dialogs.matter-add-device.new.appstore"
-                    )}
-                    class="icon"
-                  />
-                  <img
-                    loading="lazy"
-                    src="/static/images/qr-appstore.svg"
-                    alt=${this.hass.localize(
-                      "ui.dialogs.matter-add-device.new.appstore"
-                    )}
-                  />
-                </a>
-                <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
-                >
-                  <img
-                    loading="lazy"
-                    src="/static/images/playstore.svg"
-                    alt=${this.hass.localize(
-                      "ui.dialogs.matter-add-device.new.playstore"
-                    )}
-                    class="icon"
-                  />
-                  <img
-                    loading="lazy"
-                    src="/static/images/qr-playstore.svg"
-                    alt=${this.hass.localize(
-                      "ui.dialogs.matter-add-device.new.playstore"
-                    )}
-                  />
-                </a>
-              </div>
-            `
-          : nothing}
+        <p>
+          ${this.hass.localize("ui.dialogs.matter-add-device.new.download_app")}
+        </p>
+        <div class="app-qr">
+          <a
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://apps.apple.com/app/home-assistant/id1099568401?mt=8"
+          >
+            <img
+              loading="lazy"
+              src="/static/images/appstore.svg"
+              alt=${this.hass.localize(
+                "ui.dialogs.matter-add-device.new.appstore"
+              )}
+              class="icon"
+            />
+            <img
+              loading="lazy"
+              src="/static/images/qr-appstore.svg"
+              alt=${this.hass.localize(
+                "ui.dialogs.matter-add-device.new.appstore"
+              )}
+            />
+          </a>
+          <a
+            target="_blank"
+            rel="noreferrer noopener"
+            href="https://play.google.com/store/apps/details?id=io.homeassistant.companion.android"
+          >
+            <img
+              loading="lazy"
+              src="/static/images/playstore.svg"
+              alt=${this.hass.localize(
+                "ui.dialogs.matter-add-device.new.playstore"
+              )}
+              class="icon"
+            />
+            <img
+              loading="lazy"
+              src="/static/images/qr-playstore.svg"
+              alt=${this.hass.localize(
+                "ui.dialogs.matter-add-device.new.playstore"
+              )}
+            />
+          </a>
+        </div>
       </div>
     `;
   }
@@ -90,14 +88,8 @@ class MatterAddDeviceNew extends LitElement {
   static styles = [
     sharedStyles,
     css`
-      .content {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        text-align: center;
-      }
       .app-qr {
-        margin-top: 24px;
+        margin: 24px auto 0 auto;
         display: flex;
         justify-content: space-between;
         padding: 0 24px;
