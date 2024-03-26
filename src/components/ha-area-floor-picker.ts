@@ -331,15 +331,11 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
       const floorAreaEntries: Array<
         [FloorRegistryEntry | undefined, AreaRegistryEntry[]]
       > = Object.entries(floorAreaLookup)
-        .map(([floorId, floorAreas]) => {
-          const floor = floors.find((fl) => fl.floor_id === floorId);
-          return [floor, floorAreas];
+       .map(([floorId, floorAreas]) => {
+          const floor = floors.find((fl) => fl.floor_id === floorId)!;
+          return [floor, floorAreas] as const;
         })
         .sort(([floorA], [floorB]) => {
-          // typescript is confused here, so we check to make it happy
-          if (!("level" in floorA!) || !("level" in floorB!)) {
-            return 0;
-          }
           if (floorA.level !== floorB.level) {
             return (floorA.level ?? 0) - (floorB.level ?? 0);
           }
