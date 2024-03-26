@@ -481,9 +481,11 @@
       },
       "target-picker": {
         "expand": "Expand",
+        "expand_floor_id": "Split this floor into separate areas.",
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
         "remove": "Remove",
+        "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
@@ -547,12 +549,29 @@
         "add_new": "Add new area…",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
+        "unassigned_areas": "Unassigned areas",
         "add_dialog": {
           "title": "Add new area",
           "text": "Enter the name of the new area.",
           "name": "Name",
           "add": "Add",
           "failed_create_area": "Failed to create area."
+        }
+      },
+      "floor-picker": {
+        "clear": "Clear",
+        "show_floors": "Show floors",
+        "floor": "Floor",
+        "add_new_sugestion": "Add new floor ''{name}''",
+        "add_new": "Add new floor…",
+        "no_floors": "You don't have any floors",
+        "no_match": "No matching floors found",
+        "add_dialog": {
+          "title": "Add new floor",
+          "text": "Enter the name of the new floor.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_floor": "Failed to create floor."
         }
       },
       "area-filter": {
@@ -1757,6 +1776,23 @@
             "ignored_in_version": "This issue was ignored in version {version}."
           }
         },
+        "floors": {
+          "editor": {
+            "create_floor": "Create floor",
+            "update_floor": "Update floor",
+            "delete": "Delete",
+            "name": "Name",
+            "icon": "Icon",
+            "level": "Level",
+            "name_required": "Name is required",
+            "floor_id": "Floor ID",
+            "unknown_error": "Unknown error",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+          }
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
@@ -1776,7 +1812,9 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "create_area": "Create Area"
+            "unassigned_areas": "Unassigned areas",
+            "create_area": "Create Area",
+            "create_floor": "Create floor"
           },
           "editor": {
             "create_area": "Create area",
@@ -1784,6 +1822,7 @@
             "delete": "Delete",
             "name": "Name",
             "icon": "Icon",
+            "floor": "Floor",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",

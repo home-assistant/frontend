@@ -9763,7 +9763,7 @@ __metadata:
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.1"
     hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
-    home-assistant-js-websocket: "npm:9.1.0"
+    home-assistant-js-websocket: "npm:9.2.1"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.0.11"
     idb-keyval: "npm:6.2.1"
@@ -9839,10 +9839,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"home-assistant-js-websocket@npm:9.1.0":
-  version: 9.1.0
-  resolution: "home-assistant-js-websocket@npm:9.1.0"
-  checksum: 10/9c1f2e20158d0eb7862e9f853807867af219f1a46d4bf2b5feb9db432dbe3a4032e466bea64d8650bb83daea1ef853b1ea7b985b29f5100d5c2375a3f40c32c6
+"home-assistant-js-websocket@npm:9.2.1":
+  version: 9.2.1
+  resolution: "home-assistant-js-websocket@npm:9.2.1"
+  checksum: 10/0508aacb4285c805953e620968ef7ca7fc9c3cdac18fa723dd9af128dff74ef2ec65fad4079353b80363cd1daec6d2798b46d2d40a7e4ff5c0807ac71080bf58
   languageName: node
   linkType: hard
 

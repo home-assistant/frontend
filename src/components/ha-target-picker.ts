@@ -6,12 +6,17 @@ import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
   mdiDevices,
+  mdiFloorPlan,
   mdiPlus,
   mdiSofa,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
+import {
+  HassEntity,
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,13 +36,19 @@ import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
-import "./ha-area-picker";
+import "./ha-area-floor-picker";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import {
+  FloorRegistryEntry,
+  subscribeFloorRegistry,
+} from "../data/floor_registry";
+import { AreaRegistryEntry } from "../data/area_registry";
 
 @customElement("ha-target-picker")
-export class HaTargetPicker extends LitElement {
+export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: HassServiceTarget;
@@ -78,7 +89,17 @@ export class HaTargetPicker extends LitElement {
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
+  @state() private _floors?: FloorRegistryEntry[];
+
   private _opened = false;
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeFloorRegistry(this.hass.connection, (floors) => {
+        this._floors = floors;
+      }),
+    ];
+  }
 
   protected render() {
     if (this.addOnTop) {
@@ -90,6 +111,21 @@ export class HaTargetPicker extends LitElement {
   private _renderItems() {
     return html`
       <div class="mdc-chip-set items">
+        ${this.value?.floor_id
+          ? ensureArray(this.value.floor_id).map((floor_id) => {
+              const floor = this._floors?.find(
+                (flr) => flr.floor_id === floor_id
+              );
+              return this._renderChip(
+                "floor_id",
+                floor_id,
+                floor?.name || floor_id,
+                undefined,
+                floor?.icon,
+                mdiFloorPlan
+              );
+            })
+          : ""}
         ${this.value?.area_id
           ? ensureArray(this.value.area_id).map((area_id) => {
               const area = this.hass.areas![area_id];
@@ -207,7 +243,7 @@ export class HaTargetPicker extends LitElement {
   }
 
   private _renderChip(
-    type: "area_id" | "device_id" | "entity_id",
+    type: "floor_id" | "area_id" | "device_id" | "entity_id",
     id: string,
     name: string,
     entityState?: HassEntity,
@@ -296,7 +332,7 @@ export class HaTargetPicker extends LitElement {
       @input=${stopPropagation}
       >${this._addMode === "area_id"
         ? html`
-            <ha-area-picker
+            <ha-area-floor-picker
               .hass=${this.hass}
               id="input"
               .type=${"area_id"}
@@ -309,9 +345,10 @@ export class HaTargetPicker extends LitElement {
               .includeDeviceClasses=${this.includeDeviceClasses}
               .includeDomains=${this.includeDomains}
               .excludeAreas=${ensureArray(this.value?.area_id)}
+              .excludeFloors=${ensureArray(this.value?.floor_id)}
               @value-changed=${this._targetPicked}
               @click=${this._preventDefault}
-            ></ha-area-picker>
+            ></ha-area-floor-picker>
           `
         : this._addMode === "device_id"
           ? html`
@@ -356,18 +393,24 @@ export class HaTargetPicker extends LitElement {
     if (!ev.detail.value) {
       return;
     }
-    const value = ev.detail.value;
+    let value = ev.detail.value;
     const target = ev.currentTarget;
+    let type = target.type;
 
-    if (target.type === "entity_id" && !isValidEntityId(value)) {
+    if (type === "entity_id" && !isValidEntityId(value)) {
       return;
+    }
+
+    if (type === "area_id") {
+      value = ev.detail.value.id;
+      type = ev.detail.value.type;
     }
 
     target.value = "";
     if (
       this.value &&
-      this.value[target.type] &&
-      ensureArray(this.value[target.type]).includes(value)
+      this.value[type] &&
+      ensureArray(this.value[type]).includes(value)
     ) {
       return;
     }
@@ -375,19 +418,31 @@ export class HaTargetPicker extends LitElement {
       value: this.value
         ? {
             ...this.value,
-            [target.type]: this.value[target.type]
-              ? [...ensureArray(this.value[target.type]), value]
+            [type]: this.value[type]
+              ? [...ensureArray(this.value[type]), value]
               : value,
           }
-        : { [target.type]: value },
+        : { [type]: value },
     });
   }
 
   private _handleExpand(ev) {
     const target = ev.currentTarget as any;
+    const newAreas: string[] = [];
     const newDevices: string[] = [];
     const newEntities: string[] = [];
-    if (target.type === "area_id") {
+
+    if (target.type === "floor_id") {
+      Object.values(this.hass.areas).forEach((area) => {
+        if (
+          area.floor_id === target.id &&
+          !this.value!.area_id?.includes(area.area_id) &&
+          this._areaMeetsFilter(area)
+        ) {
+          newAreas.push(area.area_id);
+        }
+      });
+    } else if (target.type === "area_id") {
       Object.values(this.hass.devices).forEach((device) => {
         if (
           device.area_id === target.id &&
@@ -425,6 +480,9 @@ export class HaTargetPicker extends LitElement {
     }
     if (newDevices.length) {
       value = this._addItems(value, "device_id", newDevices);
+    }
+    if (newAreas.length) {
+      value = this._addItems(value, "area_id", newAreas);
     }
     value = this._removeItem(value, target.type, target.id);
     fireEvent(this, "value-changed", { value });
@@ -493,6 +551,26 @@ export class HaTargetPicker extends LitElement {
 
   private _preventDefault(ev: Event) {
     ev.preventDefault();
+  }
+
+  private _areaMeetsFilter(area: AreaRegistryEntry): boolean {
+    const areaDevices = Object.values(this.hass.devices).filter(
+      (device) => device.area_id === area.area_id
+    );
+
+    if (areaDevices.some((device) => this._deviceMeetsFilter(device))) {
+      return true;
+    }
+
+    const areaEntities = Object.values(this.hass.entities).filter(
+      (entity) => entity.area_id === area.area_id
+    );
+
+    if (areaEntities.some((entity) => this._entityRegMeetsFilter(entity))) {
+      return true;
+    }
+
+    return false;
   }
 
   private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
@@ -651,12 +729,15 @@ export class HaTargetPicker extends LitElement {
         margin-inline-end: 0;
         margin-inline-start: initial;
       }
-      .mdc-chip.area_id:not(.add) {
+      .mdc-chip.area_id:not(.add),
+      .mdc-chip.floor_id:not(.add) {
         border: 2px solid #fed6a4;
         background: var(--card-background-color);
       }
       .mdc-chip.area_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.area_id.add {
+      .mdc-chip.area_id.add,
+      .mdc-chip.floor_id:not(.add) .mdc-chip__icon--leading,
+      .mdc-chip.floor_id.add {
         background: #fed6a4;
       }
       .mdc-chip.device_id:not(.add) {
@@ -690,7 +771,7 @@ export class HaTargetPicker extends LitElement {
       }
       ha-entity-picker,
       ha-device-picker,
-      ha-area-picker {
+      ha-area-floor-picker {
         display: block;
         width: 100%;
       }

@@ -97,6 +97,7 @@ const DEVICES = [
 const AREAS: AreaRegistryEntry[] = [
   {
     area_id: "backyard",
+    floor_id: null,
     name: "Backyard",
     icon: null,
     picture: null,
@@ -104,6 +105,7 @@ const AREAS: AreaRegistryEntry[] = [
   },
   {
     area_id: "bedroom",
+    floor_id: null,
     name: "Bedroom",
     icon: "mdi:bed",
     picture: null,
@@ -111,6 +113,7 @@ const AREAS: AreaRegistryEntry[] = [
   },
   {
     area_id: "livingroom",
+    floor_id: null,
     name: "Livingroom",
     icon: "mdi:sofa",
     picture: null,

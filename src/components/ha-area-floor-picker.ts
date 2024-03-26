@@ -1,19 +1,15 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
-  fuzzyFilterSort,
   ScorableTextItem,
+  fuzzyFilterSort,
 } from "../common/string/filter/sequence-matching";
-import {
-  AreaRegistryEntry,
-  createAreaRegistryEntry,
-} from "../data/area_registry";
+import { AreaRegistryEntry } from "../data/area_registry";
 import {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -21,9 +17,11 @@ import {
 } from "../data/device_registry";
 import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../dialogs/generic/show-dialog-box";
+  FloorRegistryEntry,
+  getFloorAreaLookup,
+  subscribeFloorRegistry,
+} from "../data/floor_registry";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
@@ -31,22 +29,32 @@ import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
+import { stringCompare } from "../common/string/compare";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
-const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.area_id === "add_new" })}
-  >
-    ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
-    ${item.name}
-  </ha-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<
+  AreaRegistryEntry & { floor: boolean }
+> = (item) =>
+  item.floor
+    ? html`<ha-list-item graphic="icon" class="floor">
+        ${item.icon
+          ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+          : nothing}
+        ${item.name}
+      </ha-list-item>`
+    : html`<ha-list-item
+        graphic="icon"
+        style="--mdc-list-side-padding-left: 48px;"
+      >
+        ${item.icon
+          ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+          : nothing}
+        ${item.name}
+      </ha-list-item>`;
 
-@customElement("ha-area-picker")
-export class HaAreaPicker extends LitElement {
+@customElement("ha-area-floor-picker")
+export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -56,9 +64,6 @@ export class HaAreaPicker extends LitElement {
   @property() public helper?: string;
 
   @property() public placeholder?: string;
-
-  @property({ type: Boolean, attribute: "no-add" })
-  public noAdd = false;
 
   /**
    * Show only areas with entities from specific domains.
@@ -92,6 +97,14 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-areas" })
   public excludeAreas?: string[];
 
+  /**
+   * List of floors to be excluded.
+   * @type {Array}
+   * @attr exclude-floors
+   */
+  @property({ type: Array, attribute: "exclude-floors" })
+  public excludeFloors?: string[];
+
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
@@ -102,13 +115,21 @@ export class HaAreaPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @state() private _floors?: FloorRegistryEntry[];
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
-  private _suggestion?: string;
-
   private _init = false;
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeFloorRegistry(this.hass.connection, (floors) => {
+        this._floors = floors;
+      }),
+    ];
+  }
 
   public async open() {
     await this.updateComplete;
@@ -122,6 +143,7 @@ export class HaAreaPicker extends LitElement {
 
   private _getAreas = memoizeOne(
     (
+      floors: FloorRegistryEntry[],
       areas: AreaRegistryEntry[],
       devices: DeviceRegistryEntry[],
       entities: EntityRegistryDisplayEntry[],
@@ -130,10 +152,10 @@ export class HaAreaPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
-      noAdd: this["noAdd"],
-      excludeAreas: this["excludeAreas"]
+      excludeAreas: this["excludeAreas"],
+      excludeFloors: this["excludeFloors"]
     ): AreaRegistryEntry[] => {
-      if (!areas.length) {
+      if (!areas.length && !floors.length) {
         return [
           {
             area_id: "no_areas",
@@ -279,6 +301,12 @@ export class HaAreaPicker extends LitElement {
         );
       }
 
+      if (excludeFloors) {
+        outputAreas = outputAreas.filter(
+          (area) => !area.floor_id || !excludeFloors!.includes(area.floor_id)
+        );
+      }
+
       if (!outputAreas.length) {
         outputAreas = [
           {
@@ -292,29 +320,75 @@ export class HaAreaPicker extends LitElement {
         ];
       }
 
-      return noAdd
-        ? outputAreas
-        : [
-            ...outputAreas,
-            {
-              area_id: "add_new",
-              floor_id: null,
-              name: this.hass.localize("ui.components.area-picker.add_new"),
-              picture: null,
-              icon: "mdi:plus",
-              aliases: [],
-            },
-          ];
+      const floorAreaLookup = getFloorAreaLookup(outputAreas);
+      const unassisgnedAreas = Object.values(outputAreas).filter(
+        (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
+      );
+
+      const output: Array<AreaRegistryEntry & { floor?: boolean }> = [];
+
+      // @ts-ignore
+      const floorAreaEntries: Array<
+        [FloorRegistryEntry | undefined, AreaRegistryEntry[]]
+      > = Object.entries(floorAreaLookup)
+        .map(([floorId, floorAreas]) => {
+          const floor = floors.find((fl) => fl.floor_id === floorId);
+          return [floor, floorAreas];
+        })
+        .sort(([floorA], [floorB]) => {
+          // typescript is confused here, so we check to make it happy
+          if (!("level" in floorA!) || !("level" in floorB!)) {
+            return 0;
+          }
+          if (floorA.level !== floorB.level) {
+            return (floorA.level ?? 0) - (floorB.level ?? 0);
+          }
+          return stringCompare(floorA.name, floorB.name);
+        });
+
+      floorAreaEntries.forEach(([floor, floorAreas]) => {
+        if (floor) {
+          output.push({
+            area_id: floor.floor_id,
+            floor_id: null,
+            name: floor.name,
+            picture: null,
+            icon: floor.icon,
+            floor: true,
+            aliases: floor.aliases,
+          });
+        }
+        output.push(...floorAreas);
+      });
+
+      if (!output.length && !unassisgnedAreas.length) {
+        output.push({
+          area_id: "no_areas",
+          floor_id: null,
+          name: this.hass.localize(
+            "ui.components.area-picker.unassigned_areas"
+          ),
+          picture: null,
+          icon: null,
+          floor: true,
+          aliases: [],
+        });
+      }
+
+      output.push(...unassisgnedAreas);
+
+      return output;
     }
   );
 
   protected updated(changedProps: PropertyValues) {
     if (
-      (!this._init && this.hass) ||
+      (!this._init && this.hass && this._floors) ||
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
       const areas = this._getAreas(
+        this._floors!,
         Object.values(this.hass.areas),
         Object.values(this.hass.devices),
         Object.values(this.hass.entities),
@@ -323,8 +397,8 @@ export class HaAreaPicker extends LitElement {
         this.includeDeviceClasses,
         this.deviceFilter,
         this.entityFilter,
-        this.noAdd,
-        this.excludeAreas
+        this.excludeAreas,
+        this.excludeFloors
       ).map((area) => ({
         ...area,
         strings: [area.area_id, ...area.aliases, area.name],
@@ -372,21 +446,8 @@ export class HaAreaPicker extends LitElement {
       filterString,
       target.items || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          area_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.area-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
-    } else {
-      this.comboBox.filteredItems = filteredItems;
-    }
+
+    this.comboBox.filteredItems = filteredItems;
   }
 
   private get _value() {
@@ -397,85 +458,27 @@ export class HaAreaPicker extends LitElement {
     this._opened = ev.detail.value;
   }
 
-  private _areaChanged(ev: ValueChangedEvent<string>) {
+  private async _areaChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    let newValue = ev.detail.value;
+    const newValue = ev.detail.value;
 
     if (newValue === "no_areas") {
-      newValue = "";
-    }
-
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
-      if (newValue !== this._value) {
-        this._setValue(newValue);
-      }
       return;
     }
 
-    (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize("ui.components.area-picker.add_dialog.title"),
-      text: this.hass.localize("ui.components.area-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.area-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.area-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
-        try {
-          const area = await createAreaRegistryEntry(this.hass, {
-            name,
-          });
-          const areas = [...Object.values(this.hass.areas), area];
-          this.comboBox.filteredItems = this._getAreas(
-            areas,
-            Object.values(this.hass.devices)!,
-            Object.values(this.hass.entities)!,
-            this.includeDomains,
-            this.excludeDomains,
-            this.includeDeviceClasses,
-            this.deviceFilter,
-            this.entityFilter,
-            this.noAdd,
-            this.excludeAreas
-          );
-          await this.updateComplete;
-          await this.comboBox.updateComplete;
-          this._setValue(area.area_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.area-picker.add_dialog.failed_create_area"
-            ),
-            text: err.message,
-          });
-        }
-      },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
+    const selected = this.comboBox.selectedItem;
+
+    fireEvent(this, "value-changed", {
+      value: {
+        id: selected.area_id,
+        type: selected.floor ? "floor_id" : "area_id",
       },
     });
-  }
-
-  private _setValue(value?: string) {
-    this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-area-picker": HaAreaPicker;
+    "ha-area-floor-picker": HaAreaFloorPicker;
   }
 }
