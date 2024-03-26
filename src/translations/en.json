@@ -1612,7 +1612,10 @@
           "answer_existing_description": "My device is connected to another controller."
         },
         "new": {
-          "header": "[%key:ui::dialogs::matter-add-device::main::header%]"
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
+          "playstore": "Get it on Google Play",
+          "appstore": "Download on the App Store"
         },
         "existing": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
@@ -4160,7 +4163,6 @@
             "missing_zwave_zigbee_title": "{integration} is not setup",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
-            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
