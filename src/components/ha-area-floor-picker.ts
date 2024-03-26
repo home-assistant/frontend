@@ -31,12 +31,18 @@ import "./ha-list-item";
 import "./ha-svg-icon";
 import { stringCompare } from "../common/string/compare";
 
-type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
+type ScorableAreaFloorEntry = ScorableTextItem & FloorAreaEntry;
 
-const rowRenderer: ComboBoxLitRenderer<
-  AreaRegistryEntry & { floor: boolean }
-> = (item) =>
-  item.floor
+interface FloorAreaEntry {
+  id: string | null;
+  name: string;
+  icon: string | null;
+  strings: string[];
+  type: "floor" | "area";
+}
+
+const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
+  item.type === "floor"
     ? html`<ha-list-item graphic="icon" class="floor">
         ${item.icon
           ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
@@ -154,16 +160,15 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
       entityFilter: this["entityFilter"],
       excludeAreas: this["excludeAreas"],
       excludeFloors: this["excludeFloors"]
-    ): AreaRegistryEntry[] => {
+    ): FloorAreaEntry[] => {
       if (!areas.length && !floors.length) {
         return [
           {
-            area_id: "no_areas",
-            floor_id: null,
+            id: "no_areas",
+            type: "area",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
-            picture: null,
             icon: null,
-            aliases: [],
+            strings: [],
           },
         ];
       }
@@ -308,14 +313,13 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
       }
 
       if (!outputAreas.length) {
-        outputAreas = [
+        return [
           {
-            area_id: "no_areas",
-            floor_id: null,
+            id: "no_areas",
+            type: "area",
             name: this.hass.localize("ui.components.area-picker.no_match"),
-            picture: null,
             icon: null,
-            aliases: [],
+            strings: [],
           },
         ];
       }
@@ -325,13 +329,11 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
         (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
       );
 
-      const output: Array<AreaRegistryEntry & { floor?: boolean }> = [];
-
       // @ts-ignore
       const floorAreaEntries: Array<
         [FloorRegistryEntry | undefined, AreaRegistryEntry[]]
       > = Object.entries(floorAreaLookup)
-       .map(([floorId, floorAreas]) => {
+        .map(([floorId, floorAreas]) => {
           const floor = floors.find((fl) => fl.floor_id === floorId)!;
           return [floor, floorAreas] as const;
         })
@@ -342,36 +344,50 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
           return stringCompare(floorA.name, floorB.name);
         });
 
+      const output: FloorAreaEntry[] = [];
+
       floorAreaEntries.forEach(([floor, floorAreas]) => {
         if (floor) {
           output.push({
-            area_id: floor.floor_id,
-            floor_id: null,
+            id: floor.floor_id,
+            type: "floor",
             name: floor.name,
-            picture: null,
             icon: floor.icon,
-            floor: true,
-            aliases: floor.aliases,
+            strings: [floor.floor_id, ...floor.aliases, floor.name],
           });
         }
-        output.push(...floorAreas);
+        output.push(
+          ...floorAreas.map((area) => ({
+            id: area.area_id,
+            type: "area" as const,
+            name: area.name,
+            icon: area.icon,
+            strings: [area.area_id, ...area.aliases, area.name],
+          }))
+        );
       });
 
       if (!output.length && !unassisgnedAreas.length) {
         output.push({
-          area_id: "no_areas",
-          floor_id: null,
+          id: "no_areas",
+          type: "area",
           name: this.hass.localize(
             "ui.components.area-picker.unassigned_areas"
           ),
-          picture: null,
           icon: null,
-          floor: true,
-          aliases: [],
+          strings: [],
         });
       }
 
-      output.push(...unassisgnedAreas);
+      output.push(
+        ...unassisgnedAreas.map((area) => ({
+          id: area.area_id,
+          type: "area" as const,
+          name: area.name,
+          icon: area.icon,
+          strings: [area.area_id, ...area.aliases, area.name],
+        }))
+      );
 
       return output;
     }
@@ -395,10 +411,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
         this.entityFilter,
         this.excludeAreas,
         this.excludeFloors
-      ).map((area) => ({
-        ...area,
-        strings: [area.area_id, ...area.aliases, area.name],
-      }));
+      );
       this.comboBox.items = areas;
       this.comboBox.filteredItems = areas;
     }
@@ -438,7 +451,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
+    const filteredItems = fuzzyFilterSort<ScorableAreaFloorEntry>(
       filterString,
       target.items || []
     );
