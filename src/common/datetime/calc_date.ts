@@ -35,5 +35,12 @@ export const calcDateProperty = (
   options?
 ) =>
   locale.time_zone === TimeZone.server
-    ? (calcZonedDate(date, config.time_zone, fn, options) as number | boolean)
+    ? (calcZonedDate(
+        date,
+        config.time_zone,
+        fn,
+        options instanceof Date
+          ? utcToZonedTime(options, config.time_zone)
+          : options
+      ) as number | boolean)
     : fn(date, options);
