@@ -1615,8 +1615,8 @@
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
           "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
           "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
-          "playstore": "Get it on Google Play",
-          "appstore": "Download on the App Store"
+          "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+          "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
         },
         "existing": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
@@ -6636,7 +6636,9 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "playstore": "Get it on Google Play",
+          "appstore": "Download on the App Store"
         },
         "user": {
           "header": "Create user",
