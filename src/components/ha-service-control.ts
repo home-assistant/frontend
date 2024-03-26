@@ -42,6 +42,7 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import { isHelperDomain } from "../panels/config/helpers/const";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -382,6 +383,8 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
+    const create_domains = isHelperDomain(domain) ? [domain] : undefined;
+
     return html`
       ${this.hidePicker
         ? nothing
@@ -435,8 +438,8 @@ export class HaServiceControl extends LitElement {
             ><ha-selector
               .hass=${this.hass}
               .selector=${serviceData.target
-                ? { target: serviceData.target }
-                : { target: {} }}
+                ? { target: { ...serviceData.target, create_domains } }
+                : { target: { create_domains } }}
               .disabled=${this.disabled}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}

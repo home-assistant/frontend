@@ -18,6 +18,12 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import { domainToName } from "../../data/integration";
+import {
+  isHelperDomain,
+  HelperDomain,
+} from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -43,6 +49,8 @@ export class HaEntityPicker extends LitElement {
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property({ type: Array }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
@@ -143,7 +151,8 @@ export class HaEntityPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
       includeEntities: this["includeEntities"],
-      excludeEntities: this["excludeEntities"]
+      excludeEntities: this["excludeEntities"],
+      createDomains: this["createDomains"]
     ): HassEntityWithCachedName[] => {
       let states: HassEntityWithCachedName[] = [];
 
@@ -151,6 +160,39 @@ export class HaEntityPicker extends LitElement {
         return [];
       }
       let entityIds = Object.keys(hass.states);
+
+      const newFriendlyName = hass.localize(
+        "ui.components.entity.entity-picker.create_helper",
+        {
+          domain:
+            createDomains?.length === 1
+              ? isHelperDomain(createDomains[0])
+                ? hass.localize(
+                    `ui.panel.config.helpers.types.${
+                      createDomains[0] as HelperDomain
+                    }`
+                  )
+                : domainToName(hass.localize, createDomains[0])
+              : undefined,
+        }
+      );
+
+      const newEntityId = hass.localize(
+        "ui.components.entity.entity-picker.new_entity"
+      );
+
+      const newEntity = {
+        entity_id: newEntityId,
+        state: "on",
+        last_changed: "",
+        last_updated: "",
+        context: { id: "", user_id: null, parent_id: null },
+        friendly_name: newFriendlyName,
+        attributes: {
+          icon: "mdi:plus",
+        },
+        strings: [newEntityId, newFriendlyName],
+      };
 
       if (!entityIds.length) {
         return [
@@ -171,6 +213,7 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...(createDomains?.length ? [newEntity] : []),
         ];
       }
 
@@ -281,8 +324,11 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...(createDomains?.length ? [newEntity] : []),
         ];
       }
+
+      if (createDomains?.length) states.push(newEntity);
 
       return states;
     }
@@ -310,7 +356,8 @@ export class HaEntityPicker extends LitElement {
         this.includeDeviceClasses,
         this.includeUnitOfMeasurement,
         this.includeEntities,
-        this.excludeEntities
+        this.excludeEntities,
+        this.createDomains
       );
       if (this._initedStates) {
         this.comboBox.filteredItems = this._states;
@@ -354,6 +401,20 @@ export class HaEntityPicker extends LitElement {
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
+
+    if (
+      newValue ===
+      this.hass.localize("ui.components.entity.entity-picker.new_entity")
+    ) {
+      showHelperDetailDialog(this, {
+        domains: this.createDomains!,
+        dialogClosedCallback: (item) => {
+          if (item.entityId) this._setValue(item.entityId);
+        },
+      });
+      return;
+    }
+
     if (newValue !== this._value) {
       this._setValue(newValue);
     }

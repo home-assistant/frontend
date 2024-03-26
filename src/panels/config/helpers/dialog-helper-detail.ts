@@ -32,7 +32,7 @@ import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-c
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { Helper, HelperDomain } from "./const";
+import { Helper, HelperDomain, isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = {
@@ -96,7 +96,9 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _domain?: HelperDomain;
+  @state() private _domains?: string[];
+
+  @state() private _domain?: string;
 
   @state() private _error?: string;
 
@@ -112,8 +114,14 @@ export class DialogHelperDetail extends LitElement {
 
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
     this._params = params;
-    this._domain = params.domain;
+    this._domains = params.domains;
+    if (this._domains?.length === 1) {
+      this._domain = this._domains[0];
+    }
     this._item = undefined;
+    if (this._domain && this._domain in HELPERS) {
+      await HELPERS[this._domain].import();
+    }
     this._opened = true;
     await this.updateComplete;
     Promise.all([
@@ -129,6 +137,7 @@ export class DialogHelperDetail extends LitElement {
     this._opened = false;
     this._error = undefined;
     this._domain = undefined;
+    this._domains = undefined;
     this._params = undefined;
   }
 
@@ -155,13 +164,15 @@ export class DialogHelperDetail extends LitElement {
         >
           ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
         </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          @click=${this._goBack}
-          .disabled=${this._submitting}
-        >
-          ${this.hass!.localize("ui.common.back")}
-        </mwc-button>
+        ${this._params?.domains?.length === 1
+          ? nothing
+          : html`<mwc-button
+              slot="secondaryAction"
+              @click=${this._goBack}
+              .disabled=${this._submitting}
+            >
+              ${this.hass!.localize("ui.common.back")}
+            </mwc-button> `};
       `;
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-circular-progress
@@ -171,15 +182,19 @@ export class DialogHelperDetail extends LitElement {
       const items: [string, string][] = [];
 
       for (const helper of Object.keys(HELPERS) as (keyof typeof HELPERS)[]) {
-        items.push([
-          helper,
-          this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||
+        if (!this._domains || this._domains.includes(helper)) {
+          items.push([
             helper,
-        ]);
+            this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||
+              helper,
+          ]);
+        }
       }
 
       for (const domain of this._helperFlows) {
-        items.push([domain, domainToName(this.hass.localize, domain)]);
+        if (!this._domains || this._domains.includes(domain)) {
+          items.push([domain, domainToName(this.hass.localize, domain)]);
+        }
       }
 
       items.sort((a, b) => a[1].localeCompare(b[1]));
@@ -253,9 +268,13 @@ export class DialogHelperDetail extends LitElement {
                 "ui.panel.config.helpers.dialog.create_platform",
                 {
                   platform:
-                    this.hass.localize(
-                      `ui.panel.config.helpers.types.${this._domain}`
-                    ) || this._domain,
+                    (isHelperDomain(this._domain) &&
+                      this.hass.localize(
+                        `ui.panel.config.helpers.types.${
+                          this._domain as HelperDomain
+                        }`
+                      )) ||
+                    this._domain,
                 }
               )
             : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
@@ -277,7 +296,16 @@ export class DialogHelperDetail extends LitElement {
     this._submitting = true;
     this._error = "";
     try {
-      await HELPERS[this._domain].create(this.hass, this._item);
+      const createdEntity = await HELPERS[this._domain].create(
+        this.hass,
+        this._item
+      );
+      if (this._params?.dialogClosedCallback && createdEntity.id) {
+        this._params.dialogClosedCallback({
+          flowFinished: true,
+          entityId: `${this._domain}.${createdEntity.id}`,
+        });
+      }
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message || "Unknown error";
