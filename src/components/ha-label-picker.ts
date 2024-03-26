@@ -350,7 +350,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         this.excludeLabels
       ).map((label) => ({
         ...label,
-        strings: [label.label_id, label.name], // ...label.aliases
+        strings: [label.label_id, label.name, ...label.aliases],
       }));
       this.comboBox.items = labels;
       this.comboBox.filteredItems = labels;
