@@ -487,14 +487,17 @@
         "expand_floor_id": "Split this floor into separate areas.",
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
+        "expand_label_id": "Split this label into separate area, devices and entities.",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
+        "remove_label_id": "Remove label",
         "add_area_id": "Choose area",
         "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity"
+        "add_entity_id": "Choose entity",
+        "add_label_id": "Choose label"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -544,6 +547,23 @@
         "device": "Device",
         "no_area": "No area"
       },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "labels": "Labels",
+        "add_label": "Add label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found",
+        "add_dialog": {
+          "title": "Add new label",
+          "text": "Enter the name of the new label.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_label": "Failed to create label."
+        }
+      },
       "area-picker": {
         "clear": "Clear",
         "show_areas": "Show areas",
@@ -584,6 +604,16 @@
         "all_areas": "All areas",
         "show": "Show {area}",
         "hide": "Hide {area}"
+      },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "label": "Label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "add_label": "Add label",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found"
       },
       "statistic-picker": {
         "statistic": "Statistic",
@@ -633,6 +663,38 @@
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
+      "color-picker": {
+        "default_color": "Default color (state)",
+        "colors": {
+          "primary": "Primary",
+          "accent": "Accent",
+          "disabled": "Disabled",
+          "inactive": "Inactive",
+          "red": "Red",
+          "pink": "Pink",
+          "purple": "Purple",
+          "deep-purple": "Deep purple",
+          "indigo": "Indigo",
+          "blue": "Blue",
+          "light-blue": "Light blue",
+          "cyan": "Cyan",
+          "teal": "Teal",
+          "green": "Green",
+          "light-green": "Light Green",
+          "lime": "Lime",
+          "yellow": "Yellow",
+          "amber": "Amber",
+          "orange": "Orange",
+          "deep-orange": "Deep orange",
+          "brown": "Brown",
+          "light-grey": "Light grey",
+          "grey": "Grey",
+          "dark-grey": "Dark grey",
+          "blue-grey": "Blue grey",
+          "black": "Black",
+          "white": "White"
+        }
       },
       "date-range-picker": {
         "start_date": "Start date",
@@ -1709,7 +1771,7 @@
             "secondary": "Manage who can access your home"
           },
           "areas": {
-            "main": "Areas & zones",
+            "main": "Areas, labels & zones",
             "secondary": "Manage locations in and around your house"
           },
           "companion": {
@@ -1794,6 +1856,28 @@
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
             "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+          }
+        },
+        "labels": {
+          "caption": "Labels",
+          "description": "Group devices and entities",
+          "headers": { "name": "Name", "icon": "Icon", "color": "Color" },
+          "add_label": "Add label",
+          "no_labels": "You don't have any labels",
+          "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
+          "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
+          "confirm_remove_title": "Remove label?",
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
+          "detail": {
+            "new_label": "New label",
+            "name": "Name",
+            "icon": "Icon",
+            "color": "Color",
+            "description": "Description",
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create",
+            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
           }
         },
         "areas": {
@@ -5839,38 +5923,6 @@
           "view": {
             "panel_mode": {
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
-            }
-          },
-          "color-picker": {
-            "default_color": "Default color (state)",
-            "colors": {
-              "primary": "Primary",
-              "accent": "Accent",
-              "disabled": "Disabled",
-              "inactive": "Inactive",
-              "red": "Red",
-              "pink": "Pink",
-              "purple": "Purple",
-              "deep-purple": "Deep purple",
-              "indigo": "Indigo",
-              "blue": "Blue",
-              "light-blue": "Light blue",
-              "cyan": "Cyan",
-              "teal": "Teal",
-              "green": "Green",
-              "light-green": "Light Green",
-              "lime": "Lime",
-              "yellow": "Yellow",
-              "amber": "Amber",
-              "orange": "Orange",
-              "deep-orange": "Deep orange",
-              "brown": "Brown",
-              "light-grey": "Light grey",
-              "grey": "Grey",
-              "dark-grey": "Dark grey",
-              "blue-grey": "Blue grey",
-              "black": "Black",
-              "white": "White"
             }
           },
           "cardpicker": {

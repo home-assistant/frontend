@@ -31,6 +31,7 @@ import {
   expandAreaTarget,
   expandDeviceTarget,
   expandFloorTarget,
+  expandLabelTarget,
   Selector,
 } from "../data/selector";
 import { HomeAssistant, ValueChangedEvent } from "../types";
@@ -274,6 +275,24 @@ export class HaServiceControl extends LitElement {
     const targetFloors = ensureArray(
       value?.target?.floor_id || value?.data?.floor_id
     )?.slice();
+    const targetLabels = ensureArray(
+      value?.target?.label_id || value?.data?.label_id
+    )?.slice();
+    if (targetLabels) {
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          targetSelector
+        );
+        targetDevices.push(...expanded.devices);
+        targetEntities.push(...expanded.entities);
+        targetAreas.push(...expanded.areas);
+      });
+    }
     if (targetFloors) {
       targetFloors.forEach((floorId) => {
         const expanded = expandFloorTarget(
