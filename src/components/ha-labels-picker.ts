@@ -168,8 +168,8 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
           label.label_id,
           values
         );
-        this._labels = this._labels?.map((lbl) =>
-          lbl.label_id === label.label_id ? updated : label
+        this._labels = this._labels!.map((lbl) =>
+          lbl.label_id === updated.label_id ? updated : lbl
         );
         return updated;
       },
