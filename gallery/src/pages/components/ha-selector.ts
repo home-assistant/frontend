@@ -55,6 +55,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: "backyard",
@@ -73,6 +74,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: null,
@@ -91,6 +93,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
 ];
 
@@ -102,6 +105,7 @@ const AREAS: AreaRegistryEntry[] = [
     icon: null,
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "bedroom",
@@ -110,6 +114,7 @@ const AREAS: AreaRegistryEntry[] = [
     icon: "mdi:bed",
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "livingroom",
@@ -118,6 +123,7 @@ const AREAS: AreaRegistryEntry[] = [
     icon: "mdi:sofa",
     picture: null,
     aliases: [],
+    labels: [],
   },
 ];
 
