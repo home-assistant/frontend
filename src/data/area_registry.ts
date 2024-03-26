@@ -11,6 +11,7 @@ export interface AreaRegistryEntry {
   name: string;
   picture: string | null;
   icon: string | null;
+  labels: string[];
   aliases: string[];
 }
 
@@ -28,6 +29,7 @@ export interface AreaRegistryEntryMutableParams {
   picture?: string | null;
   icon?: string | null;
   aliases?: string[];
+  labels?: string[];
 }
 
 export const createAreaRegistryEntry = (

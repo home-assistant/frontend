@@ -232,6 +232,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             entity_id: entity.ei,
             device_id: entity.di,
             area_id: entity.ai,
+            labels: entity.lb,
             translation_key: entity.tk,
             platform: entity.pl,
             entity_category:

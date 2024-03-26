@@ -736,6 +736,7 @@ export class HaConfigEntities extends LitElement {
           entity_category: null,
           has_entity_name: false,
           options: null,
+          labels: [],
         });
       }
       if (changed) {
