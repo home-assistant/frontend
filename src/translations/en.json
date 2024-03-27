@@ -575,6 +575,7 @@
       "label-picker": {
         "clear": "Clear",
         "show_labels": "Show labels",
+        "label": "Label",
         "labels": "Labels",
         "add_label": "Add label",
         "add_new_sugestion": "Add new label ''{name}''",
@@ -622,16 +623,6 @@
         "all_areas": "All areas",
         "show": "Show {area}",
         "hide": "Hide {area}"
-      },
-      "label-picker": {
-        "clear": "Clear",
-        "show_labels": "Show labels",
-        "label": "Label",
-        "add_new_sugestion": "Add new label ''{name}''",
-        "add_new": "Add new label…",
-        "add_label": "Add label",
-        "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found"
       },
       "statistic-picker": {
         "statistic": "Statistic",
@@ -1958,7 +1949,7 @@
             "icon": "Icon",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "unknown_error": "An unknown error happened when saving the category",
-            "confirm_delete": "Are you sure you want to delete this category?",
+            "confirm_delete": "Delete category?",
             "confirm_delete_text": "This will delete the category and unassign everything that is currently assigned to it."
           },
           "filter": {
