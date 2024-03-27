@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDevices } from "@mdi/js";
+import { mdiDelete, mdiDevices, mdiPencil } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -83,18 +83,24 @@ export class EnergyDeviceSettings extends LitElement {
           ${this.preferences.device_consumption.map((device) => {
             const entityState = this.hass.states[device.stat_consumption];
             return html`
-              <div class="row">
+              <div class="row" .device=${device}>
                 <ha-state-icon
                   .hass=${this.hass}
                   .stateObj=${entityState}
                 ></ha-state-icon>
                 <span class="content"
-                  >${getStatisticLabel(
+                  >${device.name ||
+                  getStatisticLabel(
                     this.hass,
                     device.stat_consumption,
                     this.statsMetadata?.[device.stat_consumption]
                   )}</span
                 >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.edit")}
+                  @click=${this._editDevice}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.delete")}
                   @click=${this._deleteDevice}
@@ -115,6 +121,24 @@ export class EnergyDeviceSettings extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _editDevice(ev) {
+    const origDevice: DeviceConsumptionEnergyPreference =
+      ev.currentTarget.closest(".row").device;
+    showEnergySettingsDeviceDialog(this, {
+      device: { ...origDevice },
+      device_consumptions: this.preferences
+        .device_consumption as DeviceConsumptionEnergyPreference[],
+      saveCallback: async (newDevice) => {
+        await this._savePreferences({
+          ...this.preferences,
+          device_consumption: this.preferences.device_consumption.map((d) =>
+            d === origDevice ? newDevice : d
+          ),
+        });
+      },
+    });
   }
 
   private _addDevice() {

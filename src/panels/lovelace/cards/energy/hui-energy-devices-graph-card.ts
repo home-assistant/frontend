@@ -127,11 +127,7 @@ export class HuiEnergyDevicesGraphCard
               const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              return getStatisticLabel(
-                this.hass,
-                statisticId as any,
-                this._data?.statsMetadata[statisticId]
-              );
+              return this.getDeviceName(statisticId as any as string);
             },
           },
         },
@@ -149,11 +145,7 @@ export class HuiEnergyDevicesGraphCard
           callbacks: {
             title: (item) => {
               const statisticId = item[0].label;
-              return getStatisticLabel(
-                this.hass,
-                statisticId,
-                this._data?.statsMetadata[statisticId]
-              );
+              return this.getDeviceName(statisticId);
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -180,6 +172,19 @@ export class HuiEnergyDevicesGraphCard
       },
     })
   );
+
+  private getDeviceName(statisticId: string): string {
+    return (
+      this._data?.prefs.device_consumption.find(
+        (d) => d.stat_consumption === statisticId
+      )?.name ||
+      getStatisticLabel(
+        this.hass,
+        statisticId,
+        this._data?.statsMetadata[statisticId]
+      )
+    );
+  }
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
     const data = energyData.stats;
