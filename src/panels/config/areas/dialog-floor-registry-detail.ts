@@ -24,7 +24,7 @@ class DialogFloorDetail extends LitElement {
 
   @state() private _icon!: string | null;
 
-  @state() private _level!: number;
+  @state() private _level!: number | null;
 
   @state() private _error?: string;
 
@@ -40,7 +40,7 @@ class DialogFloorDetail extends LitElement {
     this._name = this._params.entry ? this._params.entry.name : "";
     this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
-    this._level = this._params.entry?.level ?? 0;
+    this._level = this._params.entry?.level ?? null;
     await this.updateComplete;
   }
 
