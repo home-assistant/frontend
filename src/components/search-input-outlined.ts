@@ -71,6 +71,10 @@ class SearchInputOutlined extends LitElement {
       md-outlined-text-field {
         display: block;
         width: 100%;
+        --md-sys-color-on-surface: var(--primary-text-color);
+        --md-sys-color-primary: var(--primary-text-color);
+        --md-outlined-text-field-input-text-color: var(--primary-text-color);
+        --md-sys-color-on-surface-variant: var(--secondary-text-color);
         --md-outlined-field-top-space: 5.5px;
         --md-outlined-field-bottom-space: 5.5px;
         --md-outlined-field-outline-color: var(--outline-color);
