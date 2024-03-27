@@ -185,7 +185,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
   private async _findRelated() {
     const relatedPromises: Promise<RelatedResult>[] = [];
 
-    if (!this.value) {
+    if (
+      !this.value ||
+      (!this.value.areas?.length && !this.value.floors?.length)
+    ) {
       fireEvent(this, "data-table-filter-changed", {
         value: {},
         items: undefined,
