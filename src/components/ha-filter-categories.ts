@@ -1,5 +1,11 @@
 import { ActionDetail, SelectedDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPencil,
+  mdiPlus,
+  mdiTag,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -90,7 +96,10 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             slot="graphic"
                             .icon=${category.icon}
                           ></ha-icon>`
-                        : nothing}
+                        : html`<ha-svg-icon
+                            .path=${mdiTag}
+                            slot="graphic"
+                          ></ha-svg-icon>`}
                       ${category.name}
                       <ha-button-menu
                         @action=${this._handleAction}
