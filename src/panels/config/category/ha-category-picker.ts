@@ -99,22 +99,21 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       categories: CategoryRegistryEntry[] | undefined,
       noAdd: this["noAdd"]
     ): CategoryRegistryEntry[] => {
-      if (!categories?.length) {
-        return [
-          {
-            category_id: "no_categories",
-            name: this.hass.localize(
-              "ui.components.category-picker.no_categories"
-            ),
-            icon: null,
-          },
-        ];
+      const result = categories ? [...categories] : [];
+      if (!result?.length) {
+        result.push({
+          category_id: "no_categories",
+          name: this.hass.localize(
+            "ui.components.category-picker.no_categories"
+          ),
+          icon: null,
+        });
       }
 
       return noAdd
-        ? categories
+        ? result
         : [
-            ...categories,
+            ...result,
             {
               category_id: "add_new",
               name: this.hass.localize("ui.components.category-picker.add_new"),
