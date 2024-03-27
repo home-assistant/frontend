@@ -3551,8 +3551,13 @@
             "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
             "headers": {
               "name": "Name",
-              "state": "State"
+              "state": "State",
+              "category": "Category"
             },
+            "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
+            "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
+            "no_category_support": "You can't assign an category to this script",
+            "no_category_entity_reg": "To assign an category to an script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
@@ -3655,8 +3660,13 @@
             "headers": {
               "state": "State",
               "name": "Name",
-              "last_activated": "Last activated"
+              "last_activated": "Last activated",
+              "category": "Category"
             },
+            "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
+            "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
+            "no_category_support": "You can't assign an category to this scene",
+            "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV."
           },
