@@ -1692,7 +1692,7 @@
           "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
           "step_2": "Tap {linked_matter_apps_services}.",
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
-          "linked_matter_apps_services": "Linked Matter apps & services",
+          "linked_matter_apps_services": "Linked Matter apps and services",
           "link_apps_services": "Link apps & services",
           "no_home_assistant": "I can’t find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
@@ -1710,10 +1710,10 @@
         },
         "apple_home": {
           "header": "Copy setup code",
-          "step_1": "Find your device in Apple Home and open {accessory_details}.",
+          "step_1": "Find your device in Apple Home and open {accessory_settings}.",
           "step_2": "Scroll all the way down and tap {turn_on_pairing_mode}.",
           "step_3": "You now see the setup code.",
-          "accessory_details": "Accessory Details",
+          "accessory_settings": "Accessory Settings",
           "turn_on_pairing_mode": "Turn On Pairing Mode",
           "setup_code": "Setup code",
           "code_instructions": "Paste the code you just received from the other controller."
