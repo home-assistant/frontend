@@ -21,7 +21,7 @@ export interface FloorAreaLookup {
 
 export interface FloorRegistryEntryMutableParams {
   name: string;
-  level?: number;
+  level?: number | null;
   icon?: string | null;
   aliases?: string[];
 }
@@ -34,7 +34,7 @@ const fetchFloorRegistry = (conn: Connection) =>
     .then((floors) =>
       (floors as FloorRegistryEntry[]).sort((ent1, ent2) => {
         if (ent1.level !== ent2.level) {
-          return (ent1.level ?? 0) - (ent2.level ?? 0);
+          return (ent1.level ?? 9999) - (ent2.level ?? 9999);
         }
         return stringCompare(ent1.name, ent2.name);
       })
