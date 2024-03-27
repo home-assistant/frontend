@@ -39,25 +39,21 @@ interface FloorAreaEntry {
   icon: string | null;
   strings: string[];
   type: "floor" | "area";
+  hasFloor?: boolean;
 }
 
 const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
-  item.type === "floor"
-    ? html`<ha-list-item graphic="icon" class="floor">
-        ${item.icon
-          ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-          : nothing}
-        ${item.name}
-      </ha-list-item>`
-    : html`<ha-list-item
-        graphic="icon"
-        style="--mdc-list-side-padding-left: 48px;"
-      >
-        ${item.icon
-          ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-          : nothing}
-        ${item.name}
-      </ha-list-item>`;
+  html`<ha-list-item
+    graphic="icon"
+    style=${item.type === "area" && item.hasFloor
+      ? "--mdc-list-side-padding-left: 48px;"
+      : ""}
+  >
+    ${item.icon
+      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+      : nothing}
+    ${item.name}
+  </ha-list-item>`;
 
 @customElement("ha-area-floor-picker")
 export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
@@ -363,6 +359,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
             name: area.name,
             icon: area.icon,
             strings: [area.area_id, ...area.aliases, area.name],
+            hasFloor: true,
           }))
         );
       });

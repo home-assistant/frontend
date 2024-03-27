@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import "@material/web/divider/divider";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";

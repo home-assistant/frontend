@@ -261,7 +261,7 @@ class HaBlueprintOverview extends LitElement {
         hasFab
         clickable
         @row-click=${this._handleRowClicked}
-        .appendRow=${html` <div
+        .appendRow=${html`<div
           class="mdc-data-table__cell"
           style="width: 100%; text-align: center;"
           role="cell"

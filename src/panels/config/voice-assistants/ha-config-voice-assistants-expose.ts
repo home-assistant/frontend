@@ -542,6 +542,7 @@ export class VoiceAssistantsExpose extends LitElement {
         )}
         .filter=${this._filter}
         selectable
+        .selected=${this._selectedEntities.length}
         clickable
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._clearFilter}
@@ -559,12 +560,6 @@ export class VoiceAssistantsExpose extends LitElement {
                 })}
                 slot="header"
               >
-                <p class="selected-txt">
-                  ${this.hass.localize(
-                    "ui.panel.config.entities.picker.selected",
-                    { number: this._selectedEntities.length }
-                  )}
-                </p>
                 <div class="header-btns">
                   ${!this.narrow
                     ? html`

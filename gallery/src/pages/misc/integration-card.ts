@@ -200,6 +200,7 @@ const createEntityRegistryEntries = (
     unique_id: "updater",
     options: null,
     labels: [],
+    categories: {},
   },
 ];
 
