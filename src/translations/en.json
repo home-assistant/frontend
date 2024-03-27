@@ -575,6 +575,7 @@
       "label-picker": {
         "clear": "Clear",
         "show_labels": "Show labels",
+        "label": "Label",
         "labels": "Labels",
         "add_label": "Add label",
         "add_new_sugestion": "Add new label ''{name}''",
