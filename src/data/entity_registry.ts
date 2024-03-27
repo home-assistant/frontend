@@ -18,6 +18,7 @@ export interface EntityRegistryDisplayEntry {
   icon?: string;
   device_id?: string;
   area_id?: string;
+  labels: string[];
   hidden?: boolean;
   entity_category?: entityCategory;
   translation_key?: string;
@@ -30,6 +31,7 @@ export interface EntityRegistryDisplayEntryResponse {
     ei: string;
     di?: string;
     ai?: string;
+    lb: string[];
     ec?: number;
     en?: string;
     ic?: string;
@@ -50,6 +52,7 @@ export interface EntityRegistryEntry {
   config_entry_id: string | null;
   device_id: string | null;
   area_id: string | null;
+  labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
   hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
   entity_category: entityCategory | null;
@@ -58,6 +61,7 @@ export interface EntityRegistryEntry {
   unique_id: string;
   translation_key?: string;
   options: EntityRegistryOptions | null;
+  categories: { [scope: string]: string };
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -133,6 +137,8 @@ export interface EntityRegistryEntryUpdateParams {
     | WeatherEntityOptions
     | LightEntityOptions;
   aliases?: string[];
+  labels?: string[];
+  categories?: { [scope: string]: string | null };
 }
 
 const batteryPriorities = ["sensor", "binary_sensor"];

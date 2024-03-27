@@ -1,4 +1,11 @@
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -7,9 +14,10 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { ActionDetail } from "@material/mwc-list";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -18,7 +26,18 @@ import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
 } from "../../../data/area_registry";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  FloorRegistryEntry,
+  createFloorRegistryEntry,
+  deleteFloorRegistryEntry,
+  getFloorAreaLookup,
+  subscribeFloorRegistry,
+  updateFloorRegistryEntry,
+} from "../../../data/floor_registry";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
@@ -27,9 +46,11 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-config-areas-dashboard")
-export class HaConfigAreasDashboard extends LitElement {
+export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -38,11 +59,14 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state() private _floors?: FloorRegistryEntry[];
+
   private _processAreas = memoizeOne(
     (
       areas: HomeAssistant["areas"],
       devices: HomeAssistant["devices"],
-      entities: HomeAssistant["entities"]
+      entities: HomeAssistant["entities"],
+      floors: FloorRegistryEntry[]
     ) => {
       const processArea = (area: AreaRegistryEntry) => {
         let noDevicesInArea = 0;
@@ -73,18 +97,40 @@ export class HaConfigAreasDashboard extends LitElement {
         };
       };
 
-      return Object.values(areas).map(processArea);
+      const floorAreaLookup = getFloorAreaLookup(Object.values(areas));
+      const unassisgnedAreas = Object.values(areas).filter(
+        (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
+      );
+      return {
+        floors: floors.map((floor) => ({
+          ...floor,
+          areas: (floorAreaLookup[floor.floor_id] || []).map(processArea),
+        })),
+        unassisgnedAreas: unassisgnedAreas.map(processArea),
+      };
     }
   );
 
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeFloorRegistry(this.hass.connection, (floors) => {
+        this._floors = floors;
+      }),
+    ];
+  }
+
   protected render(): TemplateResult {
-    const areas =
-      !this.hass.areas || !this.hass.devices || !this.hass.entities
+    const areasAndFloors =
+      !this.hass.areas ||
+      !this.hass.devices ||
+      !this.hass.entities ||
+      !this._floors
         ? undefined
         : this._processAreas(
             this.hass.areas,
             this.hass.devices,
-            this.hass.entities
+            this.hass.entities,
+            this._floors
           );
 
     return html`
@@ -103,12 +149,78 @@ export class HaConfigAreasDashboard extends LitElement {
           @click=${this._showHelp}
         ></ha-icon-button>
         <div class="container">
-          ${areas?.length
-            ? html`<div class="areas">
-                ${areas.map((area) => this._renderArea(area))}
+          ${areasAndFloors?.floors.map(
+            (floor) =>
+              html`<div class="floor">
+                <div class="header">
+                  <h2>
+                    ${floor.icon
+                      ? html`<ha-icon .icon=${floor.icon}></ha-icon>`
+                      : nothing}
+                    ${floor.name}
+                  </h2>
+                  <ha-button-menu
+                    .floor=${floor}
+                    @action=${this._handleFloorAction}
+                  >
+                    <ha-icon-button
+                      slot="trigger"
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+                    <ha-list-item graphic="icon"
+                      ><ha-svg-icon
+                        .path=${mdiPencil}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.edit_floor"
+                      )}</ha-list-item
+                    >
+                    <ha-list-item class="warning" graphic="icon"
+                      ><ha-svg-icon
+                        class="warning"
+                        .path=${mdiDelete}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.delete_floor"
+                      )}</ha-list-item
+                    >
+                  </ha-button-menu>
+                </div>
+                <div class="areas">
+                  ${floor.areas.map((area) => this._renderArea(area))}
+                </div>
+              </div>`
+          )}
+          ${areasAndFloors?.unassisgnedAreas.length
+            ? html`<div class="unassigned">
+                <div class="header">
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.picker.unassigned_areas"
+                    )}
+                  </h2>
+                </div>
+                <div class="areas">
+                  ${areasAndFloors?.unassisgnedAreas.map((area) =>
+                    this._renderArea(area)
+                  )}
+                </div>
               </div>`
             : nothing}
         </div>
+        <ha-fab
+          slot="fab"
+          class="floor"
+          .label=${this.hass.localize(
+            "ui.panel.config.areas.picker.create_floor"
+          )}
+          extended
+          @click=${this._createFloor}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -170,6 +282,43 @@ export class HaConfigAreasDashboard extends LitElement {
     loadAreaRegistryDetailDialog();
   }
 
+  private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
+    const floor = (ev.currentTarget as any).floor;
+    switch (ev.detail.index) {
+      case 0:
+        this._editFloor(floor);
+        break;
+      case 1:
+        this._deleteFloor(floor);
+        break;
+    }
+  }
+
+  private _createFloor() {
+    this._openFloorDialog();
+  }
+
+  private _editFloor(floor) {
+    this._openFloorDialog(floor);
+  }
+
+  private async _deleteFloor(floor) {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete_text"
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    await deleteFloorRegistryEntry(this.hass, floor.floor_id);
+  }
+
   private _createArea() {
     this._openAreaDialog();
   }
@@ -199,11 +348,36 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
+  private _openFloorDialog(entry?: FloorRegistryEntry) {
+    showFloorRegistryDetailDialog(this, {
+      entry,
+      createEntry: async (values) =>
+        createFloorRegistryEntry(this.hass!, values),
+      updateEntry: async (values) =>
+        updateFloorRegistryEntry(this.hass!, entry!.floor_id, values),
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       .container {
         padding: 8px 16px 16px;
         margin: 0 auto 64px auto;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--secondary-text-color);
+        padding-inline-start: 8px;
+      }
+      .header h2 {
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 28px;
+      }
+      .header ha-icon {
+        margin-inline-end: 8px;
       }
       .areas {
         display: grid;
@@ -248,6 +422,13 @@ export class HaConfigAreasDashboard extends LitElement {
       .card-content {
         min-height: 16px;
         color: var(--secondary-text-color);
+      }
+      .floor {
+        --primary-color: var(--secondary-text-color);
+        margin-inline-end: 8px;
+      }
+      .warning {
+        color: var(--error-color);
       }
     `;
   }

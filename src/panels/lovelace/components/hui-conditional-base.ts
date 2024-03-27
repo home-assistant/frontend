@@ -33,8 +33,6 @@ export class HuiConditionalBase extends ReactiveElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @property({ type: Boolean, reflect: true }) public hidden = false;
-
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _element?: LovelaceCard | LovelaceRow;
@@ -151,7 +149,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
     const visible = this.editMode || conditionMet;
-    this.hidden = !visible;
+    this.toggleAttribute("hidden", !visible);
     this.style.setProperty("display", visible ? "" : "none");
 
     if (visible) {

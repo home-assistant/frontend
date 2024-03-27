@@ -9,6 +9,7 @@ import {
   mdiDevices,
   mdiInformation,
   mdiInformationOutline,
+  mdiLabel,
   mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
@@ -268,6 +269,14 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
+      component: "labels",
+      path: "/config/labels",
+      translationKey: "ui.panel.config.labels.caption",
+      iconPath: mdiLabel,
+      iconColor: "#2D338F",
+      core: true,
+    },
+    {
       component: "zone",
       path: "/config/zone",
       translationKey: "ui.panel.config.zone.caption",
@@ -450,6 +459,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+      },
+      labels: {
+        tag: "ha-config-labels",
+        load: () => import("./labels/ha-config-labels"),
       },
       lovelace: {
         tag: "ha-config-lovelace",

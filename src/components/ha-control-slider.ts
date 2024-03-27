@@ -529,7 +529,7 @@ export class HaControlSlider extends LitElement {
           0,
           0
         );
-        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        border-radius: 0 8px 8px 0;
       }
       .slider .slider-track-bar:after {
         top: 0;
@@ -546,7 +546,7 @@ export class HaControlSlider extends LitElement {
           0,
           0
         );
-        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        border-radius: 8px 0 0 8px;
       }
       .slider .slider-track-bar.end::after {
         right: initial;
@@ -561,7 +561,7 @@ export class HaControlSlider extends LitElement {
           calc((1 - var(--value, 0)) * var(--slider-size)),
           0
         );
-        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        border-radius: 8px 8px 0 0;
       }
       :host([vertical]) .slider .slider-track-bar:after {
         top: var(--handle-margin);
@@ -579,7 +579,7 @@ export class HaControlSlider extends LitElement {
           calc((0 - var(--value, 0)) * var(--slider-size)),
           0
         );
-        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        border-radius: 0 0 8px 8px;
       }
       :host([vertical]) .slider .slider-track-bar.end::after {
         top: initial;

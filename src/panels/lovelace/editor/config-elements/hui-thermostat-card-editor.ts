@@ -34,6 +34,7 @@ const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "climate-hvac-modes",
   "climate-preset-modes",
   "climate-fan-modes",
+  "climate-swing-modes",
 ];
 
 const cardConfigStruct = assign(

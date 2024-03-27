@@ -36,6 +36,45 @@ const ENTITIES = [
     friendly_name: "Nest",
     supported_features: 43,
   }),
+  getEntity("climate", "overkiz_radiator", "heat", {
+    current_temperature: 18,
+    min_temp: 7,
+    max_temp: 35,
+    temperature: 20,
+    hvac_modes: ["heat", "auto", "off"],
+    friendly_name: "Overkiz radiator",
+    supported_features: 17,
+    preset_mode: "comfort",
+    preset_modes: [
+      "none",
+      "frost_protection",
+      "eco",
+      "comfort",
+      "comfort-1",
+      "comfort-2",
+      "auto",
+      "boost",
+      "external",
+      "prog",
+    ],
+  }),
+  getEntity("climate", "overkiz_towel_dryer", "heat", {
+    current_temperature: null,
+    min_temp: 7,
+    max_temp: 35,
+    hvac_modes: ["heat", "off"],
+    friendly_name: "Overkiz towel dryer",
+    supported_features: 16,
+    preset_mode: "eco",
+    preset_modes: [
+      "none",
+      "frost_protection",
+      "eco",
+      "comfort",
+      "comfort-1",
+      "comfort-2",
+    ],
+  }),
   getEntity("climate", "sensibo", "fan_only", {
     current_temperature: null,
     temperature: null,
@@ -46,7 +85,9 @@ const ENTITIES = [
     friendly_name: "Sensibo purifier",
     fan_modes: ["low", "high"],
     fan_mode: "low",
-    supported_features: 9,
+    swing_modes: ["on", "off", "both", "vertical", "horizontal"],
+    swing_mode: "vertical",
+    supported_features: 41,
   }),
   getEntity("climate", "unavailable", "unavailable", {
     supported_features: 43,
@@ -59,8 +100,6 @@ const CONFIGS = [
     config: `
 - type: thermostat
   entity: climate.ecobee
-- type: thermostat
-  entity: climate.nest
     `,
   },
   {
@@ -68,6 +107,66 @@ const CONFIGS = [
     config: `
 - type: thermostat
   entity: climate.nest
+    `,
+  },
+  {
+    heading: "Feature example",
+    config: `
+- type: thermostat
+  entity: climate.overkiz_radiator
+  features:
+    - type: climate-hvac-modes
+      hvac_modes:
+        - heat
+        - 'off'
+        - auto
+    - type: climate-preset-modes
+      style: icons
+      preset_modes:
+        - none
+        - frost_protection
+        - eco
+        - comfort
+        - comfort-1
+        - comfort-2
+        - auto
+        - boost
+        - external
+        - prog
+    - type: climate-preset-modes
+      style: dropdown
+      preset_modes:
+        - none
+        - frost_protection
+        - eco
+        - comfort
+        - comfort-1
+        - comfort-2
+        - auto
+        - boost
+        - external
+        - prog
+    `,
+  },
+  {
+    heading: "Preset only example",
+    config: `
+- type: thermostat
+  entity: climate.overkiz_towel_dryer
+  features:
+    - type: climate-hvac-modes
+      hvac_modes:
+        - heat
+        - 'off'
+    - type: climate-preset-modes
+      style: icons
+      preset_modes:
+        - none
+        - frost_protection
+        - eco
+        - comfort
+        - comfort-1
+        - comfort-2
     `,
   },
   {
@@ -85,6 +184,14 @@ const CONFIGS = [
       fan_modes:
         - low
         - high
+    - type: climate-swing-modes
+      style: icons
+      swing_modes:
+        - 'on'
+        - 'off'
+        - 'both'
+        - 'vertical'
+        - 'horizontal'
     `,
   },
   {
