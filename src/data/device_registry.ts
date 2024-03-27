@@ -20,6 +20,7 @@ export interface DeviceRegistryEntry {
   manufacturer: string | null;
   model: string | null;
   name: string | null;
+  labels: string[];
   sw_version: string | null;
   hw_version: string | null;
   serial_number: string | null;
@@ -43,6 +44,7 @@ export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
   name_by_user?: string | null;
   disabled_by?: string | null;
+  labels?: string[];
 }
 
 export const fallbackDeviceName = (
@@ -140,7 +142,7 @@ export const getDeviceEntityDisplayLookup = (
 
 export const getDeviceIntegrationLookup = (
   entitySources: EntitySources,
-  entities: EntityRegistryDisplayEntry[]
+  entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[]
 ): Record<string, string[]> => {
   const deviceIntegrations: Record<string, string[]> = {};
 
