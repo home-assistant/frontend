@@ -3,7 +3,7 @@ import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
 class HuiVerticalStackCard extends HuiStackCard {
-  public async getCardSize() {
+  public async getCardSize(hScale?: number) {
     if (!this._cards) {
       return 0;
     }
@@ -11,7 +11,7 @@ class HuiVerticalStackCard extends HuiStackCard {
     const promises: Array<Promise<number> | number> = [];
 
     for (const element of this._cards) {
-      promises.push(computeCardSize(element));
+      promises.push(computeCardSize(element, hScale));
     }
 
     const results = await Promise.all(promises);

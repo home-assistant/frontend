@@ -55,8 +55,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: PictureElementsCardConfig;
 
-  public getCardSize(): number {
-    return 4;
+  public getCardSize(hScale?: number): number {
+    return 4 * (hScale || 1);
   }
 
   public setConfig(config: PictureElementsCardConfig): void {
