@@ -464,9 +464,9 @@ export class HaConfigEntities extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(
@@ -479,10 +479,9 @@ export class HaConfigEntities extends LitElement {
           "ui.panel.config.entities.picker.search"
         )}
         hasFilters
-        .filters=${
-          Object.values(this._filters).filter((filter) => filter.value?.length)
-            .length
-        }
+        .filters=${Object.values(this._filters).filter(
+          (filter) => filter.value?.length
+        ).length}
         .selected=${this._selectedEntities.length}
         .filter=${this._filter}
         selectable
@@ -498,107 +497,101 @@ export class HaConfigEntities extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-                <div class="header-btns" slot="selection-bar">
-                  ${
-                    !this.narrow
-                      ? html`
-                          <mwc-button
-                            @click=${this._enableSelected}
-                            .disabled=${!this._selectedEntities.length}
-                            >${this.hass.localize(
-                              "ui.panel.config.entities.picker.enable_selected.button"
-                            )}</mwc-button
-                          >
-                          <mwc-button
-                            @click=${this._disableSelected}
-                            .disabled=${!this._selectedEntities.length}
-                            >${this.hass.localize(
-                              "ui.panel.config.entities.picker.disable_selected.button"
-                            )}</mwc-button
-                          >
-                          <mwc-button
-                            @click=${this._hideSelected}
-                            .disabled=${!this._selectedEntities.length}
-                            >${this.hass.localize(
-                              "ui.panel.config.entities.picker.hide_selected.button"
-                            )}</mwc-button
-                          >
-                          <mwc-button
-                            @click=${this._removeSelected}
-                            .disabled=${!this._selectedEntities.length}
-                            class="warning"
-                            >${this.hass.localize(
-                              "ui.panel.config.entities.picker.remove_selected.button"
-                            )}</mwc-button
-                          >
-                        `
-                      : html`
-                          <ha-icon-button
-                            id="enable-btn"
-                            .disabled=${!this._selectedEntities.length}
-                            @click=${this._enableSelected}
-                            .path=${mdiUndo}
-                            .label=${this.hass.localize("ui.common.enable")}
-                          ></ha-icon-button>
-                          <simple-tooltip animation-delay="0" for="enable-btn">
-                            ${this.hass.localize(
-                              "ui.panel.config.entities.picker.enable_selected.button"
-                            )}
-                          </simple-tooltip>
-                          <ha-icon-button
-                            id="disable-btn"
-                            .disabled=${!this._selectedEntities.length}
-                            @click=${this._disableSelected}
-                            .path=${mdiCancel}
-                            .label=${this.hass.localize("ui.common.disable")}
-                          ></ha-icon-button>
-                          <simple-tooltip animation-delay="0" for="disable-btn">
-                            ${this.hass.localize(
-                              "ui.panel.config.entities.picker.disable_selected.button"
-                            )}
-                          </simple-tooltip>
-                          <ha-icon-button
-                            id="hide-btn"
-                            .disabled=${!this._selectedEntities.length}
-                            @click=${this._hideSelected}
-                            .path=${mdiEyeOff}
-                            .label=${this.hass.localize("ui.common.hide")}
-                          ></ha-icon-button>
-                          <simple-tooltip animation-delay="0" for="hide-btn">
-                            ${this.hass.localize(
-                              "ui.panel.config.entities.picker.hide_selected.button"
-                            )}
-                          </simple-tooltip>
-                          <ha-icon-button
-                            class="warning"
-                            id="remove-btn"
-                            .disabled=${!this._selectedEntities.length}
-                            @click=${this._removeSelected}
-                            .path=${mdiDelete}
-                            .label=${this.hass.localize("ui.common.remove")}
-                          ></ha-icon-button>
-                          <simple-tooltip animation-delay="0" for="remove-btn">
-                            ${this.hass.localize(
-                              "ui.panel.config.entities.picker.remove_selected.button"
-                            )}
-                          </simple-tooltip>
-                        `
-                  }
-                </div>
-              </div>
-        
-        ${
-          this._filters.config_entry?.value?.length
-            ? html`<ha-alert slot="filter-pane">
-                Filtering by config entry
-                ${this._entries?.find(
-                  (entry) =>
-                    entry.entry_id === this._filters.config_entry!.value![0]
-                )?.title || this._filters.config_entry.value[0]}
-              </ha-alert>`
-            : nothing
-        }
-              <ha-filter-floor-areas
+        <div class="header-btns" slot="selection-bar">
+          ${!this.narrow
+            ? html`
+                <mwc-button
+                  @click=${this._enableSelected}
+                  .disabled=${!this._selectedEntities.length}
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.enable_selected.button"
+                  )}</mwc-button
+                >
+                <mwc-button
+                  @click=${this._disableSelected}
+                  .disabled=${!this._selectedEntities.length}
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.disable_selected.button"
+                  )}</mwc-button
+                >
+                <mwc-button
+                  @click=${this._hideSelected}
+                  .disabled=${!this._selectedEntities.length}
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.hide_selected.button"
+                  )}</mwc-button
+                >
+                <mwc-button
+                  @click=${this._removeSelected}
+                  .disabled=${!this._selectedEntities.length}
+                  class="warning"
+                  >${this.hass.localize(
+                    "ui.panel.config.entities.picker.remove_selected.button"
+                  )}</mwc-button
+                >
+              `
+            : html`
+                <ha-icon-button
+                  id="enable-btn"
+                  .disabled=${!this._selectedEntities.length}
+                  @click=${this._enableSelected}
+                  .path=${mdiUndo}
+                  .label=${this.hass.localize("ui.common.enable")}
+                ></ha-icon-button>
+                <simple-tooltip animation-delay="0" for="enable-btn">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.enable_selected.button"
+                  )}
+                </simple-tooltip>
+                <ha-icon-button
+                  id="disable-btn"
+                  .disabled=${!this._selectedEntities.length}
+                  @click=${this._disableSelected}
+                  .path=${mdiCancel}
+                  .label=${this.hass.localize("ui.common.disable")}
+                ></ha-icon-button>
+                <simple-tooltip animation-delay="0" for="disable-btn">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.disable_selected.button"
+                  )}
+                </simple-tooltip>
+                <ha-icon-button
+                  id="hide-btn"
+                  .disabled=${!this._selectedEntities.length}
+                  @click=${this._hideSelected}
+                  .path=${mdiEyeOff}
+                  .label=${this.hass.localize("ui.common.hide")}
+                ></ha-icon-button>
+                <simple-tooltip animation-delay="0" for="hide-btn">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.hide_selected.button"
+                  )}
+                </simple-tooltip>
+                <ha-icon-button
+                  class="warning"
+                  id="remove-btn"
+                  .disabled=${!this._selectedEntities.length}
+                  @click=${this._removeSelected}
+                  .path=${mdiDelete}
+                  .label=${this.hass.localize("ui.common.remove")}
+                ></ha-icon-button>
+                <simple-tooltip animation-delay="0" for="remove-btn">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.remove_selected.button"
+                  )}
+                </simple-tooltip>
+              `}
+        </div>
+        ${this._filters.config_entry?.value?.length
+          ? html`<ha-alert slot="filter-pane">
+              Filtering by config entry
+              ${this._entries?.find(
+                (entry) =>
+                  entry.entry_id === this._filters.config_entry!.value![0]
+              )?.title || this._filters.config_entry.value[0]}
+            </ha-alert>`
+          : nothing}
+        <ha-filter-floor-areas
           .hass=${this.hass}
           type="entity"
           .value=${this._filters["ha-filter-floor-areas"]?.value}
@@ -629,7 +622,9 @@ export class HaConfigEntities extends LitElement {
         ></ha-filter-integrations>
         <ha-filter-states
           .hass=${this.hass}
-          .label=${this.hass.localize("ui.panel.config.entities.picker.headers.status")}
+          .label=${this.hass.localize(
+            "ui.panel.config.entities.picker.headers.status"
+          )}
           .value=${this._filters["ha-filter-states"]?.value}
           .states=${this._states(this.hass.localize)}
           @data-table-filter-changed=${this._filterChanged}
@@ -638,20 +633,16 @@ export class HaConfigEntities extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
-        ${
-          includeAddDeviceFab
-            ? html`<ha-fab
-                .label=${this.hass.localize(
-                  "ui.panel.config.devices.add_device"
-                )}
-                extended
-                @click=${this._addDevice}
-                slot="fab"
-              >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-              </ha-fab>`
-            : nothing
-        }
+        ${includeAddDeviceFab
+          ? html`<ha-fab
+              .label=${this.hass.localize("ui.panel.config.devices.add_device")}
+              extended
+              @click=${this._addDevice}
+              slot="fab"
+            >
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-fab>`
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
