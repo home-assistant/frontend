@@ -32,7 +32,6 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     return html`
       <ha-textfield
         type="numeric"
-        inputMode="decimal"
         .label=${this.label}
         .helper=${this.helper}
         helperPersistent

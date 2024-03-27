@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -82,7 +89,7 @@ export class HaNumberSelector extends LitElement {
         <ha-textfield
           .inputMode=${this.selector.number?.step === "any" ||
           (this.selector.number?.step ?? 1) % 1 !== 0
-            ? "decimal"
+            ? nothing
             : "numeric"}
           .label=${!isBox ? undefined : this.label}
           .placeholder=${this.placeholder}
