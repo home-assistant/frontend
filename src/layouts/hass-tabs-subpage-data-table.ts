@@ -666,6 +666,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
       .select-mode-chip {
         --md-assist-chip-icon-label-space: 0;
+        --md-assist-chip-trailing-space: 8px;
       }
 
       ha-dialog {
