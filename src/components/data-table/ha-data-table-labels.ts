@@ -86,12 +86,13 @@ class HaDataTableLabels extends LitElement {
   static get styles() {
     return css`
       :host {
-        position: relative;
         display: block;
         flex-grow: 1;
         margin-top: 4px;
+        height: 22px;
       }
       ha-chip-set {
+        position: fixed;
         flex-wrap: nowrap;
       }
       ha-assist-chip {

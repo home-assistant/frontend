@@ -193,7 +193,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           direction: "asc",
-          type: "overflow",
           grows: true,
           template: (automation) => {
             const date = new Date(automation.attributes.last_triggered);
@@ -211,10 +210,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                       : localize("ui.components.relative_time.never")}
                   </div>`
                 : nothing}
-              <ha-data-table-labels
-                @label-clicked=${this._labelClicked}
-                .labels=${automation.labels}
-              ></ha-data-table-labels>
+              ${automation.labels.length
+                ? html`<ha-data-table-labels
+                    @label-clicked=${this._labelClicked}
+                    .labels=${automation.labels}
+                  ></ha-data-table-labels>`
+                : nothing}
             `;
           },
         },
