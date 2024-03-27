@@ -629,7 +629,7 @@ export class HaConfigEntities extends LitElement {
         ></ha-filter-integrations>
         <ha-filter-states
           .hass=${this.hass}
-          .label=${this.hass.localize("ui.panel.config.entities.picker.state")}
+          .label=${this.hass.localize("ui.panel.config.entities.picker.headers.status")}
           .value=${this._filters["ha-filter-states"]?.value}
           .states=${this._states(this.hass.localize)}
           @data-table-filter-changed=${this._filterChanged}

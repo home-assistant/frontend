@@ -3996,7 +3996,6 @@
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search entities",
             "unnamed_entity": "Unnamed entity",
-            "state": "State",
             "status": {
               "restored": "Restored",
               "available": "Available",
