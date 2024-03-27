@@ -3994,12 +3994,7 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search devices",
-            "filter": {
-              "filter": "Filter",
-              "show_disabled": "Show disabled devices",
-              "hidden_devices": "{number} {number, plural,\n  one {device}\n  other {devices}\n} not shown",
-              "show_all": "Show all"
-            }
+            "state": "State"
           }
         },
         "entities": {
@@ -4011,15 +4006,6 @@
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search entities",
             "unnamed_entity": "Unnamed entity",
-            "filter": {
-              "filter": "Filter",
-              "show_hidden": "Show hidden entities",
-              "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities",
-              "hidden_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} not shown",
-              "show_all": "Show all"
-            },
             "status": {
               "restored": "Restored",
               "available": "Available",

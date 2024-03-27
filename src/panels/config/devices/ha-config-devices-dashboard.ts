@@ -1,7 +1,6 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -10,6 +9,7 @@ import {
   html,
   nothing,
 } from "lit";
+
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -28,7 +28,12 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-integrations";
+import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-alert";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
@@ -41,7 +46,7 @@ import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import { IntegrationManifest, domainToName } from "../../../data/integration";
+import { IntegrationManifest } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -77,11 +82,14 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @state() private _showDisabled = false;
-
   @state() private _filter: string = history.state?.filter || "";
 
-  @state() private _numHiddenDevices = 0;
+  @state() private _filters: Record<
+    string,
+    { value: string[] | undefined; items: Set<string> | undefined }
+  > = {};
+
+  @state() private _expandedFilter?: string;
 
   private _ignoreLocationChange = false;
 
@@ -104,55 +112,72 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
     }
   };
 
   private _popState = () => {
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
     }
   };
 
-  private _activeFilters = memoizeOne(
-    (
-      entries: ConfigEntry[],
-      filters: URLSearchParams,
-      localize: LocalizeFunc
-    ): string[] | undefined => {
-      const filterTexts: string[] = [];
-      filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry": {
-            const configEntry = entries.find(
-              (entry) => entry.entry_id === value
-            );
-            if (!configEntry) {
-              break;
-            }
-            const integrationName = domainToName(localize, configEntry.domain);
-            filterTexts.push(
-              `${this.hass.localize(
-                "ui.panel.config.integrations.integration"
-              )} "${integrationName}${
-                integrationName !== configEntry.title
-                  ? `: ${configEntry.title}`
-                  : ""
-              }"`
-            );
-            break;
-          }
-          case "domain": {
-            filterTexts.push(
-              `${this.hass.localize(
-                "ui.panel.config.integrations.integration"
-              )} "${domainToName(localize, value)}"`
-            );
-          }
-        }
-      });
-      return filterTexts.length ? filterTexts : undefined;
+  private _states = memoizeOne((localize: LocalizeFunc) => [
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.devices.data_table.disabled_by"),
+    },
+  ]);
+
+  firstUpdated() {
+    this._filters = {
+      "ha-filter-states": {
+        value: [],
+        items: undefined,
+      },
+    };
+    this._setFiltersFromUrl();
+  }
+
+  private _setFiltersFromUrl() {
+    if (this._searchParms.has("domain")) {
+      this._filters = {
+        ...this._filters,
+        "ha-filter-states": {
+          value: [
+            ...(this._filters["ha-filter-states"]?.value || []),
+            "disabled",
+          ],
+          items: undefined,
+        },
+        "ha-filter-integrations": {
+          value: [this._searchParms.get("domain")!],
+          items: undefined,
+        },
+      };
     }
-  );
+    if (this._searchParms.has("config_entry")) {
+      this._filters = {
+        ...this._filters,
+        "ha-filter-states": {
+          value: [
+            ...(this._filters["ha-filter-states"]?.value || []),
+            "disabled",
+          ],
+          items: undefined,
+        },
+        config_entry: {
+          value: [this._searchParms.get("config_entry")!],
+          items: undefined,
+        },
+      };
+    }
+  }
+
+  private _clearFilter() {
+    this._filters = {};
+  }
 
   private _devicesAndFilterDomains = memoizeOne(
     (
@@ -161,16 +186,15 @@ export class HaConfigDeviceDashboard extends LitElement {
       entities: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
-      filters: URLSearchParams,
-      showDisabled: boolean,
+      filters: Record<
+        string,
+        { value: string[] | undefined; items: Set<string> | undefined }
+      >,
       localize: LocalizeFunc
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
       // So we guard for that.
       let outputDevices: DeviceRowData[] = Object.values(devices);
-
-      // If nothing gets filtered, this is our correct count of devices
-      let startLength = outputDevices.length;
 
       const deviceEntityLookup: DeviceEntityLookup = {};
       for (const entity of entities) {
@@ -193,32 +217,47 @@ export class HaConfigDeviceDashboard extends LitElement {
         manifestLookup[manifest.domain] = manifest;
       }
 
-      let filterConfigEntry: ConfigEntry | undefined;
+      let filteredConfigEntry: ConfigEntry | undefined;
 
       const filteredDomains = new Set<string>();
 
-      filters.forEach((value, key) => {
-        if (key === "config_entry") {
+      Object.entries(filters).forEach(([key, flter]) => {
+        if (key === "config_entry" && flter.value?.length) {
           outputDevices = outputDevices.filter((device) =>
-            device.config_entries.includes(value)
+            device.config_entries.some((entryId) =>
+              flter.value?.includes(entryId)
+            )
           );
-          startLength = outputDevices.length;
-          filterConfigEntry = entries.find((entry) => entry.entry_id === value);
-          if (filterConfigEntry) {
-            filteredDomains.add(filterConfigEntry.domain);
+
+          const configEntries = entries.filter(
+            (entry) => entry.entry_id && flter.value?.includes(entry.entry_id)
+          );
+
+          configEntries.forEach((configEntry) => {
+            filteredDomains.add(configEntry.domain);
+          });
+          if (configEntries.length === 1) {
+            filteredConfigEntry = configEntries[0];
           }
-        }
-        if (key === "domain") {
+        } else if (key === "ha-filter-integrations" && flter.value?.length) {
           const entryIds = entries
-            .filter((entry) => entry.domain === value)
+            .filter((entry) => flter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) => entryIds.includes(entryId))
           );
-          startLength = outputDevices.length;
-          filteredDomains.add(value);
+          flter.value!.forEach((domain) => filteredDomains.add(domain));
+        } else if (flter.items) {
+          outputDevices = outputDevices.filter((device) =>
+            flter.items!.has(device.id)
+          );
         }
       });
+
+      const stateFilters = filters["ha-filter-states"]?.value;
+
+      const showDisabled =
+        stateFilters?.length && stateFilters.includes("disabled");
 
       if (!showDisabled) {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
@@ -270,165 +309,140 @@ export class HaConfigDeviceDashboard extends LitElement {
         };
       });
 
-      this._numHiddenDevices = startLength - formattedOutputDevices.length;
       return {
         devicesOutput: formattedOutputDevices,
-        filteredConfigEntry: filterConfigEntry,
+        filteredConfigEntry,
         filteredDomains,
       };
     }
   );
 
-  private _columns = memoizeOne(
-    (localize: LocalizeFunc, narrow: boolean, showDisabled: boolean) => {
-      type DeviceItem = ReturnType<
-        typeof this._devicesAndFilterDomains
-      >["devicesOutput"][number];
+  private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
+    type DeviceItem = ReturnType<
+      typeof this._devicesAndFilterDomains
+    >["devicesOutput"][number];
 
-      const columns: DataTableColumnContainer<DeviceItem> = {
-        icon: {
-          title: "",
-          type: "icon",
-          template: (device) =>
-            device.domains.length
-              ? html`<img
-                  alt=""
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl({
-                    domain: device.domains[0],
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                />`
-              : "",
-        },
-      };
+    const columns: DataTableColumnContainer<DeviceItem> = {
+      icon: {
+        title: "",
+        type: "icon",
+        template: (device) =>
+          device.domains.length
+            ? html`<img
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl({
+                  domain: device.domains[0],
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+              />`
+            : "",
+      },
+    };
 
-      if (narrow) {
-        columns.name = {
-          title: localize("ui.panel.config.devices.data_table.device"),
-          main: true,
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-          template: (device) => html`
-            ${device.name}
-            <div class="secondary">${device.area} | ${device.integration}</div>
-          `,
-        };
-      } else {
-        columns.name = {
-          title: localize("ui.panel.config.devices.data_table.device"),
-          main: true,
-          sortable: true,
-          filterable: true,
-          grows: true,
-          direction: "asc",
-        };
-      }
+    if (narrow) {
+      columns.name = {
+        title: localize("ui.panel.config.devices.data_table.device"),
+        main: true,
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+        template: (device) => html`
+          ${device.name}
+          <div class="secondary">${device.area} | ${device.integration}</div>
+        `,
+      };
+    } else {
+      columns.name = {
+        title: localize("ui.panel.config.devices.data_table.device"),
+        main: true,
+        sortable: true,
+        filterable: true,
+        grows: true,
+        direction: "asc",
+      };
+    }
 
-      columns.manufacturer = {
-        title: localize("ui.panel.config.devices.data_table.manufacturer"),
-        sortable: true,
-        hidden: narrow,
-        filterable: true,
-        width: "15%",
-      };
-      columns.model = {
-        title: localize("ui.panel.config.devices.data_table.model"),
-        sortable: true,
-        hidden: narrow,
-        filterable: true,
-        width: "15%",
-      };
-      columns.area = {
-        title: localize("ui.panel.config.devices.data_table.area"),
-        sortable: true,
-        hidden: narrow,
-        filterable: true,
-        width: "15%",
-      };
-      columns.integration = {
-        title: localize("ui.panel.config.devices.data_table.integration"),
-        sortable: true,
-        hidden: narrow,
-        filterable: true,
-        width: "15%",
-      };
-      columns.battery_entity = {
-        title: localize("ui.panel.config.devices.data_table.battery"),
-        sortable: true,
-        filterable: true,
-        type: "numeric",
-        width: narrow ? "105px" : "15%",
-        maxWidth: "105px",
-        valueColumn: "battery_level",
-        template: (device) => {
-          const batteryEntityPair = device.battery_entity;
-          const battery =
-            batteryEntityPair && batteryEntityPair[0]
-              ? this.hass.states[batteryEntityPair[0]]
-              : undefined;
-          const batteryDomain = battery
-            ? computeStateDomain(battery)
+    columns.manufacturer = {
+      title: localize("ui.panel.config.devices.data_table.manufacturer"),
+      sortable: true,
+      hidden: narrow,
+      filterable: true,
+      groupable: true,
+      width: "15%",
+    };
+    columns.model = {
+      title: localize("ui.panel.config.devices.data_table.model"),
+      sortable: true,
+      hidden: narrow,
+      filterable: true,
+      width: "15%",
+    };
+    columns.area = {
+      title: localize("ui.panel.config.devices.data_table.area"),
+      sortable: true,
+      hidden: narrow,
+      filterable: true,
+      groupable: true,
+      width: "15%",
+    };
+    columns.integration = {
+      title: localize("ui.panel.config.devices.data_table.integration"),
+      sortable: true,
+      hidden: narrow,
+      filterable: true,
+      groupable: true,
+      width: "15%",
+    };
+    columns.battery_entity = {
+      title: localize("ui.panel.config.devices.data_table.battery"),
+      sortable: true,
+      filterable: true,
+      type: "numeric",
+      width: narrow ? "105px" : "15%",
+      maxWidth: "105px",
+      valueColumn: "battery_level",
+      template: (device) => {
+        const batteryEntityPair = device.battery_entity;
+        const battery =
+          batteryEntityPair && batteryEntityPair[0]
+            ? this.hass.states[batteryEntityPair[0]]
             : undefined;
-          const batteryCharging =
-            batteryEntityPair && batteryEntityPair[1]
-              ? this.hass.states[batteryEntityPair[1]]
-              : undefined;
+        const batteryDomain = battery ? computeStateDomain(battery) : undefined;
+        const batteryCharging =
+          batteryEntityPair && batteryEntityPair[1]
+            ? this.hass.states[batteryEntityPair[1]]
+            : undefined;
 
-          return battery &&
-            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
-            ? html`
-                ${batteryDomain === "sensor"
-                  ? this.hass.formatEntityState(battery)
-                  : nothing}
-                <ha-battery-icon
-                  .hass=${this.hass}
-                  .batteryStateObj=${battery}
-                  .batteryChargingStateObj=${batteryCharging}
-                ></ha-battery-icon>
-              `
-            : html`—`;
-        },
-      };
-      if (showDisabled) {
-        columns.disabled_by = {
-          title: "",
-          label: localize("ui.panel.config.devices.data_table.disabled_by"),
-          type: "icon",
-          template: (device) =>
-            device.disabled_by
-              ? html`<div
-                  tabindex="0"
-                  style="display:inline-block; position: relative;"
-                >
-                  <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
-                  <simple-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize("ui.panel.config.devices.disabled")}
-                  </simple-tooltip>
-                </div>`
-              : "—",
-        };
-      }
-      return columns;
-    }
-  );
-
-  public willUpdate(changedProps) {
-    if (changedProps.has("_searchParms")) {
-      if (
-        this._searchParms.get("config_entry") ||
-        this._searchParms.get("domain")
-      ) {
-        // If we are requested to show the devices for a given config entry / domain,
-        // also show the disabled ones by default.
-        this._showDisabled = true;
-      }
-    }
-  }
+        return battery &&
+          (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+          ? html`
+              ${batteryDomain === "sensor"
+                ? this.hass.formatEntityState(battery)
+                : nothing}
+              <ha-battery-icon
+                .hass=${this.hass}
+                .batteryStateObj=${battery}
+                .batteryChargingStateObj=${batteryCharging}
+              ></ha-battery-icon>
+            `
+          : html`—`;
+      },
+    };
+    columns.disabled_by = {
+      title: "",
+      label: localize("ui.panel.config.devices.data_table.disabled_by"),
+      hidden: true,
+      template: (device) =>
+        device.disabled_by
+          ? this.hass.localize("ui.panel.config.devices.disabled")
+          : "",
+    };
+    return columns;
+  });
 
   protected render(): TemplateResult {
     const { devicesOutput } = this._devicesAndFilterDomains(
@@ -437,13 +451,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.entities,
       this.hass.areas,
       this.manifests,
-      this._searchParms,
-      this._showDisabled,
-      this.hass.localize
-    );
-    const activeFilters = this._activeFilters(
-      this.entries,
-      this._searchParms,
+      this._filters,
       this.hass.localize
     );
 
@@ -456,22 +464,16 @@ export class HaConfigDeviceDashboard extends LitElement {
           : "/config"}
         .tabs=${configSections.devices}
         .route=${this.route}
-        .activeFilters=${activeFilters}
-        .numHidden=${this._numHiddenDevices}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.devices.picker.search"
         )}
-        .hiddenLabel=${this.hass.localize(
-          "ui.panel.config.devices.picker.filter.hidden_devices",
-          { number: this._numHiddenDevices }
-        )}
-        .columns=${this._columns(
-          this.hass.localize,
-          this.narrow,
-          this._showDisabled
-        )}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${devicesOutput}
         .filter=${this._filter}
+        hasFilters
+        .filters=${Object.values(this._filters).filter(
+          (filter) => filter.value?.length
+        ).length}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
@@ -490,35 +492,60 @@ export class HaConfigDeviceDashboard extends LitElement {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-        <ha-button-menu slot="filter-menu" multi>
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.filter"
-            )}
-            .path=${mdiFilterVariant}
-          ></ha-icon-button>
-          ${this.narrow && activeFilters?.length
-            ? html`<mwc-list-item @click=${this._clearFilter}
-                >${this.hass.localize("ui.components.data-table.filtering_by")}
-                ${activeFilters.join(", ")}
-                <span class="clear"
-                  >${this.hass.localize("ui.common.clear")}</span
-                ></mwc-list-item
-              >`
-            : ""}
-          <ha-check-list-item
-            left
-            @request-selected=${this._showDisabledChanged}
-            .selected=${this._showDisabled}
-          >
-            ${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.show_disabled"
-            )}
-          </ha-check-list-item>
-        </ha-button-menu>
+        ${this._filters.config_entry?.value?.length
+          ? html`<ha-alert slot="filter-pane">
+              Filtering by config entry
+              ${this.entries?.find(
+                (entry) =>
+                  entry.entry_id === this._filters.config_entry!.value![0]
+              )?.title || this._filters.config_entry.value[0]}
+            </ha-alert>`
+          : nothing}
+        <ha-filter-floor-areas
+          .hass=${this.hass}
+          type="device"
+          .value=${this._filters["ha-filter-floor-areas"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-floor-areas>
+        <ha-filter-integrations
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-integrations"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-integrations"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-integrations>
+        <ha-filter-states
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-states"]?.value}
+          .states=${this._states(this.hass.localize)}
+          .label=${this.hass.localize("ui.panel.config.devices.picker.state")}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-states"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-states>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _filterExpanded(ev) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
+  }
+
+  private _filterChanged(ev) {
+    const type = ev.target.localName;
+    this._filters = { ...this._filters, [type]: ev.detail };
   }
 
   private _batteryEntity(
@@ -549,25 +576,9 @@ export class HaConfigDeviceDashboard extends LitElement {
     navigate(`/config/devices/device/${deviceId}`);
   }
 
-  private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-    this._showDisabled = ev.detail.selected;
-  }
-
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
     history.replaceState({ filter: this._filter }, "");
-  }
-
-  private _clearFilter() {
-    if (
-      this._activeFilters(this.entries, this._searchParms, this.hass.localize)
-    ) {
-      navigate(window.location.pathname, { replace: true });
-    }
-    this._showDisabled = true;
   }
 
   private _addDevice() {
@@ -578,8 +589,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         this.entities,
         this.hass.areas,
         this.manifests,
-        this._searchParms,
-        this._showDisabled,
+        this._filters,
         this.hass.localize
       );
     if (
