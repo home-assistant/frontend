@@ -12,10 +12,10 @@ import {
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./chips/ha-assist-chip";
+import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-check-list-item";
+import "./ha-label";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -69,18 +69,15 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                     .selected=${this.value?.includes(label.label_id)}
                     hasMeta
                   >
-                    <ha-assist-chip
-                      .label=${label.name}
-                      active
-                      style=${color ? `--color: ${color}` : ""}
-                    >
+                    <ha-label style=${color ? `--color: ${color}` : ""}>
                       ${label.icon
                         ? html`<ha-icon
                             slot="icon"
                             .icon=${label.icon}
                           ></ha-icon>`
                         : nothing}
-                    </ha-assist-chip>
+                      ${label.name}
+                    </ha-label>
                   </ha-check-list-item>`;
                 })}
               </mwc-list>
@@ -170,13 +167,9 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         .warning {
           color: var(--error-color);
         }
-        ha-assist-chip {
-          border: 1px solid var(--color);
-          --md-assist-chip-icon-size: 16px;
-          --md-assist-chip-leading-space: 12px;
-          --md-assist-chip-trailing-space: 12px;
-          --ha-assist-chip-active-container-color: var(--color);
-          --ha-assist-chip-active-container-opacity: 0.3;
+        ha-label {
+          --ha-label-background-color: var(--color);
+          --ha-label-background-opacity: 0.5;
         }
       `,
     ];
