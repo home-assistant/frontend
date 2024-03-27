@@ -96,6 +96,10 @@ export interface LockEntityOptions {
   default_code?: string | null;
 }
 
+export interface AlarmControlPanelEntityOptions {
+  default_code?: string | null;
+}
+
 export interface WeatherEntityOptions {
   precipitation_unit?: string | null;
   pressure_unit?: string | null;
@@ -112,6 +116,7 @@ export interface SwitchAsXEntityOptions {
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
+  alarm_control_panel?: AlarmControlPanelEntityOptions;
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
@@ -134,6 +139,7 @@ export interface EntityRegistryEntryUpdateParams {
     | SensorEntityOptions
     | NumberEntityOptions
     | LockEntityOptions
+    | AlarmControlPanelEntityOptions
     | WeatherEntityOptions
     | LightEntityOptions;
   aliases?: string[];
