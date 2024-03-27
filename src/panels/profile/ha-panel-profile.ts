@@ -1,18 +1,21 @@
 import { customElement, property } from "lit/decorators";
 
-import { HomeAssistant } from "../../types";
+import { mdiAccount, mdiLock } from "@mdi/js";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { HomeAssistant } from "../../types";
 
 export const profileSections: PageNavigation[] = [
   {
     path: "/profile/general",
     translationKey: "ui.panel.profile.tabs.general",
+    iconPath: mdiAccount,
   },
   {
     path: "/profile/security",
     translationKey: "ui.panel.profile.tabs.security",
+    iconPath: mdiLock,
   },
 ];
 
