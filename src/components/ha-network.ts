@@ -18,8 +18,8 @@ import {
 } from "../data/network";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import "./ha-checkbox";
-import type { HaCheckbox } from "./ha-checkbox";
+import "./ha-switch";
+import type { HaSwitch } from "./ha-switch";
 import "./ha-settings-row";
 import "./ha-svg-icon";
 
@@ -61,35 +61,23 @@ export class HaNetwork extends LitElement {
     const configured_adapters = this.networkConfig.configured_adapters || [];
     return html`
       <ha-settings-row>
-        <span slot="prefix">
-          <ha-checkbox
-            id="auto_configure"
-            @change=${this._handleAutoConfigureCheckboxClick}
-            .checked=${!configured_adapters.length}
-            name="auto_configure"
-          >
-          </ha-checkbox>
-        </span>
         <span slot="heading" data-for="auto_configure"> Auto Configure </span>
         <span slot="description" data-for="auto_configure">
           Detected:
           ${format_auto_detected_interfaces(this.networkConfig.adapters)}
         </span>
+        <ha-switch
+          id="auto_configure"
+          @change=${this._handleAutoConfigureSwitchClick}
+          .checked=${!configured_adapters.length}
+          name="auto_configure"
+        >
+        </ha-switch>
       </ha-settings-row>
       ${configured_adapters.length || this._expanded
         ? this.networkConfig.adapters.map(
             (adapter) =>
               html`<ha-settings-row>
-                <span slot="prefix">
-                  <ha-checkbox
-                    id=${adapter.name}
-                    @change=${this._handleAdapterCheckboxClick}
-                    .checked=${configured_adapters.includes(adapter.name)}
-                    .adapter=${adapter.name}
-                    name=${adapter.name}
-                  >
-                  </ha-checkbox>
-                </span>
                 <span slot="heading">
                   Adapter: ${adapter.name}
                   ${adapter.default
@@ -100,21 +88,29 @@ export class HaNetwork extends LitElement {
                 <span slot="description">
                   ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}
                 </span>
+                <ha-switch
+                  id=${adapter.name}
+                  @change=${this._handleAdapterSwitchClick}
+                  .checked=${configured_adapters.includes(adapter.name)}
+                  .adapter=${adapter.name}
+                  name=${adapter.name}
+                >
+                </ha-switch>
               </ha-settings-row>`
           )
         : ""}
     `;
   }
 
-  private _handleAutoConfigureCheckboxClick(ev: Event) {
-    const checkbox = ev.currentTarget as HaCheckbox;
+  private _handleAutoConfigureSwitchClick(ev: Event) {
+    const switch_ = ev.currentTarget as HaSwitch;
     if (this.networkConfig === undefined) {
       return;
     }
 
     let configured_adapters = [...this.networkConfig.configured_adapters];
 
-    if (checkbox.checked) {
+    if (switch_.checked) {
       this._expanded = false;
       configured_adapters = [];
     } else {
@@ -132,16 +128,16 @@ export class HaNetwork extends LitElement {
     });
   }
 
-  private _handleAdapterCheckboxClick(ev: Event) {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    const adapter_name = (checkbox as any).name;
+  private _handleAdapterSwitchClick(ev: Event) {
+    const switch_ = ev.currentTarget as HaSwitch;
+    const adapter_name = (switch_ as any).adapter;
     if (this.networkConfig === undefined) {
       return;
     }
 
     const configured_adapters = [...this.networkConfig.configured_adapters];
 
-    if (checkbox.checked) {
+    if (switch_.checked) {
       configured_adapters.push(adapter_name);
     } else {
       const index = configured_adapters.indexOf(adapter_name, 0);
