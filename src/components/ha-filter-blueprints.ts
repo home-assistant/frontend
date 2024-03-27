@@ -14,7 +14,7 @@ export class HaFilterBlueprints extends LitElement {
 
   @property({ attribute: false }) public value?: string[];
 
-  @property() public type?: keyof RelatedResult;
+  @property() public type?: "automation" | "script";
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -63,7 +63,10 @@ export class HaFilterBlueprints extends LitElement {
   }
 
   protected async firstUpdated() {
-    this._blueprints = await fetchBlueprints(this.hass, "automation");
+    if (!this.type) {
+      return;
+    }
+    this._blueprints = await fetchBlueprints(this.hass, this.type);
   }
 
   protected updated(changed) {
@@ -106,7 +109,7 @@ export class HaFilterBlueprints extends LitElement {
       value.push(blueprintId);
       if (this.type) {
         relatedPromises.push(
-          findRelated(this.hass, "automation_blueprint", blueprintId)
+          findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
         );
       }
     }
