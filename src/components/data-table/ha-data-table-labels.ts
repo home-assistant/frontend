@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../chips/ha-assist-chip";
 import { repeat } from "lit/directives/repeat";
 import { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
@@ -21,23 +20,22 @@ class HaDataTableLabels extends LitElement {
         ${this.labels.length > 2
           ? html`<ha-button-menu
               absolute
+              role="button"
+              tabindex="0"
               @click=${this._handleIconOverflowMenuOpened}
               @closed=${this._handleIconOverflowMenuClosed}
             >
-              <ha-assist-chip
-                slot="trigger"
-                .label=${`+${this.labels.length - 2}`}
-              ></ha-assist-chip>
+              <ha-label slot="trigger" class="plus" dense>
+                +${this.labels.length - 2}
+              </ha-label>
               ${repeat(
                 this.labels.slice(2),
                 (label) => label.label_id,
-                (label) =>
-                  html`<ha-list-item
-                    @click=${this._labelClicked}
-                    .item=${label}
-                  >
+                (label) => html`
+                  <ha-list-item @click=${this._labelClicked} .item=${label}>
                     ${this._renderLabel(label, false)}
-                  </ha-list-item>`
+                  </ha-list-item>
+                `
               )}
             </ha-button-menu>`
           : nothing}
@@ -47,20 +45,29 @@ class HaDataTableLabels extends LitElement {
 
   private _renderLabel(label: LabelRegistryEntry, clickAction: boolean) {
     const color = label?.color ? computeCssColor(label.color) : undefined;
-    return html`<ha-assist-chip
-      .item=${label}
-      @click=${clickAction ? this._labelClicked : undefined}
-      .label=${label?.name}
-      active
-      style=${color ? `--color: ${color}` : ""}
-    >
-      ${label?.icon
-        ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-        : nothing}
-    </ha-assist-chip>`;
+    return html`
+      <ha-label
+        dense
+        role="button"
+        tabindex="0"
+        .item=${label}
+        @click=${clickAction ? this._labelClicked : undefined}
+        @keydown=${clickAction ? this._labelClicked : undefined}
+        style=${color ? `--color: ${color}` : ""}
+      >
+        ${label?.icon
+          ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+          : nothing}
+        ${label.name}
+      </ha-label>
+    `;
   }
 
-  private _labelClicked(ev: Event) {
+  private _labelClicked(ev) {
+    ev.stopPropagation();
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
     const label = (ev.currentTarget as any).item as LabelRegistryEntry;
     fireEvent(this, "label-clicked", { label });
   }
@@ -95,14 +102,15 @@ class HaDataTableLabels extends LitElement {
         position: fixed;
         flex-wrap: nowrap;
       }
-      ha-assist-chip {
-        border: 1px solid var(--color);
-        --md-assist-chip-icon-size: 16px;
-        --md-assist-chip-container-height: 20px;
-        --md-assist-chip-leading-space: 12px;
-        --md-assist-chip-trailing-space: 12px;
-        --ha-assist-chip-active-container-color: var(--color);
-        --ha-assist-chip-active-container-opacity: 0.3;
+      ha-label {
+        --ha-label-background-color: var(--color);
+        --ha-label-background-opacity: 0.5;
+      }
+      ha-button-menu {
+        border-radius: 10px;
+      }
+      .plus {
+        border: 1px solid var(--divider-color);
       }
     `;
   }
