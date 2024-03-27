@@ -35,12 +35,22 @@ export const calcDateProperty = (
   options?
 ) =>
   locale.time_zone === TimeZone.server
-    ? (calcZonedDate(
-        date,
-        config.time_zone,
-        fn,
-        options instanceof Date
-          ? utcToZonedTime(options, config.time_zone)
-          : options
-      ) as number | boolean)
+    ? (calcZonedDate(date, config.time_zone, fn, options) as number | boolean)
     : fn(date, options);
+
+export const calcDateDifferenceProperty = (
+  endDate: Date,
+  startDate: Date,
+  fn: (date: Date, options?: any) => boolean | number,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  calcDateProperty(
+    endDate,
+    fn,
+    locale,
+    config,
+    locale.time_zone === TimeZone.server
+      ? utcToZonedTime(startDate, config.time_zone)
+      : startDate
+  );
