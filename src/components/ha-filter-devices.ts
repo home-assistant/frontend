@@ -1,5 +1,11 @@
-import "@material/mwc-menu/mwc-menu-surface";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -9,6 +15,8 @@ import { findRelated, RelatedResult } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
+import "./ha-check-list-item";
+import { loadVirtualizer } from "../resources/virtualizer";
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
@@ -23,6 +31,14 @@ export class HaFilterDevices extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _shouldRender = false;
+
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
 
   protected render() {
     return html`

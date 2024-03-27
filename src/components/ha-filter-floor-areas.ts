@@ -14,6 +14,7 @@ import { findRelated, RelatedResult } from "../data/search";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {

@@ -1,5 +1,4 @@
 import { ActionDetail, SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
@@ -162,7 +161,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
 
   private _editCategory(id: string) {
     showCategoryRegistryDetailDialog(this, {
-      scope: "automation",
+      scope: this.scope!,
       entry: this._categories.find((cat) => cat.category_id === id),
     });
   }
@@ -193,7 +192,10 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
   }
 
   private _addCategory() {
-    showCategoryRegistryDetailDialog(this, { scope: "automation" });
+    if (!this.scope) {
+      return;
+    }
+    showCategoryRegistryDetailDialog(this, { scope: this.scope });
   }
 
   private _expandedWillChange(ev) {
