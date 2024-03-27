@@ -30,6 +30,7 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
@@ -56,90 +57,94 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     return this.hass.auth.external?.config.canWriteTag;
   }
 
-  private _columns = memoizeOne((narrow: boolean, _language) => {
-    const columns: DataTableColumnContainer<TagRowData> = {
-      icon: {
-        title: "",
-        label: this.hass.localize("ui.panel.config.tag.headers.icon"),
-        type: "icon",
-        template: (tag) => html`<tag-image .tag=${tag}></tag-image>`,
-      },
-      display_name: {
-        title: this.hass.localize("ui.panel.config.tag.headers.name"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        grows: true,
-        template: (tag) =>
-          html`${tag.name}
-          ${narrow
-            ? html`<div class="secondary">
-                ${tag.last_scanned_datetime
-                  ? html`<ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${tag.last_scanned_datetime}
-                      capitalize
-                    ></ha-relative-time>`
-                  : this.hass.localize("ui.panel.config.tag.never_scanned")}
-              </div>`
-            : ""}`,
-      },
-    };
-    if (!narrow) {
-      columns.last_scanned_datetime = {
-        title: this.hass.localize("ui.panel.config.tag.headers.last_scanned"),
-        sortable: true,
-        direction: "desc",
-        width: "20%",
-        template: (tag) => html`
-          ${tag.last_scanned_datetime
-            ? html`<ha-relative-time
-                .hass=${this.hass}
-                .datetime=${tag.last_scanned_datetime}
-                capitalize
-              ></ha-relative-time>`
-            : this.hass.localize("ui.panel.config.tag.never_scanned")}
-        `,
+  private _columns = memoizeOne(
+    (narrow: boolean, _language, localize: LocalizeFunc) => {
+      const columns: DataTableColumnContainer<TagRowData> = {
+        icon: {
+          title: "",
+          label: localize("ui.panel.config.tag.headers.icon"),
+          type: "icon",
+          template: (tag) => html`<tag-image .tag=${tag}></tag-image>`,
+        },
+        display_name: {
+          title: localize("ui.panel.config.tag.headers.name"),
+          main: true,
+          sortable: true,
+          filterable: true,
+          grows: true,
+          template: (tag) =>
+            html`${tag.name}
+            ${narrow
+              ? html`<div class="secondary">
+                  ${tag.last_scanned_datetime
+                    ? html`<ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${tag.last_scanned_datetime}
+                        capitalize
+                      ></ha-relative-time>`
+                    : this.hass.localize("ui.panel.config.tag.never_scanned")}
+                </div>`
+              : ""}`,
+        },
       };
-    }
-    if (this._canWriteTags) {
-      columns.write = {
+      if (!narrow) {
+        columns.last_scanned_datetime = {
+          title: localize("ui.panel.config.tag.headers.last_scanned"),
+          sortable: true,
+          direction: "desc",
+          width: "20%",
+          template: (tag) => html`
+            ${tag.last_scanned_datetime
+              ? html`<ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${tag.last_scanned_datetime}
+                  capitalize
+                ></ha-relative-time>`
+              : this.hass.localize("ui.panel.config.tag.never_scanned")}
+          `,
+        };
+      }
+      if (this._canWriteTags) {
+        columns.write = {
+          title: "",
+          label: localize("ui.panel.config.tag.headers.write"),
+          type: "icon-button",
+          template: (tag) =>
+            html` <ha-icon-button
+              .tag=${tag}
+              @click=${this._handleWriteClick}
+              .label=${this.hass.localize("ui.panel.config.tag.write")}
+              .path=${mdiContentDuplicate}
+            ></ha-icon-button>`,
+        };
+      }
+      columns.automation = {
         title: "",
-        label: this.hass.localize("ui.panel.config.tag.headers.write"),
         type: "icon-button",
         template: (tag) =>
           html` <ha-icon-button
             .tag=${tag}
-            @click=${this._handleWriteClick}
-            .label=${this.hass.localize("ui.panel.config.tag.write")}
-            .path=${mdiContentDuplicate}
+            @click=${this._handleAutomationClick}
+            .label=${this.hass.localize(
+              "ui.panel.config.tag.create_automation"
+            )}
+            .path=${mdiRobot}
           ></ha-icon-button>`,
       };
+      columns.edit = {
+        title: "",
+        type: "icon-button",
+        template: (tag) =>
+          html` <ha-icon-button
+            .tag=${tag}
+            @click=${this._handleEditClick}
+            .label=${this.hass.localize("ui.panel.config.tag.edit")}
+            .path=${mdiCog}
+          ></ha-icon-button>`,
+      };
+      return columns;
     }
-    columns.automation = {
-      title: "",
-      type: "icon-button",
-      template: (tag) =>
-        html` <ha-icon-button
-          .tag=${tag}
-          @click=${this._handleAutomationClick}
-          .label=${this.hass.localize("ui.panel.config.tag.create_automation")}
-          .path=${mdiRobot}
-        ></ha-icon-button>`,
-    };
-    columns.edit = {
-      title: "",
-      type: "icon-button",
-      template: (tag) =>
-        html` <ha-icon-button
-          .tag=${tag}
-          @click=${this._handleEditClick}
-          .label=${this.hass.localize("ui.panel.config.tag.edit")}
-          .path=${mdiCog}
-        ></ha-icon-button>`,
-    };
-    return columns;
-  });
+  );
 
   private _data = memoizeOne((tags: Tag[]): TagRowData[] =>
     tags.map((tag) => ({
@@ -178,7 +183,11 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.tags}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this.hass.localize
+        )}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         hasFab

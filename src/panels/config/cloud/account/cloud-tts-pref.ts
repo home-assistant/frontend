@@ -14,7 +14,7 @@ import {
   CloudTTSInfo,
   getCloudTTSInfo,
   getCloudTtsLanguages,
-  getCloudTtsSupportedGenders,
+  getCloudTtsSupportedVoices,
 } from "../../../../data/cloud/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
@@ -37,11 +37,7 @@ export class CloudTTSPref extends LitElement {
 
     const languages = this.getLanguages(this.ttsInfo);
     const defaultVoice = this.cloudStatus.prefs.tts_default_voice;
-    const genders = this.getSupportedGenders(
-      defaultVoice[0],
-      this.ttsInfo,
-      this.hass.localize
-    );
+    const voices = this.getSupportedVoices(defaultVoice[0], this.ttsInfo);
 
     return html`
       <ha-card
@@ -68,15 +64,15 @@ export class CloudTTSPref extends LitElement {
 
             <ha-select
               .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.tts.default_gender"
+                "ui.panel.config.cloud.account.tts.default_voice"
               )}
               .disabled=${this.savingPreferences}
               .value=${defaultVoice[1]}
-              @selected=${this._handleGenderChange}
+              @selected=${this._handleVoiceChange}
             >
-              ${genders.map(
-                ([key, label]) =>
-                  html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
+              ${voices.map(
+                (voice) =>
+                  html`<mwc-list-item .value=${voice}>${voice}</mwc-list-item>`
               )}
             </ha-select>
           </div>
@@ -88,6 +84,16 @@ export class CloudTTSPref extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  protected updated(changedProps) {
+    if (
+      changedProps.has("cloudStatus") &&
+      this.cloudStatus?.prefs.tts_default_voice?.[0] !==
+        changedProps.get("cloudStatus")?.prefs.tts_default_voice?.[0]
+    ) {
+      this.renderRoot.querySelector("ha-select")?.layoutOptions();
+    }
   }
 
   protected willUpdate(changedProps) {
@@ -104,7 +110,7 @@ export class CloudTTSPref extends LitElement {
 
   private getLanguages = memoizeOne(getCloudTtsLanguages);
 
-  private getSupportedGenders = memoizeOne(getCloudTtsSupportedGenders);
+  private getSupportedVoices = memoizeOne(getCloudTtsSupportedVoices);
 
   private _openTryDialog() {
     showTryTtsDialog(this, {
@@ -119,19 +125,15 @@ export class CloudTTSPref extends LitElement {
     this.savingPreferences = true;
     const language = ev.detail.value;
 
-    const curGender = this.cloudStatus!.prefs.tts_default_voice[1];
-    const genders = this.getSupportedGenders(
-      language,
-      this.ttsInfo,
-      this.hass.localize
-    );
-    const newGender = genders.find((item) => item[0] === curGender)
-      ? curGender
-      : genders[0][0];
+    const curVoice = this.cloudStatus!.prefs.tts_default_voice[1];
+    const voices = this.getSupportedVoices(language, this.ttsInfo);
+    const newVoice = voices.find((item) => item === curVoice)
+      ? curVoice
+      : voices[0];
 
     try {
       await updateCloudPref(this.hass, {
-        tts_default_voice: [language, newGender],
+        tts_default_voice: [language, newVoice],
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
@@ -145,17 +147,17 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  async _handleGenderChange(ev) {
+  async _handleVoiceChange(ev) {
     if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }
     this.savingPreferences = true;
     const language = this.cloudStatus!.prefs.tts_default_voice[0];
-    const gender = ev.target.value;
+    const voice = ev.target.value;
 
     try {
       await updateCloudPref(this.hass, {
-        tts_default_voice: [language, gender],
+        tts_default_voice: [language, voice],
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
@@ -163,7 +165,7 @@ export class CloudTTSPref extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       showAlertDialog(this, {
-        text: `Unable to save default gender. ${err}`,
+        text: `Unable to save default voice. ${err}`,
         warning: true,
       });
     }

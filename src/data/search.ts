@@ -26,6 +26,7 @@ export type ItemType =
   | "config_entry"
   | "device"
   | "entity"
+  | "floor"
   | "group"
   | "scene"
   | "script"
