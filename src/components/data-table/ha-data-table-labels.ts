@@ -4,6 +4,7 @@ import { repeat } from "lit/directives/repeat";
 import { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-label";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
