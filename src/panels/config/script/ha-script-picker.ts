@@ -30,7 +30,6 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
@@ -82,8 +81,6 @@ class HaScriptPicker extends LitElement {
   @state() private _activeFilters?: string[];
 
   @state() private _filteredScripts?: string[] | null;
-
-  @state() private _filterValue?;
 
   private _scripts = memoizeOne(
     (
@@ -266,15 +263,6 @@ class HaScriptPicker extends LitElement {
           .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-button-related-filter-menu
-          slot="filter-menu"
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .value=${this._filterValue}
-          exclude-domains='["script"]'
-          @related-changed=${this._relatedFilterChanged}
-        >
-        </ha-button-related-filter-menu>
         ${!this.scripts.length
           ? html` <div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiScriptText}></ha-svg-icon>
@@ -345,20 +333,9 @@ class HaScriptPicker extends LitElement {
     ];
   }
 
-  private _relatedFilterChanged(ev: CustomEvent) {
-    this._filterValue = ev.detail.value;
-    if (!this._filterValue) {
-      this._clearFilter();
-      return;
-    }
-    this._activeFilters = [ev.detail.filter];
-    this._filteredScripts = ev.detail.items.script || null;
-  }
-
   private _clearFilter() {
     this._filteredScripts = undefined;
     this._activeFilters = undefined;
-    this._filterValue = undefined;
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

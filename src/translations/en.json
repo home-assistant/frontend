@@ -499,6 +499,14 @@
         "add_entity_id": "Choose entity",
         "add_label_id": "Choose label"
       },
+      "subpage-data-table": {
+        "filters": "Filters",
+        "sort_by": "Sort by {sortColumn}",
+        "group_by": "Group by {groupColumn}",
+        "dont_group_by": "Don't group",
+        "select": "Select",
+        "selected": "Selected {selected}"
+      },
       "config-entry-picker": {
         "config_entry": "Integration"
       },
@@ -547,6 +555,23 @@
         "device": "Device",
         "no_area": "No area"
       },
+      "category-picker": {
+        "clear": "Clear",
+        "show_categories": "Show categories",
+        "categories": "Categories",
+        "category": "Category",
+        "add_category": "Add category",
+        "add_new_sugestion": "Add new category ''{name}''",
+        "add_new": "Add new category…",
+        "no_categories": "You don't have any categories",
+        "add_dialog": {
+          "title": "Add new category",
+          "text": "Enter the name of the new category.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_category": "Failed to create category."
+        }
+      },
       "label-picker": {
         "clear": "Clear",
         "show_labels": "Show labels",
@@ -555,14 +580,7 @@
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found",
-        "add_dialog": {
-          "title": "Add new label",
-          "text": "Enter the name of the new label.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_label": "Failed to create label."
-        }
+        "no_match": "No matching labels found"
       },
       "area-picker": {
         "clear": "Clear",
@@ -1924,6 +1942,29 @@
             "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
           }
         },
+        "category": {
+          "caption": "Categories",
+          "assign": {
+            "edit": "Edit category",
+            "assign": "Assign category",
+            "unknown_error": "An unknown error happened when assigning the category"
+          },
+          "editor": {
+            "edit": "Edit category",
+            "delete": "Delete category",
+            "add": "Add category",
+            "create": "Create category",
+            "name": "Name",
+            "icon": "Icon",
+            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
+            "unknown_error": "An unknown error happened when saving the category",
+            "confirm_delete": "Are you sure you want to delete this category?",
+            "confirm_delete_text": "This will delete the category and unassign everything that is currently assigned to it."
+          },
+          "filter": {
+            "show_all": "Show all"
+          }
+        },
         "labels": {
           "caption": "Labels",
           "description": "Group devices and entities",
@@ -2632,14 +2673,20 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
+            "state": "State",
             "filtered_by_blueprint": "blueprint: {name}",
             "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
+            "edit_category": "Edit category",
+            "assign_category": "Assign category",
+            "no_category_support": "You can't assign an category to this automation",
+            "no_category_entity_reg": "To assign an category to an automation it needs to have a unique ID.",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
               "trigger": "Trigger",
               "actions": "Actions",
-              "state": "State"
+              "state": "State",
+              "category": "Category"
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
@@ -3965,6 +4012,7 @@
             },
             "status": {
               "restored": "Restored",
+              "available": "Available",
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",

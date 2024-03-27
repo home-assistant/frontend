@@ -61,6 +61,7 @@ export interface EntityRegistryEntry {
   unique_id: string;
   translation_key?: string;
   options: EntityRegistryOptions | null;
+  categories: { [scope: string]: string };
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -137,6 +138,7 @@ export interface EntityRegistryEntryUpdateParams {
     | LightEntityOptions;
   aliases?: string[];
   labels?: string[];
+  categories?: { [scope: string]: string | null };
 }
 
 const batteryPriorities = ["sensor", "binary_sensor"];

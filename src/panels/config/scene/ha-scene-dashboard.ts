@@ -27,7 +27,6 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -75,8 +74,6 @@ class HaSceneDashboard extends LitElement {
   @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
-
-  @state() private _filterValue?;
 
   private _scenes = memoizeOne(
     (scenes: SceneEntity[], filteredScenes?: string[] | null): SceneItem[] => {
@@ -242,15 +239,6 @@ class HaSceneDashboard extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircle}
         ></ha-icon-button>
-        <ha-button-related-filter-menu
-          slot="filter-menu"
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .value=${this._filterValue}
-          exclude-domains='["scene"]'
-          @related-changed=${this._relatedFilterChanged}
-        >
-        </ha-button-related-filter-menu>
         ${!this.scenes.length
           ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
@@ -295,20 +283,9 @@ class HaSceneDashboard extends LitElement {
     }
   }
 
-  private _relatedFilterChanged(ev: CustomEvent) {
-    this._filterValue = ev.detail.value;
-    if (!this._filterValue) {
-      this._clearFilter();
-      return;
-    }
-    this._activeFilters = [ev.detail.filter];
-    this._filteredScenes = ev.detail.items.scene || null;
-  }
-
   private _clearFilter() {
     this._filteredScenes = undefined;
     this._activeFilters = undefined;
-    this._filterValue = undefined;
   }
 
   private _showInfo(scene: SceneEntity) {
