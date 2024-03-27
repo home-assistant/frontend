@@ -9783,7 +9783,7 @@ __metadata:
     tar: "npm:6.2.1"
     terser-webpack-plugin: "npm:5.3.10"
     tinykeys: "npm:2.1.0"
-    transform-async-modules-webpack-plugin: "npm:1.0.3"
+    transform-async-modules-webpack-plugin: "npm:1.0.4"
     ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
@@ -15418,15 +15418,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"transform-async-modules-webpack-plugin@npm:1.0.3":
-  version: 1.0.3
-  resolution: "transform-async-modules-webpack-plugin@npm:1.0.3"
+"transform-async-modules-webpack-plugin@npm:1.0.4":
+  version: 1.0.4
+  resolution: "transform-async-modules-webpack-plugin@npm:1.0.4"
   dependencies:
     "@babel/core": "npm:^7.13.0"
     "@babel/preset-env": "npm:^7.13.0"
   peerDependencies:
+    "@babel/core": ^7.13.0
+    "@babel/preset-env": ^7.13.0
     webpack: ^5.0.0
-  checksum: 10/5a1ebc03c5455ac790fac58aec1daa3f05f90ba5da0e83d977fef53cd801f654bf0f5884f7ea764115c2324b6f9d5af050a3bb88f1a50f1671b451cb7fcfa51b
+  checksum: 10/dfb4c1a693897b0b35bf435130fd48fac8175fe60d681ef884bbdc0f1cd15017747f18b3d966bdcd96781ed85b284facbf007c6f358a6b495d46aa4358081909
   languageName: node
   linkType: hard
 
