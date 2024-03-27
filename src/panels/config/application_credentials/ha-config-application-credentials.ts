@@ -100,7 +100,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         backPath="/config"
-        .tabs=${configSections.devices}
+        .tabs=${configSections.application_credentials}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._applicationCredentials}
         hasFab
