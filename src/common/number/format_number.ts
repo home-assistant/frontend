@@ -14,8 +14,12 @@ export const isNumericState = (stateObj: HassEntity): boolean =>
   isNumericFromAttributes(stateObj.attributes);
 
 export const isNumericFromAttributes = (
-  attributes: HassEntityAttributeBase
-): boolean => !!attributes.unit_of_measurement || !!attributes.state_class;
+  attributes: HassEntityAttributeBase,
+  numericDeviceClasses?: string[]
+): boolean =>
+  !!attributes.unit_of_measurement ||
+  !!attributes.state_class ||
+  (numericDeviceClasses || []).includes(attributes.device_class || "");
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData

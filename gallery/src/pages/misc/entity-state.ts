@@ -368,6 +368,7 @@ export class DemoEntityState extends LitElement {
               hass.localize,
               entry.stateObj,
               hass.locale,
+              [], // numericDeviceClasses
               hass.config,
               hass.entities
             )}`,
