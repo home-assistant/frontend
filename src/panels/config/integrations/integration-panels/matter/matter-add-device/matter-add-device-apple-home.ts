@@ -21,9 +21,9 @@ class MatterAddDeviceAppleHome extends LitElement {
             ${this.hass.localize(
               "ui.dialogs.matter-add-device.apple_home.step_1",
               {
-                accessory_details: html`<b
+                accessory_settings: html`<b
                   >${this.hass.localize(
-                    "ui.dialogs.matter-add-device.apple_home.accessory_details"
+                    "ui.dialogs.matter-add-device.apple_home.accessory_settings"
                   )}</b
                 >`,
               }
