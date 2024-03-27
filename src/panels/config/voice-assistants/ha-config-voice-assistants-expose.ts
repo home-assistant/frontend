@@ -3,18 +3,10 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
-  mdiFilterVariant,
   mdiPlus,
   mdiPlusBoxMultiple,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -616,26 +608,6 @@ export class VoiceAssistantsExpose extends LitElement {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-        ${this.narrow && activeFilters?.length
-          ? html`
-              <ha-button-menu slot="filter-menu" multi>
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.devices.picker.filter.filter"
-                  )}
-                  .path=${mdiFilterVariant}
-                ></ha-icon-button>
-                <mwc-list-item @click=${this._clearFilter}>
-                  ${this.hass.localize("ui.components.data-table.filtering_by")}
-                  ${activeFilters.join(", ")}
-                  <span class="clear">
-                    ${this.hass.localize("ui.common.clear")}
-                  </span>
-                </mwc-list-item>
-              </ha-button-menu>
-            `
-          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
