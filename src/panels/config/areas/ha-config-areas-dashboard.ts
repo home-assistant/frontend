@@ -1,4 +1,10 @@
-import { mdiHelpCircle, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -11,6 +17,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { ActionDetail } from "@material/mwc-list";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -22,11 +29,15 @@ import {
 import {
   FloorRegistryEntry,
   createFloorRegistryEntry,
+  deleteFloorRegistryEntry,
   getFloorAreaLookup,
   subscribeFloorRegistry,
   updateFloorRegistryEntry,
 } from "../../../data/floor_registry";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
@@ -148,11 +159,34 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                       : nothing}
                     ${floor.name}
                   </h2>
-                  <ha-icon-button
-                    .path=${mdiPencil}
-                    @click=${this._editFloor}
+                  <ha-button-menu
                     .floor=${floor}
-                  ></ha-icon-button>
+                    @action=${this._handleFloorAction}
+                  >
+                    <ha-icon-button
+                      slot="trigger"
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+                    <ha-list-item graphic="icon"
+                      ><ha-svg-icon
+                        .path=${mdiPencil}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.edit_floor"
+                      )}</ha-list-item
+                    >
+                    <ha-list-item class="warning" graphic="icon"
+                      ><ha-svg-icon
+                        class="warning"
+                        .path=${mdiDelete}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.delete_floor"
+                      )}</ha-list-item
+                    >
+                  </ha-button-menu>
                 </div>
                 <div class="areas">
                   ${floor.areas.map((area) => this._renderArea(area))}
@@ -248,13 +282,41 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
     loadAreaRegistryDetailDialog();
   }
 
+  private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
+    const floor = (ev.currentTarget as any).floor;
+    switch (ev.detail.index) {
+      case 0:
+        this._editFloor(floor);
+        break;
+      case 1:
+        this._deleteFloor(floor);
+        break;
+    }
+  }
+
   private _createFloor() {
     this._openFloorDialog();
   }
 
-  private _editFloor(ev) {
-    const floor = ev.currentTarget.floor;
+  private _editFloor(floor) {
     this._openFloorDialog(floor);
+  }
+
+  private async _deleteFloor(floor) {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete_text"
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    await deleteFloorRegistryEntry(this.hass, floor.floor_id);
   }
 
   private _createArea() {
@@ -364,6 +426,9 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
       .floor {
         --primary-color: var(--secondary-text-color);
         margin-inline-end: 8px;
+      }
+      .warning {
+        color: var(--error-color);
       }
     `;
   }
