@@ -34,6 +34,7 @@ class HaProfileSectionSecurity extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
+        main-page
         .hass=${this.hass}
         .narrow=${this.narrow}
         .tabs=${profileSections}
