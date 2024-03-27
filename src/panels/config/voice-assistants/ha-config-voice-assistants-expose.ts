@@ -56,6 +56,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
@@ -127,7 +128,8 @@ export class VoiceAssistantsExpose extends LitElement {
             string[] | undefined
           >
         | undefined,
-      _language: string
+      _language: string,
+      localize: LocalizeFunc
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
@@ -143,9 +145,7 @@ export class VoiceAssistantsExpose extends LitElement {
       },
       name: {
         main: true,
-        title: this.hass.localize(
-          "ui.panel.config.voice_assistants.expose.headers.name"
-        ),
+        title: localize("ui.panel.config.voice_assistants.expose.headers.name"),
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -156,16 +156,14 @@ export class VoiceAssistantsExpose extends LitElement {
         `,
       },
       area: {
-        title: this.hass.localize(
-          "ui.panel.config.voice_assistants.expose.headers.area"
-        ),
+        title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
         sortable: true,
         hidden: narrow,
         filterable: true,
         width: "15%",
       },
       assistants: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.voice_assistants.expose.headers.assistants"
         ),
         sortable: true,
@@ -192,7 +190,7 @@ export class VoiceAssistantsExpose extends LitElement {
           })}`,
       },
       aliases: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.voice_assistants.expose.headers.aliases"
         ),
         sortable: true,
@@ -527,7 +525,8 @@ export class VoiceAssistantsExpose extends LitElement {
           this.narrow,
           this._availableAssistants(this.cloudStatus),
           this._supportedEntities,
-          this.hass.language
+          this.hass.language,
+          this.hass.localize
         )}
         .data=${filteredEntities}
         .activeFilters=${activeFilters}
