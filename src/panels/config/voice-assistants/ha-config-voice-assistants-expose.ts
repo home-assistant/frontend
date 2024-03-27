@@ -6,11 +6,11 @@ import {
   mdiPlus,
   mdiPlusBoxMultiple,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   EntityFilter,
@@ -33,13 +33,13 @@ import {
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
 import {
-  exposeEntities,
   ExposeEntitySettings,
+  exposeEntities,
   voiceAssistants,
 } from "../../../data/expose";
 import {
-  fetchCloudGoogleEntities,
   GoogleEntity,
+  fetchCloudGoogleEntities,
 } from "../../../data/google_assistant";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -77,8 +77,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _filter: string = history.state?.filter || "";
 
-  @state() private _numHiddenEntities = 0;
-
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _selectedEntities: string[] = [];
@@ -90,23 +88,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
-
-  private _activeFilters = memoize(
-    (filters: URLSearchParams): string[] | undefined => {
-      const filterTexts: string[] = [];
-      filters.forEach((value, key) => {
-        switch (key) {
-          case "assistants": {
-            const assistants = value.split(",");
-            assistants.forEach((assistant) => {
-              filterTexts.push(voiceAssistants[assistant]?.name || assistant);
-            });
-          }
-        }
-      });
-      return filterTexts.length ? filterTexts : undefined;
-    }
-  );
 
   private _columns = memoize(
     (
@@ -312,9 +293,6 @@ export class VoiceAssistantsExpose extends LitElement {
         )
       );
 
-      // If nothing gets filtered, this is our correct count of entities
-      const startLength = filteredEntities.length;
-
       let filteredAssistants: string[];
 
       filters.forEach((value, key) => {
@@ -358,8 +336,6 @@ export class VoiceAssistantsExpose extends LitElement {
           aliases: entry?.aliases || [],
         };
       }
-
-      this._numHiddenEntities = startLength - Object.values(result).length;
 
       if (alexaManual || googleManual) {
         const manFilterFuncs = this._getEntityFilterFuncs(
@@ -494,7 +470,6 @@ export class VoiceAssistantsExpose extends LitElement {
     if (!this.hass || !this.exposedEntities || !this._extEntities) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
-    const activeFilters = this._activeFilters(this._searchParms);
 
     const filteredEntities = this._filteredEntities(
       this._extEntities,
@@ -521,15 +496,8 @@ export class VoiceAssistantsExpose extends LitElement {
           this.hass.language
         )}
         .data=${filteredEntities}
-        .activeFilters=${activeFilters}
-        .numHidden=${this._numHiddenEntities}
-        .hideFilterMenu=${this._selectedEntities.length > 0}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search"
-        )}
-        .hiddenLabel=${this.hass.localize(
-          "ui.panel.config.entities.picker.filter.hidden_entities",
-          { number: this._numHiddenEntities }
         )}
         .filter=${this._filter}
         selectable
@@ -723,9 +691,7 @@ export class VoiceAssistantsExpose extends LitElement {
   }
 
   private _clearFilter() {
-    if (this._activeFilters(this._searchParms)) {
-      navigate(window.location.pathname, { replace: true });
-    }
+    navigate(window.location.pathname, { replace: true });
   }
 
   static get styles(): CSSResultGroup {
