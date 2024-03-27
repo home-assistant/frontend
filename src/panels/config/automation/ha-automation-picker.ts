@@ -47,7 +47,6 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,

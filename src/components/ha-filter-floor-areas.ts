@@ -125,12 +125,18 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     }
 
     if (this.value?.[type]?.includes(value)) {
-      this.value[type] = this.value[type].filter((val) => val !== value);
+      this.value = {
+        ...this.value,
+        [type]: this.value[type].filter((val) => val !== value),
+      };
     } else {
       if (!this.value) {
         this.value = {};
       }
-      this.value[type] = [...(this.value[type] || []), value];
+      this.value = {
+        ...this.value,
+        [type]: [...(this.value[type] || []), value],
+      };
     }
 
     listItem.selected = this.value[type]?.includes(value);
