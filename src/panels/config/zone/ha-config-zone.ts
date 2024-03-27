@@ -1,4 +1,4 @@
-import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
@@ -35,6 +35,7 @@ import {
   updateZone,
   Zone,
   ZoneMutableParams,
+  HomeZoneMutableParams,
 } from "../../../data/zone";
 import {
   showAlertDialog,
@@ -47,6 +48,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -193,12 +195,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         !this._canEditCore}
                         .path=${stateObject.entity_id === "zone.home" &&
                         this._canEditCore
-                          ? mdiCog
+                          ? mdiPencil
                           : mdiPencilOff}
                         .label=${stateObject.entity_id === "zone.home"
                           ? hass.localize("ui.panel.config.zone.edit_home")
                           : hass.localize("ui.panel.config.zone.edit_zone")}
-                        @click=${this._openCoreConfig}
+                        @click=${this._editHomeZone}
                       ></ha-icon-button>
                       ${stateObject.entity_id !== "zone.home"
                         ? html`
@@ -400,7 +402,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog(entry);
   }
 
-  private async _openCoreConfig(ev) {
+  private async _editHomeZone(ev) {
     if (ev.currentTarget.noEdit) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
@@ -409,7 +411,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    navigate("/config/general");
+    showHomeZoneDetailDialog(this, {
+      updateEntry: (values) => this._updateHomeZoneEntry(values),
+    });
   }
 
   private async _createEntry(values: ZoneMutableParams) {
@@ -425,6 +429,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
+  }
+
+  private async _updateHomeZoneEntry(values: HomeZoneMutableParams) {
+    await saveCoreConfig(this.hass, {
+      latitude: values.latitude,
+      longitude: values.longitude,
+    });
+    this._zoomZone("zone.home");
   }
 
   private async _updateEntry(

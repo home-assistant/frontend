@@ -18,17 +18,19 @@ import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
+import "../../../components/ha-selector/ha-selector-location";
+import type { LocationSelectorValue } from "../../../data/selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
-import "../../../components/map/ha-locations-editor";
-import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+
+const LOCATION_SELECTOR = { location: {} };
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -244,15 +246,16 @@ class HaConfigSectionGeneral extends LitElement {
             </div>
             ${this.narrow
               ? html`
-                  <ha-locations-editor
+                  <ha-selector-location
                     .hass=${this.hass}
-                    .locations=${this._markerLocation(
+                    .selector=${LOCATION_SELECTOR}
+                    .value=${this._selectorLocation(
                       this.hass.config.latitude,
                       this.hass.config.longitude,
                       this._location
                     )}
-                    @location-updated=${this._locationChanged}
-                  ></ha-locations-editor>
+                    @value-changed=${this._locationChanged}
+                  ></ha-selector-location>
                 `
               : html`
                   <ha-settings-row>
@@ -320,7 +323,7 @@ class HaConfigSectionGeneral extends LitElement {
   }
 
   private _locationChanged(ev: CustomEvent) {
-    this._location = ev.detail.location;
+    this._location = [ev.detail.value.latitude, ev.detail.value.longitude];
   }
 
   private async _updateEntry(ev: CustomEvent) {
@@ -381,19 +384,15 @@ class HaConfigSectionGeneral extends LitElement {
     }
   }
 
-  private _markerLocation = memoizeOne(
+  private _selectorLocation = memoizeOne(
     (
-      lat: number,
-      lng: number,
+      latDefault: number,
+      lngDefault: number,
       location?: [number, number]
-    ): MarkerLocation[] => [
-      {
-        id: "location",
-        latitude: location ? location[0] : lat,
-        longitude: location ? location[1] : lng,
-        location_editable: true,
-      },
-    ]
+    ): LocationSelectorValue => ({
+      latitude: location != null ? location[0] : latDefault,
+      longitude: location != null ? location[1] : lngDefault,
+    })
   );
 
   private _editLocation() {
@@ -440,11 +439,6 @@ class HaConfigSectionGeneral extends LitElement {
       a.find-value {
         margin-top: 8px;
         display: inline-block;
-      }
-      ha-locations-editor {
-        display: block;
-        height: 400px;
-        padding: 16px;
       }
     `,
   ];
