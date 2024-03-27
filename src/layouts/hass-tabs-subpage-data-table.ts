@@ -470,6 +470,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   private _disableSelectMode() {
     this._selectMode = false;
+    this._dataTable.clearSelection();
   }
 
   private _handleSearchChange(ev: CustomEvent) {

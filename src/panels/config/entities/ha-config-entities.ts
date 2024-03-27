@@ -1,12 +1,10 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
   mdiCancel,
   mdiDelete,
   mdiEyeOff,
-  mdiFilterVariant,
   mdiPencilOff,
   mdiPlus,
   mdiRestoreAlert,
@@ -22,7 +20,6 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
@@ -34,7 +31,6 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -43,9 +39,14 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-integrations";
+import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-alert";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -56,7 +57,6 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { entryIcon } from "../../../data/icons";
-import { domainToName } from "../../../data/integration";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -106,21 +106,18 @@ export class HaConfigEntities extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
-  @state() private _showDisabled = false;
-
-  @state() private _showHidden = false;
-
-  @state() private _showUnavailable = true;
-
-  @state() private _showReadOnly = true;
-
   @state() private _filter: string = history.state?.filter || "";
-
-  @state() private _numHiddenEntities = 0;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state() private _filters: Record<
+    string,
+    { value: string[] | undefined; items: Set<string> | undefined }
+  > = {};
+
   @state() private _selectedEntities: string[] = [];
+
+  @state() private _expandedFilter?: string;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -140,71 +137,41 @@ export class HaConfigEntities extends LitElement {
   private _locationChanged = () => {
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
     }
   };
 
   private _popState = () => {
     if (window.location.search.substring(1) !== this._searchParms.toString()) {
       this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
     }
   };
 
-  private _activeFilters = memoize(
-    (
-      filters: URLSearchParams,
-      localize: LocalizeFunc,
-      entries?: ConfigEntry[]
-    ): string[] | undefined => {
-      const filterTexts: string[] = [];
-      filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry": {
-            // If we are requested to show the entities for a given config entry,
-            // also show the disabled ones by default.
-            this._showDisabled = true;
-
-            if (!entries) {
-              this._loadConfigEntries();
-              break;
-            }
-            const configEntry = entries.find(
-              (entry) => entry.entry_id === value
-            );
-            if (!configEntry) {
-              break;
-            }
-            const integrationName = domainToName(localize, configEntry.domain);
-            filterTexts.push(
-              `${this.hass.localize(
-                "ui.panel.config.integrations.integration"
-              )} "${integrationName}${
-                integrationName !== configEntry.title
-                  ? `: ${configEntry.title}`
-                  : ""
-              }"`
-            );
-            break;
-          }
-          case "domain": {
-            this._showDisabled = true;
-            filterTexts.push(
-              `${this.hass.localize(
-                "ui.panel.config.integrations.integration"
-              )} "${domainToName(localize, value)}"`
-            );
-          }
-        }
-      });
-      return filterTexts.length ? filterTexts : undefined;
-    }
-  );
+  private _states = memoize((localize: LocalizeFunc) => [
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.entities.picker.status.disabled"),
+    },
+    {
+      value: "hidden",
+      label: localize("ui.panel.config.entities.picker.status.hidden"),
+    },
+    {
+      value: "unavailable",
+      label: localize("ui.panel.config.entities.picker.status.unavailable"),
+    },
+    {
+      value: "readonly",
+      label: localize("ui.panel.config.entities.picker.status.readonly"),
+    },
+  ]);
 
   private _columns = memoize(
     (
       localize: LocalizeFunc,
       narrow,
-      _language,
-      showDisabled
+      _language
     ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
@@ -255,6 +222,7 @@ export class HaConfigEntities extends LitElement {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         hidden: narrow,
         sortable: true,
+        groupable: true,
         filterable: true,
         width: "20%",
       },
@@ -263,17 +231,16 @@ export class HaConfigEntities extends LitElement {
         sortable: true,
         hidden: narrow,
         filterable: true,
+        groupable: true,
         width: "15%",
       },
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
-        sortable: true,
-        hidden: narrow || !showDisabled,
+        hidden: true,
         filterable: true,
-        width: "15%",
         template: (entry) =>
           entry.disabled_by === null
-            ? "—"
+            ? ""
             : this.hass.localize(
                 `config_entry.disabled_by.${entry.disabled_by}`
               ),
@@ -283,6 +250,7 @@ export class HaConfigEntities extends LitElement {
         type: "icon",
         sortable: true,
         filterable: true,
+        groupable: true,
         width: "68px",
         template: (entry) =>
           entry.unavailable ||
@@ -343,17 +311,24 @@ export class HaConfigEntities extends LitElement {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
-      filters: URLSearchParams,
-      showDisabled: boolean,
-      showUnavailable: boolean,
-      showReadOnly: boolean,
-      showHidden: boolean,
+      filters: Record<
+        string,
+        { value: string[] | undefined; items: Set<string> | undefined }
+      >,
       entries?: ConfigEntry[]
     ) => {
       const result: EntityRow[] = [];
 
-      // If nothing gets filtered, this is our correct count of entities
-      let startLength = entities.length + stateEntities.length;
+      const stateFilters = filters["ha-filter-states"]?.value;
+
+      const showReadOnly =
+        !stateFilters?.length || stateFilters.includes("readonly");
+      const showDisabled =
+        !stateFilters?.length || stateFilters.includes("disabled");
+      const showHidden =
+        !stateFilters?.length || stateFilters.includes("hidden");
+      const showUnavailable =
+        !stateFilters?.length || stateFilters.includes("unavailable");
 
       let filteredEntities = showReadOnly
         ? entities.concat(stateEntities)
@@ -362,48 +337,47 @@ export class HaConfigEntities extends LitElement {
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
 
-      filters.forEach((value, key) => {
-        if (key === "config_entry") {
+      Object.entries(filters).forEach(([key, flter]) => {
+        if (key === "config_entry" && flter.value?.length) {
           filteredEntities = filteredEntities.filter(
-            (entity) => entity.config_entry_id === value
+            (entity) =>
+              entity.config_entry_id &&
+              flter.value?.includes(entity.config_entry_id)
           );
-          // If we have an active filter and `showReadOnly` is true, the length of `entities` is correct.
-          // If however, the read-only entities were not added before, we need to check how many would
-          // have matched the active filter and add that number to the count.
-          startLength = filteredEntities.length;
-          if (!showReadOnly) {
-            startLength += stateEntities.filter(
-              (entity) => entity.config_entry_id === value
-            ).length;
-          }
 
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
 
-          const configEntry = entries.find((entry) => entry.entry_id === value);
+          const configEntries = entries.filter(
+            (entry) => entry.entry_id && flter.value?.includes(entry.entry_id)
+          );
 
-          if (configEntry) {
+          configEntries.forEach((configEntry) => {
             filteredDomains.add(configEntry.domain);
-            filteredConfigEntry = configEntry;
+          });
+          if (configEntries.length === 1) {
+            filteredConfigEntry = configEntries[0];
           }
-        }
-        if (key === "domain") {
+        } else if (key === "ha-filter-integrations" && flter.value?.length) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
           const entryIds = entries
-            .filter((entry) => entry.domain === value)
+            .filter((entry) => flter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
               entryIds.includes(entity.config_entry_id)
           );
-          filteredDomains.add(value);
-          startLength = filteredEntities.length;
+          flter.value!.forEach((domain) => filteredDomains.add(domain));
+        } else if (flter.items) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            flter.items!.has(entity.entity_id)
+          );
         }
       });
 
@@ -454,11 +428,12 @@ export class HaConfigEntities extends LitElement {
                     ? localize(
                         "ui.panel.config.entities.picker.status.readonly"
                       )
-                    : undefined,
+                    : localize(
+                        "ui.panel.config.entities.picker.status.available"
+                      ),
         });
       }
 
-      this._numHiddenEntities = startLength - result.length;
       return { filteredEntities: result, filteredConfigEntry, filteredDomains };
     }
   );
@@ -467,11 +442,6 @@ export class HaConfigEntities extends LitElement {
     if (!this.hass || this._entities === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
-    const activeFilters = this._activeFilters(
-      this._searchParms,
-      this.hass.localize,
-      this._entries
-    );
 
     const { filteredEntities, filteredDomains } =
       this._filteredEntitiesAndDomains(
@@ -480,11 +450,7 @@ export class HaConfigEntities extends LitElement {
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
-        this._searchParms,
-        this._showDisabled,
-        this._showUnavailable,
-        this._showReadOnly,
-        this._showHidden,
+        this._filters,
         this._entries
       );
 
@@ -498,28 +464,26 @@ export class HaConfigEntities extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config"
+        }
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(
           this.hass.localize,
           this.narrow,
-          this.hass.language,
-          this._showDisabled
+          this.hass.language
         )}
         .data=${filteredEntities}
-        .activeFilters=${activeFilters}
-        .numHidden=${this._numHiddenEntities}
-        .hideFilterMenu=${this._selectedEntities.length > 0}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search"
         )}
-        .hiddenLabel=${this.hass.localize(
-          "ui.panel.config.entities.picker.filter.hidden_entities",
-          { number: this._numHiddenEntities }
-        )}
+        hasFilters
+        .filters=${
+          Object.values(this._filters).filter((filter) => filter.value?.length)
+            .length
+        }
+        .selected=${this._selectedEntities.length}
         .filter=${this._filter}
         selectable
         clickable
@@ -534,169 +498,224 @@ export class HaConfigEntities extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        ${this._selectedEntities.length
-          ? html`
-              <div
-                class=${classMap({
-                  "header-toolbar": this.narrow,
-                  "table-header": !this.narrow,
-                })}
-                slot="header"
-              >
-                <p class="selected-txt">
-                  ${this.hass.localize(
-                    "ui.panel.config.entities.picker.selected",
-                    { number: this._selectedEntities.length }
-                  )}
-                </p>
-                <div class="header-btns">
-                  ${!this.narrow
-                    ? html`
-                        <mwc-button @click=${this._enableSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.enable_selected.button"
-                          )}</mwc-button
-                        >
-                        <mwc-button @click=${this._disableSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.disable_selected.button"
-                          )}</mwc-button
-                        >
-                        <mwc-button @click=${this._hideSelected}
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.hide_selected.button"
-                          )}</mwc-button
-                        >
-                        <mwc-button
-                          @click=${this._removeSelected}
-                          class="warning"
-                          >${this.hass.localize(
-                            "ui.panel.config.entities.picker.remove_selected.button"
-                          )}</mwc-button
-                        >
-                      `
-                    : html`
-                        <ha-icon-button
-                          id="enable-btn"
-                          @click=${this._enableSelected}
-                          .path=${mdiUndo}
-                          .label=${this.hass.localize("ui.common.enable")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="enable-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.enable_selected.button"
-                          )}
-                        </simple-tooltip>
-                        <ha-icon-button
-                          id="disable-btn"
-                          @click=${this._disableSelected}
-                          .path=${mdiCancel}
-                          .label=${this.hass.localize("ui.common.disable")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="disable-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.disable_selected.button"
-                          )}
-                        </simple-tooltip>
-                        <ha-icon-button
-                          id="hide-btn"
-                          @click=${this._hideSelected}
-                          .path=${mdiEyeOff}
-                          .label=${this.hass.localize("ui.common.hide")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="hide-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.hide_selected.button"
-                          )}
-                        </simple-tooltip>
-                        <ha-icon-button
-                          class="warning"
-                          id="remove-btn"
-                          @click=${this._removeSelected}
-                          .path=${mdiDelete}
-                          .label=${this.hass.localize("ui.common.remove")}
-                        ></ha-icon-button>
-                        <simple-tooltip animation-delay="0" for="remove-btn">
-                          ${this.hass.localize(
-                            "ui.panel.config.entities.picker.remove_selected.button"
-                          )}
-                        </simple-tooltip>
-                      `}
+                <div class="header-btns" slot="selection-bar">
+                  ${
+                    !this.narrow
+                      ? html`
+                          <mwc-button
+                            @click=${this._enableSelected}
+                            .disabled=${!this._selectedEntities.length}
+                            >${this.hass.localize(
+                              "ui.panel.config.entities.picker.enable_selected.button"
+                            )}</mwc-button
+                          >
+                          <mwc-button
+                            @click=${this._disableSelected}
+                            .disabled=${!this._selectedEntities.length}
+                            >${this.hass.localize(
+                              "ui.panel.config.entities.picker.disable_selected.button"
+                            )}</mwc-button
+                          >
+                          <mwc-button
+                            @click=${this._hideSelected}
+                            .disabled=${!this._selectedEntities.length}
+                            >${this.hass.localize(
+                              "ui.panel.config.entities.picker.hide_selected.button"
+                            )}</mwc-button
+                          >
+                          <mwc-button
+                            @click=${this._removeSelected}
+                            .disabled=${!this._selectedEntities.length}
+                            class="warning"
+                            >${this.hass.localize(
+                              "ui.panel.config.entities.picker.remove_selected.button"
+                            )}</mwc-button
+                          >
+                        `
+                      : html`
+                          <ha-icon-button
+                            id="enable-btn"
+                            .disabled=${!this._selectedEntities.length}
+                            @click=${this._enableSelected}
+                            .path=${mdiUndo}
+                            .label=${this.hass.localize("ui.common.enable")}
+                          ></ha-icon-button>
+                          <simple-tooltip animation-delay="0" for="enable-btn">
+                            ${this.hass.localize(
+                              "ui.panel.config.entities.picker.enable_selected.button"
+                            )}
+                          </simple-tooltip>
+                          <ha-icon-button
+                            id="disable-btn"
+                            .disabled=${!this._selectedEntities.length}
+                            @click=${this._disableSelected}
+                            .path=${mdiCancel}
+                            .label=${this.hass.localize("ui.common.disable")}
+                          ></ha-icon-button>
+                          <simple-tooltip animation-delay="0" for="disable-btn">
+                            ${this.hass.localize(
+                              "ui.panel.config.entities.picker.disable_selected.button"
+                            )}
+                          </simple-tooltip>
+                          <ha-icon-button
+                            id="hide-btn"
+                            .disabled=${!this._selectedEntities.length}
+                            @click=${this._hideSelected}
+                            .path=${mdiEyeOff}
+                            .label=${this.hass.localize("ui.common.hide")}
+                          ></ha-icon-button>
+                          <simple-tooltip animation-delay="0" for="hide-btn">
+                            ${this.hass.localize(
+                              "ui.panel.config.entities.picker.hide_selected.button"
+                            )}
+                          </simple-tooltip>
+                          <ha-icon-button
+                            class="warning"
+                            id="remove-btn"
+                            .disabled=${!this._selectedEntities.length}
+                            @click=${this._removeSelected}
+                            .path=${mdiDelete}
+                            .label=${this.hass.localize("ui.common.remove")}
+                          ></ha-icon-button>
+                          <simple-tooltip animation-delay="0" for="remove-btn">
+                            ${this.hass.localize(
+                              "ui.panel.config.entities.picker.remove_selected.button"
+                            )}
+                          </simple-tooltip>
+                        `
+                  }
                 </div>
               </div>
-            `
-          : html`
-              <ha-button-menu slot="filter-menu" multi>
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.entities.picker.filter.filter"
-                  )}
-                  .path=${mdiFilterVariant}
-                ></ha-icon-button>
-                ${this.narrow && activeFilters?.length
-                  ? html`<mwc-list-item @click=${this._clearFilter}
-                      >${this.hass.localize(
-                        "ui.components.data-table.filtering_by"
-                      )}
-                      ${activeFilters.join(", ")}
-                      <span class="clear"
-                        >${this.hass.localize("ui.common.clear")}</span
-                      ></mwc-list-item
-                    >`
-                  : ""}
-                <ha-check-list-item
-                  @request-selected=${this._showDisabledChanged}
-                  .selected=${this._showDisabled}
-                  left
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.entities.picker.filter.show_disabled"
-                  )}
-                </ha-check-list-item>
-                <ha-check-list-item
-                  @request-selected=${this._showHiddenChanged}
-                  .selected=${this._showHidden}
-                  left
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.entities.picker.filter.show_hidden"
-                  )}
-                </ha-check-list-item>
-                <ha-check-list-item
-                  @request-selected=${this._showRestoredChanged}
-                  graphic="control"
-                  .selected=${this._showUnavailable}
-                  left
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.entities.picker.filter.show_unavailable"
-                  )}
-                </ha-check-list-item>
-                <ha-check-list-item
-                  @request-selected=${this._showReadOnlyChanged}
-                  graphic="control"
-                  .selected=${this._showReadOnly}
-                  left
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.entities.picker.filter.show_readonly"
-                  )}
-                </ha-check-list-item>
-              </ha-button-menu>
-            `}
-        ${includeAddDeviceFab
-          ? html`<ha-fab
-              .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-              extended
-              @click=${this._addDevice}
-              slot="fab"
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>`
-          : nothing}
+        
+        ${
+          this._filters.config_entry?.value?.length
+            ? html`<ha-alert slot="filter-pane">
+                Filtering by config entry
+                ${this._entries?.find(
+                  (entry) =>
+                    entry.entry_id === this._filters.config_entry!.value![0]
+                )?.title || this._filters.config_entry.value[0]}
+              </ha-alert>`
+            : nothing
+        }
+              <ha-filter-floor-areas
+          .hass=${this.hass}
+          type="entity"
+          .value=${this._filters["ha-filter-floor-areas"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-floor-areas>
+        <ha-filter-devices
+          .hass=${this.hass}
+          .type=${"entity"}
+          .value=${this._filters["ha-filter-devices"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-devices"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-devices>
+        <ha-filter-integrations
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-integrations"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-integrations"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-integrations>
+        <ha-filter-states
+          .hass=${this.hass}
+          .label=${this.hass.localize("ui.panel.config.entities.picker.state")}
+          .value=${this._filters["ha-filter-states"]?.value}
+          .states=${this._states(this.hass.localize)}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-states"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-states>
+        ${
+          includeAddDeviceFab
+            ? html`<ha-fab
+                .label=${this.hass.localize(
+                  "ui.panel.config.devices.add_device"
+                )}
+                extended
+                @click=${this._addDevice}
+                slot="fab"
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>`
+            : nothing
+        }
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _filterExpanded(ev) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
+  }
+
+  private _filterChanged(ev) {
+    const type = ev.target.localName;
+    this._filters = { ...this._filters, [type]: ev.detail };
+  }
+
+  protected firstUpdated() {
+    this._filters = {
+      "ha-filter-states": {
+        value: ["unavailable", "readonly"],
+        items: undefined,
+      },
+    };
+    this._setFiltersFromUrl();
+  }
+
+  private _setFiltersFromUrl() {
+    if (this._searchParms.has("domain")) {
+      this._filters = {
+        ...this._filters,
+        "ha-filter-states": {
+          value: [
+            ...(this._filters["ha-filter-states"]?.value || []),
+            "disabled",
+          ],
+          items: undefined,
+        },
+        "ha-filter-integrations": {
+          value: [this._searchParms.get("domain")!],
+          items: undefined,
+        },
+      };
+    }
+    if (this._searchParms.has("config_entry")) {
+      this._filters = {
+        ...this._filters,
+        "ha-filter-states": {
+          value: [
+            ...(this._filters["ha-filter-states"]?.value || []),
+            "disabled",
+          ],
+          items: undefined,
+        },
+        config_entry: {
+          value: [this._searchParms.get("config_entry")!],
+          items: undefined,
+        },
+      };
+    }
+  }
+
+  private _clearFilter() {
+    this._filters = {};
   }
 
   public willUpdate(changedProps: PropertyValues<this>): void {
@@ -744,34 +763,6 @@ export class HaConfigEntities extends LitElement {
         this._stateEntities = stateEntities;
       }
     }
-  }
-
-  private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-    this._showDisabled = ev.detail.selected;
-  }
-
-  private _showHiddenChanged(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-    this._showHidden = ev.detail.selected;
-  }
-
-  private _showRestoredChanged(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-    this._showUnavailable = ev.detail.selected;
-  }
-
-  private _showReadOnlyChanged(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-    this._showReadOnly = ev.detail.selected;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -927,18 +918,6 @@ export class HaConfigEntities extends LitElement {
     this._entries = await getConfigEntries(this.hass);
   }
 
-  private _clearFilter() {
-    if (
-      this._activeFilters(this._searchParms, this.hass.localize, this._entries)
-    ) {
-      navigate(window.location.pathname, { replace: true });
-    }
-    this._showDisabled = true;
-    this._showReadOnly = true;
-    this._showUnavailable = true;
-    this._showHidden = true;
-  }
-
   private _addDevice() {
     const { filteredConfigEntry, filteredDomains } =
       this._filteredEntitiesAndDomains(
@@ -947,11 +926,7 @@ export class HaConfigEntities extends LitElement {
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
-        this._searchParms,
-        this._showDisabled,
-        this._showUnavailable,
-        this._showReadOnly,
-        this._showHidden,
+        this._filters,
         this._entries
       );
     if (
