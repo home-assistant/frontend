@@ -43,6 +43,12 @@ export interface WebRtcAnswer {
   answer: string;
 }
 
+export interface WebRtcConfig {
+  rtc_configuration: RTCConfiguration;
+  video_direction: string;
+  audio_direction: string;
+}
+
 export const cameraUrlWithWidthHeight = (
   base_url: string,
   width: number,
@@ -103,6 +109,18 @@ export const handleWebRtcOffer = (
     type: "camera/web_rtc_offer",
     entity_id: entityId,
     offer: offer,
+  });
+
+export const fetchWebRtcConfig = (hass: HomeAssistant, entityId: string) =>
+  hass.callWS<WebRtcConfig>({
+    type: "camera/web_rtc_config",
+    entity_id: entityId,
+  });
+
+export const closeWebRtcStream = (hass: HomeAssistant, entityId: string) =>
+  hass.callWS({
+    type: "camera/web_rtc_close",
+    entity_id: entityId,
   });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
