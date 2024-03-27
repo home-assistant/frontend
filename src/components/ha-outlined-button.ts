@@ -10,8 +10,6 @@ export class HaOutlinedButton extends MdOutlinedButton {
     css`
       :host {
         --ha-icon-display: block;
-        --md-sys-color-primary: var(--primary-text-color);
-        --md-sys-color-outline: var(--outline-color);
       }
     `,
   ];

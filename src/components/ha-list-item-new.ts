@@ -11,11 +11,6 @@ export class HaListItemNew extends MdListItem {
       css`
         :host {
           --ha-icon-display: block;
-          --md-sys-color-primary: var(--primary-text-color);
-          --md-sys-color-secondary: var(--secondary-text-color);
-          --md-sys-color-surface: var(--card-background-color);
-          --md-sys-color-on-surface: var(--primary-text-color);
-          --md-sys-color-on-surface-variant: var(--secondary-text-color);
         }
       `,
     ];

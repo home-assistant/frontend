@@ -37,7 +37,6 @@ export class HaCircularProgress extends MdCircularProgress {
       ...super.styles,
       css`
         :host {
-          --md-sys-color-primary: var(--primary-color);
           --md-circular-progress-size: 48px;
         }
       `,

@@ -15,9 +15,6 @@ export class HaSlider extends MdSlider {
     ...MdSlider.styles,
     css`
       :host {
-        --md-sys-color-primary: var(--primary-color);
-        --md-sys-color-outline: var(--outline-color);
-        --md-sys-color-on-surface: var(--primary-text-color);
         --md-slider-handle-width: 14px;
         --md-slider-handle-height: 14px;
         min-width: 100px;
