@@ -204,10 +204,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                       : localize("ui.components.relative_time.never")}
                   </div>`
                 : nothing}
-              <ha-data-table-labels
-                @label-clicked=${this._labelClicked}
-                .labels=${script.labels}
-              ></ha-data-table-labels>
+              ${script.labels.length
+                ? html`<ha-data-table-labels
+                    @label-clicked=${this._labelClicked}
+                    .labels=${script.labels}
+                  ></ha-data-table-labels>`
+                : nothing}
             `;
           },
         },

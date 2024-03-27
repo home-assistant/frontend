@@ -174,10 +174,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           grows: true,
           template: (scene) => html`
             <div style="font-size: 14px;">${scene.name}</div>
-            <ha-data-table-labels
-              @label-clicked=${this._labelClicked}
-              .labels=${scene.labels}
-            ></ha-data-table-labels>
+            ${scene.labels.length
+              ? html`<ha-data-table-labels
+                  @label-clicked=${this._labelClicked}
+                  .labels=${scene.labels}
+                ></ha-data-table-labels>`
+              : nothing}
           `,
         },
         category: {
