@@ -231,6 +231,8 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
         locking: "mdi:lock-clock",
         unlocked: "mdi:lock-open",
         unlocking: "mdi:lock-clock",
+        opening: "mdi:lock-clock",
+        open: "mdi:lock-open-variant",
       },
     },
   },
