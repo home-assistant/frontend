@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { mdiFloorPlan, mdiSofa } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   FloorRegistryEntry,
@@ -75,7 +76,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
                             slot="graphic"
                             .icon=${floor.icon}
                           ></ha-icon>`
-                        : nothing}
+                        : html`<ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiFloorPlan}
+                          ></ha-svg-icon>`}
                       ${floor.name}
                     </ha-check-list-item>
                     ${repeat(
@@ -108,7 +112,7 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     >
       ${area.icon
         ? html`<ha-icon slot="graphic" .icon=${area.icon}></ha-icon>`
-        : nothing}
+        : html`<ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>`}
       ${area.name}
     </ha-check-list-item>`;
   }

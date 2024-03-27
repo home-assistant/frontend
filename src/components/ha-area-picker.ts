@@ -1,6 +1,7 @@
+import { mdiSofa } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -41,7 +42,7 @@ const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+      : html`<ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 
