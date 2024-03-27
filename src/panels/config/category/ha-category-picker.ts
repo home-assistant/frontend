@@ -1,3 +1,4 @@
+import { mdiTag } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, PropertyValues } from "lit";
@@ -35,7 +36,7 @@ const rowRenderer: ComboBoxLitRenderer<CategoryRegistryEntry> = (item) =>
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+      : html`<ha-svg-icon .path=${mdiTag} slot="graphic"></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 

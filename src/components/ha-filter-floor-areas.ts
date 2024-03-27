@@ -268,6 +268,9 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           padding: 0px 2px;
           color: var(--text-accent-color, var(--text-primary-color));
         }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: 16px;
+        }
         .floor {
           padding-left: 32px;
           padding-inline-start: 32px;
