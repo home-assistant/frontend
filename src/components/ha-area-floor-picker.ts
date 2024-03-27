@@ -1,8 +1,9 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiFloorPlan, mdiSofa } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
@@ -51,7 +52,10 @@ const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+      : html`<ha-svg-icon
+          slot="graphic"
+          .path=${item.type === "area" ? mdiFloorPlan : mdiSofa}
+        ></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 
