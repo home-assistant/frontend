@@ -23,6 +23,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list-item";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -102,6 +103,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                           ></ha-svg-icon>`}
                       ${category.name}
                       <ha-button-menu
+                        @click=${stopPropagation}
                         @action=${this._handleAction}
                         slot="meta"
                         fixed
