@@ -321,7 +321,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           [type]: true,
         })}"
         style=${color
-          ? `--color: rgb(${color}); --background-color: rgba(${color}, .3)`
+          ? `--color: rgb(${color}); --background-color: rgba(${color}, .5)`
           : ""}
       >
         ${icon
