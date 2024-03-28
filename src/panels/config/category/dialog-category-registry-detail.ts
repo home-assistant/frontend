@@ -34,8 +34,13 @@ class DialogCategoryDetail extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._name = this._params.entry ? this._params.entry.name : "";
-    this._icon = this._params.entry?.icon || null;
+    if (this._params.entry) {
+      this._name = this._params.entry.name || "";
+      this._icon = this._params.entry.icon || null;
+    } else {
+      this._name = this._params.suggestedName || "";
+      this._icon = null;
+    }
     await this.updateComplete;
   }
 

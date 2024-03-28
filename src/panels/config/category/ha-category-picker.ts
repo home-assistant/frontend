@@ -237,6 +237,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope!,
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,
