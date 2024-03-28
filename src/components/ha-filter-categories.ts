@@ -1,13 +1,21 @@
 import { ActionDetail, SelectedDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPencil,
+  mdiPlus,
+  mdiTag,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   deleteCategoryRegistryEntry,
   subscribeCategoryRegistry,
+  updateCategoryRegistryEntry,
 } from "../data/category_registry";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -17,6 +25,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list-item";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -90,9 +99,13 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             slot="graphic"
                             .icon=${category.icon}
                           ></ha-icon>`
-                        : nothing}
+                        : html`<ha-svg-icon
+                            .path=${mdiTag}
+                            slot="graphic"
+                          ></ha-svg-icon>`}
                       ${category.name}
                       <ha-button-menu
+                        @click=${stopPropagation}
                         @action=${this._handleAction}
                         slot="meta"
                         fixed
@@ -163,6 +176,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope!,
       entry: this._categories.find((cat) => cat.category_id === id),
+      updateEntry: (updates) =>
+        updateCategoryRegistryEntry(this.hass, this.scope!, id, updates),
     });
   }
 
@@ -195,7 +210,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     if (!this.scope) {
       return;
     }
-    showCategoryRegistryDetailDialog(this, { scope: this.scope });
+    showCategoryRegistryDetailDialog(this, {
+      scope: this.scope,
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, this.scope!, values),
+    });
   }
 
   private _expandedWillChange(ev) {
