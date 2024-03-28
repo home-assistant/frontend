@@ -26,10 +26,14 @@ import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registr
 
 type ScorableCategoryRegistryEntry = ScorableTextItem & CategoryRegistryEntry;
 
+const ADD_NEW_ID = "___ADD_NEW___";
+const NO_CATEGORIES_ID = "___NO_CATEGORIES___";
+const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
+
 const rowRenderer: ComboBoxLitRenderer<CategoryRegistryEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
-    class=${classMap({ "add-new": item.category_id === "add_new" })}
+    class=${classMap({ "add-new": item.category_id === ADD_NEW_ID })}
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
@@ -100,7 +104,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       const result = categories ? [...categories] : [];
       if (!result?.length) {
         result.push({
-          category_id: "no_categories",
+          category_id: NO_CATEGORIES_ID,
           name: this.hass.localize(
             "ui.components.category-picker.no_categories"
           ),
@@ -113,7 +117,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         : [
             ...result,
             {
-              category_id: "add_new",
+              category_id: ADD_NEW_ID,
               name: this.hass.localize("ui.components.category-picker.add_new"),
               icon: "mdi:plus",
             },
@@ -127,7 +131,12 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      const categories = this._getCategories(this._categories, this.noAdd);
+      const categories = this._getCategories(this._categories, this.noAdd).map(
+        (label) => ({
+          ...label,
+          strings: [label.name],
+        })
+      );
       this.comboBox.items = categories;
       this.comboBox.filteredItems = categories;
     }
@@ -172,18 +181,30 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       filterString,
       target.items || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          category_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.category-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems?.length === 0) {
+      if (this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            category_id: NO_CATEGORIES_ID,
+            name: this.hass.localize(
+              "ui.components.category-picker.no_categories"
+            ),
+            icon: null,
+          },
+        ] as ScorableCategoryRegistryEntry[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            category_id: ADD_NEW_SUGGESTION_ID,
+            name: this.hass.localize(
+              "ui.components.category-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+          },
+        ];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -201,11 +222,11 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
-    if (newValue === "no_categories") {
+    if (newValue === NO_CATEGORIES_ID) {
       newValue = "";
     }
 
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
+    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
       if (newValue !== this._value) {
         this._setValue(newValue);
       }
