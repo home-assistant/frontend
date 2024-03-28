@@ -20,12 +20,9 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registry-detail";
 
 type ScorableCategoryRegistryEntry = ScorableTextItem & CategoryRegistryEntry;
 
@@ -216,54 +213,29 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     }
 
     (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.components.category-picker.add_dialog.title"
-      ),
-      text: this.hass.localize("ui.components.category-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.category-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.category-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
-        try {
-          const category = await createCategoryRegistryEntry(
-            this.hass,
-            this.scope!,
-            {
-              name,
-            }
-          );
-          this._categories = [...this._categories!, category];
-          this.comboBox.filteredItems = this._getCategories(
-            this._categories,
-            this.noAdd
-          );
-          await this.updateComplete;
-          await this.comboBox.updateComplete;
-          this._setValue(category.category_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.category-picker.add_dialog.failed_create_category"
-            ),
-            text: err.message,
-          });
-        }
-      },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
+
+    showCategoryRegistryDetailDialog(this, {
+      scope: this.scope!,
+      createEntry: async (values) => {
+        const category = await createCategoryRegistryEntry(
+          this.hass,
+          this.scope!,
+          values
+        );
+        this._categories = [...this._categories!, category];
+        this.comboBox.filteredItems = this._getCategories(
+          this._categories,
+          this.noAdd
+        );
+        await this.updateComplete;
+        await this.comboBox.updateComplete;
+        this._setValue(category.category_id);
+        return category;
       },
     });
+
+    this._suggestion = undefined;
+    this.comboBox.setInputValue("");
   }
 
   private _setValue(value?: string) {

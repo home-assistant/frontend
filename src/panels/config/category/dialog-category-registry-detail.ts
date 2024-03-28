@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -8,14 +8,14 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import {
+  CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
-  createCategoryRegistryEntry,
-  updateCategoryRegistryEntry,
 } from "../../../data/category_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
 
+@customElement("dialog-category-registry-detail")
 class DialogCategoryDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -123,24 +123,16 @@ class DialogCategoryDetail extends LitElement {
   private async _updateEntry() {
     const create = !this._params!.entry;
     this._submitting = true;
+    let newValue: CategoryRegistryEntry | undefined;
     try {
       const values: CategoryRegistryEntryMutableParams = {
         name: this._name.trim(),
         icon: this._icon || (create ? undefined : null),
       };
       if (create) {
-        await createCategoryRegistryEntry(
-          this.hass,
-          this._params!.scope,
-          values
-        );
+        newValue = await this._params!.createEntry!(values);
       } else {
-        await updateCategoryRegistryEntry(
-          this.hass,
-          this._params!.scope,
-          this._params!.entry!.category_id,
-          values
-        );
+        newValue = await this._params!.updateEntry!(values);
       }
       this.closeDialog();
     } catch (err: any) {
@@ -150,6 +142,7 @@ class DialogCategoryDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
+    return newValue;
   }
 
   static get styles(): CSSResultGroup {
@@ -171,5 +164,3 @@ declare global {
     "dialog-category-registry-detail": DialogCategoryDetail;
   }
 }
-
-customElements.define("dialog-category-registry-detail", DialogCategoryDetail);

@@ -1,9 +1,19 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { CategoryRegistryEntry } from "../../../data/category_registry";
+import {
+  CategoryRegistryEntry,
+  CategoryRegistryEntryMutableParams,
+} from "../../../data/category_registry";
 
 export interface CategoryRegistryDetailDialogParams {
   entry?: CategoryRegistryEntry;
   scope: string;
+  suggestedName?: string;
+  createEntry?: (
+    values: CategoryRegistryEntryMutableParams
+  ) => Promise<CategoryRegistryEntry>;
+  updateEntry?: (
+    updates: Partial<CategoryRegistryEntryMutableParams>
+  ) => Promise<CategoryRegistryEntry>;
 }
 
 export const loadCategoryRegistryDetailDialog = () =>
