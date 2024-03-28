@@ -12,8 +12,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   deleteCategoryRegistryEntry,
   subscribeCategoryRegistry,
+  updateCategoryRegistryEntry,
 } from "../data/category_registry";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -174,6 +176,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope!,
       entry: this._categories.find((cat) => cat.category_id === id),
+      updateEntry: (updates) =>
+        updateCategoryRegistryEntry(this.hass, this.scope!, id, updates),
     });
   }
 
@@ -206,7 +210,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     if (!this.scope) {
       return;
     }
-    showCategoryRegistryDetailDialog(this, { scope: this.scope });
+    showCategoryRegistryDetailDialog(this, {
+      scope: this.scope,
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, this.scope!, values),
+    });
   }
 
   private _expandedWillChange(ev) {
