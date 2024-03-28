@@ -1,14 +1,14 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
-  fuzzyFilterSort,
   ScorableTextItem,
+  fuzzyFilterSort,
 } from "../common/string/filter/sequence-matching";
 import { AreaRegistryEntry } from "../data/area_registry";
 import {
@@ -18,23 +18,23 @@ import {
 } from "../data/device_registry";
 import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import {
+  FloorRegistryEntry,
+  createFloorRegistryEntry,
+  getFloorAreaLookup,
+  subscribeFloorRegistry,
+} from "../data/floor_registry";
+import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-list-item";
-import "./ha-svg-icon";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import {
-  createFloorRegistryEntry,
-  FloorRegistryEntry,
-  getFloorAreaLookup,
-  subscribeFloorRegistry,
-} from "../data/floor_registry";
 
 type ScorableFloorRegistryEntry = ScorableTextItem & FloorRegistryEntry;
 
@@ -43,9 +43,7 @@ const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) =>
     graphic="icon"
     class=${classMap({ "add-new": item.floor_id === "add_new" })}
   >
-    ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+    <ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>
     ${item.name}
   </ha-list-item>`;
 
