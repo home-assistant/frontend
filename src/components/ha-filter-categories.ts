@@ -1,5 +1,11 @@
 import { ActionDetail, SelectedDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiPencil, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPencil,
+  mdiPlus,
+  mdiTag,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,6 +23,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list-item";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -90,9 +97,13 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             slot="graphic"
                             .icon=${category.icon}
                           ></ha-icon>`
-                        : nothing}
+                        : html`<ha-svg-icon
+                            .path=${mdiTag}
+                            slot="graphic"
+                          ></ha-svg-icon>`}
                       ${category.name}
                       <ha-button-menu
+                        @click=${stopPropagation}
                         @action=${this._handleAction}
                         slot="meta"
                         fixed
