@@ -1,10 +1,10 @@
 import "@material/mwc-menu/mwc-menu-surface";
+import { mdiSofa } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { mdiFloorPlan, mdiSofa } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   FloorRegistryEntry,
@@ -16,6 +16,9 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
+import "./ha-floor-icon";
+import "./ha-icon";
+import "./ha-svg-icon";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
@@ -71,15 +74,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
                       graphic="icon"
                       @request-selected=${this._handleItemClick}
                     >
-                      ${floor.icon
-                        ? html`<ha-icon
-                            slot="graphic"
-                            .icon=${floor.icon}
-                          ></ha-icon>`
-                        : html`<ha-svg-icon
-                            slot="graphic"
-                            .path=${mdiFloorPlan}
-                          ></ha-svg-icon>`}
+                      <ha-floor-icon
+                        slot="graphic"
+                        .floor=${floor}
+                      ></ha-floor-icon>
                       ${floor.name}
                     </ha-check-list-item>
                     ${repeat(
