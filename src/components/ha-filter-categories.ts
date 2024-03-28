@@ -78,13 +78,15 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                 class="ha-scrollbar"
                 activatable
               >
-                <ha-list-item
-                  .selected=${!this.value?.length}
-                  .activated=${!this.value?.length}
-                  >${this.hass.localize(
-                    "ui.panel.config.category.filter.show_all"
-                  )}</ha-list-item
-                >
+                ${this._categories.length > 0
+                  ? html`<ha-list-item
+                      .selected=${!this.value?.length}
+                      .activated=${!this.value?.length}
+                      >${this.hass.localize(
+                        "ui.panel.config.category.filter.show_all"
+                      )}</ha-list-item
+                    >`
+                  : nothing}
                 ${this._categories.map(
                   (category) =>
                     html`<ha-list-item
