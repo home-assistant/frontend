@@ -3,10 +3,12 @@ import "@material/mwc-menu/mwc-menu-surface";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiPlus } from "@mdi/js";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -16,6 +18,7 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-label";
+import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -84,6 +87,12 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
             `
           : nothing}
       </ha-expansion-panel>
+      ${this.expanded
+        ? html`<ha-list-item graphic="icon" @click=${this._addLabel}>
+            <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.labels.add_label")}
+          </ha-list-item>`
+        : nothing}
     `;
   }
 
@@ -92,9 +101,15 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - (49 + 48)}px`;
       }, 300);
     }
+  }
+
+  private _addLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+    });
   }
 
   private _expandedWillChange(ev) {
