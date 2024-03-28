@@ -32,6 +32,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-states";
+import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-alert";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
@@ -221,16 +222,16 @@ export class HaConfigDeviceDashboard extends LitElement {
 
       const filteredDomains = new Set<string>();
 
-      Object.entries(filters).forEach(([key, flter]) => {
-        if (key === "config_entry" && flter.value?.length) {
+      Object.entries(filters).forEach(([key, filter]) => {
+        if (key === "config_entry" && filter.value?.length) {
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) =>
-              flter.value?.includes(entryId)
+              filter.value?.includes(entryId)
             )
           );
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && flter.value?.includes(entry.entry_id)
+            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -239,17 +240,21 @@ export class HaConfigDeviceDashboard extends LitElement {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && flter.value?.length) {
+        } else if (key === "ha-filter-integrations" && filter.value?.length) {
           const entryIds = entries
-            .filter((entry) => flter.value!.includes(entry.domain))
+            .filter((entry) => filter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) => entryIds.includes(entryId))
           );
-          flter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (flter.items) {
+          filter.value!.forEach((domain) => filteredDomains.add(domain));
+        } else if (key === "ha-filter-labels" && filter.value?.length) {
           outputDevices = outputDevices.filter((device) =>
-            flter.items!.has(device.id)
+            device.labels.some((lbl) => filter.value!.includes(lbl))
+          );
+        } else if (filter.items) {
+          outputDevices = outputDevices.filter((device) =>
+            filter.items!.has(device.id)
           );
         }
       });
@@ -531,6 +536,15 @@ export class HaConfigDeviceDashboard extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
+        <ha-filter-labels
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-labels"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-labels"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-labels>
       </hass-tabs-subpage-data-table>
     `;
   }

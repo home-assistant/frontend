@@ -43,6 +43,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-states";
+import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -337,12 +338,12 @@ export class HaConfigEntities extends LitElement {
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
 
-      Object.entries(filters).forEach(([key, flter]) => {
-        if (key === "config_entry" && flter.value?.length) {
+      Object.entries(filters).forEach(([key, filter]) => {
+        if (key === "config_entry" && filter.value?.length) {
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
-              flter.value?.includes(entity.config_entry_id)
+              filter.value?.includes(entity.config_entry_id)
           );
 
           if (!entries) {
@@ -351,7 +352,7 @@ export class HaConfigEntities extends LitElement {
           }
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && flter.value?.includes(entry.entry_id)
+            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -360,23 +361,27 @@ export class HaConfigEntities extends LitElement {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && flter.value?.length) {
+        } else if (key === "ha-filter-integrations" && filter.value?.length) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
           const entryIds = entries
-            .filter((entry) => flter.value!.includes(entry.domain))
+            .filter((entry) => filter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
               entryIds.includes(entity.config_entry_id)
           );
-          flter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (flter.items) {
+          filter.value!.forEach((domain) => filteredDomains.add(domain));
+        } else if (key === "ha-filter-labels" && filter.value?.length) {
           filteredEntities = filteredEntities.filter((entity) =>
-            flter.items!.has(entity.entity_id)
+            entity.labels.some((lbl) => filter.value!.includes(lbl))
+          );
+        } else if (filter.items) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            filter.items!.has(entity.entity_id)
           );
         }
       });
@@ -633,6 +638,15 @@ export class HaConfigEntities extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
+        <ha-filter-labels
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-labels"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-labels"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-labels>
         ${includeAddDeviceFab
           ? html`<ha-fab
               .label=${this.hass.localize("ui.panel.config.devices.add_device")}
