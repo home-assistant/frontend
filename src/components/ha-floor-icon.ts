@@ -12,7 +12,9 @@ import { FloorRegistryEntry } from "../data/floor_registry";
 import "./ha-icon";
 import "./ha-svg-icon";
 
-const floorDefaultIconPath = (floor: Pick<FloorRegistryEntry, "level">) => {
+export const floorDefaultIconPath = (
+  floor: Pick<FloorRegistryEntry, "level">
+) => {
   switch (floor.level) {
     case 0:
       return mdiHomeFloor0;

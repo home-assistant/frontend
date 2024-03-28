@@ -1,4 +1,4 @@
-import { mdiSofa } from "@mdi/js";
+import { mdiTextureBox } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues, TemplateResult, html } from "lit";
@@ -53,10 +53,13 @@ const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
       : ""}
   >
     ${item.type === "floor"
-      ? html`<ha-floor-icon .floor=${item}></ha-floor-icon>`
+      ? html`<ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>`
       : item.icon
         ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-        : html`<ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>`}
+        : html`<ha-svg-icon
+            slot="graphic"
+            .path=${mdiTextureBox}
+          ></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 

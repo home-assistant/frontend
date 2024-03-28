@@ -1,5 +1,5 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiSofa } from "@mdi/js";
+import { mdiTextureBox } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -110,7 +110,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     >
       ${area.icon
         ? html`<ha-icon slot="graphic" .icon=${area.icon}></ha-icon>`
-        : html`<ha-svg-icon slot="graphic" .path=${mdiSofa}></ha-svg-icon>`}
+        : html`<ha-svg-icon
+            slot="graphic"
+            .path=${mdiTextureBox}
+          ></ha-svg-icon>`}
       ${area.name}
     </ha-check-list-item>`;
   }
