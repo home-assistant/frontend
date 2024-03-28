@@ -1,14 +1,15 @@
+import { mdiTextureBox } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import {
-  fuzzyFilterSort,
   ScorableTextItem,
+  fuzzyFilterSort,
 } from "../common/string/filter/sequence-matching";
 import {
   AreaRegistryEntry,
@@ -41,7 +42,7 @@ const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+      : html`<ha-svg-icon slot="graphic" .path=${mdiTextureBox}></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 
