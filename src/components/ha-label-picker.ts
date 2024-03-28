@@ -31,12 +31,16 @@ import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
 
-type ScorableLabelRegistryEntry = ScorableTextItem & LabelRegistryEntry;
+type ScorableLabelItem = ScorableTextItem & LabelRegistryEntry;
+
+const ADD_NEW_ID = "___ADD_NEW___";
+const NO_LABELS_ID = "___NO_LABELS___";
+const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
 const rowRenderer: ComboBoxLitRenderer<LabelRegistryEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
-    class=${classMap({ "add-new": item.label_id === "add_new" })}
+    class=${classMap({ "add-new": item.label_id === ADD_NEW_ID })}
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
@@ -143,17 +147,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       noAdd: this["noAdd"],
       excludeLabels: this["excludeLabels"]
     ): LabelRegistryEntry[] => {
-      if (!labels.length) {
-        return [
-          {
-            label_id: "no_labels",
-            name: this.hass.localize("ui.components.label-picker.no_labels"),
-            icon: null,
-            color: null,
-          },
-        ];
-      }
-
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -305,7 +298,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       if (!outputLabels.length) {
         outputLabels = [
           {
-            label_id: "no_labels",
+            label_id: NO_LABELS_ID,
             name: this.hass.localize("ui.components.label-picker.no_match"),
             icon: null,
             color: null,
@@ -318,7 +311,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         : [
             ...outputLabels,
             {
-              label_id: "add_new",
+              label_id: ADD_NEW_ID,
               name: this.hass.localize("ui.components.label-picker.add_new"),
               icon: "mdi:plus",
               color: null,
@@ -333,7 +326,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      const labels = this._getLabels(
+      const items = this._getLabels(
         this._labels!,
         this.hass.areas,
         Object.values(this.hass.devices),
@@ -350,8 +343,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         strings: [label.label_id, label.name],
       }));
 
-      this.comboBox.items = labels;
-      this.comboBox.filteredItems = labels;
+      this.comboBox.items = items;
+      this.comboBox.filteredItems = items;
     }
   }
 
@@ -390,22 +383,36 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const filteredItems = fuzzyFilterSort<ScorableLabelRegistryEntry>(
+    const filteredItems = fuzzyFilterSort<ScorableLabelItem>(
       filterString,
-      target.items || []
+      target.items?.filter((item) =>
+        [NO_LABELS_ID, ADD_NEW_ID].includes(item.ignoreFilter)
+      ) || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          label_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.label-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems.length === 0) {
+      if (this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            label_id: NO_LABELS_ID,
+            name: this.hass.localize("ui.components.label-picker.no_match"),
+            icon: null,
+            color: null,
+          },
+        ] as ScorableLabelItem[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            label_id: ADD_NEW_SUGGESTION_ID,
+            name: this.hass.localize(
+              "ui.components.label-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+            color: null,
+          },
+        ] as ScorableLabelItem[];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -423,13 +430,13 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
-    if (newValue === "no_labels") {
+    if (newValue === NO_LABELS_ID) {
       newValue = "";
       this.comboBox.setInputValue("");
       return;
     }
 
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
+    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
       if (newValue !== this._value) {
         this._setValue(newValue);
       }
@@ -440,7 +447,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
     showLabelDetailDialog(this, {
       entry: undefined,
-      suggestedName: newValue === "add_new_suggestion" ? this._suggestion : "",
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         const labels = [...this._labels!, label];

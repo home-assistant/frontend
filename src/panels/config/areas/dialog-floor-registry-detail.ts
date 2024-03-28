@@ -6,10 +6,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import "../../../components/ha-icon-picker";
 import { FloorRegistryEntryMutableParams } from "../../../data/floor_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -56,6 +57,7 @@ class DialogFloorDetail extends LitElement {
     }
     const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
+
     return html`
       <ha-dialog
         open
@@ -110,7 +112,16 @@ class DialogFloorDetail extends LitElement {
               .value=${this._icon}
               @value-changed=${this._iconChanged}
               .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
-            ></ha-icon-picker>
+            >
+              ${!this._icon
+                ? html`
+                    <ha-floor-icon
+                      slot="fallback"
+                      .floor=${{ level: this._level }}
+                    ></ha-floor-icon>
+                  `
+                : nothing}
+            </ha-icon-picker>
 
             <h3 class="header">
               ${this.hass.localize(
@@ -157,7 +168,7 @@ class DialogFloorDetail extends LitElement {
 
   private _levelChanged(ev) {
     this._error = undefined;
-    this._level = Number(ev.target.value);
+    this._level = ev.target.value === "" ? null : Number(ev.target.value);
   }
 
   private _iconChanged(ev) {

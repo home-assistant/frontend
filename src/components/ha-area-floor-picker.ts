@@ -1,10 +1,12 @@
+import { mdiTextureBox } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
+import { stringCompare } from "../common/string/compare";
 import {
   ScorableTextItem,
   fuzzyFilterSort,
@@ -26,10 +28,10 @@ import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
-import { stringCompare } from "../common/string/compare";
 
 type ScorableAreaFloorEntry = ScorableTextItem & FloorAreaEntry;
 
@@ -40,6 +42,7 @@ interface FloorAreaEntry {
   strings: string[];
   type: "floor" | "area";
   hasFloor?: boolean;
+  level: number | null;
 }
 
 const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
@@ -49,9 +52,14 @@ const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
       ? "--mdc-list-side-padding-left: 48px;"
       : ""}
   >
-    ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+    ${item.type === "floor"
+      ? html`<ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>`
+      : item.icon
+        ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+        : html`<ha-svg-icon
+            slot="graphic"
+            .path=${mdiTextureBox}
+          ></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 
@@ -165,6 +173,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             icon: null,
             strings: [],
+            level: null,
           },
         ];
       }
@@ -316,6 +325,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
             name: this.hass.localize("ui.components.area-picker.no_match"),
             icon: null,
             strings: [],
+            level: null,
           },
         ];
       }
@@ -350,6 +360,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
             name: floor.name,
             icon: floor.icon,
             strings: [floor.floor_id, ...floor.aliases, floor.name],
+            level: floor.level,
           });
         }
         output.push(
@@ -360,6 +371,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
             icon: area.icon,
             strings: [area.area_id, ...area.aliases, area.name],
             hasFloor: true,
+            level: null,
           }))
         );
       });
@@ -373,6 +385,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
           ),
           icon: null,
           strings: [],
+          level: null,
         });
       }
 
@@ -383,6 +396,7 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
           name: area.name,
           icon: area.icon,
           strings: [area.area_id, ...area.aliases, area.name],
+          level: null,
         }))
       );
 

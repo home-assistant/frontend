@@ -1,16 +1,16 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
+import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { AreaRegistryEntry } from "./area_registry";
-import { debounce } from "../common/util/debounce";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
 
 export interface FloorRegistryEntry {
   floor_id: string;
   name: string;
-  level: number;
+  level: number | null;
   icon: string | null;
   aliases: string[];
 }

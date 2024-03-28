@@ -168,7 +168,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           color: var(--error-color);
         }
         ha-label {
-          --ha-label-background-color: var(--color);
+          --ha-label-background-color: var(--color, var(--grey-color));
           --ha-label-background-opacity: 0.5;
         }
       `,

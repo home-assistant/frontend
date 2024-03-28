@@ -6,10 +6,10 @@ import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
   mdiDevices,
-  mdiFloorPlan,
+  mdiHome,
   mdiLabel,
   mdiPlus,
-  mdiSofa,
+  mdiTextureBox,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
@@ -18,30 +18,23 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing, unsafeCSS } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
+import { computeCssColor } from "../common/color/compute-color";
+import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
+import { AreaRegistryEntry } from "../data/area_registry";
 import {
-  computeDeviceName,
   DeviceRegistryEntry,
+  computeDeviceName,
 } from "../data/device_registry";
 import { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import { HomeAssistant } from "../types";
-import "./device/ha-device-picker";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
-import "./ha-area-floor-picker";
-import "./ha-icon-button";
-import "./ha-input-helper-text";
-import "./ha-svg-icon";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import {
   FloorRegistryEntry,
   subscribeFloorRegistry,
@@ -50,9 +43,17 @@ import {
   LabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
-import { computeCssColor } from "../common/color/compute-color";
-import { AreaRegistryEntry } from "../data/area_registry";
-import { hex2rgb } from "../common/color/convert-color";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { HomeAssistant } from "../types";
+import "./device/ha-device-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./entity/ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
+import "./ha-area-floor-picker";
+import { floorDefaultIconPath } from "./ha-floor-icon";
+import "./ha-icon-button";
+import "./ha-input-helper-text";
+import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -138,7 +139,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 floor?.name || floor_id,
                 undefined,
                 floor?.icon,
-                mdiFloorPlan
+                floor ? floorDefaultIconPath(floor) : mdiHome
               );
             })
           : ""}
@@ -151,7 +152,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 area?.name || area_id,
                 undefined,
                 area?.icon,
-                mdiSofa
+                mdiTextureBox
               );
             })
           : nothing}

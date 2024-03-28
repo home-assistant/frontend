@@ -1,3 +1,4 @@
+import { ActionDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -17,9 +18,9 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { ActionDetail } from "@material/mwc-list";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
+import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
@@ -39,6 +40,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -47,7 +49,6 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
@@ -154,9 +155,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
               html`<div class="floor">
                 <div class="header">
                   <h2>
-                    ${floor.icon
-                      ? html`<ha-icon .icon=${floor.icon}></ha-icon>`
-                      : nothing}
+                    <ha-floor-icon .floor=${floor}></ha-floor-icon>
                     ${floor.name}
                   </h2>
                   <ha-button-menu

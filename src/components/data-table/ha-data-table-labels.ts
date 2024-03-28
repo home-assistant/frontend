@@ -104,13 +104,14 @@ class HaDataTableLabels extends LitElement {
         flex-wrap: nowrap;
       }
       ha-label {
-        --ha-label-background-color: var(--color);
+        --ha-label-background-color: var(--color, var(--grey-color));
         --ha-label-background-opacity: 0.5;
       }
       ha-button-menu {
         border-radius: 10px;
       }
       .plus {
+        --ha-label-background-color: transparent;
         border: 1px solid var(--divider-color);
       }
     `;

@@ -1,3 +1,4 @@
+import { mdiTag } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, PropertyValues } from "lit";
@@ -19,23 +20,24 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registry-detail";
 
 type ScorableCategoryRegistryEntry = ScorableTextItem & CategoryRegistryEntry;
+
+const ADD_NEW_ID = "___ADD_NEW___";
+const NO_CATEGORIES_ID = "___NO_CATEGORIES___";
+const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
 const rowRenderer: ComboBoxLitRenderer<CategoryRegistryEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
-    class=${classMap({ "add-new": item.category_id === "add_new" })}
+    class=${classMap({ "add-new": item.category_id === ADD_NEW_ID })}
   >
     ${item.icon
       ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : nothing}
+      : html`<ha-svg-icon .path=${mdiTag} slot="graphic"></ha-svg-icon>`}
     ${item.name}
   </ha-list-item>`;
 
@@ -102,7 +104,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       const result = categories ? [...categories] : [];
       if (!result?.length) {
         result.push({
-          category_id: "no_categories",
+          category_id: NO_CATEGORIES_ID,
           name: this.hass.localize(
             "ui.components.category-picker.no_categories"
           ),
@@ -115,7 +117,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         : [
             ...result,
             {
-              category_id: "add_new",
+              category_id: ADD_NEW_ID,
               name: this.hass.localize("ui.components.category-picker.add_new"),
               icon: "mdi:plus",
             },
@@ -129,7 +131,12 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      const categories = this._getCategories(this._categories, this.noAdd);
+      const categories = this._getCategories(this._categories, this.noAdd).map(
+        (label) => ({
+          ...label,
+          strings: [label.name],
+        })
+      );
       this.comboBox.items = categories;
       this.comboBox.filteredItems = categories;
     }
@@ -174,18 +181,30 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
       filterString,
       target.items || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          category_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.category-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems?.length === 0) {
+      if (this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            category_id: NO_CATEGORIES_ID,
+            name: this.hass.localize(
+              "ui.components.category-picker.no_categories"
+            ),
+            icon: null,
+          },
+        ] as ScorableCategoryRegistryEntry[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            category_id: ADD_NEW_SUGGESTION_ID,
+            name: this.hass.localize(
+              "ui.components.category-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+          },
+        ];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -203,11 +222,11 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
-    if (newValue === "no_categories") {
+    if (newValue === NO_CATEGORIES_ID) {
       newValue = "";
     }
 
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
+    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
       if (newValue !== this._value) {
         this._setValue(newValue);
       }
@@ -215,54 +234,30 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     }
 
     (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.components.category-picker.add_dialog.title"
-      ),
-      text: this.hass.localize("ui.components.category-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.category-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.category-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
-        try {
-          const category = await createCategoryRegistryEntry(
-            this.hass,
-            this.scope!,
-            {
-              name,
-            }
-          );
-          this._categories = [...this._categories!, category];
-          this.comboBox.filteredItems = this._getCategories(
-            this._categories,
-            this.noAdd
-          );
-          await this.updateComplete;
-          await this.comboBox.updateComplete;
-          this._setValue(category.category_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.category-picker.add_dialog.failed_create_category"
-            ),
-            text: err.message,
-          });
-        }
-      },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
+
+    showCategoryRegistryDetailDialog(this, {
+      scope: this.scope!,
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
+      createEntry: async (values) => {
+        const category = await createCategoryRegistryEntry(
+          this.hass,
+          this.scope!,
+          values
+        );
+        this._categories = [...this._categories!, category];
+        this.comboBox.filteredItems = this._getCategories(
+          this._categories,
+          this.noAdd
+        );
+        await this.updateComplete;
+        await this.comboBox.updateComplete;
+        this._setValue(category.category_id);
+        return category;
       },
     });
+
+    this._suggestion = undefined;
+    this.comboBox.setInputValue("");
   }
 
   private _setValue(value?: string) {

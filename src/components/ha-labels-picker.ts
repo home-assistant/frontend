@@ -199,7 +199,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
       margin-bottom: 8px;
     }
     ha-input-chip {
-      --md-input-chip-selected-container-color: var(--color);
+      --md-input-chip-selected-container-color: var(--color, var(--grey-color));
       --ha-input-chip-selected-container-opacity: 0.5;
     }
   `;
