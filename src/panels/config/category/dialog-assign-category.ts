@@ -85,7 +85,7 @@ class DialogAssignCategory extends LitElement {
 
   private _categoryChanged(ev: CustomEvent): void {
     if (!ev.detail.value) {
-      return;
+      this._category = undefined;
     }
     this._category = ev.detail.value;
   }
