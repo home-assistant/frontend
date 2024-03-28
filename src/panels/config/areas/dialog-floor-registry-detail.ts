@@ -168,7 +168,7 @@ class DialogFloorDetail extends LitElement {
 
   private _levelChanged(ev) {
     this._error = undefined;
-    this._level = Number(ev.target.value);
+    this._level = ev.target.value === "" ? null : Number(ev.target.value);
   }
 
   private _iconChanged(ev) {
