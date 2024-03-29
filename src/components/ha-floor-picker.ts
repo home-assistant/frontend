@@ -38,10 +38,14 @@ import "./ha-list-item";
 
 type ScorableFloorRegistryEntry = ScorableTextItem & FloorRegistryEntry;
 
+const ADD_NEW_ID = "___ADD_NEW___";
+const NO_FLOORS_ID = "___NO_FLOORS___";
+const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
+
 const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
-    class=${classMap({ "add-new": item.floor_id === "add_new" })}
+    class=${classMap({ "add-new": item.floor_id === ADD_NEW_ID })}
   >
     <ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>
     ${item.name}
@@ -146,18 +150,6 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       noAdd: this["noAdd"],
       excludeFloors: this["excludeFloors"]
     ): FloorRegistryEntry[] => {
-      if (!floors.length) {
-        return [
-          {
-            floor_id: "no_floors",
-            name: this.hass.localize("ui.components.floor-picker.no_floors"),
-            icon: null,
-            level: 0,
-            aliases: [],
-          },
-        ];
-      }
-
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -297,10 +289,10 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       if (!outputFloors.length) {
         outputFloors = [
           {
-            floor_id: "no_floors",
-            name: this.hass.localize("ui.components.floor-picker.no_match"),
+            floor_id: NO_FLOORS_ID,
+            name: this.hass.localize("ui.components.floor-picker.no_floors"),
             icon: null,
-            level: 0,
+            level: null,
             aliases: [],
           },
         ];
@@ -311,10 +303,10 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         : [
             ...outputFloors,
             {
-              floor_id: "add_new",
+              floor_id: ADD_NEW_ID,
               name: this.hass.localize("ui.components.floor-picker.add_new"),
               icon: "mdi:plus",
-              level: 0,
+              level: null,
               aliases: [],
             },
           ];
@@ -341,7 +333,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         this.excludeFloors
       ).map((floor) => ({
         ...floor,
-        strings: [floor.floor_id, floor.name], // ...floor.aliases
+        strings: [floor.floor_id, floor.name, ...floor.aliases],
       }));
       this.comboBox.items = floors;
       this.comboBox.filteredItems = floors;
@@ -385,20 +377,36 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
 
     const filteredItems = fuzzyFilterSort<ScorableFloorRegistryEntry>(
       filterString,
-      target.items || []
+      target.items?.filter(
+        (item) => ![NO_FLOORS_ID, ADD_NEW_ID].includes(item.label_id)
+      ) || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          floor_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems.length === 0) {
+      if (this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            floor_id: NO_FLOORS_ID,
+            name: this.hass.localize("ui.components.floor-picker.no_floors"),
+            icon: null,
+            level: null,
+            aliases: [],
+          },
+        ] as FloorRegistryEntry[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            floor_id: ADD_NEW_SUGGESTION_ID,
+            name: this.hass.localize(
+              "ui.components.floor-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+            level: null,
+            aliases: [],
+          },
+        ] as FloorRegistryEntry[];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -416,11 +424,13 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
-    if (newValue === "no_floors") {
+    if (newValue === NO_FLOORS_ID) {
       newValue = "";
+      this.comboBox.setInputValue("");
+      return;
     }
 
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
+    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
       if (newValue !== this._value) {
         this._setValue(newValue);
       }
@@ -438,7 +448,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         "ui.components.floor-picker.add_dialog.name"
       ),
       defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
+        newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : undefined,
       confirm: async (name) => {
         if (!name) {
           return;
