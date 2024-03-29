@@ -385,8 +385,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
     const filteredItems = fuzzyFilterSort<ScorableLabelItem>(
       filterString,
-      target.items?.filter((item) =>
-        [NO_LABELS_ID, ADD_NEW_ID].includes(item.ignoreFilter)
+      target.items?.filter(
+        (item) => ![NO_LABELS_ID, ADD_NEW_ID].includes(item.label_id)
       ) || []
     );
     if (filteredItems.length === 0) {

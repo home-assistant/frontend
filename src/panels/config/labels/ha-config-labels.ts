@@ -1,4 +1,4 @@
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -11,6 +11,7 @@ import {
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-relative-time";
+import "../../../components/ha-icon-overflow-menu";
 import {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
@@ -70,6 +71,26 @@ export class HaConfigLabels extends LitElement {
         sortable: true,
         filterable: true,
         grows: true,
+      },
+      actions: {
+        title: "",
+        width: "64px",
+        type: "overflow-menu",
+        template: (label) => html`
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            narrow
+            .items=${[
+              {
+                label: this.hass.localize("ui.common.delete"),
+                path: mdiDelete,
+                action: () => this._removeLabel(label),
+                warning: true,
+              },
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
       },
     };
     return columns;
@@ -189,6 +210,7 @@ export class HaConfigLabels extends LitElement {
         }),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.remove"),
+        destructive: true,
       }))
     ) {
       return false;

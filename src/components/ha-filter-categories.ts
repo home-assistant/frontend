@@ -78,13 +78,15 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                 class="ha-scrollbar"
                 activatable
               >
-                <ha-list-item
-                  .selected=${!this.value?.length}
-                  .activated=${!this.value?.length}
-                  >${this.hass.localize(
-                    "ui.panel.config.category.filter.show_all"
-                  )}</ha-list-item
-                >
+                ${this._categories.length > 0
+                  ? html`<ha-list-item
+                      .selected=${!this.value?.length}
+                      .activated=${!this.value?.length}
+                      >${this.hass.localize(
+                        "ui.panel.config.category.filter.show_all"
+                      )}</ha-list-item
+                    >`
+                  : nothing}
                 ${this._categories.map(
                   (category) =>
                     html`<ha-list-item
@@ -142,7 +144,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           : nothing}
       </ha-expansion-panel>
       ${this.expanded
-        ? html`<ha-list-item graphic="icon" @click=${this._addCategory}>
+        ? html`<ha-list-item
+            graphic="icon"
+            @click=${this._addCategory}
+            class="add"
+          >
             <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.category.editor.add")}
           </ha-list-item>`
@@ -254,6 +260,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
       css`
         :host {
           border-bottom: 1px solid var(--divider-color);
+          position: relative;
         }
         :host([expanded]) {
           flex: 1;
@@ -277,11 +284,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           border-radius: 50%;
           font-weight: 400;
           font-size: 11px;
-          background-color: var(--accent-color);
+          background-color: var(--primary-color);
           line-height: 16px;
           text-align: center;
           padding: 0px 2px;
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-primary-color);
         }
         mwc-list {
           --mdc-list-item-meta-size: auto;
@@ -290,6 +297,12 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         .warning {
           color: var(--error-color);
+        }
+        .add {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          left: 0;
         }
       `,
     ];
