@@ -147,11 +147,11 @@ export class HaFilterStates extends LitElement {
           border-radius: 50%;
           font-weight: 400;
           font-size: 11px;
-          background-color: var(--accent-color);
+          background-color: var(--primary-color);
           line-height: 16px;
           text-align: center;
           padding: 0px 2px;
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-primary-color);
         }
       `,
     ];
