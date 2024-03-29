@@ -18,6 +18,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
@@ -38,13 +39,15 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
-import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
@@ -64,6 +67,10 @@ import {
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  LabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label_registry";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
@@ -77,12 +84,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import "../../../components/data-table/ha-data-table-labels";
-import {
-  LabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label_registry";
-import "../../../components/ha-filter-labels";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -507,6 +508,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_entityReg")) {
+      this._applyFilters();
+    }
   }
 
   firstUpdated() {
