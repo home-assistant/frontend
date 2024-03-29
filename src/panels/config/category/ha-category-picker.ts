@@ -226,6 +226,8 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     if (newValue === NO_CATEGORIES_ID) {
       newValue = "";
+      this.comboBox.setInputValue("");
+      return;
     }
 
     if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
