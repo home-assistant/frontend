@@ -144,7 +144,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           : nothing}
       </ha-expansion-panel>
       ${this.expanded
-        ? html`<ha-list-item graphic="icon" @click=${this._addCategory}>
+        ? html`<ha-list-item
+            graphic="icon"
+            @click=${this._addCategory}
+            class="add"
+          >
             <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.category.editor.add")}
           </ha-list-item>`
@@ -256,6 +260,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
       css`
         :host {
           border-bottom: 1px solid var(--divider-color);
+          position: relative;
         }
         :host([expanded]) {
           flex: 1;
@@ -292,6 +297,12 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         .warning {
           color: var(--error-color);
+        }
+        .add {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          left: 0;
         }
       `,
     ];
