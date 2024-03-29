@@ -35,6 +35,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @state() protected _config?: T;
 
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
+
   public getCardSize(): number | Promise<number> {
     return 1;
   }
@@ -98,10 +101,10 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         display: block;
         padding: 24px 16px 16px;
       }
-      #root {
-        --ha-card-border-radius: var(--restore-card-border-radius, inherit);
-        --ha-card-border-width: var(--restore-card-border-width, inherit);
-        --ha-card-box-shadow: var(--restore-card-border-shadow, inherit);
+      :host([ispanel]) #root {
+        --ha-card-border-radius: var(--restore-card-border-radius);
+        --ha-card-border-width: var(--restore-card-border-width);
+        --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
     `;
   }
