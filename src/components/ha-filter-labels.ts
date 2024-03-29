@@ -3,10 +3,12 @@ import "@material/mwc-menu/mwc-menu-surface";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiPlus } from "@mdi/js";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -16,6 +18,7 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-label";
+import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -84,6 +87,16 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
             `
           : nothing}
       </ha-expansion-panel>
+      ${this.expanded
+        ? html`<ha-list-item
+            graphic="icon"
+            @click=${this._addLabel}
+            class="add"
+          >
+            <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.labels.add_label")}
+          </ha-list-item>`
+        : nothing}
     `;
   }
 
@@ -92,9 +105,15 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - (49 + 48)}px`;
       }, 300);
     }
+  }
+
+  private _addLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+    });
   }
 
   private _expandedWillChange(ev) {
@@ -134,6 +153,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       haStyleScrollbar,
       css`
         :host {
+          position: relative;
           border-bottom: 1px solid var(--divider-color);
         }
         :host([expanded]) {
@@ -158,11 +178,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           border-radius: 50%;
           font-weight: 400;
           font-size: 11px;
-          background-color: var(--accent-color);
+          background-color: var(--primary-color);
           line-height: 16px;
           text-align: center;
           padding: 0px 2px;
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-primary-color);
         }
         .warning {
           color: var(--error-color);
@@ -170,6 +190,12 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
           --ha-label-background-opacity: 0.5;
+        }
+        .add {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          left: 0;
         }
       `,
     ];

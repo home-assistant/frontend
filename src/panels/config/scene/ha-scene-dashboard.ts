@@ -16,6 +16,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
@@ -296,6 +297,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       return columns;
     }
   );
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_entityReg")) {
+      this._applyFilters();
+    }
+  }
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [

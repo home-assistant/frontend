@@ -1,6 +1,9 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
+import "@material/web/menu/menu";
+import type { MdMenu } from "@material/web/menu/menu";
+import "@material/web/menu/menu-item";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -19,6 +22,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -173,6 +177,10 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
+  @query("#group-by-menu") private _groupByMenu!: MdMenu;
+
+  @query("#sort-by-menu") private _sortByMenu!: MdMenu;
+
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
@@ -185,6 +193,14 @@ export class HaTabsSubpageDataTable extends LitElement {
     if (this.initialGroupColumn) {
       this._groupColumn = this.initialGroupColumn;
     }
+  }
+
+  private _toggleGroupBy() {
+    this._groupByMenu.open = !this._groupByMenu.open;
+  }
+
+  private _toggleSortBy() {
+    this._sortByMenu.open = !this._sortByMenu.open;
   }
 
   protected render(): TemplateResult {
@@ -226,73 +242,35 @@ export class HaTabsSubpageDataTable extends LitElement {
     </search-input-outlined>`;
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
-      ? html`<ha-button-menu fixed>
+      ? html`
           <ha-assist-chip
             .label=${localize("ui.components.subpage-data-table.sort_by", {
               sortColumn: this._sortColumn
                 ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
                 : "",
             })}
-            slot="trigger"
+            id="sort-by-anchor"
+            @click=${this._toggleSortBy}
           >
             <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
           ></ha-assist-chip>
-          ${Object.entries(this.columns).map(([id, column]) =>
-            column.sortable
-              ? html`<ha-list-item
-                  .value=${id}
-                  @request-selected=${this._handleSortBy}
-                  hasMeta
-                  .activated=${id === this._sortColumn}
-                >
-                  ${this._sortColumn === id
-                    ? html`<ha-svg-icon
-                        slot="meta"
-                        .path=${this._sortDirection === "desc"
-                          ? mdiArrowDown
-                          : mdiArrowUp}
-                      ></ha-svg-icon>`
-                    : nothing}
-                  ${column.title || column.label}
-                </ha-list-item>`
-              : nothing
-          )}
-        </ha-button-menu>`
+        `
       : nothing;
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
-      ? html`<ha-button-menu fixed>
+      ? html`
           <ha-assist-chip
             .label=${localize("ui.components.subpage-data-table.group_by", {
               groupColumn: this._groupColumn
                 ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
                 : "",
             })}
-            slot="trigger"
+            id="group-by-anchor"
+            @click=${this._toggleGroupBy}
           >
             <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
           ></ha-assist-chip>
-          ${Object.entries(this.columns).map(([id, column]) =>
-            column.groupable
-              ? html`<ha-list-item
-                  .value=${id}
-                  @request-selected=${this._handleGroupBy}
-                  .activated=${id === this._groupColumn}
-                >
-                  ${column.title || column.label}
-                </ha-list-item> `
-              : nothing
-          )}
-          <li divider role="separator"></li>
-          <ha-list-item
-            .value=${undefined}
-            @request-selected=${this._handleGroupBy}
-            .activated=${this._groupColumn === undefined}
-            >${localize(
-              "ui.components.subpage-data-table.dont_group_by"
-            )}</ha-list-item
-          >
-        </ha-button-menu>`
+        `
       : nothing;
 
     return html`
@@ -431,6 +409,58 @@ export class HaTabsSubpageDataTable extends LitElement {
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
+      <md-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.groupable
+            ? html`
+                <md-menu-item
+                  .value=${id}
+                  @click=${this._handleGroupBy}
+                  .selected=${id === this._groupColumn}
+                  class=${classMap({ selected: id === this._groupColumn })}
+                >
+                  ${column.title || column.label}
+                </md-menu-item>
+              `
+            : nothing
+        )}
+        <li divider role="separator"></li>
+        <md-menu-item
+          .value=${undefined}
+          @click=${this._handleGroupBy}
+          .selected=${this._groupColumn === undefined}
+          class=${classMap({ selected: this._groupColumn === undefined })}
+          >${localize(
+            "ui.components.subpage-data-table.dont_group_by"
+          )}</md-menu-item
+        >
+      </md-menu>
+      <md-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.sortable
+            ? html`
+                <md-menu-item
+                  .value=${id}
+                  @click=${this._handleSortBy}
+                  .selected=${id === this._sortColumn}
+                  class=${classMap({ selected: id === this._sortColumn })}
+                >
+                  ${this._sortColumn === id
+                    ? html`
+                        <ha-svg-icon
+                          slot="end"
+                          .path=${this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                  ${column.title || column.label}
+                </md-menu-item>
+              `
+            : nothing
+        )}
+      </md-menu>
     `;
   }
 
@@ -449,6 +479,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   private _handleSortBy(ev) {
     ev.stopPropagation();
+    ev.preventDefault();
     const columnId = ev.currentTarget.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
@@ -611,11 +642,11 @@ export class HaTabsSubpageDataTable extends LitElement {
         border-radius: 50%;
         font-weight: 400;
         font-size: 11px;
-        background-color: var(--accent-color);
+        background-color: var(--primary-color);
         line-height: 16px;
         text-align: center;
         padding: 0px 2px;
-        color: var(--text-accent-color, var(--text-primary-color));
+        color: var(--text-primary-color);
       }
 
       .narrow-header-row {
@@ -656,13 +687,6 @@ export class HaTabsSubpageDataTable extends LitElement {
       ha-assist-chip {
         --ha-assist-chip-container-shape: 10px;
       }
-      ha-button-menu {
-        --mdc-list-item-meta-size: 16px;
-        --mdc-list-item-meta-display: flex;
-      }
-      ha-button-menu ha-assist-chip {
-        --md-assist-chip-trailing-space: 8px;
-      }
 
       .select-mode-chip {
         --md-assist-chip-icon-label-space: 0;
@@ -687,6 +711,25 @@ export class HaTabsSubpageDataTable extends LitElement {
         height: calc(100vh - 1px - var(--header-height));
         display: flex;
         flex-direction: column;
+      }
+      /* TODO: Migrate to ha-menu and ha-menu-item */
+      md-menu {
+        --md-menu-container-color: var(--card-background-color);
+      }
+      md-menu-item {
+        --md-menu-item-label-text-color: var(--primary-text-color);
+        --mdc-icon-size: 16px;
+        --md-menu-item-selected-container-color: rgba(
+          var(--rgb-primary-color),
+          0.15
+        );
+      }
+      md-menu-item.selected {
+        --md-menu-item-label-text-color: var(--primary-color);
+      }
+      #sort-by-anchor,
+      #group-by-anchor {
+        --md-assist-chip-trailing-space: 8px;
       }
     `;
   }

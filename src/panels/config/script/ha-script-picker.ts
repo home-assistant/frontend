@@ -15,6 +15,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
@@ -558,6 +559,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       }
     }
     this._filteredScripts = items ? [...items] : undefined;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_entityReg")) {
+      this._applyFilters();
+    }
   }
 
   firstUpdated() {
