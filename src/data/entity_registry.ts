@@ -10,7 +10,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 
 export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
 
-type entityCategory = "config" | "diagnostic";
+type EntityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
@@ -20,7 +20,7 @@ export interface EntityRegistryDisplayEntry {
   area_id?: string;
   labels: string[];
   hidden?: boolean;
-  entity_category?: entityCategory;
+  entity_category?: EntityCategory;
   translation_key?: string;
   platform?: string;
   display_precision?: number;
@@ -40,7 +40,7 @@ export interface EntityRegistryDisplayEntryResponse {
     hb?: boolean;
     dp?: number;
   }[];
-  entity_categories: Record<number, entityCategory>;
+  entity_categories: Record<number, EntityCategory>;
 }
 
 export interface EntityRegistryEntry {
@@ -55,7 +55,7 @@ export interface EntityRegistryEntry {
   labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
   hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
-  entity_category: entityCategory | null;
+  entity_category: EntityCategory | null;
   has_entity_name: boolean;
   original_name?: string;
   unique_id: string;
