@@ -179,7 +179,9 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     const filteredItems = fuzzyFilterSort<ScorableCategoryRegistryEntry>(
       filterString,
-      target.items || []
+      target.items?.filter(
+        (item) => ![NO_CATEGORIES_ID, ADD_NEW_ID].includes(item.category_id)
+      ) || []
     );
     if (filteredItems?.length === 0) {
       if (this.noAdd) {
