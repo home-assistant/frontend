@@ -32,6 +32,7 @@ const mainStyles = css`
     --accent-color: ${unsafeCSS(DEFAULT_ACCENT_COLOR)};
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
+    --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
