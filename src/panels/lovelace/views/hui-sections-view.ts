@@ -58,6 +58,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const editMode = this.lovelace.editMode;
 
+    const sectionCount = sectionsConfig.length + (editMode ? 1 : 0);
+    const maxColumnsCount = this._config?.max_columns;
+
     return html`
       ${this.badges.length > 0
         ? html`<div class="badges">${this.badges}</div>`
@@ -73,9 +76,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
-            "--section-count": String(
-              sectionsConfig.length + (editMode ? 1 : 0)
-            ),
+            "--max-columns-count": maxColumnsCount,
+            "--total-count": sectionCount,
           })}
         >
           ${repeat(
@@ -119,13 +121,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           ${editMode
             ? html`
                 <button
-                  class="add"
-                  @click=${this._addSection}
+                  class="create"
+                  @click=${this._createSection}
                   aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                   .title=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_section"
+                    "ui.panel.lovelace.editor.section.create_section"
                   )}
                 >
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
@@ -137,7 +139,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _addSection(): void {
+  private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
       type: "grid",
       cards: [],
@@ -234,50 +236,60 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        --row-gap: var(--ha-view-sections-row-gap, 8px);
+        --column-gap: var(--ha-view-sections-column-gap, 32px);
+        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+        --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         display: block;
       }
 
       .badges {
-        margin: 12px 8px 16px 8px;
+        margin: 4px 0;
+        padding: var(--row-gap) var(--column-gap);
+        padding-bottom: 0;
         font-size: 85%;
         text-align: center;
       }
 
-      .section {
+      .container > * {
         position: relative;
+        max-width: var(--column-max-width);
+        width: 100%;
+      }
+
+      .section {
         border-radius: var(--ha-card-border-radius, 12px);
       }
 
       .container {
-        /* Inputs */
-        --grid-gap: 20px;
-        --grid-max-section-count: 4;
-        --grid-section-min-width: 320px;
-
-        /* Calculated */
-        --max-count: min(var(--section-count), var(--grid-max-section-count));
-        --grid-max-width: calc(
-          (var(--max-count) + 1) * var(--grid-section-min-width) +
-            (var(--max-count) + 2) * var(--grid-gap) - 1px
+        --max-count: min(var(--total-count), var(--max-columns-count, 4));
+        --max-width: min(
+          calc(
+            (var(--max-count) + 1) * var(--column-min-width) +
+              (var(--max-count) + 2) * var(--column-gap) - 1px
+          ),
+          calc(
+            var(--max-count) * var(--column-max-width) + (var(--max-count) + 1) *
+              var(--column-gap)
+          )
         );
-
         display: grid;
+        align-items: start;
+        justify-items: center;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(var(--grid-section-min-width), 1fr)
+          minmax(min(var(--column-min-width), 100%), 1fr)
         );
-        grid-gap: 8px var(--grid-gap);
-        justify-content: center;
-        padding: var(--grid-gap);
+        gap: var(--row-gap) var(--column-gap);
+        padding: var(--row-gap) var(--column-gap);
         box-sizing: border-box;
-        max-width: var(--grid-max-width);
+        max-width: var(--max-width);
         margin: 0 auto;
       }
 
       @media (max-width: 600px) {
         .container {
-          grid-template-columns: 1fr;
-          --grid-gap: 8px;
+          --column-gap: var(--row-gap);
         }
       }
 
@@ -285,6 +297,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         position: absolute;
         top: 0;
         right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
         opacity: 1;
         display: flex;
         align-items: center;
@@ -303,20 +317,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         padding: 8px;
       }
 
-      .add {
-        margin-top: calc(66px + 8px);
+      .create {
+        margin-top: calc(66px + var(--row-gap));
         outline: none;
         background: none;
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         order: 1;
-        height: 66px;
+        height: calc(66px + 2 * (var(--row-gap) + 2px));
         padding: 8px;
-        box-sizing: content-box;
+        box-sizing: border-box;
       }
 
-      .add:focus {
+      .create:focus {
         border: 2px solid var(--primary-color);
       }
 

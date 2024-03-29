@@ -1,19 +1,35 @@
 import "@material/mwc-list/mwc-list";
-import { mdiPencilOutline, mdiShape } from "@mdi/js";
+import { mdiMap, mdiPencilOutline, mdiShape, mdiWeb } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
-import { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 
 const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
+
+type Strategy = {
+  type: string;
+  iconPath: string;
+};
+
+const STRATEGIES = [
+  {
+    type: "map",
+    iconPath: mdiMap,
+  },
+  {
+    type: "iframe",
+    iconPath: mdiWeb,
+  },
+] as const satisfies Strategy[];
 
 @customElement("ha-dialog-new-dashboard")
 class DialogNewDashboard extends LitElement implements HassDialog {
@@ -100,16 +116,55 @@ class DialogNewDashboard extends LitElement implements HassDialog {
             >
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
+          ${STRATEGIES.map(
+            (strategy) => html`
+              <ha-list-item
+                hasmeta
+                twoline
+                graphic="icon"
+                .strategy=${strategy.type}
+                @request-selected=${this._selected}
+              >
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${strategy.iconPath}
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.title`
+                )}
+                <span slot="secondary">
+                  ${this.hass.localize(
+                    `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.description`
+                  )}
+                </span>
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>
+            `
+          )}
         </mwc-list>
       </ha-dialog>
     `;
+  }
+
+  private _generateStrategyConfig(strategy: string) {
+    return {
+      strategy: {
+        type: strategy,
+      },
+    };
   }
 
   private async _selected(ev) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    const config = (ev.currentTarget! as any).config;
+
+    const target = ev.currentTarget as any;
+    const config =
+      target.config ||
+      (target.strategy && this._generateStrategyConfig(target.strategy)) ||
+      null;
+
     this._params?.selectConfig(config);
     this.closeDialog();
   }

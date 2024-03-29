@@ -166,6 +166,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         width: "25%",
         filterable: true,
+        groupable: true,
       };
       columns.editable = {
         title: "",
