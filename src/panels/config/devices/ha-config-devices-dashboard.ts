@@ -10,6 +10,7 @@ import {
   nothing,
 } from "lit";
 
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -24,17 +25,18 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
-import "../../../components/ha-filter-states";
 import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-alert";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
@@ -48,7 +50,12 @@ import {
   findBatteryEntity,
 } from "../../../data/entity_registry";
 import { IntegrationManifest } from "../../../data/integration";
+import {
+  LabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label_registry";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -61,10 +68,11 @@ interface DeviceRowData extends DeviceRegistryEntry {
   area?: string;
   integration?: string;
   battery_entity?: [string | undefined, string | undefined];
+  label_entries: EntityRegistryEntry[];
 }
 
 @customElement("ha-config-devices-dashboard")
-export class HaConfigDeviceDashboard extends LitElement {
+export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -91,6 +99,9 @@ export class HaConfigDeviceDashboard extends LitElement {
   > = {};
 
   @state() private _expandedFilter?: string;
+
+  @state()
+  _labels!: LabelRegistryEntry[];
 
   private _ignoreLocationChange = false;
 
@@ -191,11 +202,17 @@ export class HaConfigDeviceDashboard extends LitElement {
         string,
         { value: string[] | undefined; items: Set<string> | undefined }
       >,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      labelReg?: LabelRegistryEntry[]
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
       // So we guard for that.
-      let outputDevices: DeviceRowData[] = Object.values(devices);
+      let outputDevices: DeviceRowData[] = Object.values(devices).map(
+        (device) => ({
+          ...device,
+          label_entries: [],
+        })
+      );
 
       const deviceEntityLookup: DeviceEntityLookup = {};
       for (const entity of entities) {
@@ -275,6 +292,12 @@ export class HaConfigDeviceDashboard extends LitElement {
             .map((entId) => entryLookup[entId]),
           manifestLookup
         );
+
+        const labels = labelReg && device?.labels;
+        const labelsEntries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
+
         return {
           ...device,
           name: computeDeviceName(
@@ -311,6 +334,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             this.hass.states[
               this._batteryEntity(device.id, deviceEntityLookup) || ""
             ]?.state,
+          label_entries: labelsEntries,
         };
       });
 
@@ -356,8 +380,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         direction: "asc",
         grows: true,
         template: (device) => html`
-          ${device.name}
+          <div style="font-size: 14px;">${device.name}</div>
           <div class="secondary">${device.area} | ${device.integration}</div>
+          ${device.label_entries.length
+            ? html`
+                <ha-data-table-labels
+                  .labels=${device.label_entries}
+                ></ha-data-table-labels>
+              `
+            : nothing}
         `,
       };
     } else {
@@ -366,8 +397,18 @@ export class HaConfigDeviceDashboard extends LitElement {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
         direction: "asc",
+        grows: true,
+        template: (device) => html`
+          <div style="font-size: 14px;">${device.name}</div>
+          ${device.label_entries.length
+            ? html`
+                <ha-data-table-labels
+                  .labels=${device.label_entries}
+                ></ha-data-table-labels>
+              `
+            : nothing}
+        `,
       };
     }
 
@@ -446,8 +487,24 @@ export class HaConfigDeviceDashboard extends LitElement {
           ? this.hass.localize("ui.panel.config.devices.disabled")
           : "",
     };
+    columns.labels = {
+      title: "",
+      hidden: true,
+      filterable: true,
+      template: (device) =>
+        device.label_entries.map((lbl) => lbl.name).join(" "),
+    };
+
     return columns;
   });
+
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
+      }),
+    ];
+  }
 
   protected render(): TemplateResult {
     const { devicesOutput } = this._devicesAndFilterDomains(
@@ -457,7 +514,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.hass.areas,
       this.manifests,
       this._filters,
-      this.hass.localize
+      this.hass.localize,
+      this._labels
     );
 
     return html`
@@ -484,6 +542,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
+        class=${this.narrow ? "narrow" : ""}
       >
         <ha-integration-overflow-menu
           .hass=${this.hass}
@@ -604,8 +663,10 @@ export class HaConfigDeviceDashboard extends LitElement {
         this.hass.areas,
         this.manifests,
         this._filters,
-        this.hass.localize
+        this.hass.localize,
+        this._labels
       );
+
     if (
       filteredDomains.size === 1 &&
       (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
@@ -625,6 +686,12 @@ export class HaConfigDeviceDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        hass-tabs-subpage-data-table {
+          --data-table-row-height: 60px;
+        }
+        hass-tabs-subpage-data-table.narrow {
+          --data-table-row-height: 72px;
+        }
         ha-button-menu {
           margin-left: 8px;
           margin-inline-start: 8px;
