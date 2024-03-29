@@ -185,9 +185,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           grows: true,
           direction: "asc",
           template: (helper) => html`
-            <div style="font-size: 14px;">
-              ${helper.name}${helper.label_entries.length}
-            </div>
+            <div style="font-size: 14px;">${helper.name}</div>
             ${narrow
               ? html`<div class="secondary">${helper.entity_id}</div> `
               : nothing}
