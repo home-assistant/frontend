@@ -88,7 +88,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           : nothing}
       </ha-expansion-panel>
       ${this.expanded
-        ? html`<ha-list-item graphic="icon" @click=${this._addLabel}>
+        ? html`<ha-list-item
+            graphic="icon"
+            @click=${this._addLabel}
+            class="add"
+          >
             <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.labels.add_label")}
           </ha-list-item>`
@@ -149,6 +153,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       haStyleScrollbar,
       css`
         :host {
+          position: relative;
           border-bottom: 1px solid var(--divider-color);
         }
         :host([expanded]) {
@@ -185,6 +190,12 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
           --ha-label-background-opacity: 0.5;
+        }
+        .add {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          left: 0;
         }
       `,
     ];
