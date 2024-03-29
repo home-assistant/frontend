@@ -512,10 +512,6 @@ export class HaDataTable extends LitElement {
         items.push({ append: true, content: this.appendRow });
       }
 
-      if (this.hasFab) {
-        items.push({ empty: true });
-      }
-
       if (this.groupColumn) {
         const grouped = groupBy(items, (item) => item[this.groupColumn!]);
         if (grouped.undefined) {
@@ -554,6 +550,10 @@ export class HaDataTable extends LitElement {
         this._items = groupedItems;
       } else {
         this._items = items;
+      }
+
+      if (this.hasFab) {
+        this._items = [...this._items, { empty: true }];
       }
     } else {
       this._items = data;
