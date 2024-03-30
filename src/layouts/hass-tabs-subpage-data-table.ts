@@ -3,7 +3,6 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
 import "@material/web/menu/menu";
 import type { MdMenu } from "@material/web/menu/menu";
-import "@material/web/menu/menu-item";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -36,6 +35,8 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-dialog";
 import "../components/search-input-outlined";
+import "../components/ha-menu";
+import "../components/ha-menu-item";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
@@ -409,37 +410,37 @@ export class HaTabsSubpageDataTable extends LitElement {
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
-      <md-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
         ${Object.entries(this.columns).map(([id, column]) =>
           column.groupable
             ? html`
-                <md-menu-item
+                <ha-menu-item
                   .value=${id}
                   @click=${this._handleGroupBy}
                   .selected=${id === this._groupColumn}
                   class=${classMap({ selected: id === this._groupColumn })}
                 >
                   ${column.title || column.label}
-                </md-menu-item>
+                </ha-menu-item>
               `
             : nothing
         )}
         <li divider role="separator"></li>
-        <md-menu-item
+        <ha-menu-item
           .value=${undefined}
           @click=${this._handleGroupBy}
           .selected=${this._groupColumn === undefined}
           class=${classMap({ selected: this._groupColumn === undefined })}
           >${localize(
             "ui.components.subpage-data-table.dont_group_by"
-          )}</md-menu-item
+          )}</ha-menu-item
         >
-      </md-menu>
-      <md-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+      </ha-menu>
+      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
         ${Object.entries(this.columns).map(([id, column]) =>
           column.sortable
             ? html`
-                <md-menu-item
+                <ha-menu-item
                   .value=${id}
                   @click=${this._handleSortBy}
                   .selected=${id === this._sortColumn}
@@ -456,11 +457,11 @@ export class HaTabsSubpageDataTable extends LitElement {
                       `
                     : nothing}
                   ${column.title || column.label}
-                </md-menu-item>
+                </ha-menu-item>
               `
             : nothing
         )}
-      </md-menu>
+      </ha-menu>
     `;
   }
 
@@ -711,21 +712,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         height: calc(100vh - 1px - var(--header-height));
         display: flex;
         flex-direction: column;
-      }
-      /* TODO: Migrate to ha-menu and ha-menu-item */
-      md-menu {
-        --md-menu-container-color: var(--card-background-color);
-      }
-      md-menu-item {
-        --md-menu-item-label-text-color: var(--primary-text-color);
-        --mdc-icon-size: 16px;
-        --md-menu-item-selected-container-color: rgba(
-          var(--rgb-primary-color),
-          0.15
-        );
-      }
-      md-menu-item.selected {
-        --md-menu-item-label-text-color: var(--primary-color);
       }
       #sort-by-anchor,
       #group-by-anchor {
