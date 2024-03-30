@@ -424,7 +424,6 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
       }
       .floor {
         --primary-color: var(--secondary-text-color);
-        margin-inline-end: 8px;
       }
       .warning {
         color: var(--error-color);

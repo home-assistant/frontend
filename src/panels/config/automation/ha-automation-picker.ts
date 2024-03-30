@@ -1,6 +1,7 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
+  mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiHelpCircle,
@@ -286,6 +287,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                   "ui.panel.config.automation.editor.show_info"
                 ),
                 action: () => this._showInfo(automation),
+              },
+              {
+                path: mdiCog,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_settings"
+                ),
+                action: () => this._showSettings(automation),
               },
               {
                 path: mdiTag,
@@ -635,6 +643,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   private _showInfo(automation: any) {
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
+  }
+
+  private _showSettings(automation: any) {
+    fireEvent(this, "hass-more-info", {
+      entityId: automation.entity_id,
+      view: "settings",
+    });
   }
 
   private _runActions(automation: any) {
