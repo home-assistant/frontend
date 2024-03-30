@@ -54,6 +54,8 @@ import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-deta
 
 const UNASSIGNED_PATH = ["__unassigned__"];
 
+const SORT_OPTIONS = { sort: false };
+
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -196,7 +198,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                   draggable-selector="a"
                   @item-moved=${this._areaMoved}
                   group="floor"
-                  .options=${{ sort: false }}
+                  .options=${SORT_OPTIONS}
                   .path=${[floor.floor_id]}
                 >
                   <div class="areas">
@@ -219,7 +221,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                   draggable-selector="a"
                   @item-moved=${this._areaMoved}
                   group="floor"
-                  .options=${{ sort: false }}
+                  .options=${SORT_OPTIONS}
                   .path=${UNASSIGNED_PATH}
                 >
                   <div class="areas">
