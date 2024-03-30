@@ -117,7 +117,7 @@ export class HaFilterIntegrations extends LitElement {
   private async _integrationsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    const integrations = this._integrations(this._manifests!);
+    const integrations = this._integrations(this._manifests!, this.value);
 
     if (!ev.detail.index.size) {
       fireEvent(this, "data-table-filter-changed", {
