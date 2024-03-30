@@ -49,11 +49,19 @@ class DialogLabelDetail
       this._icon = "";
       this._color = "";
     }
+    document.body.addEventListener("keydown", this._handleKeyPress);
   }
+
+  private _handleKeyPress = (ev: KeyboardEvent) => {
+    if (ev.key === "Escape") {
+      ev.stopPropagation();
+    }
+  };
 
   public closeDialog(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    document.body.removeEventListener("keydown", this._handleKeyPress);
   }
 
   protected render() {
