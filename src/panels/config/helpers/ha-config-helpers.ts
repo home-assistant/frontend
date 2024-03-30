@@ -1,8 +1,17 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiAlertCircle, mdiPencilOff, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "@lit-labs/context";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
@@ -15,6 +24,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-state-icon";
@@ -44,6 +54,13 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import {
+  LabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label_registry";
+import { fullEntitiesContext } from "../../../data/context";
+import "../../../components/ha-filter-labels";
+import { haStyle } from "../../../resources/styles";
 
 type HelperItem = {
   id: string;
@@ -54,6 +71,7 @@ type HelperItem = {
   type: string;
   configEntry?: ConfigEntry;
   entity?: HassEntity;
+  label_entries: LabelRegistryEntry[];
 };
 
 // This groups items by a key but only returns last entry per key.
@@ -93,6 +111,24 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
+  @state() private _activeFilters?: string[];
+
+  @state() private _filters: Record<
+    string,
+    { value: string[] | undefined; items: Set<string> | undefined }
+  > = {};
+
+  @state() private _expandedFilter?: string;
+
+  @state()
+  _labels!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
+  @state() private _filteredStateItems?: string[] | null;
+
   public hassSubscribe() {
     return [
       subscribeConfigEntries(
@@ -116,6 +152,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       ),
       subscribeEntityRegistry(this.hass.connection!, (entries) => {
         this._entityEntries = groupByOne(entries, (entry) => entry.entity_id);
+      }),
+      subscribeLabelRegistry(this.hass.connection, (labels) => {
+        this._labels = labels;
       }),
     ];
   }
@@ -146,10 +185,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           grows: true,
           direction: "asc",
           template: (helper) => html`
-            ${helper.name}
+            <div style="font-size: 14px;">${helper.name}</div>
             ${narrow
               ? html`<div class="secondary">${helper.entity_id}</div> `
-              : ""}
+              : nothing}
+            ${helper.label_entries.length
+              ? html`
+                  <ha-data-table-labels
+                    .labels=${helper.label_entries}
+                  ></ha-data-table-labels>
+                `
+              : nothing}
           `,
         },
       };
@@ -201,8 +247,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       stateItems: HassEntity[],
       entityEntries: Record<string, EntityRegistryEntry>,
-      configEntries: Record<string, ConfigEntry>
+      configEntries: Record<string, ConfigEntry>,
+      entityReg: EntityRegistryEntry[],
+      labelReg?: LabelRegistryEntry[],
+      filteredStateItems?: string[] | null
     ): HelperItem[] => {
+      if (filteredStateItems === null) {
+        return [];
+      }
+
       const configEntriesCopy = { ...configEntries };
 
       const states = stateItems.map((entityState) => {
@@ -241,14 +294,29 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         entity: undefined,
       }));
 
-      return [...states, ...entries].map((item) => ({
-        ...item,
-        localized_type: item.configEntry
-          ? domainToName(localize, item.type)
-          : localize(
-              `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
-            ) || item.type,
-      }));
+      return [...states, ...entries]
+        .filter((item) =>
+          filteredStateItems
+            ? filteredStateItems?.includes(item.entity_id)
+            : true
+        )
+        .map((item) => {
+          const entityRegEntry = entityReg.find(
+            (reg) => reg.entity_id === item.entity_id
+          );
+          const labels = labelReg && entityRegEntry?.labels;
+          return {
+            ...item,
+            localized_type: item.configEntry
+              ? domainToName(localize, item.type)
+              : localize(
+                  `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
+                ) || item.type,
+            label_entries: (labels || []).map(
+              (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+            ),
+          };
+        });
     }
   );
 
@@ -269,20 +337,40 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
+        hasFilters
+        .filters=${Object.values(this._filters).filter(
+          (filter) => filter.value?.length
+        ).length}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._getItems(
           this.hass.localize,
           this._stateItems,
           this._entityEntries,
-          this._configEntries
+          this._configEntries,
+          this._entityReg,
+          this._labels,
+          this._filteredStateItems
         )}
+        .activeFilters=${this._activeFilters}
+        @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
         hasFab
         clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"
         )}
+        class=${this.narrow ? "narrow" : ""}
       >
+        <ha-filter-labels
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-labels"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-labels"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-labels>
+
         <ha-integration-overflow-menu
           .hass=${this.hass}
           slot="toolbar-icon"
@@ -293,12 +381,69 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             "ui.panel.config.helpers.picker.create_helper"
           )}
           extended
-          @click=${this._createHelpler}
+          @click=${this._createHelper}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _filterExpanded(ev) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
+  }
+
+  private _filterChanged(ev) {
+    const type = ev.target.localName;
+    this._filters[type] = ev.detail;
+    this._applyFilters();
+  }
+
+  private _applyFilters() {
+    const filters = Object.entries(this._filters);
+    let items: Set<string> | undefined;
+    for (const [key, filter] of filters) {
+      if (filter.items) {
+        if (!items) {
+          items = filter.items;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(filter.items)
+            : new Set([...items].filter((x) => filter.items!.has(x)));
+      }
+      if (key === "ha-filter-labels" && filter.value?.length) {
+        const labelItems: Set<string> = new Set();
+        this._stateItems
+          .filter((stateItem) =>
+            this._entityReg
+              .find((reg) => reg.entity_id === stateItem.entity_id)
+              ?.labels.some((lbl) => filter.value!.includes(lbl))
+          )
+          .forEach((stateItem) => labelItems.add(stateItem.entity_id));
+        if (!items) {
+          items = labelItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(labelItems)
+            : new Set([...items].filter((x) => labelItems!.has(x)));
+      }
+    }
+    this._filteredStateItems = items ? [...items] : undefined;
+  }
+
+  private _clearFilter() {
+    this._filters = {};
+    this._applyFilters();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -418,8 +563,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _createHelpler() {
+  private _createHelper() {
     showHelperDetailDialog(this, {});
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        hass-tabs-subpage-data-table {
+          --data-table-row-height: 60px;
+        }
+        hass-tabs-subpage-data-table.narrow {
+          --data-table-row-height: 72px;
+        }
+      `,
+    ];
   }
 }
 
