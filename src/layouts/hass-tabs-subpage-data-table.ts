@@ -236,7 +236,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
-          <ha-button-menu-new positioning="fixed">
+          <ha-button-menu-new positioning="popover">
             <ha-assist-chip
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn: this._sortColumn
@@ -256,6 +256,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     <md-menu-item
                       .value=${id}
                       @click=${this._handleSortBy}
+                      keep-open
                       .selected=${id === this._sortColumn}
                       class=${classMap({ selected: id === this._sortColumn })}
                     >
@@ -280,7 +281,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
-          <ha-button-menu-new positioning="fixed">
+          <ha-button-menu-new positioning="popover">
             <ha-assist-chip
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.group_by", {
@@ -346,7 +347,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-button-menu-new positioning="fixed">
+                <ha-button-menu-new positioning="popover">
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -518,8 +519,6 @@ export class HaTabsSubpageDataTable extends LitElement {
   }
 
   private _handleSortBy(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
     const columnId = ev.currentTarget.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";

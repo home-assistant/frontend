@@ -493,7 +493,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-blueprints>
         <div slot="selection-bar">
-          <ha-button-menu-new positioning="fixed" has-overflow>
+          <ha-button-menu-new has-overflow>
             <ha-assist-chip
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.bulk_action"
