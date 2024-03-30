@@ -6,6 +6,7 @@ import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-select";
+import "./ha-list-item";
 import { HomeAssistant } from "../types";
 import { LocalizeKeys } from "../common/translations/localize";
 
@@ -53,18 +54,18 @@ export class HaColorPicker extends LitElement {
             `
           : nothing}
         ${this.defaultColor
-          ? html` <mwc-list-item value="default">
+          ? html` <ha-list-item value="default">
               ${this.hass.localize(`ui.components.color-picker.default_color`)}
-            </mwc-list-item>`
+            </ha-list-item>`
           : nothing}
         ${Array.from(THEME_COLORS).map(
           (color) => html`
-            <mwc-list-item .value=${color} graphic="icon">
+            <ha-list-item .value=${color} graphic="icon">
               ${this.hass.localize(
                 `ui.components.color-picker.colors.${color}` as LocalizeKeys
               ) || color}
               <span slot="graphic">${this.renderColorCircle(color)}</span>
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>
