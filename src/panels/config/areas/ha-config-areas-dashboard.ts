@@ -321,8 +321,10 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
       );
       area = oldFloor!.areas[ev.detail.oldIndex];
     }
+
     await updateAreaRegistryEntry(this.hass, area.area_id, {
-      floor_id: ev.detail.newPath[0],
+      floor_id:
+        ev.detail.newPath === UNASSIGNED_PATH ? null : ev.detail.newPath[0],
     });
   }
 
