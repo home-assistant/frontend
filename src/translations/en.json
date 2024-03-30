@@ -2700,6 +2700,7 @@
             "bulk_action": "Action",
             "bulk_actions": {
               "move_category": "Move to category",
+              "no_category": "No category",
               "add_label": "Add label",
               "enable": "Enable",
               "disable": "Disable"
