@@ -8,7 +8,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiFilterRemove,
+  mdiFilterVariantRemove,
   mdiFilterVariant,
   mdiFormatListChecks,
   mdiMenuDown,
@@ -227,6 +227,9 @@ export class HaTabsSubpageDataTable extends LitElement {
             class="has-dropdown select-mode-chip"
             .active=${this._selectMode}
             @click=${this._enableSelectMode}
+            .label=${localize(
+              "ui.components.subpage-data-table.enter_selection_mode"
+            )}
           >
             <ha-svg-icon slot="icon" .path=${mdiFormatListChecks}></ha-svg-icon>
           </ha-assist-chip>`
@@ -294,6 +297,9 @@ export class HaTabsSubpageDataTable extends LitElement {
                 <ha-icon-button
                   .path=${mdiClose}
                   @click=${this._disableSelectMode}
+                  .label=${localize(
+                    "ui.components.subpage-data-table.exit-_selection_mode"
+                  )}
                 ></ha-icon-button>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
@@ -318,6 +324,9 @@ export class HaTabsSubpageDataTable extends LitElement {
                     slot="navigationIcon"
                     .path=${mdiClose}
                     @click=${this._toggleFilters}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.close_filter"
+                    )}
                   ></ha-icon-button>
                   <span slot="title"
                     >${localize(
@@ -326,7 +335,11 @@ export class HaTabsSubpageDataTable extends LitElement {
                   >
                   <ha-icon-button
                     slot="actionItems"
-                    .path=${mdiFilterRemove}
+                    @click=${this._clearFilters}
+                    .path=${mdiFilterVariantRemove}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                   ></ha-icon-button>
                 </ha-dialog-header>
                 <div class="filter-dialog-content">
@@ -347,8 +360,11 @@ export class HaTabsSubpageDataTable extends LitElement {
                     ></ha-svg-icon>
                   </ha-assist-chip>
                   <ha-icon-button
-                    .path=${mdiFilterRemove}
+                    .path=${mdiFilterVariantRemove}
                     @click=${this._clearFilters}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                   ></ha-icon-button>
                 </div>
                 <div class="pane-content">
