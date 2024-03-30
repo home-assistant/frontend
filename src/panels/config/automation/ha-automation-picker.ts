@@ -1,11 +1,15 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import "@material/web/menu/menu-item";
+import "@material/web/menu/sub-menu";
 import {
   mdiCog,
+  mdiChevronRight,
   mdiContentDuplicate,
   mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
+  mdiMenuDown,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlus,
@@ -39,6 +43,7 @@ import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
@@ -67,7 +72,11 @@ import {
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   LabelRegistryEntry,
   subscribeLabelRegistry,
@@ -80,8 +89,9 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
@@ -116,6 +126,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   > = {};
 
   @state() private _expandedFilter?: string;
+
+  @state() private _selected: string[] = [];
 
   @state()
   _categories!: CategoryRegistryEntry[];
@@ -382,6 +394,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         hasFilters
         .filters=${Object.values(this._filters).filter(
           (filter) => filter.value?.length
@@ -474,6 +489,73 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-blueprints>
+        <div slot="selection-bar">
+          <ha-button-menu-new positioning="fixed" has-overflow>
+            <ha-assist-chip
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.picker.bulk_action"
+              )}
+              slot="trigger"
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            <md-sub-menu>
+              <md-menu-item slot="item">
+                <div slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.move_category"
+                  )}
+                </div>
+                <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
+              </md-menu-item>
+              <md-menu slot="menu">
+                ${this._categories?.map(
+                  (category) =>
+                    html`<md-menu-item
+                      .value=${category.category_id}
+                      @click=${this._handleBulkCategory}
+                    >
+                      <div slot="headline">${category.name}</div>
+                    </md-menu-item>`
+                )}
+              </md-menu>
+            </md-sub-menu>
+            <md-sub-menu>
+              <md-menu-item slot="item">
+                <div slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.add_label"
+                  )}
+                </div>
+                <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
+              </md-menu-item>
+              <md-menu slot="menu">
+                ${this._labels?.map(
+                  (label) =>
+                    html`<md-menu-item
+                      .value=${label.label_id}
+                      @click=${this._handleBulkLabel}
+                    >
+                      <div slot="headline">${label.name}</div>
+                    </md-menu-item>`
+                )}
+              </md-menu>
+            </md-sub-menu>
+            <md-menu-item @click=${this._handleBulkEnable}
+              >${this.hass.localize(
+                "ui.panel.config.automation.picker.bulk_actions.enable"
+              )}</md-menu-item
+            >
+            <md-menu-item @click=${this._handleBulkDisable}
+              >${this.hass.localize(
+                "ui.panel.config.automation.picker.bulk_actions.disable"
+              )}</md-menu-item
+            >
+          </ha-button-menu-new>
+        </div>
         ${!this.automations.length
           ? html`<div class="empty" slot="empty">
               <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
@@ -791,12 +873,60 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {
       showNewAutomationDialog(this, { mode: "automation" });
     } else {
       navigate("/config/automation/edit/new");
     }
+  }
+
+  private async _handleBulkCategory(ev) {
+    const category = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          categories: { automation: category },
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkLabel(ev) {
+    const label = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          labels: this.hass.entities[entityId].labels.concat(label),
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkEnable() {
+    const promises: Promise<ServiceCallResponse>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(turnOnOffEntity(this.hass, entityId, true));
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkDisable() {
+    const promises: Promise<ServiceCallResponse>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(turnOnOffEntity(this.hass, entityId, false));
+    });
+    await Promise.all(promises);
   }
 
   static get styles(): CSSResultGroup {
@@ -813,6 +943,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+        }
+        ha-button-menu-new ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
         }
       `,
     ];

@@ -509,7 +509,10 @@
         "group_by": "Group by {groupColumn}",
         "dont_group_by": "Don't group",
         "select": "Select",
-        "selected": "Selected {selected}"
+        "selected": "Selected {selected}",
+        "close_select_mode": "Close selection mode",
+        "select_all": "Select all",
+        "select_none": "Select none"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -2693,6 +2696,13 @@
               "actions": "Actions",
               "state": "State",
               "category": "Category"
+            },
+            "bulk_action": "Action",
+            "bulk_actions": {
+              "move_category": "Move to category",
+              "add_label": "Add label",
+              "enable": "Enable",
+              "disable": "Disable"
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",

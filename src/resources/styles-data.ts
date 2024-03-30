@@ -143,7 +143,10 @@ export const derivedStyles = {
   "mdc-select-disabled-ink-color": "var(--input-disabled-ink-color)",
   "mdc-select-dropdown-icon-color": "var(--input-dropdown-icon-color)",
   "mdc-select-disabled-dropdown-icon-color": "var(--input-disabled-ink-color)",
-
+  "ha-assist-chip-filled-container-color":
+    "rgba(var(--rgb-primary-text-color),0.15)",
+  "ha-assist-chip-active-container-color":
+    "rgba(var(--rgb-primary-color),0.15)",
   "chip-background-color": "rgba(var(--rgb-primary-text-color), 0.15)",
   // Vaadin
   "material-body-text-color": "var(--primary-text-color)",
