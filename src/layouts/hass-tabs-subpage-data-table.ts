@@ -637,6 +637,8 @@ export class HaTabsSubpageDataTable extends LitElement {
         position: absolute;
         top: -4px;
         right: -4px;
+        inset-inline-end: -4px;
+        inset-inline-start: initial;
         min-width: 16px;
         box-sizing: border-box;
         border-radius: 50%;
@@ -682,6 +684,8 @@ export class HaTabsSubpageDataTable extends LitElement {
 
       .selection-bar p {
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
       }
 
       ha-assist-chip {
