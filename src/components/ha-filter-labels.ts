@@ -1,9 +1,10 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
+import { mdiPlus } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiPlus } from "@mdi/js";
+import { repeat } from "lit/directives/repeat";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import {
@@ -12,13 +13,13 @@ import {
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-label";
-import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -63,26 +64,30 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 class="ha-scrollbar"
                 multi
               >
-                ${this._labels.map((label) => {
-                  const color = label.color
-                    ? computeCssColor(label.color)
-                    : undefined;
-                  return html`<ha-check-list-item
-                    .value=${label.label_id}
-                    .selected=${this.value?.includes(label.label_id)}
-                    hasMeta
-                  >
-                    <ha-label style=${color ? `--color: ${color}` : ""}>
-                      ${label.icon
-                        ? html`<ha-icon
-                            slot="icon"
-                            .icon=${label.icon}
-                          ></ha-icon>`
-                        : nothing}
-                      ${label.name}
-                    </ha-label>
-                  </ha-check-list-item>`;
-                })}
+                ${repeat(
+                  this._labels,
+                  (label) => label.label_id,
+                  (label) => {
+                    const color = label.color
+                      ? computeCssColor(label.color)
+                      : undefined;
+                    return html`<ha-check-list-item
+                      .value=${label.label_id}
+                      .selected=${(this.value || []).includes(label.label_id)}
+                      hasMeta
+                    >
+                      <ha-label style=${color ? `--color: ${color}` : ""}>
+                        ${label.icon
+                          ? html`<ha-icon
+                              slot="icon"
+                              .icon=${label.icon}
+                            ></ha-icon>`
+                          : nothing}
+                        ${label.name}
+                      </ha-label>
+                    </ha-check-list-item>`;
+                  }
+                )}
               </mwc-list>
             `
           : nothing}
