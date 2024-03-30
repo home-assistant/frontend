@@ -59,7 +59,12 @@ export class HaFilterEntities extends LitElement {
           ? html`
               <mwc-list class="ha-scrollbar">
                 <lit-virtualizer
-                  .items=${this._entities(this.hass.states, this.type)}
+                  .items=${this._entities(
+                    this.hass.states,
+                    this.type,
+                    this.value
+                  )}
+                  .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
                 >
@@ -80,6 +85,8 @@ export class HaFilterEntities extends LitElement {
       }, 300);
     }
   }
+
+  private _keyFunction = (entity) => entity?.entity_id;
 
   private _renderItem = (entity) =>
     html`<ha-check-list-item
@@ -119,7 +126,7 @@ export class HaFilterEntities extends LitElement {
   }
 
   private _entities = memoizeOne(
-    (states: HomeAssistant["states"], type: this["type"]) => {
+    (states: HomeAssistant["states"], type: this["type"], _value) => {
       const values = Object.values(states);
       return values
         .filter(
