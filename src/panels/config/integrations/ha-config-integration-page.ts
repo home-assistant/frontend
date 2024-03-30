@@ -551,11 +551,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
       if (item.reason) {
-        const lokalisePromError = this.hass
-          .loadBackendTranslation("config", item.domain)
-          .then((localize) =>
-            localize(`component.${item.domain}.config.error.${item.reason}`)
-          );
         if (item.error_reason_translation_key) {
           const lokalisePromExc = this.hass
             .loadBackendTranslation("exceptions", item.domain)
@@ -567,6 +562,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             );
           stateTextExtra = html`${until(lokalisePromExc)}`;
         } else {
+          const lokalisePromError = this.hass
+            .loadBackendTranslation("config", item.domain)
+            .then((localize) =>
+              localize(`component.${item.domain}.config.error.${item.reason}`)
+            );
           stateTextExtra = html`${until(lokalisePromError, item.reason)}`;
         }
       } else {
