@@ -387,7 +387,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _keyFunction = (row: DataTableRowData) =>
-    row ? row[this.id] || row : undefined;
+    row?.[this.id] || row;
 
   private _renderRow = (row: DataTableRowData, index: number) => {
     // not sure how this happens...
