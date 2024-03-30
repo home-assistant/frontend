@@ -502,7 +502,7 @@
       "subpage-data-table": {
         "filters": "Filters",
         "clear_filter": "Clear filter",
-        "close": "Close filters",
+        "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",
         "enter_selection_mode": "Enter selection mode",
         "sort_by": "Sort by {sortColumn}",

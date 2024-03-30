@@ -298,7 +298,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                   .path=${mdiClose}
                   @click=${this._disableSelectMode}
                   .label=${localize(
-                    "ui.components.subpage-data-table.exit-_selection_mode"
+                    "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
                 <p>
