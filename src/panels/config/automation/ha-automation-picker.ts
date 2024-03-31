@@ -1,10 +1,8 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/web/menu/menu-item";
-import "@material/web/menu/sub-menu";
 import {
-  mdiCog,
   mdiChevronRight,
+  mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiHelpCircle,
@@ -34,6 +32,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -58,6 +57,8 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-menu-item";
+import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
@@ -97,7 +98,6 @@ import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { computeCssColor } from "../../../common/color/compute-color";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -505,19 +505,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 .path=${mdiMenuDown}
               ></ha-svg-icon
             ></ha-assist-chip>
-            <md-sub-menu>
-              <md-menu-item slot="item">
+            <ha-sub-menu>
+              <ha-menu-item slot="item">
                 <div slot="headline">
                   ${this.hass.localize(
                     "ui.panel.config.automation.picker.bulk_actions.move_category"
                   )}
                 </div>
                 <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
-              </md-menu-item>
-              <md-menu slot="menu">
+              </ha-menu-item>
+              <ha-menu slot="menu">
                 ${this._categories?.map(
                   (category) =>
-                    html`<md-menu-item
+                    html`<ha-menu-item
                       .value=${category.category_id}
                       @click=${this._handleBulkCategory}
                     >
@@ -531,32 +531,32 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                             .path=${mdiTag}
                           ></ha-svg-icon>`}
                       <div slot="headline">${category.name}</div>
-                    </md-menu-item>`
+                    </ha-menu-item>`
                 )}
-                <md-menu-item .value=${null} @click=${this._handleBulkCategory}>
+                <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
                   <div slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.automation.picker.bulk_actions.no_category"
                     )}
                   </div>
-                </md-menu-item>
-              </md-menu>
-            </md-sub-menu>
-            <md-sub-menu>
-              <md-menu-item slot="item">
+                </ha-menu-item>
+              </ha-menu>
+            </ha-sub-menu>
+            <ha-sub-menu>
+              <ha-menu-item slot="item">
                 <div slot="headline">
                   ${this.hass.localize(
                     "ui.panel.config.automation.picker.bulk_actions.add_label"
                   )}
                 </div>
                 <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
-              </md-menu-item>
-              <md-menu slot="menu">
+              </ha-menu-item>
+              <ha-menu slot="menu">
                 ${this._labels?.map((label) => {
                   const color = label.color
                     ? computeCssColor(label.color)
                     : undefined;
-                  return html`<md-menu-item
+                  return html`<ha-menu-item
                     .value=${label.label_id}
                     @click=${this._handleBulkLabel}
                   >
@@ -569,19 +569,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                         : nothing}
                       ${label.name}
                     </ha-label>
-                  </md-menu-item>`;
+                  </ha-menu-item>`;
                 })}
-              </md-menu>
-            </md-sub-menu>
-            <md-menu-item @click=${this._handleBulkEnable}>
+              </ha-menu>
+            </ha-sub-menu>
+            <ha-menu-item @click=${this._handleBulkEnable}>
               <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.bulk_actions.enable"
                 )}
               </div>
-            </md-menu-item>
-            <md-menu-item @click=${this._handleBulkDisable}>
+            </ha-menu-item>
+            <ha-menu-item @click=${this._handleBulkDisable}>
               <ha-svg-icon
                 slot="start"
                 .path=${mdiToggleSwitchOffOutline}
@@ -591,7 +591,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                   "ui.panel.config.automation.picker.bulk_actions.disable"
                 )}
               </div>
-            </md-menu-item>
+            </ha-menu-item>
           </ha-button-menu-new>
         </div>
         ${!this.automations.length

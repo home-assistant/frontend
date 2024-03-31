@@ -1,10 +1,10 @@
 import { Button } from "@material/mwc-button";
-import "@material/web/menu/menu";
-import type { MdMenu } from "@material/web/menu/menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
+import "./ha-menu";
+import type { HaMenu } from "./ha-menu";
 
 @customElement("ha-button-menu-new")
 export class HaButtonMenuNew extends LitElement {
@@ -17,7 +17,7 @@ export class HaButtonMenuNew extends LitElement {
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
 
-  @query("md-menu", true) private _menu!: MdMenu;
+  @query("ha-menu", true) private _menu!: HaMenu;
 
   public get items() {
     return this._menu.items;
@@ -36,12 +36,12 @@ export class HaButtonMenuNew extends LitElement {
       <div @click=${this._handleClick}>
         <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
-      <md-menu
+      <ha-menu
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
       >
         <slot></slot>
-      </md-menu>
+      </ha-menu>
     `;
   }
 
@@ -77,24 +77,6 @@ export class HaButtonMenuNew extends LitElement {
       }
       ::slotted([disabled]) {
         color: var(--disabled-text-color);
-      }
-      /* TODO: Migrate to ha-menu and ha-menu-item */
-      md-menu {
-        --md-menu-container-color: var(--card-background-color);
-      }
-      ::slotted(*) {
-        --md-menu-item-label-text-color: var(--primary-text-color);
-        --md-list-item-selected-label-text-color: var(--primary-text-color);
-        --md-sys-color-on-surface-variant: var(--secondary-text-color);
-        --mdc-icon-size: 16px;
-        --md-menu-item-selected-container-color: rgba(
-          var(--rgb-primary-color),
-          0.15
-        );
-        --md-menu-item-selected-label-text-color: var(--primary-text-color);
-      }
-      ::slotted(md-menu-item.selected) {
-        --md-menu-item-label-text-color: var(--primary-color);
       }
     `;
   }

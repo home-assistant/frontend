@@ -34,13 +34,12 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-button-menu-new";
 import "../components/ha-dialog";
-import "../components/ha-menu";
+import { HaMenu } from "../components/ha-menu";
 import "../components/ha-menu-item";
 import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import { HaMenu } from "../components/ha-menu";
 
 declare global {
   // for fire event
@@ -229,7 +228,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             class="has-dropdown select-mode-chip"
             .active=${this._selectMode}
             @click=${this._enableSelectMode}
-            .label=${localize(
+            .title=${localize(
               "ui.components.subpage-data-table.enter_selection_mode"
             )}
           >
