@@ -134,6 +134,10 @@ const SCHEMAS: {
   {
     name: "One of each",
     input: {
+      label: { name: "Label", selector: { label: {} } },
+      floor: { name: "Floor", selector: { floor: {} } },
+      area: { name: "Area", selector: { area: {} } },
+      device: { name: "Device", selector: { device: {} } },
       entity: { name: "Entity", selector: { entity: {} } },
       state: {
         name: "State",
@@ -143,7 +147,6 @@ const SCHEMAS: {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },
       },
-      device: { name: "Device", selector: { device: {} } },
       config_entry: {
         name: "Integration",
         selector: { config_entry: {} },
