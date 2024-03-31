@@ -38,6 +38,7 @@ import "../components/ha-menu-item";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+import type { HaMenu } from "../components/ha-menu";
 
 declare global {
   // for fire event
@@ -176,9 +177,9 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("#group-by-menu") private _groupByMenu!: MdMenu;
+  @query("#group-by-menu") private _groupByMenu!: HaMenu;
 
-  @query("#sort-by-menu") private _sortByMenu!: MdMenu;
+  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
