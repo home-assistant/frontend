@@ -54,7 +54,7 @@ import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-deta
 
 const UNASSIGNED_PATH = ["__unassigned__"];
 
-const SORT_OPTIONS = { sort: false };
+const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
