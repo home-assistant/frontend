@@ -6,8 +6,8 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiFilterVariantRemove,
   mdiFilterVariant,
+  mdiFilterVariantRemove,
   mdiFormatListChecks,
   mdiMenuDown,
 } from "@mdi/js";
@@ -34,13 +34,13 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-button-menu-new";
 import "../components/ha-dialog";
-import "../components/search-input-outlined";
 import "../components/ha-menu";
 import "../components/ha-menu-item";
+import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import type { HaMenu } from "../components/ha-menu";
+import { HaMenu } from "../components/ha-menu";
 
 declare global {
   // for fire event
@@ -179,6 +179,10 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
+  @query("#group-by-menu") private _groupByMenu!: HaMenu;
+
+  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
@@ -191,6 +195,14 @@ export class HaTabsSubpageDataTable extends LitElement {
     if (this.initialGroupColumn) {
       this._groupColumn = this.initialGroupColumn;
     }
+  }
+
+  private _toggleGroupBy() {
+    this._groupByMenu.open = !this._groupByMenu.open;
+  }
+
+  private _toggleSortBy() {
+    this._sortByMenu.open = !this._sortByMenu.open;
   }
 
   protected render(): TemplateResult {
@@ -236,89 +248,33 @@ export class HaTabsSubpageDataTable extends LitElement {
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
-          <ha-button-menu-new positioning="popover">
-            <ha-assist-chip
-              .label=${localize("ui.components.subpage-data-table.sort_by", {
-                sortColumn: this._sortColumn
-                  ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
-                  : "",
-              })}
-              slot="trigger"
-            >
-              <ha-svg-icon
-                slot="trailing-icon"
-                .path=${mdiMenuDown}
-              ></ha-svg-icon
-            ></ha-assist-chip>
-            ${Object.entries(this.columns).map(([id, column]) =>
-              column.sortable
-                ? html`
-                    <md-menu-item
-                      .value=${id}
-                      @click=${this._handleSortBy}
-                      keep-open
-                      .selected=${id === this._sortColumn}
-                      class=${classMap({ selected: id === this._sortColumn })}
-                    >
-                      ${this._sortColumn === id
-                        ? html`
-                            <ha-svg-icon
-                              slot="end"
-                              .path=${this._sortDirection === "desc"
-                                ? mdiArrowDown
-                                : mdiArrowUp}
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
-                      ${column.title || column.label}
-                    </md-menu-item>
-                  `
-                : nothing
-            )}
-          </ha-button-menu-new>
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.sort_by", {
+              sortColumn: this._sortColumn
+                ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
+                : "",
+            })}
+            id="sort-by-anchor"
+            @click=${this._toggleSortBy}
+          >
+            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
+          ></ha-assist-chip>
         `
       : nothing;
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
-          <ha-button-menu-new positioning="popover">
-            <ha-assist-chip
-              slot="trigger"
-              .label=${localize("ui.components.subpage-data-table.group_by", {
-                groupColumn: this._groupColumn
-                  ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
-                  : "",
-              })}
-            >
-              <ha-svg-icon
-                slot="trailing-icon"
-                .path=${mdiMenuDown}
-              ></ha-svg-icon>
-            </ha-assist-chip>
-            ${Object.entries(this.columns).map(([id, column]) =>
-              column.groupable
-                ? html`
-                    <md-menu-item
-                      .value=${id}
-                      @click=${this._handleGroupBy}
-                      .selected=${id === this._groupColumn}
-                      class=${classMap({ selected: id === this._groupColumn })}
-                    >
-                      ${column.title || column.label}
-                    </md-menu-item>
-                  `
-                : nothing
-            )}
-            <md-divider role="separator" tabindex="-1"></md-divider>
-            <md-menu-item
-              .value=${undefined}
-              @click=${this._handleGroupBy}
-              .selected=${this._groupColumn === undefined}
-              class=${classMap({ selected: this._groupColumn === undefined })}
-            >
-              ${localize("ui.components.subpage-data-table.dont_group_by")}
-            </md-menu-item>
-          </ha-button-menu-new>
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.group_by", {
+              groupColumn: this._groupColumn
+                ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
+                : "",
+            })}
+            id="group-by-anchor"
+            @click=${this._toggleGroupBy}
+          >
+            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
+          ></ha-assist-chip>
         `
       : nothing;
 
@@ -347,7 +303,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-button-menu-new positioning="popover">
+                <ha-button-menu-new positioning="absolute">
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -363,20 +319,20 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <md-menu-item .value=${undefined} @click=${this._selectAll}
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}
                     >${localize("ui.components.subpage-data-table.select_all")}
-                  </md-menu-item>
-                  <md-menu-item .value=${undefined} @click=${this._selectNone}
+                  </ha-menu-item>
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}
                     >${localize("ui.components.subpage-data-table.select_none")}
-                  </md-menu-item>
+                  </ha-menu-item>
                   <md-divider role="separator" tabindex="-1"></md-divider>
-                  <md-menu-item
+                  <ha-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
                     >${localize(
                       "ui.components.subpage-data-table.close_select_mode"
                     )}
-                  </md-menu-item>
+                  </ha-menu-item>
                 </ha-button-menu-new>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
@@ -502,6 +458,58 @@ export class HaTabsSubpageDataTable extends LitElement {
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
+      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.groupable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleGroupBy}
+                  .selected=${id === this._groupColumn}
+                  class=${classMap({ selected: id === this._groupColumn })}
+                >
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
+        )}
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item
+          .value=${undefined}
+          @click=${this._handleGroupBy}
+          .selected=${this._groupColumn === undefined}
+          class=${classMap({ selected: this._groupColumn === undefined })}
+        >
+          ${localize("ui.components.subpage-data-table.dont_group_by")}
+        </ha-menu-item>
+      </ha-menu>
+      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.sortable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleSortBy}
+                  keep-open
+                  .selected=${id === this._sortColumn}
+                  class=${classMap({ selected: id === this._sortColumn })}
+                >
+                  ${this._sortColumn === id
+                    ? html`
+                        <ha-svg-icon
+                          slot="end"
+                          .path=${this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
+        )}
+      </ha-menu>
     `;
   }
 
@@ -770,6 +778,9 @@ export class HaTabsSubpageDataTable extends LitElement {
         display: flex;
         flex-direction: column;
       }
+
+      #sort-by-anchor,
+      #group-by-anchor,
       ha-button-menu-new ha-assist-chip {
         --md-assist-chip-trailing-space: 8px;
       }

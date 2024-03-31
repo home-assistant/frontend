@@ -84,11 +84,14 @@ export class HaButtonMenuNew extends LitElement {
       }
       ::slotted(*) {
         --md-menu-item-label-text-color: var(--primary-text-color);
+        --md-list-item-selected-label-text-color: var(--primary-text-color);
+        --md-sys-color-on-surface-variant: var(--secondary-text-color);
         --mdc-icon-size: 16px;
         --md-menu-item-selected-container-color: rgba(
           var(--rgb-primary-color),
           0.15
         );
+        --md-menu-item-selected-label-text-color: var(--primary-text-color);
       }
       ::slotted(md-menu-item.selected) {
         --md-menu-item-label-text-color: var(--primary-color);
