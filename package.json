@@ -206,7 +206,7 @@
     "eslint-plugin-wc": "2.0.4",
     "fancy-log": "2.0.0",
     "fs-extra": "11.2.0",
-    "glob": "10.3.10",
+    "glob": "10.3.12",
     "gulp": "4.0.2",
     "gulp-flatmap": "1.0.2",
     "gulp-json-transform": "0.5.0",
