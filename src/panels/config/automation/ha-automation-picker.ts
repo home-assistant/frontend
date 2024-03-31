@@ -1,18 +1,11 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
-  mdiCog,
-  mdiContentDuplicate,
-  mdiDelete,
+  mdiDotsVertical,
   mdiHelpCircle,
   mdiInformationOutline,
-  mdiPlay,
-  mdiPlayCircleOutline,
   mdiPlus,
   mdiRobotHappy,
-  mdiStopCircleOutline,
-  mdiTag,
-  mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -25,9 +18,10 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { MdMenu } from "@material/web/menu/menu";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -126,6 +120,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @query("#overflow-menu") private _overflowMenu!: MdMenu;
 
   private _automations = memoizeOne(
     (
@@ -277,86 +273,29 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         width: "64px",
         type: "overflow-menu",
         template: (automation) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.editor.show_info"
-                ),
-                action: () => this._showInfo(automation),
-              },
-              {
-                path: mdiCog,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.show_settings"
-                ),
-                action: () => this._showSettings(automation),
-              },
-              {
-                path: mdiTag,
-                label: this.hass.localize(
-                  `ui.panel.config.automation.picker.${automation.category ? "edit_category" : "assign_category"}`
-                ),
-                action: () => this._editCategory(automation),
-              },
-              {
-                path: mdiPlay,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.editor.run"
-                ),
-                action: () => this._runActions(automation),
-              },
-              {
-                path: mdiTransitConnection,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.editor.show_trace"
-                ),
-                action: () => this._showTrace(automation),
-              },
-              {
-                divider: true,
-              },
-              {
-                path: mdiContentDuplicate,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.duplicate"
-                ),
-                action: () => this.duplicate(automation),
-              },
-              {
-                path:
-                  automation.state === "off"
-                    ? mdiPlayCircleOutline
-                    : mdiStopCircleOutline,
-                label:
-                  automation.state === "off"
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.enable"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.disable"
-                      ),
-                action: () => this._toggle(automation),
-              },
-              {
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.delete"
-                ),
-                path: mdiDelete,
-                action: () => this._deleteConfirm(automation),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
+          <ha-icon-button
+            .automation=${automation}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+            @click=${this._showOverflowMenu}
+          ></ha-icon-button>
         `,
       };
       return columns;
     }
   );
+
+  private _showOverflowMenu = (ev) => {
+    if (
+      this._overflowMenu.open &&
+      ev.target === this._overflowMenu.anchorElement
+    ) {
+      this._overflowMenu.close();
+      return;
+    }
+    this._overflowMenu.anchorElement = ev.target;
+    this._overflowMenu.show();
+  };
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
@@ -515,6 +454,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
+      <md-menu id="overflow-menu" positioning="fixed">
+        <md-menu-item @click=${this._showInfo}>
+          <ha-svg-icon
+            .path=${mdiInformationOutline}
+            slot="start"
+          ></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+          </div>
+        </md-menu-item>
+      </md-menu>
     `;
   }
 
@@ -641,7 +591,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._applyFilters();
   }
 
-  private _showInfo(automation: any) {
+  private _showInfo(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
   }
 
