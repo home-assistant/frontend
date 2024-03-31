@@ -256,8 +256,11 @@ export class HaTabsSubpageDataTable extends LitElement {
             id="sort-by-anchor"
             @click=${this._toggleSortBy}
           >
-            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
-          ></ha-assist-chip>
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
         `
       : nothing;
 
@@ -743,6 +746,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       .center-vertical {
         display: flex;
         align-items: center;
+        gap: 8px;
       }
 
       .relative {
