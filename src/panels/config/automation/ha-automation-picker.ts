@@ -1,11 +1,20 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import "@material/web/divider/divider";
 import {
+  mdiCog,
+  mdiContentDuplicate,
+  mdiDelete,
   mdiDotsVertical,
   mdiHelpCircle,
   mdiInformationOutline,
+  mdiPlay,
+  mdiPlayCircleOutline,
   mdiPlus,
   mdiRobotHappy,
+  mdiStopCircleOutline,
+  mdiTag,
+  mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -21,7 +30,6 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { MdMenu } from "@material/web/menu/menu";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -45,6 +53,8 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-menu";
+import "../../../components/ha-menu-item";
 import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
@@ -79,6 +89,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import type { HaMenu } from "../../../components/ha-menu";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -121,7 +132,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @query("#overflow-menu") private _overflowMenu!: MdMenu;
+  @state() private _overflowAutomation?: AutomationItem;
+
+  @query("#overflow-menu") private _overflowMenu!: HaMenu;
 
   private _automations = memoizeOne(
     (
@@ -271,7 +284,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       columns.actions = {
         title: "",
         width: "64px",
-        type: "overflow-menu",
+        type: "icon-button",
         template: (automation) => html`
           <ha-icon-button
             .automation=${automation}
@@ -293,6 +306,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this._overflowMenu.close();
       return;
     }
+    this._overflowAutomation = ev.target.automation;
     this._overflowMenu.anchorElement = ev.target;
     this._overflowMenu.show();
   };
@@ -454,8 +468,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
-      <md-menu id="overflow-menu" positioning="fixed">
-        <md-menu-item @click=${this._showInfo}>
+      <ha-menu id="overflow-menu" positioning="fixed">
+        <ha-menu-item @click=${this._showInfo}>
           <ha-svg-icon
             .path=${mdiInformationOutline}
             slot="start"
@@ -463,8 +477,65 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
           </div>
-        </md-menu-item>
-      </md-menu>
+        </ha-menu-item>
+
+        <ha-menu-item @click=${this._showSettings}>
+          <ha-svg-icon .path=${mdiCog} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+          </div>
+        </ha-menu-item>
+        <ha-menu-item @click=${this._editCategory}>
+          <ha-svg-icon .path=${mdiTag} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize(
+              `ui.panel.config.automation.picker.${this._overflowAutomation?.category ? "edit_category" : "assign_category"}`
+            )}
+          </div>
+        </ha-menu-item>
+        <ha-menu-item @click=${this._runActions}>
+          <ha-svg-icon .path=${mdiPlay} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.automation.editor.run")}
+          </div>
+        </ha-menu-item>
+        <ha-menu-item @click=${this._showTrace}>
+          <ha-svg-icon .path=${mdiTransitConnection} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.show_trace"
+            )}
+          </div>
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item @click=${this._duplicate}>
+          <ha-svg-icon .path=${mdiContentDuplicate} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
+          </div>
+        </ha-menu-item>
+        <ha-menu-item @click=${this._toggle}>
+          <ha-svg-icon
+            .path=${this._overflowAutomation?.state === "off"
+              ? mdiPlayCircleOutline
+              : mdiStopCircleOutline}
+            slot="start"
+          ></ha-svg-icon>
+          <div slot="headline">
+            ${this._overflowAutomation?.state === "off"
+              ? this.hass.localize("ui.panel.config.automation.editor.enable")
+              : this.hass.localize("ui.panel.config.automation.editor.disable")}
+          </div>
+        </ha-menu-item>
+        <ha-menu-item @click=${this._deleteConfirm} class="warning">
+          <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.automation.picker.delete")}
+          </div>
+        </ha-menu-item>
+      </ha-menu>
     `;
   }
 
@@ -596,18 +667,24 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
   }
 
-  private _showSettings(automation: any) {
+  private _showSettings(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     fireEvent(this, "hass-more-info", {
       entityId: automation.entity_id,
       view: "settings",
     });
   }
 
-  private _runActions(automation: any) {
+  private _runActions(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     triggerAutomationActions(this.hass, automation.entity_id);
   }
 
-  private _editCategory(automation: any) {
+  private _editCategory(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     const entityReg = this._entityReg.find(
       (reg) => reg.entity_id === automation.entity_id
     );
@@ -628,7 +705,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _showTrace(automation: any) {
+  private _showTrace(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     if (!automation.attributes.id) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -642,14 +721,18 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _toggle(automation): Promise<void> {
+  private async _toggle(ev): Promise<void> {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     const service = automation.state === "off" ? "turn_on" : "turn_off";
     await this.hass.callService("automation", service, {
       entity_id: automation.entity_id,
     });
   }
 
-  private async _deleteConfirm(automation) {
+  private async _deleteConfirm(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm_title"
@@ -683,7 +766,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async duplicate(automation) {
+  private async _duplicate(ev) {
+    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+
     try {
       const config = await fetchAutomationFileConfig(
         this.hass,
