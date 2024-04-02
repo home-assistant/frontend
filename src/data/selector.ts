@@ -31,6 +31,7 @@ export type Selector =
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | FloorSelector
   | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
@@ -166,6 +167,14 @@ export interface DeviceSelector {
   device: {
     filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    multiple?: boolean;
+  } | null;
+}
+
+export interface FloorSelector {
+  floor: {
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
