@@ -96,6 +96,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state() private _activeFilters?: string[];
 
   @state() private _filteredScenes?: string[] | null;
@@ -527,6 +529,27 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
+    this._applyFilters();
+  }
+
+  firstUpdated() {
+    if (this._searchParms.has("label")) {
+      this._filterLabel();
+    }
+  }
+
+  private _filterLabel() {
+    const label = this._searchParms.get("label");
+    if (!label) {
+      return;
+    }
+    this._filters = {
+      ...this._filters,
+      "ha-filter-labels": {
+        value: [label],
+        items: undefined,
+      },
+    };
     this._applyFilters();
   }
 
