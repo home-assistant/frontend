@@ -1,5 +1,12 @@
-import { mdiMagnify } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import { mdiClose, mdiMagnify } from "@mdi/js";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
@@ -54,6 +61,15 @@ class SearchInputOutlined extends LitElement {
             .path=${mdiMagnify}
           ></ha-svg-icon>
         </slot>
+        ${this.filter
+          ? html`<ha-icon-button
+              aria-label="Clear input"
+              slot="trailing-icon"
+              @click=${this._clearSearch}
+              .path=${mdiClose}
+            >
+            </ha-icon-button>`
+          : nothing}
       </ha-outlined-text-field>
     `;
   }
@@ -66,12 +82,17 @@ class SearchInputOutlined extends LitElement {
     this._filterChanged(e.target.value);
   }
 
+  private async _clearSearch() {
+    this._filterChanged("");
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-flex;
         /* For iOS */
         z-index: 0;
+        --mdc-icon-button-size: 24px;
       }
       ha-outlined-text-field {
         display: block;
