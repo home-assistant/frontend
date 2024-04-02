@@ -1,5 +1,5 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiTextureBox } from "@mdi/js";
+import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -53,9 +53,13 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.areas.caption")}
           ${this.value?.areas?.length || this.value?.floors?.length
             ? html`<div class="badge">
-                ${(this.value?.areas?.length || 0) +
-                (this.value?.floors?.length || 0)}
-              </div>`
+                  ${(this.value?.areas?.length || 0) +
+                  (this.value?.floors?.length || 0)}
+                </div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -238,6 +242,15 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -256,6 +269,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;
