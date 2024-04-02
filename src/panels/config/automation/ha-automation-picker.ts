@@ -558,7 +558,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             }
             ${
               this.narrow || this.hass.dockedSidebar === "docked"
-                ? html` <ha-sub-menu>
+                ? html`<ha-sub-menu>
                     <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(

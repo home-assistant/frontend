@@ -30,6 +30,9 @@ export class HaMenuItem extends MdMenuItem {
         --md-menu-item-label-text-color: var(--error-color);
         --md-menu-item-leading-icon-color: var(--error-color);
       }
+      ::slotted([slot="headline"]) {
+        text-wrap: nowrap;
+      }
     `,
   ];
 }

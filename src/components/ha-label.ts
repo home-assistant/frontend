@@ -43,6 +43,7 @@ class HaLabel extends LitElement {
           border-radius: 18px;
           color: var(--ha-label-text-color);
           --mdc-icon-size: 12px;
+          text-wrap: nowrap;
         }
         .content > * {
           position: relative;
