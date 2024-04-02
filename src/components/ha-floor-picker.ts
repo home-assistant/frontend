@@ -438,7 +438,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
     (ev.target as any).value = this._value;
 
     showFloorRegistryDetailDialog(this, {
-      suggestedName: newValue === "add_new_suggestion" ? this._suggestion : "",
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
       createEntry: async (values) => {
         try {
           const floor = await createFloorRegistryEntry(this.hass, values);
