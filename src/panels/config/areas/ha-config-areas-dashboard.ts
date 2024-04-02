@@ -208,7 +208,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
               </div>`
           )}
           ${areasAndFloors?.unassisgnedAreas.length
-            ? html`<div class="unassigned">
+            ? html`<div class="floor">
                 <div class="header">
                   <h2>
                     ${this.hass.localize(
