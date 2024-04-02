@@ -23,11 +23,9 @@ import {
   getFloorAreaLookup,
   subscribeFloorRegistry,
 } from "../data/floor_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showFloorRegistryDetailDialog } from "../panels/config/areas/show-dialog-floor-registry-detail";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
@@ -386,7 +384,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         this.comboBox.filteredItems = [
           {
             floor_id: NO_FLOORS_ID,
-            name: this.hass.localize("ui.components.floor-picker.no_floors"),
+            name: this.hass.localize("ui.components.floor-picker.no_match"),
             icon: null,
             level: null,
             aliases: [],
@@ -438,25 +436,14 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
     }
 
     (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize("ui.components.floor-picker.add_dialog.title"),
-      text: this.hass.localize("ui.components.floor-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.floor-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.floor-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
+
+    this.hass.loadFragmentTranslation("config");
+
+    showFloorRegistryDetailDialog(this, {
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
+      createEntry: async (values) => {
         try {
-          const floor = await createFloorRegistryEntry(this.hass, {
-            name,
-          });
+          const floor = await createFloorRegistryEntry(this.hass, values);
           const floors = [...this._floors!, floor];
           this.comboBox.filteredItems = this._getFloors(
             floors,
@@ -477,18 +464,16 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         } catch (err: any) {
           showAlertDialog(this, {
             title: this.hass.localize(
-              "ui.components.floor-picker.add_dialog.failed_create_floor"
+              "ui.components.floor-picker.failed_create_floor"
             ),
             text: err.message,
           });
         }
       },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
-      },
     });
+
+    this._suggestion = undefined;
+    this.comboBox.setInputValue("");
   }
 
   private _setValue(value?: string) {

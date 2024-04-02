@@ -11,10 +11,8 @@ import {
   mdiInformationOutline,
   mdiMenuDown,
   mdiPlay,
-  mdiPlayCircleOutline,
   mdiPlus,
   mdiRobotHappy,
-  mdiStopCircleOutline,
   mdiTag,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -60,6 +58,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-menu";
+import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
@@ -101,7 +100,6 @@ import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import type { HaMenu } from "../../../components/ha-menu";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -379,7 +377,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config"
+        }
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
@@ -692,8 +692,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon
             .path=${
               this._overflowAutomation?.state === "off"
-                ? mdiPlayCircleOutline
-                : mdiStopCircleOutline
+                ? mdiToggleSwitch
+                : mdiToggleSwitchOffOutline
             }
             slot="start"
           ></ha-svg-icon>
@@ -727,6 +727,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   firstUpdated() {
     if (this._searchParms.has("blueprint")) {
       this._filterBlueprint();
+    }
+    if (this._searchParms.has("label")) {
+      this._filterLabel();
     }
   }
 
@@ -813,6 +816,21 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       }
     }
     this._filteredAutomations = items ? [...items] : undefined;
+  }
+
+  private _filterLabel() {
+    const label = this._searchParms.get("label");
+    if (!label) {
+      return;
+    }
+    this._filters = {
+      ...this._filters,
+      "ha-filter-labels": {
+        value: [label],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private async _filterBlueprint() {
