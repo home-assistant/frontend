@@ -237,6 +237,8 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     (ev.target as any).value = this._value;
 
+    this.hass.loadFragmentTranslation("config");
+
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope!,
       suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
