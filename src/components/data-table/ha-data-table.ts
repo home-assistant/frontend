@@ -627,9 +627,13 @@ export class HaDataTable extends LitElement {
       ev
         .composedPath()
         .find((el) =>
-          ["ha-checkbox", "mwc-button", "ha-button", "ha-assist-chip"].includes(
-            (el as HTMLElement).localName
-          )
+          [
+            "ha-checkbox",
+            "mwc-button",
+            "ha-button",
+            "ha-icon-button",
+            "ha-assist-chip",
+          ].includes((el as HTMLElement).localName)
         )
     ) {
       return;
