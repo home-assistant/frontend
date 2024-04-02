@@ -8,7 +8,10 @@ import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "./device_registry";
-import { EntityRegistryDisplayEntry } from "./entity_registry";
+import {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity_registry";
 import { EntitySources } from "./entity_sources";
 
 export type Selector =
@@ -34,6 +37,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | LabelSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -242,6 +246,12 @@ export interface IconSelector {
   } | null;
 }
 
+export interface LabelSelector {
+  label: {
+    multiple?: boolean;
+  };
+}
+
 export interface LanguageSelector {
   language: {
     languages?: string[];
@@ -421,8 +431,94 @@ export interface UiActionSelector {
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  ui_color: {} | null;
+  ui_color: { default_color?: boolean } | null;
 }
+
+export const expandLabelTarget = (
+  hass: HomeAssistant,
+  labelId: string,
+  areas: HomeAssistant["areas"],
+  devices: HomeAssistant["devices"],
+  entities: HomeAssistant["entities"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newEntities: string[] = [];
+  const newDevices: string[] = [];
+  const newAreas: string[] = [];
+
+  Object.values(areas).forEach((area) => {
+    if (
+      area.labels.includes(labelId) &&
+      areaMeetsTargetSelector(
+        hass,
+        entities,
+        devices,
+        area.area_id,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newAreas.push(area.area_id);
+    }
+  });
+
+  Object.values(devices).forEach((device) => {
+    if (
+      device.labels.includes(labelId) &&
+      deviceMeetsTargetSelector(
+        hass,
+        Object.values(entities),
+        device,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newDevices.push(device.id);
+    }
+  });
+
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.labels.includes(labelId) &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+
+  return { areas: newAreas, devices: newDevices, entities: newEntities };
+};
+
+export const expandFloorTarget = (
+  hass: HomeAssistant,
+  floorId: string,
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+) => {
+  const newAreas: string[] = [];
+  Object.values(areas).forEach((area) => {
+    if (
+      area.floor_id === floorId &&
+      areaMeetsTargetSelector(
+        hass,
+        hass.entities,
+        hass.devices,
+        area.area_id,
+        targetSelector,
+        entitySources
+      )
+    ) {
+      newAreas.push(area.area_id);
+    }
+  });
+  return { areas: newAreas };
+};
 
 export const expandAreaTarget = (
   hass: HomeAssistant,
@@ -529,7 +625,7 @@ export const areaMeetsTargetSelector = (
 
 export const deviceMeetsTargetSelector = (
   hass: HomeAssistant,
-  entityRegistry: EntityRegistryDisplayEntry[],
+  entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
   entitySources?: EntitySources

@@ -11,7 +11,11 @@ import {
   isLastDayOfMonth,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
+import {
+  calcDate,
+  calcDateProperty,
+  calcDateDifferenceProperty,
+} from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -443,12 +447,12 @@ const getEnergyData = async (
         addMonths,
         hass.locale,
         hass.config,
-        -(calcDateProperty(
+        -(calcDateDifferenceProperty(
           end || new Date(),
+          start,
           differenceInMonths,
           hass.locale,
-          hass.config,
-          start
+          hass.config
         ) as number) - 1
       );
     } else {
