@@ -758,6 +758,23 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         },
       };
     }
+    if (this._searchParms.has("label")) {
+      this._filterLabel();
+    }
+  }
+
+  private _filterLabel() {
+    const label = this._searchParms.get("label");
+    if (!label) {
+      return;
+    }
+    this._filters = {
+      ...this._filters,
+      "ha-filter-labels": {
+        value: [label],
+        items: undefined,
+      },
+    };
   }
 
   private _clearFilter() {
