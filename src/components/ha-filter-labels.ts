@@ -1,6 +1,6 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiCog } from "@mdi/js";
+import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -53,7 +53,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.labels.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -150,6 +154,15 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -169,6 +182,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;

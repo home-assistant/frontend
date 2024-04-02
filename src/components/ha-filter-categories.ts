@@ -2,6 +2,7 @@ import { ActionDetail, SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
+  mdiFilterVariantRemove,
   mdiPencil,
   mdiPlus,
   mdiTag,
@@ -68,7 +69,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.category.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -254,6 +259,15 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -273,6 +287,10 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;
