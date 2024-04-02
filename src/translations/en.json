@@ -571,6 +571,7 @@
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
         "no_categories": "You don't have any categories",
+        "no_match": "No matching categories found",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
