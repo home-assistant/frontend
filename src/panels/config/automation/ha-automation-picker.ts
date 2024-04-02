@@ -2,18 +2,22 @@ import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/web/divider/divider";
 import {
+  mdiChevronRight,
   mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiHelpCircle,
   mdiInformationOutline,
+  mdiMenuDown,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiPlus,
   mdiRobotHappy,
   mdiStopCircleOutline,
   mdiTag,
+  mdiToggleSwitch,
+  mdiToggleSwitchOffOutline,
   mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns/esm";
@@ -30,6 +34,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -41,6 +46,7 @@ import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
@@ -55,6 +61,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-menu";
 import "../../../components/ha-menu-item";
+import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
@@ -71,7 +78,11 @@ import {
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   LabelRegistryEntry,
   subscribeLabelRegistry,
@@ -84,8 +95,9 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
@@ -121,6 +133,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   > = {};
 
   @state() private _expandedFilter?: string;
+
+  @state() private _selected: string[] = [];
 
   @state()
   _categories!: CategoryRegistryEntry[];
@@ -327,6 +341,40 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const categoryItems = html`${this._categories?.map(
+        (category) =>
+          html`<ha-menu-item
+            .value=${category.category_id}
+            @click=${this._handleBulkCategory}
+          >
+            ${category.icon
+              ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
+              : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
+            <div slot="headline">${category.name}</div>
+          </ha-menu-item>`
+      )}
+      <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.automation.picker.bulk_actions.no_category"
+          )}
+        </div>
+      </ha-menu-item>`;
+    const labelItems = html` ${this._labels?.map((label) => {
+      const color = label.color ? computeCssColor(label.color) : undefined;
+      return html`<ha-menu-item
+        .value=${label.label_id}
+        @click=${this._handleBulkLabel}
+      >
+        <ha-label style=${color ? `--color: ${color}` : ""}>
+          ${label.icon
+            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+            : nothing}
+          ${label.name}
+        </ha-label>
+      </ha-menu-item>`;
+    })}`;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -335,10 +383,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) => filter.value?.length)
+            .length
+        }
         .columns=${this._columns(
           this.narrow,
           this.hass.localize,
@@ -427,36 +479,156 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-blueprints>
-        ${!this.automations.length
-          ? html`<div class="empty" slot="empty">
-              <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
-              <h1>
+          ${
+            !this.narrow
+              ? html`<ha-button-menu-new slot="selection-bar">
+                    <ha-assist-chip
+                      slot="trigger"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.picker.bulk_actions.move_category"
+                      )}
+                    >
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon>
+                    </ha-assist-chip>
+                    ${categoryItems}
+                  </ha-button-menu-new>
+                  ${this.hass.dockedSidebar === "docked"
+                    ? nothing
+                    : html`<ha-button-menu-new slot="selection-bar">
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.picker.bulk_actions.add_label"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${labelItems}
+                      </ha-button-menu-new>`}`
+              : nothing
+          }
+          <ha-button-menu-new has-overflow slot="selection-bar">
+            ${
+              this.narrow
+                ? html`<ha-assist-chip
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>`
+                : html`<ha-icon-button
+                    .path=${mdiDotsVertical}
+                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    slot="trigger"
+                  ></ha-icon-button>`
+            }
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            ${
+              this.narrow
+                ? html`<ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing
+            }
+            ${
+              this.narrow || this.hass.dockedSidebar === "docked"
+                ? html` <ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing
+            }
+            <ha-menu-item @click=${this._handleBulkEnable}>
+              <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
+              <div slot="headline">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_header"
+                  "ui.panel.config.automation.picker.bulk_actions.enable"
                 )}
-              </h1>
-              <p>
+              </div>
+            </ha-menu-item>
+            <ha-menu-item @click=${this._handleBulkDisable}>
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiToggleSwitchOffOutline}
+              ></ha-svg-icon>
+              <div slot="headline">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_text_1"
+                  "ui.panel.config.automation.picker.bulk_actions.disable"
                 )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.picker.empty_text_2",
-                  { user: this.hass.user?.name || "Alice" }
-                )}
-              </p>
-              <a
-                href=${documentationUrl(this.hass, "/docs/automation/editor/")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ha-button>
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
-                </ha-button>
-              </a>
-            </div>`
-          : nothing}
+              </div>
+            </ha-menu-item>
+          </ha-button-menu-new>
+        ${
+          !this.automations.length
+            ? html`<div class="empty" slot="empty">
+                <ha-svg-icon .path=${mdiRobotHappy}></ha-svg-icon>
+                <h1>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.empty_header"
+                  )}
+                </h1>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.empty_text_1"
+                  )}
+                </p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.empty_text_2",
+                    { user: this.hass.user?.name || "Alice" }
+                  )}
+                </p>
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    "/docs/automation/editor/"
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ha-button>
+                    ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  </ha-button>
+                </a>
+              </div>`
+            : nothing
+        }
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -827,12 +999,60 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {
       showNewAutomationDialog(this, { mode: "automation" });
     } else {
       navigate("/config/automation/edit/new");
     }
+  }
+
+  private async _handleBulkCategory(ev) {
+    const category = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          categories: { automation: category },
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkLabel(ev) {
+    const label = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          labels: this.hass.entities[entityId].labels.concat(label),
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkEnable() {
+    const promises: Promise<ServiceCallResponse>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(turnOnOffEntity(this.hass, entityId, true));
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkDisable() {
+    const promises: Promise<ServiceCallResponse>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(turnOnOffEntity(this.hass, entityId, false));
+    });
+    await Promise.all(promises);
   }
 
   static get styles(): CSSResultGroup {
@@ -849,6 +1069,16 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+        }
+        ha-button-menu-new ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
+        }
+        ha-label {
+          --ha-label-background-color: var(--color, var(--grey-color));
+          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

@@ -181,6 +181,13 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
+  public selectAll(): void {
+    this._checkedRows = this._filteredData
+      .filter((data) => data.selectable !== false)
+      .map((data) => data[this.id]);
+    this._checkedRowsChanged();
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     if (this._items.length) {
@@ -593,10 +600,7 @@ export class HaDataTable extends LitElement {
   private _handleHeaderRowCheckboxClick(ev: Event) {
     const checkbox = ev.target as HaCheckbox;
     if (checkbox.checked) {
-      this._checkedRows = this._filteredData
-        .filter((data) => data.selectable !== false)
-        .map((data) => data[this.id]);
-      this._checkedRowsChanged();
+      this.selectAll();
     } else {
       this._checkedRows = [];
       this._checkedRowsChanged();

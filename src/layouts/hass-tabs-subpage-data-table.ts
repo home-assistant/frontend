@@ -1,12 +1,13 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
+import "@material/web/divider/divider";
 import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiFilterVariantRemove,
   mdiFilterVariant,
+  mdiFilterVariantRemove,
   mdiFormatListChecks,
   mdiMenuDown,
 } from "@mdi/js";
@@ -31,14 +32,14 @@ import type {
   HaDataTable,
   SortingDirection,
 } from "../components/data-table/ha-data-table";
+import "../components/ha-button-menu-new";
 import "../components/ha-dialog";
-import "../components/search-input-outlined";
-import "../components/ha-menu";
+import { HaMenu } from "../components/ha-menu";
 import "../components/ha-menu-item";
+import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import type { HaMenu } from "../components/ha-menu";
 
 declare global {
   // for fire event
@@ -227,7 +228,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             class="has-dropdown select-mode-chip"
             .active=${this._selectMode}
             @click=${this._enableSelectMode}
-            .label=${localize(
+            .title=${localize(
               "ui.components.subpage-data-table.enter_selection_mode"
             )}
           >
@@ -255,8 +256,11 @@ export class HaTabsSubpageDataTable extends LitElement {
             id="sort-by-anchor"
             @click=${this._toggleSortBy}
           >
-            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
-          ></ha-assist-chip>
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
         `
       : nothing;
 
@@ -293,7 +297,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       >
         ${this._selectMode
           ? html`<div class="selection-bar" slot="toolbar">
-              <div class="center-vertical">
+              <div class="selection-controls">
                 <ha-icon-button
                   .path=${mdiClose}
                   @click=${this._disableSelectMode}
@@ -301,6 +305,37 @@ export class HaTabsSubpageDataTable extends LitElement {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
+                <ha-button-menu-new positioning="absolute">
+                  <ha-assist-chip
+                    .label=${localize(
+                      "ui.components.subpage-data-table.select"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFormatListChecks}
+                    ></ha-svg-icon>
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon
+                  ></ha-assist-chip>
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}
+                    >${localize("ui.components.subpage-data-table.select_all")}
+                  </ha-menu-item>
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}
+                    >${localize("ui.components.subpage-data-table.select_none")}
+                  </ha-menu-item>
+                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-menu-item
+                    .value=${undefined}
+                    @click=${this._disableSelectMode}
+                    >${localize(
+                      "ui.components.subpage-data-table.close_select_mode"
+                    )}
+                  </ha-menu-item>
+                </ha-button-menu-new>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
                     selected: this.selected || "0",
@@ -440,16 +475,15 @@ export class HaTabsSubpageDataTable extends LitElement {
               `
             : nothing
         )}
-        <li divider role="separator"></li>
+        <md-divider role="separator" tabindex="-1"></md-divider>
         <ha-menu-item
           .value=${undefined}
           @click=${this._handleGroupBy}
           .selected=${this._groupColumn === undefined}
           class=${classMap({ selected: this._groupColumn === undefined })}
-          >${localize(
-            "ui.components.subpage-data-table.dont_group_by"
-          )}</ha-menu-item
         >
+          ${localize("ui.components.subpage-data-table.dont_group_by")}
+        </ha-menu-item>
       </ha-menu>
       <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
         ${Object.entries(this.columns).map(([id, column]) =>
@@ -458,6 +492,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 <ha-menu-item
                   .value=${id}
                   @click=${this._handleSortBy}
+                  keep-open
                   .selected=${id === this._sortColumn}
                   class=${classMap({ selected: id === this._sortColumn })}
                 >
@@ -494,8 +529,6 @@ export class HaTabsSubpageDataTable extends LitElement {
   }
 
   private _handleSortBy(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
     const columnId = ev.currentTarget.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
@@ -517,6 +550,14 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   private _disableSelectMode() {
     this._selectMode = false;
+    this._dataTable.clearSelection();
+  }
+
+  private _selectAll() {
+    this._dataTable.selectAll();
+  }
+
+  private _selectNone() {
     this._dataTable.clearSelection();
   }
 
@@ -687,21 +728,29 @@ export class HaTabsSubpageDataTable extends LitElement {
         padding: 8px 12px;
         box-sizing: border-box;
         font-size: 14px;
+        --ha-assist-chip-container-color: var(--primary-background-color);
+      }
+
+      .selection-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .selection-controls p {
+        margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
 
       .center-vertical {
         display: flex;
         align-items: center;
+        gap: 8px;
       }
 
       .relative {
         position: relative;
-      }
-
-      .selection-bar p {
-        margin-left: 16px;
-        margin-inline-start: 16px;
-        margin-inline-end: initial;
       }
 
       ha-assist-chip {
@@ -732,8 +781,10 @@ export class HaTabsSubpageDataTable extends LitElement {
         display: flex;
         flex-direction: column;
       }
+
       #sort-by-anchor,
-      #group-by-anchor {
+      #group-by-anchor,
+      ha-button-menu-new ha-assist-chip {
         --md-assist-chip-trailing-space: 8px;
       }
     `;
