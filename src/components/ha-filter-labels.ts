@@ -1,19 +1,18 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiPlus } from "@mdi/js";
+import { mdiCog } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
+import { navigate } from "../common/navigate";
 import {
   LabelRegistryEntry,
-  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -95,11 +94,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       ${this.expanded
         ? html`<ha-list-item
             graphic="icon"
-            @click=${this._addLabel}
+            @click=${this._manageLabels}
             class="add"
           >
-            <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.labels.add_label")}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.labels.manage_labels")}
           </ha-list-item>`
         : nothing}
     `;
@@ -115,10 +114,8 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _addLabel() {
-    showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
-    });
+  private _manageLabels() {
+    navigate("/config/labels");
   }
 
   private _expandedWillChange(ev) {
