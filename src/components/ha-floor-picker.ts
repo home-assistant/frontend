@@ -384,7 +384,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         this.comboBox.filteredItems = [
           {
             floor_id: NO_FLOORS_ID,
-            name: this.hass.localize("ui.components.floor-picker.no_floors"),
+            name: this.hass.localize("ui.components.floor-picker.no_match"),
             icon: null,
             level: null,
             aliases: [],
