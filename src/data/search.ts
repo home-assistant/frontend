@@ -28,6 +28,7 @@ export type ItemType =
   | "entity"
   | "floor"
   | "group"
+  | "label"
   | "scene"
   | "script"
   | "automation_blueprint"

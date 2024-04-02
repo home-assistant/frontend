@@ -1,5 +1,15 @@
+import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiAlertCircle, mdiPencilOff, mdiPlus } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiChevronRight,
+  mdiCog,
+  mdiDotsVertical,
+  mdiMenuDown,
+  mdiPencilOff,
+  mdiPlus,
+  mdiTag,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -11,8 +21,9 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { consume } from "@lit-labs/context";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
 import {
@@ -23,22 +34,40 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-fab";
+import "../../../components/ha-filter-categories";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-entities";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import {
+  CategoryRegistryEntry,
+  subscribeCategoryRegistry,
+} from "../../../data/category_registry";
 import {
   ConfigEntry,
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
+import { fullEntitiesContext } from "../../../data/context";
 import {
   EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
   subscribeEntityRegistry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import {
+  LabelRegistryEntry,
+  subscribeLabelRegistry,
+} from "../../../data/label_registry";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -49,18 +78,13 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import {
-  LabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label_registry";
-import { fullEntitiesContext } from "../../../data/context";
-import "../../../components/ha-filter-labels";
-import { haStyle } from "../../../resources/styles";
 
 type HelperItem = {
   id: string;
@@ -71,6 +95,7 @@ type HelperItem = {
   type: string;
   configEntry?: ConfigEntry;
   entity?: HassEntity;
+  category: string | undefined;
   label_entries: LabelRegistryEntry[];
 };
 
@@ -111,6 +136,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
+  @state() private _selected: string[] = [];
+
   @state() private _activeFilters?: string[];
 
   @state() private _filters: Record<
@@ -119,6 +146,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   > = {};
 
   @state() private _expandedFilter?: string;
+
+  @state()
+  _categories!: CategoryRegistryEntry[];
 
   @state()
   _labels!: LabelRegistryEntry[];
@@ -156,65 +186,86 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       subscribeLabelRegistry(this.hass.connection, (labels) => {
         this._labels = labels;
       }),
+      subscribeCategoryRegistry(
+        this.hass.connection,
+        "helpers",
+        (categories) => {
+          this._categories = categories;
+        }
+      ),
     ];
   }
 
   private _columns = memoizeOne(
-    (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer<HelperItem> = {
-        icon: {
-          title: "",
-          label: localize("ui.panel.config.helpers.picker.headers.icon"),
-          type: "icon",
-          template: (helper) =>
-            helper.entity
-              ? html`<ha-state-icon
-                  .hass=${this.hass}
-                  .stateObj=${helper.entity}
-                ></ha-state-icon>`
-              : html`<ha-svg-icon
-                  .path=${helper.icon}
-                  style="color: var(--error-color)"
-                ></ha-svg-icon>`,
-        },
-        name: {
-          title: localize("ui.panel.config.helpers.picker.headers.name"),
-          main: true,
-          sortable: true,
-          filterable: true,
-          grows: true,
-          direction: "asc",
-          template: (helper) => html`
-            <div style="font-size: 14px;">${helper.name}</div>
-            ${narrow
-              ? html`<div class="secondary">${helper.entity_id}</div> `
-              : nothing}
-            ${helper.label_entries.length
-              ? html`
-                  <ha-data-table-labels
-                    .labels=${helper.label_entries}
-                  ></ha-data-table-labels>
-                `
-              : nothing}
-          `,
-        },
-      };
-      if (!narrow) {
-        columns.entity_id = {
-          title: localize("ui.panel.config.helpers.picker.headers.entity_id"),
-          sortable: true,
-          filterable: true,
-          width: "25%",
-        };
-      }
-      columns.localized_type = {
+    (
+      narrow: boolean,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<HelperItem> => ({
+      icon: {
+        title: "",
+        label: localize("ui.panel.config.helpers.picker.headers.icon"),
+        type: "icon",
+        template: (helper) =>
+          helper.entity
+            ? html`<ha-state-icon
+                .hass=${this.hass}
+                .stateObj=${helper.entity}
+              ></ha-state-icon>`
+            : html`<ha-svg-icon
+                .path=${helper.icon}
+                style="color: var(--error-color)"
+              ></ha-svg-icon>`,
+      },
+      name: {
+        title: localize("ui.panel.config.helpers.picker.headers.name"),
+        main: true,
+        sortable: true,
+        filterable: true,
+        grows: true,
+        direction: "asc",
+        template: (helper) => html`
+          <div style="font-size: 14px;">${helper.name}</div>
+          ${narrow
+            ? html`<div class="secondary">${helper.entity_id}</div> `
+            : nothing}
+          ${helper.label_entries.length
+            ? html`
+                <ha-data-table-labels
+                  .labels=${helper.label_entries}
+                ></ha-data-table-labels>
+              `
+            : nothing}
+        `,
+      },
+      entity_id: {
+        title: localize("ui.panel.config.helpers.picker.headers.entity_id"),
+        hidden: this.narrow,
+        sortable: true,
+        filterable: true,
+        width: "25%",
+      },
+      category: {
+        title: localize("ui.panel.config.automation.picker.headers.category"),
+        hidden: true,
+        groupable: true,
+        filterable: true,
+        sortable: true,
+      },
+      labels: {
+        title: "",
+        hidden: true,
+        filterable: true,
+        template: (helper) =>
+          helper.label_entries.map((lbl) => lbl.name).join(" "),
+      },
+      localized_type: {
         title: localize("ui.panel.config.helpers.picker.headers.type"),
         sortable: true,
         width: "25%",
         filterable: true,
         groupable: true,
-      };
-      columns.editable = {
+      },
+      editable: {
         title: "",
         label: this.hass.localize(
           "ui.panel.config.helpers.picker.headers.editable"
@@ -237,9 +288,36 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               `
             : ""}
         `,
-      };
-      return columns;
-    }
+      },
+      actions: {
+        title: "",
+        width: "64px",
+        type: "overflow-menu",
+        template: (helper) => html`
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            narrow
+            .items=${[
+              {
+                path: mdiCog,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_settings"
+                ),
+                action: () => this._openSettings(helper),
+              },
+              {
+                path: mdiTag,
+                label: this.hass.localize(
+                  `ui.panel.config.automation.picker.${helper.category ? "edit_category" : "assign_category"}`
+                ),
+                action: () => this._editCategory(helper),
+              },
+            ]}
+          >
+          </ha-icon-overflow-menu>
+        `,
+      },
+    })
   );
 
   private _getItems = memoizeOne(
@@ -249,6 +327,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>,
       entityReg: EntityRegistryEntry[],
+      categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredStateItems?: string[] | null
     ): HelperItem[] => {
@@ -305,6 +384,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             (reg) => reg.entity_id === item.entity_id
           );
           const labels = labelReg && entityRegEntry?.labels;
+          const category = entityRegEntry?.categories.helpers;
           return {
             ...item,
             localized_type: item.configEntry
@@ -315,6 +395,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             label_entries: (labels || []).map(
               (lbl) => labelReg!.find((label) => label.label_id === lbl)!
             ),
+            category: category
+              ? categoryReg?.find((cat) => cat.category_id === category)?.name
+              : undefined,
           };
         });
     }
@@ -330,6 +413,40 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
+    const categoryItems = html`${this._categories?.map(
+        (category) =>
+          html`<ha-menu-item
+            .value=${category.category_id}
+            @click=${this._handleBulkCategory}
+          >
+            ${category.icon
+              ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
+              : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
+            <div slot="headline">${category.name}</div>
+          </ha-menu-item>`
+      )}
+      <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.automation.picker.bulk_actions.no_category"
+          )}
+        </div>
+      </ha-menu-item>`;
+    const labelItems = html` ${this._labels?.map((label) => {
+      const color = label.color ? computeCssColor(label.color) : undefined;
+      return html`<ha-menu-item
+        .value=${label.label_id}
+        @click=${this._handleBulkLabel}
+      >
+        <ha-label style=${color ? `--color: ${color}` : ""}>
+          ${label.icon
+            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+            : nothing}
+          ${label.name}
+        </ha-label>
+      </ha-menu-item>`;
+    })}`;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -337,6 +454,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         hasFilters
         .filters=${Object.values(this._filters).filter(
           (filter) => filter.value?.length
@@ -348,9 +468,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this._entityEntries,
           this._configEntries,
           this._entityReg,
+          this._categories,
           this._labels,
           this._filteredStateItems
         )}
+        initialGroupColumn="category"
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
@@ -361,6 +483,26 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         )}
         class=${this.narrow ? "narrow" : ""}
       >
+        <ha-filter-floor-areas
+          .hass=${this.hass}
+          .type=${"entity"}
+          .value=${this._filters["ha-filter-floor-areas"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-floor-areas>
+        <ha-filter-devices
+          .hass=${this.hass}
+          .type=${"entity"}
+          .value=${this._filters["ha-filter-devices"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-devices"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-devices>
         <ha-filter-labels
           .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]?.value}
@@ -370,6 +512,114 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
+        <ha-filter-categories
+          .hass=${this.hass}
+          scope="helpers"
+          .value=${this._filters["ha-filter-categories"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-categories"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-categories>
+
+        ${!this.narrow
+          ? html`<ha-button-menu-new slot="selection-bar">
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.move_category"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                ${categoryItems}
+              </ha-button-menu-new>
+              ${this.hass.dockedSidebar === "docked"
+                ? nothing
+                : html`<ha-button-menu-new slot="selection-bar">
+                    <ha-assist-chip
+                      slot="trigger"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.picker.bulk_actions.add_label"
+                      )}
+                    >
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon>
+                    </ha-assist-chip>
+                    ${labelItems}
+                  </ha-button-menu-new>`}`
+          : nothing}
+        ${this.narrow || this.hass.dockedSidebar === "docked"
+          ? html`
+          <ha-button-menu-new has-overflow slot="selection-bar">
+            ${
+              this.narrow
+                ? html`<ha-assist-chip
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>`
+                : html`<ha-icon-button
+                    .path=${mdiDotsVertical}
+                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    slot="trigger"
+                  ></ha-icon-button>`
+            }
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            ${
+              this.narrow
+                ? html`<ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing
+            }
+            ${
+              this.narrow || this.hass.dockedSidebar === "docked"
+                ? html` <ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing
+            }
+          </ha-button-menu-new>`
+          : nothing}
 
         <ha-integration-overflow-menu
           .hass=${this.hass}
@@ -437,6 +687,27 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
       }
+      if (key === "ha-filter-categories" && filter.value?.length) {
+        const categoryItems: Set<string> = new Set();
+        this._stateItems
+          .filter(
+            (stateItem) =>
+              filter.value![0] ===
+              this._entityReg.find(
+                (reg) => reg.entity_id === stateItem.entity_id
+              )?.categories.helpers
+          )
+          .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
+        if (!items) {
+          items = categoryItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(categoryItems)
+            : new Set([...items].filter((x) => categoryItems!.has(x)));
+      }
     }
     this._filteredStateItems = items ? [...items] : undefined;
   }
@@ -444,6 +715,59 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _clearFilter() {
     this._filters = {};
     this._applyFilters();
+  }
+
+  private _editCategory(helper: any) {
+    const entityReg = this._entityReg.find(
+      (reg) => reg.entity_id === helper.entity_id
+    );
+    if (!entityReg) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.automation.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "helpers",
+      entityReg,
+    });
+  }
+
+  private async _handleBulkCategory(ev) {
+    const category = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          categories: { helpers: category },
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private async _handleBulkLabel(ev) {
+    const label = ev.currentTarget.value;
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          labels: this.hass.entities[entityId].labels.concat(label),
+        })
+      );
+    });
+    await Promise.all(promises);
+  }
+
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -563,6 +887,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _openSettings(helper: HelperItem) {
+    if (helper.entity) {
+      showMoreInfoDialog(this, {
+        entityId: helper.entity_id,
+        view: "settings",
+      });
+    } else {
+      showOptionsFlowDialog(this, helper.configEntry!);
+    }
+  }
+
   private _createHelper() {
     showHelperDetailDialog(this, {});
   }
@@ -576,6 +911,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         }
         hass-tabs-subpage-data-table.narrow {
           --data-table-row-height: 72px;
+        }
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+        }
+        ha-button-menu-new ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
+        }
+        ha-label {
+          --ha-label-background-color: var(--color, var(--grey-color));
+          --ha-label-background-opacity: 0.5;
         }
       `,
     ];
