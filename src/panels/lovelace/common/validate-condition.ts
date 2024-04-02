@@ -109,7 +109,7 @@ function checkStateNumericCondition(
     above = getValueFromEntityId(hass, above) ?? above;
   }
   if (typeof below === "string") {
-    below = getValueFromEntityId(hass, below) ?? above;
+    below = getValueFromEntityId(hass, below) ?? below;
   }
 
   const numericState = Number(state);
