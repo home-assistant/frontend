@@ -1,7 +1,7 @@
-import { mdiTextureBox } from "@mdi/js";
+import { mdiSubdirectoryArrowRight, mdiTextureBox } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -49,9 +49,16 @@ const rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
     style=${item.type === "area" && item.hasFloor
-      ? "--mdc-list-side-padding-left: 48px;"
+      ? "padding-left: 42px; padding-inline-start: 42px; --mdc-list-item-graphic-margin: 32px;"
       : ""}
   >
+    ${item.type === "area" && item.hasFloor
+      ? html`<ha-svg-icon
+          style="margin-inline-end: 8px; opacity: .6;"
+          slot="graphic"
+          .path=${mdiSubdirectoryArrowRight}
+        ></ha-svg-icon>`
+      : nothing}
     ${item.type === "floor"
       ? html`<ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>`
       : item.icon
