@@ -11,10 +11,8 @@ import {
   mdiInformationOutline,
   mdiMenuDown,
   mdiPlay,
-  mdiPlayCircleOutline,
   mdiPlus,
   mdiRobotHappy,
-  mdiStopCircleOutline,
   mdiTag,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -60,6 +58,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-menu";
+import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
@@ -101,7 +100,6 @@ import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import type { HaMenu } from "../../../components/ha-menu";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -694,8 +692,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon
             .path=${
               this._overflowAutomation?.state === "off"
-                ? mdiPlayCircleOutline
-                : mdiStopCircleOutline
+                ? mdiToggleSwitch
+                : mdiToggleSwitchOffOutline
             }
             slot="start"
           ></ha-svg-icon>
