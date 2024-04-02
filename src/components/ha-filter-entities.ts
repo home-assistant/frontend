@@ -19,6 +19,7 @@ import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-state-icon";
+import "./search-input-outlined";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -33,6 +34,8 @@ export class HaFilterEntities extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @state() private _shouldRender = false;
+
+  @state() private _filter?: string;
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
@@ -62,11 +65,18 @@ export class HaFilterEntities extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
+              <search-input-outlined
+                .hass=${this.hass}
+                .filter=${this._filter}
+                @value-changed=${this._handleSearchChange}
+              >
+              </search-input-outlined>
               <mwc-list class="ha-scrollbar">
                 <lit-virtualizer
                   .items=${this._entities(
                     this.hass.states,
                     this.type,
+                    this._filter || "",
                     this.value
                   )}
                   .keyFunction=${this._keyFunction}
@@ -86,7 +96,7 @@ export class HaFilterEntities extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
   }
@@ -94,18 +104,20 @@ export class HaFilterEntities extends LitElement {
   private _keyFunction = (entity) => entity?.entity_id;
 
   private _renderItem = (entity) =>
-    html`<ha-check-list-item
-      .value=${entity.entity_id}
-      .selected=${this.value?.includes(entity.entity_id)}
-      graphic="icon"
-    >
-      <ha-state-icon
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${entity}
-      ></ha-state-icon>
-      ${computeStateName(entity)}
-    </ha-check-list-item>`;
+    !entity
+      ? nothing
+      : html`<ha-check-list-item
+          .value=${entity.entity_id}
+          .selected=${this.value?.includes(entity.entity_id)}
+          graphic="icon"
+        >
+          <ha-state-icon
+            slot="graphic"
+            .hass=${this.hass}
+            .stateObj=${entity}
+          ></ha-state-icon>
+          ${computeStateName(entity)}
+        </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -130,12 +142,27 @@ export class HaFilterEntities extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value.toLowerCase();
+  }
+
   private _entities = memoizeOne(
-    (states: HomeAssistant["states"], type: this["type"], _value) => {
+    (
+      states: HomeAssistant["states"],
+      type: this["type"],
+      filter: string,
+      _value
+    ) => {
       const values = Object.values(states);
       return values
         .filter(
-          (entityState) => !type || computeStateDomain(entityState) !== type
+          (entityState) =>
+            (!type || computeStateDomain(entityState) !== type) &&
+            (!filter ||
+              entityState.entity_id.toLowerCase().includes(filter) ||
+              entityState.attributes.friendly_name
+                ?.toLowerCase()
+                .includes(filter))
         )
         .sort((a, b) =>
           stringCompare(
@@ -233,6 +260,10 @@ export class HaFilterEntities extends LitElement {
         ha-check-list-item {
           --mdc-list-item-graphic-margin: 16px;
           width: 100%;
+        }
+        search-input-outlined {
+          display: block;
+          padding: 0 8px;
         }
       `,
     ];
