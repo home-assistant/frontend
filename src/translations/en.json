@@ -1962,6 +1962,7 @@
             "color": "Color"
           },
           "add_label": "Add label",
+          "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
