@@ -1,4 +1,11 @@
-import { mdiDelete, mdiHelpCircle, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDevices,
+  mdiHelpCircle,
+  mdiPlus,
+  mdiRobot,
+  mdiShape,
+} from "@mdi/js";
 import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -28,6 +35,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -81,6 +89,21 @@ export class HaConfigLabels extends LitElement {
             .hass=${this.hass}
             narrow
             .items=${[
+              {
+                label: this.hass.localize("ui.panel.config.entities.caption"),
+                path: mdiShape,
+                action: () => this._navigateEntities(label),
+              },
+              {
+                label: this.hass.localize("ui.panel.config.devices.caption"),
+                path: mdiDevices,
+                action: () => this._navigateDevices(label),
+              },
+              {
+                label: this.hass.localize("ui.panel.config.automation.caption"),
+                path: mdiRobot,
+                action: () => this._navigateAutomations(label),
+              },
               {
                 label: this.hass.localize("ui.common.delete"),
                 path: mdiDelete,
@@ -224,6 +247,20 @@ export class HaConfigLabels extends LitElement {
     } catch (err: any) {
       return false;
     }
+  }
+
+  private _navigateEntities(label: LabelRegistryEntry) {
+    navigate(`/config/entities?historyBack=1&label=${label.label_id}`);
+  }
+
+  private _navigateDevices(label: LabelRegistryEntry) {
+    navigate(`/config/devices/dashboard?historyBack=1&label=${label.label_id}`);
+  }
+
+  private _navigateAutomations(label: LabelRegistryEntry) {
+    navigate(
+      `/config/automation/dashboard?historyBack=1&label=${label.label_id}`
+    );
   }
 }
 

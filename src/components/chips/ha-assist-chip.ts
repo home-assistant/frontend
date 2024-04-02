@@ -22,14 +22,6 @@ export class HaAssistChip extends MdAssistChip {
         );
         --md-assist-chip-outline-color: var(--outline-color);
         --md-assist-chip-label-text-weight: 400;
-        --ha-assist-chip-filled-container-color: rgba(
-          var(--rgb-primary-text-color),
-          0.15
-        );
-        --ha-assist-chip-active-container-color: rgba(
-          var(--rgb-primary-color),
-          0.15
-        );
       }
       /** Material 3 doesn't have a filled chip, so we have to make our own **/
       .filled {
@@ -51,6 +43,10 @@ export class HaAssistChip extends MdAssistChip {
       .trailing.icon svg {
         margin-inline-end: unset;
         margin-inline-start: var(--_icon-label-space);
+      }
+      ::before {
+        background: var(--ha-assist-chip-container-color);
+        opacity: var(--ha-assist-chip-container-opacity);
       }
       :where(.active)::before {
         background: var(--ha-assist-chip-active-container-color);

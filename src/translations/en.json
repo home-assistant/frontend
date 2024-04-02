@@ -509,7 +509,10 @@
         "group_by": "Group by {groupColumn}",
         "dont_group_by": "Don't group",
         "select": "Select",
-        "selected": "Selected {selected}"
+        "selected": "Selected {selected}",
+        "close_select_mode": "Close selection mode",
+        "select_all": "Select all",
+        "select_none": "Select none"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -568,6 +571,7 @@
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
         "no_categories": "You don't have any categories",
+        "no_match": "No matching categories found",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -596,13 +600,7 @@
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "unassigned_areas": "Unassigned areas",
-        "add_dialog": {
-          "title": "Add new area",
-          "text": "Enter the name of the new area.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_area": "Failed to create area."
-        }
+        "failed_create_area": "Failed to create area."
       },
       "floor-picker": {
         "clear": "Clear",
@@ -612,13 +610,7 @@
         "add_new": "Add new floor…",
         "no_floors": "You don't have any floors",
         "no_match": "No matching floors found",
-        "add_dialog": {
-          "title": "Add new floor",
-          "text": "Enter the name of the new floor.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_floor": "Failed to create floor."
-        }
+        "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
         "title": "Areas",
@@ -1122,6 +1114,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "back_to_info": "Back to info",
+        "info": "Information",
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
@@ -2693,6 +2686,14 @@
               "actions": "Actions",
               "state": "State",
               "category": "Category"
+            },
+            "bulk_action": "Action",
+            "bulk_actions": {
+              "move_category": "Move to category",
+              "no_category": "No category",
+              "add_label": "Add label",
+              "enable": "Enable",
+              "disable": "Disable"
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",

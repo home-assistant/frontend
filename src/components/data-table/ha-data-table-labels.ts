@@ -5,20 +5,22 @@ import { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-label";
+import { stringCompare } from "../../common/string/compare";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
   @property({ attribute: false }) public labels!: LabelRegistryEntry[];
 
   protected render(): TemplateResult {
+    const labels = this.labels.sort((a, b) => stringCompare(a.name, b.name));
     return html`
       <ha-chip-set>
         ${repeat(
-          this.labels.slice(0, 2),
+          labels.slice(0, 2),
           (label) => label.label_id,
           (label) => this._renderLabel(label, true)
         )}
-        ${this.labels.length > 2
+        ${labels.length > 2
           ? html`<ha-button-menu
               absolute
               role="button"
@@ -27,10 +29,10 @@ class HaDataTableLabels extends LitElement {
               @closed=${this._handleIconOverflowMenuClosed}
             >
               <ha-label slot="trigger" class="plus" dense>
-                +${this.labels.length - 2}
+                +${labels.length - 2}
               </ha-label>
               ${repeat(
-                this.labels.slice(2),
+                labels.slice(2),
                 (label) => label.label_id,
                 (label) => html`
                   <ha-list-item @click=${this._labelClicked} .item=${label}>

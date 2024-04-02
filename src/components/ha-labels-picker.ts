@@ -17,6 +17,7 @@ import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
+import { stringCompare } from "../common/string/compare";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -75,7 +76,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: LabelRegistryEntry[];
+  @state() private _labels?: { [id: string]: LabelRegistryEntry };
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
@@ -92,22 +93,28 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
+        const lookUp = {};
+        labels.forEach((label) => {
+          lookUp[label.label_id] = label;
+        });
+        this._labels = lookUp;
       }),
     ];
   }
 
   protected render(): TemplateResult {
+    const labels = this.value
+      ?.map((id) => this._labels?.[id])
+      .sort((a, b) =>
+        stringCompare(a?.name || "", b?.name || "", this.hass.locale.language)
+      );
     return html`
-      ${this.value?.length
+      ${labels?.length
         ? html`<ha-chip-set>
             ${repeat(
-              this.value,
-              (item) => item,
-              (item, idx) => {
-                const label = this._labels?.find(
-                  (lbl) => lbl.label_id === item
-                );
+              labels,
+              (label) => label?.label_id,
+              (label, idx) => {
                 const color = label?.color
                   ? computeCssColor(label.color)
                   : undefined;
@@ -167,9 +174,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
           this.hass,
           label.label_id,
           values
-        );
-        this._labels = this._labels!.map((lbl) =>
-          lbl.label_id === updated.label_id ? updated : lbl
         );
         return updated;
       },
