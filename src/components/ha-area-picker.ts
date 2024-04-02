@@ -21,10 +21,8 @@ import {
   getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
 import { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
@@ -417,25 +415,12 @@ export class HaAreaPicker extends LitElement {
     }
 
     (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize("ui.components.area-picker.add_dialog.title"),
-      text: this.hass.localize("ui.components.area-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.area-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.area-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
+
+    showAreaRegistryDetailDialog(this, {
+      suggestedName: newValue === "add_new_suggestion" ? this._suggestion : "",
+      createEntry: async (values) => {
         try {
-          const area = await createAreaRegistryEntry(this.hass, {
-            name,
-          });
+          const area = await createAreaRegistryEntry(this.hass, values);
           const areas = [...Object.values(this.hass.areas), area];
           this.comboBox.filteredItems = this._getAreas(
             areas,
@@ -455,18 +440,16 @@ export class HaAreaPicker extends LitElement {
         } catch (err: any) {
           showAlertDialog(this, {
             title: this.hass.localize(
-              "ui.components.area-picker.add_dialog.failed_create_area"
+              "ui.components.area-picker.failed_create_area"
             ),
             text: err.message,
           });
         }
       },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
-      },
     });
+
+    this._suggestion = undefined;
+    this.comboBox.setInputValue("");
   }
 
   private _setValue(value?: string) {

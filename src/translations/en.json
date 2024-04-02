@@ -599,13 +599,7 @@
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "unassigned_areas": "Unassigned areas",
-        "add_dialog": {
-          "title": "Add new area",
-          "text": "Enter the name of the new area.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_area": "Failed to create area."
-        }
+        "failed_create_area": "Failed to create area."
       },
       "floor-picker": {
         "clear": "Clear",
@@ -615,13 +609,7 @@
         "add_new": "Add new floor…",
         "no_floors": "You don't have any floors",
         "no_match": "No matching floors found",
-        "add_dialog": {
-          "title": "Add new floor",
-          "text": "Enter the name of the new floor.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_floor": "Failed to create floor."
-        }
+        "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
         "title": "Areas",

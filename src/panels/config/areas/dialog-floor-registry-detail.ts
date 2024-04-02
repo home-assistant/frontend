@@ -38,7 +38,9 @@ class DialogFloorDetail extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._name = this._params.entry ? this._params.entry.name : "";
+    this._name = this._params.entry
+      ? this._params.entry.name
+      : this._params.suggestedName || "";
     this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
     this._level = this._params.entry?.level ?? null;
