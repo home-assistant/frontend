@@ -35,6 +35,7 @@ import { ButtonsHeaderFooterConfig } from "../header-footer/types";
 const HIDE_DOMAIN = new Set([
   "automation",
   "configurator",
+  "conversation",
   "device_tracker",
   "geo_location",
   "persistent_notification",

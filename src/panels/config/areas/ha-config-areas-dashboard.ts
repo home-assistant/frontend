@@ -271,7 +271,14 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
             ? html`<ha-icon .icon=${area.icon}></ha-icon>`
             : ""}
         </div>
-        <h1 class="card-header">${area.name}</h1>
+        <div class="card-header">
+          ${area.name}
+          <ha-icon-button
+            .area=${area}
+            .path=${mdiPencil}
+            @click=${this._openAreaDetails}
+          ></ha-icon-button>
+        </div>
         <div class="card-content">
           <div>
             ${formatListWithAnds(
@@ -303,6 +310,16 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
+  }
+
+  private _openAreaDetails(ev) {
+    ev.preventDefault();
+    const area = ev.currentTarget.area;
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: async (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
   }
 
   private async _areaMoved(ev) {
@@ -469,8 +486,10 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
         min-height: 16px;
         color: var(--secondary-text-color);
       }
-      .floor {
-        --primary-color: var(--secondary-text-color);
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
       .warning {
         color: var(--error-color);
