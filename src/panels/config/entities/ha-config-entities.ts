@@ -527,11 +527,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .filters=${Object.values(this._filters).filter(
           (filter) => filter.value?.length
         ).length}
-        .selected=${this._selectedEntities.length}
         .filter=${this._filter}
         selectable
-        clickable
+        .selected=${this._selectedEntities.length}
         @selection-changed=${this._handleSelectionChanged}
+        clickable
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
