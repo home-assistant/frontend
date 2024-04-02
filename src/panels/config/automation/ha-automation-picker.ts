@@ -379,7 +379,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config"
+        }
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
@@ -728,6 +730,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     if (this._searchParms.has("blueprint")) {
       this._filterBlueprint();
     }
+    if (this._searchParms.has("label")) {
+      this._filterLabel();
+    }
   }
 
   private _filterExpanded(ev) {
@@ -813,6 +818,21 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       }
     }
     this._filteredAutomations = items ? [...items] : undefined;
+  }
+
+  private _filterLabel() {
+    const label = this._searchParms.get("label");
+    if (!label) {
+      return;
+    }
+    this._filters = {
+      ...this._filters,
+      "ha-filter-labels": {
+        value: [label],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private async _filterBlueprint() {
