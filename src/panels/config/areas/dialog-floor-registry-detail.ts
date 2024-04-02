@@ -1,8 +1,13 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
+import { mdiTextureBox } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -11,10 +16,14 @@ import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import { FloorRegistryEntryMutableParams } from "../../../data/floor_registry";
+import {
+  FloorRegistryEntry,
+  FloorRegistryEntryMutableParams,
+} from "../../../data/floor_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
+import { updateAreaRegistryEntry } from "../../../data/area_registry";
 
 class DialogFloorDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -53,7 +62,20 @@ class DialogFloorDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _floorAreas = memoizeOne(
+    (areas: HomeAssistant["areas"], entry?: FloorRegistryEntry) => {
+      if (!entry) {
+        return [];
+      }
+      return Object.values(areas).filter(
+        (area) => area.floor_id === entry.floor_id
+      );
+    }
+  );
+
   protected render() {
+    const areas = this._floorAreas(this.hass.areas, this._params?.entry);
+
     if (!this._params) {
       return nothing;
     }
@@ -125,6 +147,38 @@ class DialogFloorDetail extends LitElement {
                 : nothing}
             </ha-icon-picker>
 
+            ${areas.length
+              ? html`<ha-chip-set>
+                  ${repeat(
+                    areas,
+                    (area) => area.area_id,
+                    (area) =>
+                      html`<ha-input-chip
+                        .area=${area}
+                        @remove=${this._removeArea}
+                        @click=${this._openAreaDetail}
+                        .label=${area?.name}
+                      >
+                        ${area.icon
+                          ? html`<ha-icon
+                              slot="icon"
+                              .icon=${area.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              slot="icon"
+                              .path=${mdiTextureBox}
+                            ></ha-svg-icon>`}
+                      </ha-input-chip>`
+                  )}
+                </ha-chip-set>`
+              : nothing}
+            <ha-area-picker
+              no-add
+              .hass=${this.hass}
+              @value-changed=${this._addArea}
+              .excludeAreas=${areas}
+            ></ha-area-picker>
+
             <h3 class="header">
               ${this.hass.localize(
                 "ui.panel.config.floors.editor.aliases_section"
@@ -157,6 +211,22 @@ class DialogFloorDetail extends LitElement {
         </mwc-button>
       </ha-dialog>
     `;
+  }
+
+  private _removeArea(ev) {
+    const area = ev.target.area;
+    updateAreaRegistryEntry(this.hass, area.area_id, { floor_id: null });
+  }
+
+  private _addArea(ev) {
+    const areaId = ev.detail.value;
+    if (!areaId) {
+      return;
+    }
+    updateAreaRegistryEntry(this.hass, areaId, {
+      floor_id: this._params!.entry!.floor_id,
+    });
+    ev.target.value = "";
   }
 
   private _isNameValid() {
@@ -217,6 +287,9 @@ class DialogFloorDetail extends LitElement {
         }
         ha-floor-icon {
           color: var(--secondary-text-color);
+        }
+        ha-chip-set {
+          margin: 16px 0 8px;
         }
       `,
     ];
