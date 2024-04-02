@@ -58,18 +58,12 @@ export interface AndCondition extends BaseCondition {
 
 function getValueFromEntityId(
   hass: HomeAssistant,
-  value: string | string[]
-): string | string[] {
-  if (
-    typeof value === "string" &&
-    isValidEntityId(value) &&
-    hass.states[value]
-  ) {
-    value = hass.states[value]?.state;
-  } else if (Array.isArray(value)) {
-    value = value.map((v) => getValueFromEntityId(hass, v) as string);
+  value: string
+): string | undefined {
+  if (isValidEntityId(value) && hass.states[value]) {
+    return hass.states[value]?.state;
   }
-  return value;
+  return undefined;
 }
 
 function checkStateCondition(
@@ -83,8 +77,17 @@ function checkStateCondition(
   let value = condition.state ?? condition.state_not;
 
   // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
-  if (Array.isArray(value) || typeof value === "string") {
-    value = getValueFromEntityId(hass, value);
+  if (Array.isArray(value)) {
+    const entityValues = value
+      .map((v) => getValueFromEntityId(hass, v))
+      .filter((v): v is string => v !== undefined);
+    value = [...value, ...entityValues];
+  } else if (typeof value === "string") {
+    const entityValue = getValueFromEntityId(hass, value);
+    value = [value];
+    if (entityValue) {
+      value.push(entityValue);
+    }
   }
 
   return condition.state != null
@@ -103,10 +106,10 @@ function checkStateNumericCondition(
 
   // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
   if (typeof above === "string") {
-    above = getValueFromEntityId(hass, above) as string;
+    above = getValueFromEntityId(hass, above) ?? above;
   }
   if (typeof below === "string") {
-    below = getValueFromEntityId(hass, below) as string;
+    below = getValueFromEntityId(hass, below) ?? above;
   }
 
   const numericState = Number(state);
