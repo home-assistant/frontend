@@ -151,7 +151,7 @@ export class DemoHaBarSlider extends LitElement {
         --control-slider-background: #ffcf4c;
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 130px;
-        --control-slider-border-radius: 48px;
+        --control-slider-border-radius: 36px;
       }
       .vertical-sliders {
         height: 300px;

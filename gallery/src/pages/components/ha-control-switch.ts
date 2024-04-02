@@ -118,7 +118,7 @@ export class DemoHaControlSwitch extends LitElement {
         --control-switch-on-color: var(--green-color);
         --control-switch-off-color: var(--red-color);
         --control-switch-thickness: 130px;
-        --control-switch-border-radius: 48px;
+        --control-switch-border-radius: 36px;
         --control-switch-padding: 6px;
         --mdc-icon-size: 24px;
       }
