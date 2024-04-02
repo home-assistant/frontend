@@ -26,6 +26,10 @@ export class HaMenuItem extends MdMenuItem {
         --md-sys-color-on-primary-container: var(--primary-text-color);
         --md-sys-color-on-secondary-container: var(--primary-text-color);
       }
+      :host(.warning) {
+        --md-menu-item-label-text-color: var(--error-color);
+        --md-menu-item-leading-icon-color: var(--error-color);
+      }
     `,
   ];
 }
