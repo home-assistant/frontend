@@ -136,20 +136,6 @@ export class HaAreaPicker extends LitElement {
       noAdd: this["noAdd"],
       excludeAreas: this["excludeAreas"]
     ): AreaRegistryEntry[] => {
-      if (!areas.length) {
-        return [
-          {
-            area_id: NO_ITEMS_ID,
-            floor_id: null,
-            name: this.hass.localize("ui.components.area-picker.no_areas"),
-            picture: null,
-            icon: null,
-            aliases: [],
-            labels: [],
-          },
-        ];
-      }
-
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -288,7 +274,7 @@ export class HaAreaPicker extends LitElement {
           {
             area_id: NO_ITEMS_ID,
             floor_id: null,
-            name: this.hass.localize("ui.components.area-picker.no_match"),
+            name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
             icon: null,
             aliases: [],
@@ -376,20 +362,40 @@ export class HaAreaPicker extends LitElement {
 
     const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
       filterString,
-      target.items || []
+      target.items?.filter(
+        (item) => ![NO_ITEMS_ID, ADD_NEW_ID].includes(item.label_id)
+      ) || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          area_id: ADD_NEW_SUGGESTION_ID,
-          name: this.hass.localize(
-            "ui.components.area-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems.length === 0) {
+      if (!this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            area_id: NO_ITEMS_ID,
+            floor_id: null,
+            name: this.hass.localize("ui.components.area-picker.no_match"),
+            icon: null,
+            picture: null,
+            labels: [],
+            aliases: [],
+          },
+        ] as AreaRegistryEntry[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            area_id: ADD_NEW_SUGGESTION_ID,
+            floor_id: null,
+            name: this.hass.localize(
+              "ui.components.area-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+            picture: null,
+            labels: [],
+            aliases: [],
+          },
+        ] as AreaRegistryEntry[];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -409,6 +415,8 @@ export class HaAreaPicker extends LitElement {
 
     if (newValue === NO_ITEMS_ID) {
       newValue = "";
+      this.comboBox.setInputValue("");
+      return;
     }
 
     if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
