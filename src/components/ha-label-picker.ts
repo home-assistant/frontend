@@ -445,6 +445,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
     (ev.target as any).value = this._value;
 
+    this.hass.loadFragmentTranslation("config");
+
     showLabelDetailDialog(this, {
       entry: undefined,
       suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
