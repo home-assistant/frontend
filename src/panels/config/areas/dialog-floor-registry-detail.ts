@@ -213,6 +213,9 @@ class DialogFloorDetail extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
+        ha-floor-icon {
+          color: var(--secondary-text-color);
+        }
       `,
     ];
   }
