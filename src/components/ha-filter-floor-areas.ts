@@ -1,5 +1,9 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiFilterVariantRemove, mdiSubdirectoryArrowRight, mdiTextureBox } from "@mdi/js";
+import {
+  mdiFilterVariantRemove,
+  mdiSubdirectoryArrowRight,
+  mdiTextureBox,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
