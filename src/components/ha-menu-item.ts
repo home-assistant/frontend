@@ -1,7 +1,7 @@
-import { customElement } from "lit/decorators";
+import { MdMenuItem } from "@material/web/menu/menu-item";
 import "element-internals-polyfill";
 import { CSSResult, css } from "lit";
-import { MdMenuItem } from "@material/web/menu/menu-item";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-menu-item")
 export class HaMenuItem extends MdMenuItem {
@@ -29,6 +29,9 @@ export class HaMenuItem extends MdMenuItem {
       :host(.warning) {
         --md-menu-item-label-text-color: var(--error-color);
         --md-menu-item-leading-icon-color: var(--error-color);
+      }
+      ::slotted([slot="headline"]) {
+        text-wrap: nowrap;
       }
     `,
   ];
