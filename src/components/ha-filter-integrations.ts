@@ -1,15 +1,16 @@
 import { SelectedDetail } from "@material/mwc-list";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../data/integration";
+import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
 import "./ha-domain-icon";
 
 @customElement("ha-filter-integrations")
@@ -47,11 +48,15 @@ export class HaFilterIntegrations extends LitElement {
                 multi
                 class="ha-scrollbar"
               >
-                ${this._integrations(this._manifests).map(
+                ${repeat(
+                  this._integrations(this._manifests, this.value),
+                  (i) => i.domain,
                   (integration) =>
                     html`<ha-check-list-item
                       .value=${integration.domain}
-                      .selected=${this.value?.includes(integration.domain)}
+                      .selected=${(this.value || []).includes(
+                        integration.domain
+                      )}
                       graphic="icon"
                     >
                       <ha-domain-icon
@@ -92,26 +97,27 @@ export class HaFilterIntegrations extends LitElement {
     this._manifests = await fetchIntegrationManifests(this.hass);
   }
 
-  private _integrations = memoizeOne((manifest: IntegrationManifest[]) =>
-    manifest
-      .filter(
-        (mnfst) =>
-          !mnfst.integration_type ||
-          !["entity", "system", "hardware"].includes(mnfst.integration_type)
-      )
-      .sort((a, b) =>
-        stringCompare(
-          a.name || a.domain,
-          b.name || b.domain,
-          this.hass.locale.language
+  private _integrations = memoizeOne(
+    (manifest: IntegrationManifest[], _value) =>
+      manifest
+        .filter(
+          (mnfst) =>
+            !mnfst.integration_type ||
+            !["entity", "system", "hardware"].includes(mnfst.integration_type)
         )
-      )
+        .sort((a, b) =>
+          stringCompare(
+            a.name || a.domain,
+            b.name || b.domain,
+            this.hass.locale.language
+          )
+        )
   );
 
   private async _integrationsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    const integrations = this._integrations(this._manifests!);
+    const integrations = this._integrations(this._manifests!, this.value);
 
     if (!ev.detail.index.size) {
       fireEvent(this, "data-table-filter-changed", {
