@@ -57,7 +57,8 @@ export class HaFilterDevices extends LitElement {
         ${this._shouldRender
           ? html`<mwc-list class="ha-scrollbar">
               <lit-virtualizer
-                .items=${this._devices(this.hass.devices)}
+                .items=${this._devices(this.hass.devices, this.value)}
+                .keyFunction=${this._keyFunction}
                 .renderItem=${this._renderItem}
                 @click=${this._handleItemClick}
               >
@@ -67,6 +68,8 @@ export class HaFilterDevices extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
+  private _keyFunction = (device) => device?.id;
 
   private _renderItem = (device) =>
     html`<ha-check-list-item
@@ -109,7 +112,7 @@ export class HaFilterDevices extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _devices = memoizeOne((devices: HomeAssistant["devices"]) => {
+  private _devices = memoizeOne((devices: HomeAssistant["devices"], _value) => {
     const values = Object.values(devices);
     return values.sort((a, b) =>
       stringCompare(

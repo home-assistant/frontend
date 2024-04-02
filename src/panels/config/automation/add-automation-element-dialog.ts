@@ -556,7 +556,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ></ha-svg-icon
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-list-item-new>
-                <md-divider></md-divider>`
+                <md-divider role="separator" tabindex="-1"></md-divider>`
             : ""}
           ${repeat(
             items,

@@ -50,7 +50,7 @@ export class HaFilterBlueprints extends LitElement {
                     ? nothing
                     : html`<ha-check-list-item
                         .value=${id}
-                        .selected=${this.value?.includes(id)}
+                        .selected=${(this.value || []).includes(id)}
                       >
                         ${blueprint.metadata.name || id}
                       </ha-check-list-item>`

@@ -274,7 +274,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       if (areaIds) {
         const floorAreaLookup = getFloorAreaLookup(areas);
         outputFloors = outputFloors.filter((floor) =>
-          floorAreaLookup[floor.floor_id].some((area) =>
+          floorAreaLookup[floor.floor_id]?.some((area) =>
             areaIds!.includes(area.area_id)
           )
         );
