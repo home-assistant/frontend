@@ -690,15 +690,21 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-menu-item>
         <ha-menu-item @click=${this._toggle}>
           <ha-svg-icon
-            .path=${this._overflowAutomation?.state === "off"
-              ? mdiPlayCircleOutline
-              : mdiStopCircleOutline}
+            .path=${
+              this._overflowAutomation?.state === "off"
+                ? mdiPlayCircleOutline
+                : mdiStopCircleOutline
+            }
             slot="start"
           ></ha-svg-icon>
           <div slot="headline">
-            ${this._overflowAutomation?.state === "off"
-              ? this.hass.localize("ui.panel.config.automation.editor.enable")
-              : this.hass.localize("ui.panel.config.automation.editor.disable")}
+            ${
+              this._overflowAutomation?.state === "off"
+                ? this.hass.localize("ui.panel.config.automation.editor.enable")
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.disable"
+                  )
+            }
           </div>
         </ha-menu-item>
         <ha-menu-item @click=${this._deleteConfirm} class="warning">
