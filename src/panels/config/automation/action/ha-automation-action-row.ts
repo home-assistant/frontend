@@ -69,6 +69,7 @@ import "./types/ha-automation-action-if";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";

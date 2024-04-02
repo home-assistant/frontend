@@ -27,6 +27,7 @@ import {
   PlayMediaAction,
   RepeatAction,
   SceneAction,
+  SequenceAction,
   SetConversationResponseAction,
   StopAction,
   VariablesAction,
@@ -440,6 +441,15 @@ const tryDescribeAction = <T extends ActionType>(
     const numActions = ensureArray(config.parallel).length;
     return hass.localize(
       `${actionTranslationBaseKey}.parallel.description.full`,
+      { number: numActions }
+    );
+  }
+
+  if (actionType === "sequence") {
+    const config = action as SequenceAction;
+    const numActions = ensureArray(config.sequence).length;
+    return hass.localize(
+      `${actionTranslationBaseKey}.sequence.description.full`,
       { number: numActions }
     );
   }

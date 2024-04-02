@@ -248,11 +248,11 @@ export interface StopAction extends BaseAction {
 }
 
 export interface SequenceAction extends BaseAction {
-  sequence: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
+  sequence: (ManualScriptConfig | Action)[];
 }
 
 export interface ParallelAction extends BaseAction {
-  parallel: SequenceAction | SequenceAction[];
+  parallel: SequenceAction[];
 }
 
 export interface SetConversationResponseAction extends BaseAction {
@@ -303,6 +303,7 @@ export interface ActionTypes {
   play_media: PlayMediaAction;
   stop: StopAction;
   parallel: ParallelAction;
+  sequence: SequenceAction;
   set_conversation_response: SetConversationResponseAction;
   unknown: UnknownAction;
 }
@@ -394,6 +395,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("parallel" in action) {
     return "parallel";
+  }
+  if ("sequence" in action) {
+    return "sequence";
   }
   if ("set_conversation_response" in action) {
     return "set_conversation_response";

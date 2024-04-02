@@ -8,6 +8,7 @@ import {
   mdiDevices,
   mdiDotsHorizontal,
   mdiExcavator,
+  mdiFormatListNumbered,
   mdiGestureDoubleTap,
   mdiHandBackRight,
   mdiPalette,
@@ -36,6 +37,7 @@ export const ACTION_ICONS = {
   device_id: mdiDevices,
   stop: mdiHandBackRight,
   parallel: mdiShuffleDisabled,
+  sequence: mdiFormatListNumbered,
   variables: mdiApplicationVariableOutline,
   set_conversation_response: mdiBullhorn,
 } as const;
