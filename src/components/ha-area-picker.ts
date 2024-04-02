@@ -428,6 +428,8 @@ export class HaAreaPicker extends LitElement {
 
     (ev.target as any).value = this._value;
 
+    this.hass.loadFragmentTranslation("config");
+
     showAreaRegistryDetailDialog(this, {
       suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
       createEntry: async (values) => {
