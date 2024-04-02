@@ -368,14 +368,16 @@ export class HaTabsSubpageDataTable extends LitElement {
                       "ui.components.subpage-data-table.filters"
                     )}</span
                   >
-                  <ha-icon-button
-                    slot="actionItems"
-                    @click=${this._clearFilters}
-                    .path=${mdiFilterVariantRemove}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.clear_filter"
-                    )}
-                  ></ha-icon-button>
+                  ${this.filters
+                    ? html`<ha-icon-button
+                        slot="actionItems"
+                        @click=${this._clearFilters}
+                        .path=${mdiFilterVariantRemove}
+                        .label=${localize(
+                          "ui.components.subpage-data-table.clear_filter"
+                        )}
+                      ></ha-icon-button>`
+                    : nothing}
                 </ha-dialog-header>
                 <div class="filter-dialog-content">
                   <slot name="filter-pane"></slot></div
@@ -394,13 +396,15 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiFilterVariant}
                     ></ha-svg-icon>
                   </ha-assist-chip>
-                  <ha-icon-button
-                    .path=${mdiFilterVariantRemove}
-                    @click=${this._clearFilters}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.clear_filter"
-                    )}
-                  ></ha-icon-button>
+                  ${this.filters
+                    ? html`<ha-icon-button
+                        .path=${mdiFilterVariantRemove}
+                        @click=${this._clearFilters}
+                        .label=${localize(
+                          "ui.components.subpage-data-table.clear_filter"
+                        )}
+                      ></ha-icon-button>`
+                    : nothing}
                 </div>
                 <div class="pane-content">
                   <slot name="filter-pane"></slot>

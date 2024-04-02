@@ -1,12 +1,13 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
+import { mdiFilterVariantRemove } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { findRelated, RelatedResult } from "../data/search";
-import type { HomeAssistant } from "../types";
-import { haStyleScrollbar } from "../resources/styles";
 import { Blueprints, fetchBlueprints } from "../data/blueprint";
+import { findRelated, RelatedResult } from "../data/search";
+import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -35,7 +36,11 @@ export class HaFilterBlueprints extends LitElement {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.blueprint.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._blueprints && this._shouldRender
@@ -128,6 +133,15 @@ export class HaFilterBlueprints extends LitElement {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -146,6 +160,10 @@ export class HaFilterBlueprints extends LitElement {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;

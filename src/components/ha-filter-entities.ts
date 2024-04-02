@@ -1,3 +1,4 @@
+import { mdiFilterVariantRemove } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -14,10 +15,10 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
 import { findRelated, RelatedResult } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-state-icon";
-import "./ha-check-list-item";
 import { loadVirtualizer } from "../resources/virtualizer";
+import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
+import "./ha-state-icon";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -52,7 +53,11 @@ export class HaFilterEntities extends LitElement {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.entities.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -177,6 +182,15 @@ export class HaFilterEntities extends LitElement {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -195,6 +209,10 @@ export class HaFilterEntities extends LitElement {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;
