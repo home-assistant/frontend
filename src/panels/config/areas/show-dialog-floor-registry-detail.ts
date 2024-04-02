@@ -6,6 +6,7 @@ import {
 
 export interface FloorRegistryDetailDialogParams {
   entry?: FloorRegistryEntry;
+  suggestedName?: string;
   createEntry?: (values: FloorRegistryEntryMutableParams) => Promise<unknown>;
   updateEntry?: (
     updates: Partial<FloorRegistryEntryMutableParams>

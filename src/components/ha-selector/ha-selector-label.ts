@@ -30,6 +30,7 @@ export class HaLabelSelector extends LitElement {
     if (this.selector.label.multiple) {
       return html`
         <ha-labels-picker
+          no-add
           .hass=${this.hass}
           .value=${ensureArray(this.value ?? [])}
           .disabled=${this.disabled}
@@ -41,6 +42,7 @@ export class HaLabelSelector extends LitElement {
     }
     return html`
       <ha-label-picker
+        no-add
         .hass=${this.hass}
         .value=${this.value}
         .disabled=${this.disabled}
