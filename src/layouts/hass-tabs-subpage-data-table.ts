@@ -321,19 +321,28 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-menu-item .value=${undefined} @click=${this._selectAll}
-                    >${localize("ui.components.subpage-data-table.select_all")}
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                    <div slot="headline">
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </div>
                   </ha-menu-item>
-                  <ha-menu-item .value=${undefined} @click=${this._selectNone}
-                    >${localize("ui.components.subpage-data-table.select_none")}
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </div>
                   </ha-menu-item>
                   <md-divider role="separator" tabindex="-1"></md-divider>
                   <ha-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
-                    >${localize(
-                      "ui.components.subpage-data-table.close_select_mode"
-                    )}
+                  >
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.close_select_mode"
+                      )}
+                    </div>
                   </ha-menu-item>
                 </ha-button-menu-new>
                 <p>
