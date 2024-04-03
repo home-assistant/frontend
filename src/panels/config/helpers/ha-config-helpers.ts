@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiAlertCircle,
@@ -83,12 +84,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 type HelperItem = {
   id: string;
@@ -162,6 +163,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   _entityReg!: EntityRegistryEntry[];
 
   @state() private _filteredStateItems?: string[] | null;
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   public hassSubscribe() {
     return [
@@ -478,7 +483,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div>
       </ha-menu-item>`;
-
+    const labelsInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -570,7 +577,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 </ha-assist-chip>
                 ${categoryItems}
               </ha-button-menu-new>
-              ${this.hass.dockedSidebar === "docked"
+              ${labelsInOverflow
                 ? nothing
                 : html`<ha-button-menu-new slot="selection-bar">
                     <ha-assist-chip
@@ -587,7 +594,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     ${labelItems}
                   </ha-button-menu-new>`}`
           : nothing}
-        ${this.narrow || this.hass.dockedSidebar === "docked"
+        ${this.narrow || labelsInOverflow
           ? html`
           <ha-button-menu-new has-overflow slot="selection-bar">
             ${
@@ -958,6 +965,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }

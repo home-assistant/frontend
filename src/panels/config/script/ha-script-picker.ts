@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiChevronRight,
   mdiCog,
@@ -142,6 +143,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   private _scripts = memoizeOne(
     (
@@ -429,7 +434,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
       >`;
-
+    const labelsInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -551,7 +558,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 </ha-assist-chip>
                 ${categoryItems}
               </ha-button-menu-new>
-              ${this.hass.dockedSidebar === "docked"
+              ${labelsInOverflow
                 ? nothing
                 : html`<ha-button-menu-new slot="selection-bar">
                     <ha-assist-chip
@@ -568,7 +575,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     ${labelItems}
                   </ha-button-menu-new>`}`
           : nothing}
-        ${this.narrow || this.hass.dockedSidebar === "docked"
+        ${this.narrow || labelsInOverflow
           ? html`
           <ha-button-menu-new has-overflow slot="selection-bar">
             ${
@@ -1028,6 +1035,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }
