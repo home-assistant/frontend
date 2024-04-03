@@ -92,7 +92,7 @@ export class HaFilterIntegrations extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
   }
