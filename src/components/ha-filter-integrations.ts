@@ -13,6 +13,7 @@ import {
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-domain-icon";
+import "./search-input-outlined";
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -27,6 +28,8 @@ export class HaFilterIntegrations extends LitElement {
   @state() private _manifests?: IntegrationManifest[];
 
   @state() private _shouldRender = false;
+
+  @state() private _filter?: string;
 
   protected render() {
     return html`
@@ -47,14 +50,19 @@ export class HaFilterIntegrations extends LitElement {
             : nothing}
         </div>
         ${this._manifests && this._shouldRender
-          ? html`
+          ? html`<search-input-outlined
+                .hass=${this.hass}
+                .filter=${this._filter}
+                @value-changed=${this._handleSearchChange}
+              >
+              </search-input-outlined>
               <mwc-list
                 @selected=${this._integrationsSelected}
                 multi
                 class="ha-scrollbar"
               >
                 ${repeat(
-                  this._integrations(this._manifests, this.value),
+                  this._integrations(this._manifests, this._filter, this.value),
                   (i) => i.domain,
                   (integration) =>
                     html`<ha-check-list-item
@@ -73,8 +81,7 @@ export class HaFilterIntegrations extends LitElement {
                       ${integration.name || integration.domain}
                     </ha-check-list-item>`
                 )}
-              </mwc-list>
-            `
+              </mwc-list> `
           : nothing}
       </ha-expansion-panel>
     `;
@@ -103,12 +110,17 @@ export class HaFilterIntegrations extends LitElement {
   }
 
   private _integrations = memoizeOne(
-    (manifest: IntegrationManifest[], _value) =>
+    (manifest: IntegrationManifest[], filter: string | undefined, _value) =>
       manifest
         .filter(
           (mnfst) =>
-            !mnfst.integration_type ||
-            !["entity", "system", "hardware"].includes(mnfst.integration_type)
+            (!mnfst.integration_type ||
+              !["entity", "system", "hardware"].includes(
+                mnfst.integration_type
+              )) &&
+            (!filter ||
+              mnfst.name.toLowerCase().includes(filter) ||
+              mnfst.domain.toLowerCase().includes(filter))
         )
         .sort((a, b) =>
           stringCompare(
@@ -122,7 +134,11 @@ export class HaFilterIntegrations extends LitElement {
   private async _integrationsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    const integrations = this._integrations(this._manifests!, this.value);
+    const integrations = this._integrations(
+      this._manifests!,
+      this._filter,
+      this.value
+    );
 
     if (!ev.detail.index.size) {
       fireEvent(this, "data-table-filter-changed", {
@@ -154,6 +170,10 @@ export class HaFilterIntegrations extends LitElement {
       value: undefined,
       items: undefined,
     });
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value.toLowerCase();
   }
 
   static get styles(): CSSResultGroup {
@@ -194,6 +214,10 @@ export class HaFilterIntegrations extends LitElement {
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);
+        }
+        search-input-outlined {
+          display: block;
+          padding: 0 8px;
         }
       `,
     ];
