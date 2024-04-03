@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/web/divider/divider";
 import {
@@ -152,6 +153,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state() private _overflowAutomation?: AutomationItem;
 
   @query("#overflow-menu") private _overflowMenu!: HaMenu;
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   private _automations = memoizeOne(
     (
@@ -414,7 +419,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
       >`;
-
+    const labelsInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -538,7 +545,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     </ha-assist-chip>
                     ${categoryItems}
                   </ha-button-menu-new>
-                  ${this.hass.dockedSidebar === "docked"
+                  ${labelsInOverflow
                     ? nothing
                     : html`<ha-button-menu-new slot="selection-bar">
                         <ha-assist-chip
@@ -600,8 +607,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 : nothing
             }
             ${
-              this.narrow || this.hass.dockedSidebar === "docked"
-                ? html` <ha-sub-menu>
+              this.narrow || labelsInOverflow
+                ? html`<ha-sub-menu>
                     <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
@@ -1146,6 +1153,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }
