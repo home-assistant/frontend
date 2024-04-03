@@ -27,6 +27,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -49,11 +50,12 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-menu-item";
 import "../../../components/ha-sub-menu";
+import "../../../components/ha-svg-icon";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
@@ -65,6 +67,7 @@ import {
 } from "../../../data/entity_registry";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import {
@@ -88,8 +91,9 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
-import { computeCssColor } from "../../../common/color/compute-color";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -361,21 +365,32 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
+        </div> </ha-menu-item
+      ><md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createCategory}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
       </ha-menu-item>`;
     const labelItems = html` ${this._labels?.map((label) => {
       const color = label.color ? computeCssColor(label.color) : undefined;
       return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
-      </ha-menu-item>`;
+          .value=${label.label_id}
+          @click=${this._handleBulkLabel}
+        >
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item @click=${this._createLabel}>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.labels.add_label")}
+          </div>
+        </ha-menu-item>`;
     })}`;
 
     return html`
@@ -942,6 +957,20 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               ),
       });
     }
+  }
+
+  private _createCategory() {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "script",
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, "script", values),
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+    });
   }
 
   static get styles(): CSSResultGroup {

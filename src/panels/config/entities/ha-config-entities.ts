@@ -70,6 +70,7 @@ import {
 import { entryIcon } from "../../../data/icons";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import {
@@ -86,6 +87,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -517,16 +519,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     const labelItems = html` ${this._labels?.map((label) => {
       const color = label.color ? computeCssColor(label.color) : undefined;
       return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
-      </ha-menu-item>`;
+          .value=${label.label_id}
+          @click=${this._handleBulkLabel}
+        >
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item @click=${this._createLabel}>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.labels.add_label")}
+          </div>
+        </ha-menu-item>`;
     })}`;
 
     return html`
@@ -1088,6 +1096,12 @@ ${
     }
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
     });
   }
 
