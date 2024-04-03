@@ -399,6 +399,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
           keep-open
+          reducedTouchTarget
         >
           <ha-checkbox
             slot="start"

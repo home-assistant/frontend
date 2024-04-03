@@ -564,6 +564,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             slot="start"
             .checked=${selected}
             .indeterminate=${partial}
+            reducedTouchTarget
           ></ha-checkbox>
           <ha-label style=${color ? `--color: ${color}` : ""}>
             ${label.icon
