@@ -201,7 +201,7 @@ class DialogFloorDetail extends LitElement {
               no-add
               .hass=${this.hass}
               @value-changed=${this._addArea}
-              .excludeAreas=${areas}
+              .excludeAreas=${areas.map((a) => a.area_id)}
               .label=${this.hass.localize(
                 "ui.panel.config.floors.editor.add_area"
               )}
