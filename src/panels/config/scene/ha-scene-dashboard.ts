@@ -27,6 +27,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
@@ -48,12 +49,13 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-menu-item";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
+import "../../../components/ha-svg-icon";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
@@ -66,6 +68,7 @@ import {
 import { forwardHaptic } from "../../../data/haptics";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import {
@@ -86,11 +89,13 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
-import { computeCssColor } from "../../../common/color/compute-color";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 type SceneItem = SceneEntity & {
   name: string;
+  area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
 };
@@ -136,6 +141,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     (
       scenes: SceneEntity[],
       entityReg: EntityRegistryEntry[],
+      areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredScenes?: string[] | null
@@ -156,6 +162,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         return {
           ...scene,
           name: computeStateName(scene),
+          area: entityRegEntry?.area_id
+            ? areas[entityRegEntry?.area_id]?.name
+            : undefined,
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
@@ -198,6 +207,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               : nothing}
           `,
         },
+        area: {
+          title: localize("ui.panel.config.scene.picker.headers.area"),
+          hidden: true,
+          groupable: true,
+          filterable: true,
+          sortable: true,
+        },
         category: {
           title: localize("ui.panel.config.scene.picker.headers.category"),
           hidden: true,
@@ -211,14 +227,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           filterable: true,
           template: (scene) => scene.labels.map((lbl) => lbl.name).join(" "),
         },
-      };
-      if (!narrow) {
-        columns.state = {
+        state: {
           title: localize(
             "ui.panel.config.scene.picker.headers.last_activated"
           ),
           sortable: true,
           width: "30%",
+          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {
@@ -233,80 +248,80 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 : relativeTime(date, this.hass.locale)}
             `;
           },
-        };
-      }
-      columns.only_editable = {
-        title: "",
-        width: "56px",
-        template: (scene) =>
-          !scene.attributes.id
-            ? html`
-                <simple-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.scene.picker.only_editable"
-                  )}
-                </simple-tooltip>
-                <ha-svg-icon
-                  .path=${mdiPencilOff}
-                  style="color: var(--secondary-text-color)"
-                ></ha-svg-icon>
-              `
-            : "",
-      };
-      columns.actions = {
-        title: "",
-        width: "64px",
-        type: "overflow-menu",
-        template: (scene) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.show_info"
-                ),
-                action: () => this._showInfo(scene),
-              },
-              {
-                path: mdiPlay,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.activate"
-                ),
-                action: () => this._activateScene(scene),
-              },
-              {
-                path: mdiTag,
-                label: this.hass.localize(
-                  `ui.panel.config.scene.picker.${scene.category ? "edit_category" : "assign_category"}`
-                ),
-                action: () => this._editCategory(scene),
-              },
-              {
-                divider: true,
-              },
-              {
-                path: mdiContentDuplicate,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.duplicate"
-                ),
-                action: () => this._duplicate(scene),
-                disabled: !scene.attributes.id,
-              },
-              {
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.delete"
-                ),
-                path: mdiDelete,
-                action: () => this._deleteConfirm(scene),
-                warning: scene.attributes.id,
-                disabled: !scene.attributes.id,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
-        `,
+        },
+        only_editable: {
+          title: "",
+          width: "56px",
+          template: (scene) =>
+            !scene.attributes.id
+              ? html`
+                  <simple-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize(
+                      "ui.panel.config.scene.picker.only_editable"
+                    )}
+                  </simple-tooltip>
+                  <ha-svg-icon
+                    .path=${mdiPencilOff}
+                    style="color: var(--secondary-text-color)"
+                  ></ha-svg-icon>
+                `
+              : "",
+        },
+        actions: {
+          title: "",
+          width: "64px",
+          type: "overflow-menu",
+          template: (scene) => html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.show_info"
+                  ),
+                  action: () => this._showInfo(scene),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.activate"
+                  ),
+                  action: () => this._activateScene(scene),
+                },
+                {
+                  path: mdiTag,
+                  label: this.hass.localize(
+                    `ui.panel.config.scene.picker.${scene.category ? "edit_category" : "assign_category"}`
+                  ),
+                  action: () => this._editCategory(scene),
+                },
+                {
+                  divider: true,
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.duplicate"
+                  ),
+                  action: () => this._duplicate(scene),
+                  disabled: !scene.attributes.id,
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(scene),
+                  warning: scene.attributes.id,
+                  disabled: !scene.attributes.id,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
+        },
       };
 
       return columns;
@@ -350,21 +365,49 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createCategory}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.category.editor.add")}
+        </div>
       </ha-menu-item>`;
     const labelItems = html` ${this._labels?.map((label) => {
-      const color = label.color ? computeCssColor(label.color) : undefined;
-      return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
-      </ha-menu-item>`;
-    })}`;
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((entityId) =>
+          this.hass.entities[entityId]?.labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this.hass.entities[entityId]?.labels.includes(label.label_id)
+          );
+        return html`<ha-menu-item
+          .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
+          @click=${this._handleBulkLabel}
+          keep-open
+        >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+            reducedTouchTarget
+          ></ha-checkbox>
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>`;
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createLabel}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </div></ha-menu-item
+      >`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -386,6 +429,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         .data=${this._scenes(
           this.scenes,
           this._entityReg,
+          this.hass.areas,
           this._categories,
           this._labels,
           this._filteredScenes
@@ -729,11 +773,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          labels: this.hass.entities[entityId].labels.concat(label),
+          labels:
+            action === "add"
+              ? this.hass.entities[entityId].labels.concat(label)
+              : this.hass.entities[entityId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
         })
       );
     });
@@ -825,6 +875,20 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           </a>
         </p>
       `,
+    });
+  }
+
+  private _createCategory() {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "scene",
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, "scene", values),
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
     });
   }
 

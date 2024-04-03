@@ -1,17 +1,19 @@
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeRTL } from "../common/util/compute_rtl";
 import {
   FloorRegistryEntry,
   getFloorAreaLookup,
   subscribeFloorRegistry,
 } from "../data/floor_registry";
-import { findRelated, RelatedResult } from "../data/search";
+import { RelatedResult, findRelated } from "../data/search";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -19,6 +21,7 @@ import "./ha-check-list-item";
 import "./ha-floor-icon";
 import "./ha-icon";
 import "./ha-svg-icon";
+import "./ha-tree-indicator";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
@@ -86,8 +89,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
                     </ha-check-list-item>
                     ${repeat(
                       floor.areas,
-                      (area) => area.area_id,
-                      (area) => this._renderArea(area)
+                      (area, index) =>
+                        `${area.area_id}${index === floor.areas.length - 1 ? "___last" : ""}`,
+                      (area, index) =>
+                        this._renderArea(area, index === floor.areas.length - 1)
                     )}
                   `
                 )}
@@ -103,23 +108,37 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _renderArea(area) {
-    return html`<ha-check-list-item
-      .value=${area.area_id}
-      .selected=${this.value?.areas?.includes(area.area_id) || false}
-      .type=${"areas"}
-      graphic="icon"
-      class=${area.floor_id ? "floor" : ""}
-      @request-selected=${this._handleItemClick}
-    >
-      ${area.icon
-        ? html`<ha-icon slot="graphic" .icon=${area.icon}></ha-icon>`
-        : html`<ha-svg-icon
-            slot="graphic"
-            .path=${mdiTextureBox}
-          ></ha-svg-icon>`}
-      ${area.name}
-    </ha-check-list-item>`;
+  private _renderArea(area, last: boolean = false) {
+    const hasFloor = !!area.floor_id;
+    return html`
+      <ha-check-list-item
+        .value=${area.area_id}
+        .selected=${this.value?.areas?.includes(area.area_id) || false}
+        .type=${"areas"}
+        graphic="icon"
+        @request-selected=${this._handleItemClick}
+        class=${classMap({
+          rtl: computeRTL(this.hass),
+          floor: hasFloor,
+        })}
+      >
+        ${hasFloor
+          ? html`
+              <ha-tree-indicator
+                .end=${last}
+                slot="graphic"
+              ></ha-tree-indicator>
+            `
+          : nothing}
+        ${area.icon
+          ? html`<ha-icon slot="graphic" .icon=${area.icon}></ha-icon>`
+          : html`<ha-svg-icon
+              slot="graphic"
+              .path=${mdiTextureBox}
+            ></ha-svg-icon>`}
+        ${area.name}
+      </ha-check-list-item>
+    `;
   }
 
   private _handleItemClick(ev) {
@@ -294,9 +313,26 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           --mdc-list-item-graphic-margin: 16px;
         }
         .floor {
-          padding-left: 32px;
-          padding-inline-start: 32px;
+          padding-left: 48px;
+          padding-inline-start: 48px;
+          padding-inline-end: 16px;
         }
+        ha-tree-indicator {
+          width: 56px;
+          position: absolute;
+          top: 0px;
+          left: 0px;
+        }
+        .rtl ha-tree-indicator {
+          right: 0px;
+          left: initial;
+          transform: scaleX(-1);
+        }
+        .subdir {
+          margin-inline-end: 8px;
+          opacity: .6;
+        }
+        .
       `,
     ];
   }

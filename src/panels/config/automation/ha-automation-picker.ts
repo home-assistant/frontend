@@ -73,6 +73,7 @@ import {
 } from "../../../data/automation";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
@@ -84,6 +85,7 @@ import {
 } from "../../../data/entity_registry";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import { findRelated } from "../../../data/search";
@@ -98,11 +100,14 @@ import { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 
 type AutomationItem = AutomationEntity & {
   name: string;
+  area: string | undefined;
   last_triggered?: string | undefined;
   formatted_state: string;
   category: string | undefined;
@@ -152,6 +157,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       automations: AutomationEntity[],
       entityReg: EntityRegistryEntry[],
+      areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredAutomations?: string[] | null
@@ -174,6 +180,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         return {
           ...automation,
           name: computeStateName(automation),
+          area: entityRegEntry?.area_id
+            ? areas[entityRegEntry?.area_id]?.name
+            : undefined,
           last_triggered: automation.attributes.last_triggered || undefined,
           formatted_state: this.hass.formatEntityState(automation),
           category: category
@@ -242,6 +251,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             `;
           },
         },
+        area: {
+          title: localize("ui.panel.config.automation.picker.headers.area"),
+          hidden: true,
+          groupable: true,
+          filterable: true,
+          sortable: true,
+        },
         category: {
           title: localize("ui.panel.config.automation.picker.headers.category"),
           hidden: true,
@@ -256,33 +272,32 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           template: (automation) =>
             automation.labels.map((lbl) => lbl.name).join(" "),
         },
-      };
-      columns.last_triggered = {
-        sortable: true,
-        width: "130px",
-        title: localize("ui.card.automation.last_triggered"),
-        hidden: narrow,
-        template: (automation) => {
-          if (!automation.last_triggered) {
-            return this.hass.localize("ui.components.relative_time.never");
-          }
-          const date = new Date(automation.last_triggered);
-          const now = new Date();
-          const dayDifference = differenceInDays(now, date);
-          return html`
-            ${dayDifference > 3
-              ? formatShortDateTime(date, locale, this.hass.config)
-              : relativeTime(date, locale)}
-          `;
+        last_triggered: {
+          sortable: true,
+          width: "130px",
+          title: localize("ui.card.automation.last_triggered"),
+          hidden: narrow,
+          template: (automation) => {
+            if (!automation.last_triggered) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
+            const date = new Date(automation.last_triggered);
+            const now = new Date();
+            const dayDifference = differenceInDays(now, date);
+            return html`
+              ${dayDifference > 3
+                ? formatShortDateTime(date, locale, this.hass.config)
+                : relativeTime(date, locale)}
+            `;
+          },
         },
-      };
-
-      if (!this.narrow) {
-        columns.formatted_state = {
+        formatted_state: {
           width: "82px",
           sortable: true,
           groupable: true,
           title: "",
+          type: "overflow",
+          hidden: narrow,
           label: this.hass.localize("ui.panel.config.automation.picker.state"),
           template: (automation) => html`
             <ha-entity-toggle
@@ -290,21 +305,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
             ></ha-entity-toggle>
           `,
-        };
-      }
-
-      columns.actions = {
-        title: "",
-        width: "64px",
-        type: "icon-button",
-        template: (automation) => html`
-          <ha-icon-button
-            .automation=${automation}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            .path=${mdiDotsVertical}
-            @click=${this._showOverflowMenu}
-          ></ha-icon-button>
-        `,
+        },
+        actions: {
+          title: "",
+          width: "64px",
+          type: "icon-button",
+          template: (automation) => html`
+            <ha-icon-button
+              .automation=${automation}
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              .path=${mdiDotsVertical}
+              @click=${this._showOverflowMenu}
+            ></ha-icon-button>
+          `,
+        },
       };
       return columns;
     }
@@ -357,21 +371,49 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createCategory}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.category.editor.add")}
+        </div>
       </ha-menu-item>`;
-    const labelItems = html` ${this._labels?.map((label) => {
-      const color = label.color ? computeCssColor(label.color) : undefined;
-      return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
-      </ha-menu-item>`;
-    })}`;
+    const labelItems = html`${this._labels?.map((label) => {
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((entityId) =>
+          this.hass.entities[entityId]?.labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this.hass.entities[entityId]?.labels.includes(label.label_id)
+          );
+        return html`<ha-menu-item
+          .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
+          @click=${this._handleBulkLabel}
+          keep-open
+        >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+            reducedTouchTarget
+          ></ha-checkbox>
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>`;
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createLabel}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </div></ha-menu-item
+      >`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -400,6 +442,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         .data=${this._automations(
           this.automations,
           this._entityReg,
+          this.hass.areas,
           this._categories,
           this._labels,
           this._filteredAutomations
@@ -1052,11 +1095,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          labels: this.hass.entities[entityId].labels.concat(label),
+          labels:
+            action === "add"
+              ? this.hass.entities[entityId].labels.concat(label)
+              : this.hass.entities[entityId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
         })
       );
     });
@@ -1077,6 +1126,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       promises.push(turnOnOffEntity(this.hass, entityId, false));
     });
     await Promise.all(promises);
+  }
+
+  private _createCategory() {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "automation",
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, "automation", values),
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+    });
   }
 
   static get styles(): CSSResultGroup {

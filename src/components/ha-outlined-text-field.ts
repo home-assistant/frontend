@@ -27,6 +27,10 @@ export class HaOutlinedTextField extends MdOutlinedTextField {
         --md-outlined-field-focus-outline-width: 1px;
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
       }
+      md-outlined-field {
+        background: var(--ha-outlined-text-field-container-color, transparent);
+        opacity: var(--ha-outlined-text-field-container-opacity, 1);
+      }
       .input {
         font-family: Roboto, sans-serif;
       }

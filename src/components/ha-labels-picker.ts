@@ -2,8 +2,10 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
+import { stringCompare } from "../common/string/compare";
 import {
   LabelRegistryEntry,
   subscribeLabelRegistry,
@@ -17,7 +19,6 @@ import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
-import { stringCompare } from "../common/string/compare";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -102,25 +103,35 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _sortedLabels = memoizeOne(
+    (
+      value: string[] | undefined,
+      labels: { [id: string]: LabelRegistryEntry } | undefined,
+      language: string
+    ) =>
+      value
+        ?.map((id) => labels?.[id])
+        .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+  );
+
   protected render(): TemplateResult {
-    const labels = this.value
-      ?.map((id) => this._labels?.[id])
-      .sort((a, b) =>
-        stringCompare(a?.name || "", b?.name || "", this.hass.locale.language)
-      );
+    const labels = this._sortedLabels(
+      this.value,
+      this._labels,
+      this.hass.locale.language
+    );
     return html`
       ${labels?.length
         ? html`<ha-chip-set>
             ${repeat(
               labels,
               (label) => label?.label_id,
-              (label, idx) => {
+              (label) => {
                 const color = label?.color
                   ? computeCssColor(label.color)
                   : undefined;
                 return html`
                   <ha-input-chip
-                    .idx=${idx}
                     .item=${label}
                     @remove=${this._removeItem}
                     @click=${this._openDetail}
@@ -161,12 +172,12 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
   }
 
   private _removeItem(ev) {
-    this._value.splice(ev.target.idx, 1);
-    this._setValue([...this._value]);
+    const label = ev.currentTarget.item;
+    this._setValue(this._value.filter((id) => id !== label.label_id));
   }
 
   private _openDetail(ev) {
-    const label = ev.target.item;
+    const label = ev.currentTarget.item;
     showLabelDetailDialog(this, {
       entry: label,
       updateEntry: async (values) => {
