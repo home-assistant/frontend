@@ -1927,7 +1927,10 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor.",
+            "areas_section": "Areas",
+            "areas_description": "Specify the areas that are on this floor.",
+            "add_area": "Add area"
           }
         },
         "category": {
