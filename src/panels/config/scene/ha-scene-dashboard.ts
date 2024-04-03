@@ -381,7 +381,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         </div>
       </ha-menu-item>
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createCategory}>
+      <ha-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
@@ -417,7 +417,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         </ha-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createLabel}>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
@@ -776,6 +776,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private async _handleBulkCategory(ev) {
     const category = ev.currentTarget.value;
+    this._bulkAddCategory(category);
+  }
+
+  private async _bulkAddCategory(category: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
@@ -790,6 +794,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
     const action = ev.currentTarget.action;
+    this._bulkLabel(label, action);
+  }
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
@@ -901,17 +909,28 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _createCategory() {
+  private async _bulkCreateCategory() {
     showCategoryRegistryDetailDialog(this, {
       scope: "scene",
-      createEntry: (values) =>
-        createCategoryRegistryEntry(this.hass, "scene", values),
+      createEntry: async (values) => {
+        const category = await createCategoryRegistryEntry(
+          this.hass,
+          "scene",
+          values
+        );
+        this._bulkAddCategory(category.category_id);
+        return category;
+      },
     });
   }
 
-  private _createLabel() {
+  private _bulkCreateLabel() {
     showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+        return label;
+      },
     });
   }
 
