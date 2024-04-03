@@ -1,6 +1,7 @@
 import { consume } from "@lit-labs/context";
 import {
   mdiChevronRight,
+  mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
@@ -83,6 +84,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -293,6 +295,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                     "ui.panel.config.script.picker.show_info"
                   ),
                   action: () => this._showInfo(script),
+                },
+                {
+                  path: mdiCog,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.show_settings"
+                  ),
+                  action: () => this._openSettings(script),
                 },
                 {
                   path: mdiTag,
@@ -893,6 +902,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   private _showInfo(script: any) {
     fireEvent(this, "hass-more-info", { entityId: script.entity_id });
+  }
+
+  private _openSettings(script: any) {
+    showMoreInfoDialog(this, {
+      entityId: script.entity_id,
+      view: "settings",
+    });
   }
 
   private _showTrace(script: any) {

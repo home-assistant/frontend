@@ -2,6 +2,7 @@ import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiChevronRight,
+  mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
@@ -82,6 +83,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -282,6 +284,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.scene.picker.show_info"
                   ),
                   action: () => this._showInfo(scene),
+                },
+                {
+                  path: mdiCog,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.show_settings"
+                  ),
+                  action: () => this._openSettings(scene),
                 },
                 {
                   path: mdiPlay,
@@ -813,6 +822,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _showInfo(scene: SceneEntity) {
     fireEvent(this, "hass-more-info", { entityId: scene.entity_id });
+  }
+
+  private _openSettings(scene: SceneEntity) {
+    showMoreInfoDialog(this, {
+      entityId: scene.entity_id,
+      view: "settings",
+    });
   }
 
   private _activateScene = async (scene: SceneEntity) => {
