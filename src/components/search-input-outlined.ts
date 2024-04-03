@@ -97,6 +97,7 @@ class SearchInputOutlined extends LitElement {
       ha-outlined-text-field {
         display: block;
         width: 100%;
+        --ha-outlined-text-field-container-color: var(--card-background-color);
       }
       ha-svg-icon,
       ha-icon-button {
