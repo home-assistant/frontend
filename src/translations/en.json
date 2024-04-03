@@ -2686,7 +2686,8 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -3560,7 +3561,8 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -3669,7 +3671,8 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",

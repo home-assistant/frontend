@@ -103,6 +103,7 @@ import { showNewAutomationDialog } from "./show-dialog-new-automation";
 
 type AutomationItem = AutomationEntity & {
   name: string;
+  area: string | undefined;
   last_triggered?: string | undefined;
   formatted_state: string;
   category: string | undefined;
@@ -152,6 +153,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       automations: AutomationEntity[],
       entityReg: EntityRegistryEntry[],
+      areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredAutomations?: string[] | null
@@ -174,6 +176,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         return {
           ...automation,
           name: computeStateName(automation),
+          area: entityRegEntry?.area_id
+            ? areas[entityRegEntry?.area_id]?.name
+            : undefined,
           last_triggered: automation.attributes.last_triggered || undefined,
           formatted_state: this.hass.formatEntityState(automation),
           category: category
@@ -242,6 +247,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             `;
           },
         },
+        area: {
+          title: localize("ui.panel.config.automation.picker.headers.area"),
+          hidden: true,
+          groupable: true,
+          filterable: true,
+          sortable: true,
+        },
         category: {
           title: localize("ui.panel.config.automation.picker.headers.category"),
           hidden: true,
@@ -256,34 +268,32 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           template: (automation) =>
             automation.labels.map((lbl) => lbl.name).join(" "),
         },
-      };
-      columns.last_triggered = {
-        sortable: true,
-        width: "130px",
-        title: localize("ui.card.automation.last_triggered"),
-        hidden: narrow,
-        template: (automation) => {
-          if (!automation.last_triggered) {
-            return this.hass.localize("ui.components.relative_time.never");
-          }
-          const date = new Date(automation.last_triggered);
-          const now = new Date();
-          const dayDifference = differenceInDays(now, date);
-          return html`
-            ${dayDifference > 3
-              ? formatShortDateTime(date, locale, this.hass.config)
-              : relativeTime(date, locale)}
-          `;
+        last_triggered: {
+          sortable: true,
+          width: "130px",
+          title: localize("ui.card.automation.last_triggered"),
+          hidden: narrow,
+          template: (automation) => {
+            if (!automation.last_triggered) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
+            const date = new Date(automation.last_triggered);
+            const now = new Date();
+            const dayDifference = differenceInDays(now, date);
+            return html`
+              ${dayDifference > 3
+                ? formatShortDateTime(date, locale, this.hass.config)
+                : relativeTime(date, locale)}
+            `;
+          },
         },
-      };
-
-      if (!this.narrow) {
-        columns.formatted_state = {
+        formatted_state: {
           width: "82px",
           sortable: true,
           groupable: true,
           title: "",
           type: "overflow",
+          hidden: this.narrow,
           label: this.hass.localize("ui.panel.config.automation.picker.state"),
           template: (automation) => html`
             <ha-entity-toggle
@@ -291,21 +301,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
             ></ha-entity-toggle>
           `,
-        };
-      }
-
-      columns.actions = {
-        title: "",
-        width: "64px",
-        type: "icon-button",
-        template: (automation) => html`
-          <ha-icon-button
-            .automation=${automation}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            .path=${mdiDotsVertical}
-            @click=${this._showOverflowMenu}
-          ></ha-icon-button>
-        `,
+        },
+        actions: {
+          title: "",
+          width: "64px",
+          type: "icon-button",
+          template: (automation) => html`
+            <ha-icon-button
+              .automation=${automation}
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              .path=${mdiDotsVertical}
+              @click=${this._showOverflowMenu}
+            ></ha-icon-button>
+          `,
+        },
       };
       return columns;
     }
@@ -401,6 +410,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         .data=${this._automations(
           this.automations,
           this._entityReg,
+          this.hass.areas,
           this._categories,
           this._labels,
           this._filteredAutomations

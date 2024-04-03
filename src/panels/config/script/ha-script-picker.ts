@@ -93,6 +93,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 
 type ScriptItem = ScriptEntity & {
   name: string;
+  area: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
 };
@@ -140,6 +141,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     (
       scripts: ScriptEntity[],
       entityReg: EntityRegistryEntry[],
+      areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredScripts?: string[] | null
@@ -162,6 +164,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         return {
           ...script,
           name: computeStateName(script),
+          area: entityRegEntry?.area_id
+            ? areas[entityRegEntry?.area_id]?.name
+            : undefined,
           last_triggered: script.attributes.last_triggered || undefined,
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
@@ -227,6 +232,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             `;
           },
         },
+        area: {
+          title: localize("ui.panel.config.script.picker.headers.area"),
+          hidden: true,
+          groupable: true,
+          filterable: true,
+          sortable: true,
+        },
         category: {
           title: localize("ui.panel.config.script.picker.headers.category"),
           hidden: true,
@@ -240,9 +252,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           template: (script) => script.labels.map((lbl) => lbl.name).join(" "),
         },
-      };
-      if (!narrow) {
-        columns.last_triggered = {
+        last_triggered: {
+          hidden: narrow,
           sortable: true,
           width: "40%",
           title: localize("ui.card.automation.last_triggered"),
@@ -262,66 +273,67 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 : this.hass.localize("ui.components.relative_time.never")}
             `;
           },
-        };
-      }
-
-      columns.actions = {
-        title: "",
-        width: "64px",
-        type: "overflow-menu",
-        template: (script) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.show_info"
-                ),
-                action: () => this._showInfo(script),
-              },
-              {
-                path: mdiTag,
-                label: this.hass.localize(
-                  `ui.panel.config.script.picker.${script.category ? "edit_category" : "assign_category"}`
-                ),
-                action: () => this._editCategory(script),
-              },
-              {
-                path: mdiPlay,
-                label: this.hass.localize("ui.panel.config.script.picker.run"),
-                action: () => this._runScript(script),
-              },
-              {
-                path: mdiTransitConnection,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.show_trace"
-                ),
-                action: () => this._showTrace(script),
-              },
-              {
-                divider: true,
-              },
-              {
-                path: mdiContentDuplicate,
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.duplicate"
-                ),
-                action: () => this._duplicate(script),
-              },
-              {
-                label: this.hass.localize(
-                  "ui.panel.config.script.picker.delete"
-                ),
-                path: mdiDelete,
-                action: () => this._deleteConfirm(script),
-                warning: true,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
-        `,
+        },
+        actions: {
+          title: "",
+          width: "64px",
+          type: "overflow-menu",
+          template: (script) => html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.script.picker.show_info"
+                  ),
+                  action: () => this._showInfo(script),
+                },
+                {
+                  path: mdiTag,
+                  label: this.hass.localize(
+                    `ui.panel.config.script.picker.${script.category ? "edit_category" : "assign_category"}`
+                  ),
+                  action: () => this._editCategory(script),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.script.picker.run"
+                  ),
+                  action: () => this._runScript(script),
+                },
+                {
+                  path: mdiTransitConnection,
+                  label: this.hass.localize(
+                    "ui.panel.config.script.picker.show_trace"
+                  ),
+                  action: () => this._showTrace(script),
+                },
+                {
+                  divider: true,
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.script.picker.duplicate"
+                  ),
+                  action: () => this._duplicate(script),
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.script.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(script),
+                  warning: true,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
+        },
       };
 
       return columns;
@@ -401,6 +413,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         .data=${this._scripts(
           this.scripts,
           this._entityReg,
+          this.hass.areas,
           this._categories,
           this._labels,
           this._filteredScripts
