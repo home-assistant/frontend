@@ -546,13 +546,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
-        const selected = this._selected.every((entityId) =>
-          this.hass.entities[entityId]?.labels.includes(label.label_id)
+        const selected = this._selected.every((deviceId) =>
+          this.hass.devices[deviceId]?.labels.includes(label.label_id)
         );
         const partial =
           !selected &&
-          this._selected.some((entityId) =>
-            this.hass.entities[entityId]?.labels.includes(label.label_id)
+          this._selected.some((deviceId) =>
+            this.hass.devices[deviceId]?.labels.includes(label.label_id)
           );
         return html`<ha-menu-item
           .value=${label.label_id}
