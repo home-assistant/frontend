@@ -384,12 +384,27 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
       </ha-menu-item>`;
-    const labelItems = html` ${this._labels?.map((label) => {
+    const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((entityId) =>
+          this.hass.entities[entityId].labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this.hass.entities[entityId].labels.includes(label.label_id)
+          );
         return html`<ha-menu-item
           .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
+          keep-open
         >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+          ></ha-checkbox>
           <ha-label style=${color ? `--color: ${color}` : ""}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
@@ -397,12 +412,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ${label.name}
           </ha-label>
         </ha-menu-item>`;
-      })}<md-divider role="separator" tabindex="-1"></md-divider>
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
       <ha-menu-item @click=${this._createLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div>
-      </ha-menu-item>`;
+        </div></ha-menu-item
+      >`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -825,11 +841,17 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          labels: this.hass.entities[entityId].labels.concat(label),
+          labels:
+            action === "add"
+              ? this.hass.entities[entityId].labels.concat(label)
+              : this.hass.entities[entityId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
         })
       );
     });

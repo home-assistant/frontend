@@ -134,7 +134,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     { value: string[] | undefined; items: Set<string> | undefined }
   > = {};
 
-  @state() private _selectedEntities: string[] = [];
+  @state() private _selected: string[] = [];
 
   @state() private _expandedFilter?: string;
 
@@ -518,10 +518,25 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((entityId) =>
+          this.hass.entities[entityId].labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((entityId) =>
+            this.hass.entities[entityId].labels.includes(label.label_id)
+          );
         return html`<ha-menu-item
           .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
+          keep-open
         >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+          ></ha-checkbox>
           <ha-label style=${color ? `--color: ${color}` : ""}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
@@ -529,12 +544,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ${label.name}
           </ha-label>
         </ha-menu-item>`;
-      })}<md-divider role="separator" tabindex="-1"></md-divider>
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
       <ha-menu-item @click=${this._createLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div>
-      </ha-menu-item>`;
+        </div></ha-menu-item
+      >`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -561,7 +577,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .filter=${this._filter}
         selectable
-        .selected=${this._selectedEntities.length}
+        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         clickable
         @clear-filter=${this._clearFilter}
@@ -903,14 +919,14 @@ ${
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
-    this._selectedEntities = ev.detail.value;
+    this._selected = ev.detail.value;
   }
 
   private async _enableSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
-        { number: this._selectedEntities.length }
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
@@ -921,7 +937,7 @@ ${
         let require_restart = false;
         let reload_delay = 0;
         await Promise.all(
-          this._selectedEntities.map(async (entity) => {
+          this._selected.map(async (entity) => {
             const result = await updateEntityRegistryEntry(this.hass, entity, {
               disabled_by: null,
             });
@@ -958,7 +974,7 @@ ${
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_title",
-        { number: this._selectedEntities.length }
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
@@ -966,7 +982,7 @@ ${
       confirmText: this.hass.localize("ui.common.disable"),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        this._selectedEntities.forEach((entity) =>
+        this._selected.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             disabled_by: "user",
           })
@@ -980,7 +996,7 @@ ${
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_title",
-        { number: this._selectedEntities.length }
+        { number: this._selected.length }
       ),
       text: this.hass.localize(
         "ui.panel.config.entities.picker.hide_selected.confirm_text"
@@ -988,7 +1004,7 @@ ${
       confirmText: this.hass.localize("ui.common.hide"),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        this._selectedEntities.forEach((entity) =>
+        this._selected.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             hidden_by: "user",
           })
@@ -999,7 +1015,7 @@ ${
   }
 
   private _unhideSelected() {
-    this._selectedEntities.forEach((entity) =>
+    this._selected.forEach((entity) =>
       updateEntityRegistryEntry(this.hass, entity, {
         hidden_by: null,
       })
@@ -1009,11 +1025,17 @@ ${
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
-    this._selectedEntities.forEach((entityId) => {
+    this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          labels: this.hass.entities[entityId].labels.concat(label),
+          labels:
+            action === "add"
+              ? this.hass.entities[entityId].labels.concat(label)
+              : this.hass.entities[entityId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
         })
       );
     });
@@ -1021,21 +1043,19 @@ ${
   }
 
   private _removeSelected() {
-    const removeableEntities = this._selectedEntities.filter((entity) => {
+    const removeableEntities = this._selected.filter((entity) => {
       const stateObj = this.hass.states[entity];
       return stateObj?.attributes.restored;
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.entities.picker.remove_selected.confirm_${
-          removeableEntities.length !== this._selectedEntities.length
-            ? "partly_"
-            : ""
+          removeableEntities.length !== this._selected.length ? "partly_" : ""
         }title`,
         { number: removeableEntities.length }
       ),
       text:
-        removeableEntities.length === this._selectedEntities.length
+        removeableEntities.length === this._selected.length
           ? this.hass.localize(
               "ui.panel.config.entities.picker.remove_selected.confirm_text"
             )
@@ -1043,7 +1063,7 @@ ${
               "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
               {
                 removable: removeableEntities.length,
-                selected: this._selectedEntities.length,
+                selected: this._selected.length,
               }
             ),
       confirmText: this.hass.localize("ui.common.remove"),
