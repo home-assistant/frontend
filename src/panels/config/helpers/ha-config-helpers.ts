@@ -375,6 +375,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         type: configEntry.domain,
         configEntry,
         entity: undefined,
+        selectable: false,
       }));
 
       return [...states, ...entries]
