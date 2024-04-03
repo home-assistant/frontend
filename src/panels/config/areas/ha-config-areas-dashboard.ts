@@ -414,10 +414,31 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   private _openFloorDialog(entry?: FloorRegistryEntry) {
     showFloorRegistryDetailDialog(this, {
       entry,
-      createEntry: async (values) =>
-        createFloorRegistryEntry(this.hass!, values),
-      updateEntry: async (values) =>
-        updateFloorRegistryEntry(this.hass!, entry!.floor_id, values),
+      createEntry: async (values, addedAreas) => {
+        const floor = await createFloorRegistryEntry(this.hass!, values);
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+      },
+      updateEntry: async (values, addedAreas, removedAreas) => {
+        const floor = await updateFloorRegistryEntry(
+          this.hass!,
+          entry!.floor_id,
+          values
+        );
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+        removedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: null,
+          });
+        });
+      },
     });
   }
 
