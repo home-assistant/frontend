@@ -530,7 +530,13 @@ export class HaDataTable extends LitElement {
         const sorted: {
           [key: string]: DataTableRowData[];
         } = Object.keys(grouped)
-          .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+          .sort((a, b) =>
+            stringCompare(
+              ["", "-", "—"].includes(a) ? "zzz" : a,
+              ["", "-", "—"].includes(b) ? "zzz" : b,
+              this.hass.locale.language
+            )
+          )
           .reduce((obj, key) => {
             obj[key] = grouped[key];
             return obj;
