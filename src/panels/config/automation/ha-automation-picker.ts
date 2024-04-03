@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/web/divider/divider";
 import {
@@ -152,6 +153,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state() private _overflowAutomation?: AutomationItem;
 
   @query("#overflow-menu") private _overflowMenu!: HaMenu;
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   private _automations = memoizeOne(
     (
@@ -373,7 +378,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </div>
       </ha-menu-item>
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createCategory}>
+      <ha-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
@@ -409,12 +414,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createLabel}>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
       >`;
-
+    const labelsInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -538,7 +545,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     </ha-assist-chip>
                     ${categoryItems}
                   </ha-button-menu-new>
-                  ${this.hass.dockedSidebar === "docked"
+                  ${labelsInOverflow
                     ? nothing
                     : html`<ha-button-menu-new slot="selection-bar">
                         <ha-assist-chip
@@ -600,8 +607,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 : nothing
             }
             ${
-              this.narrow || this.hass.dockedSidebar === "docked"
-                ? html` <ha-sub-menu>
+              this.narrow || labelsInOverflow
+                ? html`<ha-sub-menu>
                     <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
@@ -1082,6 +1089,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   private async _handleBulkCategory(ev) {
     const category = ev.currentTarget.value;
+    this._bulkAddCategory(category);
+  }
+
+  private async _bulkAddCategory(category: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
@@ -1096,6 +1107,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
     const action = ev.currentTarget.action;
+    this._bulkLabel(label, action);
+  }
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(
@@ -1128,17 +1143,28 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     await Promise.all(promises);
   }
 
-  private _createCategory() {
+  private async _bulkCreateCategory() {
     showCategoryRegistryDetailDialog(this, {
       scope: "automation",
-      createEntry: (values) =>
-        createCategoryRegistryEntry(this.hass, "automation", values),
+      createEntry: async (values) => {
+        const category = await createCategoryRegistryEntry(
+          this.hass,
+          "automation",
+          values
+        );
+        this._bulkAddCategory(category.category_id);
+        return category;
+      },
     });
   }
 
-  private _createLabel() {
+  private _bulkCreateLabel() {
     showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+        return label;
+      },
     });
   }
 
@@ -1146,6 +1172,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }

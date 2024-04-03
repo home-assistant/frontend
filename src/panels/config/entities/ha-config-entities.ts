@@ -88,6 +88,10 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../../data/entity_sources";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -140,6 +144,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state()
   _labels!: LabelRegistryEntry[];
+
+  @state() private _entitySources?: EntitySources;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -405,10 +411,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           const entryIds = entries
             .filter((entry) => filter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
+
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              entity.config_entry_id &&
-              entryIds.includes(entity.config_entry_id)
+              filter.value?.includes(entity.platform) ||
+              (entity.config_entry_id &&
+                entryIds.includes(entity.config_entry_id))
           );
           filter.value!.forEach((domain) => filteredDomains.add(domain));
         } else if (key === "ha-filter-labels" && filter.value?.length) {
@@ -547,7 +555,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         </ha-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createLabel}>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
@@ -807,6 +815,9 @@ ${
       },
     };
     this._setFiltersFromUrl();
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
   }
 
   private _setFiltersFromUrl() {
@@ -865,14 +876,18 @@ ${
     this._filters = {};
   }
 
-  public willUpdate(changedProps: PropertyValues<this>): void {
+  public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
       return;
     }
-    if (changedProps.has("hass") || changedProps.has("_entities")) {
+    if (
+      changedProps.has("hass") ||
+      changedProps.has("_entities") ||
+      changedProps.has("_entitySources")
+    ) {
       const stateEntities: StateEntity[] = [];
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
@@ -883,6 +898,7 @@ ${
         }
         if (
           !oldHass ||
+          changedProps.has("_entitySources") ||
           this.hass.states[entityId] !== oldHass.states[entityId]
         ) {
           changed = true;
@@ -890,7 +906,8 @@ ${
         stateEntities.push({
           name: computeStateName(this.hass.states[entityId]),
           entity_id: entityId,
-          platform: computeDomain(entityId),
+          platform:
+            this._entitySources?.[entityId]?.domain || computeDomain(entityId),
           disabled_by: null,
           hidden_by: null,
           area_id: null,
@@ -1027,6 +1044,10 @@ ${
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
     const action = ev.currentTarget.action;
+    await this._bulkLabel(label, action);
+  }
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
       const entityReg =
@@ -1045,6 +1066,16 @@ ${
       );
     });
     await Promise.all(promises);
+  }
+
+  private _bulkCreateLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+        return label;
+      },
+    });
   }
 
   private _removeSelected() {
@@ -1120,12 +1151,6 @@ ${
     }
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
-    });
-  }
-
-  private _createLabel() {
-    showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
     });
   }
 
