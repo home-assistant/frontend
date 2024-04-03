@@ -577,6 +577,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     return css`
       :host {
         display: block;
+        height: 100%;
       }
 
       ha-data-table {
