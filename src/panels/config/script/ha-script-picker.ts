@@ -1024,7 +1024,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,
-          "automation",
+          "script",
           values
         );
         this._bulkAddCategory(category.category_id);

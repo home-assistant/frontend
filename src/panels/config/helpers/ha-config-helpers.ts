@@ -954,7 +954,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,
-          "automation",
+          "helpers",
           values
         );
         this._bulkAddCategory(category.category_id);

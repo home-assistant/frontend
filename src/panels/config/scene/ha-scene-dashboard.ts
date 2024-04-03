@@ -908,7 +908,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,
-          "automation",
+          "scene",
           values
         );
         this._bulkAddCategory(category.category_id);
