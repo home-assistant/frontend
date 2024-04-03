@@ -456,6 +456,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
+          keep-open
         >
           <ha-checkbox
             slot="start"

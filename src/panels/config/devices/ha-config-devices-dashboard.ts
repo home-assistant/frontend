@@ -546,23 +546,40 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((deviceId) =>
+          this.hass.devices[deviceId]?.labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((deviceId) =>
+            this.hass.devices[deviceId]?.labels.includes(label.label_id)
+          );
         return html`<ha-menu-item
           .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
+          keep-open
         >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+            reducedTouchTarget
+          ></ha-checkbox>
           <ha-label style=${color ? `--color: ${color}` : ""}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item> `;
-      })}<md-divider role="separator" tabindex="-1"></md-divider>
+        </ha-menu-item>`;
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
       <ha-menu-item @click=${this._createLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div>
-      </ha-menu-item>`;
+        </div></ha-menu-item
+      >`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -783,11 +800,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
         updateDeviceRegistryEntry(this.hass, deviceId, {
-          labels: this.hass.devices[deviceId].labels.concat(label),
+          labels:
+            action === "add"
+              ? this.hass.devices[deviceId].labels.concat(label)
+              : this.hass.devices[deviceId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
         })
       );
     });
