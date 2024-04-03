@@ -49,6 +49,7 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import {
@@ -66,6 +67,7 @@ import {
 import { domainToName } from "../../../data/integration";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -85,6 +87,8 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 type HelperItem = {
   id: string;
@@ -245,7 +249,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         width: "25%",
       },
       category: {
-        title: localize("ui.panel.config.automation.picker.headers.category"),
+        title: localize("ui.panel.config.helpers.picker.headers.category"),
         hidden: true,
         groupable: true,
         filterable: true,
@@ -431,20 +435,32 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createCategory}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.category.editor.add")}
+        </div>
       </ha-menu-item>`;
     const labelItems = html` ${this._labels?.map((label) => {
       const color = label.color ? computeCssColor(label.color) : undefined;
       return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
-      </ha-menu-item>`;
+          .value=${label.label_id}
+          @click=${this._handleBulkLabel}
+        >
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item @click=${this._createLabel}>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.labels.add_label")}
+          </div>
+        </ha-menu-item>`;
     })}`;
 
     return html`
@@ -900,6 +916,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _createHelper() {
     showHelperDetailDialog(this, {});
+  }
+
+  private _createCategory() {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "helpers",
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, "helpers", values),
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+    });
   }
 
   static get styles(): CSSResultGroup {

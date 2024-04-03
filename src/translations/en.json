@@ -2263,7 +2263,8 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
-              "editable": "Editable"
+              "editable": "Editable",
+              "category": "Category"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
