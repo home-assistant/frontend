@@ -33,6 +33,7 @@ import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
 import { groupBy } from "../../common/util/group-by";
+import { stringCompare } from "../../common/string/compare";
 
 declare global {
   // for fire event
@@ -529,7 +530,7 @@ export class HaDataTable extends LitElement {
         const sorted: {
           [key: string]: DataTableRowData[];
         } = Object.keys(grouped)
-          .sort()
+          .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
           .reduce((obj, key) => {
             obj[key] = grouped[key];
             return obj;
