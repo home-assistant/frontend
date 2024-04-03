@@ -1029,14 +1029,18 @@ ${
     const action = ev.currentTarget.action;
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
+      const entityReg =
+        this.hass.entities[entityId] ||
+        this._entities.find((entReg) => entReg.entity_id === entityId);
+      if (!entityReg) {
+        return;
+      }
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
           labels:
             action === "add"
-              ? this.hass.entities[entityId].labels.concat(label)
-              : this.hass.entities[entityId].labels.filter(
-                  (lbl) => lbl !== label
-                ),
+              ? entityReg.labels.concat(label)
+              : entityReg.labels.filter((lbl) => lbl !== label),
         })
       );
     });
