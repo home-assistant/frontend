@@ -575,7 +575,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </ha-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._createLabel}>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
@@ -801,6 +801,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
     const action = ev.currentTarget.action;
+    this._bulkLabel(label, action);
+  }
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<DeviceRegistryEntry>[] = [];
     this._selected.forEach((deviceId) => {
       promises.push(
@@ -817,9 +821,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     await Promise.all(promises);
   }
 
-  private _createLabel() {
+  private _bulkCreateLabel() {
     showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+        return label;
+      },
     });
   }
 
