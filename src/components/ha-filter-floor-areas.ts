@@ -1,7 +1,11 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
+import {
+  mdiFilterVariantRemove,
+  mdiSubdirectoryArrowRight,
+  mdiTextureBox,
+} from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -11,7 +15,7 @@ import {
   getFloorAreaLookup,
   subscribeFloorRegistry,
 } from "../data/floor_registry";
-import { findRelated, RelatedResult } from "../data/search";
+import { RelatedResult, findRelated } from "../data/search";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -112,6 +116,13 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
       class=${area.floor_id ? "floor" : ""}
       @request-selected=${this._handleItemClick}
     >
+      ${area.floor_id
+        ? html`<ha-svg-icon
+            class="subdir"
+            slot="graphic"
+            .path=${mdiSubdirectoryArrowRight}
+          ></ha-svg-icon>`
+        : nothing}
       ${area.icon
         ? html`<ha-icon slot="graphic" .icon=${area.icon}></ha-icon>`
         : html`<ha-svg-icon
@@ -294,9 +305,15 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           --mdc-list-item-graphic-margin: 16px;
         }
         .floor {
-          padding-left: 32px;
-          padding-inline-start: 32px;
+          padding-left: 38px;
+          padding-inline-start: 38px;
+          --mdc-list-item-graphic-margin: 32px;
         }
+        .subdir {
+          margin-inline-end: 8px;
+          opacity: .6;
+        }
+        .
       `,
     ];
   }
