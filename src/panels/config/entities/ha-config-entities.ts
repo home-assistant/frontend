@@ -517,8 +517,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       );
 
     const labelItems = html` ${this._labels?.map((label) => {
-      const color = label.color ? computeCssColor(label.color) : undefined;
-      return html`<ha-menu-item
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        return html`<ha-menu-item
           .value=${label.label_id}
           @click=${this._handleBulkLabel}
         >
@@ -528,14 +528,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item>
-        <md-divider role="separator" tabindex="-1"></md-divider>
-        <ha-menu-item @click=${this._createLabel}>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.labels.add_label")}
-          </div>
         </ha-menu-item>`;
-    })}`;
+      })}<md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createLabel}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </div>
+      </ha-menu-item>`;
 
     return html`
       <hass-tabs-subpage-data-table
