@@ -353,7 +353,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
-      entitySources: EntitySources | undefined,
       filters: Record<
         string,
         { value: string[] | undefined; items: Set<string> | undefined }
@@ -514,7 +513,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
-        this._entitySources,
         this._filters,
         this._entries,
         this._labels
@@ -1118,7 +1116,6 @@ ${
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
-        this._entitySources,
         this._filters,
         this._entries,
         this._labels
