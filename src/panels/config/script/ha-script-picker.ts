@@ -846,7 +846,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          categories: { automation: category },
+          categories: { script: category },
         })
       );
     });
@@ -1020,7 +1020,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   private async _bulkCreateCategory() {
     showCategoryRegistryDetailDialog(this, {
-      scope: "automation",
+      scope: "script",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,

@@ -780,7 +780,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          categories: { automation: category },
+          categories: { helpers: category },
         })
       );
     });
@@ -950,7 +950,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _bulkCreateCategory() {
     showCategoryRegistryDetailDialog(this, {
-      scope: "automation",
+      scope: "helpers",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,

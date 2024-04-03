@@ -777,7 +777,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     this._selected.forEach((entityId) => {
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
-          categories: { automation: category },
+          categories: { scene: category },
         })
       );
     });
@@ -904,7 +904,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private async _bulkCreateCategory() {
     showCategoryRegistryDetailDialog(this, {
-      scope: "automation",
+      scope: "scene",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
           this.hass,
