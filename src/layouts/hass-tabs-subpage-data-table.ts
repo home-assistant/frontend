@@ -743,7 +743,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         padding: 8px 12px;
         box-sizing: border-box;
         font-size: 14px;
-        --ha-assist-chip-container-color: var(--primary-background-color);
+        --ha-assist-chip-container-color: var(--card-background-color);
       }
 
       .selection-controls {
@@ -770,6 +770,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
       ha-assist-chip {
         --ha-assist-chip-container-shape: 10px;
+        --ha-assist-chip-container-color: var(--card-background-color);
       }
 
       .select-mode-chip {
