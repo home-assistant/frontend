@@ -6971,6 +6971,14 @@
               "clearing_failed": "Clearing the statistics failed",
               "clearing_timeout_title": "Clearing not done yet",
               "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
+              "fix_all": "Fix all",
+              "auto_fix": {
+                "title": "Fix all auto-fixable issues",
+                "info_text_not_available": "There are no auto-fixable issues, no action will be taken.",
+                "info_text_1": "This will delete long term statistics of all entities that either have an unsupported state class or have no state.",
+                "info_text_2": "Do you want to permanently delete {statistic_count} long term statistics from your database?",
+                "info_text_3": "The following statistics will be deleted:"
+              },
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."
