@@ -88,6 +88,10 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../../data/entity_sources";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -140,6 +144,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state()
   _labels!: LabelRegistryEntry[];
+
+  @state() private _entitySources?: EntitySources;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -347,6 +353,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
+      entitySources: EntitySources | undefined,
       filters: Record<
         string,
         { value: string[] | undefined; items: Set<string> | undefined }
@@ -405,10 +412,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           const entryIds = entries
             .filter((entry) => filter.value!.includes(entry.domain))
             .map((entry) => entry.entry_id);
+
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              entity.config_entry_id &&
-              entryIds.includes(entity.config_entry_id)
+              filter.value?.includes(entity.platform) ||
+              (entity.config_entry_id &&
+                entryIds.includes(entity.config_entry_id))
           );
           filter.value!.forEach((domain) => filteredDomains.add(domain));
         } else if (key === "ha-filter-labels" && filter.value?.length) {
@@ -505,6 +514,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
+        this._entitySources,
         this._filters,
         this._entries,
         this._labels
@@ -807,6 +817,9 @@ ${
       },
     };
     this._setFiltersFromUrl();
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
   }
 
   private _setFiltersFromUrl() {
@@ -865,14 +878,18 @@ ${
     this._filters = {};
   }
 
-  public willUpdate(changedProps: PropertyValues<this>): void {
+  public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
       return;
     }
-    if (changedProps.has("hass") || changedProps.has("_entities")) {
+    if (
+      changedProps.has("hass") ||
+      changedProps.has("_entities") ||
+      changedProps.has("_entitySources")
+    ) {
       const stateEntities: StateEntity[] = [];
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
@@ -883,6 +900,7 @@ ${
         }
         if (
           !oldHass ||
+          changedProps.has("_entitySources") ||
           this.hass.states[entityId] !== oldHass.states[entityId]
         ) {
           changed = true;
@@ -890,7 +908,8 @@ ${
         stateEntities.push({
           name: computeStateName(this.hass.states[entityId]),
           entity_id: entityId,
-          platform: computeDomain(entityId),
+          platform:
+            this._entitySources?.[entityId]?.domain || computeDomain(entityId),
           disabled_by: null,
           hidden_by: null,
           area_id: null,
@@ -1099,6 +1118,7 @@ ${
         this.hass.devices,
         this.hass.areas,
         this._stateEntities,
+        this._entitySources,
         this._filters,
         this._entries,
         this._labels
