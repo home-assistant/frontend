@@ -45,8 +45,8 @@ export class HaAssistChip extends MdAssistChip {
         margin-inline-start: var(--_icon-label-space);
       }
       ::before {
-        background: var(--ha-assist-chip-container-color);
-        opacity: var(--ha-assist-chip-container-opacity);
+        background: var(--ha-assist-chip-container-color, transparent);
+        opacity: var(--ha-assist-chip-container-opacity, 1);
       }
       :where(.active)::before {
         background: var(--ha-assist-chip-active-container-color);

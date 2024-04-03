@@ -1927,7 +1927,10 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor.",
+            "areas_section": "Areas",
+            "areas_description": "Specify the areas that are on this floor.",
+            "add_area": "Add area"
           }
         },
         "category": {
@@ -2263,7 +2266,8 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
-              "editable": "Editable"
+              "editable": "Editable",
+              "category": "Category"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
@@ -2686,7 +2690,8 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -3560,7 +3565,8 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -3669,7 +3675,8 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
