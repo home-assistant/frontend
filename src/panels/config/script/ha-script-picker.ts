@@ -93,7 +93,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 
 type ScriptItem = ScriptEntity & {
   name: string;
-  area: string;
+  area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
 };

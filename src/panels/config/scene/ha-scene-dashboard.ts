@@ -229,7 +229,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           ),
           sortable: true,
           width: "30%",
-          hidden: this.narrow,
+          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {

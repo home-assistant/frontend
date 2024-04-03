@@ -293,7 +293,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           groupable: true,
           title: "",
           type: "overflow",
-          hidden: this.narrow,
+          hidden: narrow,
           label: this.hass.localize("ui.panel.config.automation.picker.state"),
           template: (automation) => html`
             <ha-entity-toggle
