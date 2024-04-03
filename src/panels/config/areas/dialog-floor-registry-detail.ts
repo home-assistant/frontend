@@ -20,9 +20,10 @@ import {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
-import { haStyleDialog } from "../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
+import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
 import { updateAreaRegistryEntry } from "../../../data/area_registry";
 
 class DialogFloorDetail extends LitElement {
@@ -42,9 +43,11 @@ class DialogFloorDetail extends LitElement {
 
   @state() private _submitting?: boolean;
 
-  public async showDialog(
-    params: FloorRegistryDetailDialogParams
-  ): Promise<void> {
+  @state() private _addedAreas = new Set<string>();
+
+  @state() private _removedAreas = new Set<string>();
+
+  public showDialog(params: FloorRegistryDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry
@@ -53,28 +56,39 @@ class DialogFloorDetail extends LitElement {
     this._aliases = this._params.entry?.aliases || [];
     this._icon = this._params.entry?.icon || null;
     this._level = this._params.entry?.level ?? null;
-    await this.updateComplete;
+    this._addedAreas.clear();
+    this._removedAreas.clear();
   }
 
   public closeDialog(): void {
     this._error = "";
     this._params = undefined;
+    this._addedAreas.clear();
+    this._removedAreas.clear();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _floorAreas = memoizeOne(
-    (areas: HomeAssistant["areas"], entry?: FloorRegistryEntry) => {
-      if (!entry) {
-        return [];
-      }
-      return Object.values(areas).filter(
-        (area) => area.floor_id === entry.floor_id
-      );
-    }
+    (
+      entry: FloorRegistryEntry | undefined,
+      areas: HomeAssistant["areas"],
+      added: Set<string>,
+      removed: Set<string>
+    ) =>
+      Object.values(areas).filter(
+        (area) =>
+          (area.floor_id === entry?.floor_id || added.has(area.area_id)) &&
+          !removed.has(area.area_id)
+      )
   );
 
   protected render() {
-    const areas = this._floorAreas(this.hass.areas, this._params?.entry);
+    const areas = this._floorAreas(
+      this._params?.entry,
+      this.hass.areas,
+      this._addedAreas,
+      this._removedAreas
+    );
 
     if (!this._params) {
       return nothing;
@@ -147,6 +161,17 @@ class DialogFloorDetail extends LitElement {
                 : nothing}
             </ha-icon-picker>
 
+            <h3 class="header">
+              ${this.hass.localize(
+                "ui.panel.config.floors.editor.areas_section"
+              )}
+            </h3>
+
+            <p class="description">
+              ${this.hass.localize(
+                "ui.panel.config.floors.editor.areas_description"
+              )}
+            </p>
             ${areas.length
               ? html`<ha-chip-set>
                   ${repeat(
@@ -155,8 +180,8 @@ class DialogFloorDetail extends LitElement {
                     (area) =>
                       html`<ha-input-chip
                         .area=${area}
+                        @click=${this._openArea}
                         @remove=${this._removeArea}
-                        @click=${this._openAreaDetail}
                         .label=${area?.name}
                       >
                         ${area.icon
@@ -177,6 +202,9 @@ class DialogFloorDetail extends LitElement {
               .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas}
+              .label=${this.hass.localize(
+                "ui.panel.config.floors.editor.add_area"
+              )}
             ></ha-area-picker>
 
             <h3 class="header">
@@ -213,9 +241,24 @@ class DialogFloorDetail extends LitElement {
     `;
   }
 
-  private _removeArea(ev) {
+  private _openArea(ev) {
     const area = ev.target.area;
-    updateAreaRegistryEntry(this.hass, area.area_id, { floor_id: null });
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
+  }
+
+  private _removeArea(ev) {
+    const areaId = ev.target.area.area_id;
+    if (this._addedAreas.has(areaId)) {
+      this._addedAreas.delete(areaId);
+      this._addedAreas = new Set(this._addedAreas);
+      return;
+    }
+    this._removedAreas.add(areaId);
+    this._removedAreas = new Set(this._removedAreas);
   }
 
   private _addArea(ev) {
@@ -223,10 +266,14 @@ class DialogFloorDetail extends LitElement {
     if (!areaId) {
       return;
     }
-    updateAreaRegistryEntry(this.hass, areaId, {
-      floor_id: this._params!.entry!.floor_id,
-    });
     ev.target.value = "";
+    if (this._removedAreas.has(areaId)) {
+      this._removedAreas.delete(areaId);
+      this._removedAreas = new Set(this._removedAreas);
+      return;
+    }
+    this._addedAreas.add(areaId);
+    this._addedAreas = new Set(this._addedAreas);
   }
 
   private _isNameValid() {
@@ -259,9 +306,13 @@ class DialogFloorDetail extends LitElement {
         aliases: this._aliases,
       };
       if (create) {
-        await this._params!.createEntry!(values);
+        await this._params!.createEntry!(values, this._addedAreas);
       } else {
-        await this._params!.updateEntry!(values);
+        await this._params!.updateEntry!(
+          values,
+          this._addedAreas,
+          this._removedAreas
+        );
       }
       this.closeDialog();
     } catch (err: any) {
@@ -279,6 +330,7 @@ class DialogFloorDetail extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       haStyleDialog,
       css`
         ha-textfield {
@@ -289,7 +341,7 @@ class DialogFloorDetail extends LitElement {
           color: var(--secondary-text-color);
         }
         ha-chip-set {
-          margin: 16px 0 8px;
+          margin-bottom: 8px;
         }
       `,
     ];

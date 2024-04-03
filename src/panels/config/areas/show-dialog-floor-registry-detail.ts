@@ -7,9 +7,14 @@ import {
 export interface FloorRegistryDetailDialogParams {
   entry?: FloorRegistryEntry;
   suggestedName?: string;
-  createEntry?: (values: FloorRegistryEntryMutableParams) => Promise<unknown>;
+  createEntry?: (
+    values: FloorRegistryEntryMutableParams,
+    addedAreas: Set<string>
+  ) => Promise<unknown>;
   updateEntry?: (
-    updates: Partial<FloorRegistryEntryMutableParams>
+    updates: Partial<FloorRegistryEntryMutableParams>,
+    addedAreas: Set<string>,
+    removedAreas: Set<string>
   ) => Promise<unknown>;
 }
 
