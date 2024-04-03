@@ -27,6 +27,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
@@ -48,12 +49,13 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-state-icon";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-menu-item";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
+import "../../../components/ha-svg-icon";
 import {
   CategoryRegistryEntry,
+  createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
@@ -66,6 +68,7 @@ import {
 import { forwardHaptic } from "../../../data/haptics";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import {
@@ -86,8 +89,9 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
-import { computeCssColor } from "../../../common/color/compute-color";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -361,21 +365,32 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createCategory}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.category.editor.add")}
+        </div>
       </ha-menu-item>`;
     const labelItems = html` ${this._labels?.map((label) => {
-      const color = label.color ? computeCssColor(label.color) : undefined;
-      return html`<ha-menu-item
-        .value=${label.label_id}
-        @click=${this._handleBulkLabel}
-      >
-        <ha-label style=${color ? `--color: ${color}` : ""}>
-          ${label.icon
-            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-            : nothing}
-          ${label.name}
-        </ha-label>
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        return html`<ha-menu-item
+          .value=${label.label_id}
+          @click=${this._handleBulkLabel}
+        >
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>`;
+      })}<md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._createLabel}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </div>
       </ha-menu-item>`;
-    })}`;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -837,6 +852,20 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           </a>
         </p>
       `,
+    });
+  }
+
+  private _createCategory() {
+    showCategoryRegistryDetailDialog(this, {
+      scope: "scene",
+      createEntry: (values) =>
+        createCategoryRegistryEntry(this.hass, "scene", values),
+    });
+  }
+
+  private _createLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
     });
   }
 
