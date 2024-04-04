@@ -422,6 +422,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+    const automations = this._automations(
+      this.automations,
+      this._entityReg,
+      this.hass.areas,
+      this._categories,
+      this._labels,
+      this._filteredAutomations
+    );
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -432,13 +440,23 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.automation.picker.search",
+          { number: automations.length }
+        )}
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
         .filters=${
-          Object.values(this._filters).filter((filter) => filter.value?.length)
-            .length
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
         }
         .columns=${this._columns(
           this.narrow,
@@ -446,14 +464,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           this.hass.locale
         )}
         initialGroupColumn="category"
-        .data=${this._automations(
-          this.automations,
-          this._entityReg,
-          this.hass.areas,
-          this._categories,
-          this._labels,
-          this._filteredAutomations
-        )}
+        .data=${automations}
         .empty=${!this.automations.length}
         @row-click=${this._handleRowClicked}
         .noDataText=${this.hass.localize(
