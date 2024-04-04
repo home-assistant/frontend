@@ -161,12 +161,14 @@ const LABELS: LabelRegistryEntry[] = [
     name: "Energy",
     icon: null,
     color: "yellow",
+    description: null,
   },
   {
     label_id: "entertainment",
     name: "Entertainment",
     icon: "mdi:popcorn",
     color: "blue",
+    description: null,
   },
 ];
 
