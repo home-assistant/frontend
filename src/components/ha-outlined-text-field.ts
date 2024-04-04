@@ -30,6 +30,10 @@ export class HaOutlinedTextField extends MdOutlinedTextField {
       md-outlined-field {
         background: var(--ha-outlined-text-field-container-color, transparent);
         opacity: var(--ha-outlined-text-field-container-opacity, 1);
+        border-start-start-radius: var(--_container-shape-start-start);
+        border-start-end-radius: var(--_container-shape-start-end);
+        border-end-end-radius: var(--_container-shape-end-end);
+        border-end-start-radius: var(--_container-shape-end-start);
       }
       .input {
         font-family: Roboto, sans-serif;
