@@ -1066,6 +1066,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       css`
         :host {
           display: block;
+          height: 100%;
         }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
