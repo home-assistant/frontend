@@ -1,4 +1,3 @@
-import { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -56,11 +55,7 @@ export class HaFilterIntegrations extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list
-                @selected=${this._integrationsSelected}
-                multi
-                class="ha-scrollbar"
-              >
+              <mwc-list class="ha-scrollbar" @click=${this._handleItemClick}>
                 ${repeat(
                   this._integrations(this._manifests, this._filter, this.value),
                   (i) => i.domain,
@@ -92,7 +87,7 @@ export class HaFilterIntegrations extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
   }
@@ -131,34 +126,21 @@ export class HaFilterIntegrations extends LitElement {
         )
   );
 
-  private async _integrationsSelected(
-    ev: CustomEvent<SelectedDetail<Set<number>>>
-  ) {
-    const integrations = this._integrations(
-      this._manifests!,
-      this._filter,
-      this.value
-    );
-
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
+  private _handleItemClick(ev) {
+    const listItem = ev.target.closest("ha-check-list-item");
+    const value = listItem?.value;
+    if (!value) {
       return;
     }
-
-    const value: string[] = [];
-
-    for (const index of ev.detail.index) {
-      const domain = integrations[index].domain;
-      value.push(domain);
+    if (this.value?.includes(value)) {
+      this.value = this.value?.filter((val) => val !== value);
+    } else {
+      this.value = [...(this.value || []), value];
     }
-    this.value = value;
+    listItem.selected = this.value?.includes(value);
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: this.value,
       items: undefined,
     });
   }
