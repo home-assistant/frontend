@@ -27,7 +27,6 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { until } from "lit/directives/until";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -67,7 +66,6 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { entryIcon } from "../../../data/icons";
 import {
   LabelRegistryEntry,
   createLabelRegistryEntry,
@@ -207,21 +205,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         template: (entry) =>
           entry.icon
-            ? html`
-                <ha-state-icon
-                  title=${ifDefined(entry.entity?.state)}
-                  slot="item-icon"
-                  .hass=${this.hass}
-                  .stateObj=${entry.entity}
-                ></ha-state-icon>
-              `
-            : html`
-                <ha-icon
-                  icon=${until(
-                    entryIcon(this.hass, entry as EntityRegistryEntry)
-                  )}
-                ></ha-icon>
-              `,
+            ? html`<ha-icon .icon=${entry.icon}></ha-icon>`
+            : entry.entity
+              ? html`
+                  <ha-state-icon
+                    title=${ifDefined(entry.entity?.state)}
+                    slot="item-icon"
+                    .hass=${this.hass}
+                    .stateObj=${entry.entity}
+                  ></ha-state-icon>
+                `
+              : html`<ha-domain-icon
+                  .domain=${computeDomain(entry.entity_id)}
+                ></ha-domain-icon>`,
       },
       name: {
         main: true,
