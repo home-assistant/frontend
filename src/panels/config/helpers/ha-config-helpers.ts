@@ -511,8 +511,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${helpers}

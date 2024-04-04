@@ -449,8 +449,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
         .filters=${
-          Object.values(this._filters).filter((filter) => filter.value?.length)
-            .length
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
         }
         .columns=${this._columns(
           this.narrow,

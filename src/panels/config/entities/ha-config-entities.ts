@@ -578,8 +578,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         )}
         hasFilters
         .filters=${
-          Object.values(this._filters).filter((filter) => filter.value?.length)
-            .length
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
         }
         .filter=${this._filter}
         selectable

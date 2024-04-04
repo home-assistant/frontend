@@ -496,8 +496,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       ${this.showFilters && !showPane
         ? html`<ha-dialog
             open
-            hideActions
-            .heading=${localize("ui.components.subpage-data-table.filtering", {
+            .heading=${localize("ui.components.subpage-data-table.filters", {
               number: this.data.length,
             })}
           >
@@ -511,7 +510,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 )}
               ></ha-icon-button>
               <span slot="title"
-                >${localize("ui.components.subpage-data-table.filtering", {
+                >${localize("ui.components.subpage-data-table.filters", {
                   number: this.data.length,
                 })}</span
               >
@@ -527,8 +526,17 @@ export class HaTabsSubpageDataTable extends LitElement {
                 : nothing}
             </ha-dialog-header>
             <div class="filter-dialog-content">
-              <slot name="filter-pane"></slot></div
-          ></ha-dialog>`
+              <slot name="filter-pane"></slot>
+            </div>
+            <div slot="primaryAction">
+              <ha-button @click=${this._toggleFilters}>
+                ${this.hass.localize(
+                  "ui.components.subpage-data-table.show_results",
+                  { number: this.data.length }
+                )}
+              </ha-button>
+            </div>
+          </ha-dialog>`
         : nothing}
     `;
   }
@@ -797,7 +805,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
 
       .filter-dialog-content {
-        height: calc(100vh - 1px - var(--header-height));
+        height: calc(100vh - 1px - 61px - var(--header-height));
         display: flex;
         flex-direction: column;
       }

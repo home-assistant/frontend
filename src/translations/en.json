@@ -501,7 +501,7 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
-        "filtering": "Filtering {number} results",
+        "show_results": "show {number} results",
         "clear_filter": "Clear filter",
         "close_filter": "Close filters",
         "exit_selection_mode": "Exit selection mode",

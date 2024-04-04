@@ -601,8 +601,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         .filter=${this._filter}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
