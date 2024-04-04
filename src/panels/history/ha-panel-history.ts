@@ -531,56 +531,51 @@ class HaPanelHistory extends LitElement {
       const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
       const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
 
-      if (targetLabels.size) {
-        targetLabels.forEach((labelId) => {
-          const expanded = expandLabelTarget(
-            this.hass,
-            labelId,
-            areas,
-            devices,
-            entities,
-            targetSelector
-          );
-          expanded.devices.forEach((id) => targetDevices.add(id));
-          expanded.entities.forEach((id) => targetEntities.add(id));
-          expanded.areas.forEach((id) => targetAreas.add(id));
-        });
-      }
-      if (targetFloors.size) {
-        targetFloors.forEach((floorId) => {
-          const expanded = expandFloorTarget(
-            this.hass,
-            floorId,
-            areas,
-            targetSelector
-          );
-          expanded.areas.forEach((id) => targetAreas.add(id));
-        });
-      }
-      if (targetAreas.size) {
-        targetAreas.forEach((areaId) => {
-          const expanded = expandAreaTarget(
-            this.hass,
-            areaId,
-            devices,
-            entities,
-            targetSelector
-          );
-          expanded.devices.forEach((id) => targetDevices.add(id));
-          expanded.entities.forEach((id) => targetEntities.add(id));
-        });
-      }
-      if (targetDevices.size) {
-        targetDevices.forEach((deviceId) => {
-          const expanded = expandDeviceTarget(
-            this.hass,
-            deviceId,
-            entities,
-            targetSelector
-          );
-          expanded.entities.forEach((id) => targetEntities.add(id));
-        });
-      }
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          areas,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
+
+      targetFloors.forEach((floorId) => {
+        const expanded = expandFloorTarget(
+          this.hass,
+          floorId,
+          areas,
+          targetSelector
+        );
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
+
+      targetAreas.forEach((areaId) => {
+        const expanded = expandAreaTarget(
+          this.hass,
+          areaId,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
+
+      targetDevices.forEach((deviceId) => {
+        const expanded = expandDeviceTarget(
+          this.hass,
+          deviceId,
+          entities,
+          targetSelector
+        );
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
 
       return Array.from(targetEntities);
     }
