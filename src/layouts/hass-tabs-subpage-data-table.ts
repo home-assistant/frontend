@@ -779,7 +779,6 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
 
       ha-dialog {
-        --dialog-z-index: 100;
         --mdc-dialog-min-width: calc(
           100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
         );
