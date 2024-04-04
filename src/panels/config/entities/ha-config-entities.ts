@@ -573,7 +573,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         )}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
-          "ui.panel.config.entities.picker.search"
+          "ui.panel.config.entities.picker.search",
+          { number: filteredEntities.length }
         )}
         hasFilters
         .filters=${

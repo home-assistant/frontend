@@ -497,7 +497,9 @@ export class HaTabsSubpageDataTable extends LitElement {
         ? html`<ha-dialog
             open
             hideActions
-            .heading=${localize("ui.components.subpage-data-table.filters")}
+            .heading=${localize("ui.components.subpage-data-table.filtering", {
+              number: this.data.length,
+            })}
           >
             <ha-dialog-header slot="heading">
               <ha-icon-button
@@ -509,7 +511,9 @@ export class HaTabsSubpageDataTable extends LitElement {
                 )}
               ></ha-icon-button>
               <span slot="title"
-                >${localize("ui.components.subpage-data-table.filters")}</span
+                >${localize("ui.components.subpage-data-table.filtering", {
+                  number: this.data.length,
+                })}</span
               >
               ${this.filters
                 ? html`<ha-icon-button
