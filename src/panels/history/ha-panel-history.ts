@@ -525,14 +525,13 @@ class HaPanelHistory extends LitElement {
       }
 
       const targetSelector = { target: {} };
-      const targetEntities =
-        ensureArray(targetPickerValue.entity_id)?.slice() || [];
-      const targetDevices =
-        ensureArray(targetPickerValue.device_id)?.slice() || [];
-      const targetAreas = ensureArray(targetPickerValue.area_id)?.slice() || [];
-      const targetFloors = ensureArray(targetPickerValue.floor_id)?.slice();
-      const targetLabels = ensureArray(targetPickerValue.label_id)?.slice();
-      if (targetLabels) {
+      const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
+      const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
+      const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
+      const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
+      const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
+
+      if (targetLabels.size) {
         targetLabels.forEach((labelId) => {
           const expanded = expandLabelTarget(
             this.hass,
@@ -542,12 +541,12 @@ class HaPanelHistory extends LitElement {
             entities,
             targetSelector
           );
-          targetDevices.push(...expanded.devices);
-          targetEntities.push(...expanded.entities);
-          targetAreas.push(...expanded.areas);
+          expanded.devices.forEach((id) => targetDevices.add(id));
+          expanded.entities.forEach((id) => targetEntities.add(id));
+          expanded.areas.forEach((id) => targetAreas.add(id));
         });
       }
-      if (targetFloors) {
+      if (targetFloors.size) {
         targetFloors.forEach((floorId) => {
           const expanded = expandFloorTarget(
             this.hass,
@@ -555,10 +554,10 @@ class HaPanelHistory extends LitElement {
             areas,
             targetSelector
           );
-          targetAreas.push(...expanded.areas);
+          expanded.areas.forEach((id) => targetAreas.add(id));
         });
       }
-      if (targetAreas.length) {
+      if (targetAreas.size) {
         targetAreas.forEach((areaId) => {
           const expanded = expandAreaTarget(
             this.hass,
@@ -567,20 +566,23 @@ class HaPanelHistory extends LitElement {
             entities,
             targetSelector
           );
-          targetEntities.push(...expanded.entities);
-          targetDevices.push(...expanded.devices);
+          expanded.devices.forEach((id) => targetDevices.add(id));
+          expanded.entities.forEach((id) => targetEntities.add(id));
         });
       }
-      if (targetDevices.length) {
+      if (targetDevices.size) {
         targetDevices.forEach((deviceId) => {
-          targetEntities.push(
-            ...expandDeviceTarget(this.hass, deviceId, entities, targetSelector)
-              .entities
+          const expanded = expandDeviceTarget(
+            this.hass,
+            deviceId,
+            entities,
+            targetSelector
           );
+          expanded.entities.forEach((id) => targetEntities.add(id));
         });
       }
 
-      return targetEntities;
+      return Array.from(targetEntities);
     }
   );
 
