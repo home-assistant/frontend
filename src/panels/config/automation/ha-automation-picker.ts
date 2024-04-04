@@ -613,9 +613,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-menu-item>
-                    <ha-menu slot="menu" positioning="popover"
-                      >${categoryItems}</ha-menu
-                    >
+                    <ha-menu slot="menu">${categoryItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -633,9 +631,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-menu-item>
-                    <ha-menu slot="menu" positioning="popover"
-                      >${labelItems}</ha-menu
-                    >
+                    <ha-menu slot="menu">${labelItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }

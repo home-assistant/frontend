@@ -653,7 +653,7 @@ ${
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
             </ha-menu-item>
-            <ha-menu slot="menu" positioning="popover">${labelItems}</ha-menu>
+            <ha-menu slot="menu">${labelItems}</ha-menu>
           </ha-sub-menu>
           <md-divider role="separator" tabindex="-1"></md-divider>`
       : nothing

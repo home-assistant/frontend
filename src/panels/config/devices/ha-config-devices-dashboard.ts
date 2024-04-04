@@ -716,9 +716,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-menu-item>
-                <ha-menu slot="menu" positioning="popover"
-                  >${labelItems}</ha-menu
-                >
+                <ha-menu slot="menu">${labelItems}</ha-menu>
               </ha-sub-menu>
             </ha-button-menu-new>`}
       </hass-tabs-subpage-data-table>
