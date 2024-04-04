@@ -6,6 +6,11 @@ import { MdSubMenu } from "@material/web/menu/sub-menu";
 @customElement("ha-sub-menu")
 // @ts-expect-error
 export class HaSubMenu extends MdSubMenu {
+  async show() {
+    super.show();
+    this.menu.hasOverflow = false;
+  }
+
   static override styles: CSSResult[] = [
     MdSubMenu.styles,
     css`
