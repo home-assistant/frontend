@@ -591,7 +591,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .tabs=${configSections.devices}
         .route=${this.route}
         .searchLabel=${this.hass.localize(
-          "ui.panel.config.devices.picker.search"
+          "ui.panel.config.devices.picker.search",
+          { number: devicesOutput.length }
         )}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${devicesOutput}
@@ -600,8 +601,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         .filter=${this._filter}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}

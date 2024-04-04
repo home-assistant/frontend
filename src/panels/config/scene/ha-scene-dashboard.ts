@@ -425,6 +425,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+    const scenes = this._scenes(
+      this.scenes,
+      this._entityReg,
+      this.hass.areas,
+      this._categories,
+      this._labels,
+      this._filteredScenes
+    );
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -432,24 +440,26 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.scene.picker.search",
+          { number: scenes.length }
+        )}
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         id="entity_id"
         initialGroupColumn="category"
-        .data=${this._scenes(
-          this.scenes,
-          this._entityReg,
-          this.hass.areas,
-          this._categories,
-          this._labels,
-          this._filteredScenes
-        )}
+        .data=${scenes}
         .empty=${!this.scenes.length}
         .activeFilters=${this._activeFilters}
         .noDataText=${this.hass.localize(

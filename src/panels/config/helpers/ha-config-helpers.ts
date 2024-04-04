@@ -486,6 +486,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+    const helpers = this._getItems(
+      this.hass.localize,
+      this._stateItems,
+      this._entityEntries,
+      this._configEntries,
+      this._entityReg,
+      this._categories,
+      this._labels,
+      this._filteredStateItems
+    );
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -493,24 +503,24 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.helpers.picker.search",
+          { number: helpers.length }
+        )}
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         .columns=${this._columns(this.narrow, this.hass.localize)}
-        .data=${this._getItems(
-          this.hass.localize,
-          this._stateItems,
-          this._entityEntries,
-          this._configEntries,
-          this._entityReg,
-          this._categories,
-          this._labels,
-          this._filteredStateItems
-        )}
+        .data=${helpers}
         initialGroupColumn="category"
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}

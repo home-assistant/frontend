@@ -437,6 +437,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+    const scripts = this._scripts(
+      this.scripts,
+      this._entityReg,
+      this.hass.areas,
+      this._categories,
+      this._labels,
+      this._filteredScripts
+    );
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -444,27 +452,29 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.script.picker.search",
+          { number: scripts.length }
+        )}
         hasFilters
         initialGroupColumn="category"
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         .columns=${this._columns(
           this.narrow,
           this.hass.localize,
           this.hass.locale
         )}
-        .data=${this._scripts(
-          this.scripts,
-          this._entityReg,
-          this.hass.areas,
-          this._categories,
-          this._labels,
-          this._filteredScripts
-        )}
+        .data=${scripts}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}
         id="entity_id"
