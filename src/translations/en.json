@@ -3241,7 +3241,9 @@
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area"
+                    "target_unknown_area": "unknown area",
+                    "target_unknown_floor": "unknown floor",
+                    "target_unknown_label": "unknown label"
                   }
                 },
                 "play_media": {
