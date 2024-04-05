@@ -591,8 +591,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .tabs=${configSections.devices}
         .route=${this.route}
         .searchLabel=${this.hass.localize(
-          "ui.panel.config.devices.picker.search",
-          { number: devicesOutput.length }
+          "ui.panel.config.devices.picker.search"
         )}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${devicesOutput}
