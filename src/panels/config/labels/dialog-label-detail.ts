@@ -7,6 +7,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import "../../../components/ha-textarea";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-color-picker";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -122,14 +123,14 @@ class DialogLabelDetail
                 "ui.panel.config.labels.detail.color"
               )}
             ></ha-color-picker>
-            <ha-textfield
+            <ha-textarea
               .value=${this._description}
               .configValue=${"description"}
               @input=${this._input}
               .label=${this.hass!.localize(
                 "ui.panel.config.labels.detail.description"
               )}
-            ></ha-textfield>
+            ></ha-textarea>
           </div>
         </div>
         ${this._params.entry && this._params.removeEntry
@@ -215,17 +216,15 @@ class DialogLabelDetail
         a {
           color: var(--primary-color);
         }
+        ha-textarea,
         ha-textfield,
         ha-icon-picker,
         ha-color-picker {
           display: block;
         }
         ha-color-picker,
-        ha-textfield {
+        ha-textarea {
           margin-top: 16px;
-        }
-        ha-textfield:first-child {
-          margin-top: 0;
         }
       `,
     ];
