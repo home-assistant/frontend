@@ -129,7 +129,7 @@ class HaPanelDevState extends LitElement {
               item-label-path="entity_id"
             ></ha-entity-picker>
             ${this.hass.enableShortcuts
-              ? html` <ha-tip .hass=${this.hass}
+              ? html`<ha-tip .hass=${this.hass}
                   >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
                 >`
               : nothing}
