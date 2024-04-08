@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
@@ -12,9 +13,13 @@ import {
   cloudLogout,
   CloudStatusLoggedIn,
   fetchCloudSubscriptionInfo,
+  removeCloudData,
   SubscriptionInfo,
 } from "../../../../data/cloud";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
@@ -43,6 +48,20 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
+        <ha-button-menu slot="toolbar-icon" @action=${this._deleteCloudData}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.reset_cloud_data"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -255,6 +274,36 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   private async _logoutFromCloud() {
     await cloudLogout(this.hass);
     fireEvent(this, "ha-refresh-cloud-status");
+  }
+
+  private async _deleteCloudData() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await cloudLogout(this.hass);
+      await removeCloudData(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.cloud.account.reset_data_failed"
+        ),
+        text: err?.message,
+      });
+      return;
+    } finally {
+      fireEvent(this, "ha-refresh-cloud-status");
+    }
   }
 
   static get styles() {

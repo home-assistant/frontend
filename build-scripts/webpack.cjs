@@ -161,6 +161,7 @@ const createWebpackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
+        "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
         "lit/directives/until$": "lit/directives/until.js",

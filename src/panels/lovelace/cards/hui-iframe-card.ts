@@ -6,6 +6,7 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
+import { IFRAME_SANDBOX } from "../../../util/iframe";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { IframeCardConfig } from "./types";
 
@@ -96,7 +97,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
           <iframe
             title=${ifDefined(this._config.title)}
             src=${this._config.url}
-            sandbox="${sandbox_user_params} allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+            .sandbox=${`${sandbox_user_params} ${IFRAME_SANDBOX}`}
             allow=${this._config.allow ?? 'fullscreen'}
           ></iframe>
         </div>

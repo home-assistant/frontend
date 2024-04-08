@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name         = "home-assistant-frontend"
-version      = "20240228.0"
+version      = "20240404.1"
 license      = {text = "Apache-2.0"}
 description  = "The Home Assistant frontend"
 readme       = "README.md"
 authors      = [
     {name = "The Home Assistant Authors", email = "hello@home-assistant.io"}
 ]
-requires-python = ">=3.10.0"
+requires-python = ">=3.11.0"
 
 [project.urls]
 "Homepage" = "https://github.com/home-assistant/frontend"

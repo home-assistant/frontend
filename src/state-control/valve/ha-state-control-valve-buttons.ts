@@ -127,11 +127,11 @@ export class HaStateControlValveButtons extends LitElement {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
-        --control-button-group-spacing: 6px;
+        --control-button-group-spacing: 10px;
         --control-button-group-thickness: 100px;
       }
       ha-control-button {
-        --control-button-border-radius: 18px;
+        --control-button-border-radius: 36px;
         --mdc-icon-size: 24px;
       }
     `;

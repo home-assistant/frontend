@@ -254,6 +254,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          text-align: center;
         }
         .card {
           margin: 8px;
