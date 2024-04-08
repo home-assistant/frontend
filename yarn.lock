@@ -9753,7 +9753,7 @@ __metadata:
     lit-analyzer: "npm:2.0.3"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.4.4"
-    magic-string: "npm:0.30.8"
+    magic-string: "npm:0.30.9"
     map-stream: "npm:0.0.7"
     marked: "npm:12.0.1"
     memoize-one: "npm:6.0.0"
@@ -11679,12 +11679,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.8, magic-string@npm:^0.30.3":
-  version: 0.30.8
-  resolution: "magic-string@npm:0.30.8"
+"magic-string@npm:0.30.9, magic-string@npm:^0.30.3":
+  version: 0.30.9
+  resolution: "magic-string@npm:0.30.9"
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.4.15"
-  checksum: 10/72ab63817af600e92c19dc8489c1aa4a9599da00cfd59b2319709bd48fb0cf533fdf354bf140ac86e598dbd63e6b2cc83647fe8448f864a3eb6061c62c94e784
+  checksum: 10/a49b7f848e36914c2794e443d4da6579abebb3e57a5e98b1603958f4672d1435dc15261f70c2793e9b6d6c891191c83b9608322b48d0d76a9be32e73e039cc8a
   languageName: node
   linkType: hard
 
