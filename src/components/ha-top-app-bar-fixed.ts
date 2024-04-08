@@ -22,6 +22,8 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+        backdrop-filter: var(--app-header-backdrop-filter, none);
       }
       .mdc-top-app-bar__title {
         padding-inline-start: 20px;

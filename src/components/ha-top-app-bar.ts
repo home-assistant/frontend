@@ -22,6 +22,8 @@ export class HaTopAppBar extends TopAppBarBase {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
+        -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+        backdrop-filter: var(--app-header-backdrop-filter, none);
       }
     `,
   ];
