@@ -76,6 +76,7 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import { LocalizeKeys } from "../../common/translations/localize";
 import { getLovelaceStrategy } from "./strategies/get-strategy";
+import "./cards/test-scanner";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
