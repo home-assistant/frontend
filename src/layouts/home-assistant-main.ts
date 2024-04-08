@@ -177,6 +177,7 @@ export class HomeAssistantMain extends LitElement {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         --mdc-drawer-width: 56px;
         --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+        --backdrop-filter: unset;
       }
       :host([expanded]) {
         --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
