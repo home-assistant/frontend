@@ -1499,12 +1499,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/legacy-modes@npm:6.3.3":
-  version: 6.3.3
-  resolution: "@codemirror/legacy-modes@npm:6.3.3"
+"@codemirror/legacy-modes@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@codemirror/legacy-modes@npm:6.4.0"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
-  checksum: 10/248a11a7fd43561ec85a8bd6dad26414f786bb9e46dcbd15394b3e5ed3b0f177eade39f1aad6f043af9a58396f68e092ee674d592ee434ebdc9f46de0bf4385c
+  checksum: 10/0f3f47cd867c95704ee7648eeb41b991f736ccd9ef4f6668210a82386333d3bc5e1beb6fa60391f6064327d6ac2037b17428decdee440c115a553f280a75bf61
   languageName: node
   linkType: hard
 
@@ -9601,7 +9601,7 @@ __metadata:
     "@codemirror/autocomplete": "npm:6.15.0"
     "@codemirror/commands": "npm:6.3.3"
     "@codemirror/language": "npm:6.10.1"
-    "@codemirror/legacy-modes": "npm:6.3.3"
+    "@codemirror/legacy-modes": "npm:6.4.0"
     "@codemirror/search": "npm:6.5.6"
     "@codemirror/state": "npm:6.4.1"
     "@codemirror/view": "npm:6.26.1"
