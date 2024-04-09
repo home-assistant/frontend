@@ -25,6 +25,7 @@ export class HaMenuItem extends MdMenuItem {
 
         --md-sys-color-on-primary-container: var(--primary-text-color);
         --md-sys-color-on-secondary-container: var(--primary-text-color);
+        --md-menu-item-label-text-font: Roboto, sans-serif;
       }
       :host(.warning) {
         --md-menu-item-label-text-color: var(--error-color);
