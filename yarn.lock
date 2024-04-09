@@ -7152,12 +7152,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:2.0.1":
-  version: 2.0.1
-  resolution: "date-fns-tz@npm:2.0.1"
+"date-fns-tz@npm:3.0.0":
+  version: 3.0.0
+  resolution: "date-fns-tz@npm:3.0.0"
+  dependencies:
+    lodash.clonedeep: "npm:^4.5.0"
   peerDependencies:
-    date-fns: 2.x
-  checksum: 10/f12e684bc13c9fe7ef7910c5b25437e15290a655d45102b7420f046cecdf9fa5715bf333d6dfb6bab6c382c7abc6b58241a50c216e9ab0b60d6fdb388f473d6b
+    date-fns: ^3.0.0
+  checksum: 10/0a20196abd2519eb56bed0ba8fa838d60374db7bffa37d0d9284b29b6eed1b84369560d59688236479ed0bda923057fec2faef71caf09bc246d5f567c23308a8
   languageName: node
   linkType: hard
 
@@ -9739,7 +9741,7 @@ __metadata:
     core-js: "npm:3.36.1"
     cropperjs: "npm:1.6.1"
     date-fns: "npm:2.30.0"
-    date-fns-tz: "npm:2.0.1"
+    date-fns-tz: "npm:3.0.0"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
