@@ -75,8 +75,14 @@ export class HaDialog extends DialogBase {
           var(--divider-color)
         );
         z-index: var(--dialog-z-index, 8);
-        -webkit-backdrop-filter: var(--ha-dialog-scrim-backdrop-filter, var(--dialog-backdrop-filter, none));
-        backdrop-filter: var(--ha-dialog-scrim-backdrop-filter, var(--dialog-backdrop-filter, none));
+        -webkit-backdrop-filter: var(
+          --ha-dialog-scrim-backdrop-filter,
+          var(--dialog-backdrop-filter, none)
+        );
+        backdrop-filter: var(
+          --ha-dialog-scrim-backdrop-filter,
+          var(--dialog-backdrop-filter, none)
+        );
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
         --mdc-typography-headline6-font-weight: 400;
         --mdc-typography-headline6-font-size: 1.574rem;
