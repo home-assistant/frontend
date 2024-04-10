@@ -908,6 +908,8 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: env(safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
