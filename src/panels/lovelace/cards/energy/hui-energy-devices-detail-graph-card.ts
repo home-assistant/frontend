@@ -38,6 +38,7 @@ import { LovelaceCard } from "../../types";
 import { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const UNIT = "kWh";
 
@@ -55,6 +56,8 @@ export class HuiEnergyDevicesDetailGraphCard
   @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
 
   @state() private _data?: EnergyData;
+
+  @state() private _devicesIds?: string[];
 
   @state() private _start = startOfToday();
 
@@ -192,6 +195,18 @@ export class HuiEnergyDevicesDetailGraphCard
             },
           },
         },
+        onClick: (_event, elements, chart) => {
+          const index = elements[0]?.datasetIndex ?? -1;
+
+          if (index < 0) return;
+
+          const statisticId = this._devicesIds?.[index];
+
+          if (!statisticId) return;
+
+          fireEvent(this, "hass-more-info", { entityId: statisticId });
+          chart?.canvas?.dispatchEvent(new Event("mouseout")); // to hide tooltip
+        },
       };
       return options;
     }
@@ -279,6 +294,9 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets,
     };
     this._chartDatasetExtra = datasetExtras;
+    this._devicesIds = energyData.prefs.device_consumption.map(
+      (device) => device.stat_consumption
+    );
   }
 
   private _processDataSet(
