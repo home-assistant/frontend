@@ -103,7 +103,7 @@
     "comlink": "4.4.1",
     "core-js": "3.36.1",
     "cropperjs": "1.6.1",
-    "date-fns": "2.30.0",
+    "date-fns": "3.6.0",
     "date-fns-tz": "2.0.1",
     "deep-clone-simple": "1.1.1",
     "deep-freeze": "0.0.1",
