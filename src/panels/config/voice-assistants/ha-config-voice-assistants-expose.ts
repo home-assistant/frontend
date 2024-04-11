@@ -496,7 +496,10 @@ export class VoiceAssistantsExpose extends LitElement {
         )}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
-          "ui.panel.config.entities.picker.search"
+          "ui.panel.config.entities.picker.search",
+          {
+            number: filteredEntities.length,
+          }
         )}
         .filter=${this._filter}
         selectable
