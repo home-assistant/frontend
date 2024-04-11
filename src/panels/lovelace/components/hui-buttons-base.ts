@@ -52,7 +52,6 @@ export class HuiButtonsBase extends LitElement {
                       .stateObj=${stateObj}
                       .overrideIcon=${entityConf.icon}
                       .overrideImage=${entityConf.image}
-                      class=${name ? "" : "no-text"}
                       .stateColor=${true}
                       slot="icon"
                     ></state-badge>
