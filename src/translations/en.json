@@ -1867,7 +1867,7 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
-          "multiselect": { "failed": "Failed to update ${number} items." },
+          "multiselect": { "failed": "Failed to update {number} items." },
           "learn_more": "Learn more"
         },
         "updates": {
