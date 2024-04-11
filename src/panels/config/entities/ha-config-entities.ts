@@ -90,6 +90,10 @@ import {
   EntitySources,
   fetchEntitySourcesWithCache,
 } from "../../../data/entity_sources";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -957,19 +961,41 @@ ${
       confirm: async () => {
         let require_restart = false;
         let reload_delay = 0;
-        await Promise.all(
+        const result = await Promise.allSettled(
           this._selected.map(async (entity) => {
-            const result = await updateEntityRegistryEntry(this.hass, entity, {
-              disabled_by: null,
-            });
-            if (result.require_restart) {
+            const updateResult = await updateEntityRegistryEntry(
+              this.hass,
+              entity,
+              {
+                disabled_by: null,
+              }
+            );
+            if (updateResult.require_restart) {
               require_restart = true;
             }
-            if (result.reload_delay) {
-              reload_delay = Math.max(reload_delay, result.reload_delay);
+            if (updateResult.reload_delay) {
+              reload_delay = Math.max(reload_delay, updateResult.reload_delay);
             }
           })
         );
+
+        if (hasRejectedItems(result)) {
+          const rejected = rejectedItems(result);
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.common.multiselect.failed",
+              {
+                number: rejected.length,
+              }
+            ),
+            text: html`<pre>
+    ${rejected
+                .map((r) => r.reason.message || r.reason.code || r.reason)
+                .join("\r\n")}</pre
+            >`,
+          });
+        }
+
         this._clearSelection();
         // If restart is required by any entity, show a dialog.
         // Otherwise, show a dialog explaining that some patience is needed
@@ -1068,7 +1094,20 @@ ${
         })
       );
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private _bulkCreateLabel() {
