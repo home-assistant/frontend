@@ -33,6 +33,7 @@ import {
   expandFloorTarget,
   expandLabelTarget,
   Selector,
+  TargetSelector,
 } from "../data/selector";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -364,6 +365,15 @@ export class HaServiceControl extends LitElement {
     return false;
   }
 
+  private _targetSelector = memoizeOne(
+    (targetSelector: TargetSelector | null | undefined, domain?: string) => {
+      const create_domains = isHelperDomain(domain) ? [domain] : undefined;
+      return targetSelector
+        ? { target: { ...targetSelector, create_domains } }
+        : { target: { create_domains } };
+    }
+  );
+
   protected render() {
     const serviceData = this._getServiceInfo(
       this._value?.service,
@@ -401,8 +411,6 @@ export class HaServiceControl extends LitElement {
           `component.${domain}.services.${serviceName}.description`
         )) ||
       serviceData?.description;
-
-    const create_domains = isHelperDomain(domain) ? [domain] : undefined;
 
     return html`${this.hidePicker
       ? nothing
@@ -453,9 +461,10 @@ export class HaServiceControl extends LitElement {
             )}</span
           ><ha-selector
             .hass=${this.hass}
-            .selector=${serviceData.target
-              ? { target: { ...serviceData.target, create_domains } }
-              : { target: { create_domains } }}
+            .selector=${this._targetSelector(
+              serviceData.target as TargetSelector,
+              domain
+            )}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
             .value=${this._value?.target}
