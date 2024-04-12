@@ -33,6 +33,10 @@ import {
 } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
+import {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -801,7 +805,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         })
       );
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private async _handleBulkLabel(ev) {
@@ -824,7 +841,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         })
       );
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private _handleSelectionChanged(
