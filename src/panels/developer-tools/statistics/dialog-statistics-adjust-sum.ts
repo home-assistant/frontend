@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import formatISO9075 from "date-fns/formatISO9075";
+import { formatISO9075 } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -16,11 +16,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import {
   adjustStatisticsSum,
   fetchStatistics,
