@@ -105,6 +105,10 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -196,6 +200,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          selectable: entityRegEntry !== undefined,
         };
       });
     }
@@ -1112,7 +1117,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         })
       );
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private async _handleBulkLabel(ev) {
@@ -1135,7 +1153,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         })
       );
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private async _handleBulkEnable() {
@@ -1143,7 +1174,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._selected.forEach((entityId) => {
       promises.push(turnOnOffEntity(this.hass, entityId, true));
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private async _handleBulkDisable() {
@@ -1151,7 +1195,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._selected.forEach((entityId) => {
       promises.push(turnOnOffEntity(this.hass, entityId, false));
     });
-    await Promise.all(promises);
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 
   private async _bulkCreateCategory() {
