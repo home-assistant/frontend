@@ -377,6 +377,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "location": {
+          "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
+          "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+        },
         "selector": {
           "options": "Selector Options",
           "types": {
@@ -4122,10 +4127,6 @@
           "confirm_delete": "Are you sure you want to delete this zone?",
           "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
-          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
-          "go_to_core_config": "Go to general configuration?",
-          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New zone",
             "name": "Name",
@@ -4140,7 +4141,8 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update"
+            "update": "Update",
+            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
           },
           "core_location_dialog": "Home Assistant location"
         },
