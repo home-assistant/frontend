@@ -333,11 +333,13 @@ export class HuiEnergyDevicesDetailGraphCard
       );
 
       data.push({
-        label: getStatisticLabel(
-          this.hass,
-          source.stat_consumption,
-          statisticsMetaData[source.stat_consumption]
-        ),
+        label:
+          source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_consumption,
+            statisticsMetaData[source.stat_consumption]
+          ),
         hidden:
           this._hiddenStats.has(source.stat_consumption) || itemExceedsMax,
         borderColor: compare ? color + "7F" : color,
