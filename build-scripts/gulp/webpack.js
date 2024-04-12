@@ -99,7 +99,7 @@ gulp.task("webpack-watch-app", () => {
   ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("create-translations", "copy-translations-app")
+    gulp.series("build-translations", "copy-translations-app")
   );
 });
 
