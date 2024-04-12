@@ -159,7 +159,7 @@ export class DialogHelperDetail extends LitElement {
         >
           ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
         </mwc-button>
-        ${this._params?.domains?.length === 1
+        ${this._params?.domain
           ? nothing
           : html`<mwc-button
               slot="secondaryAction"
