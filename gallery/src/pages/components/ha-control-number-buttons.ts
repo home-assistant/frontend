@@ -94,7 +94,7 @@ export class DemoHarControlNumberButtons extends LitElement {
         --control-number-buttons-background-color: #2196f3;
         --control-number-buttons-background-opacity: 0.1;
         --control-number-buttons-thickness: 100px;
-        --control-number-buttons-border-radius: 24px;
+        --control-number-buttons-border-radius: 36px;
       }
     `;
   }

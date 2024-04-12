@@ -1,15 +1,42 @@
-import "@material/mwc-button/mwc-button";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import "@material/mwc-button/mwc-button";
+import "@material/web/divider/divider";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiClose,
+  mdiFilterVariant,
+  mdiFilterVariantRemove,
+  mdiFormatListChecks,
+  mdiMenuDown,
+} from "@mdi/js";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
+import "../components/chips/ha-assist-chip";
+import "../components/chips/ha-filter-chip";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
   HaDataTable,
+  SortingDirection,
 } from "../components/data-table/ha-data-table";
+import "../components/ha-button-menu-new";
+import "../components/ha-dialog";
+import { HaMenu } from "../components/ha-menu";
+import "../components/ha-menu-item";
+import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
@@ -87,22 +114,16 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property() public searchLabel?: string;
 
   /**
-   * List of strings that show what the data is currently filtered by.
-   * @type {Array}
-   */
-  @property({ type: Array }) public activeFilters?;
-
-  /**
-   * Text to how how many items are hidden.
-   * @type {String}
-   */
-  @property() public hiddenLabel?: string;
-
-  /**
-   * How many items are hidden because of active filters.
+   * Number of active filters.
    * @type {Number}
    */
-  @property({ type: Number }) public numHidden = 0;
+  @property({ type: Number }) public filters?;
+
+  /**
+   * Number of current selections.
+   * @type {Number}
+   */
+  @property({ type: Number }) public selected?;
 
   /**
    * What path to use when the back button is pressed.
@@ -138,57 +159,126 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public tabs: PageNavigation[] = [];
 
   /**
-   * Force hides the filter menu.
+   * Show the filter menu.
    * @type {Boolean}
    */
-  @property({ type: Boolean }) public hideFilterMenu = false;
+  @property({ type: Boolean }) public hasFilters = false;
+
+  @property({ type: Boolean }) public showFilters = false;
+
+  @property() public initialGroupColumn?: string;
+
+  @state() private _sortColumn?: string;
+
+  @state() private _sortDirection: SortingDirection = null;
+
+  @state() private _groupColumn?: string;
+
+  @state() private _selectMode = false;
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
+
+  @query("#group-by-menu") private _groupByMenu!: HaMenu;
+
+  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
+  private _showPaneController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width > 750,
+  });
 
   public clearSelection() {
     this._dataTable.clearSelection();
   }
 
+  protected firstUpdated() {
+    if (this.initialGroupColumn) {
+      this._groupColumn = this.initialGroupColumn;
+    }
+  }
+
+  private _toggleGroupBy() {
+    this._groupByMenu.open = !this._groupByMenu.open;
+  }
+
+  private _toggleSortBy() {
+    this._sortByMenu.open = !this._sortByMenu.open;
+  }
+
   protected render(): TemplateResult {
-    const hiddenLabel = this.numHidden
-      ? this.hiddenLabel ||
-        this.hass.localize("ui.components.data-table.hidden", {
-          number: this.numHidden,
-        }) ||
-        this.numHidden
-      : undefined;
+    const localize = this.localizeFunc || this.hass.localize;
+    const showPane = this._showPaneController.value ?? !this.narrow;
+    const filterButton = this.hasFilters
+      ? html`<div class="relative">
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.filters")}
+            .active=${this.filters}
+            @click=${this._toggleFilters}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
+          </ha-assist-chip>
+          ${this.filters
+            ? html`<div class="badge">${this.filters}</div>`
+            : nothing}
+        </div>`
+      : nothing;
 
-    const filterInfo = this.activeFilters
-      ? html`${this.hass.localize("ui.components.data-table.filtering_by")}
-        ${this.activeFilters.join(", ")}
-        ${hiddenLabel ? `(${hiddenLabel})` : ""}`
-      : hiddenLabel;
+    const selectModeBtn =
+      this.selectable && !this._selectMode
+        ? html`<ha-assist-chip
+            class="has-dropdown select-mode-chip"
+            .active=${this._selectMode}
+            @click=${this._enableSelectMode}
+            .title=${localize(
+              "ui.components.subpage-data-table.enter_selection_mode"
+            )}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiFormatListChecks}></ha-svg-icon>
+          </ha-assist-chip>`
+        : nothing;
 
-    const headerToolbar = html`<search-input
+    const searchBar = html`<search-input-outlined
       .hass=${this.hass}
       .filter=${this.filter}
-      .suffix=${!this.narrow}
       @value-changed=${this._handleSearchChange}
       .label=${this.searchLabel}
+      .placeholder=${this.searchLabel}
     >
-      ${!this.narrow
-        ? html`<div
-            class="filters"
-            slot="suffix"
-            @click=${this._preventDefault}
+    </search-input-outlined>`;
+
+    const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
+      ? html`
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.sort_by", {
+              sortColumn: this._sortColumn
+                ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
+                : "",
+            })}
+            id="sort-by-anchor"
+            @click=${this._toggleSortBy}
           >
-            ${filterInfo
-              ? html`<div class="active-filters">
-                  ${filterInfo}
-                  <mwc-button @click=${this._clearFilter}>
-                    ${this.hass.localize("ui.components.data-table.clear")}
-                  </mwc-button>
-                </div>`
-              : ""}
-            <slot name="filter-menu"></slot>
-          </div>`
-        : ""}
-    </search-input>`;
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
+        `
+      : nothing;
+
+    const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
+      ? html`
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.group_by", {
+              groupColumn: this._groupColumn
+                ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
+                : "",
+            })}
+            id="group-by-anchor"
+            @click=${this._toggleGroupBy}
+          >
+            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
+          ></ha-assist-chip>
+        `
+      : nothing;
 
     return html`
       <hass-tabs-subpage
@@ -202,34 +292,114 @@ export class HaTabsSubpageDataTable extends LitElement {
         .tabs=${this.tabs}
         .mainPage=${this.mainPage}
         .supervisor=${this.supervisor}
+        .pane=${showPane && this.showFilters}
+        @sorting-changed=${this._sortingChanged}
       >
+        ${this._selectMode
+          ? html`<div class="selection-bar" slot="toolbar">
+              <div class="selection-controls">
+                <ha-icon-button
+                  .path=${mdiClose}
+                  @click=${this._disableSelectMode}
+                  .label=${localize(
+                    "ui.components.subpage-data-table.exit_selection_mode"
+                  )}
+                ></ha-icon-button>
+                <ha-button-menu-new positioning="absolute">
+                  <ha-assist-chip
+                    .label=${localize(
+                      "ui.components.subpage-data-table.select"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFormatListChecks}
+                    ></ha-svg-icon>
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon
+                  ></ha-assist-chip>
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                    <div slot="headline">
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </div>
+                  </ha-menu-item>
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </div>
+                  </ha-menu-item>
+                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-menu-item
+                    .value=${undefined}
+                    @click=${this._disableSelectMode}
+                  >
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.close_select_mode"
+                      )}
+                    </div>
+                  </ha-menu-item>
+                </ha-button-menu-new>
+                <p>
+                  ${localize("ui.components.subpage-data-table.selected", {
+                    selected: this.selected || "0",
+                  })}
+                </p>
+              </div>
+              <div class="center-vertical">
+                <slot name="selection-bar"></slot>
+              </div>
+            </div>`
+          : nothing}
+        ${this.showFilters
+          ? !showPane
+            ? nothing
+            : html`<div class="pane" slot="pane">
+                <div class="table-header">
+                  <ha-assist-chip
+                    .label=${localize(
+                      "ui.components.subpage-data-table.filters"
+                    )}
+                    active
+                    @click=${this._toggleFilters}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFilterVariant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                  ${this.filters
+                    ? html`<ha-icon-button
+                        .path=${mdiFilterVariantRemove}
+                        @click=${this._clearFilters}
+                        .label=${localize(
+                          "ui.components.subpage-data-table.clear_filter"
+                        )}
+                      ></ha-icon-button>`
+                    : nothing}
+                </div>
+                <div class="pane-content">
+                  <slot name="filter-pane"></slot>
+                </div>
+              </div>`
+          : nothing}
         ${this.empty
           ? html`<div class="center">
               <slot name="empty">${this.noDataText}</slot>
             </div>`
-          : html`${!this.hideFilterMenu
-                ? html`
-                    <div slot="toolbar-icon">
-                      ${this.narrow
-                        ? html`
-                            <div class="filter-menu">
-                              ${this.numHidden || this.activeFilters
-                                ? html`<span class="badge"
-                                    >${this.numHidden || "!"}</span
-                                  >`
-                                : ""}
-                              <slot name="filter-menu"></slot>
-                            </div>
-                          `
-                        : ""}<slot name="toolbar-icon"></slot>
-                    </div>
-                  `
-                : ""}
+          : html`<div slot="toolbar-icon">
+                <slot name="toolbar-icon"></slot>
+              </div>
               ${this.narrow
                 ? html`
                     <div slot="header">
                       <slot name="header">
-                        <div class="search-toolbar">${headerToolbar}</div>
+                        <div class="search-toolbar">${searchBar}</div>
                       </slot>
                     </div>
                   `
@@ -240,30 +410,177 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .data=${this.data}
                 .noDataText=${this.noDataText}
                 .filter=${this.filter}
-                .selectable=${this.selectable}
+                .selectable=${this._selectMode}
                 .hasFab=${this.hasFab}
                 .id=${this.id}
                 .clickable=${this.clickable}
                 .appendRow=${this.appendRow}
+                .sortColumn=${this._sortColumn}
+                .sortDirection=${this._sortDirection}
+                .groupColumn=${this._groupColumn}
               >
                 ${!this.narrow
                   ? html`
                       <div slot="header">
                         <slot name="header">
-                          <div class="table-header">${headerToolbar}</div>
+                          <div class="table-header">
+                            ${this.hasFilters && !this.showFilters
+                              ? html`${filterButton}`
+                              : nothing}${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}
+                          </div>
                         </slot>
                       </div>
                     `
-                  : html` <div slot="header"></div> `}
+                  : html`<div slot="header"></div>
+                      <div slot="header-row" class="narrow-header-row">
+                        ${this.hasFilters && !this.showFilters
+                          ? html`${filterButton}`
+                          : nothing}
+                        ${selectModeBtn}${groupByMenu}${sortByMenu}
+                      </div>`}
               </ha-data-table>`}
-
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
+      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.groupable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleGroupBy}
+                  .selected=${id === this._groupColumn}
+                  class=${classMap({ selected: id === this._groupColumn })}
+                >
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
+        )}
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item
+          .value=${undefined}
+          @click=${this._handleGroupBy}
+          .selected=${this._groupColumn === undefined}
+          class=${classMap({ selected: this._groupColumn === undefined })}
+        >
+          ${localize("ui.components.subpage-data-table.dont_group_by")}
+        </ha-menu-item>
+      </ha-menu>
+      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+        ${Object.entries(this.columns).map(([id, column]) =>
+          column.sortable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleSortBy}
+                  keep-open
+                  .selected=${id === this._sortColumn}
+                  class=${classMap({ selected: id === this._sortColumn })}
+                >
+                  ${this._sortColumn === id
+                    ? html`
+                        <ha-svg-icon
+                          slot="end"
+                          .path=${this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
+        )}
+      </ha-menu>
+      ${this.showFilters && !showPane
+        ? html`<ha-dialog
+            open
+            .heading=${localize("ui.components.subpage-data-table.filters")}
+          >
+            <ha-dialog-header slot="heading">
+              <ha-icon-button
+                slot="navigationIcon"
+                .path=${mdiClose}
+                @click=${this._toggleFilters}
+                .label=${localize(
+                  "ui.components.subpage-data-table.close_filter"
+                )}
+              ></ha-icon-button>
+              <span slot="title"
+                >${localize("ui.components.subpage-data-table.filters")}</span
+              >
+              ${this.filters
+                ? html`<ha-icon-button
+                    slot="actionItems"
+                    @click=${this._clearFilters}
+                    .path=${mdiFilterVariantRemove}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
+                  ></ha-icon-button>`
+                : nothing}
+            </ha-dialog-header>
+            <div class="filter-dialog-content">
+              <slot name="filter-pane"></slot>
+            </div>
+            <div slot="primaryAction">
+              <ha-button @click=${this._toggleFilters}>
+                ${this.hass.localize(
+                  "ui.components.subpage-data-table.show_results",
+                  { number: this.data.length }
+                )}
+              </ha-button>
+            </div>
+          </ha-dialog>`
+        : nothing}
     `;
   }
 
-  private _preventDefault(ev) {
-    ev.preventDefault();
+  private _clearFilters() {
+    fireEvent(this, "clear-filter");
+  }
+
+  private _toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
+  private _sortingChanged(ev) {
+    this._sortDirection = ev.detail.direction;
+    this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
+  }
+
+  private _handleSortBy(ev) {
+    const columnId = ev.currentTarget.value;
+    if (!this._sortDirection || this._sortColumn !== columnId) {
+      this._sortDirection = "asc";
+    } else if (this._sortDirection === "asc") {
+      this._sortDirection = "desc";
+    } else {
+      this._sortDirection = null;
+    }
+    this._sortColumn = this._sortDirection === null ? undefined : columnId;
+  }
+
+  private _handleGroupBy(ev) {
+    this._groupColumn = ev.currentTarget.value;
+  }
+
+  private _enableSelectMode() {
+    this._selectMode = true;
+  }
+
+  private _disableSelectMode() {
+    this._selectMode = false;
+    this._dataTable.clearSelection();
+  }
+
+  private _selectAll() {
+    this._dataTable.selectAll();
+  }
+
+  private _selectNone() {
+    this._dataTable.clearSelection();
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -274,53 +591,56 @@ export class HaTabsSubpageDataTable extends LitElement {
     fireEvent(this, "search-changed", { value: this.filter });
   }
 
-  private _clearFilter() {
-    fireEvent(this, "clear-filter");
-  }
-
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: block;
+        height: 100%;
+      }
+
       ha-data-table {
         width: 100%;
         height: 100%;
         --data-table-border-width: 0;
       }
-      :host(:not([narrow])) ha-data-table {
+      :host(:not([narrow])) ha-data-table,
+      .pane {
         height: calc(100vh - 1px - var(--header-height));
         display: block;
       }
+
+      .pane-content {
+        height: calc(100vh - 1px - var(--header-height) - var(--header-height));
+        display: flex;
+        flex-direction: column;
+      }
+
       :host([narrow]) hass-tabs-subpage {
         --main-title-margin: 0;
+      }
+      :host([narrow]) {
+        --expansion-panel-summary-padding: 0 16px;
       }
       .table-header {
         display: flex;
         align-items: center;
         --mdc-shape-small: 0;
         height: 56px;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 16px;
+        gap: 16px;
+        box-sizing: border-box;
+        background: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+      search-input-outlined {
+        flex: 1;
       }
       .search-toolbar {
         display: flex;
         align-items: center;
         color: var(--secondary-text-color);
-      }
-      search-input {
-        --mdc-text-field-fill-color: var(--sidebar-background-color);
-        --mdc-text-field-idle-line-color: var(--divider-color);
-        --text-field-overflow: visible;
-        z-index: 5;
-      }
-      .table-header search-input {
-        display: block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-      }
-      .search-toolbar search-input {
-        display: block;
-        width: 100%;
-        color: var(--secondary-text-color);
-        --mdc-ripple-color: transparant;
       }
       .filters {
         --mdc-text-field-fill-color: var(--input-fill-color);
@@ -382,9 +702,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         top: 4px;
         font-size: 0.65em;
       }
-      .filter-menu {
-        position: relative;
-      }
       .center {
         display: flex;
         align-items: center;
@@ -394,6 +711,105 @@ export class HaTabsSubpageDataTable extends LitElement {
         height: 100%;
         width: 100%;
         padding: 16px;
+      }
+
+      .badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        inset-inline-end: -4px;
+        inset-inline-start: initial;
+        min-width: 16px;
+        box-sizing: border-box;
+        border-radius: 50%;
+        font-weight: 400;
+        font-size: 11px;
+        background-color: var(--primary-color);
+        line-height: 16px;
+        text-align: center;
+        padding: 0px 2px;
+        color: var(--text-primary-color);
+      }
+
+      .narrow-header-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 16px;
+        overflow-x: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .selection-bar {
+        background: rgba(var(--rgb-primary-color), 0.1);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        box-sizing: border-box;
+        font-size: 14px;
+        --ha-assist-chip-container-color: var(--card-background-color);
+      }
+
+      .selection-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .selection-controls p {
+        margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
+      }
+
+      .center-vertical {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .relative {
+        position: relative;
+      }
+
+      ha-assist-chip {
+        --ha-assist-chip-container-shape: 10px;
+        --ha-assist-chip-container-color: var(--card-background-color);
+      }
+
+      .select-mode-chip {
+        --md-assist-chip-icon-label-space: 0;
+        --md-assist-chip-trailing-space: 8px;
+      }
+
+      ha-dialog {
+        --mdc-dialog-min-width: calc(
+          100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+        );
+        --mdc-dialog-max-width: calc(
+          100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+        );
+        --mdc-dialog-min-height: 100%;
+        --mdc-dialog-max-height: 100%;
+        --vertical-align-dialog: flex-end;
+        --ha-dialog-border-radius: 0;
+        --dialog-content-padding: 0;
+      }
+
+      .filter-dialog-content {
+        height: calc(100vh - 1px - 61px - var(--header-height));
+        display: flex;
+        flex-direction: column;
+      }
+
+      #sort-by-anchor,
+      #group-by-anchor,
+      ha-button-menu-new ha-assist-chip {
+        --md-assist-chip-trailing-space: 8px;
       }
     `;
   }

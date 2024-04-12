@@ -187,7 +187,10 @@
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
         "unlock": "Unlock",
-        "open": "Open"
+        "open": "Open",
+        "open_door": "Open door",
+        "open_door_confirm": "Really open?",
+        "open_door_success": "Door open"
       },
       "media_player": {
         "source": "Source",
@@ -481,15 +484,36 @@
       },
       "target-picker": {
         "expand": "Expand",
+        "expand_floor_id": "Split this floor into separate areas.",
         "expand_area_id": "Split this area into separate devices and entities.",
         "expand_device_id": "Split this device into separate entities.",
+        "expand_label_id": "Split this label into separate areas, devices and entities.",
         "remove": "Remove",
+        "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
+        "remove_label_id": "Remove label",
         "add_area_id": "Choose area",
         "add_device_id": "Choose device",
-        "add_entity_id": "Choose entity"
+        "add_entity_id": "Choose entity",
+        "add_label_id": "Choose label"
+      },
+      "subpage-data-table": {
+        "filters": "Filters",
+        "show_results": "show {number} results",
+        "clear_filter": "Clear filter",
+        "close_filter": "Close filters",
+        "exit_selection_mode": "Exit selection mode",
+        "enter_selection_mode": "Enter selection mode",
+        "sort_by": "Sort by {sortColumn}",
+        "group_by": "Group by {groupColumn}",
+        "dont_group_by": "Don't group",
+        "select": "Select",
+        "selected": "Selected {selected}",
+        "close_select_mode": "Close selection mode",
+        "select_all": "Select all",
+        "select_none": "Select none"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -539,6 +563,35 @@
         "device": "Device",
         "no_area": "No area"
       },
+      "category-picker": {
+        "clear": "Clear",
+        "show_categories": "Show categories",
+        "categories": "Categories",
+        "category": "Category",
+        "add_category": "Add category",
+        "add_new_sugestion": "Add new category ''{name}''",
+        "add_new": "Add new category…",
+        "no_categories": "You don't have any categories",
+        "no_match": "No matching categories found",
+        "add_dialog": {
+          "title": "Add new category",
+          "text": "Enter the name of the new category.",
+          "name": "Name",
+          "add": "Add",
+          "failed_create_category": "Failed to create category."
+        }
+      },
+      "label-picker": {
+        "clear": "Clear",
+        "show_labels": "Show labels",
+        "label": "Label",
+        "labels": "Labels",
+        "add_label": "Add label",
+        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new": "Add new label…",
+        "no_labels": "You don't have any labels",
+        "no_match": "No matching labels found"
+      },
       "area-picker": {
         "clear": "Clear",
         "show_areas": "Show areas",
@@ -547,13 +600,18 @@
         "add_new": "Add new area…",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
-        "add_dialog": {
-          "title": "Add new area",
-          "text": "Enter the name of the new area.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_area": "Failed to create area."
-        }
+        "unassigned_areas": "Unassigned areas",
+        "failed_create_area": "Failed to create area."
+      },
+      "floor-picker": {
+        "clear": "Clear",
+        "show_floors": "Show floors",
+        "floor": "Floor",
+        "add_new_sugestion": "Add new floor ''{name}''",
+        "add_new": "Add new floor…",
+        "no_floors": "You don't have any floors",
+        "no_match": "No matching floors found",
+        "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
         "title": "Areas",
@@ -611,6 +669,38 @@
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+      },
+      "color-picker": {
+        "default_color": "Default color (state)",
+        "colors": {
+          "primary": "Primary",
+          "accent": "Accent",
+          "disabled": "Disabled",
+          "inactive": "Inactive",
+          "red": "Red",
+          "pink": "Pink",
+          "purple": "Purple",
+          "deep-purple": "Deep purple",
+          "indigo": "Indigo",
+          "blue": "Blue",
+          "light-blue": "Light blue",
+          "cyan": "Cyan",
+          "teal": "Teal",
+          "green": "Green",
+          "light-green": "Light Green",
+          "lime": "Lime",
+          "yellow": "Yellow",
+          "amber": "Amber",
+          "orange": "Orange",
+          "deep-orange": "Deep orange",
+          "brown": "Brown",
+          "light-grey": "Light grey",
+          "grey": "Grey",
+          "dark-grey": "Dark grey",
+          "blue-grey": "Blue grey",
+          "black": "Black",
+          "white": "White"
+        }
       },
       "date-range-picker": {
         "start_date": "Start date",
@@ -1025,6 +1115,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "back_to_info": "Back to info",
+        "info": "Information",
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
@@ -1573,6 +1664,72 @@
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
         "create": "Create"
+      },
+      "matter-add-device": {
+        "add_device": "Add device",
+        "add_device_failed": "Failed to add the device",
+        "commissioning": {
+          "header": "Add Matter device",
+          "note": "Adding the device, this may take a minute or two."
+        },
+        "main": {
+          "header": "Add Matter device",
+          "question": "Is your device already added to another Matter controller?",
+          "answer_new": "No. It’s new.",
+          "answer_new_description": "My device is brand new or factory reset.",
+          "answer_existing": "Yes. It’s already in use.",
+          "answer_existing_description": "My device is connected to another controller."
+        },
+        "new": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+          "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
+        },
+        "existing": {
+          "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
+          "question": "Which controller is it connected to?",
+          "answer_google_home": "Google Home",
+          "answer_apple_home": "Apple Home",
+          "answer_generic": "Other controllers"
+        },
+        "google_home": {
+          "header": "Link Matter app",
+          "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
+          "step_2": "Tap {linked_matter_apps_services}.",
+          "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
+          "linked_matter_apps_services": "Linked Matter apps and services",
+          "link_apps_services": "Link apps & services",
+          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
+        },
+        "google_home_fallback": {
+          "header": "Copy pairing code",
+          "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
+          "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
+          "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
+          "use_pairing_code": "Use Pairing Code",
+          "pairing_code": "Pairing code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "apple_home": {
+          "header": "Copy setup code",
+          "step_1": "Find your device in Apple Home and open {accessory_settings}.",
+          "step_2": "Scroll all the way down and tap {turn_on_pairing_mode}.",
+          "step_3": "You now see the setup code.",
+          "accessory_settings": "Accessory Settings",
+          "turn_on_pairing_mode": "Turn On Pairing Mode",
+          "setup_code": "Setup code",
+          "code_instructions": "Paste the code you just received from the other controller."
+        },
+        "generic": {
+          "header": "Copy setup code",
+          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a sharing code, enter that below.",
+          "setup_code": "Setup code"
+        }
       }
     },
     "weekdays": {
@@ -1687,7 +1844,7 @@
             "secondary": "Manage who can access your home"
           },
           "areas": {
-            "main": "Areas & zones",
+            "main": "Areas, labels & zones",
             "secondary": "Manage locations in and around your house"
           },
           "companion": {
@@ -1710,6 +1867,7 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
+          "multiselect": { "failed": "Failed to update {number} items." },
           "learn_more": "Learn more"
         },
         "updates": {
@@ -1757,6 +1915,76 @@
             "ignored_in_version": "This issue was ignored in version {version}."
           }
         },
+        "floors": {
+          "editor": {
+            "create_floor": "Create floor",
+            "update_floor": "Update floor",
+            "delete": "Delete",
+            "name": "Name",
+            "icon": "Icon",
+            "level": "Level",
+            "name_required": "Name is required",
+            "floor_id": "Floor ID",
+            "unknown_error": "Unknown error",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor.",
+            "areas_section": "Areas",
+            "areas_description": "Specify the areas that are on this floor.",
+            "add_area": "Add area"
+          }
+        },
+        "category": {
+          "caption": "Categories",
+          "assign": {
+            "edit": "Edit category",
+            "assign": "Assign category",
+            "unknown_error": "An unknown error happened when assigning the category"
+          },
+          "editor": {
+            "edit": "Edit category",
+            "delete": "Delete category",
+            "add": "Add category",
+            "create": "Create category",
+            "name": "Name",
+            "icon": "Icon",
+            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
+            "unknown_error": "An unknown error happened when saving the category",
+            "confirm_delete": "Delete category?",
+            "confirm_delete_text": "This will delete the category and unassign everything that is currently assigned to it."
+          },
+          "filter": {
+            "show_all": "Show all"
+          }
+        },
+        "labels": {
+          "caption": "Labels",
+          "description": "Group devices and entities",
+          "headers": {
+            "name": "Name",
+            "icon": "Icon",
+            "color": "Color"
+          },
+          "add_label": "Add label",
+          "manage_labels": "Manage labels",
+          "no_labels": "You don't have any labels",
+          "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
+          "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
+          "confirm_remove_title": "Remove label?",
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
+          "detail": {
+            "new_label": "New label",
+            "name": "Name",
+            "icon": "Icon",
+            "color": "Color",
+            "description": "Description",
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create",
+            "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
+          }
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
@@ -1776,7 +2004,15 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "create_area": "Create Area"
+            "unassigned_areas": "Unassigned areas",
+            "create_area": "Create Area",
+            "create_floor": "Create floor",
+            "floor": {
+              "edit_floor": "Edit floor",
+              "delete_floor": "Delete floor",
+              "confirm_delete": "Delete floor?",
+              "confirm_delete_text": "Removing the floor will unassign all areas from it."
+            }
           },
           "editor": {
             "create_area": "Create area",
@@ -1784,6 +2020,7 @@
             "delete": "Delete",
             "name": "Name",
             "icon": "Icon",
+            "floor": "Floor",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
@@ -2031,10 +2268,12 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
-              "editable": "Editable"
+              "editable": "Editable",
+              "category": "Category"
             },
             "create_helper": "Create helper",
-            "no_helpers": "Looks like you don't have any helpers yet!"
+            "no_helpers": "Looks like you don't have any helpers yet!",
+            "search": "Search {number} helpers"
           },
           "dialog": {
             "create": "Create",
@@ -2435,19 +2674,36 @@
             "edit_automation": "Edit automation",
             "dev_automation": "Debug automation",
             "show_info_automation": "Show info about automation",
+            "show_settings": "Show settings",
             "delete": "[%key:ui::common::delete%]",
             "delete_confirm_title": "Delete automation?",
             "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
+            "state": "State",
             "filtered_by_blueprint": "blueprint: {name}",
             "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
+            "edit_category": "Edit category",
+            "assign_category": "Assign category",
+            "no_category_support": "You can't assign an category to this automation",
+            "no_category_entity_reg": "To assign an category to an automation it needs to have a unique ID.",
+            "search": "Search {number} automations",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
               "trigger": "Trigger",
               "actions": "Actions",
-              "state": "State"
+              "state": "State",
+              "category": "Category",
+              "area": "Area"
+            },
+            "bulk_action": "Action",
+            "bulk_actions": {
+              "move_category": "Move to category",
+              "no_category": "No category",
+              "add_label": "Add label",
+              "enable": "Enable",
+              "disable": "Disable"
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
@@ -2989,7 +3245,9 @@
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area"
+                    "target_unknown_area": "unknown area",
+                    "target_unknown_floor": "unknown floor",
+                    "target_unknown_label": "unknown label"
                   }
                 },
                 "play_media": {
@@ -3312,12 +3570,19 @@
             "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
             "headers": {
               "name": "Name",
-              "state": "State"
+              "state": "State",
+              "category": "Category",
+              "area": "Area"
             },
+            "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
+            "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
+            "no_category_support": "You can't assign an category to this script",
+            "no_category_entity_reg": "To assign an category to an script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
-            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay."
+            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
+            "search": "Search {number} scripts"
           },
           "dialog_new": {
             "header": "Create script",
@@ -3416,10 +3681,17 @@
             "headers": {
               "state": "State",
               "name": "Name",
-              "last_activated": "Last activated"
+              "last_activated": "Last activated",
+              "category": "Category",
+              "area": "Area"
             },
+            "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
+            "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
+            "no_category_support": "You can't assign an category to this scene",
+            "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
-            "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV."
+            "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
+            "search": "Search {number} scenes"
           },
           "editor": {
             "default_name": "New scene",
@@ -3744,13 +4016,8 @@
           "confirm_delete": "Are you sure you want to delete this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
-            "search": "Search devices",
-            "filter": {
-              "filter": "Filter",
-              "show_disabled": "Show disabled devices",
-              "hidden_devices": "{number} {number, plural,\n  one {device}\n  other {devices}\n} not shown",
-              "show_all": "Show all"
-            }
+            "search": "Search {number} devices",
+            "state": "State"
           }
         },
         "entities": {
@@ -3760,19 +4027,11 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search entities",
+            "search": "Search {number} entities",
             "unnamed_entity": "Unnamed entity",
-            "filter": {
-              "filter": "Filter",
-              "show_hidden": "Show hidden entities",
-              "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities",
-              "show_readonly": "Show read-only entities",
-              "hidden_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} not shown",
-              "show_all": "Show all"
-            },
             "status": {
               "restored": "Restored",
+              "available": "Available",
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
@@ -3809,6 +4068,9 @@
               "button": "Hide selected",
               "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
+            },
+            "unhide_selected": {
+              "button": "Unhide selected"
             }
           }
         },
@@ -4056,7 +4318,6 @@
             "missing_zwave_zigbee_title": "{integration} is not setup",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
-            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
@@ -5156,7 +5417,6 @@
             "type": "View type",
             "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
             "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
-
             "types": {
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
@@ -5164,6 +5424,7 @@
               "sections": "Sections (experimental)"
             },
             "subview": "Subview",
+            "max_columns": "Max number of columns",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
@@ -5799,38 +6060,6 @@
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
-          "color-picker": {
-            "default_color": "Default color (state)",
-            "colors": {
-              "primary": "Primary",
-              "accent": "Accent",
-              "disabled": "Disabled",
-              "inactive": "Inactive",
-              "red": "Red",
-              "pink": "Pink",
-              "purple": "Purple",
-              "deep-purple": "Deep purple",
-              "indigo": "Indigo",
-              "blue": "Blue",
-              "light-blue": "Light blue",
-              "cyan": "Cyan",
-              "teal": "Teal",
-              "green": "Green",
-              "light-green": "Light Green",
-              "lime": "Lime",
-              "yellow": "Yellow",
-              "amber": "Amber",
-              "orange": "Orange",
-              "deep-orange": "Deep orange",
-              "brown": "Brown",
-              "light-grey": "Light grey",
-              "grey": "Grey",
-              "dark-grey": "Dark grey",
-              "blue-grey": "Blue grey",
-              "black": "Black",
-              "white": "White"
-            }
-          },
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",
@@ -5903,6 +6132,10 @@
         "edit_zones": "Edit zones"
       },
       "profile": {
+        "tabs": {
+          "general": "General",
+          "security": "Security"
+        },
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
         "user_settings_header": "User settings",
@@ -6525,7 +6758,9 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "playstore": "Get it on Google Play",
+          "appstore": "Download on the App Store"
         },
         "user": {
           "header": "Create user",

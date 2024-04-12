@@ -37,7 +37,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, viewType: string) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -68,6 +68,20 @@ export class HuiViewEditor extends LitElement {
             },
           },
         },
+        ...(viewType === SECTION_VIEW_LAYOUT
+          ? ([
+              {
+                name: "max_columns",
+                selector: {
+                  number: {
+                    min: 1,
+                    max: 10,
+                    mode: "slider",
+                  },
+                },
+              },
+            ] as const satisfies HaFormSchema[])
+          : []),
         {
           name: "subview",
           selector: {
@@ -95,12 +109,16 @@ export class HuiViewEditor extends LitElement {
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass.localize, this._type);
 
     const data = {
       ...this._config,
       type: this._type,
     };
+
+    if (data.max_columns === undefined && this._type === SECTION_VIEW_LAYOUT) {
+      data.max_columns = 4;
+    }
 
     return html`
       <ha-form
@@ -117,8 +135,12 @@ export class HuiViewEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value as LovelaceViewConfig;
 
-    if (config.type === "masonry") {
+    if (config.type === DEFAULT_VIEW_LAYOUT) {
       delete config.type;
+    }
+
+    if (config.type !== SECTION_VIEW_LAYOUT) {
+      delete config.max_columns;
     }
 
     if (
@@ -144,6 +166,10 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
+      case "max_columns":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.max_columns"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

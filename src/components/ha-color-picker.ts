@@ -2,17 +2,16 @@ import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import {
-  computeCssColor,
-  THEME_COLORS,
-} from "../../../common/color/compute-color";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-select";
-import { HomeAssistant } from "../../../types";
+import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
+import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-select";
+import "./ha-list-item";
+import { HomeAssistant } from "../types";
+import { LocalizeKeys } from "../common/translations/localize";
 
-@customElement("hui-color-picker")
-export class HuiColorPicker extends LitElement {
+@customElement("ha-color-picker")
+export class HaColorPicker extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
@@ -20,6 +19,8 @@ export class HuiColorPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: string;
+
+  @property({ type: Boolean }) public defaultColor = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -52,19 +53,19 @@ export class HuiColorPicker extends LitElement {
               </span>
             `
           : nothing}
-        <mwc-list-item value="default">
-          ${this.hass.localize(
-            `ui.panel.lovelace.editor.color-picker.default_color`
-          )}
-        </mwc-list-item>
+        ${this.defaultColor
+          ? html` <ha-list-item value="default">
+              ${this.hass.localize(`ui.components.color-picker.default_color`)}
+            </ha-list-item>`
+          : nothing}
         ${Array.from(THEME_COLORS).map(
           (color) => html`
-            <mwc-list-item .value=${color} graphic="icon">
+            <ha-list-item .value=${color} graphic="icon">
               ${this.hass.localize(
-                `ui.panel.lovelace.editor.color-picker.colors.${color}`
+                `ui.components.color-picker.colors.${color}` as LocalizeKeys
               ) || color}
               <span slot="graphic">${this.renderColorCircle(color)}</span>
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>
@@ -100,6 +101,6 @@ export class HuiColorPicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-color-picker": HuiColorPicker;
+    "ha-color-picker": HaColorPicker;
   }
 }
