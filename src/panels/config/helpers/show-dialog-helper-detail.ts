@@ -3,8 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export const loadHelperDetailDialog = () => import("./dialog-helper-detail");
 
 export interface ShowDialogHelperDetailParams {
-  domains?: string[];
-  // Only used for config entries
+  domain?: string;
   dialogClosedCallback?: (params: {
     flowFinished: boolean;
     entryId?: string;

@@ -96,8 +96,6 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _domains?: string[];
-
   @state() private _domain?: string;
 
   @state() private _error?: string;
@@ -114,16 +112,14 @@ export class DialogHelperDetail extends LitElement {
 
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
     this._params = params;
-    this._domains = params.domains;
-    if (this._domains?.length === 1) {
-      this._domain = this._domains[0];
-    }
+    this._domain = params.domain;
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
       await HELPERS[this._domain].import();
     }
     this._opened = true;
     await this.updateComplete;
+    this.hass.loadFragmentTranslation("config");
     Promise.all([
       getConfigFlowHandlers(this.hass, ["helper"]),
       // Ensure the titles are loaded before we render the flows.
@@ -137,7 +133,6 @@ export class DialogHelperDetail extends LitElement {
     this._opened = false;
     this._error = undefined;
     this._domain = undefined;
-    this._domains = undefined;
     this._params = undefined;
   }
 
@@ -150,7 +145,7 @@ export class DialogHelperDetail extends LitElement {
     if (this._domain) {
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
-          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
           ${dynamicElement(`ha-${this._domain}-form`, {
             hass: this.hass,
             item: this._item,
@@ -172,7 +167,7 @@ export class DialogHelperDetail extends LitElement {
               .disabled=${this._submitting}
             >
               ${this.hass!.localize("ui.common.back")}
-            </mwc-button> `};
+            </mwc-button>`}
       `;
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-circular-progress
@@ -182,19 +177,15 @@ export class DialogHelperDetail extends LitElement {
       const items: [string, string][] = [];
 
       for (const helper of Object.keys(HELPERS) as (keyof typeof HELPERS)[]) {
-        if (!this._domains || this._domains.includes(helper)) {
-          items.push([
+        items.push([
+          helper,
+          this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||
             helper,
-            this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||
-              helper,
-          ]);
-        }
+        ]);
       }
 
       for (const domain of this._helperFlows) {
-        if (!this._domains || this._domains.includes(domain)) {
-          items.push([domain, domainToName(this.hass.localize, domain)]);
-        }
+        items.push([domain, domainToName(this.hass.localize, domain)]);
       }
 
       items.sort((a, b) => a[1].localeCompare(b[1]));
