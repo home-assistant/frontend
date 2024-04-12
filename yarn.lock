@@ -3165,7 +3165,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:=1.4.0":
+"@material/web@npm:1.4.0":
   version: 1.4.0
   resolution: "@material/web@npm:1.4.0"
   dependencies:
@@ -9654,7 +9654,7 @@ __metadata:
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/web": "npm:=1.4.0"
+    "@material/web": "npm:1.4.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:7.0.1"
