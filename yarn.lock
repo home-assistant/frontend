@@ -1404,7 +1404,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.24.4, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.24.4, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
   version: 7.24.4
   resolution: "@babel/runtime@npm:7.24.4"
   dependencies:
@@ -7152,21 +7152,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:2.0.1":
-  version: 2.0.1
-  resolution: "date-fns-tz@npm:2.0.1"
+"date-fns-tz@npm:3.0.0":
+  version: 3.0.0
+  resolution: "date-fns-tz@npm:3.0.0"
+  dependencies:
+    lodash.clonedeep: "npm:^4.5.0"
   peerDependencies:
-    date-fns: 2.x
-  checksum: 10/f12e684bc13c9fe7ef7910c5b25437e15290a655d45102b7420f046cecdf9fa5715bf333d6dfb6bab6c382c7abc6b58241a50c216e9ab0b60d6fdb388f473d6b
+    date-fns: ^3.0.0
+  checksum: 10/0a20196abd2519eb56bed0ba8fa838d60374db7bffa37d0d9284b29b6eed1b84369560d59688236479ed0bda923057fec2faef71caf09bc246d5f567c23308a8
   languageName: node
   linkType: hard
 
-"date-fns@npm:2.30.0":
-  version: 2.30.0
-  resolution: "date-fns@npm:2.30.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.21.0"
-  checksum: 10/70b3e8ea7aaaaeaa2cd80bd889622a4bcb5d8028b4de9162cbcda359db06e16ff6e9309e54eead5341e71031818497f19aaf9839c87d1aba1e27bb4796e758a9
+"date-fns@npm:3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: 10/cac35c58926a3b5d577082ff2b253612ec1c79eb6754fddef46b6a8e826501ea2cb346ecbd211205f1ba382ddd1f9d8c3f00bf433ad63cc3063454d294e3a6b8
   languageName: node
   linkType: hard
 
@@ -9738,8 +9738,8 @@ __metadata:
     comlink: "npm:4.4.1"
     core-js: "npm:3.36.1"
     cropperjs: "npm:1.6.1"
-    date-fns: "npm:2.30.0"
-    date-fns-tz: "npm:2.0.1"
+    date-fns: "npm:3.6.0"
+    date-fns-tz: "npm:3.0.0"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
