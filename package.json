@@ -203,7 +203,7 @@
     "eslint-plugin-lit": "1.11.0",
     "eslint-plugin-lit-a11y": "4.1.2",
     "eslint-plugin-unused-imports": "3.1.0",
-    "eslint-plugin-wc": "2.0.4",
+    "eslint-plugin-wc": "2.1.0",
     "fancy-log": "2.0.0",
     "fs-extra": "11.2.0",
     "glob": "10.3.12",
