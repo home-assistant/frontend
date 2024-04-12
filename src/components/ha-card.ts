@@ -14,6 +14,8 @@ export class HaCard extends LitElement {
           --ha-card-background,
           var(--card-background-color, white)
         );
+        -webkit-backdrop-filter: var(--ha-card-backdrop-filter, none);
+        backdrop-filter: var(--ha-card-backdrop-filter, none);
         box-shadow: var(--ha-card-box-shadow, none);
         box-sizing: border-box;
         border-radius: var(--ha-card-border-radius, 12px);

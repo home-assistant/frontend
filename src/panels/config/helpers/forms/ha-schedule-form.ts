@@ -2,7 +2,7 @@ import { Calendar, CalendarOptions } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
+import { Day, addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   CSSResultGroup,
   LitElement,
