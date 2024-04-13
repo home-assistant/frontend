@@ -541,9 +541,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ha-card {
         margin-bottom: 100px;
       }
-      ha-card paper-item {
-        cursor: pointer;
-      }
     `;
   }
 }
