@@ -315,6 +315,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
     } else {
       label += "\n<b>Device is not in <i>'zigbee.db'</i></b>";
     }
+    if (device.area_id) {
+      label += `\n<b>Area ID: </b>${device.area_id}`;
+    }
     return label;
   }
 
