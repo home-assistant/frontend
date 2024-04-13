@@ -498,6 +498,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
+      ha-list-item {
+        --mdc-list-item-meta-size: 48px;
+      }
       a {
         color: var(--primary-color);
       }
@@ -540,11 +543,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       }
       ha-card paper-item {
         cursor: pointer;
-      }
-      div[slot="meta"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
       }
     `;
   }
