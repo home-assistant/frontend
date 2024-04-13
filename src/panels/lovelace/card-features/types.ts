@@ -47,6 +47,12 @@ export interface ClimateFanModesCardFeatureConfig {
   fan_modes?: string[];
 }
 
+export interface ClimateSwingModesCardFeatureConfig {
+  type: "climate-swing-modes";
+  style?: "dropdown" | "icons";
+  swing_modes?: string[];
+}
+
 export interface ClimateHvacModesCardFeatureConfig {
   type: "climate-hvac-modes";
   style?: "dropdown" | "icons";
@@ -123,6 +129,7 @@ export interface UpdateActionsCardFeatureConfig {
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
+  | ClimateSwingModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig

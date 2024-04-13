@@ -235,7 +235,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ${item.metadata.label}
       </span>
       <span slot="description">
-        ${item.metadata.description || item.metadata.label}
+        ${item.metadata.description}
         ${item.metadata.description !== null && !item.metadata.writeable
           ? html`<br />`
           : nothing}

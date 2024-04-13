@@ -148,6 +148,11 @@ export const updateCloudPref = (
     ...prefs,
   });
 
+export const removeCloudData = (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "cloud/remove_data",
+  });
+
 export const updateCloudGoogleEntityConfig = (
   hass: HomeAssistant,
   entity_id: string,

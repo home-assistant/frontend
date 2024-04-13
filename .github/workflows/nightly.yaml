@@ -6,7 +6,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.12"
   NODE_OPTIONS: --max_old_space_size=6144
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.2
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5

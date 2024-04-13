@@ -291,6 +291,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         padding-top: 4px;
       }
 
+      .badges {
+        margin: 8px 16px;
+        font-size: 85%;
+        text-align: center;
+      }
+
       #columns {
         display: flex;
         flex-direction: row;

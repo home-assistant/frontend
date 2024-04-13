@@ -23,7 +23,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import {
   LovelaceViewConfig,
   isStrategyView,
@@ -57,13 +56,9 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _currentType?: string;
-
   @state() private _params?: EditViewDialogParams;
 
   @state() private _config?: LovelaceViewConfig;
-
-  @state() private _badges?: LovelaceBadgeConfig[];
 
   @state() private _saving = false;
 
@@ -90,7 +85,6 @@ export class HuiDialogEditView extends LitElement {
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const viewConfig = {
         ...this._config,
-        badges: this._badges,
       };
       this._editor?.setValue(viewConfig);
     }
@@ -101,7 +95,6 @@ export class HuiDialogEditView extends LitElement {
 
     if (this._params.viewIndex === undefined) {
       this._config = {};
-      this._badges = [];
       this._dirty = false;
       return;
     }
@@ -110,20 +103,15 @@ export class HuiDialogEditView extends LitElement {
     if (isStrategyView(view)) {
       const { strategy, ...viewConfig } = view;
       this._config = viewConfig;
-      this._badges = [];
       return;
     }
-    this._currentType = view.type;
-    const { badges, ...viewConfig } = view;
-    this._config = viewConfig;
-    this._badges = badges ? processEditorEntities(badges) : [];
+    this._config = view;
   }
 
   public closeDialog(): void {
     this._curTabIndex = 0;
     this._params = undefined;
     this._config = {};
-    this._badges = [];
     this._yamlMode = false;
     this._dirty = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -169,7 +157,7 @@ export class HuiDialogEditView extends LitElement {
           break;
         case "tab-badges":
           content = html`
-            ${this._badges?.length
+            ${this._config?.badges?.length
               ? html`
                   ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
                     ? html`
@@ -181,7 +169,7 @@ export class HuiDialogEditView extends LitElement {
                       `
                     : nothing}
                   <div class="preview-badges">
-                    ${this._badges.map(
+                    ${this._config.badges.map(
                       (badgeConfig) => html`
                         <hui-badge-preview
                           .hass=${this.hass}
@@ -194,7 +182,7 @@ export class HuiDialogEditView extends LitElement {
               : nothing}
             <hui-entity-editor
               .hass=${this.hass}
-              .entities=${this._badges}
+              .entities=${this._config?.badges || []}
               @entities-changed=${this._badgesChanged}
             ></hui-entity-editor>
           `;
@@ -214,14 +202,12 @@ export class HuiDialogEditView extends LitElement {
       }
     }
 
-    const isEmpty =
-      !this._config?.cards?.length && !this._config?.sections?.length;
-
     const isCompatibleViewType =
-      isEmpty ||
-      (this._currentType === SECTION_VIEW_LAYOUT
-        ? this._config?.type === SECTION_VIEW_LAYOUT
-        : this._config?.type !== SECTION_VIEW_LAYOUT);
+      this._config?.type === SECTION_VIEW_LAYOUT
+        ? this._config?.type === SECTION_VIEW_LAYOUT &&
+          !this._config?.cards?.length
+        : this._config?.type !== SECTION_VIEW_LAYOUT &&
+          !this._config?.sections?.length;
 
     return html`
       <ha-dialog
@@ -281,6 +267,19 @@ export class HuiDialogEditView extends LitElement {
                 : ``}
             </mwc-list-item>
           </ha-button-menu>
+          ${!isCompatibleViewType
+            ? html`
+                <ha-alert class="incompatible" alert-type="warning">
+                  ${this._config?.type === SECTION_VIEW_LAYOUT
+                    ? this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_view.type_warning_sections"
+                      )
+                    : this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_view.type_warning_others"
+                      )}
+                </ha-alert>
+              `
+            : nothing}
           ${!this._yamlMode
             ? html`<paper-tabs
                 scrollable
@@ -318,19 +317,6 @@ export class HuiDialogEditView extends LitElement {
                   "ui.panel.lovelace.editor.edit_view.delete"
                 )}
               </mwc-button>
-            `
-          : nothing}
-        ${!isCompatibleViewType
-          ? html`
-              <ha-alert class="incompatible" alert-type="warning">
-                ${this._config?.type === SECTION_VIEW_LAYOUT
-                  ? this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_sections"
-                    )
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.type_warning_others"
-                    )}
-              </ha-alert>
             `
           : nothing}
         <mwc-button
@@ -426,13 +412,12 @@ export class HuiDialogEditView extends LitElement {
 
     this._saving = true;
 
-    const viewConf: LovelaceViewConfig = {
+    const viewConf = {
       ...this._config,
-      badges: this._badges,
     };
 
     if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
-      viewConf.sections = [{ cards: [] }];
+      viewConf.sections = [{ type: "grid", cards: [] }];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
     }
@@ -487,16 +472,22 @@ export class HuiDialogEditView extends LitElement {
     ev: HASSDomEvent<ViewVisibilityChangeEvent>
   ): void {
     if (ev.detail.visible && this._config) {
-      this._config.visible = ev.detail.visible;
+      this._config = {
+        ...this._config,
+        visible: ev.detail.visible,
+      };
     }
     this._dirty = true;
   }
 
   private _badgesChanged(ev: EntitiesEditorEvent): void {
-    if (!this._badges || !this.hass || !ev.detail || !ev.detail.entities) {
+    if (!this.hass || !ev.detail || !ev.detail.entities) {
       return;
     }
-    this._badges = processEditorEntities(ev.detail.entities);
+    this._config = {
+      ...this._config,
+      badges: processEditorEntities(ev.detail.entities),
+    };
     this._dirty = true;
   }
 
@@ -505,9 +496,7 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    const { badges, ...config } = ev.detail.value;
-    this._config = config;
-    this._badges = badges;
+    this._config = ev.detail.value;
     this._dirty = true;
   }
 
@@ -584,7 +573,6 @@ export class HuiDialogEditView extends LitElement {
         }
         .incompatible {
           display: block;
-          margin-top: 16px;
         }
 
         @media all and (min-width: 600px) {

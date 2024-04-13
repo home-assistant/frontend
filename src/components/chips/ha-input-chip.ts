@@ -19,11 +19,15 @@ export class HaInputChip extends MdInputChip {
           var(--rgb-primary-text-color),
           0.15
         );
+        --ha-input-chip-selected-container-opacity: 1;
       }
       /** Set the size of mdc icons **/
       ::slotted([slot="icon"]) {
         display: flex;
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
+      }
+      .selected::before {
+        opacity: var(--ha-input-chip-selected-container-opacity);
       }
     `,
   ];

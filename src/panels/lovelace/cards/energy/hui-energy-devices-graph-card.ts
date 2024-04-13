@@ -18,7 +18,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../../common/color/colors";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   formatNumber,
@@ -253,15 +253,17 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.length = this._config?.max_devices || chartData.length;
 
+    const computedStyle = getComputedStyle(this);
+
     chartData.forEach((d: any) => {
-      const color = getColorByIndex(d.idx);
+      const color = getGraphColorByIndex(d.idx, computedStyle);
 
       borderColor.push(color);
       backgroundColor.push(color + "7F");
     });
 
     chartDataCompare.forEach((d: any) => {
-      const color = getColorByIndex(d.idx);
+      const color = getGraphColorByIndex(d.idx, computedStyle);
 
       borderColorCompare.push(color + "7F");
       backgroundColorCompare.push(color + "32");
