@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
