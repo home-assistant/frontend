@@ -252,13 +252,29 @@ export class ZHANetworkVisualizationPage extends LitElement {
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(parseInt(neighbor.lqi)),
+              color: this._getLQI(parseInt(neighbor.lqi)).color,
+              width: this._getLQI(parseInt(neighbor.lqi)).width,
+              length: 2000 - 4 * parseInt(neighbor.lqi),
+              arrows: {
+                from: {
+                  enabled: neighbor.relationship !== "Child",
+                },
+              },
+              dashes: neighbor.relationship !== "Child",
             });
           } else {
             edges[idx].color = this._getLQI(
               (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
-            );
+            ).color;
+            edges[idx].width = this._getLQI(
+              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
+            ).width;
+            edges[idx].length =
+              2000 -
+              6 * ((parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2);
             edges[idx].label += "/" + neighbor.lqi;
+            delete edges[idx].arrows;
+            delete edges[idx].dashes;
           }
         });
       }
@@ -267,17 +283,17 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._network?.setData({ nodes: this._nodes, edges: edges });
   }
 
-  private _getLQI(lqi: number): EdgeOptions["color"] {
+  private _getLQI(lqi: number): EdgeOptions {
     if (lqi > 192) {
-      return { color: "#17ab00", highlight: "#17ab00" };
+      return { color: { color: "#17ab00", highlight: "#17ab00" }, width: 4 };
     }
     if (lqi > 128) {
-      return { color: "#e6b402", highlight: "#e6b402" };
+      return { color: { color: "#e6b402", highlight: "#e6b402" }, width: 3 };
     }
     if (lqi > 80) {
-      return { color: "#fc4c4c", highlight: "#fc4c4c" };
+      return { color: { color: "#fc4c4c", highlight: "#fc4c4c" }, width: 2 };
     }
-    return { color: "#bfbfbf", highlight: "#bfbfbf" };
+    return { color: { color: "#bfbfbf", highlight: "#bfbfbf" }, width: 1 };
   }
 
   private _getMass(device: ZHADevice): number {
