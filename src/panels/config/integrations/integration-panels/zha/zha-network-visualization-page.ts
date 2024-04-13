@@ -238,6 +238,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
         label: this._buildLabel(device),
         shape: this._getShape(device),
         mass: this._getMass(device),
+        color: {
+          background: device.available ? "#66FF99" : "#FF9999",
+        },
       });
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
@@ -311,9 +314,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
       label += `\n<b>Device: </b>${device.manufacturer} ${device.model}`;
     } else {
       label += "\n<b>Device is not in <i>'zigbee.db'</i></b>";
-    }
-    if (!device.available) {
-      label += "\n<b>Device is <i>Offline</i></b>";
     }
     return label;
   }
