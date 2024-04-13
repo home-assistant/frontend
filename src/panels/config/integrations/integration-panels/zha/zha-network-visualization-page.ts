@@ -297,6 +297,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _getMass(device: ZHADevice): number {
+    if (!device.available) {
+      return 6;
+    }
     if (device.device_type === "Coordinator") {
       return 2;
     }
