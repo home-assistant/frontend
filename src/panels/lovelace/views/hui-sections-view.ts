@@ -58,6 +58,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const editMode = this.lovelace.editMode;
 
+    const sectionCount = sectionsConfig.length + (editMode ? 1 : 0);
+    const maxColumnsCount = this._config?.max_columns;
+
     return html`
       ${this.badges.length > 0
         ? html`<div class="badges">${this.badges}</div>`
@@ -73,9 +76,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
-            "--section-count": String(
-              sectionsConfig.length + (editMode ? 1 : 0)
-            ),
+            "--max-columns-count": maxColumnsCount,
+            "--total-count": sectionCount,
           })}
         >
           ${repeat(
@@ -234,22 +236,24 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --grid-gap: 32px;
-        --grid-max-section-count: 4;
-        --grid-section-min-width: 320px;
-        --grid-section-max-width: 500px;
+        --row-gap: var(--ha-view-sections-row-gap, 8px);
+        --column-gap: var(--ha-view-sections-column-gap, 32px);
+        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+        --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         display: block;
       }
 
       .badges {
-        margin: 12px 8px 4px 8px;
+        margin: 4px 0;
+        padding: var(--row-gap) var(--column-gap);
+        padding-bottom: 0;
         font-size: 85%;
         text-align: center;
       }
 
       .container > * {
         position: relative;
-        max-width: var(--grid-section-max-width);
+        max-width: var(--column-max-width);
         width: 100%;
       }
 
@@ -258,15 +262,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
-        --max-count: min(var(--section-count), var(--grid-max-section-count));
+        --max-count: min(var(--total-count), var(--max-columns-count, 4));
         --max-width: min(
           calc(
-            (var(--max-count) + 1) * var(--grid-section-min-width) +
-              (var(--max-count) + 2) * var(--grid-gap) - 1px
+            (var(--max-count) + 1) * var(--column-min-width) +
+              (var(--max-count) + 2) * var(--column-gap) - 1px
           ),
           calc(
-            var(--max-count) * var(--grid-section-max-width) +
-              (var(--max-count) + 1) * var(--grid-gap)
+            var(--max-count) * var(--column-max-width) + (var(--max-count) + 1) *
+              var(--column-gap)
           )
         );
         display: grid;
@@ -274,10 +278,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         justify-items: center;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(min(var(--grid-section-min-width), 100%), 1fr)
+          minmax(min(var(--column-min-width), 100%), 1fr)
         );
-        grid-gap: 8px var(--grid-gap);
-        padding: 8px var(--grid-gap);
+        gap: var(--row-gap) var(--column-gap);
+        padding: var(--row-gap) var(--column-gap);
         box-sizing: border-box;
         max-width: var(--max-width);
         margin: 0 auto;
@@ -285,7 +289,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       @media (max-width: 600px) {
         .container {
-          --grid-gap: 8px;
+          --column-gap: var(--row-gap);
         }
       }
 
@@ -314,14 +318,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .create {
-        margin-top: calc(66px + 8px);
+        margin-top: calc(66px + var(--row-gap));
         outline: none;
         background: none;
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         order: 1;
-        height: calc(66px + (8px + 2px) * 2);
+        height: calc(66px + 2 * (var(--row-gap) + 2px));
         padding: 8px;
         box-sizing: border-box;
       }

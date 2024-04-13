@@ -93,9 +93,18 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
       weight: 2,
       narrow: true,
     },
-    { content: hass.localize("ui.tips.key_c_hint"), weight: 1, narrow: false },
-    { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false },
   ];
+
+  if (hass?.enableShortcuts) {
+    tips.push(
+      {
+        content: hass.localize("ui.tips.key_c_hint"),
+        weight: 1,
+        narrow: false,
+      },
+      { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false }
+    );
+  }
 
   if (narrow) {
     tips = tips.filter((tip) => tip.narrow);
@@ -310,7 +319,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: true,
-      hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.dialogs.quick-bar.key_c_hint")
+        : undefined,
     });
   }
 

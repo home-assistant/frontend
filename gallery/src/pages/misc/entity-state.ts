@@ -406,6 +406,7 @@ export class DemoEntityState extends LitElement {
           entity_id: "select.speed",
           translation_key: "speed",
           platform: "demo",
+          labels: [],
         },
       },
     });

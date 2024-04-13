@@ -6,7 +6,7 @@ import {
   addMilliseconds,
   differenceInMilliseconds,
   startOfHour,
-} from "date-fns/esm";
+} from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";

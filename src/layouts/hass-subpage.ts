@@ -142,9 +142,12 @@ class HassSubpage extends LitElement {
           right: calc(16px + env(safe-area-inset-right));
           inset-inline-end: calc(16px + env(safe-area-inset-right));
           inset-inline-start: initial;
-
           bottom: calc(16px + env(safe-area-inset-bottom));
           z-index: 1;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: 8px;
         }
         :host([narrow]) #fab.tabs {
           bottom: calc(84px + env(safe-area-inset-bottom));

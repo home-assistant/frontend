@@ -88,7 +88,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
                 window.setTimeout(resolve, 0);
               })
           );
-          let fullUpdate = false;
+          let fullUpdate = this._configEntries === undefined;
           const newEntries: ConfigEntryExtended[] = [];
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {

@@ -83,13 +83,11 @@ export class HaExpansionPanel extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.has("expanded") && this.expanded) {
+    if (changedProps.has("expanded")) {
       this._showContent = this.expanded;
       setTimeout(() => {
         // Verify we're still expanded
-        if (this.expanded) {
-          this._container.style.overflow = "initial";
-        }
+        this._container.style.overflow = this.expanded ? "initial" : "hidden";
       }, 300);
     }
   }
