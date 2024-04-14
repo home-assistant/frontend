@@ -278,13 +278,21 @@ export class HuiCardPicker extends LitElement {
 
     if (customCards.length > 0) {
       cards = cards.concat(
-        customCards.map((ccard: CustomCardEntry) => ({
-          type: ccard.type,
-          name: ccard.name,
-          description: ccard.description,
-          showElement: ccard.preview,
-          isCustom: true,
-        }))
+        customCards
+          .map((ccard: CustomCardEntry) => ({
+            type: ccard.type,
+            name: ccard.name,
+            description: ccard.description,
+            showElement: ccard.preview,
+            isCustom: true,
+          }))
+          .sort((a, b) =>
+            stringCompare(
+              a.name || a.type,
+              b.name || b.type,
+              this.hass?.language
+            )
+          )
       );
     }
     this._cards = cards.map((card: Card) => ({
