@@ -1,13 +1,14 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { DataEntryFlowDialogParams } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
-import { HelperDomain } from "./const";
 
 export const loadHelperDetailDialog = () => import("./dialog-helper-detail");
 
 export interface ShowDialogHelperDetailParams {
-  domain?: HelperDomain;
-  // Only used for config entries
-  dialogClosedCallback?: DataEntryFlowDialogParams["dialogClosedCallback"];
+  domain?: string;
+  dialogClosedCallback?: (params: {
+    flowFinished: boolean;
+    entryId?: string;
+    entityId?: string;
+  }) => void;
 }
 
 export const showHelperDetailDialog = (
