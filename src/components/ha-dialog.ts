@@ -125,8 +125,8 @@ export class HaDialog extends DialogBase {
         margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 28px);
-        -webkit--filter: var(--ha-dialog-surface--filter, none);
-        -filter: var(--ha-dialog-surface--filter, none);
+        -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+        backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
