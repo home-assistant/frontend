@@ -1,7 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
@@ -18,8 +17,6 @@ import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
-import "../../../components/ha-selector/ha-selector-location";
-import type { LocationSelectorValue } from "../../../data/selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -29,8 +26,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-
-const LOCATION_SELECTOR = { location: {} };
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -244,36 +239,22 @@ class HaConfigSectionGeneral extends LitElement {
               >
               </ha-language-picker>
             </div>
-            ${this.narrow
-              ? html`
-                  <ha-selector-location
-                    .hass=${this.hass}
-                    .selector=${LOCATION_SELECTOR}
-                    .value=${this._selectorLocation(
-                      this.hass.config.latitude,
-                      this.hass.config.longitude,
-                      this._location
-                    )}
-                    @value-changed=${this._locationChanged}
-                  ></ha-selector-location>
-                `
-              : html`
-                  <ha-settings-row>
-                    <div slot="heading">
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.edit_location"
-                      )}
-                    </div>
-                    <div slot="description" class="secondary">
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.edit_location_description"
-                      )}
-                    </div>
-                    <mwc-button @click=${this._editLocation}
-                      >${this.hass.localize("ui.common.edit")}</mwc-button
-                    >
-                  </ha-settings-row>
-                `}
+
+            <ha-settings-row>
+              <div slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.edit_location"
+                )}
+              </div>
+              <div slot="description" class="secondary">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.edit_location_description"
+                )}
+              </div>
+              <mwc-button @click=${this._editLocation}
+                >${this.hass.localize("ui.common.edit")}</mwc-button
+              >
+            </ha-settings-row>
             <div class="card-actions">
               <ha-progress-button @click=${this._updateEntry}>
                 ${this.hass!.localize("ui.panel.config.zone.detail.update")}
@@ -320,10 +301,6 @@ class HaConfigSectionGeneral extends LitElement {
 
   private _updateUnitsChanged(ev: CustomEvent) {
     this._updateUnits = (ev.target as HaCheckbox).checked;
-  }
-
-  private _locationChanged(ev: CustomEvent) {
-    this._location = [ev.detail.value.latitude, ev.detail.value.longitude];
   }
 
   private async _updateEntry(ev: CustomEvent) {
@@ -383,17 +360,6 @@ class HaConfigSectionGeneral extends LitElement {
       button.progress = false;
     }
   }
-
-  private _selectorLocation = memoizeOne(
-    (
-      latDefault: number,
-      lngDefault: number,
-      location?: [number, number]
-    ): LocationSelectorValue => ({
-      latitude: location != null ? location[0] : latDefault,
-      longitude: location != null ? location[1] : lngDefault,
-    })
-  );
 
   private _editLocation() {
     navigate("/config/zone/edit/zone.home");
