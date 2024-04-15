@@ -303,10 +303,6 @@ class HaConfigSectionGeneral extends LitElement {
     this._updateUnits = (ev.target as HaCheckbox).checked;
   }
 
-  private _locationChanged(ev: CustomEvent) {
-    this._location = [ev.detail.value.latitude, ev.detail.value.longitude];
-  }
-
   private async _updateEntry(ev: CustomEvent) {
     const button = ev.target as HaProgressButton;
     if (button.progress) {
