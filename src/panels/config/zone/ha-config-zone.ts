@@ -1,23 +1,26 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/map/ha-locations-editor";
 import type {
@@ -27,13 +30,13 @@ import type {
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
+  HomeZoneMutableParams,
+  Zone,
+  ZoneMutableParams,
   createZone,
   deleteZone,
   fetchZones,
   updateZone,
-  Zone,
-  ZoneMutableParams,
-  HomeZoneMutableParams,
 } from "../../../data/zone";
 import {
   showAlertDialog,
@@ -45,10 +48,8 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { showZoneDetailDialog } from "./show-dialog-zone-detail";
-import "../../../components/ha-list-item";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
+import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -150,6 +151,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 (entry) => html`
                   <ha-list-item
                     .entry=${entry}
+                    .id=${this.narrow ? entry.id : ""}
                     graphic="icon"
                     .hasMeta=${!this.narrow}
                     @request-selected=${this._itemClicked}
@@ -162,6 +164,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       ? html`
                           <div slot="meta">
                             <ha-icon-button
+                              .id=${entry.id}
                               .entry=${entry}
                               @click=${this._openEditEntry}
                               .path=${mdiPencil}
@@ -179,10 +182,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 (stateObject) => html`
                   <ha-list-item
                     graphic="icon"
-                    hasMeta
+                    .id=${this.narrow ? stateObject.entity_id : ""}
+                    .hasMeta=${!this.narrow ||
+                    stateObject.entity_id !== "zone.home"}
                     .value=${stateObject.entity_id}
                     @request-selected=${this._stateItemClicked}
                     ?selected=${this._activeEntry === stateObject.entity_id}
+                    .noEdit=${stateObject.entity_id !== "zone.home" ||
+                    !this._canEditCore}
                   >
                     <ha-icon
                       .icon=${stateObject.attributes.icon}
@@ -192,30 +199,38 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
                     ${stateObject.attributes.friendly_name ||
                     stateObject.entity_id}
-                    <div slot="meta">
-                      <ha-icon-button
-                        .entityId=${stateObject.entity_id}
-                        .noEdit=${stateObject.entity_id !== "zone.home" ||
-                        !this._canEditCore}
-                        .path=${stateObject.entity_id === "zone.home" &&
-                        this._canEditCore
-                          ? mdiPencil
-                          : mdiPencilOff}
-                        .label=${stateObject.entity_id === "zone.home"
-                          ? hass.localize("ui.panel.config.zone.edit_home")
-                          : hass.localize("ui.panel.config.zone.edit_zone")}
-                        @click=${this._editHomeZone}
-                      ></ha-icon-button>
-                      ${stateObject.entity_id !== "zone.home"
-                        ? html`
-                            <simple-tooltip animation-delay="0" position="left">
-                              ${hass.localize(
-                                "ui.panel.config.zone.configured_in_yaml"
-                              )}
-                            </simple-tooltip>
-                          `
-                        : ""}
-                    </div>
+                    ${this.narrow &&
+                    stateObject.entity_id === "zone.home" &&
+                    !this._canEditCore
+                      ? nothing
+                      : html`<div slot="meta">
+                          <ha-icon-button
+                            .id=${!this.narrow ? stateObject.entity_id : ""}
+                            .entityId=${stateObject.entity_id}
+                            .noEdit=${stateObject.entity_id !== "zone.home" ||
+                            !this._canEditCore}
+                            .path=${stateObject.entity_id === "zone.home" &&
+                            this._canEditCore
+                              ? mdiPencil
+                              : mdiPencilOff}
+                            .label=${stateObject.entity_id === "zone.home"
+                              ? hass.localize("ui.panel.config.zone.edit_home")
+                              : hass.localize("ui.panel.config.zone.edit_zone")}
+                            @click=${this._editHomeZone}
+                          ></ha-icon-button>
+                          ${stateObject.entity_id !== "zone.home"
+                            ? html`
+                                <simple-tooltip
+                                  animation-delay="0"
+                                  position="left"
+                                >
+                                  ${hass.localize(
+                                    "ui.panel.config.zone.configured_in_yaml"
+                                  )}
+                                </simple-tooltip>
+                              `
+                            : ""}
+                        </div>`}
                   </ha-list-item>
                 `
               )}
@@ -292,7 +307,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       return;
     }
     const id = this.route.path.slice(6);
+    this._editZone(id);
     navigate("/config/zone", { replace: true });
+    if (this.narrow) {
+      return;
+    }
     this._zoomZone(id);
   }
 
@@ -401,12 +420,23 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
 
     const entryId: string = (ev.currentTarget! as any).value;
+
+    if (this.narrow && entryId === "zone.home") {
+      this._editHomeZone(ev);
+      return;
+    }
+
     this._zoomZone(entryId);
     this._activeEntry = entryId;
   }
 
   private async _zoomZone(id: string) {
     this._map?.fitMarker(id);
+  }
+
+  private async _editZone(id: string) {
+    await this.updateComplete;
+    (this.shadowRoot?.querySelector(`[id="${id}"]`) as HTMLElement)?.click();
   }
 
   private _openEditEntry(ev: Event) {
