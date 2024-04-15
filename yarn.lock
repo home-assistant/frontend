@@ -1469,9 +1469,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.15.0":
-  version: 6.15.0
-  resolution: "@codemirror/autocomplete@npm:6.15.0"
+"@codemirror/autocomplete@npm:6.16.0":
+  version: 6.16.0
+  resolution: "@codemirror/autocomplete@npm:6.16.0"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
@@ -1482,7 +1482,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 10/5ef009826113459532b836347afd73759588edb1cbe507834b2b06de665c8b36fdf6de0685bcae4b1204fbb0ba4294af732da57a44b57b350339228164ba49e1
+  checksum: 10/a29e27f69d17bce014d1d34ab4cd7c607b139cb3cd529aad554f2b0badb9d2924412b0ab3f4eb44901ea4250cdb033e0c6b81134ee8991bdbcd128ecb3b94d75
   languageName: node
   linkType: hard
 
@@ -1539,14 +1539,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.26.2, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0":
-  version: 6.26.2
-  resolution: "@codemirror/view@npm:6.26.2"
+"@codemirror/view@npm:6.26.3, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0":
+  version: 6.26.3
+  resolution: "@codemirror/view@npm:6.26.3"
   dependencies:
     "@codemirror/state": "npm:^6.4.0"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/1507730d1aa3a886ae6798fdc002ea435af39827d5312f4784bb75684aa3780185277724341209ffba876be8eeb89ce7eb2d198a979f0ffc7bcee96948050af7
+  checksum: 10/fa7cb5aa37db2d252ffd7cdbfb858b23a525ce9835648070b3c99eaaa361f686fa1997576bb258b7c34b6d6bd7a251a2294158e952239616102f783da1025fe4
   languageName: node
   linkType: hard
 
@@ -4711,128 +4711,128 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/a11y-base@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/a11y-base@npm:24.3.10"
+"@vaadin/a11y-base@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/a11y-base@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/component-base": "npm:~24.3.10"
+    "@vaadin/component-base": "npm:~24.3.11"
     lit: "npm:^3.0.0"
-  checksum: 10/8c1bb67fea2b6896ea9ec8e54e89432b3a2ced34dc05cd1d106beba80e584bdc4dd9669e013ee44162711c42aa98291378f1308ec4bc1bc9940e185a52149472
+  checksum: 10/751dbf6469303a507d81af58725e6eaa858c1924fc5383b26aefadb92b872f2a877588362c5844773be6758cdb436036f1dab259c4dfa78d3d874cce704787c3
   languageName: node
   linkType: hard
 
-"@vaadin/combo-box@npm:24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/combo-box@npm:24.3.10"
+"@vaadin/combo-box@npm:24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/combo-box@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/a11y-base": "npm:~24.3.10"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/field-base": "npm:~24.3.10"
-    "@vaadin/input-container": "npm:~24.3.10"
-    "@vaadin/item": "npm:~24.3.10"
-    "@vaadin/lit-renderer": "npm:~24.3.10"
-    "@vaadin/overlay": "npm:~24.3.10"
-    "@vaadin/vaadin-lumo-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-material-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
-  checksum: 10/66b276a2a21e8a96080a73bb891b81026e6e0e28939b71543952d45d41f2eafc62b6f7240b48d1b46aaeffe96a1e8542ff04bde2fe0d70a231a88b485d12e8ac
+    "@vaadin/a11y-base": "npm:~24.3.11"
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/field-base": "npm:~24.3.11"
+    "@vaadin/input-container": "npm:~24.3.11"
+    "@vaadin/item": "npm:~24.3.11"
+    "@vaadin/lit-renderer": "npm:~24.3.11"
+    "@vaadin/overlay": "npm:~24.3.11"
+    "@vaadin/vaadin-lumo-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-material-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
+  checksum: 10/0ea4ccef7ac038eea876a110839e98b6eb58401c4b7783b03c3d6e844828c0bad71529f67905b8bc153058a6d7bd93895333e1642b37aa7765e019d498ea4925
   languageName: node
   linkType: hard
 
-"@vaadin/component-base@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/component-base@npm:24.3.10"
+"@vaadin/component-base@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/component-base@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
     "@vaadin/vaadin-development-mode-detector": "npm:^2.0.0"
     "@vaadin/vaadin-usage-statistics": "npm:^2.1.0"
     lit: "npm:^3.0.0"
-  checksum: 10/20fae1c91f4c7ea2736840b5a241a955ec7c78e41f4219d41b90fc577e53a6cd8034183be63de3fef0a87fb4f2370075d0e20fc6ff13611231ae858f31f81581
+  checksum: 10/b6ca4a2ce1ded0f81cab7f2ff18e456bed8c0e2927ca31adceedbb3dac9a9378b221a240ccc745a2c33f4f785a49d4916524e1bed36091059a77dd8f4798022f
   languageName: node
   linkType: hard
 
-"@vaadin/field-base@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/field-base@npm:24.3.10"
+"@vaadin/field-base@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/field-base@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/a11y-base": "npm:~24.3.10"
-    "@vaadin/component-base": "npm:~24.3.10"
+    "@vaadin/a11y-base": "npm:~24.3.11"
+    "@vaadin/component-base": "npm:~24.3.11"
     lit: "npm:^3.0.0"
-  checksum: 10/a98c228201574cbb7d962e9c9b980c27d2c865474617913da71f628354df751e04c7a33c1c6ba0ea44c0082ff52aff682fd4187c3efa32f4c6a6762014cab7dd
+  checksum: 10/3ef6ad677eb2c0a473577eb5a08b620fa1bf961cdb0b3b61adb5f23be839d6fe4ef498b57ff5976b19b2b556c9f39d5ea479141eac0adaeb81e935132cd50481
   languageName: node
   linkType: hard
 
-"@vaadin/icon@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/icon@npm:24.3.10"
+"@vaadin/icon@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/icon@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/vaadin-lumo-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/vaadin-lumo-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
     lit: "npm:^3.0.0"
-  checksum: 10/acc722b27adb123e5456340e1ac70b3ac6976e5a56a814c483261216aa7ea700e3ba6609dc5a1013e49a5030bca83088832979e254de1b1682fb73731074091b
+  checksum: 10/73b7b4c2c400d430aad1d670b3d5b0f6ebabbd0115f318789cac38929d419f0e007b73c2f358aa72226153a865b7de410da0ddc22e93732ee17bb3b79810a64b
   languageName: node
   linkType: hard
 
-"@vaadin/input-container@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/input-container@npm:24.3.10"
+"@vaadin/input-container@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/input-container@npm:24.3.11"
   dependencies:
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/vaadin-lumo-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-material-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/vaadin-lumo-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-material-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
     lit: "npm:^3.0.0"
-  checksum: 10/0b62888095c36bb2201b7b91903d02a003ba13db3894ae32c78b863eda883bd799e34084600888b1e7091af2566f2d20c3c7908f1665e411da256a751174c0ef
+  checksum: 10/e2382dacd1221f8b0ee0996f3fe836370a2a99127514fd155fc671beb4f3f7240d1ce5f20394b6e450a7e73513bf4040b66f474e4caa7df30ed87beda6d39fa0
   languageName: node
   linkType: hard
 
-"@vaadin/item@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/item@npm:24.3.10"
+"@vaadin/item@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/item@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/a11y-base": "npm:~24.3.10"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/vaadin-lumo-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-material-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
-  checksum: 10/e2ec3916f20f6dcdc6d359b0a8affe937845e09f9ef3decb15f00a88bb372d485e376434d284fee739f7c8c7dbb6983c02a2ef406398cbc62088da060fe8663e
+    "@vaadin/a11y-base": "npm:~24.3.11"
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/vaadin-lumo-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-material-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
+  checksum: 10/dc05b64399f9d943f90d9e6ad1feaf3783618d933a85f33ab7075431b8a8d12673f98f797856300887cf09cefdeebde8225f6a7509708da801be40f91f124c0f
   languageName: node
   linkType: hard
 
-"@vaadin/lit-renderer@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/lit-renderer@npm:24.3.10"
+"@vaadin/lit-renderer@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/lit-renderer@npm:24.3.11"
   dependencies:
     lit: "npm:^3.0.0"
-  checksum: 10/a1449affcb6df2ead9443e1be0f07a935388986496c7d6f2401ea72d4ecb6c6bcb7333e90a6699fb3b9b7e3a4736e29ab2a278da0681446d84ece36024a0964c
+  checksum: 10/14b3049c5a25a2540b68c7d4f6b2be0e3e397e460f246250bf5d0483c73ac4a375add01d1b8f987805ef89e0bfe6c658f4e8dcefd6951cb495be906044afa4d7
   languageName: node
   linkType: hard
 
-"@vaadin/overlay@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/overlay@npm:24.3.10"
+"@vaadin/overlay@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/overlay@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/a11y-base": "npm:~24.3.10"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/vaadin-lumo-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-material-styles": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
-  checksum: 10/fd55a60a81f34ff3d088360bf9014f99a804c14dfaea8436f1adf92bcc4a0080dd7e164775eb02c79dd2e109dd94b544de8af12e1696150b4d73df8826dfd7f1
+    "@vaadin/a11y-base": "npm:~24.3.11"
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/vaadin-lumo-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-material-styles": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
+  checksum: 10/2b79099e87e5cfa1500dbe4c48a8b30759dbe69bba28cc8e6991f121f93f8a959b3f62952f14ed14b9cedcc0a6fa7cddab19a5bfb51556c221483629574519ff
   languageName: node
   linkType: hard
 
@@ -4843,36 +4843,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-lumo-styles@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/vaadin-lumo-styles@npm:24.3.10"
+"@vaadin/vaadin-lumo-styles@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/vaadin-lumo-styles@npm:24.3.11"
   dependencies:
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/icon": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
-  checksum: 10/962dbb77139931774d9cc190fc29a44294f72db0b6abc08bcbc37742f6d2e53b5cec4cf69653b58bc1e1cff657aaefa7fd3a63191c68101e9f59b29b02d7033a
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/icon": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
+  checksum: 10/b493736672291de9a7357faf99413191c905b8aa3efcb6fddbc3f7c83102fc1ef4ffaa6ebf1883effd2c41cf3ceba9ad51e54558bea42fb0c2e35aa154cd128b
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-material-styles@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/vaadin-material-styles@npm:24.3.10"
+"@vaadin/vaadin-material-styles@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/vaadin-material-styles@npm:24.3.11"
   dependencies:
     "@polymer/polymer": "npm:^3.0.0"
-    "@vaadin/component-base": "npm:~24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:~24.3.10"
-  checksum: 10/f944723a5b569786febc496f47224fe06ce6b49b78a973a7e462ef64023a9f8870735c1e186e32299a589c2f9159335cbd636b9acbaad9ef1ce0580ded9f627d
+    "@vaadin/component-base": "npm:~24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:~24.3.11"
+  checksum: 10/f3c718894e56f3705a05d978bde86bbe9ff6f70f317d96f94fb5d495a801ca23065fadf517569fad082d5e024570157c8c265497e3ef21e2d05ab752dedf1115
   languageName: node
   linkType: hard
 
-"@vaadin/vaadin-themable-mixin@npm:24.3.10, @vaadin/vaadin-themable-mixin@npm:~24.3.10":
-  version: 24.3.10
-  resolution: "@vaadin/vaadin-themable-mixin@npm:24.3.10"
+"@vaadin/vaadin-themable-mixin@npm:24.3.11, @vaadin/vaadin-themable-mixin@npm:~24.3.11":
+  version: 24.3.11
+  resolution: "@vaadin/vaadin-themable-mixin@npm:24.3.11"
   dependencies:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     lit: "npm:^3.0.0"
-  checksum: 10/28eaf3e9126180b188a7fc29d9c4f17474572fbdb5ff58ae653325e752bfc20f1304073ec1a5a9586f090bcf3b535ab5e5c003db9ef57548ced9e12799aa67e3
+  checksum: 10/d18adde6a9c4fa5adf31a9366dc9d55170835b332150741d4e62eca71f0a6d16b7554a07ca788268508b654cf003567e0ff6f1a926b7c26bfba91f578fcd83fa
   languageName: node
   linkType: hard
 
@@ -7116,14 +7116,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:3.0.0":
-  version: 3.0.0
-  resolution: "date-fns-tz@npm:3.0.0"
+"date-fns-tz@npm:3.0.1":
+  version: 3.0.1
+  resolution: "date-fns-tz@npm:3.0.1"
   dependencies:
     lodash.clonedeep: "npm:^4.5.0"
   peerDependencies:
     date-fns: ^3.0.0
-  checksum: 10/0a20196abd2519eb56bed0ba8fa838d60374db7bffa37d0d9284b29b6eed1b84369560d59688236479ed0bda923057fec2faef71caf09bc246d5f567c23308a8
+  checksum: 10/d34eaf95510473cd6f22728a24a6d5ee191a6faa9d059d8ee659708936f1f4ae56dfe82b9d40ee983ca20e5d1a6950119e046d717f0a9f22e589f01975a1dea1
   languageName: node
   linkType: hard
 
@@ -7571,10 +7571,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-internals-polyfill@npm:1.3.10":
-  version: 1.3.10
-  resolution: "element-internals-polyfill@npm:1.3.10"
-  checksum: 10/156fed2c83b309714d7241d73d741798bfd4177e73cef0f105735b87a5fd0791d8e09d44eddfda5bc4b6ba411777d43994894e2f2ec352d4b144454cb7c2e07f
+"element-internals-polyfill@npm:1.3.11":
+  version: 1.3.11
+  resolution: "element-internals-polyfill@npm:1.3.11"
+  checksum: 10/8e86562c84cac451801c8d1593e8d8d7224a91e85037f0b651072a628f7e3b23155c3d520d369be9a733e9675f7fc0763a6ca61f54f5485f6840eb5709bf269e
   languageName: node
   linkType: hard
 
@@ -9572,13 +9572,13 @@ __metadata:
     "@babel/runtime": "npm:7.24.4"
     "@braintree/sanitize-url": "npm:7.0.1"
     "@bundle-stats/plugin-webpack-filter": "npm:4.12.2"
-    "@codemirror/autocomplete": "npm:6.15.0"
+    "@codemirror/autocomplete": "npm:6.16.0"
     "@codemirror/commands": "npm:6.3.3"
     "@codemirror/language": "npm:6.10.1"
     "@codemirror/legacy-modes": "npm:6.4.0"
     "@codemirror/search": "npm:6.5.6"
     "@codemirror/state": "npm:6.4.1"
-    "@codemirror/view": "npm:6.26.2"
+    "@codemirror/view": "npm:6.26.3"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.12.3"
     "@formatjs/intl-displaynames": "npm:6.6.6"
@@ -9664,8 +9664,8 @@ __metadata:
     "@types/webspeechapi": "npm:0.0.29"
     "@typescript-eslint/eslint-plugin": "npm:7.6.0"
     "@typescript-eslint/parser": "npm:7.6.0"
-    "@vaadin/combo-box": "npm:24.3.10"
-    "@vaadin/vaadin-themable-mixin": "npm:24.3.10"
+    "@vaadin/combo-box": "npm:24.3.11"
+    "@vaadin/vaadin-themable-mixin": "npm:24.3.11"
     "@vibrant/color": "npm:3.2.1-alpha.1"
     "@vibrant/core": "npm:3.2.1-alpha.1"
     "@vibrant/quantizer-mmcq": "npm:3.2.1-alpha.1"
@@ -9684,11 +9684,11 @@ __metadata:
     core-js: "npm:3.36.1"
     cropperjs: "npm:1.6.1"
     date-fns: "npm:3.6.0"
-    date-fns-tz: "npm:3.0.0"
+    date-fns-tz: "npm:3.0.1"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
-    element-internals-polyfill: "npm:1.3.10"
+    element-internals-polyfill: "npm:1.3.11"
     eslint: "npm:8.57.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
@@ -9760,7 +9760,7 @@ __metadata:
     ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
-    typescript: "npm:5.4.4"
+    typescript: "npm:5.4.5"
     ua-parser-js: "npm:1.0.37"
     unfetch: "npm:5.0.0"
     vis-data: "npm:7.1.9"
@@ -15674,13 +15674,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.4.4":
-  version: 5.4.4
-  resolution: "typescript@npm:5.4.4"
+"typescript@npm:5.4.5":
+  version: 5.4.5
+  resolution: "typescript@npm:5.4.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/bade322d88fd93c8179e262aca9ba7f7b4417c09117879819c87946578c782ab123e3acb4733046a6e38714c47ef927360045a1f9292a1bff3a05a6577d27ca2
+  checksum: 10/d04a9e27e6d83861f2126665aa8d84847e8ebabcea9125b9ebc30370b98cb38b5dff2508d74e2326a744938191a83a69aa9fddab41f193ffa43eabfdf3f190a5
   languageName: node
   linkType: hard
 
@@ -15694,13 +15694,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.4.4#optional!builtin<compat/typescript>":
-  version: 5.4.4
-  resolution: "typescript@patch:typescript@npm%3A5.4.4#optional!builtin<compat/typescript>::version=5.4.4&hash=5adc0c"
+"typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>":
+  version: 5.4.5
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/88aff3244c31d4c6ede05b4fd28732fc8935a7fc638f2a3dcbbb767d1ac98e4b077f21ec74bc97f43c9307bc3f27e2359def1d793f9918c3429a744408fd75b4
+  checksum: 10/760f7d92fb383dbf7dee2443bf902f4365db2117f96f875cf809167f6103d55064de973db9f78fe8f31ec08fff52b2c969aee0d310939c0a3798ec75d0bca2e1
   languageName: node
   linkType: hard
 
