@@ -57,13 +57,13 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
     ) {
       const disarm = mode === "disarmed";
 
-      const AlarmControlPanelRegistryEntry =
+      const alarmControlPanelRegistryEntry =
         await getExtendedEntityRegistryEntry(
           this.hass,
           this.stateObj.entity_id
         ).catch(() => undefined);
       const defaultCode =
-        AlarmControlPanelRegistryEntry?.options?.alarm_control_panel
+        alarmControlPanelRegistryEntry?.options?.alarm_control_panel
           ?.default_code;
 
       if (!defaultCode) {
@@ -73,7 +73,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
             `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
           ),
           submitText: this.hass!.localize(
-            `ui.card.alarm_control_panel.${disarm ? "disarmn" : "arm"}`
+            `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
           ),
         });
         if (response == null) {
