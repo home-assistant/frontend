@@ -3,7 +3,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/trace/hat-script-graph";
 import "../../../../src/components/trace/hat-trace-timeline";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../../src/types";
@@ -56,6 +55,7 @@ export class DemoAutomationTraceTimeline extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
   }
 
   static get styles() {

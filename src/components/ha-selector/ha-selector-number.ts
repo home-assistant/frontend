@@ -10,13 +10,13 @@ import "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: NumberSelector;
+  @property({ attribute: false }) public selector!: NumberSelector;
 
-  @property() public value?: number;
+  @property({ type: Number }) public value?: number;
 
-  @property() public placeholder?: number;
+  @property({ type: Number }) public placeholder?: number;
 
   @property() public label?: string;
 
@@ -30,9 +30,9 @@ export class HaNumberSelector extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("value")) {
-      if (this.value !== Number(this._valueStr)) {
+      if (this._valueStr === "" || this.value !== Number(this._valueStr)) {
         this._valueStr =
-          !this.value || isNaN(this.value) ? "" : this.value.toString();
+          this.value == null || isNaN(this.value) ? "" : this.value.toString();
       }
     }
   }
@@ -43,6 +43,22 @@ export class HaNumberSelector extends LitElement {
       this.selector.number?.min === undefined ||
       this.selector.number?.max === undefined;
 
+    let sliderStep;
+
+    if (!isBox) {
+      sliderStep = this.selector.number!.step ?? 1;
+      if (sliderStep === "any") {
+        sliderStep = 1;
+        // divide the range of the slider by 100 steps
+        const step =
+          (this.selector.number!.max! - this.selector.number!.min!) / 100;
+        // biggest step size is 1, round the step size to a division of 1
+        while (sliderStep > step) {
+          sliderStep /= 10;
+        }
+      }
+    }
+
     return html`
       <div class="input">
         ${!isBox
@@ -52,12 +68,10 @@ export class HaNumberSelector extends LitElement {
                 : ""}
               <ha-slider
                 labeled
-                .min=${this.selector.number?.min}
-                .max=${this.selector.number?.max}
+                .min=${this.selector.number!.min}
+                .max=${this.selector.number!.max}
                 .value=${this.value ?? ""}
-                .step=${this.selector.number?.step === "any"
-                  ? undefined
-                  : this.selector.number?.step ?? 1}
+                .step=${sliderStep}
                 .disabled=${this.disabled}
                 .required=${this.required}
                 @change=${this._handleSliderChange}

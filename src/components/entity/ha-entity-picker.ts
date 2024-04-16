@@ -18,6 +18,12 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import { domainToName } from "../../data/integration";
+import {
+  isHelperDomain,
+  HelperDomain,
+} from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -25,15 +31,7 @@ interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-// eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
-  html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
-    ${item.state
-      ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
-      : ""}
-    <span>${item.friendly_name}</span>
-    <span slot="secondary">${item.entity_id}</span>
-  </ha-list-item>`;
+const CREATE_ID = "___create-new-entity___";
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -41,9 +39,9 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public autofocus = false;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
@@ -53,6 +51,8 @@ export class HaEntityPicker extends LitElement {
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property({ type: Array }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
@@ -102,7 +102,8 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-entities" })
   public excludeEntities?: string[];
 
-  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean }) public hideClearIcon = false;
 
@@ -127,6 +128,25 @@ export class HaEntityPicker extends LitElement {
 
   private _states: HassEntityWithCachedName[] = [];
 
+  private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
+    item
+  ) =>
+    html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
+      ${item.state
+        ? html`<state-badge
+            slot="graphic"
+            .stateObj=${item}
+            .hass=${this.hass}
+          ></state-badge>`
+        : ""}
+      <span>${item.friendly_name}</span>
+      <span slot="secondary"
+        >${item.entity_id.startsWith(CREATE_ID)
+          ? this.hass.localize("ui.components.entity.entity-picker.new_entity")
+          : item.entity_id}</span
+      >
+    </ha-list-item>`;
+
   private _getStates = memoizeOne(
     (
       _opened: boolean,
@@ -137,7 +157,8 @@ export class HaEntityPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
       includeEntities: this["includeEntities"],
-      excludeEntities: this["excludeEntities"]
+      excludeEntities: this["excludeEntities"],
+      createDomains: this["createDomains"]
     ): HassEntityWithCachedName[] => {
       let states: HassEntityWithCachedName[] = [];
 
@@ -145,6 +166,34 @@ export class HaEntityPicker extends LitElement {
         return [];
       }
       let entityIds = Object.keys(hass.states);
+
+      const createItems = createDomains?.length
+        ? createDomains.map((domain) => {
+            const newFriendlyName = hass.localize(
+              "ui.components.entity.entity-picker.create_helper",
+              {
+                domain: isHelperDomain(domain)
+                  ? hass.localize(
+                      `ui.panel.config.helpers.types.${domain as HelperDomain}`
+                    )
+                  : domainToName(hass.localize, domain),
+              }
+            );
+
+            return {
+              entity_id: CREATE_ID + domain,
+              state: "on",
+              last_changed: "",
+              last_updated: "",
+              context: { id: "", user_id: null, parent_id: null },
+              friendly_name: newFriendlyName,
+              attributes: {
+                icon: "mdi:plus",
+              },
+              strings: [domain, newFriendlyName],
+            };
+          })
+        : [];
 
       if (!entityIds.length) {
         return [
@@ -165,6 +214,7 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...createItems,
         ];
       }
 
@@ -275,7 +325,12 @@ export class HaEntityPicker extends LitElement {
             },
             strings: [],
           },
+          ...createItems,
         ];
+      }
+
+      if (createItems?.length) {
+        states.push(...createItems);
       }
 
       return states;
@@ -304,12 +359,17 @@ export class HaEntityPicker extends LitElement {
         this.includeDeviceClasses,
         this.includeUnitOfMeasurement,
         this.includeEntities,
-        this.excludeEntities
+        this.excludeEntities,
+        this.createDomains
       );
       if (this._initedStates) {
         this.comboBox.filteredItems = this._states;
       }
       this._initedStates = true;
+    }
+
+    if (changedProps.has("createDomains") && this.createDomains?.length) {
+      this.hass.loadFragmentTranslation("config");
     }
   }
 
@@ -326,7 +386,7 @@ export class HaEntityPicker extends LitElement {
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
-        .renderer=${rowRenderer}
+        .renderer=${this._rowRenderer}
         .required=${this.required}
         .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}
@@ -348,6 +408,18 @@ export class HaEntityPicker extends LitElement {
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
+
+    if (newValue.startsWith(CREATE_ID)) {
+      const domain = newValue.substring(CREATE_ID.length);
+      showHelperDetailDialog(this, {
+        domain,
+        dialogClosedCallback: (item) => {
+          if (item.entityId) this._setValue(item.entityId);
+        },
+      });
+      return;
+    }
+
     if (newValue !== this._value) {
       this._setValue(newValue);
     }

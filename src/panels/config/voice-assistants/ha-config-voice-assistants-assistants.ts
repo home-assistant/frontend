@@ -1,9 +1,6 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { CloudStatus } from "../../../data/cloud";
 import { ExposeEntitySettings } from "../../../data/expose";
 
@@ -27,11 +24,11 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   protected render() {
     if (!this.hass) {
@@ -50,7 +47,6 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
           ${isComponentLoaded(this.hass, "assist_pipeline")
             ? html`
                 <assist-pref
-                  .dir=${computeRTLDirection(this.hass)}
                   .hass=${this.hass}
                   .cloudStatus=${this.cloudStatus}
                   .exposedEntities=${this.exposedEntities}
@@ -63,13 +59,11 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
                   .hass=${this.hass}
                   .exposedEntities=${this.exposedEntities}
                   .cloudStatus=${this.cloudStatus}
-                  .dir=${computeRTLDirection(this.hass)}
                 ></cloud-alexa-pref>
                 <cloud-google-pref
                   .hass=${this.hass}
                   .exposedEntities=${this.exposedEntities}
                   .cloudStatus=${this.cloudStatus}
-                  .dir=${computeRTLDirection(this.hass)}
                 ></cloud-google-pref>
               `
             : html`<cloud-discover .hass=${this.hass}></cloud-discover>`}
@@ -95,4 +89,10 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
       color: inherit;
     }
   `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-voice-assistants-assistants": HaConfigVoiceAssistantsAssistants;
+  }
 }

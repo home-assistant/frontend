@@ -9,10 +9,10 @@ import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
 @customElement("state-card-button")
-export class StateCardButton extends LitElement {
+class StateCardButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
 

@@ -17,7 +17,8 @@ import { haStyleScrollbar } from "../../../resources/styles";
 export class HuiButtonsBase extends LitElement {
   @state() public hass!: HomeAssistant;
 
-  @property() public configEntities?: EntitiesCardEntityConfig[];
+  @property({ attribute: false })
+  public configEntities?: EntitiesCardEntityConfig[];
 
   protected render(): TemplateResult {
     return html`
@@ -51,8 +52,7 @@ export class HuiButtonsBase extends LitElement {
                       .stateObj=${stateObj}
                       .overrideIcon=${entityConf.icon}
                       .overrideImage=${entityConf.image}
-                      class=${name ? "" : "no-text"}
-                      stateColor
+                      .stateColor=${true}
                       slot="icon"
                     ></state-badge>
                   `
@@ -91,20 +91,7 @@ export class HuiButtonsBase extends LitElement {
           color: var(--secondary-text-color);
           align-items: center;
           justify-content: center;
-          width: 24px;
-          height: 24px;
-          margin-left: -4px;
           margin-top: -2px;
-        }
-        state-badge.no-text {
-          width: 26px;
-          height: 26px;
-          margin-left: -3px;
-          margin-top: -3px;
-        }
-        ha-assist-chip state-badge {
-          margin-right: -4px;
-          --mdc-icon-size: 18px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .ha-scrollbar {

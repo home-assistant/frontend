@@ -35,7 +35,7 @@ class HaInitPage extends LitElement {
         `
       : html`
           <div id="progress-indicator-wrapper">
-            <ha-circular-progress active></ha-circular-progress>
+            <ha-circular-progress indeterminate></ha-circular-progress>
           </div>
           <div id="loading-text">
             ${this.migration

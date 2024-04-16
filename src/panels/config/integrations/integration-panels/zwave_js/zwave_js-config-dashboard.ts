@@ -18,7 +18,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
@@ -50,7 +49,6 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
@@ -58,13 +56,13 @@ import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @property() public configEntryId!: string;
 
@@ -128,365 +126,351 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiRefresh}
           .label=${this.hass!.localize("ui.common.refresh")}
         ></ha-icon-button>
-        <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
-          <div slot="header">
-            ${this.hass.localize("ui.panel.config.zwave_js.dashboard.header")}
-          </div>
-
-          <div slot="introduction">
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.dashboard.introduction"
-            )}
-          </div>
-          ${this._network &&
-          this._status === "connected" &&
-          (this._network?.controller.inclusion_state ===
-            InclusionState.Including ||
-            this._network?.controller.inclusion_state ===
-              InclusionState.Excluding)
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    `ui.panel.config.zwave_js.common.in_progress_inclusion_exclusion`
+        ${this._network &&
+        this._status === "connected" &&
+        (this._network?.controller.inclusion_state ===
+          InclusionState.Including ||
+          this._network?.controller.inclusion_state ===
+            InclusionState.Excluding)
+          ? html`
+              <ha-alert alert-type="info">
+                ${this.hass.localize(
+                  `ui.panel.config.zwave_js.common.in_progress_inclusion_exclusion`
+                )}
+                <mwc-button
+                  slot="action"
+                  .label=${this.hass.localize(
+                    `ui.panel.config.zwave_js.common.cancel_inclusion_exclusion`
                   )}
-                  <mwc-button
-                    slot="action"
-                    .label=${this.hass.localize(
-                      `ui.panel.config.zwave_js.common.cancel_inclusion_exclusion`
-                    )}
-                    @click=${this._network?.controller.inclusion_state ===
-                    InclusionState.Including
-                      ? this._cancelInclusion
-                      : this._cancelExclusion}
-                  >
-                  </mwc-button>
-                </ha-alert>
-              `
-            : ""}
-          ${this._network
-            ? html`
-                <ha-card class="content network-status">
-                  <div class="card-content">
-                    <div class="heading">
-                      <div class="icon">
-                        ${this._status === "disconnected"
-                          ? html`<ha-circular-progress
-                              active
-                            ></ha-circular-progress>`
-                          : html`
-                              <ha-svg-icon
-                                .path=${this._icon}
-                                class="network-status-icon ${classMap({
-                                  [this._status!]: true,
-                                })}"
-                                slot="item-icon"
-                              ></ha-svg-icon>
-                            `}
-                      </div>
-                      ${this._status !== "disconnected"
-                        ? html`
-                            <div class="details">
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.common.network"
-                              )}
-                              ${this.hass.localize(
-                                `ui.panel.config.zwave_js.network_status.${this._status}`
-                              )}<br />
-                              <small>
-                                ${this.hass.localize(
-                                  `ui.panel.config.zwave_js.dashboard.devices`,
-                                  {
-                                    count:
-                                      this._network.controller.nodes.length,
-                                  }
-                                )}
-                                ${notReadyDevices > 0
-                                  ? html`(${this.hass.localize(
-                                      `ui.panel.config.zwave_js.dashboard.not_ready`,
-                                      { count: notReadyDevices }
-                                    )})`
-                                  : ""}
-                              </small>
-                            </div>
-                          `
-                        : ``}
+                  @click=${this._network?.controller.inclusion_state ===
+                  InclusionState.Including
+                    ? this._cancelInclusion
+                    : this._cancelExclusion}
+                >
+                </mwc-button>
+              </ha-alert>
+            `
+          : ""}
+        ${this._network
+          ? html`
+              <ha-card class="content network-status">
+                <div class="card-content">
+                  <div class="heading">
+                    <div class="icon">
+                      ${this._status === "disconnected"
+                        ? html`<ha-circular-progress
+                            indeterminate
+                          ></ha-circular-progress>`
+                        : html`
+                            <ha-svg-icon
+                              .path=${this._icon}
+                              class="network-status-icon ${classMap({
+                                [this._status!]: true,
+                              })}"
+                              slot="item-icon"
+                            ></ha-svg-icon>
+                          `}
                     </div>
-                  </div>
-                  <div class="card-actions">
-                    <a
-                      href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                    >
-                      <mwc-button>
-                        ${this.hass.localize("ui.panel.config.devices.caption")}
-                      </mwc-button>
-                    </a>
-                    <a
-                      href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                    >
-                      <mwc-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.entities.caption"
-                        )}
-                      </mwc-button>
-                    </a>
-                    ${this._provisioningEntries?.length
-                      ? html`<a
-                          href=${`provisioned?config_entry=${this.configEntryId}`}
-                          ><mwc-button>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.provisioned_devices"
-                            )}
-                          </mwc-button></a
-                        >`
-                      : ""}
-                  </div>
-                </ha-card>
-                <ha-card header="Diagnostics">
-                  <div class="card-content">
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.driver_version"
-                        )}:
-                      </span>
-                      <span>${this._network.client.driver_version}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.server_version"
-                        )}:
-                      </span>
-                      <span>${this._network.client.server_version}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.home_id"
-                        )}:
-                      </span>
-                      <span>${this._network.controller.home_id}</span>
-                    </div>
-                    <div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.server_url"
-                        )}:
-                      </span>
-                      <span>${this._network.client.ws_server_url}</span>
-                    </div>
-                    <br />
-                    <ha-expansion-panel
-                      .header=${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.statistics.title"
-                      )}
-                    >
-                      <mwc-list noninteractive>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_tx ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_rx ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_dropped_tx ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.messages_dropped_rx ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta">${this._statistics?.nak ?? 0}</span>
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.can.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta">${this._statistics?.can ?? 0}</span>
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_ack ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_response ?? 0}</span
-                          >
-                        </mwc-list-item>
-                        <mwc-list-item twoline hasmeta>
-                          <span>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
-                            )}
-                          </span>
-                          <span slot="secondary">
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
-                            )}
-                          </span>
-                          <span slot="meta"
-                            >${this._statistics?.timeout_callback ?? 0}</span
-                          >
-                        </mwc-list-item>
-                      </mwc-list>
-                    </ha-expansion-panel>
-                  </div>
-                  <div class="card-actions">
-                    <mwc-button
-                      @click=${this._removeNodeClicked}
-                      .disabled=${this._status !== "connected" ||
-                      (this._network?.controller.inclusion_state !==
-                        InclusionState.Idle &&
-                        this._network?.controller.inclusion_state !==
-                          InclusionState.SmartStart)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_node"
-                      )}
-                    </mwc-button>
-                    <mwc-button
-                      @click=${this._rebuildNetworkRoutesClicked}
-                      .disabled=${this._status === "disconnected"}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.rebuild_network_routes"
-                      )}
-                    </mwc-button>
-                    <mwc-button @click=${this._openOptionFlow}>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.reconfigure_server"
-                      )}
-                    </mwc-button>
-                  </div>
-                </ha-card>
-                <ha-card>
-                  <div class="card-header">
-                    <h1>Third-Party Data Reporting</h1>
-                    ${this._dataCollectionOptIn !== undefined
+                    ${this._status !== "disconnected"
                       ? html`
-                          <ha-switch
-                            .checked=${this._dataCollectionOptIn === true}
-                            @change=${this._dataCollectionToggled}
-                          ></ha-switch>
+                          <div class="details">
+                            Z-Wave
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.common.network"
+                            )}
+                            ${this.hass.localize(
+                              `ui.panel.config.zwave_js.network_status.${this._status}`
+                            )}<br />
+                            <small>
+                              ${this.hass.localize(
+                                `ui.panel.config.zwave_js.dashboard.devices`,
+                                {
+                                  count: this._network.controller.nodes.length,
+                                }
+                              )}
+                              ${notReadyDevices > 0
+                                ? html`(${this.hass.localize(
+                                    `ui.panel.config.zwave_js.dashboard.not_ready`,
+                                    { count: notReadyDevices }
+                                  )})`
+                                : ""}
+                            </small>
+                          </div>
                         `
-                      : html`
-                          <ha-circular-progress
-                            size="small"
-                            active
-                          ></ha-circular-progress>
-                        `}
+                      : ``}
                   </div>
-                  <div class="card-content">
-                    <p>
-                      Enable the reporting of anonymized telemetry and
-                      statistics to the <em>Z-Wave JS organization</em>. This
-                      data will be used to focus development efforts and improve
-                      the user experience. Information about the data that is
-                      collected and how it is used, including an example of the
-                      data collected, can be found in the
-                      <a
-                        target="_blank"
-                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                        >Z-Wave JS data collection documentation</a
-                      >.
-                    </p>
+                </div>
+                <div class="card-actions">
+                  <a
+                    href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                  >
+                    <mwc-button>
+                      ${this.hass.localize("ui.panel.config.devices.caption")}
+                    </mwc-button>
+                  </a>
+                  <a
+                    href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                  >
+                    <mwc-button>
+                      ${this.hass.localize("ui.panel.config.entities.caption")}
+                    </mwc-button>
+                  </a>
+                  ${this._provisioningEntries?.length
+                    ? html`<a
+                        href=${`provisioned?config_entry=${this.configEntryId}`}
+                        ><mwc-button>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.provisioned_devices"
+                          )}
+                        </mwc-button></a
+                      >`
+                    : ""}
+                </div>
+              </ha-card>
+              <ha-card header="Diagnostics">
+                <div class="card-content">
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.driver_version"
+                      )}:
+                    </span>
+                    <span>${this._network.client.driver_version}</span>
                   </div>
-                </ha-card>
-              `
-            : ``}
-        </ha-config-section>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.server_version"
+                      )}:
+                    </span>
+                    <span>${this._network.client.server_version}</span>
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.home_id"
+                      )}:
+                    </span>
+                    <span>${this._network.controller.home_id}</span>
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.server_url"
+                      )}:
+                    </span>
+                    <span>${this._network.client.ws_server_url}</span>
+                  </div>
+                  <br />
+                  <ha-expansion-panel
+                    .header=${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.statistics.title"
+                    )}
+                  >
+                    <mwc-list noninteractive>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.messages_tx ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.messages_rx ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.messages_dropped_tx ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.messages_dropped_rx ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta">${this._statistics?.nak ?? 0}</span>
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.can.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta">${this._statistics?.can ?? 0}</span>
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.timeout_ack ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.timeout_response ?? 0}</span
+                        >
+                      </mwc-list-item>
+                      <mwc-list-item twoline hasmeta>
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
+                          )}
+                        </span>
+                        <span slot="secondary">
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
+                          )}
+                        </span>
+                        <span slot="meta"
+                          >${this._statistics?.timeout_callback ?? 0}</span
+                        >
+                      </mwc-list-item>
+                    </mwc-list>
+                  </ha-expansion-panel>
+                </div>
+                <div class="card-actions">
+                  <mwc-button
+                    @click=${this._removeNodeClicked}
+                    .disabled=${this._status !== "connected" ||
+                    (this._network?.controller.inclusion_state !==
+                      InclusionState.Idle &&
+                      this._network?.controller.inclusion_state !==
+                        InclusionState.SmartStart)}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.common.remove_node"
+                    )}
+                  </mwc-button>
+                  <mwc-button
+                    @click=${this._rebuildNetworkRoutesClicked}
+                    .disabled=${this._status === "disconnected"}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.common.rebuild_network_routes"
+                    )}
+                  </mwc-button>
+                  <mwc-button @click=${this._openOptionFlow}>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.common.reconfigure_server"
+                    )}
+                  </mwc-button>
+                </div>
+              </ha-card>
+              <ha-card>
+                <div class="card-header">
+                  <h1>Third-Party Data Reporting</h1>
+                  ${this._dataCollectionOptIn !== undefined
+                    ? html`
+                        <ha-switch
+                          .checked=${this._dataCollectionOptIn === true}
+                          @change=${this._dataCollectionToggled}
+                        ></ha-switch>
+                      `
+                    : html`
+                        <ha-circular-progress
+                          size="small"
+                          indeterminate
+                        ></ha-circular-progress>
+                      `}
+                </div>
+                <div class="card-content">
+                  <p>
+                    Enable the reporting of anonymized telemetry and statistics
+                    to the <em>Z-Wave JS organization</em>. This data will be
+                    used to focus development efforts and improve the user
+                    experience. Information about the data that is collected and
+                    how it is used, including an example of the data collected,
+                    can be found in the
+                    <a
+                      target="_blank"
+                      href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                      >Z-Wave JS data collection documentation</a
+                    >.
+                  </p>
+                </div>
+              </ha-card>
+            `
+          : ``}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.common.add_node"
           )}
           extended
-          ?rtl=${computeRTL(this.hass)}
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
@@ -694,6 +678,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+          padding-inline-end: 40px;
+          padding-inline-start: initial;
         }
 
         .row {
@@ -715,6 +701,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           width: 48px;
           height: 48px;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
         .network-status div.heading ha-svg-icon {
           width: 48px;

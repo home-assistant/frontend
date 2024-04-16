@@ -1,7 +1,6 @@
 import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -24,9 +23,9 @@ export interface DeviceRowData extends DataTableRowData {
 class ZHADeviceNeighbors extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public device: ZHADevice | undefined;
+  @property({ attribute: false }) public device?: ZHADevice;
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
 
@@ -120,16 +119,14 @@ class ZHADeviceNeighbors extends LitElement {
     return html`
       ${!this._devices
         ? html`<ha-circular-progress
-            alt="Loading"
             size="large"
-            active
+            indeterminate
           ></ha-circular-progress>`
         : html`<ha-data-table
             .hass=${this.hass}
             .columns=${this._columns(this.narrow)}
             .data=${this._deviceNeighbors(this.device, this._devices)}
             auto-height
-            .dir=${computeRTLDirection(this.hass)}
             .searchLabel=${this.hass.localize(
               "ui.components.data-table.search"
             )}

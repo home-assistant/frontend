@@ -14,7 +14,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import { Fields } from "../../../data/script";
-import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import "./ha-script-field-row";
 import type HaScriptFieldRow from "./ha-script-field-row";
@@ -25,7 +24,7 @@ export default class HaScriptFields extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public fields!: Fields;
+  @property({ attribute: false }) public fields!: Fields;
 
   private _focusLastActionOnChange = false;
 
@@ -142,19 +141,16 @@ export default class HaScriptFields extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      sortableStyles,
-      css`
-        ha-script-field-row {
-          display: block;
-          margin-bottom: 16px;
-          scroll-margin-top: 48px;
-        }
-        ha-svg-icon {
-          height: 20px;
-        }
-      `,
-    ];
+    return css`
+      ha-script-field-row {
+        display: block;
+        margin-bottom: 16px;
+        scroll-margin-top: 48px;
+      }
+      ha-svg-icon {
+        height: 20px;
+      }
+    `;
   }
 }
 

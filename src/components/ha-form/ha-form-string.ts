@@ -19,15 +19,17 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import { HomeAssistant } from "../../types";
+import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
-  @property() public schema!: HaFormStringSchema;
+  @property() public localizeBaseKey = "ui.components.selectors.text";
+
+  @property({ attribute: false }) public schema!: HaFormStringSchema;
 
   @property() public data!: HaFormStringData;
 
@@ -53,8 +55,8 @@ export class HaFormString extends LitElement implements HaFormElement {
         .type=${!this.isPassword
           ? this.stringType
           : this.unmaskedPassword
-          ? "text"
-          : "password"}
+            ? "text"
+            : "password"}
         .label=${this.label}
         .value=${this.data || ""}
         .helper=${this.helper}
@@ -68,7 +70,9 @@ export class HaFormString extends LitElement implements HaFormElement {
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
           : this.schema.description?.suffix}
-        .validationMessage=${this.schema.required ? "Required" : undefined}
+        .validationMessage=${this.schema.required
+          ? this.localize?.("ui.common.error_required")
+          : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
       ></ha-textfield>
@@ -81,11 +85,11 @@ export class HaFormString extends LitElement implements HaFormElement {
     return html`
       <ha-icon-button
         toggles
-        .label=${this.hass?.localize(
-          this.unmaskedPassword
-            ? "ui.components.selectors.text.hide_password"
-            : "ui.components.selectors.text.show_password"
-        ) || (this.unmaskedPassword ? "Hide password" : "Show password")}
+        .label=${this.localize?.(
+          `${this.localizeBaseKey}.${
+            this.unmaskedPassword ? "hide_password" : "show_password"
+          }` as LocalizeKeys
+        )}
         @click=${this.toggleUnmaskedPassword}
         .path=${this.unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>

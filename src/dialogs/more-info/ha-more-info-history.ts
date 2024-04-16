@@ -1,4 +1,4 @@
-import { startOfYesterday, subHours } from "date-fns/esm";
+import { startOfYesterday, subHours } from "date-fns";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -84,24 +84,25 @@ export class MoreInfoHistory extends LitElement {
           ${this._error
             ? html`<div class="errors">${this._error}</div>`
             : this._statistics
-            ? html`<statistics-chart
-                .hass=${this.hass}
-                .isLoadingData=${!this._statistics}
-                .statisticsData=${this._statistics}
-                .metadata=${this._metadata}
-                .statTypes=${statTypes}
-                .names=${this._statNames}
-                hideLegend
-                .showNames=${false}
-              ></statistics-chart>`
-            : html`<state-history-charts
-                up-to-now
-                .hass=${this.hass}
-                .historyData=${this._stateHistory}
-                .isLoadingData=${!this._stateHistory}
-                .showNames=${false}
-                .clickForMoreInfo=${false}
-              ></state-history-charts>`}`
+              ? html`<statistics-chart
+                  .hass=${this.hass}
+                  .isLoadingData=${!this._statistics}
+                  .statisticsData=${this._statistics}
+                  .metadata=${this._metadata}
+                  .statTypes=${statTypes}
+                  .names=${this._statNames}
+                  hideLegend
+                  .showNames=${false}
+                  .clickForMoreInfo=${false}
+                ></statistics-chart>`
+              : html`<state-history-charts
+                  up-to-now
+                  .hass=${this.hass}
+                  .historyData=${this._stateHistory}
+                  .isLoadingData=${!this._stateHistory}
+                  .showNames=${false}
+                  .clickForMoreInfo=${false}
+                ></state-history-charts>`}`
       : ""}`;
   }
 
@@ -228,6 +229,7 @@ export class MoreInfoHistory extends LitElement {
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
+          [this.entityId],
           this.hass!.localize,
           sensorNumericDeviceClasses
         );

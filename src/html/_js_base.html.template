@@ -2,7 +2,6 @@
   function _ls(src, notCustom) {
     var script = document.createElement("script");
     if (notCustom) {
-      script.async = false;
       script.crossOrigin = "use-credentials";
     }
     script.src = src;

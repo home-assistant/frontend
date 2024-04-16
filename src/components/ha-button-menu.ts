@@ -3,6 +3,7 @@ import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
 
@@ -68,7 +69,7 @@ export class HaButtonMenu extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
-    if (document.dir === "rtl") {
+    if (mainWindow.document.dir === "rtl") {
       this.updateComplete.then(() => {
         this.querySelectorAll("mwc-list-item").forEach((item) => {
           const style = document.createElement("style");

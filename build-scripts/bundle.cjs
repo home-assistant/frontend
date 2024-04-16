@@ -1,6 +1,7 @@
 const path = require("path");
 const env = require("./env.cjs");
 const paths = require("./paths.cjs");
+const { dependencies } = require("../package.json");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
@@ -31,8 +32,6 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
       require.resolve(
         path.resolve(paths.polymer_dir, "src/resources/compatibility.ts")
       ),
-    // This polyfill is loaded in workers to support ES5, filter it out.
-    latestBuild && require.resolve("proxy-polyfill/src/index.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
@@ -87,14 +86,12 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     setSpreadProperties: true,
   },
   browserslistEnv: latestBuild ? "modern" : "legacy",
-  // Must be unambiguous because some dependencies are CommonJS only
-  sourceType: "unambiguous",
   presets: [
     [
       "@babel/preset-env",
       {
-        useBuiltIns: latestBuild ? false : "entry",
-        corejs: latestBuild ? false : { version: "3.33", proposals: true },
+        useBuiltIns: latestBuild ? false : "usage",
+        corejs: latestBuild ? false : dependencies["core-js"],
         bugfixes: true,
         shippedProposals: true,
       },
@@ -112,27 +109,39 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         ignoreModuleNotFound: true,
       },
     ],
+    [
+      path.resolve(
+        paths.polymer_dir,
+        "build-scripts/babel-plugins/custom-polyfill-plugin.js"
+      ),
+      { method: "usage-global" },
+    ],
     // Minify template literals for production
     isProdBuild && [
       "template-html-minifier",
       {
         modules: {
-          lit: [
-            "html",
-            { name: "svg", encapsulation: "svg" },
-            { name: "css", encapsulation: "style" },
-          ],
-          "@polymer/polymer/lib/utils/html-tag": ["html"],
+          ...Object.fromEntries(
+            ["lit", "lit-element", "lit-html"].map((m) => [
+              m,
+              [
+                "html",
+                { name: "svg", encapsulation: "svg" },
+                { name: "css", encapsulation: "style" },
+              ],
+            ])
+          ),
+          "@polymer/polymer/lib/utils/html-tag.js": ["html"],
         },
         strictCSS: true,
         htmlMinifier: module.exports.htmlMinifierOptions,
-        failOnError: true, // we can turn this off in case of false positives
+        failOnError: false, // we can turn this off in case of false positives
       },
     ],
     // Import helpers and regenerator from runtime package
     [
       "@babel/plugin-transform-runtime",
-      { version: require("../package.json").dependencies["@babel/runtime"] },
+      { version: dependencies["@babel/runtime"] },
     ],
     // Support  some proposals still in TC39 process
     ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
@@ -143,6 +152,18 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     /node_modules[\\/]webpack[\\/]buildin/,
   ],
   sourceMaps: !isTestBuild,
+  overrides: [
+    {
+      // Use unambiguous for dependencies so that require() is correctly injected into CommonJS files
+      // Exclusions are needed in some cases where ES modules have no static imports or exports, such as polyfills
+      sourceType: "unambiguous",
+      include: /\/node_modules\//,
+      exclude: [
+        "element-internals-polyfill",
+        "@?lit(?:-labs|-element|-html)?",
+      ].map((p) => new RegExp(`/node_modules/${p}/`)),
+    },
+  ],
 });
 
 const nameSuffix = (latestBuild) => (latestBuild ? "-modern" : "-legacy");

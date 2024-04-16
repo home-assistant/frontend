@@ -33,24 +33,29 @@ import {
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-backup")
 class HaConfigBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _backupData?: BackupData;
 
   private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer<BackupContent> => ({
+    (
+      narrow,
+      _language,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<BackupContent> => ({
       name: {
-        title: this.hass.localize("ui.panel.config.backup.name"),
+        title: localize("ui.panel.config.backup.name"),
         main: true,
         sortable: true,
         filterable: true,
@@ -60,7 +65,7 @@ class HaConfigBackup extends LitElement {
             <div class="secondary">${backup.path}</div>`,
       },
       size: {
-        title: this.hass.localize("ui.panel.config.backup.size"),
+        title: localize("ui.panel.config.backup.size"),
         width: "15%",
         hidden: narrow,
         filterable: true,
@@ -68,7 +73,7 @@ class HaConfigBackup extends LitElement {
         template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
       },
       date: {
-        title: this.hass.localize("ui.panel.config.backup.created"),
+        title: localize("ui.panel.config.backup.created"),
         width: "15%",
         direction: "desc",
         hidden: narrow,
@@ -139,7 +144,11 @@ class HaConfigBackup extends LitElement {
         .narrow=${this.narrow}
         back-path="/config/system"
         .route=${this.route}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this.hass.localize
+        )}
         .data=${this._getItems(this._backupData.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
@@ -158,7 +167,7 @@ class HaConfigBackup extends LitElement {
           ${this._backupData.backing_up
             ? html`<ha-circular-progress
                 slot="icon"
-                active
+                indeterminate
               ></ha-circular-progress>`
             : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>

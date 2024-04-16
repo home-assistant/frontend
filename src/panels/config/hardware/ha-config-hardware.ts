@@ -56,7 +56,7 @@ const DATA_SET_CONFIG = {
 class HaConfigHardware extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _error?: { code: string; message: string };
 
@@ -439,16 +439,16 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                 </ha-card>`
             : isComponentLoaded(this.hass, "hardware")
-            ? html`<ha-card outlined>
-                <div class="card-content">
-                  <div class="value">
-                    ${this.hass.localize(
-                      "ui.panel.config.hardware.loading_system_data"
-                    )}
+              ? html`<ha-card outlined>
+                  <div class="card-content">
+                    <div class="value">
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.loading_system_data"
+                      )}
+                    </div>
                   </div>
-                </div>
-              </ha-card>`
-            : ""}
+                </ha-card>`
+              : ""}
         </div>
       </hass-subpage>
     `;

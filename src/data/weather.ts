@@ -8,7 +8,6 @@ import {
   mdiWeatherLightning,
   mdiWeatherLightningRainy,
   mdiWeatherNight,
-  mdiWeatherNightPartlyCloudy,
   mdiWeatherPartlyCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
@@ -383,13 +382,13 @@ const getWeatherStateSVG = (
           />
         `
       : state === "partlycloudy"
-      ? svg`
+        ? svg`
           <path
             class="sun"
             d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
           />
         `
-      : ""
+        : ""
   }
   ${
     cloudyStates.has(state)
@@ -519,13 +518,6 @@ export const getWeatherStateIcon = (
 
   return undefined;
 };
-
-export const weatherIcon = (state?: string, nightTime?: boolean): string =>
-  !state
-    ? undefined
-    : nightTime && state === "partlycloudy"
-    ? mdiWeatherNightPartlyCloudy
-    : weatherIcons[state];
 
 const EIGHT_HOURS = 28800000;
 const DAY_IN_MILLISECONDS = 86400000;

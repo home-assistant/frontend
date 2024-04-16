@@ -39,8 +39,8 @@ class MoreInfoInputDatetime extends LitElement {
               .value=${this.stateObj.state === UNKNOWN
                 ? ""
                 : this.stateObj.attributes.has_date
-                ? this.stateObj.state.split(" ")[1]
-                : this.stateObj.state}
+                  ? this.stateObj.state.split(" ")[1]
+                  : this.stateObj.state}
               .locale=${this.hass.locale}
               .disabled=${isUnavailableState(this.stateObj.state)}
               @value-changed=${this._timeChanged}
@@ -86,6 +86,8 @@ class MoreInfoInputDatetime extends LitElement {
       }
       ha-date-input + ha-time-input {
         margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
       }
     `;
   }

@@ -5,15 +5,16 @@ import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
-import { canRun, ScriptEntity } from "../data/script";
+import { canRun, hasScriptFields, ScriptEntity } from "../data/script";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
+import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("state-card-script")
-export class StateCardScript extends LitElement {
+class StateCardScript extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
 
@@ -30,11 +31,9 @@ export class StateCardScript extends LitElement {
           ? html`<mwc-button @click=${this._cancelScript}>
               ${stateObj.attributes.mode !== "single" &&
               (stateObj.attributes.current || 0) > 0
-                ? this.hass.localize(
-                    "ui.card.script.cancel_multiple",
-                    "number",
-                    stateObj.attributes.current
-                  )
+                ? this.hass.localize("ui.card.script.cancel_multiple", {
+                    number: stateObj.attributes.current,
+                  })
                 : this.hass.localize("ui.card.script.cancel")}
             </mwc-button>`
           : ""}
@@ -58,7 +57,12 @@ export class StateCardScript extends LitElement {
 
   private _runScript(ev: Event) {
     ev.stopPropagation();
-    this._callService("turn_on");
+
+    if (hasScriptFields(this.hass, this.stateObj.entity_id)) {
+      showMoreInfoDialog(this, { entityId: this.stateObj.entity_id });
+    } else {
+      this._callService("turn_on");
+    }
   }
 
   private _callService(service: string): void {
@@ -69,5 +73,11 @@ export class StateCardScript extends LitElement {
 
   static get styles(): CSSResultGroup {
     return haStyle;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-script": StateCardScript;
   }
 }

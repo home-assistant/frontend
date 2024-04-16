@@ -69,8 +69,7 @@ export class HaDeviceViaDevicesCard extends LitElement {
               <button class="show-more" @click=${this._toggleShowAll}>
                 ${this.hass.localize(
                   "ui.panel.config.devices.connected_devices.show_more",
-                  "count",
-                  viaDevices.length - MAX_VISIBLE_VIA_DEVICES
+                  { count: viaDevices.length - MAX_VISIBLE_VIA_DEVICES }
                 )}
               </button>
             `

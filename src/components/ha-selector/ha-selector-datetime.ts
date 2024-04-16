@@ -78,6 +78,8 @@ export class HaDateTimeSelector extends LitElement {
     ha-date-input {
       min-width: 150px;
       margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
     }
   `;
 }

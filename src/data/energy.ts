@@ -9,9 +9,13 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-} from "date-fns/esm";
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
+import {
+  calcDate,
+  calcDateProperty,
+  calcDateDifferenceProperty,
+} from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -91,6 +95,7 @@ export type EnergySolarForecasts = {
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  name?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -331,6 +336,9 @@ export const getReferencedStatisticIds = (
       }
     }
   }
+  if (!(includeTypes && !includeTypes.includes("device"))) {
+    statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
+  }
 
   return statIDs;
 };
@@ -383,6 +391,7 @@ const getEnergyData = async (
     "solar",
     "battery",
     "gas",
+    "device",
   ]);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
@@ -439,12 +448,12 @@ const getEnergyData = async (
         addMonths,
         hass.locale,
         hass.config,
-        -(calcDateProperty(
+        -(calcDateDifferenceProperty(
           end || new Date(),
+          start,
           differenceInMonths,
           hass.locale,
-          hass.config,
-          start
+          hass.config
         ) as number) - 1
       );
     } else {
@@ -581,6 +590,28 @@ const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   });
 };
 
+const scheduleHourlyRefresh = (collection: EnergyCollection) => {
+  if (collection._refreshTimeout) {
+    clearTimeout(collection._refreshTimeout);
+  }
+
+  if (collection._active && (!collection.end || collection.end > new Date())) {
+    // The stats are created every hour
+    // Schedule a refresh for 20 minutes past the hour
+    // If the end is larger than the current time.
+    const nextFetch = new Date();
+    if (nextFetch.getMinutes() >= 20) {
+      nextFetch.setHours(nextFetch.getHours() + 1);
+    }
+    nextFetch.setMinutes(20, 0, 0);
+
+    collection._refreshTimeout = window.setTimeout(
+      () => collection.refresh(),
+      nextFetch.getTime() - Date.now()
+    );
+  }
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
   options: { prefs?: EnergyPreferences; key?: string } = {}
@@ -609,28 +640,7 @@ export const getEnergyDataCollection = (
         collection.prefs = await getEnergyPreferences(hass);
       }
 
-      if (collection._refreshTimeout) {
-        clearTimeout(collection._refreshTimeout);
-      }
-
-      if (
-        collection._active &&
-        (!collection.end || collection.end > new Date())
-      ) {
-        // The stats are created every hour
-        // Schedule a refresh for 20 minutes past the hour
-        // If the end is larger than the current time.
-        const nextFetch = new Date();
-        if (nextFetch.getMinutes() >= 20) {
-          nextFetch.setHours(nextFetch.getHours() + 1);
-        }
-        nextFetch.setMinutes(20, 0, 0);
-
-        collection._refreshTimeout = window.setTimeout(
-          () => collection.refresh(),
-          nextFetch.getTime() - Date.now()
-        );
-      }
+      scheduleHourlyRefresh(collection);
 
       return getEnergyData(
         hass,
@@ -647,6 +657,11 @@ export const getEnergyDataCollection = (
   collection.subscribe = (subscriber: (data: EnergyData) => void) => {
     const unsub = origSubscribe(subscriber);
     collection._active++;
+
+    if (collection._refreshTimeout === undefined) {
+      scheduleHourlyRefresh(collection);
+    }
+
     return () => {
       collection._active--;
       if (collection._active < 1) {
@@ -767,11 +782,11 @@ export const getEnergyGasUnit = (
   return unitClass === "energy"
     ? "kWh"
     : hass.config.unit_system.length === "km"
-    ? "m³"
-    : "ft³";
+      ? "m³"
+      : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
+export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
 
 export const energyStatisticHelpUrl =

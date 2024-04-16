@@ -5,11 +5,16 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  localizeWeekdays,
+  localizeMonths,
+} from "../common/datetime/localize_date";
+import { mainWindow } from "../common/dom/get_main_window";
 
-// Set the current date to the left picker instead of the right picker because the right is hidden
 const CustomDateRangePicker = Vue.extend({
   mixins: [DateRangePicker],
   methods: {
+    // Set the current date to the left picker instead of the right picker because the right is hidden
     selectMonthDate() {
       const dt: Date = this.end || new Date();
       // @ts-ignore
@@ -17,6 +22,33 @@ const CustomDateRangePicker = Vue.extend({
         year: dt.getFullYear(),
         month: dt.getMonth() + 1,
       });
+    },
+    // Fix the start/end date calculation when selecting a date range. The
+    // original code keeps track of the first clicked date (in_selection) but it
+    // never sets it to either the start or end date variables, so if the
+    // in_selection date is between the start and end date that were set by the
+    // hover the selection will enter a broken state that's counter-intuitive
+    // when hovering between weeks and leads to a random date when selecting a
+    // range across months. This bug doesn't seem to be present on v0.6.7 of the
+    // lib
+    hoverDate(value: Date) {
+      if (this.readonly) return;
+
+      if (this.in_selection) {
+        const pickA = this.in_selection as Date;
+        const pickB = value;
+
+        this.start = this.normalizeDatetime(
+          Math.min(pickA.valueOf(), pickB.valueOf()),
+          this.start
+        );
+        this.end = this.normalizeDatetime(
+          Math.max(pickA.valueOf(), pickB.valueOf()),
+          this.end
+        );
+      }
+
+      this.$emit("hover-date", value);
     },
   },
 });
@@ -63,6 +95,10 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
+    language: {
+      type: String,
+      default: "en",
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -77,6 +113,8 @@ const Component = Vue.extend({
         ranges: this.ranges ? {} : false,
         "locale-data": {
           firstDay: this.firstDay,
+          daysOfWeek: localizeWeekdays(this.language, true),
+          monthNames: localizeMonths(this.language, false),
         },
       },
       model: {
@@ -145,7 +183,9 @@ class DateRangePickerElement extends WrappedElement {
             );
             color: var(--primary-text-color);
             min-width: initial !important;
-          }
+            max-height: var(--date-range-picker-max-height);
+            overflow-y: auto;
+                      }
           .daterangepicker:before {
             display: none;
           }
@@ -162,7 +202,7 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--secondary-text-color);
             border-radius: 0;
             outline: none;
-            width: 32px;
+            min-width: 32px;
             height: 32px;
           }
           .daterangepicker td.off,
@@ -238,6 +278,9 @@ class DateRangePickerElement extends WrappedElement {
           }
           .daterangepicker .drp-calendar.left {
             padding: 8px;
+            width: unset;
+            max-width: unset;
+            min-width: 270px;
           }
           .daterangepicker.show-calendar .ranges {
             margin-top: 0;
@@ -252,15 +295,37 @@ class DateRangePickerElement extends WrappedElement {
           .calendar-table {
             padding: 0 !important;
           }
-          .daterangepicker.ltr {
+          .calendar-time {
             direction: ltr;
-            text-align: left;
+          }
+          .daterangepicker.ltr {
+            direction: var(--direction);
+            text-align: var(--float-start);
           }
           .vue-daterange-picker{
             min-width: unset !important;
             display: block !important;
           }
         `;
+    if (mainWindow.document.dir === "rtl") {
+      style.innerHTML += `
+            .daterangepicker .calendar-table .next span {
+              transform: rotate(135deg);
+              -webkit-transform: rotate(135deg);
+            }
+            .daterangepicker .calendar-table .prev span {
+              transform: rotate(-45deg);
+              -webkit-transform: rotate(-45deg);
+            }
+            .daterangepicker td.start-date {
+              border-radius: 0 50% 50% 0;
+            }
+            .daterangepicker td.end-date {
+              border-radius: 50% 0 0 50%;
+            }
+            `;
+    }
+
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);
     // Stop click events from reaching the document, otherwise it will close the picker immediately.

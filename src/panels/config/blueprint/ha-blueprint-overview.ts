@@ -26,15 +26,19 @@ import {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-button";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
+  BlueprintImportResult,
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
+  importBlueprint,
+  saveBlueprint,
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
 import { findRelated } from "../../../data/search";
@@ -45,7 +49,9 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
@@ -75,9 +81,9 @@ const createNewFunctions = {
 class HaBlueprintOverview extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -115,11 +121,13 @@ class HaBlueprintOverview extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow, _language): DataTableColumnContainer<BlueprintMetaDataPath> => ({
+    (
+      narrow,
+      _language,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
-        title: this.hass.localize(
-          "ui.panel.config.blueprint.overview.headers.name"
-        ),
+        title: localize("ui.panel.config.blueprint.overview.headers.name"),
         main: true,
         sortable: true,
         filterable: true,
@@ -133,9 +141,7 @@ class HaBlueprintOverview extends LitElement {
           : undefined,
       },
       type: {
-        title: this.hass.localize(
-          "ui.panel.config.blueprint.overview.headers.type"
-        ),
+        title: localize("ui.panel.config.blueprint.overview.headers.type"),
         template: (blueprint) =>
           html`${this.hass.localize(
             `ui.panel.config.blueprint.overview.types.${blueprint.type}`
@@ -147,9 +153,7 @@ class HaBlueprintOverview extends LitElement {
         width: "10%",
       },
       path: {
-        title: this.hass.localize(
-          "ui.panel.config.blueprint.overview.headers.file_name"
-        ),
+        title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
         hidden: narrow,
@@ -200,6 +204,16 @@ class HaBlueprintOverview extends LitElement {
                       action: () => this._share(blueprint),
                     },
                     {
+                      path: mdiDownload,
+                      disabled: !blueprint.source_url,
+                      label: this.hass.localize(
+                        blueprint.source_url
+                          ? "ui.panel.config.blueprint.overview.re_import_blueprint"
+                          : "ui.panel.config.blueprint.overview.re_import_blueprint_no_url"
+                      ),
+                      action: () => this._reImport(blueprint),
+                    },
+                    {
                       divider: true,
                     },
                     {
@@ -237,7 +251,11 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this.hass.localize
+        )}
         .data=${this._processedBlueprints(this.blueprints)}
         id="fullpath"
         .noDataText=${this.hass.localize(
@@ -246,7 +264,7 @@ class HaBlueprintOverview extends LitElement {
         hasFab
         clickable
         @row-click=${this._handleRowClicked}
-        .appendRow=${html` <div
+        .appendRow=${html`<div
           class="mdc-data-table__cell"
           style="width: 100%; text-align: center;"
           role="cell"
@@ -256,10 +274,10 @@ class HaBlueprintOverview extends LitElement {
             target="_blank"
             rel="noreferrer noopener"
           >
-            <mwc-button
+            <ha-button
               >${this.hass.localize(
                 "ui.panel.config.blueprint.overview.discover_more"
-              )}</mwc-button
+              )}</ha-button
             >
           </a>
         </div>`}
@@ -357,6 +375,67 @@ class HaBlueprintOverview extends LitElement {
     window.open(
       `https://my.home-assistant.io/create-link/?${params.toString()}`
     );
+  };
+
+  private _reImport = async (blueprint: BlueprintMetaDataPath) => {
+    const result = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.blueprint.overview.re_import_confirm_title"
+      ),
+      text: html`
+        ${this.hass.localize(
+          "ui.panel.config.blueprint.overview.re_import_confirm_text"
+        )}
+      `,
+      confirmText: this.hass.localize(
+        "ui.panel.config.blueprint.overview.re_import_confirm_action"
+      ),
+      warning: true,
+    });
+
+    if (!result) {
+      return;
+    }
+
+    let importResult: BlueprintImportResult;
+    try {
+      importResult = await importBlueprint(this.hass, blueprint.source_url!);
+    } catch (err) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.blueprint.overview.re_import_error_source_not_found"
+        ),
+      });
+      throw err;
+    }
+
+    try {
+      await saveBlueprint(
+        this.hass,
+        blueprint.domain,
+        blueprint.path,
+        importResult!.raw_data,
+        blueprint.source_url,
+        true
+      );
+    } catch (err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.blueprint.overview.re_import_error_save",
+          { error: err.message }
+        ),
+      });
+      throw err;
+    }
+
+    fireEvent(this, "reload-blueprints");
+
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.blueprint.overview.re_import_success",
+        { name: importResult!.blueprint.metadata.name }
+      ),
+    });
   };
 
   private _delete = async (blueprint: BlueprintMetaDataPath) => {

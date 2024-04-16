@@ -87,17 +87,17 @@ export class HaSceneEditor extends SubscribeMixin(
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property() public sceneId: string | null = null;
 
-  @property() public scenes!: SceneEntity[];
+  @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
@@ -349,6 +349,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                 @click=${this._showMoreInfo}
                               >
                                 <state-badge
+                                  .hass=${this.hass}
                                   .stateObj=${entityStateObj}
                                   slot="graphic"
                                 ></state-badge>
@@ -416,6 +417,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                         @click=${this._showMoreInfo}
                                       >
                                         <state-badge
+                                          .hass=${this.hass}
                                           .stateObj=${entityStateObj}
                                           slot="graphic"
                                         ></state-badge>
@@ -513,6 +515,7 @@ export class HaSceneEditor extends SubscribeMixin(
         if (
           !entity.device_id ||
           entity.entity_category ||
+          entity.hidden_by ||
           SCENE_IGNORED_DOMAINS.includes(computeDomain(entity.entity_id))
         ) {
           continue;
@@ -589,8 +592,7 @@ export class HaSceneEditor extends SubscribeMixin(
               )
             : this.hass.localize(
                 "ui.panel.config.scene.editor.load_error_unknown",
-                "err_no",
-                err.status_code
+                { err_no: err.status_code }
               ),
       });
       history.back();

@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../../../types";
 class HaCounterForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   private _item?: Partial<Counter>;
 
@@ -53,11 +53,10 @@ class HaCounterForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(
-      () =>
-        (
-          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-        )?.focus()
+    this.updateComplete.then(() =>
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -161,8 +160,8 @@ class HaCounterForm extends LitElement {
           ? Number(target.value)
           : undefined
         : target.localName === "ha-switch"
-        ? (ev.target as HaSwitch).checked
-        : ev.detail?.value || target.value;
+          ? (ev.target as HaSwitch).checked
+          : ev.detail?.value || target.value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -193,6 +192,8 @@ class HaCounterForm extends LitElement {
         }
         .row div {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;

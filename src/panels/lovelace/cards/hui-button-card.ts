@@ -52,7 +52,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { ButtonCardConfig } from "./types";
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
@@ -134,17 +138,23 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   private getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return (
-      config &&
-      (config.state_color ||
-        (domain === "light" && config.state_color !== false))
-    );
+    return config && (config.state_color ?? domain === "light");
   }
 
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
     );
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    if (
+      this._config?.show_icon &&
+      (this._config?.show_name || this._config?.show_state)
+    ) {
+      return { grid_rows: 2, grid_columns: 2 };
+    }
+    return { grid_rows: 1, grid_columns: 1 };
   }
 
   public setConfig(config: ButtonCardConfig): void {
@@ -187,10 +197,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus=${this.handleRippleFocus}
-        @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
         @mouseup=${this.handleRippleDeactivate}
+        @mouseenter=${this.handleRippleMouseEnter}
+        @mouseleave=${this.handleRippleMouseLeave}
         @touchstart=${this.handleRippleActivate}
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
@@ -204,6 +214,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
+        style=${styleMap({
+          "--state-color": colored ? this._computeColor(stateObj) : undefined,
+        })}
       >
         ${this._config.show_icon
           ? html`
@@ -214,9 +227,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 )}
                 data-state=${ifDefined(stateObj?.state)}
                 .icon=${this._config.icon}
-                .state=${stateObj}
+                .hass=${this.hass}
+                .stateObj=${stateObj}
                 style=${styleMap({
-                  color: colored ? this._computeColor(stateObj) : undefined,
                   filter: colored ? stateColorBrightness(stateObj) : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
@@ -279,16 +292,19 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     this._rippleHandlers.startPress(evt);
   }
 
+  @eventOptions({ passive: true })
   private handleRippleDeactivate() {
     this._rippleHandlers.endPress();
   }
 
-  private handleRippleFocus() {
-    this._rippleHandlers.startFocus();
+  @eventOptions({ passive: true })
+  private handleRippleMouseEnter() {
+    this._rippleHandlers.startHover();
   }
 
-  private handleRippleBlur() {
-    this._rippleHandlers.endFocus();
+  @eventOptions({ passive: true })
+  private handleRippleMouseLeave() {
+    this._rippleHandlers.endHover();
   }
 
   static get styles(): CSSResultGroup {
@@ -296,6 +312,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       iconColorCSS,
       css`
         ha-card {
+          --state-inactive-color: var(--paper-item-icon-color, #44739e);
+          --state-color: var(--paper-item-icon-color, #44739e);
+          --mdc-ripple-color: var(--state-color);
           cursor: pointer;
           display: flex;
           flex-direction: column;
@@ -317,9 +336,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         ha-state-icon {
           width: 40%;
           height: auto;
-          color: var(--paper-item-icon-color, #44739e);
+          max-height: 80%;
+          color: var(--state-color);
           --mdc-icon-size: 100%;
-          --state-inactive-color: var(--paper-item-icon-color, #44739e);
+          transition: transform 180ms ease-in-out;
         }
 
         ha-state-icon + span {
@@ -329,6 +349,22 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         ha-state-icon,
         span {
           outline: none;
+        }
+
+        ha-card:focus-visible {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px
+            var(--state-color, var(--paper-item-icon-color, #44739e));
+          border-color: var(
+            --state-color,
+            var(--paper-item-icon-color, #44739e)
+          );
+          box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
+
+        ha-card:focus-visible ha-state-icon,
+        :host(:active) ha-state-icon {
+          transform: scale(1.2);
         }
 
         .state {

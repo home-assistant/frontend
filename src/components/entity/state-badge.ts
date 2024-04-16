@@ -1,11 +1,11 @@
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
@@ -14,8 +14,8 @@ import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
-  stateColorCss,
   stateColorBrightness,
+  stateColorCss,
 } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
@@ -26,18 +26,20 @@ import "../ha-state-icon";
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public overrideIcon?: string;
 
   @property() public overrideImage?: string;
 
-  @property({ type: Boolean }) public stateColor?: boolean;
+  // Cannot be a boolean attribute because undefined is treated different than
+  // false.  When it is undefined, state is still colored for light entities.
+  @property({ attribute: false }) public stateColor?: boolean;
 
   @property() public color?: string;
 
-  @property({ type: Boolean, reflect: true, attribute: "icon" })
-  private _showIcon = true;
+  // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
+  @property({ type: Boolean, reflect: true }) public icon = true;
 
   @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
@@ -70,7 +72,7 @@ export class StateBadge extends LitElement {
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
       : undefined;
-    return this.stateColor || (domain === "light" && this.stateColor !== false);
+    return this.stateColor ?? domain === "light";
   }
 
   protected render() {
@@ -83,22 +85,23 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
-    if (!this._showIcon) {
+    if (!this.icon) {
       return nothing;
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
     return html`<ha-state-icon
+      .hass=${this.hass}
       style=${styleMap(this._iconStyle)}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
-      .state=${stateObj}
+      .stateObj=${stateObj}
     ></ha-state-icon>`;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (
       !changedProps.has("stateObj") &&
@@ -114,7 +117,7 @@ export class StateBadge extends LitElement {
     const iconStyle: { [name: string]: string } = {};
     let backgroundImage = "";
 
-    this._showIcon = true;
+    this.icon = true;
 
     if (stateObj && this.overrideImage === undefined) {
       // hide icon if we have entity picture
@@ -134,7 +137,7 @@ export class StateBadge extends LitElement {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
         }
         backgroundImage = `url(${imageUrl})`;
-        this._showIcon = false;
+        this.icon = false;
         if (domain === "update") {
           this.style.borderRadius = "0";
         } else if (domain === "media_player") {
@@ -180,7 +183,7 @@ export class StateBadge extends LitElement {
         imageUrl = this.hass.hassUrl(imageUrl);
       }
       backgroundImage = `url(${imageUrl})`;
-      this._showIcon = false;
+      this.icon = false;
     }
 
     this._iconStyle = iconStyle;

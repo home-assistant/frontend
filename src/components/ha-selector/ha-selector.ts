@@ -13,6 +13,7 @@ const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
   area: () => import("./ha-selector-area"),
+  area_filter: () => import("./ha-selector-area-filter"),
   attribute: () => import("./ha-selector-attribute"),
   assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),
@@ -29,11 +30,15 @@ const LOAD_ELEMENTS = {
   entity: () => import("./ha-selector-entity"),
   statistic: () => import("./ha-selector-statistic"),
   file: () => import("./ha-selector-file"),
+  floor: () => import("./ha-selector-floor"),
+  label: () => import("./ha-selector-label"),
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
   object: () => import("./ha-selector-object"),
+  qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
+  selector: () => import("./ha-selector-selector"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
@@ -57,11 +62,11 @@ const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public name?: string;
 
-  @property() public selector!: Selector;
+  @property({ attribute: false }) public selector!: Selector;
 
   @property() public value?: any;
 
@@ -69,7 +74,8 @@ export class HaSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property() public localizeValue?: (key: string) => string;
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
 
   @property() public placeholder?: any;
 
@@ -77,7 +83,7 @@ export class HaSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: Record<string, any>;
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   public async focus() {
     await this.updateComplete;

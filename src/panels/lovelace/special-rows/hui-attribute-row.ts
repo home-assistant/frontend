@@ -71,16 +71,16 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
               capitalize
             ></hui-timestamp-display>`
           : attribute !== undefined
-          ? html`
-              <ha-attribute-value
-                .hideUnit=${this._config.suffix}
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .attribute=${this._config.attribute}
-              >
-              </ha-attribute-value>
-            `
-          : "—"}
+            ? html`
+                <ha-attribute-value
+                  .hideUnit=${this._config.suffix}
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .attribute=${this._config.attribute}
+                >
+                </ha-attribute-value>
+              `
+            : "—"}
         ${this._config.suffix}
       </hui-generic-entity-row>
     `;

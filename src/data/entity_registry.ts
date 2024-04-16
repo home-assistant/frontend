@@ -8,33 +8,39 @@ import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
 
-type entityCategory = "config" | "diagnostic";
+export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
+
+type EntityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
   name?: string;
+  icon?: string;
   device_id?: string;
   area_id?: string;
+  labels: string[];
   hidden?: boolean;
-  entity_category?: entityCategory;
+  entity_category?: EntityCategory;
   translation_key?: string;
   platform?: string;
   display_precision?: number;
 }
 
-interface EntityRegistryDisplayEntryResponse {
+export interface EntityRegistryDisplayEntryResponse {
   entities: {
     ei: string;
     di?: string;
     ai?: string;
+    lb: string[];
     ec?: number;
     en?: string;
+    ic?: string;
     pl?: string;
     tk?: string;
     hb?: boolean;
     dp?: number;
   }[];
-  entity_categories: Record<number, entityCategory>;
+  entity_categories: Record<number, EntityCategory>;
 }
 
 export interface EntityRegistryEntry {
@@ -46,14 +52,16 @@ export interface EntityRegistryEntry {
   config_entry_id: string | null;
   device_id: string | null;
   area_id: string | null;
+  labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
   hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
-  entity_category: entityCategory | null;
+  entity_category: EntityCategory | null;
   has_entity_name: boolean;
   original_name?: string;
   unique_id: string;
   translation_key?: string;
   options: EntityRegistryOptions | null;
+  categories: { [scope: string]: string };
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -98,6 +106,7 @@ export interface WeatherEntityOptions {
 
 export interface SwitchAsXEntityOptions {
   entity_id: string;
+  invert: boolean;
 }
 
 export interface EntityRegistryOptions {
@@ -128,6 +137,8 @@ export interface EntityRegistryEntryUpdateParams {
     | WeatherEntityOptions
     | LightEntityOptions;
   aliases?: string[];
+  labels?: string[];
+  categories?: { [scope: string]: string | null };
 }
 
 const batteryPriorities = ["sensor", "binary_sensor"];
@@ -251,34 +262,6 @@ export const subscribeEntityRegistry = (
     "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
-    conn,
-    onChange
-  );
-
-const subscribeEntityRegistryDisplayUpdates = (
-  conn: Connection,
-  store: Store<EntityRegistryDisplayEntryResponse>
-) =>
-  conn.subscribeEvents(
-    debounce(
-      () =>
-        fetchEntityRegistryDisplay(conn).then((entities) =>
-          store.setState(entities, true)
-        ),
-      500,
-      true
-    ),
-    "entity_registry_updated"
-  );
-
-export const subscribeEntityRegistryDisplay = (
-  conn: Connection,
-  onChange: (entities: EntityRegistryDisplayEntryResponse) => void
-) =>
-  createCollection<EntityRegistryDisplayEntryResponse>(
-    "_entityRegistryDisplay",
-    fetchEntityRegistryDisplay,
-    subscribeEntityRegistryDisplayUpdates,
     conn,
     onChange
   );

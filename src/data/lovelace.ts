@@ -10,8 +10,10 @@ import {
   LovelaceCard,
 } from "../panels/lovelace/types";
 import { HomeAssistant } from "../types";
+import { LovelaceSectionConfig } from "./lovelace/config/section";
 import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/types";
 import { LovelaceViewConfig } from "./lovelace/config/view";
+import { HuiSection } from "../panels/lovelace/sections/hui-section";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -24,8 +26,19 @@ export interface LovelaceViewElement extends HTMLElement {
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
+  sections?: HuiSection[];
   isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
+}
+
+export interface LovelaceSectionElement extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: Lovelace;
+  viewIndex?: number;
+  index?: number;
+  cards?: Array<LovelaceCard | HuiErrorCard>;
+  isStrategy: boolean;
+  setConfig(config: LovelaceSectionConfig): void;
 }
 
 type LovelaceUpdatedEvent = HassEventBase & {

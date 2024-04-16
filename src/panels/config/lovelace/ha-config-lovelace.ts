@@ -8,9 +8,16 @@ import { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
   {
-    component: "lovelace",
     path: "/config/lovelace/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
+    iconPath: mdiViewDashboard,
+  },
+];
+
+export const lovelaceResourcesTabs = [
+  {
+    path: "/config/lovelace/resources",
+    translationKey: "ui.panel.config.lovelace.resources.caption",
     iconPath: mdiViewDashboard,
   },
 ];
@@ -19,9 +26,9 @@ export const lovelaceTabs = [
 class HaConfigLovelace extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboards",

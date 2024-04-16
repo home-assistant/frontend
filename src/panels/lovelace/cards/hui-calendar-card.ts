@@ -59,7 +59,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public _events: CalendarEvent[] = [];
+  @state() private _events: CalendarEvent[] = [];
 
   @state() private _config?: CalendarCardConfig;
 
@@ -68,8 +68,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _eventDisplay = "list-item";
 
   @state() private _narrow = false;
-
-  @state() private _veryNarrow = false;
 
   @state() private _error?: string = undefined;
 
@@ -121,9 +119,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const views: FullCalendarView[] = this._veryNarrow
-      ? ["listWeek"]
-      : ["dayGridMonth", "dayGridDay", "listWeek"];
+    const views: FullCalendarView[] = [
+      "dayGridMonth",
+      "dayGridDay",
+      "listWeek",
+    ];
 
     return html`
       <ha-card>
@@ -206,7 +206,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._narrow = card.offsetWidth < 870;
-    this._veryNarrow = card.offsetWidth < 350;
   }
 
   private async _attachObserver(): Promise<void> {

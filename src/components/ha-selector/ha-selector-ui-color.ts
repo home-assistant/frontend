@@ -2,14 +2,14 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { UiColorSelector } from "../../data/selector";
-import "../../panels/lovelace/components/hui-color-picker";
+import "../ha-color-picker";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: UiColorSelector;
+  @property({ attribute: false }) public selector!: UiColorSelector;
 
   @property() public value?: string;
 
@@ -19,13 +19,14 @@ export class HaSelectorUiColor extends LitElement {
 
   protected render() {
     return html`
-      <hui-color-picker
+      <ha-color-picker
         .label=${this.label}
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
+        .defaultColor=${this.selector.ui_color?.default_color}
         @value-changed=${this._valueChanged}
-      ></hui-color-picker>
+      ></ha-color-picker>
     `;
   }
 
@@ -36,6 +37,6 @@ export class HaSelectorUiColor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui-color": HaSelectorUiColor;
+    "ha-selector-ui_color": HaSelectorUiColor;
   }
 }

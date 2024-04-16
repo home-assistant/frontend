@@ -31,11 +31,11 @@ import "./hc-layout";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
-  @property() public auth!: Auth;
+  @property({ attribute: false }) public auth!: Auth;
 
-  @property() public connection!: Connection;
+  @property({ attribute: false }) public connection!: Connection;
 
-  @property() public castManager!: CastManager;
+  @property({ attribute: false }) public castManager!: CastManager;
 
   @state() private askWrite = false;
 
@@ -73,44 +73,44 @@ class HcCast extends LitElement {
         ${error
           ? html` <div class="card-content">${error}</div> `
           : !this.castManager.status
-          ? html`
-              <p class="center-item">
-                <mwc-button raised @click=${this._handleLaunch}>
-                  <ha-svg-icon .path=${mdiCast}></ha-svg-icon>
-                  Start Casting
-                </mwc-button>
-              </p>
-            `
-          : html`
-              <div class="section-header">PICK A VIEW</div>
-              <paper-listbox
-                attr-for-selected="data-path"
-                .selected=${this.castManager.status.lovelacePath || ""}
-              >
-                ${(
-                  this.lovelaceViews ?? [
-                    generateDefaultViewConfig({}, {}, {}, {}, () => ""),
-                  ]
-                ).map(
-                  (view, idx) => html`
-                    <paper-icon-item
-                      @click=${this._handlePickView}
-                      data-path=${view.path || idx}
-                    >
-                      ${view.icon
-                        ? html`
-                            <ha-icon
-                              .icon=${view.icon}
-                              slot="item-icon"
-                            ></ha-icon>
-                          `
-                        : ""}
-                      ${view.title || view.path}
-                    </paper-icon-item>
-                  `
-                )}
-              </paper-listbox>
-            `}
+            ? html`
+                <p class="center-item">
+                  <mwc-button raised @click=${this._handleLaunch}>
+                    <ha-svg-icon .path=${mdiCast}></ha-svg-icon>
+                    Start Casting
+                  </mwc-button>
+                </p>
+              `
+            : html`
+                <div class="section-header">PICK A VIEW</div>
+                <paper-listbox
+                  attr-for-selected="data-path"
+                  .selected=${this.castManager.status.lovelacePath || ""}
+                >
+                  ${(
+                    this.lovelaceViews ?? [
+                      generateDefaultViewConfig({}, {}, {}, {}, () => ""),
+                    ]
+                  ).map(
+                    (view, idx) => html`
+                      <paper-icon-item
+                        @click=${this._handlePickView}
+                        data-path=${view.path || idx}
+                      >
+                        ${view.icon
+                          ? html`
+                              <ha-icon
+                                .icon=${view.icon}
+                                slot="item-icon"
+                              ></ha-icon>
+                            `
+                          : ""}
+                        ${view.title || view.path}
+                      </paper-icon-item>
+                    `
+                  )}
+                </paper-listbox>
+              `}
         <div class="card-actions">
           ${this.castManager.status
             ? html`
@@ -241,6 +241,8 @@ class HcCast extends LitElement {
 
       mwc-button ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
         height: 18px;
       }
 

@@ -1,6 +1,8 @@
 import IntlMessageFormat from "intl-messageformat";
+import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
+import { fireEvent } from "../dom/fire_event";
 
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
@@ -40,9 +42,13 @@ export type FlattenObjectKeys<
     : `${Key}`
   : never;
 
+// Later, don't return string when HTML is passed, and don't allow undefined
 export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   key: Keys,
-  ...args: any[]
+  values?: Record<
+    string,
+    string | number | HTMLTemplateResult | null | undefined
+  >
 ) => string;
 
 interface FormatType {
@@ -76,7 +82,9 @@ export interface FormatsType {
  */
 
 export const computeLocalize = async <Keys extends string = LocalizeKeys>(
-  cache: any,
+  cache: HTMLElement & {
+    _localizationCache?: Record<string, IntlMessageFormat>;
+  },
   language: string,
   resources: Resources,
   formats?: FormatsType
@@ -102,7 +110,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     }
 
     const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey] as
+    let translatedMessage = cache._localizationCache![messageKey] as
       | IntlMessageFormat
       | undefined;
 
@@ -116,7 +124,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       } catch (err: any) {
         return "Translation error: " + err.message;
       }
-      cache._localizationCache[messageKey] = translatedMessage;
+      cache._localizationCache![messageKey] = translatedMessage;
     }
 
     let argObject = {};
@@ -124,6 +132,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       argObject = args[0];
     } else {
       for (let i = 0; i < args.length; i += 2) {
+        // @ts-expect-error in some places the old format (key, value, key, value) is used
         argObject[args[i]] = args[i + 1];
       }
     }
@@ -131,6 +140,12 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     try {
       return translatedMessage.format<string>(argObject) as string;
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Translation error", key, language, err);
+      fireEvent(cache, "write_log", {
+        level: "error",
+        message: `Failed to format translation for key '${key}' in language '${language}'. ${err}`,
+      });
       return "Translation " + err;
     }
   };

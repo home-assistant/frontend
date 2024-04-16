@@ -1,6 +1,7 @@
 /** Constants to be used in the frontend. */
 
 import {
+  mdiAccount,
   mdiAirFilter,
   mdiAlert,
   mdiAngleAcute,
@@ -18,7 +19,6 @@ import {
   mdiChatSleep,
   mdiClipboardList,
   mdiClock,
-  mdiCloudUpload,
   mdiCog,
   mdiCommentAlert,
   mdiCounter,
@@ -29,6 +29,7 @@ import {
   mdiFlash,
   mdiFlower,
   mdiFormatListBulleted,
+  mdiFormatListCheckbox,
   mdiFormTextbox,
   mdiGauge,
   mdiGoogleAssistant,
@@ -47,11 +48,14 @@ import {
   mdiMoleculeCo2,
   mdiPalette,
   mdiPh,
+  mdiPipe,
   mdiProgressClock,
   mdiRayVertex,
   mdiRemote,
+  mdiRobot,
   mdiRobotMower,
   mdiRobotVacuum,
+  mdiRoomService,
   mdiScriptText,
   mdiSineWave,
   mdiSpeakerMessage,
@@ -61,13 +65,16 @@ import {
   mdiThermometerLines,
   mdiThermostat,
   mdiTimerOutline,
+  mdiToggleSwitch,
   mdiTransmissionTower,
   mdiWater,
   mdiWaterPercent,
+  mdiWeatherPartlyCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
   mdiWeatherWindy,
   mdiWeight,
+  mdiWhiteBalanceSunny,
   mdiWifi,
 } from "@mdi/js";
 
@@ -77,6 +84,9 @@ import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 // Arrays with values should be alphabetically sorted if order doesn't matter.
 // Each constant should have a description what it is supposed to be used for.
 
+/** Icon to use when no icon specified for service. */
+export const DEFAULT_SERVICE_ICON = mdiRoomService;
+
 /** Icon to use when no icon specified for domain. */
 export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
@@ -84,20 +94,23 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 export const FIXED_DOMAIN_ICONS = {
   air_quality: mdiAirFilter,
   alert: mdiAlert,
+  automation: mdiRobot,
   calendar: mdiCalendar,
   climate: mdiThermostat,
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
   counter: mdiCounter,
-  datetime: mdiCalendarClock,
   date: mdiCalendar,
+  datetime: mdiCalendarClock,
   demo: mdiHomeAssistant,
+  device_tracker: mdiAccount,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
   homeassistant: mdiHomeAssistant,
   homekit: mdiHomeAutomation,
-  image: mdiImage,
   image_processing: mdiImageFilterFrames,
+  image: mdiImage,
+  input_boolean: mdiToggleSwitch,
   input_button: mdiButtonPointer,
   input_datetime: mdiCalendarClock,
   input_number: mdiRayVertex,
@@ -109,6 +122,7 @@ export const FIXED_DOMAIN_ICONS = {
   notify: mdiCommentAlert,
   number: mdiRayVertex,
   persistent_notification: mdiBell,
+  person: mdiAccount,
   plant: mdiFlower,
   proximity: mdiAppleSafari,
   remote: mdiRemote,
@@ -120,14 +134,15 @@ export const FIXED_DOMAIN_ICONS = {
   simple_alarm: mdiBell,
   siren: mdiBullhorn,
   stt: mdiMicrophoneMessage,
+  sun: mdiWhiteBalanceSunny,
   text: mdiFormTextbox,
-  todo: mdiClipboardList,
   time: mdiClock,
   timer: mdiTimerOutline,
+  todo: mdiClipboardList,
   tts: mdiSpeakerMessage,
-  updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
   wake_word: mdiChatSleep,
+  weather: mdiWeatherPartlyCloudy,
   zone: mdiMapMarkerRadius,
 };
 
@@ -166,6 +181,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   precipitation_intensity: mdiWeatherPouring,
   pressure: mdiGauge,
   reactive_power: mdiFlash,
+  shopping_List: mdiFormatListCheckbox,
   signal_strength: mdiWifi,
   sound_pressure: mdiEarHearing,
   speed: mdiSpeedometer,
@@ -176,6 +192,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   volatile_organic_compounds_parts: mdiMolecule,
   voltage: mdiSineWave,
   volume: mdiCarCoolantLevel,
+  volume_flow_rate: mdiPipe,
   water: mdiWater,
   weight: mdiWeight,
   wind_speed: mdiWeatherWindy,
@@ -203,6 +220,7 @@ export const DOMAINS_WITH_CARD = [
   "select",
   "timer",
   "text",
+  "update",
   "vacuum",
   "water_heater",
 ];
@@ -213,6 +231,7 @@ export const SENSOR_ENTITIES = [
   "calendar",
   "camera",
   "device_tracker",
+  "image",
   "weather",
 ];
 
@@ -249,6 +268,7 @@ export const DOMAINS_INPUT_ROW = [
   "text",
   "time",
   "vacuum",
+  "valve",
 ];
 
 /** States that we consider "off". */
@@ -267,6 +287,7 @@ export const DOMAINS_TOGGLE = new Set([
   "group",
   "automation",
   "humidifier",
+  "valve",
 ]);
 
 /** Domains that have a dynamic entity image / picture. */

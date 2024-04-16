@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
@@ -5,6 +6,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
@@ -19,6 +21,7 @@ import {
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {
@@ -104,12 +107,21 @@ export class HuiDialogSelectView extends LitElement {
               })}
             </ha-select>`
           : ""}
-        ${this._config
-          ? this._config.views.length > 1
+        ${!this._config || (this._config.views || []).length < 1
+          ? html`<ha-alert alert-type="error"
+              >${this.hass.localize(
+                this._config
+                  ? "ui.panel.lovelace.editor.select_view.no_views"
+                  : "ui.panel.lovelace.editor.select_view.no_config"
+              )}</ha-alert
+            >`
+          : this._config.views.length > 1
             ? html`
                 <mwc-list dialogInitialFocus>
-                  ${this._config.views.map(
-                    (view, idx) => html`
+                  ${this._config.views.map((view, idx) => {
+                    const isStrategy = isStrategyView(view);
+
+                    return html`
                       <mwc-radio-list-item
                         .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
@@ -117,16 +129,22 @@ export class HuiDialogSelectView extends LitElement {
                         @click=${this._viewChanged}
                         .value=${idx.toString()}
                         .selected=${this._selectedViewIdx === idx}
+                        .disabled=${isStrategy &&
+                        !this._params?.includeStrategyViews}
                       >
-                        <span>${view.title}</span>
+                        <span>
+                          ${view.title}${isStrategy
+                            ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
+                            : nothing}
+                        </span>
+
                         <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
                       </mwc-radio-list-item>
-                    `
-                  )}
+                    `;
+                  })}
                 </mwc-list>
               `
-            : ""
-          : html`<div>No config found.</div>`}
+            : ""}
         <mwc-button
           slot="secondaryAction"
           @click=${this.closeDialog}
@@ -134,7 +152,11 @@ export class HuiDialogSelectView extends LitElement {
         >
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
-        <mwc-button slot="primaryAction" @click=${this._selectView}>
+        <mwc-button
+          slot="primaryAction"
+          .disabled=${!this._config || (this._config.views || []).length < 1}
+          @click=${this._selectView}
+        >
           ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
         </mwc-button>
       </ha-dialog>

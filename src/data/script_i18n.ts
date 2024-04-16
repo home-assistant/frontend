@@ -14,7 +14,9 @@ import {
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
+import { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
+import { LabelRegistryEntry } from "./label_registry";
 import {
   ActionType,
   ActionTypes,
@@ -27,6 +29,7 @@ import {
   PlayMediaAction,
   RepeatAction,
   SceneAction,
+  SetConversationResponseAction,
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
@@ -39,6 +42,8 @@ const actionTranslationBaseKey =
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
+  labelRegistry: LabelRegistryEntry[],
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -47,6 +52,8 @@ export const describeAction = <T extends ActionType>(
     return tryDescribeAction(
       hass,
       entityRegistry,
+      labelRegistry,
+      floorRegistry,
       action,
       actionType,
       ignoreAlias
@@ -65,6 +72,8 @@ export const describeAction = <T extends ActionType>(
 const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
+  labelRegistry: LabelRegistryEntry[],
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -81,10 +90,12 @@ const tryDescribeAction = <T extends ActionType>(
 
     const targets: string[] = [];
     if (config.target) {
-      for (const [key, label] of Object.entries({
+      for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
         entity_id: "entities",
+        floor_id: "floors",
+        label_id: "labels",
       })) {
         if (!(key in config.target)) {
           continue;
@@ -98,7 +109,7 @@ const tryDescribeAction = <T extends ActionType>(
             targets.push(
               hass.localize(
                 `${actionTranslationBaseKey}.service.description.target_template`,
-                { name: label }
+                { name }
               )
             );
             break;
@@ -146,6 +157,32 @@ const tryDescribeAction = <T extends ActionType>(
                 )
               );
             }
+          } else if (key === "floor_id") {
+            const floor = floorRegistry.find(
+              (flr) => flr.floor_id === targetThing
+            );
+            if (floor?.name) {
+              targets.push(floor.name);
+            } else {
+              targets.push(
+                hass.localize(
+                  `${actionTranslationBaseKey}.service.description.target_unknown_floor`
+                )
+              );
+            }
+          } else if (key === "label_id") {
+            const label = labelRegistry.find(
+              (lbl) => lbl.label_id === targetThing
+            );
+            if (label?.name) {
+              targets.push(label.name);
+            } else {
+              targets.push(
+                hass.localize(
+                  `${actionTranslationBaseKey}.service.description.target_unknown_label`
+                )
+              );
+            }
           } else {
             targets.push(targetThing);
           }
@@ -168,6 +205,18 @@ const tryDescribeAction = <T extends ActionType>(
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
+
+      if (config.metadata) {
+        return hass.localize(
+          `${actionTranslationBaseKey}.service.description.service_name`,
+          {
+            domain: domainToName(hass.localize, domain),
+            name: service || config.service,
+            targets: formatListWithAnds(hass.locale, targets),
+          }
+        );
+      }
+
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_name`,
         {
@@ -259,9 +308,15 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.play_media.description.full`,
       {
-        hasMedia: config.metadata.title || config.data.media_content_id,
-        media: config.metadata.title || config.data.media_content_id,
-        hasMediaPlayer: mediaStateObj ? true : entityId !== undefined,
+        hasMedia:
+          config.metadata.title || config.data.media_content_id
+            ? "true"
+            : "false",
+        media:
+          (config.metadata.title as string | undefined) ||
+          config.data.media_content_id,
+        hasMediaPlayer:
+          mediaStateObj || entityId !== undefined ? "true" : "false",
         mediaPlayer: mediaStateObj ? computeStateName(mediaStateObj) : entityId,
       }
     );
@@ -317,7 +372,7 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "stop") {
     const config = action as StopAction;
     return hass.localize(`${actionTranslationBaseKey}.stop.description.full`, {
-      hasReason: config.stop !== undefined,
+      hasReason: config.stop !== undefined ? "true" : "false",
       reason: config.stop,
     });
   }
@@ -398,7 +453,9 @@ const tryDescribeAction = <T extends ActionType>(
   if (actionType === "device_action") {
     const config = action as DeviceAction;
     if (!config.device_id) {
-      return "Device action";
+      return hass.localize(
+        `${actionTranslationBaseKey}.device_id.description.no_device`
+      );
     }
     const localized = localizeDeviceAutomationAction(
       hass,
@@ -420,6 +477,14 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.parallel.description.full`,
       { number: numActions }
+    );
+  }
+
+  if (actionType === "set_conversation_response") {
+    const config = action as SetConversationResponseAction;
+    return hass.localize(
+      `${actionTranslationBaseKey}.set_conversation_response.description.full`,
+      { response: config.set_conversation_response }
     );
   }
 

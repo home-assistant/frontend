@@ -17,7 +17,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public schema!: HaFormSelectSchema;
 
-  @property() public data!: HaFormSelectData;
+  @property({ attribute: false }) public data!: HaFormSelectData;
 
   @property() public label?: string;
 

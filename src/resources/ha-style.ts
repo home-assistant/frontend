@@ -32,6 +32,7 @@ const mainStyles = css`
     --accent-color: ${unsafeCSS(DEFAULT_ACCENT_COLOR)};
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
+    --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
@@ -174,6 +175,7 @@ const mainStyles = css`
     --state-switch-active-color: var(--amber-color);
     --state-update-active-color: var(--orange-color);
     --state-vacuum-active-color: var(--teal-color);
+    --state-valve-active-color: var(--blue-color);
     --state-sensor-battery-high-color: var(--green-color);
     --state-sensor-battery-low-color: var(--red-color);
     --state-sensor-battery-medium-color: var(--orange-color);
@@ -428,6 +430,8 @@ const mainStyles = css`
     --direction: ltr;
     --float-start: left;
     --float-end: right;
+    --margin-title-ltr: 0 0 0 24px;
+    --margin-title-rtl: 0 24px 0 0;
 
     ${unsafeCSS(
       Object.entries(derivedStyles)

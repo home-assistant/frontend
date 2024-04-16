@@ -30,8 +30,8 @@ gulp.task(
     env.useWDS()
       ? "wds-watch-app"
       : env.useRollup()
-      ? "rollup-watch-app"
-      : "webpack-watch-app"
+        ? "rollup-watch-app"
+        : "webpack-watch-app"
   )
 );
 

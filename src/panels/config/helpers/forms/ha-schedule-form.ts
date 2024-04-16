@@ -2,7 +2,7 @@ import { Calendar, CalendarOptions } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
+import { Day, addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   CSSResultGroup,
   LitElement,
@@ -44,7 +44,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
 class HaScheduleForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public new?: boolean;
+  @property({ type: Boolean }) public new = false;
 
   @state() private _name!: string;
 
@@ -108,11 +108,10 @@ class HaScheduleForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(
-      () =>
-        (
-          this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-        )?.focus()
+    this.updateComplete.then(() =>
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 

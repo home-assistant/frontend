@@ -130,6 +130,15 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         height: 100%;
+        --restore-card-border-radius: var(--ha-card-border-radius, 12px);
+        --restore-card-border-width: var(--ha-card-border-width, 1px);
+        --restore-card-box-shadow: var(--ha-card-box-shadow, none);
+      }
+
+      * {
+        --ha-card-border-radius: 0;
+        --ha-card-border-width: 0;
+        --ha-card-box-shadow: none;
       }
 
       ha-fab {
@@ -137,12 +146,9 @@ export class PanelView extends LitElement implements LovelaceViewElement {
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
-      }
-
-      ha-fab.rtl {
-        float: left;
-        right: auto;
-        left: calc(16px + env(safe-area-inset-left));
+        float: var(--float-end);
+        inset-inline-end: calc(16px + env(safe-area-inset-right));
+        inset-inline-start: initial;
       }
     `;
   }

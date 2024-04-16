@@ -59,7 +59,7 @@ export class DemoHaBarButton extends LitElement {
               <ha-control-button
                 class=${ifDefined(btn.class)}
                 label=${ifDefined(btn.label)}
-                disabled=${ifDefined(btn.disabled)}
+                ?disabled=${btn.disabled}
               >
                 <ha-svg-icon .path=${btn.icon || mdiLightbulb}></ha-svg-icon>
               </ha-control-button>
@@ -162,7 +162,7 @@ export class DemoHaBarButton extends LitElement {
       }
       .custom-group {
         --control-button-group-thickness: 100px;
-        --control-button-group-border-radius: 18px;
+        --control-button-group-border-radius: 36px;
         --control-button-group-spacing: 20px;
       }
       .custom-group ha-control-button {

@@ -145,13 +145,13 @@ export class HaMediaSelector extends LitElement {
                         .path=${!this.value?.media_content_id
                           ? mdiPlus
                           : this.value?.metadata?.media_class
-                          ? MediaClassBrowserSettings[
-                              this.value.metadata.media_class === "directory"
-                                ? this.value.metadata.children_media_class ||
-                                  this.value.metadata.media_class
-                                : this.value.metadata.media_class
-                            ].icon
-                          : mdiPlayBox}
+                            ? MediaClassBrowserSettings[
+                                this.value.metadata.media_class === "directory"
+                                  ? this.value.metadata.children_media_class ||
+                                    this.value.metadata.media_class
+                                  : this.value.metadata.media_class
+                              ].icon
+                            : mdiPlayBox}
                       ></ha-svg-icon>
                     </div>
                   `}
@@ -254,6 +254,8 @@ export class HaMediaSelector extends LitElement {
         margin-bottom: 16px;
         padding-left: 16px;
         padding-right: 4px;
+        padding-inline-start: 16px;
+        padding-inline-end: 4px;
         white-space: nowrap;
       }
       .image {

@@ -11,7 +11,8 @@ import "./notification-item-template";
 export class HuiConfiguratorNotificationItem extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public notification?: PersitentNotificationEntity;
+  @property({ attribute: false })
+  public notification?: PersitentNotificationEntity;
 
   protected render() {
     if (!this.hass || !this.notification) {
@@ -25,11 +26,9 @@ export class HuiConfiguratorNotificationItem extends LitElement {
         </span>
 
         <div>
-          ${this.hass.localize(
-            "ui.notification_drawer.click_to_configure",
-            "entity",
-            this.notification.attributes.friendly_name
-          )}
+          ${this.hass.localize("ui.notification_drawer.click_to_configure", {
+            entity: this.notification.attributes.friendly_name,
+          })}
         </div>
 
         <mwc-button slot="actions" @click=${this._handleClick}>

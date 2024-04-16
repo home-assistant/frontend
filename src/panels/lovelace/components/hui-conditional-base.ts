@@ -1,5 +1,5 @@
 import { PropertyValues, ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { HomeAssistant } from "../../../types";
@@ -31,11 +31,9 @@ function extractMediaQueries(
 export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public editMode?: boolean;
+  @property({ type: Boolean }) public editMode = false;
 
-  @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
-
-  @property({ type: Boolean, reflect: true }) public hidden = false;
+  @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _element?: LovelaceCard | LovelaceRow;
 
@@ -151,7 +149,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
     const visible = this.editMode || conditionMet;
-    this.hidden = !visible;
+    this.toggleAttribute("hidden", !visible);
     this.style.setProperty("display", visible ? "" : "none");
 
     if (visible) {

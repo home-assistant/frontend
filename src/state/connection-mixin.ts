@@ -143,7 +143,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                       ? "connection lost"
                       : "unknown error")
                   }`;
-              fireEvent(this as any, "hass-notification", { message });
+              fireEvent(this as any, "hass-notification", {
+                message,
+                duration: 10000,
+              });
             }
             throw err;
           }
@@ -229,6 +232,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             entity_id: entity.ei,
             device_id: entity.di,
             area_id: entity.ai,
+            labels: entity.lb,
             translation_key: entity.tk,
             platform: entity.pl,
             entity_category:
@@ -236,6 +240,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 ? entityReg.entity_categories[entity.ec]
                 : undefined,
             name: entity.en,
+            icon: entity.ic,
             hidden: entity.hb,
             display_precision: entity.dp,
           };
@@ -256,17 +261,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         }
         this._updateHass({ areas });
       });
-      subscribeConfig(conn, (config) => {
-        if (this.hass?.config?.time_zone !== config.time_zone) {
-          import("../resources/intl-polyfill").then(() => {
-            if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
-              // @ts-ignore
-              Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
-            }
-          });
-        }
-        this._updateHass({ config });
-      });
+      subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
       subscribeFrontendUserData(conn, "core", (userData) =>

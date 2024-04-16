@@ -1,25 +1,26 @@
-import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import "@material/mwc-list/mwc-list";
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/map/ha-locations-editor";
 import type {
@@ -29,12 +30,13 @@ import type {
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
+  HomeZoneMutableParams,
+  Zone,
+  ZoneMutableParams,
   createZone,
   deleteZone,
   fetchZones,
   updateZone,
-  Zone,
-  ZoneMutableParams,
 } from "../../../data/zone";
 import {
   showAlertDialog,
@@ -46,17 +48,20 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
+import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _storageItems?: Zone[];
 
@@ -92,8 +97,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             entityState.entity_id === "zone.home"
               ? homeRadiusColor
               : entityState.attributes.passive
-              ? passiveRadiusColor
-              : zoneRadiusColor,
+                ? passiveRadiusColor
+                : zoneRadiusColor,
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
           radius_editable: false,
@@ -141,77 +146,95 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <paper-listbox
-              attr-for-selected="data-id"
-              .selected=${this._activeEntry || ""}
-            >
+            <mwc-list>
               ${this._storageItems.map(
                 (entry) => html`
-                  <paper-icon-item
-                    data-id=${entry.id}
-                    @click=${this._itemClicked}
+                  <ha-list-item
                     .entry=${entry}
+                    .id=${this.narrow ? entry.id : ""}
+                    graphic="icon"
+                    .hasMeta=${!this.narrow}
+                    @request-selected=${this._itemClicked}
+                    .value=${entry.id}
+                    ?selected=${this._activeEntry === entry.id}
                   >
-                    <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
-                    <paper-item-body>${entry.name}</paper-item-body>
+                    <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
+                    ${entry.name}
                     ${!this.narrow
                       ? html`
-                          <ha-icon-button
-                            .entry=${entry}
-                            @click=${this._openEditEntry}
-                            .path=${mdiPencil}
-                            .label=${hass.localize(
-                              "ui.panel.config.zone.edit_zone"
-                            )}
-                          ></ha-icon-button>
+                          <div slot="meta">
+                            <ha-icon-button
+                              .id=${entry.id}
+                              .entry=${entry}
+                              @click=${this._openEditEntry}
+                              .path=${mdiPencil}
+                              .label=${hass.localize(
+                                "ui.panel.config.zone.edit_zone"
+                              )}
+                            ></ha-icon-button>
+                          </div>
                         `
                       : ""}
-                  </paper-icon-item>
+                  </ha-list-item>
                 `
               )}
               ${this._stateItems.map(
                 (stateObject) => html`
-                  <paper-icon-item
-                    data-id=${stateObject.entity_id}
-                    @click=${this._stateItemClicked}
+                  <ha-list-item
+                    graphic="icon"
+                    .id=${this.narrow ? stateObject.entity_id : ""}
+                    .hasMeta=${!this.narrow ||
+                    stateObject.entity_id !== "zone.home"}
+                    .value=${stateObject.entity_id}
+                    @request-selected=${this._stateItemClicked}
+                    ?selected=${this._activeEntry === stateObject.entity_id}
+                    .noEdit=${stateObject.entity_id !== "zone.home" ||
+                    !this._canEditCore}
                   >
                     <ha-icon
                       .icon=${stateObject.attributes.icon}
-                      slot="item-icon"
+                      slot="graphic"
                     >
                     </ha-icon>
-                    <paper-item-body>
-                      ${stateObject.attributes.friendly_name ||
-                      stateObject.entity_id}
-                    </paper-item-body>
-                    <div style="display:inline-block">
-                      <ha-icon-button
-                        .entityId=${stateObject.entity_id}
-                        .noEdit=${stateObject.entity_id !== "zone.home" ||
-                        !this._canEditCore}
-                        .path=${stateObject.entity_id === "zone.home" &&
-                        this._canEditCore
-                          ? mdiCog
-                          : mdiPencilOff}
-                        .label=${stateObject.entity_id === "zone.home"
-                          ? hass.localize("ui.panel.config.zone.edit_home")
-                          : hass.localize("ui.panel.config.zone.edit_zone")}
-                        @click=${this._openCoreConfig}
-                      ></ha-icon-button>
-                      ${stateObject.entity_id !== "zone.home"
-                        ? html`
-                            <simple-tooltip animation-delay="0" position="left">
-                              ${hass.localize(
-                                "ui.panel.config.zone.configured_in_yaml"
-                              )}
-                            </simple-tooltip>
-                          `
-                        : ""}
-                    </div>
-                  </paper-icon-item>
+
+                    ${stateObject.attributes.friendly_name ||
+                    stateObject.entity_id}
+                    ${this.narrow &&
+                    stateObject.entity_id === "zone.home" &&
+                    !this._canEditCore
+                      ? nothing
+                      : html`<div slot="meta">
+                          <ha-icon-button
+                            .id=${!this.narrow ? stateObject.entity_id : ""}
+                            .entityId=${stateObject.entity_id}
+                            .noEdit=${stateObject.entity_id !== "zone.home" ||
+                            !this._canEditCore}
+                            .path=${stateObject.entity_id === "zone.home" &&
+                            this._canEditCore
+                              ? mdiPencil
+                              : mdiPencilOff}
+                            .label=${stateObject.entity_id === "zone.home"
+                              ? hass.localize("ui.panel.config.zone.edit_home")
+                              : hass.localize("ui.panel.config.zone.edit_zone")}
+                            @click=${this._editHomeZone}
+                          ></ha-icon-button>
+                          ${stateObject.entity_id !== "zone.home"
+                            ? html`
+                                <simple-tooltip
+                                  animation-delay="0"
+                                  position="left"
+                                >
+                                  ${hass.localize(
+                                    "ui.panel.config.zone.configured_in_yaml"
+                                  )}
+                                </simple-tooltip>
+                              `
+                            : ""}
+                        </div>`}
+                  </ha-list-item>
                 `
               )}
-            </paper-listbox>
+            </mwc-list>
           `;
 
     return html`
@@ -219,7 +242,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .tabs=${configSections.areas}
       >
         ${this.narrow
@@ -282,7 +307,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       return;
     }
     const id = this.route.path.slice(6);
+    this._editZone(id);
     navigate("/config/zone", { replace: true });
+    if (this.narrow) {
+      return;
+    }
     this._zoomZone(id);
   }
 
@@ -371,32 +400,52 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog();
   }
 
-  private _itemClicked(ev: Event) {
+  private _itemClicked(ev: CustomEvent) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
     if (this.narrow) {
       this._openEditEntry(ev);
       return;
     }
-    const entry: Zone = (ev.currentTarget! as any).entry;
-    this._zoomZone(entry.id);
+    const entryId: string = (ev.currentTarget! as any).value;
+    this._zoomZone(entryId);
+    this._activeEntry = entryId;
   }
 
-  private _stateItemClicked(ev: Event) {
-    const entityId = (ev.currentTarget! as HTMLElement).getAttribute(
-      "data-id"
-    )!;
-    this._zoomZone(entityId);
+  private _stateItemClicked(ev: CustomEvent) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    const entryId: string = (ev.currentTarget! as any).value;
+
+    if (this.narrow && entryId === "zone.home") {
+      this._editHomeZone(ev);
+      return;
+    }
+
+    this._zoomZone(entryId);
+    this._activeEntry = entryId;
   }
 
   private async _zoomZone(id: string) {
     this._map?.fitMarker(id);
   }
 
+  private async _editZone(id: string) {
+    await this.updateComplete;
+    (this.shadowRoot?.querySelector(`[id="${id}"]`) as HTMLElement)?.click();
+  }
+
   private _openEditEntry(ev: Event) {
     const entry: Zone = (ev.currentTarget! as any).entry;
     this._openDialog(entry);
+    ev.stopPropagation();
   }
 
-  private async _openCoreConfig(ev) {
+  private async _editHomeZone(ev) {
     if (ev.currentTarget.noEdit) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
@@ -405,7 +454,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    navigate("/config/general");
+    showHomeZoneDetailDialog(this, {
+      updateEntry: (values) => this._updateHomeZoneEntry(values),
+    });
   }
 
   private async _createEntry(values: ZoneMutableParams) {
@@ -421,6 +472,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
+  }
+
+  private async _updateHomeZoneEntry(values: HomeZoneMutableParams) {
+    await saveCoreConfig(this.hass, {
+      latitude: values.latitude,
+      longitude: values.longitude,
+    });
+    this._zoomZone("zone.home");
   }
 
   private async _updateEntry(
@@ -481,6 +540,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
+      ha-list-item {
+        --mdc-list-item-meta-size: 48px;
+      }
       a {
         color: var(--primary-color);
       }
@@ -511,40 +573,22 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         flex-grow: 1;
         height: 100%;
       }
-      .flex paper-listbox,
+      .flex mwc-list,
       .flex .empty {
         border-left: 1px solid var(--divider-color);
         width: 250px;
         min-height: 100%;
         box-sizing: border-box;
       }
-      paper-icon-item {
-        padding-top: 4px;
-        padding-bottom: 4px;
-        cursor: pointer;
-      }
-      .overflow paper-icon-item:last-child {
-        margin-bottom: 80px;
-      }
-      paper-icon-item.iron-selected:before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        pointer-events: none;
-        content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-        transition: opacity 15ms linear;
-        will-change: opacity;
-      }
       ha-card {
         margin-bottom: 100px;
       }
-      ha-card paper-item {
-        cursor: pointer;
-      }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-zone": HaConfigZone;
   }
 }

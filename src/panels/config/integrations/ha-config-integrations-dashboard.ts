@@ -29,7 +29,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
@@ -70,6 +70,7 @@ import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import "./ha-disabled-config-entry-card";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/search-input-outlined";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
@@ -92,13 +93,13 @@ const groupByIntegration = (
 class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public configEntries?: ConfigEntryExtended[];
 
@@ -161,7 +162,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<ConfigEntryExtended> = {
           keys: ["domain", "localized_domain_name", "title"],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntries, options);
@@ -205,7 +206,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
           keys: ["handler", "localized_title"],
           isCaseSensitive: false,
-          minMatchCharLength: 2,
+          minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
         const fuse = new Fuse(configEntriesInProgress, options);
@@ -327,15 +328,16 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         ${this.narrow
           ? html`
               <div slot="header">
-                <search-input
+                <search-input-outlined
+                  class="header"
                   .hass=${this.hass}
                   .filter=${this._filter}
-                  class="header"
                   @value-changed=${this._handleSearchChange}
                   .label=${this.hass.localize(
                     "ui.panel.config.integrations.search"
                   )}
-                ></search-input>
+                >
+                </search-input-outlined>
               </div>
               ${filterMenu}
             `
@@ -345,36 +347,36 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                 slot="toolbar-icon"
               ></ha-integration-overflow-menu>
               <div class="search">
-                <search-input
+                <search-input-outlined
+                  class="header"
                   .hass=${this.hass}
-                  suffix
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
                   .label=${this.hass.localize(
                     "ui.panel.config.integrations.search"
                   )}
                 >
-                  <div class="filters" slot="suffix">
-                    ${!this._showDisabled && disabledConfigEntries.length
-                      ? html`<div
-                          class="active-filters"
-                          @click=${this._preventDefault}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.integrations.disable.disabled_integrations",
-                            { number: disabledConfigEntries.length }
+                </search-input-outlined>
+                <div class="filters">
+                  ${!this._showDisabled && disabledConfigEntries.length
+                    ? html`<div
+                        class="active-filters"
+                        @click=${this._preventDefault}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.disable.disabled_integrations",
+                          { number: disabledConfigEntries.length }
+                        )}
+                        <mwc-button
+                          @click=${this._toggleShowDisabled}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.integrations.disable.show"
                           )}
-                          <mwc-button
-                            @click=${this._toggleShowDisabled}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.integrations.disable.show"
-                            )}
-                          ></mwc-button>
-                        </div>`
-                      : ""}
-                    ${filterMenu}
-                  </div>
-                </search-input>
+                        ></mwc-button>
+                      </div>`
+                    : ""}
+                  ${filterMenu}
+                </div>
               </div>
             `}
         ${this._showIgnored
@@ -465,57 +467,60 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                   ></ha-integration-card>`
               )
             : this._filter &&
-              !configEntriesInProgress.length &&
-              !integrations.length &&
-              this.configEntries.length
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found"
-                    )}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found_detail"
-                    )}
-                  </p>
-                  <mwc-button
-                    @click=${this._createFlow}
-                    unelevated
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.add_integration"
-                    )}
-                  ></mwc-button>
-                </div>
-              `
-            : // If we have a filter, never show a card
-            this._filter
-            ? ""
-            : // If we're showing 0 cards, show empty state text
-            (!this._showIgnored || ignoredConfigEntries.length === 0) &&
-              (!this._showDisabled || disabledConfigEntries.length === 0) &&
-              integrations.length === 0
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize("ui.panel.config.integrations.none")}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.no_integrations"
-                    )}
-                  </p>
-                  <mwc-button
-                    @click=${this._createFlow}
-                    unelevated
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.add_integration"
-                    )}
-                  ></mwc-button>
-                </div>
-              `
-            : ""}
+                !configEntriesInProgress.length &&
+                !integrations.length &&
+                this.configEntries.length
+              ? html`
+                  <div class="empty-message">
+                    <h1>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found"
+                      )}
+                    </h1>
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found_detail"
+                      )}
+                    </p>
+                    <mwc-button
+                      @click=${this._createFlow}
+                      unelevated
+                      .label=${this.hass.localize(
+                        "ui.panel.config.integrations.add_integration"
+                      )}
+                    ></mwc-button>
+                  </div>
+                `
+              : // If we have a filter, never show a card
+                this._filter
+                ? ""
+                : // If we're showing 0 cards, show empty state text
+                  (!this._showIgnored || ignoredConfigEntries.length === 0) &&
+                    (!this._showDisabled ||
+                      disabledConfigEntries.length === 0) &&
+                    integrations.length === 0
+                  ? html`
+                      <div class="empty-message">
+                        <h1>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.none"
+                          )}
+                        </h1>
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.no_integrations"
+                          )}
+                        </p>
+                        <mwc-button
+                          @click=${this._createFlow}
+                          unelevated
+                          .label=${this.hass.localize(
+                            "ui.panel.config.integrations.add_integration"
+                          )}
+                        ></mwc-button>
+                      </div>
+                    `
+                  : ""}
         </div>
         <ha-fab
           slot="fab"
@@ -655,6 +660,24 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
+      if (integration.single_config_entry) {
+        const configEntries = await getConfigEntries(this.hass, { domain });
+        if (configEntries.length > 0) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.integrations.config_flow.single_config_entry",
+              {
+                integration_name: integration.name,
+              }
+            ),
+          });
+          return;
+        }
+      }
+
       // Integration exists, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",
@@ -787,38 +810,25 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           grid-column-end: -1;
         }
         .empty-message h1 {
-          margin-bottom: 0;
+          margin: 0;
         }
-        search-input {
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: var(--divider-color);
-          --text-field-overflow: visible;
-        }
-        search-input.header {
-          display: block;
-          color: var(--secondary-text-color);
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-          direction: var(--direction);
-          --mdc-ripple-color: transparant;
+        search-input-outlined {
+          flex: 1;
         }
         .search {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           width: 100%;
           align-items: center;
           height: 56px;
           position: sticky;
           top: 0;
           z-index: 2;
-        }
-        .search search-input {
-          display: block;
-          position: absolute;
-          top: 0;
-          right: 0;
-          left: 0;
+          background-color: var(--primary-background-color);
+          padding: 0 16px;
+          gap: 16px;
+          box-sizing: border-box;
+          border-bottom: 1px solid var(--divider-color);
         }
         .filters {
           --mdc-text-field-fill-color: var(--input-fill-color);
@@ -827,6 +837,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           --text-field-overflow: initial;
           display: flex;
           justify-content: flex-end;
+          align-items: center;
           color: var(--primary-text-color);
         }
         .active-filters {
@@ -844,6 +855,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           width: max-content;
           cursor: initial;
           direction: var(--direction);
+          height: 32px;
         }
         .active-filters mwc-button {
           margin-left: 8px;
@@ -874,6 +886,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
+          inset-inline-end: 0px;
+          inset-inline-start: initial;
           top: 4px;
           font-size: 0.65em;
         }
@@ -881,7 +895,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           position: relative;
         }
         h1 {
-          margin: 8px 0 0 16px;
+          margin-top: 8px;
+          margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
         }
         ha-button-menu {
           color: var(--primary-text-color);

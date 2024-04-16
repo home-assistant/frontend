@@ -5,6 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
 import {
@@ -27,6 +28,8 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @state() private _areaId!: string;
 
+  @state() private _labels!: string[];
+
   @state() private _disabledBy!: DeviceRegistryEntry["disabled_by"];
 
   @state() private _submitting = false;
@@ -38,6 +41,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._error = undefined;
     this._nameByUser = this._params.device.name_by_user || "";
     this._areaId = this._params.device.area_id || "";
+    this._labels = this._params.device.labels || [];
     this._disabledBy = this._params.device.disabled_by;
     await this.updateComplete;
   }
@@ -79,6 +83,11 @@ class DialogDeviceRegistryDetail extends LitElement {
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
+            <ha-labels-picker
+              .hass=${this.hass}
+              .value=${this._labels}
+              @value-changed=${this._labelsChanged}
+            ></ha-labels-picker>
             <div class="row">
               <ha-switch
                 .checked=${!this._disabledBy}
@@ -90,28 +99,29 @@ class DialogDeviceRegistryDetail extends LitElement {
                 <div>
                   ${this.hass.localize(
                     "ui.dialogs.device-registry-detail.enabled_label",
-                    "type",
-                    this.hass.localize(
-                      `ui.dialogs.device-registry-detail.type.${
-                        device.entry_type || "device"
-                      }`
-                    )
+                    {
+                      type: this.hass.localize(
+                        `ui.dialogs.device-registry-detail.type.${
+                          device.entry_type || "device"
+                        }`
+                      ),
+                    }
                   )}
                 </div>
                 <div class="secondary">
                   ${this._disabledBy && this._disabledBy !== "user"
                     ? this.hass.localize(
                         "ui.dialogs.device-registry-detail.enabled_cause",
-                        "type",
-                        this.hass.localize(
-                          `ui.dialogs.device-registry-detail.type.${
-                            device.entry_type || "device"
-                          }`
-                        ),
-                        "cause",
-                        this.hass.localize(
-                          `config_entry.disabled_by.${this._disabledBy}`
-                        )
+                        {
+                          type: this.hass.localize(
+                            `ui.dialogs.device-registry-detail.type.${
+                              device.entry_type || "device"
+                            }`
+                          ),
+                          cause: this.hass.localize(
+                            `config_entry.disabled_by.${this._disabledBy}`
+                          ),
+                        }
                       )
                     : ""}
                   ${this.hass.localize(
@@ -149,6 +159,10 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._areaId = event.detail.value;
   }
 
+  private _labelsChanged(event: CustomEvent): void {
+    this._labels = event.detail.value;
+  }
+
   private _disabledByChanged(ev: Event): void {
     this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
@@ -159,6 +173,7 @@ class DialogDeviceRegistryDetail extends LitElement {
       await this._params!.updateEntry({
         name_by_user: this._nameByUser.trim() || null,
         area_id: this._areaId || null,
+        labels: this._labels || null,
         disabled_by: this._disabledBy || null,
       });
       this.closeDialog();
@@ -178,8 +193,12 @@ class DialogDeviceRegistryDetail extends LitElement {
       css`
         mwc-button.warning {
           margin-right: auto;
+          margin-inline-end: auto;
+          margin-inline-start: initial;
         }
-        ha-textfield {
+        ha-textfield,
+        ha-labels-picker,
+        ha-area-picker {
           display: block;
           margin-bottom: 16px;
         }

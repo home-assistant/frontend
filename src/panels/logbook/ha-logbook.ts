@@ -41,28 +41,24 @@ const idsChanged = (oldIds?: string[], newIds?: string[]) => {
 export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public time!:
+  @property({ attribute: false }) public time!:
     | { range: [Date, Date] }
     | {
         // Seconds
         recent: number;
       };
 
-  @property() public entityIds?: string[];
+  @property({ attribute: false }) public entityIds?: string[];
 
-  @property() public deviceIds?: string[];
+  @property({ attribute: false }) public deviceIds?: string[];
 
-  @property({ type: Boolean, attribute: "narrow" })
-  public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean, attribute: "virtualize", reflect: true })
-  public virtualize = false;
+  @property({ type: Boolean, reflect: true }) public virtualize = false;
 
-  @property({ type: Boolean, attribute: "no-icon" })
-  public noIcon = false;
+  @property({ type: Boolean, attribute: "no-icon" }) public noIcon = false;
 
-  @property({ type: Boolean, attribute: "no-name" })
-  public noName = false;
+  @property({ type: Boolean, attribute: "no-name" }) public noName = false;
 
   @property({ type: Boolean, attribute: "show-indicator" })
   public showIndicator = false;
@@ -107,10 +103,7 @@ export class HaLogbook extends LitElement {
     if (this._logbookEntries === undefined) {
       return html`
         <div class="progress-wrapper">
-          <ha-circular-progress
-            active
-            alt=${this.hass.localize("ui.common.loading")}
-          ></ha-circular-progress>
+          <ha-circular-progress indeterminate></ha-circular-progress>
         </div>
       `;
     }
@@ -343,10 +336,10 @@ export class HaLogbook extends LitElement {
     !this._logbookEntries
       ? []
       : purgeBeforePythonTime
-      ? this._logbookEntries.filter(
-          (entry) => entry.when > purgeBeforePythonTime!
-        )
-      : this._logbookEntries;
+        ? this._logbookEntries.filter(
+            (entry) => entry.when > purgeBeforePythonTime!
+          )
+        : this._logbookEntries;
 
   private _processOrQueueStreamMessage = (
     streamMessage: LogbookStreamMessage

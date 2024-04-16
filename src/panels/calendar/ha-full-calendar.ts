@@ -28,7 +28,6 @@ import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { LocalizeFunc } from "../../common/translations/localize";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
@@ -169,7 +168,6 @@ export class HAFullCalendar extends LitElement {
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
                       @value-changed=${this._handleView}
-                      .dir=${computeRTLDirection(this.hass)}
                     ></ha-button-toggle-group>
                   `
                 : html`
@@ -190,7 +188,7 @@ export class HAFullCalendar extends LitElement {
                         </ha-icon-button-next>
                       </div>
                     </div>
-                    <div class="controls">
+                    <div class="controls buttons">
                       <mwc-button
                         outlined
                         class="today"
@@ -203,7 +201,6 @@ export class HAFullCalendar extends LitElement {
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
                         @value-changed=${this._handleView}
-                        .dir=${computeRTLDirection(this.hass)}
                       ></ha-button-toggle-group>
                     </div>
                   `}
@@ -452,6 +449,8 @@ export class HAFullCalendar extends LitElement {
         :host([narrow]) .header {
           padding-right: 8px;
           padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: 8px;
           flex-direction: column;
           align-items: flex-start;
           justify-content: initial;
@@ -460,6 +459,8 @@ export class HAFullCalendar extends LitElement {
         .header {
           padding-right: var(--calendar-header-padding);
           padding-left: var(--calendar-header-padding);
+          padding-inline-start: var(--calendar-header-padding);
+          padding-inline-end: var(--calendar-header-padding);
         }
 
         .navigation {
@@ -477,6 +478,16 @@ export class HAFullCalendar extends LitElement {
           justify-content: space-between;
           align-items: center;
           width: 100%;
+        }
+
+        .buttons {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .buttons > * {
+          margin-bottom: 5px;
+          box-sizing: border-box;
         }
 
         .today {
@@ -499,6 +510,8 @@ export class HAFullCalendar extends LitElement {
           position: absolute;
           bottom: 32px;
           right: 32px;
+          inset-inline-end: 32px;
+          inset-inline-start: initial;
           z-index: 1;
         }
 

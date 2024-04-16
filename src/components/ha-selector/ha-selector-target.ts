@@ -28,11 +28,11 @@ import "../ha-target-picker";
 
 @customElement("ha-selector-target")
 export class HaTargetSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TargetSelector;
+  @property({ attribute: false }) public selector!: TargetSelector;
 
-  @property() public value?: HassServiceTarget;
+  @property({ type: Object }) public value?: HassServiceTarget;
 
   @property() public label?: string;
 
@@ -82,6 +82,7 @@ export class HaTargetSelector extends LitElement {
       .deviceFilter=${this._filterDevices}
       .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
+      .createDomains=${this.selector.target?.create_domains}
     ></ha-target-picker>`;
   }
 

@@ -14,7 +14,7 @@ import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
-  @property() localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @state() private _cameras?: QrScanner.Camera[];
 
@@ -186,6 +186,8 @@ class HaQrScanner extends LitElement {
       position: absolute;
       bottom: 8px;
       right: 8px;
+      inset-inline-end: 8px;
+      inset-inline-start: initial;
       background: #727272b2;
       color: white;
       border-radius: 50%;
@@ -197,6 +199,8 @@ class HaQrScanner extends LitElement {
     ha-textfield {
       flex: 1;
       margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
     }
   `;
 }

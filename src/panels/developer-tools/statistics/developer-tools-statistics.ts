@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiSlopeUphill } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -26,7 +26,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { documentationUrl } from "../../../util/documentation-url";
 
 const FIX_ISSUES_ORDER = {
@@ -51,11 +50,13 @@ type DisplayedStatisticData = StatisticData & {
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
   private _disabledEntities = new Set<string>();
+
+  private _deletedStatistics = new Set<string>();
 
   protected firstUpdated() {
     this._validateStatistics();
@@ -175,11 +176,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._displayData(this._data, this.hass.localize)}
-        noDataText="No statistics"
+        .noDataText=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
+        )}
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
-        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }
@@ -227,7 +229,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
     this._data = statisticIds
       .filter(
-        (statistic) => !this._disabledEntities.has(statistic.statistic_id)
+        (statistic) =>
+          !this._disabledEntities.has(statistic.statistic_id) &&
+          !this._deletedStatistics.has(statistic.statistic_id)
       )
       .map((statistic) => {
         statsIds.add(statistic.statistic_id);
@@ -241,7 +245,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     Object.keys(issues).forEach((statisticId) => {
       if (
         !statsIds.has(statisticId) &&
-        !this._disabledEntities.has(statisticId)
+        !this._disabledEntities.has(statisticId) &&
+        !this._deletedStatistics.has(statisticId)
       ) {
         this._data.push({
           statistic_id: statisticId,
@@ -279,6 +284,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           confirmText: this.hass.localize("ui.common.delete"),
           confirm: async () => {
             await clearStatistics(this.hass, [issue.data.statistic_id]);
+            this._deletedStatistics.add(issue.data.statistic_id);
             this._validateStatistics();
           },
         });
@@ -377,6 +383,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           confirmText: this.hass.localize("ui.common.delete"),
           confirm: async () => {
             await clearStatistics(this.hass, [issue.data.statistic_id]);
+            this._deletedStatistics.add(issue.data.statistic_id);
             this._validateStatistics();
           },
         });
@@ -402,48 +409,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   };
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .content {
-          padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
-        }
-
-        th {
-          padding: 0 8px;
-          text-align: left;
-          font-size: var(
-            --paper-input-container-shared-input-style_-_font-size
-          );
-        }
-
-        :host([rtl]) th {
-          text-align: right;
-        }
-
-        tr {
-          vertical-align: top;
-          direction: ltr;
-        }
-
-        tr:nth-child(odd) {
-          background-color: var(--table-row-background-color, #fff);
-        }
-
-        tr:nth-child(even) {
-          background-color: var(--table-row-alternative-background-color, #eee);
-        }
-        td {
-          padding: 4px;
-          min-width: 200px;
-          word-break: break-word;
-        }
-      `,
-    ];
+    return haStyle;
   }
 }
 

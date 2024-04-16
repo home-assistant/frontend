@@ -41,8 +41,8 @@ export class HaAuthFormString extends HaFormString {
         !this.isPassword
           ? this.stringType
           : this.unmaskedPassword
-          ? "text"
-          : "password"
+            ? "text"
+            : "password"
       }
         .label=${this.label}
         .value=${this.data || ""}
@@ -59,7 +59,7 @@ export class HaAuthFormString extends HaFormString {
               html`<div style="width: 24px"></div>`
             : this.schema.description?.suffix
         }
-        .validationMessage=${this.schema.required ? "Required" : undefined}
+        .validationMessage=${this.schema.required ? this.localize?.("ui.panel.page-authorize.form.error_required") : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
         ></ha-auth-textfield>

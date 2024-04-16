@@ -22,7 +22,6 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
-import "../components/ha-language-picker";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
   OnboardingResponses,
@@ -114,7 +113,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   disconnectedCallback() {
-    super.connectedCallback();
+    super.disconnectedCallback();
     mainWindow.removeEventListener("location-changed", this._updatePage);
     mainWindow.removeEventListener("popstate", this._updatePage);
   }
@@ -219,9 +218,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._handleProgress(ev)
     );
     if (window.innerWidth > 450) {
-      import("./particles");
+      import("../resources/particles");
     }
     makeDialogManager(this, this.shadowRoot!);
+    import("../components/ha-language-picker");
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -286,7 +286,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     try {
       const response = await (window.stepsPromise || fetchOnboardingOverview());
 
-      if (response.status === 404) {
+      if (response.status === 401 || response.status === 404) {
         // We don't load the component when onboarding is done
         document.location.assign("/");
         return;
@@ -495,6 +495,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       z-index: 10;
     }
     .footer {
+      padding-top: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -502,7 +503,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ha-language-picker {
       display: block;
       width: 200px;
-      margin-top: 8px;
       border-radius: 4px;
       overflow: hidden;
       --ha-select-height: 40px;
@@ -518,6 +518,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       text-decoration: none;
       color: var(--primary-text-color);
       margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
     }
   `;
 }

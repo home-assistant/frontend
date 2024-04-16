@@ -14,7 +14,6 @@ import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
@@ -72,7 +71,6 @@ class MoreInfoMediaPlayer extends LitElement {
                 @click=${this._showBrowseMedia}
               >
                 <ha-svg-icon
-                  class="browse-media-icon"
                   .path=${mdiPlayBoxMultiple}
                   slot="icon"
                 ></ha-svg-icon>
@@ -81,7 +79,7 @@ class MoreInfoMediaPlayer extends LitElement {
           : ""}
       </div>
       ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) &&
       stateActive(stateObj)
         ? html`
             <div class="volume">
@@ -104,8 +102,9 @@ class MoreInfoMediaPlayer extends LitElement {
                 : ""}
               ${supportsFeature(
                 stateObj,
-                MediaPlayerEntityFeature.VOLUME_BUTTONS
-              )
+                MediaPlayerEntityFeature.VOLUME_SET
+              ) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -130,7 +129,6 @@ class MoreInfoMediaPlayer extends LitElement {
                     <ha-slider
                       labeled
                       id="input"
-                      .dir=${computeRTLDirection(this.hass!)}
                       .value=${Number(stateObj.attributes.volume_level) * 100}
                       @change=${this._selectedValueChanged}
                     ></ha-slider>
@@ -256,10 +254,6 @@ class MoreInfoMediaPlayer extends LitElement {
 
       mwc-button > ha-svg-icon {
         vertical-align: text-bottom;
-      }
-
-      .browse-media-icon {
-        margin-left: 8px;
       }
     `;
   }

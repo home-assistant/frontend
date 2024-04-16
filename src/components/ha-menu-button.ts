@@ -11,7 +11,7 @@ import "./ha-icon-button";
 class HaMenuButton extends LitElement {
   @property({ type: Boolean }) public hassio = false;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -136,6 +136,8 @@ class HaMenuButton extends LitElement {
         height: 12px;
         top: 9px;
         right: 7px;
+        inset-inline-end: 7px;
+        inset-inline-start: initial;
         border-radius: 50%;
         border: 2px solid var(--app-header-background-color);
       }

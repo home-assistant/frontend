@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoPerson extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   private _entityArray = memoizeOne((entityId: string) => [entityId]);
 
@@ -34,7 +34,6 @@ class MoreInfoPerson extends LitElement {
         : ""}
       ${!__DEMO__ &&
       this.hass.user?.is_admin &&
-      this.stateObj.state === "not_home" &&
       this.stateObj.attributes.latitude &&
       this.stateObj.attributes.longitude
         ? html`

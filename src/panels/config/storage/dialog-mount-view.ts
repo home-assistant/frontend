@@ -92,59 +92,59 @@ const mountSchema = memoizeOne(
             },
           ] as const)
         : mountType === "cifs"
-        ? ([
-            ...(showCIFSVersion
-              ? ([
-                  {
-                    name: "version",
-                    required: true,
-                    selector: {
-                      select: {
-                        options: [
-                          {
-                            label: localize(
-                              "ui.panel.config.storage.network_mounts.cifs_versions.auto"
-                            ),
-                            value: "auto",
-                          },
-                          {
-                            label: localize(
-                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
-                              { version: "2.0" }
-                            ),
-                            value: "2.0",
-                          },
-                          {
-                            label: localize(
-                              "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
-                              { version: "1.0" }
-                            ),
-                            value: "1.0",
-                          },
-                        ],
-                        mode: "dropdown",
+          ? ([
+              ...(showCIFSVersion
+                ? ([
+                    {
+                      name: "version",
+                      required: true,
+                      selector: {
+                        select: {
+                          options: [
+                            {
+                              label: localize(
+                                "ui.panel.config.storage.network_mounts.cifs_versions.auto"
+                              ),
+                              value: "auto",
+                            },
+                            {
+                              label: localize(
+                                "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                                { version: "2.0" }
+                              ),
+                              value: "2.0",
+                            },
+                            {
+                              label: localize(
+                                "ui.panel.config.storage.network_mounts.cifs_versions.legacy",
+                                { version: "1.0" }
+                              ),
+                              value: "1.0",
+                            },
+                          ],
+                          mode: "dropdown",
+                        },
                       },
                     },
-                  },
-                ] as const)
-              : ([] as const)),
-            {
-              name: "share",
-              required: true,
-              selector: { text: {} },
-            },
-            {
-              name: "username",
-              required: false,
-              selector: { text: {} },
-            },
-            {
-              name: "password",
-              required: false,
-              selector: { text: { type: "password" } },
-            },
-          ] as const)
-        : ([] as const)),
+                  ] as const)
+                : ([] as const)),
+              {
+                name: "share",
+                required: true,
+                selector: { text: {} },
+              },
+              {
+                name: "username",
+                required: false,
+                selector: { text: {} },
+              },
+              {
+                name: "password",
+                required: false,
+                selector: { text: { type: "password" } },
+              },
+            ] as const)
+          : ([] as const)),
     ] as const
 );
 

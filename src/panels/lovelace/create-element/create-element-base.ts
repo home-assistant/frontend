@@ -1,27 +1,31 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { LovelaceViewElement } from "../../../data/lovelace";
+import {
+  LovelaceSectionElement,
+  LovelaceViewElement,
+} from "../../../data/lovelace";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   isCustomType,
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   LovelaceBadge,
   LovelaceCard,
   LovelaceCardConstructor,
+  LovelaceCardFeature,
+  LovelaceCardFeatureConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
   LovelaceRowConstructor,
-  LovelaceTileFeature,
-  LovelaceTileFeatureConstructor,
 } from "../types";
 
 const TIMEOUT = 2000;
@@ -57,10 +61,15 @@ interface CreateElementConfigTypes {
     element: LovelaceViewElement;
     constructor: unknown;
   };
-  "tile-feature": {
-    config: LovelaceTileFeatureConfig;
-    element: LovelaceTileFeature;
-    constructor: LovelaceTileFeatureConstructor;
+  "card-feature": {
+    config: LovelaceCardFeatureConfig;
+    element: LovelaceCardFeature;
+    constructor: LovelaceCardFeatureConstructor;
+  };
+  section: {
+    config: LovelaceSectionConfig;
+    element: LovelaceSectionElement;
+    constructor: unknown;
   };
 }
 

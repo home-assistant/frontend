@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -31,23 +32,12 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
+    logarithmic_scale: optional(boolean()),
+    min_y_axis: optional(number()),
+    max_y_axis: optional(number()),
+    fit_y_data: optional(boolean()),
   })
 );
-
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "hours_to_show",
-        default: DEFAULT_HOURS_TO_SHOW,
-        selector: { number: { min: 1, mode: "box" } },
-      },
-    ],
-  },
-] as const;
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
@@ -66,16 +56,69 @@ export class HuiHistoryGraphCardEditor
     this._configEntities = processEditorEntities(config.entities);
   }
 
+  private _schema = memoizeOne(
+    (showFitOption: boolean) =>
+      [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "hours_to_show",
+              default: DEFAULT_HOURS_TO_SHOW,
+              selector: { number: { min: 1, mode: "box" } },
+            },
+          ],
+        },
+        {
+          name: "logarithmic_scale",
+          required: false,
+          selector: { boolean: {} },
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "min_y_axis",
+              required: false,
+              selector: { number: { mode: "box", step: "any" } },
+            },
+            {
+              name: "max_y_axis",
+              required: false,
+              selector: { number: { mode: "box", step: "any" } },
+            },
+          ],
+        },
+        ...(showFitOption
+          ? [
+              {
+                name: "fit_y_data",
+                required: false,
+                selector: { boolean: {} },
+              },
+            ]
+          : []),
+      ] as const
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
+    const schema = this._schema(
+      this._config!.min_y_axis !== undefined ||
+        this._config!.max_y_axis !== undefined
+    );
+
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -100,8 +143,23 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "logarithmic_scale":
+      case "min_y_axis":
+      case "max_y_axis":
+      case "fit_y_data":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.history-graph.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static styles: CSSResultGroup = css`
     ha-form {

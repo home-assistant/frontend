@@ -7,7 +7,14 @@ import {
   mdiInformationOutline,
   mdiCellphoneKey,
 } from "@mdi/js";
-import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
+import {
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -47,6 +54,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
+import { documentationUrl } from "../../../../../util/documentation-url";
 
 interface ThreadNetwork {
   name: string;
@@ -58,7 +66,7 @@ interface ThreadNetwork {
 export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _configEntryId: string | null = null;
 
@@ -116,11 +124,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-                  <mwc-button @click=${this._addOTBR}
-                    >${this.hass.localize(
-                      "ui.panel.config.thread.add_open_thread_border_router"
-                    )}</mwc-button
+                  <a
+                    href=${documentationUrl(this.hass, `/integrations/thread`)}
+                    target="_blank"
                   >
+                    <mwc-button
+                      >${this.hass.localize(
+                        "ui.panel.config.thread.more_info"
+                      )}</mwc-button
+                    >
+                  </a>
                 </div>
               </ha-card>`}
           ${networks.networks.length
@@ -132,6 +145,15 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 )}`
             : ""}
         </div>
+        ${this.hass.auth.external?.config.canImportThreadCredentials
+          ? html`<ha-fab
+              slot="fab"
+              @click=${this._importExternalThreadCredentials}
+              extended
+              label="Import credentials"
+              ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
+            ></ha-fab>`
+          : nothing}
       </hass-subpage>
     `;
   }
@@ -194,8 +216,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 <span slot="secondary">${router.server}</span>
                 ${showOverflow
                   ? html`${network.dataset &&
-                      router.border_agent_id ===
-                        network.dataset.preferred_border_agent_id
+                      router.extended_address ===
+                        network.dataset.preferred_extended_address
                         ? html`<ha-svg-icon
                             .path=${mdiCellphoneKey}
                             .title=${this.hass.localize(
@@ -310,6 +332,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         Dataset id: ${dataset.dataset_id}<br />
         Pan id: ${dataset.pan_id}<br />
         Extended Pan id: ${dataset.extended_pan_id}`,
+    });
+  }
+
+  private _importExternalThreadCredentials() {
+    this.hass.auth.external!.fireMessage({
+      type: "thread/import_credentials",
     });
   }
 
@@ -502,12 +530,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     dataset: ThreadDataSet,
     router: ThreadRouter
   ) {
-    const datasetId = dataset.dataset_id;
-    const borderAgentId = router.border_agent_id;
-    if (!borderAgentId) {
-      return;
-    }
-    await setPreferredBorderAgent(this.hass, datasetId, borderAgentId);
+    await setPreferredBorderAgent(
+      this.hass,
+      dataset.dataset_id,
+      router.border_agent_id,
+      router.extended_address
+    );
     this._refresh();
   }
 

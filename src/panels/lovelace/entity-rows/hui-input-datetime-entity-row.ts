@@ -85,8 +85,8 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                   .value=${stateObj.state === UNKNOWN
                     ? ""
                     : stateObj.attributes.has_date
-                    ? stateObj.state.split(" ")[1]
-                    : stateObj.state}
+                      ? stateObj.state.split(" ")[1]
+                      : stateObj.state}
                   .locale=${this.hass.locale}
                   .disabled=${isUnavailableState(stateObj.state)}
                   @value-changed=${this._timeChanged}

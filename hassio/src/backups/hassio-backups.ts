@@ -59,11 +59,11 @@ export class HassioBackups extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 
@@ -395,6 +395,8 @@ export class HassioBackups extends LitElement {
         .selected-txt {
           font-weight: bold;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          padding-inline-end: initial;
           color: var(--primary-text-color);
         }
         .table-header .selected-txt {
@@ -405,6 +407,8 @@ export class HassioBackups extends LitElement {
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
+          margin-inline-end: -12px;
+          margin-inline-start: initial;
         }
         .header-btns > mwc-button,
         .header-btns > ha-icon-button {

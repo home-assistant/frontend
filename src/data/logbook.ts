@@ -194,7 +194,7 @@ export const localizeStateMessage = (
       if (state === "home") {
         return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
       }
-      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, "state", state);
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, { state });
 
     case "sun":
       return state === "above_horizon"
@@ -382,11 +382,9 @@ export const localizeStateMessage = (
     return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
-  return hass.localize(
-    `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
-    "state",
-    stateObj ? hass.formatEntityState(stateObj, state) : state
-  );
+  return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.changed_to_state`, {
+    state: stateObj ? hass.formatEntityState(stateObj, state) : state,
+  });
 };
 
 export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (

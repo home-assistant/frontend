@@ -1,22 +1,25 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-item/paper-item-body";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
+import "../../../../components/ha-list-item";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
   fetchCloudSubscriptionInfo,
+  removeCloudData,
   SubscriptionInfo,
 } from "../../../../data/cloud";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
@@ -38,8 +41,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
   @state() private _subscription?: SubscriptionInfo;
 
-  @state() private _rtlDirection: "rtl" | "ltr" = "rtl";
-
   protected render() {
     return html`
       <hass-subpage
@@ -47,6 +48,20 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
+        <ha-button-menu slot="toolbar-icon" @action=${this._deleteCloudData}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.reset_cloud_data"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -65,12 +80,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <paper-item-body two-line>
+                <ha-list-item twoline>
                   ${this.cloudStatus.email.replace(
                     /(\w{3})[\w.-]+@([\w.]+\w)/,
                     "$1***@$2"
                   )}
-                  <div secondary class="wrap">
+                  <span slot="secondary" class="wrap">
                     ${this._subscription
                       ? this._subscription.human_description.replace(
                           "{periodEnd}",
@@ -87,8 +102,8 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.cloud.account.fetching_subscription"
                         )}
-                  </div>
-                </paper-item-body>
+                  </span>
+                </ha-list-item>
               </div>
 
               ${this.cloudStatus.cloud === "connecting" &&
@@ -103,24 +118,22 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <paper-item-body>
+                <ha-list-item>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.connection_status"
-                  )}
-                </paper-item-body>
-                <div class="status">
+                  )}:
                   ${this.cloudStatus.cloud === "connected"
                     ? this.hass.localize(
                         "ui.panel.config.cloud.account.connected"
                       )
                     : this.cloudStatus.cloud === "disconnected"
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.not_connected"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.connecting"
-                      )}
-                </div>
+                      ? this.hass.localize(
+                          "ui.panel.config.cloud.account.not_connected"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.connecting"
+                        )}
+                </ha-list-item>
               </div>
 
               <div class="card-actions">
@@ -175,13 +188,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
             <cloud-remote-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-remote-pref>
 
             <cloud-tts-pref
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-tts-pref>
 
             <ha-tip .hass=${this.hass}>
@@ -196,7 +207,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
             ></cloud-webhooks>
           </ha-config-section>
         </div>
@@ -206,15 +216,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
   firstUpdated() {
     this._fetchSubscriptionInfo();
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale !== this.hass.locale) {
-        this._rtlDirection = computeRTLDirection(this.hass);
-      }
-    }
   }
 
   protected override hassSubscribe() {
@@ -275,8 +276,34 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
-  _computeRTLDirection(hass) {
-    return computeRTLDirection(hass);
+  private async _deleteCloudData() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await cloudLogout(this.hass);
+      await removeCloudData(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.cloud.account.reset_data_failed"
+        ),
+        text: err?.message,
+      });
+      return;
+    } finally {
+      fireEvent(this, "ha-refresh-cloud-status");
+    }
   }
 
   static get styles() {

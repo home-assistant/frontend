@@ -38,7 +38,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode?: boolean;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _config?: MarkdownCardConfig;
 
@@ -54,9 +54,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     return this._config === undefined
       ? 3
       : this._config.card_size === undefined
-      ? Math.round(this._config.content.split("\n").length / 2) +
-        (this._config.title ? 1 : 0)
-      : this._config.card_size;
+        ? Math.round(this._config.content.split("\n").length / 2) +
+          (this._config.title ? 1 : 0)
+        : this._config.card_size;
   }
 
   public setConfig(config: MarkdownCardConfig): void {

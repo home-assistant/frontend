@@ -20,7 +20,7 @@ import {
   startOfWeek,
   startOfYear,
   subDays,
-} from "date-fns/esm";
+} from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -32,7 +32,11 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { calcDate, calcDateProperty } from "../../../common/datetime/calc_date";
+import {
+  calcDate,
+  calcDateProperty,
+  calcDateDifferenceProperty,
+} from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -103,6 +107,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback(): void {
+    super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -210,26 +215,26 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 )
               : formatDate(this._startDate, this.hass.locale, this.hass.config)
             : simpleRange === "month"
-            ? formatDateMonthYear(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )
-            : simpleRange === "year"
-            ? formatDateYear(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )
-            : `${formatDateVeryShort(
-                this._startDate,
-                this.hass.locale,
-                this.hass.config
-              )} – ${formatDateVeryShort(
-                this._endDate || new Date(),
-                this.hass.locale,
-                this.hass.config
-              )}`}
+              ? formatDateMonthYear(
+                  this._startDate,
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : simpleRange === "year"
+                ? formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )
+                : `${formatDateVeryShort(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )} – ${formatDateVeryShort(
+                    this._endDate || new Date(),
+                    this.hass.locale,
+                    this.hass.config
+                  )}`}
         </div>
         <div class="time-handle">
           <ha-icon-button-prev
@@ -278,6 +283,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               "ui.panel.lovelace.components.energy_period_selector.compare"
             )}
           </ha-check-list-item>
+          <slot name="overflow-menu"></slot>
         </ha-button-menu>
       </div>
     `;
@@ -298,23 +304,23 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         (calcDateProperty(endDate, isLastDayOfMonth, locale, config) as boolean)
       ) {
         if (
-          (calcDateProperty(
+          (calcDateDifferenceProperty(
             endDate,
+            startDate,
             differenceInMonths,
             locale,
-            config,
-            startDate
+            config
           ) as number) === 0
         ) {
           return "month";
         }
         if (
-          (calcDateProperty(
+          (calcDateDifferenceProperty(
             endDate,
+            startDate,
             differenceInMonths,
             locale,
-            config,
-            startDate
+            config
           ) as number) === 2 &&
           startDate.getMonth() % 3 === 0
         ) {
@@ -324,12 +330,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       if (
         calcDateProperty(startDate, isFirstDayOfMonth, locale, config) &&
         calcDateProperty(endDate, isLastDayOfMonth, locale, config) &&
-        calcDateProperty(
+        calcDateDifferenceProperty(
           endDate,
+          startDate,
           differenceInMonths,
           locale,
-          config,
-          startDate
+          config
         ) === 11
       ) {
         return "year";
@@ -466,12 +472,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         );
       } else {
         // Custom date range
-        const difference = calcDateProperty(
+        const difference = calcDateDifferenceProperty(
           this._endDate!,
+          this._startDate,
           differenceInDays,
           this.hass.locale,
-          this.hass.config,
-          this._startDate
+          this.hass.config
         ) as number;
         this._startDate = calcDate(
           calcDate(
@@ -532,12 +538,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ) {
       // Shift date range with respect to month/year selection
       const difference =
-        ((calcDateProperty(
+        ((calcDateDifferenceProperty(
           this._endDate!,
+          this._startDate,
           differenceInMonths,
           this.hass.locale,
-          this.hass.config,
-          this._startDate
+          this.hass.config
         ) as number) +
           1) *
         (forward ? 1 : -1);
@@ -563,12 +569,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     } else {
       // Shift date range by period length
       const difference =
-        ((calcDateProperty(
+        ((calcDateDifferenceProperty(
           this._endDate!,
+          this._startDate,
           differenceInDays,
           this.hass.locale,
-          this.hass.config,
-          this._startDate
+          this.hass.config
         ) as number) +
           1) *
         (forward ? 1 : -1);
@@ -625,6 +631,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       :host([narrow]) .time-handle {
         margin-left: auto;
+        margin-inline-start: auto;
+        margin-inline-end: initial;
       }
       .label {
         display: flex;
@@ -632,12 +640,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         justify-content: flex-end;
         font-size: 20px;
         margin-left: auto;
+        margin-inline-start: auto;
+        margin-inline-end: initial;
       }
       :host([narrow]) .label {
         margin-left: unset;
+        margin-inline-start: unset;
+        margin-inline-end: initial;
       }
       mwc-button {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         flex-shrink: 0;
         --mdc-button-outline-color: currentColor;
         --primary-color: currentColor;

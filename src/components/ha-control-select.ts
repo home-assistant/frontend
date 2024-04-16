@@ -5,6 +5,7 @@ import {
   LitElement,
   nothing,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -17,7 +18,7 @@ import "./ha-svg-icon";
 export type ControlSelectOption = {
   value: string;
   label?: string;
-  icon?: string;
+  icon?: TemplateResult;
   path?: string;
 };
 
@@ -25,7 +26,7 @@ export type ControlSelectOption = {
 export class HaControlSelect extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() public options?: ControlSelectOption[];
+  @property({ attribute: false }) public options?: ControlSelectOption[];
 
   @property() public value?: string;
 
@@ -183,9 +184,7 @@ export class HaControlSelect extends LitElement {
         <div class="content">
           ${option.path
             ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
-            : option.icon
-            ? html`<ha-icon .icon=${option.icon}></ha-icon> `
-            : nothing}
+            : option.icon || nothing}
           ${option.label && !this.hideLabel
             ? html`<span>${option.label}</span>`
             : nothing}

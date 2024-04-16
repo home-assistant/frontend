@@ -8,7 +8,7 @@ export interface CustomCardEntry {
   documentationURL?: string;
 }
 
-export interface CustomTileFeatureEntry {
+export interface CustomCardFeatureEntry {
   type: string;
   name?: string;
   supported?: (stateObj: HassEntity) => boolean;
@@ -17,7 +17,11 @@ export interface CustomTileFeatureEntry {
 
 export interface CustomCardsWindow {
   customCards?: CustomCardEntry[];
-  customTileFeatures?: CustomTileFeatureEntry[];
+  customCardFeatures?: CustomCardFeatureEntry[];
+  /**
+   * @deprecated Use customCardFeatures
+   */
+  customTileFeatures?: CustomCardFeatureEntry[];
 }
 
 export const CUSTOM_TYPE_PREFIX = "custom:";
@@ -27,12 +31,18 @@ const customCardsWindow = window as CustomCardsWindow;
 if (!("customCards" in customCardsWindow)) {
   customCardsWindow.customCards = [];
 }
+if (!("customCardFeatures" in customCardsWindow)) {
+  customCardsWindow.customCardFeatures = [];
+}
 if (!("customTileFeatures" in customCardsWindow)) {
   customCardsWindow.customTileFeatures = [];
 }
 
 export const customCards = customCardsWindow.customCards!;
-export const customTileFeatures = customCardsWindow.customTileFeatures!;
+export const getCustomCardFeatures = () => [
+  ...customCardsWindow.customCardFeatures!,
+  ...customCardsWindow.customTileFeatures!,
+];
 
 export const getCustomCardEntry = (type: string) =>
   customCards.find((card) => card.type === type);

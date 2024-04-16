@@ -19,12 +19,14 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeLabel?: (
+  @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
     data?: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: HaFormSchema) => string;
+  @property({ attribute: false }) public computeHelper?: (
+    schema: HaFormSchema
+  ) => string;
 
   protected render() {
     return html`
@@ -37,8 +39,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
           ${this.schema.icon
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
             : this.schema.iconPath
-            ? html` <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon> `
-            : nothing}
+              ? html`
+                  <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon>
+                `
+              : nothing}
           ${this.schema.title}
         </div>
         <div class="content">

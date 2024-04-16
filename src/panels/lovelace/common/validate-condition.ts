@@ -1,54 +1,70 @@
 import { ensureArray } from "../../../common/array/ensure-array";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
 export type Condition =
   | NumericStateCondition
-  | ScreenCondition
   | StateCondition
+  | ScreenCondition
   | UserCondition
   | OrCondition
   | AndCondition;
 
-export type LegacyCondition = {
+// Legacy conditional card condition
+export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-};
+}
 
-export type NumericStateCondition = {
+interface BaseCondition {
+  condition: string;
+}
+
+export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
   entity?: string;
-  below?: number;
-  above?: number;
-};
+  below?: string | number;
+  above?: string | number;
+}
 
-export type StateCondition = {
+export interface StateCondition extends BaseCondition {
   condition: "state";
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
-};
+}
 
-export type ScreenCondition = {
+export interface ScreenCondition extends BaseCondition {
   condition: "screen";
   media_query?: string;
-};
+}
 
-export type UserCondition = {
+export interface UserCondition extends BaseCondition {
   condition: "user";
   users?: string[];
-};
+}
 
-export type OrCondition = {
+export interface OrCondition extends BaseCondition {
   condition: "or";
   conditions?: Condition[];
-};
+}
 
-export type AndCondition = {
+export interface AndCondition extends BaseCondition {
   condition: "and";
   conditions?: Condition[];
-};
+}
+
+function getValueFromEntityId(
+  hass: HomeAssistant,
+  value: string
+): string | undefined {
+  if (isValidEntityId(value) && hass.states[value]) {
+    return hass.states[value]?.state;
+  }
+  return undefined;
+}
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
@@ -58,32 +74,59 @@ function checkStateCondition(
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].state
       : UNAVAILABLE;
+  let value = condition.state ?? condition.state_not;
+
+  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  if (Array.isArray(value)) {
+    const entityValues = value
+      .map((v) => getValueFromEntityId(hass, v))
+      .filter((v): v is string => v !== undefined);
+    value = [...value, ...entityValues];
+  } else if (typeof value === "string") {
+    const entityValue = getValueFromEntityId(hass, value);
+    value = [value];
+    if (entityValue) {
+      value.push(entityValue);
+    }
+  }
 
   return condition.state != null
-    ? ensureArray(condition.state).includes(state)
-    : !ensureArray(condition.state_not).includes(state);
+    ? ensureArray(value).includes(state)
+    : !ensureArray(value).includes(state);
 }
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
   hass: HomeAssistant
 ) {
-  const entity =
-    (condition.entity ? hass.states[condition.entity] : undefined) ?? undefined;
+  const state = (condition.entity ? hass.states[condition.entity] : undefined)
+    ?.state;
+  let above = condition.above;
+  let below = condition.below;
 
-  if (!entity) {
-    return false;
+  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  if (typeof above === "string") {
+    above = getValueFromEntityId(hass, above) ?? above;
+  }
+  if (typeof below === "string") {
+    below = getValueFromEntityId(hass, below) ?? below;
   }
 
-  const numericState = Number(entity.state);
+  const numericState = Number(state);
+  const numericAbove = Number(above);
+  const numericBelow = Number(below);
 
   if (isNaN(numericState)) {
     return false;
   }
 
   return (
-    (condition.above == null || condition.above < numericState) &&
-    (condition.below == null || condition.below > numericState)
+    (condition.above == null ||
+      isNaN(numericAbove) ||
+      numericAbove < numericState) &&
+    (condition.below == null ||
+      isNaN(numericBelow) ||
+      numericBelow > numericState)
   );
 }
 
@@ -109,6 +152,12 @@ function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
   return condition.conditions.some((c) => checkConditionsMet([c], hass));
 }
 
+/**
+ * Return the result of applying conditions
+ * @param conditions conditions to apply
+ * @param hass Home Assistant object
+ * @returns true if conditions are respected
+ */
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
   hass: HomeAssistant
@@ -132,6 +181,43 @@ export function checkConditionsMet(
     }
     return checkStateCondition(c, hass);
   });
+}
+
+export function extractConditionEntityIds(
+  conditions: Condition[]
+): Set<string> {
+  const entityIds: Set<string> = new Set();
+  for (const condition of conditions) {
+    if (condition.condition === "numeric_state") {
+      if (
+        typeof condition.above === "string" &&
+        isValidEntityId(condition.above)
+      ) {
+        entityIds.add(condition.above);
+      }
+      if (
+        typeof condition.below === "string" &&
+        isValidEntityId(condition.below)
+      ) {
+        entityIds.add(condition.below);
+      }
+    } else if (condition.condition === "state") {
+      [
+        ...(ensureArray(condition.state) ?? []),
+        ...(ensureArray(condition.state_not) ?? []),
+      ].forEach((state) => {
+        if (!!state && isValidEntityId(state)) {
+          entityIds.add(state);
+        }
+      });
+    } else if ("conditions" in condition && condition.conditions) {
+      return new Set([
+        ...entityIds,
+        ...extractConditionEntityIds(condition.conditions),
+      ]);
+    }
+  }
+  return entityIds;
 }
 
 function validateStateCondition(condition: StateCondition | LegacyCondition) {
@@ -163,7 +249,11 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
     (condition.above != null || condition.below != null)
   );
 }
-
+/**
+ * Validate the conditions config for the UI
+ * @param conditions conditions to apply
+ * @returns true if conditions are validated
+ */
 export function validateConditionalConfig(
   conditions: (Condition | LegacyCondition)[]
 ): boolean {
@@ -186,4 +276,35 @@ export function validateConditionalConfig(
     }
     return validateStateCondition(c);
   });
+}
+
+/**
+ * Build a condition for filters
+ * @param condition condition to apply
+ * @param entityId base the condition on that entity
+ * @returns a new condition with entity id
+ */
+export function addEntityToCondition(
+  condition: Condition,
+  entityId: string
+): Condition {
+  if ("conditions" in condition && condition.conditions) {
+    return {
+      ...condition,
+      conditions: condition.conditions.map((c) =>
+        addEntityToCondition(c, entityId)
+      ),
+    };
+  }
+
+  if (
+    condition.condition === "state" ||
+    condition.condition === "numeric_state"
+  ) {
+    return {
+      ...condition,
+      entity: entityId,
+    };
+  }
+  return condition;
 }

@@ -56,13 +56,13 @@ export class HaIntegrationHeader extends LitElement {
                 </div>
               `
             : this.warning
-            ? html`
-                <div class="secondary warning">
-                  <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
-                  <span>${this.warning}</span>
-                </div>
-              `
-            : nothing}
+              ? html`
+                  <div class="secondary warning">
+                    <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
+                    <span>${this.warning}</span>
+                  </div>
+                `
+              : nothing}
         </div>
         <ha-icon-next
           class="header-button"
@@ -144,6 +144,8 @@ export class HaIntegrationHeader extends LitElement {
     }
     .secondary > ha-svg-icon {
       margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
       flex-shrink: 0;
     }
     .error ha-svg-icon {

@@ -1,24 +1,24 @@
 import "@material/mwc-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list-item";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
-import { cloudLogin } from "../../../../data/cloud";
+import { cloudLogin, removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import "../../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
@@ -52,6 +52,20 @@ export class CloudLogin extends LitElement {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
+        <ha-button-menu slot="toolbar-icon" @action=${this._deleteCloudData}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.reset_cloud_data"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -145,6 +159,15 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.password_error_msg"
                   )}
                 ></ha-textfield>
+              </div>
+              <div class="card-actions">
+                <ha-progress-button
+                  @click=${this._handleLogin}
+                  .progress=${this._requestInProgress}
+                  >${this.hass.localize(
+                    "ui.panel.config.cloud.login.sign_in"
+                  )}</ha-progress-button
+                >
                 <button
                   class="link pwd-forgot-link"
                   .disabled=${this._requestInProgress}
@@ -155,31 +178,22 @@ export class CloudLogin extends LitElement {
                   )}
                 </button>
               </div>
-              <div class="card-actions">
-                <ha-progress-button
-                  @click=${this._handleLogin}
-                  .progress=${this._requestInProgress}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.login.sign_in"
-                  )}</ha-progress-button
-                >
-              </div>
             </ha-card>
 
             <ha-card outlined>
-              <paper-item @click=${this._handleRegister}>
-                <paper-item-body two-line>
+              <mwc-list>
+                <ha-list-item @click=${this._handleRegister} twoline hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.login.start_trial"
                   )}
-                  <div secondary>
+                  <span slot="secondary">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.login.trial_info"
                     )}
-                  </div>
-                </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-item>
+                  </span>
+                  <ha-icon-next slot="meta"></ha-icon-next>
+                </ha-list-item>
+              </mwc-list>
             </ha-card>
           </ha-config-section>
         </div>
@@ -281,6 +295,35 @@ export class CloudLogin extends LitElement {
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
+  private async _deleteCloudData() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.reset_data_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await removeCloudData(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.cloud.account.reset_data_failed"
+        ),
+        text: err?.message,
+      });
+      return;
+    } finally {
+      fireEvent(this, "ha-refresh-cloud-status");
+    }
+  }
+
   static get styles() {
     return [
       haStyle,
@@ -293,9 +336,6 @@ export class CloudLogin extends LitElement {
         }
         [slot="introduction"] a {
           color: var(--primary-color);
-        }
-        paper-item {
-          cursor: pointer;
         }
         ha-card {
           overflow: hidden;
@@ -314,11 +354,6 @@ export class CloudLogin extends LitElement {
         .login-form {
           display: flex;
           flex-direction: column;
-        }
-        .pwd-forgot-link {
-          color: var(--secondary-text-color) !important;
-          text-align: right !important;
-          align-self: flex-end;
         }
       `,
     ];

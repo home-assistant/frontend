@@ -304,7 +304,7 @@ class DialogSystemInformation extends LitElement {
     if (!this._systemInfo) {
       sections.push(html`
         <div class="loading-container">
-          <ha-circular-progress active></ha-circular-progress>
+          <ha-circular-progress indeterminate></ha-circular-progress>
         </div>
       `);
     } else {
@@ -324,7 +324,10 @@ class DialogSystemInformation extends LitElement {
 
             if (info.type === "pending") {
               value = html`
-                <ha-circular-progress active size="tiny"></ha-circular-progress>
+                <ha-circular-progress
+                  indeterminate
+                  size="small"
+                ></ha-circular-progress>
               `;
             } else if (info.type === "failed") {
               value = html`

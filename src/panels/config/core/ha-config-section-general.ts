@@ -1,7 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
@@ -20,21 +19,19 @@ import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
-import "../../../components/map/ha-locations-editor";
-import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() private _submitting = false;
 
@@ -242,35 +239,22 @@ class HaConfigSectionGeneral extends LitElement {
               >
               </ha-language-picker>
             </div>
-            ${this.narrow
-              ? html`
-                  <ha-locations-editor
-                    .hass=${this.hass}
-                    .locations=${this._markerLocation(
-                      this.hass.config.latitude,
-                      this.hass.config.longitude,
-                      this._location
-                    )}
-                    @location-updated=${this._locationChanged}
-                  ></ha-locations-editor>
-                `
-              : html`
-                  <ha-settings-row>
-                    <div slot="heading">
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.edit_location"
-                      )}
-                    </div>
-                    <div slot="description" class="secondary">
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.edit_location_description"
-                      )}
-                    </div>
-                    <mwc-button @click=${this._editLocation}
-                      >${this.hass.localize("ui.common.edit")}</mwc-button
-                    >
-                  </ha-settings-row>
-                `}
+
+            <ha-settings-row>
+              <div slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.edit_location"
+                )}
+              </div>
+              <div slot="description" class="secondary">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.edit_location_description"
+                )}
+              </div>
+              <mwc-button @click=${this._editLocation}
+                >${this.hass.localize("ui.common.edit")}</mwc-button
+              >
+            </ha-settings-row>
             <div class="card-actions">
               <ha-progress-button @click=${this._updateEntry}>
                 ${this.hass!.localize("ui.panel.config.zone.detail.update")}
@@ -294,10 +278,7 @@ class HaConfigSectionGeneral extends LitElement {
     this._country = this.hass.config.country;
     this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
-    this._timeZone =
-      this.hass.config.time_zone ||
-      Intl.DateTimeFormat?.().resolvedOptions?.().timeZone ||
-      "Etc/GMT";
+    this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
   }
@@ -320,10 +301,6 @@ class HaConfigSectionGeneral extends LitElement {
 
   private _updateUnitsChanged(ev: CustomEvent) {
     this._updateUnits = (ev.target as HaCheckbox).checked;
-  }
-
-  private _locationChanged(ev: CustomEvent) {
-    this._location = ev.detail.location;
   }
 
   private async _updateEntry(ev: CustomEvent) {
@@ -384,21 +361,6 @@ class HaConfigSectionGeneral extends LitElement {
     }
   }
 
-  private _markerLocation = memoizeOne(
-    (
-      lat: number,
-      lng: number,
-      location?: [number, number]
-    ): MarkerLocation[] => [
-      {
-        id: "location",
-        latitude: location ? location[0] : lat,
-        longitude: location ? location[1] : lng,
-        location_editable: true,
-      },
-    ]
-  );
-
   private _editLocation() {
     navigate("/config/zone/edit/zone.home");
   }
@@ -443,11 +405,6 @@ class HaConfigSectionGeneral extends LitElement {
       a.find-value {
         margin-top: 8px;
         display: inline-block;
-      }
-      ha-locations-editor {
-        display: block;
-        height: 400px;
-        padding: 16px;
       }
     `,
   ];

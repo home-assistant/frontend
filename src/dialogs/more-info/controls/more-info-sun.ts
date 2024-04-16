@@ -9,7 +9,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoSun extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render() {
     if (!this.hass || !this.stateObj) {
@@ -56,6 +56,14 @@ class MoreInfoSun extends LitElement {
         </div>
         <div class="value">
           ${this.hass.formatEntityAttributeValue(this.stateObj, "elevation")}
+        </div>
+      </div>
+      <div class="row">
+        <div class="key">
+          ${this.hass.localize("ui.dialogs.more_info_control.sun.azimuth")}
+        </div>
+        <div class="value">
+          ${this.hass.formatEntityAttributeValue(this.stateObj, "azimuth")}
         </div>
       </div>
     `;

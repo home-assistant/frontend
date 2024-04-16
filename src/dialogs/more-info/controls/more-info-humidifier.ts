@@ -8,26 +8,25 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import "../../../components/ha-attribute-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   HumidifierEntity,
   HumidifierEntityFeature,
-  computeHumidiferModeIcon,
 } from "../../../data/humidifier";
+import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
-import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
-import "../components/humidifier/ha-more-info-humidifier-humidity";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public stateObj?: HumidifierEntity;
 
   @state() public _mode?: string;
 
@@ -37,8 +36,6 @@ class MoreInfoHumidifier extends LitElement {
       this._mode = this.stateObj?.attributes.mode;
     }
   }
-
-  private _resizeDebounce?: number;
 
   protected render() {
     if (!this.stateObj) {
@@ -76,10 +73,10 @@ class MoreInfoHumidifier extends LitElement {
       </div>
 
       <div class="controls">
-        <ha-more-info-humidifier-humidity
+        <ha-state-control-humidifier-humidity
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-        ></ha-more-info-humidifier-humidity>
+        ></ha-state-control-humidifier-humidity>
       </div>
 
       <ha-more-info-control-select-container>
@@ -112,14 +109,32 @@ class MoreInfoHumidifier extends LitElement {
                 @selected=${this._handleModeChanged}
                 @closed=${stopPropagation}
               >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+                ${stateObj.attributes.mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="mode"
+                        .attributeValue=${stateObj.attributes.mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTuneVariant}
+                      ></ha-svg-icon>
+                    `}
                 ${stateObj.attributes.available_modes!.map(
                   (mode) => html`
                     <ha-list-item .value=${mode} graphic="icon">
-                      <ha-svg-icon
+                      <ha-attribute-icon
                         slot="graphic"
-                        .path=${computeHumidiferModeIcon(mode)}
-                      ></ha-svg-icon>
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj!,
                         "mode",
@@ -133,21 +148,6 @@ class MoreInfoHumidifier extends LitElement {
           : nothing}
       </ha-more-info-control-select-container>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
-
-    if (this._resizeDebounce) {
-      clearTimeout(this._resizeDebounce);
-    }
-    this._resizeDebounce = window.setTimeout(() => {
-      fireEvent(this, "iron-resize");
-      this._resizeDebounce = undefined;
-    }, 500);
   }
 
   private _handleStateChanged(ev) {

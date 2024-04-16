@@ -40,8 +40,8 @@ export class TextBarElement extends BarElement {
       (options?.backgroundColor === "transparent"
         ? "transparent"
         : luminosity(hex2rgb(options.backgroundColor)) > 0.5
-        ? "#000"
-        : "#fff");
+          ? "#000"
+          : "#fff");
 
     // ctx.font = "12px arial";
     ctx.fillStyle = textColor;

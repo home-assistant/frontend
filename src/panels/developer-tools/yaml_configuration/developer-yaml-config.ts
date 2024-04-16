@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { CheckConfigResult, checkCoreConfig } from "../../../data/core";
@@ -27,13 +28,13 @@ type ReloadableDomain = Exclude<
 export class DeveloperYamlConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _validating = false;
 
@@ -77,7 +78,7 @@ export class DeveloperYamlConfig extends LitElement {
                 ? html`<div
                     class="validate-container layout vertical center-center"
                   >
-                    <ha-circular-progress active></ha-circular-progress>
+                    <ha-circular-progress indeterminate></ha-circular-progress>
                   </div> `
                 : nothing
               : html`
@@ -94,7 +95,7 @@ export class DeveloperYamlConfig extends LitElement {
                               )
                         }
                     </div>
-                  
+
                     ${
                       this._validateResult.errors
                         ? html`<ha-alert
@@ -186,8 +187,7 @@ export class DeveloperYamlConfig extends LitElement {
                   ) ||
                   this.hass.localize(
                     "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
-                    "domain",
-                    domainToName(this.hass.localize, domain)
+                    { domain: domainToName(this.hass.localize, domain) }
                   )}
                 </ha-call-service-button>
               </div>
@@ -234,7 +234,7 @@ export class DeveloperYamlConfig extends LitElement {
         }
 
         .validate-log {
-          white-space: pre;
+          white-space: pre-wrap;
           direction: ltr;
         }
 

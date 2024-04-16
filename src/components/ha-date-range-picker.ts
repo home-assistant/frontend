@@ -5,32 +5,38 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
+  addMonths,
+  addYears,
   endOfDay,
+  endOfMonth,
   endOfWeek,
+  endOfYear,
   startOfDay,
+  startOfMonth,
   startOfWeek,
+  startOfYear,
 } from "date-fns";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDate } from "../common/datetime/format_date";
 import { formatDateTime } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
 import "./date-range-picker";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import "./ha-icon-button";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -40,25 +46,25 @@ export interface DateRangePickerRanges {
 export class HaDateRangePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public startDate!: Date;
+  @property({ attribute: false }) public startDate!: Date;
 
-  @property() public endDate!: Date;
+  @property({ attribute: false }) public endDate!: Date;
 
-  @property() public ranges?: DateRangePickerRanges | false;
+  @property({ attribute: false }) public ranges?: DateRangePickerRanges | false;
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @property() public autoApply = false;
+  @property({ type: Boolean }) public autoApply = false;
 
-  @property() public timePicker = true;
+  @property({ type: Boolean }) public timePicker = true;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) private _hour24format = false;
+  @property({ type: Boolean }) public minimal = false;
 
-  @property({ type: String }) private _rtlDirection = "ltr";
+  @state() private _hour24format = false;
 
-  @property({ type: Boolean }) private minimal = false;
+  @property({ type: Boolean }) public extendedPresets = false;
 
   @property() public openingDirection?: "right" | "left" | "center" | "inline";
 
@@ -132,6 +138,92 @@ export class HaDateRangePicker extends LitElement {
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.last_week"
         )]: [addDays(weekStart, -7), addDays(weekEnd, -7)],
+        ...(this.extendedPresets
+          ? {
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.this_month"
+              )]: [
+                calcDate(
+                  today,
+                  startOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  today,
+                  endOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_month"
+              )]: [
+                calcDate(
+                  addMonths(today, -1),
+                  startOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addMonths(today, -1),
+                  endOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.this_year"
+              )]: [
+                calcDate(
+                  today,
+                  startOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
+                  weekStartsOn,
+                }),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_year"
+              )]: [
+                calcDate(
+                  addYears(today, -1),
+                  startOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addYears(today, -1),
+                  endOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+            }
+          : {}),
       };
     }
   }
@@ -141,7 +233,6 @@ export class HaDateRangePicker extends LitElement {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.locale !== this.hass.locale) {
         this._hour24format = !useAmPm(this.hass.locale);
-        this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
   }
@@ -153,12 +244,14 @@ export class HaDateRangePicker extends LitElement {
         ?auto-apply=${this.autoApply}
         time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
-        start-date=${this.startDate}
-        end-date=${this.endDate}
+        start-date=${this.startDate.toISOString()}
+        end-date=${this.endDate.toISOString()}
         ?ranges=${this.ranges !== false}
-        opening-direction=${this.openingDirection ||
-        this._calcedOpeningDirection}
+        opening-direction=${ifDefined(
+          this.openingDirection || this._calcedOpeningDirection
+        )}
         first-day=${firstWeekdayIndex(this.hass.locale)}
+        language=${this.hass.locale.language}
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
@@ -209,11 +302,7 @@ export class HaDateRangePicker extends LitElement {
               ></ha-icon-button>`}
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
-          ? html`<div
-              slot="ranges"
-              class="date-range-ranges"
-              .dir=${this._rtlDirection}
-            >
+          ? html`<div slot="ranges" class="date-range-ranges">
               <mwc-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges || this._ranges!).map(
                   (name) => html`<mwc-list-item>${name}</mwc-list-item>`

@@ -59,24 +59,24 @@ class HuiCastRow extends LitElement implements LovelaceRow {
         ${this._noHTTPS
           ? html` Cast requires HTTPS `
           : this._castManager === undefined
-          ? nothing
-          : this._castManager === null
-          ? html` Cast API unavailable `
-          : this._castManager.castState === "NO_DEVICES_AVAILABLE"
-          ? html` No devices found `
-          : html`
-              <div class="controls">
-                <google-cast-launcher></google-cast-launcher>
-                <mwc-button
-                  @click=${this._sendLovelace}
-                  class=${classMap({ inactive: !active })}
-                  .unelevated=${active}
-                  .disabled=${!this._castManager.status}
-                >
-                  SHOW
-                </mwc-button>
-              </div>
-            `}
+            ? nothing
+            : this._castManager === null
+              ? html` Cast API unavailable `
+              : this._castManager.castState === "NO_DEVICES_AVAILABLE"
+                ? html` No devices found `
+                : html`
+                    <div class="controls">
+                      <google-cast-launcher></google-cast-launcher>
+                      <mwc-button
+                        @click=${this._sendLovelace}
+                        class=${classMap({ inactive: !active })}
+                        .unelevated=${active}
+                        .disabled=${!this._castManager.status}
+                      >
+                        SHOW
+                      </mwc-button>
+                    </div>
+                  `}
       </div>
     `;
   }
@@ -138,6 +138,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       .flex {
         flex: 1;
         margin-left: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: initial;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -153,6 +155,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       }
       google-cast-launcher {
         margin-right: 0.57em;
+        margin-inline-end: -0.57em;
+        margin-inline-start: initial;
         cursor: pointer;
         display: inline-block;
         height: 24px;

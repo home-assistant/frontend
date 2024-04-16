@@ -56,8 +56,9 @@ export class HuiStateBadgeElement
         .title=${this._config.title === undefined
           ? computeStateName(stateObj)
           : this._config.title === null
-          ? ""
-          : this._config.title}
+            ? ""
+            : this._config.title}
+        showName
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

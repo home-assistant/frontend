@@ -75,11 +75,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return (
-      config &&
-      (config.state_color ||
-        (domain === "light" && config.state_color !== false))
-    );
+    return config && (config.state_color ?? domain === "light");
   }
 
   public setConfig(config: EntityCardConfig): void {
@@ -139,7 +135,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-state-icon
               .icon=${this._config.icon}
-              .state=${stateObj}
+              .stateObj=${stateObj}
+              .hass=${this.hass}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
@@ -167,15 +164,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   `
                 : this.hass.localize("state.default.unknown")
               : isNumericState(stateObj) || this._config.unit
-              ? formatNumber(
-                  stateObj.state,
-                  this.hass.locale,
-                  getNumberFormatOptions(
-                    stateObj,
-                    this.hass.entities[this._config.entity]
+                ? formatNumber(
+                    stateObj.state,
+                    this.hass.locale,
+                    getNumberFormatOptions(
+                      stateObj,
+                      this.hass.entities[this._config.entity]
+                    )
                   )
-                )
-              : this.hass.formatEntityState(stateObj)}</span
+                : this.hass.formatEntityState(stateObj)}</span
           >${showUnit
             ? html`
                 <span class="measurement"
@@ -291,6 +288,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         .value {
           font-size: 28px;
           margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .measurement {

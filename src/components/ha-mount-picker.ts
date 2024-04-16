@@ -96,8 +96,8 @@ class HaMountPicker extends LitElement {
                 .path=${mount.usage === SupervisorMountUsage.MEDIA
                   ? mdiPlayBox
                   : mount.usage === SupervisorMountUsage.SHARE
-                  ? mdiFolder
-                  : mdiBackupRestore}
+                    ? mdiFolder
+                    : mdiBackupRestore}
               ></ha-svg-icon>
             </ha-list-item>`
         )}

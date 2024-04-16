@@ -68,7 +68,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
+                <ha-circular-progress indeterminate></ha-circular-progress>
                 <div class="status">
                   <p>
                     <b>
@@ -236,6 +236,8 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
         }
       `,
     ];

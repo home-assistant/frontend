@@ -59,17 +59,17 @@ export class DialogEnergyGridFlowSettings
     this._source = params.source
       ? { ...params.source }
       : params.direction === "from"
-      ? emptyFlowFromGridSourceEnergyPreference()
-      : emptyFlowToGridSourceEnergyPreference();
+        ? emptyFlowFromGridSourceEnergyPreference()
+        : emptyFlowToGridSourceEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
-      ? "number"
-      : this._source[
-          params.direction === "from" ? "stat_cost" : "stat_compensation"
-        ]
-      ? "statistic"
-      : "no-costs";
+        ? "number"
+        : this._source[
+              params.direction === "from" ? "stat_cost" : "stat_compensation"
+            ]
+          ? "statistic"
+          : "no-costs";
 
     const initialSourceId =
       this._source[
@@ -378,6 +378,8 @@ export class DialogEnergyGridFlowSettings
         .price-options {
           display: block;
           padding-left: 52px;
+          padding-inline-start: 52px;
+          padding-inline-end: initial;
           margin-top: -8px;
         }
       `,

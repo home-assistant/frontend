@@ -114,6 +114,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <div class="content">
           <div id="controls">
             <div id="slider">
+              <!-- @ts-ignore Round-slider has no tag definition or exported type -->
               <round-slider
                 min="1"
                 max="100"
@@ -147,7 +148,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               >
                 <ha-state-icon
                   .icon=${this._config.icon}
-                  .state=${stateObj}
+                  .stateObj=${stateObj}
+                  .hass=${this.hass}
                 ></ha-state-icon>
               </ha-icon-button>
             </div>
@@ -196,9 +198,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(
-      ".brightness"
-    )!.innerHTML = `${e.detail.value} %`;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
+      `${e.detail.value} %`;
     this._showBrightness();
     this._hideBrightness();
   }

@@ -19,17 +19,13 @@ import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
 export class HaControlSwitch extends LitElement {
-  @property({ type: Boolean, reflect: true })
-  public disabled = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean })
-  public vertical = false;
+  @property({ type: Boolean }) public vertical = false;
 
-  @property({ type: Boolean })
-  public reversed = false;
+  @property({ type: Boolean }) public reversed = false;
 
-  @property({ type: Boolean, reflect: true })
-  public checked?: boolean;
+  @property({ type: Boolean, reflect: true }) public checked = false;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided on icon slot to pass an <ha-icon slot="icon-on"> in)
   @property({ type: String }) pathOn?: string;
@@ -147,8 +143,8 @@ export class HaControlSwitch extends LitElement {
               ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
               : html`<slot name="icon-on"></slot>`
             : this.pathOff
-            ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
-            : html`<slot name="icon-off"></slot>`}
+              ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
+              : html`<slot name="icon-off"></slot>`}
         </div>
       </div>
     `;

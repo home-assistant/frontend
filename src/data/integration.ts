@@ -16,7 +16,9 @@ export type IntegrationType =
   | "helper"
   | "hub"
   | "service"
-  | "hardware";
+  | "hardware"
+  | "entity"
+  | "system";
 
 export interface IntegrationManifest {
   is_built_in: boolean;
@@ -41,6 +43,7 @@ export interface IntegrationManifest {
     | "cloud_push"
     | "local_polling"
     | "local_push";
+  single_config_entry?: boolean;
 }
 export interface IntegrationSetup {
   domain: string;
