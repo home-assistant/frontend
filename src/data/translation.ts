@@ -96,14 +96,3 @@ export const getHassTranslations = async (
   });
   return result.resources;
 };
-
-export const getHassTranslationsPre109 = async (
-  hass: HomeAssistant,
-  language: string
-): Promise<Record<string, unknown>> => {
-  const result = await hass.callWS<{ resources: Record<string, unknown> }>({
-    type: "frontend/get_translations",
-    language,
-  });
-  return result.resources;
-};
