@@ -76,6 +76,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // track what things have been loaded
       [category: string]: LoadedTranslationCategory;
     } = {
+      // state is no longer fetched from the backend but it is
+      // still used in the frontend so we need to initialize it
       state: {
         integrations: [],
         setup: false,
