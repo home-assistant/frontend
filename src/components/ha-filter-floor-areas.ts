@@ -295,7 +295,6 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
         }
         .badge {
           display: inline-block;
-          margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: 0;
           min-width: 16px;
@@ -313,7 +312,6 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           --mdc-list-item-graphic-margin: 16px;
         }
         .floor {
-          padding-left: 48px;
           padding-inline-start: 48px;
           padding-inline-end: 16px;
         }

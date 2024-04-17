@@ -294,7 +294,6 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         .badge {
           display: inline-block;
-          margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: 0;
           min-width: 16px;
