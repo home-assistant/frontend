@@ -75,15 +75,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private __loadedTranslations: {
       // track what things have been loaded
       [category: string]: LoadedTranslationCategory;
-    } = {
-      // state is no longer fetched from the backend but it is
-      // still used in the frontend so we need to initialize it
-      state: {
-        integrations: [],
-        setup: false,
-        configFlow: false,
-      },
-    };
+    } = {};
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
