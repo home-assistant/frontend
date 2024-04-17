@@ -116,6 +116,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
+
+    // Migrate legacy dark_mode to theme_mode
+    if (!this._config && !("theme_mode" in config)) {
+      config = { ...config };
+      if (config.dark_mode) {
+        config.theme_mode = "dark";
+      } else {
+        config.theme_mode = "auto";
+      }
+      delete config.dark_mode;
+      fireEvent(this, "config-changed", { config: config });
+    }
+
     this._config = config;
     this._configEntities = config.entities
       ? processEditorEntities(config.entities)

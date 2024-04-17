@@ -152,18 +152,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       </ha-alert>`;
     }
 
-    let isDarkMode =
-      this._config.dark_mode !== null || this._config.dark_mode !== undefined
-        ? this._config.dark_mode
-        : this.hass.themes.darkMode;
-
-    if (this._config.theme_mode === "auto") {
-      isDarkMode = this.hass.themes.darkMode;
-    } else if (this._config.theme_mode === "light") {
-      isDarkMode = false;
-    } else if (this._config.theme_mode === "dark") {
-      isDarkMode = true;
-    }
+    const isDarkMode =
+      this._config.dark_mode || this._config.theme_mode === "dark"
+        ? true
+        : this._config.theme_mode === "light"
+          ? false
+          : this.hass.themes.darkMode;
 
     return html`
       <ha-card id="card" .header=${this._config.title}>
@@ -175,7 +169,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
-            ?darkMode=${isDarkMode}
+            ?forceDarkMode=${this._config.theme_mode === "dark" ||
+            this._config.dark_mode}
+            ?forceLightMode=${this._config.theme_mode === "light"}
             interactiveZones
             renderPassive
           ></ha-map>
