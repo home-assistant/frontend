@@ -236,7 +236,7 @@
     "systemjs": "6.14.3",
     "tar": "7.0.0",
     "terser-webpack-plugin": "5.3.10",
-    "transform-async-modules-webpack-plugin": "1.0.4",
+    "transform-async-modules-webpack-plugin": "1.1.0",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.4.5",
     "webpack": "5.91.0",
