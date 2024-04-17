@@ -409,7 +409,7 @@ export class HaEntityPicker extends LitElement {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    if (newValue.startsWith(CREATE_ID)) {
+    if (newValue && newValue.startsWith(CREATE_ID)) {
       const domain = newValue.substring(CREATE_ID.length);
       showHelperDetailDialog(this, {
         domain,
