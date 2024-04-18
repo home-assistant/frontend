@@ -776,7 +776,7 @@ export class HaVoiceCommandDialog extends LitElement {
           float: var(--float-end);
           text-align: right;
           border-bottom-right-radius: 0px;
-          background-color: var(--primary-color);
+          background-color: var(--primary-conversation-color), var(--primary-color);
           color: var(--text-primary-color);
           direction: var(--direction);
         }
@@ -787,7 +787,7 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: initial;
           float: var(--float-start);
           border-bottom-left-radius: 0px;
-          background-color: var(--secondary-background-color);
+          background-color: var(--secondary-conversation-color), var(--secondary-background-color);
           color: var(--primary-text-color);
           direction: var(--direction);
         }
