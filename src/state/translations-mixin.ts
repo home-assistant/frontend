@@ -1,4 +1,3 @@
-import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import {
@@ -9,7 +8,6 @@ import { debounce } from "../common/util/debounce";
 import {
   FirstWeekday,
   getHassTranslations,
-  getHassTranslationsPre109,
   NumberFormat,
   saveTranslationPreferences,
   TimeFormat,
@@ -286,23 +284,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       configFlow?: Parameters<typeof getHassTranslations>[4],
       force = false
     ): Promise<LocalizeFunc> {
-      if (
-        __BACKWARDS_COMPAT__ &&
-        !atLeastVersion(this.hass!.connection.haVersion, 0, 109)
-      ) {
-        if (category !== "state") {
-          return this.hass!.localize;
-        }
-        const resources = await getHassTranslationsPre109(this.hass!, language);
-
-        // Ignore the repsonse if user switched languages before we got response
-        if (this.hass!.language !== language) {
-          return this.hass!.localize;
-        }
-
-        return this._updateResources(language, resources);
-      }
-
       let alreadyLoaded: LoadedTranslationCategory;
 
       if (category in this.__loadedTranslations) {
