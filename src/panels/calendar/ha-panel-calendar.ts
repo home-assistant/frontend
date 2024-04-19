@@ -1,7 +1,7 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
+import { mdiChevronDown, mdiPlus, mdiRefresh, mdiUpload } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -20,6 +20,7 @@ import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-check-list-item";
+import "../../components/ha-file-upload";
 import "../../components/ha-icon-button";
 import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
@@ -34,6 +35,7 @@ import {
 } from "../../data/calendar";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { showImportCalendarEventsDialog } from "./show-dialog-import-calendar-events";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
@@ -168,6 +170,14 @@ class PanelCalendar extends LitElement {
             </div>`}
         <ha-icon-button
           slot="actionItems"
+          .path=${mdiUpload}
+          .label=${this.hass.localize(
+            "ui.components.calendar.import_calendar.label"
+          )}
+          @click=${this._importCalendarEvents}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="actionItems"
           .path=${mdiRefresh}
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
@@ -255,6 +265,10 @@ class PanelCalendar extends LitElement {
         }
       },
     });
+  }
+
+  private async _importCalendarEvents(): Promise<void> {
+    showImportCalendarEventsDialog(this, { calendars: this._calendars });
   }
 
   private async _handleViewChanged(

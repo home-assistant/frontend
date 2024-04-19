@@ -882,6 +882,15 @@
         "create_calendar": "Create calendar",
         "today": "Today",
         "event_retrieval_error": "Could not retrieve events for calendars:",
+        "import_events": {
+          "label": "Import event information",
+          "select_label": "Add to calendar",
+          "supported_formats": "Supports iCal (.ics) format",
+          "title": "Import event information",
+          "unsupported_format": "Unsupported format, please choose an ICS file.",
+          "upload_failed": "Upload failed",
+          "upload_button": "Upload"
+        },
         "event": {
           "add": "Add event",
           "delete": "Delete event",

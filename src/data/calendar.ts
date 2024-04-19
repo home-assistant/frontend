@@ -191,3 +191,24 @@ export const deleteCalendarEvent = (
     recurrence_id,
     recurrence_range,
   });
+
+export const uploadCalendarFile = async (
+  hass: HomeAssistant,
+  entityId: string,
+  file: File
+) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("entity_id", entityId);
+  const resp = await hass.fetchWithAuth("/api/calendars/import", {
+    method: "POST",
+    body: fd,
+  });
+  if (resp.status === 413) {
+    throw new Error(`Uploaded file is too large (${file.name})`);
+  } else if (resp.status !== 200) {
+    throw new Error("Unknown error");
+  }
+  const data = await resp.json();
+  return data.file_id;
+};
