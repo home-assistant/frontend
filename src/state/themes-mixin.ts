@@ -130,8 +130,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const themeMeta = document.querySelector("meta[name=theme-color]");
       const computedStyles = getComputedStyle(document.documentElement);
-      const headerColor = computedStyles.getPropertyValue(
-        "--app-header-background-color"
+      const themeMetaColor = computedStyles.getPropertyValue(
+        "--app-theme-color"
       );
 
       document.documentElement.style.backgroundColor =
@@ -145,7 +145,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           );
         }
         const themeColor =
-          headerColor?.trim() ||
+          themeMetaColor?.trim() ||
           (themeMeta.getAttribute("default-content") as string);
         themeMeta.setAttribute("content", themeColor);
       }
