@@ -74,6 +74,12 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public logarithmicScale = false;
 
+  @property({ type: Number }) public minYAxis?: number;
+
+  @property({ type: Number }) public maxYAxis?: number;
+
+  @property({ type: Boolean }) public fitYData = false;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -161,6 +167,9 @@ export class StateHistoryCharts extends LitElement {
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
           .logarithmicScale=${this.logarithmicScale}
+          .minYAxis=${this.minYAxis}
+          .maxYAxis=${this.maxYAxis}
+          .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
@@ -224,16 +233,32 @@ export class StateHistoryCharts extends LitElement {
           new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
         );
       } else {
-        this._computedStartTime = new Date(
-          (this.historyData?.timeline ?? []).reduce(
-            (minTime, stateInfo) =>
-              Math.min(
-                minTime,
-                new Date(stateInfo.data[0].last_changed).getTime()
-              ),
-            new Date().getTime()
-          )
+        let minTimeAll = (this.historyData?.timeline ?? []).reduce(
+          (minTime, stateInfo) =>
+            Math.min(
+              minTime,
+              new Date(stateInfo.data[0].last_changed).getTime()
+            ),
+          new Date().getTime()
         );
+
+        minTimeAll = (this.historyData?.line ?? []).reduce(
+          (minTimeLine, line) =>
+            Math.min(
+              minTimeLine,
+              line.data.reduce(
+                (minTimeData, data) =>
+                  Math.min(
+                    minTimeData,
+                    new Date(data.states[0].last_changed).getTime()
+                  ),
+                minTimeLine
+              )
+            ),
+          minTimeAll
+        );
+
+        this._computedStartTime = new Date(minTimeAll);
       }
     }
   }

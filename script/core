@@ -40,6 +40,7 @@ if [ -n "$ref" ]; then
   echo "Installing Home Assistant core at ${ref}..."
   python3 -m pip install --user --upgrade --src "$HOME/src" \
   --editable "git+${coreURL}@${ref}#egg=homeassistant"
+  (cd ~/src/homeassistant && exec python3 -m script.translations develop --all)
 fi
 
 if [ ! -d "${WD}/config" ]; then

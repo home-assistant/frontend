@@ -1,11 +1,45 @@
 import { HassEntity } from "home-assistant-js-websocket";
 
-export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
-  const operator = filter.operator || "==";
-  let value = filter.value ?? filter;
-  let state = filter.attribute
-    ? stateObj.attributes[filter.attribute]
-    : stateObj.state;
+type FilterOperator =
+  | "=="
+  | "<="
+  | "<"
+  | ">="
+  | ">"
+  | "!="
+  | "in"
+  | "not in"
+  | "regex";
+
+// Legacy entity-filter badge & card condition
+export type LegacyStateFilter =
+  | {
+      operator: FilterOperator;
+      attribute?: string;
+      value: string | number | (string | number)[];
+    }
+  | number
+  | string;
+
+export const evaluateStateFilter = (
+  stateObj: HassEntity,
+  filter: LegacyStateFilter
+): boolean => {
+  let operator: FilterOperator;
+  let value: string | number | (string | number)[];
+  let state: any;
+
+  if (typeof filter === "object") {
+    operator = filter.operator;
+    value = filter.value;
+    state = filter.attribute
+      ? stateObj.attributes[filter.attribute]
+      : stateObj.state;
+  } else {
+    operator = "==";
+    value = filter;
+    state = stateObj.state;
+  }
 
   if (operator === "==" || operator === "!=") {
     const valueIsNumeric =
@@ -35,15 +69,24 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
       return state !== value;
     case "in":
       if (Array.isArray(value) || typeof value === "string") {
+        if (Array.isArray(value)) {
+          value = value.map((val) => `${val}`);
+        }
         return value.includes(state);
       }
       return false;
     case "not in":
       if (Array.isArray(value) || typeof value === "string") {
+        if (Array.isArray(value)) {
+          value = value.map((val) => `${val}`);
+        }
         return !value.includes(state);
       }
       return false;
     case "regex": {
+      if (typeof value !== "string") {
+        return false;
+      }
       if (state !== null && typeof state === "object") {
         return RegExp(value).test(JSON.stringify(state));
       }

@@ -33,8 +33,9 @@ import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
-import { lovelaceTabs } from "../ha-config-lovelace";
+import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 
 @customElement("ha-config-lovelace-resources")
@@ -50,9 +51,12 @@ export class HaConfigLovelaceRescources extends LitElement {
   @state() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer<LovelaceResource> => ({
+    (
+      _language,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<LovelaceResource> => ({
       url: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.lovelace.resources.picker.headers.url"
         ),
         sortable: true,
@@ -62,7 +66,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         forceLTR: true,
       },
       type: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.lovelace.resources.picker.headers.type"
         ),
         sortable: true,
@@ -117,8 +121,8 @@ export class HaConfigLovelaceRescources extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${lovelaceTabs}
-        .columns=${this._columns(this.hass.language)}
+        .tabs=${lovelaceResourcesTabs}
+        .columns=${this._columns(this.hass.language, this.hass.localize)}
         .data=${this._resources}
         .noDataText=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.no_resources"

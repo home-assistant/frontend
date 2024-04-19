@@ -1,9 +1,8 @@
-import { mdiRoomService } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
+import { DEFAULT_SERVICE_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
-import { domainIconWithoutDefault } from "../common/entity/domain_icon";
 import { serviceIcon } from "../data/icons";
 import { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -41,10 +40,11 @@ export class HaServiceIcon extends LitElement {
   }
 
   private _renderFallback() {
+    const domain = computeDomain(this.service!);
+
     return html`
       <ha-svg-icon
-        .path=${domainIconWithoutDefault(computeDomain(this.service!)) ||
-        mdiRoomService}
+        .path=${FIXED_DOMAIN_ICONS[domain] || DEFAULT_SERVICE_ICON}
       ></ha-svg-icon>
     `;
   }

@@ -1,5 +1,6 @@
 import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
+import type { LovelaceSectionRawConfig } from "./section";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface ShowViewConfig {
@@ -17,12 +18,14 @@ export interface LovelaceBaseViewConfig {
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;
+  max_columns?: number; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   type?: string;
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
+  sections?: LovelaceSectionRawConfig[];
 }
 
 export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {

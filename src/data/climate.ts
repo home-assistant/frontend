@@ -72,6 +72,8 @@ export const enum ClimateEntityFeature {
   PRESET_MODE = 16,
   SWING_MODE = 32,
   AUX_HEAT = 64,
+  TURN_OFF = 128,
+  TURN_ON = 256,
 }
 
 const hvacModeOrdering = HVAC_MODES.reduce(

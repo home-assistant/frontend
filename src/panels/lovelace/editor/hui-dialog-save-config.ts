@@ -1,11 +1,11 @@
 import "@material/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
@@ -50,28 +50,39 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     if (!this._params) {
       return nothing;
     }
+
+    const heading = this.hass!.localize(
+      "ui.panel.lovelace.editor.save_config.header"
+    );
     return html`
       <ha-dialog
         open
         scrimClickAction
         escapeKeyAction
         @closed=${this._close}
-        .heading=${html`${this.hass!.localize(
-            "ui.panel.lovelace.editor.save_config.header"
-          )}<a
-            class="header_button"
+        .heading=${heading}
+      >
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass!.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title">${heading}</span>
+          <a
             href=${documentationUrl(this.hass!, "/lovelace/")}
             title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
             target="_blank"
             rel="noreferrer"
-            dir=${computeRTLDirection(this.hass!)}
+            slot="actionItems"
           >
             <ha-icon-button
               .path=${mdiHelpCircle}
               .label=${this.hass!.localize("ui.common.help")}
             ></ha-icon-button>
-          </a>`}
-      >
+          </a>
+        </ha-dialog-header>
         <div>
           <p>
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
@@ -88,7 +99,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
                   )}
-                  .dir=${computeRTLDirection(this.hass!)}
                 >
                   <ha-switch
                     .checked=${this._emptyConfig}
@@ -186,7 +196,19 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyleDialog];
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --dialog-content-padding: 0 24px 24px 24px;
+        }
+
+        ha-dialog-header a {
+          color: inherit;
+          text-decoration: none;
+        }
+      `,
+    ];
   }
 }
 

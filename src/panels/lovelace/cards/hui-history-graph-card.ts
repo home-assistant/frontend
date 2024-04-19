@@ -120,6 +120,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
+          this._entityIds,
           this.hass!.localize,
           sensorNumericDeviceClasses,
           this._config?.split_device_classes
@@ -238,6 +239,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                     ? this._config.show_names
                     : true}
                   .logarithmicScale=${this._config.logarithmic_scale || false}
+                  .minYAxis=${this._config.min_y_axis}
+                  .maxYAxis=${this._config.max_y_axis}
+                  .fitYData=${this._config.fit_y_data || false}
                 ></state-history-charts>
               `}
         </div>

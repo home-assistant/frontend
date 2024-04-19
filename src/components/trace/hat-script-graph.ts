@@ -17,10 +17,10 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 import { Condition, Trigger } from "../../data/automation";
 import {
   Action,
@@ -40,7 +40,9 @@ import {
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
+import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
+import "../ha-service-icon";
 import "./hat-graph-branch";
 import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 import "./hat-graph-node";
@@ -63,6 +65,8 @@ export class HatScriptGraph extends LitElement {
   @property({ attribute: false }) public trace!: TraceExtended;
 
   @property({ attribute: false }) public selected?: string;
+
+  public hass!: HomeAssistant;
 
   public renderedNodes: Record<string, NodeInfo> = {};
 
@@ -89,6 +93,7 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
         .notEnabled=${config.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -167,6 +172,7 @@ export class HatScriptGraph extends LitElement {
           ?track=${trace !== undefined}
           ?active=${this.selected === path}
           .notEnabled=${disabled || config.enabled === false}
+          .error=${this.trace.trace[path]?.some((tr) => tr.error)}
           slot="head"
           nofocus
         ></hat-graph-node>
@@ -415,13 +421,22 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiRoomService}
+        .iconPath=${node.service ? undefined : mdiRoomService}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
-      ></hat-graph-node>
+      >
+        ${node.service
+          ? html`<ha-service-icon
+              slot="icon"
+              .hass=${this.hass}
+              .service=${node.service}
+            ></ha-service-icon>`
+          : nothing}
+      </hat-graph-node>
     `;
   }
 
@@ -439,6 +454,7 @@ export class HatScriptGraph extends LitElement {
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -505,6 +521,7 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
+        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         .notEnabled=${disabled || node.enabled === false}
       ></hat-graph-node>
     `;
@@ -667,8 +684,6 @@ export class HatScriptGraph extends LitElement {
       }
       .parent {
         margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
         margin-top: 16px;
       }
       .error {

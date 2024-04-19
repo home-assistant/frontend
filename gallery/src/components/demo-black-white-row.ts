@@ -1,5 +1,5 @@
 import { Button } from "@material/mwc-button";
-import { html, LitElement, css, TemplateResult } from "lit";
+import { html, LitElement, css, TemplateResult, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -9,7 +9,7 @@ import "../../../src/components/ha-card";
 class DemoBlackWhiteRow extends LitElement {
   @property() title!: string;
 
-  @property() value!: any;
+  @property() value?: any;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -45,7 +45,9 @@ class DemoBlackWhiteRow extends LitElement {
               </mwc-button>
             </div>
           </ha-card>
-          <pre>${JSON.stringify(this.value, undefined, 2)}</pre>
+          ${this.value
+            ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
+            : nothing}
         </div>
       </div>
     `;

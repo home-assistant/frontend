@@ -82,6 +82,7 @@ export class HaTargetSelector extends LitElement {
       .deviceFilter=${this._filterDevices}
       .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
+      .createDomains=${this.selector.target?.create_domains}
     ></ha-target-picker>`;
   }
 

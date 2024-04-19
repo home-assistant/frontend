@@ -20,14 +20,14 @@ function findNestedItem(
   }, obj);
 }
 
-export function nestedArrayMove<T>(
-  obj: T | T[],
+export function nestedArrayMove<A>(
+  obj: A,
   oldIndex: number,
   newIndex: number,
   oldPath?: ItemPath,
   newPath?: ItemPath
-): T | T[] {
-  const newObj = Array.isArray(obj) ? [...obj] : { ...obj };
+): A {
+  const newObj = (Array.isArray(obj) ? [...obj] : { ...obj }) as A;
   const from = oldPath ? findNestedItem(newObj, oldPath) : newObj;
   const to = newPath ? findNestedItem(newObj, newPath, true) : newObj;
 

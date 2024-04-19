@@ -3,7 +3,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { computeRTL } from "../../common/util/compute_rtl";
 import type { HomeAssistant } from "../../types";
 import "../ha-relative-time";
 import "./state-badge";
@@ -15,9 +14,6 @@ class StateInfo extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ type: Boolean }) public inDialog = false;
-
-  // property used only in CSS
-  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   @property() public color?: string;
 
@@ -79,18 +75,6 @@ class StateInfo extends LitElement {
       </div>`;
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
-      this.rtl = computeRTL(this.hass);
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -106,17 +90,14 @@ class StateInfo extends LitElement {
 
       .info {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
         display: flex;
         flex-direction: column;
         justify-content: center;
         height: 100%;
         min-width: 0;
-      }
-
-      :host([rtl]) .info {
-        margin-right: 8px;
-        margin-left: 0;
-        text-align: right;
+        text-align: var(--float-start);
       }
 
       .name {

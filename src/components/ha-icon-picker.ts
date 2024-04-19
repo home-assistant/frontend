@@ -118,7 +118,7 @@ export class HaIconPicker extends LitElement {
               <ha-icon .icon=${this._value || this.placeholder} slot="icon">
               </ha-icon>
             `
-          : html`<slot name="fallback"></slot>`}
+          : html`<slot slot="icon" name="fallback"></slot>`}
       </ha-combo-box>
     `;
   }
