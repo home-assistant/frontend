@@ -257,15 +257,15 @@ export interface IconSelector {
   } | null;
 }
 
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: {} | null;
+}
+
 export interface LabelSelector {
   label: {
     multiple?: boolean;
   };
-}
-
-export interface ImageSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  image: {} | null;
 }
 
 export interface LanguageSelector {
