@@ -3491,7 +3491,7 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed at {time} (runtime: {executiontime} seconds)",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
-              "stopped_unknown_reason": "Stopped because of unknown reason at {time} (runtime: {executiontime} seconds)",
+              "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug."
