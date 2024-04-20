@@ -1145,7 +1145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:7.24.3":
+"@babel/plugin-transform-runtime@npm:7.24.3, @babel/plugin-transform-runtime@npm:^7.13.0":
   version: 7.24.3
   resolution: "@babel/plugin-transform-runtime@npm:7.24.3"
   dependencies:
@@ -9127,7 +9127,7 @@ __metadata:
     tar: "npm:7.0.1"
     terser-webpack-plugin: "npm:5.3.10"
     tinykeys: "npm:2.1.0"
-    transform-async-modules-webpack-plugin: "npm:1.0.4"
+    transform-async-modules-webpack-plugin: "npm:1.1.0"
     ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
@@ -13965,17 +13965,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"transform-async-modules-webpack-plugin@npm:1.0.4":
-  version: 1.0.4
-  resolution: "transform-async-modules-webpack-plugin@npm:1.0.4"
+"transform-async-modules-webpack-plugin@npm:1.1.0":
+  version: 1.1.0
+  resolution: "transform-async-modules-webpack-plugin@npm:1.1.0"
   dependencies:
     "@babel/core": "npm:^7.13.0"
+    "@babel/plugin-transform-runtime": "npm:^7.13.0"
     "@babel/preset-env": "npm:^7.13.0"
   peerDependencies:
     "@babel/core": ^7.13.0
+    "@babel/plugin-transform-runtime": ^7.13.0
     "@babel/preset-env": ^7.13.0
+    "@babel/runtime": ^7.13.0
     webpack: ^5.0.0
-  checksum: 10/dfb4c1a693897b0b35bf435130fd48fac8175fe60d681ef884bbdc0f1cd15017747f18b3d966bdcd96781ed85b284facbf007c6f358a6b495d46aa4358081909
+  checksum: 10/35e729c8ed44bf7cf5b6ae6e4ea5eb82eef44038ec13fba0a53eec551095be5553e3c99c6c7dec37d6b1fd3c9e04f35e94a246f735c81fb2d247dfad21678322
   languageName: node
   linkType: hard
 
