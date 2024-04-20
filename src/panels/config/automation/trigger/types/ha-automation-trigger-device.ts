@@ -89,7 +89,12 @@ export class HaDeviceTrigger extends LitElement {
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
-                this.hass.localize
+                this.hass.localize,
+                this.trigger
+              )}
+              .computeHelper=${this._extraFieldsComputeHelperCallback(
+                this.hass.localize,
+                this.trigger
               )}
               @value-changed=${this._extraFieldsChanged}
             ></ha-form>
@@ -177,12 +182,27 @@ export class HaDeviceTrigger extends LitElement {
     });
   }
 
-  private _extraFieldsComputeLabelCallback(localize) {
+  private _extraFieldsComputeLabelCallback(localize, trigger: DeviceTrigger) {
     // Returns a callback for ha-form to calculate labels per schema object
-    return (schema) =>
+    return (schema): string =>
       localize(
         `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
-      ) || schema.name;
+      ) ||
+      localize(
+        `component.${trigger.domain}.device_automation.extra_fields.${schema.name}`
+      ) ||
+      schema.name;
+  }
+
+  private _extraFieldsComputeHelperCallback(localize, trigger: DeviceTrigger) {
+    // Returns a callback for ha-form to calculate helper texts per schema object
+    return (schema): string | undefined =>
+      localize(
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields_descriptions.${schema.name}`
+      ) ||
+      localize(
+        `component.${trigger.domain}.device_automation.extra_fields_descriptions.${schema.name}`
+      );
   }
 
   static styles = css`
