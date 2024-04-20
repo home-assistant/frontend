@@ -99,6 +99,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         margin-block-end: 0px;
         letter-spacing: -0.012em;
         line-height: 32px;
+        text-align: var(--ha-card-title-text-align, start);
         display: block;
         padding: 24px 16px 16px;
       }
