@@ -1486,15 +1486,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:6.3.3":
-  version: 6.3.3
-  resolution: "@codemirror/commands@npm:6.3.3"
+"@codemirror/commands@npm:6.4.0":
+  version: 6.4.0
+  resolution: "@codemirror/commands@npm:6.4.0"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.4.0"
     "@codemirror/view": "npm:^6.0.0"
     "@lezer/common": "npm:^1.1.0"
-  checksum: 10/4b398b102d6afcbf0e0018b426287a7458867497811c9155790a3cc679b880765cd756bdb96bf35abc28fecb85c0938e618d39469ce8bc0724d4dea5d88f6ac2
+  checksum: 10/8cbd985f00e3352c2a928b8d23388395803c198768f6eb3e51f6b5a8e5954c48765152e85a0d6d4bf34ae11a8d271d81de87250b9a7ef57d58987cfa37191e6c
   languageName: node
   linkType: hard
 
@@ -6832,14 +6832,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:3.0.1":
-  version: 3.0.1
-  resolution: "date-fns-tz@npm:3.0.1"
-  dependencies:
-    lodash.clonedeep: "npm:^4.5.0"
+"date-fns-tz@npm:3.1.3":
+  version: 3.1.3
+  resolution: "date-fns-tz@npm:3.1.3"
   peerDependencies:
     date-fns: ^3.0.0
-  checksum: 10/d34eaf95510473cd6f22728a24a6d5ee191a6faa9d059d8ee659708936f1f4ae56dfe82b9d40ee983ca20e5d1a6950119e046d717f0a9f22e589f01975a1dea1
+  checksum: 10/eb5cb3b2cd152340004efda9f7905e571cf5140b8e85267b1eaa36c2f1eaa54a0f2e3b26e19794f2aca4d3b15aa3d52a5b2dadb540fcec74b239049c7792a981
   languageName: node
   linkType: hard
 
@@ -8946,7 +8944,7 @@ __metadata:
     "@braintree/sanitize-url": "npm:7.0.1"
     "@bundle-stats/plugin-webpack-filter": "npm:4.12.2"
     "@codemirror/autocomplete": "npm:6.16.0"
-    "@codemirror/commands": "npm:6.3.3"
+    "@codemirror/commands": "npm:6.4.0"
     "@codemirror/language": "npm:6.10.1"
     "@codemirror/legacy-modes": "npm:6.4.0"
     "@codemirror/search": "npm:6.5.6"
@@ -9057,7 +9055,7 @@ __metadata:
     core-js: "npm:3.37.0"
     cropperjs: "npm:1.6.1"
     date-fns: "npm:3.6.0"
-    date-fns-tz: "npm:3.0.1"
+    date-fns-tz: "npm:3.1.3"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:7.1.0"
@@ -9099,7 +9097,7 @@ __metadata:
     lit-analyzer: "npm:2.0.3"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.4.4"
-    magic-string: "npm:0.30.9"
+    magic-string: "npm:0.30.10"
     map-stream: "npm:0.0.7"
     marked: "npm:12.0.1"
     memoize-one: "npm:6.0.0"
@@ -10815,12 +10813,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:0.30.9":
-  version: 0.30.9
-  resolution: "magic-string@npm:0.30.9"
+"magic-string@npm:0.30.10, magic-string@npm:^0.30.3":
+  version: 0.30.10
+  resolution: "magic-string@npm:0.30.10"
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.4.15"
-  checksum: 10/a49b7f848e36914c2794e443d4da6579abebb3e57a5e98b1603958f4672d1435dc15261f70c2793e9b6d6c891191c83b9608322b48d0d76a9be32e73e039cc8a
+  checksum: 10/9f8bf6363a14c98a9d9f32ef833b194702a5c98fb931b05ac511b76f0b06fd30ed92beda6ca3261d2d52d21e39e891ef1136fbd032023f6cbb02d0b7d5767201
   languageName: node
   linkType: hard
 
@@ -10830,15 +10828,6 @@ __metadata:
   dependencies:
     sourcemap-codec: "npm:^1.4.8"
   checksum: 10/87a14b944bd169821cbd54b169a7ab6b0348fd44b5497266dc555dd70280744e9e88047da9dcb95675bdc23b1ce33f13398b0f70b3be7b858225ccb1d185ff51
-  languageName: node
-  linkType: hard
-
-"magic-string@npm:^0.30.3":
-  version: 0.30.10
-  resolution: "magic-string@npm:0.30.10"
-  dependencies:
-    "@jridgewell/sourcemap-codec": "npm:^1.4.15"
-  checksum: 10/9f8bf6363a14c98a9d9f32ef833b194702a5c98fb931b05ac511b76f0b06fd30ed92beda6ca3261d2d52d21e39e891ef1136fbd032023f6cbb02d0b7d5767201
   languageName: node
   linkType: hard
 
