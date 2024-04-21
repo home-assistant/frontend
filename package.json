@@ -182,7 +182,7 @@
     "@types/qrcode": "1.5.5",
     "@types/serve-handler": "6.1.4",
     "@types/sortablejs": "1.15.8",
-    "@types/tar": "6.1.12",
+    "@types/tar": "6.1.13",
     "@types/ua-parser-js": "0.7.39",
     "@types/webspeechapi": "0.0.29",
     "@typescript-eslint/eslint-plugin": "7.7.0",
