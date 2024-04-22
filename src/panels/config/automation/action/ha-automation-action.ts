@@ -133,6 +133,7 @@ export default class HaAutomationAction extends LitElement {
             >
               <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
+            <slot name="automationExtraButtons"></slot>
           </div>
         </div>
       </ha-sortable>

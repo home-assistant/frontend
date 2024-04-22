@@ -37,18 +37,17 @@ export class HaParallelAction extends LitElement implements ActionElement {
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
       ></ha-automation-action>
-      <div class="buttons">
-        <ha-button
-          outlined
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.type.parallel.add_sequence"
-          )}
-          @click=${this._addSequenceAction}
-        >
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </ha-button>
-      </div>
+      <ha-button
+        slot="automationExtraButtons"
+        outlined
+        .disabled=${this.disabled}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.parallel.add_sequence"
+        )}
+        @click=${this._addSequenceAction}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </ha-button>
     `;
   }
 
