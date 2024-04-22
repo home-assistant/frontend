@@ -783,7 +783,8 @@
         "no-data": "No data",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
-        "clear": "Clear"
+        "clear": "Clear",
+        "ungrouped": "Ungrouped"
       },
       "media-browser": {
         "tts": {
