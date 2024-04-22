@@ -4052,7 +4052,8 @@
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
-              "status": "Status"
+              "status": "Status",
+              "domain": "Domain"
             },
             "selected": "{number} selected",
             "enable_selected": {
