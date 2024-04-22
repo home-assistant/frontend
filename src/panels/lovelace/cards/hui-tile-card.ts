@@ -245,6 +245,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-relative-time>
           `;
         }
+        if (content === "last_triggered") {
+          return html`
+            <ha-relative-time
+              .hass=${this.hass}
+              .datetime=${stateObj.attributes.last_triggered}
+            ></ha-relative-time>
+          `;
+        }
         if (stateObj.attributes[content] == null) {
           return undefined;
         }

@@ -79,6 +79,12 @@ export class HaConfigLabels extends LitElement {
         sortable: true,
         filterable: true,
         grows: true,
+        template: (label) => html`
+          <div>${label.name}</div>
+          ${label.description
+            ? html`<div class="secondary">${label.description}</div>`
+            : nothing}
+        `,
       },
       actions: {
         title: "",

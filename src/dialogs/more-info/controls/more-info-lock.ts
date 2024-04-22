@@ -170,7 +170,7 @@ class MoreInfoLock extends LitElement {
           --control-button-border-radius: 24px;
         }
         .open-button {
-          width: 100px;
+          width: 130px;
           --control-button-background-color: var(--state-color);
         }
         .open-button.confirm {

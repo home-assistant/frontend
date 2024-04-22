@@ -1,6 +1,6 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiPlus } from "@mdi/js";
+import { mdiChevronRight, mdiMenuDown, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -13,6 +13,7 @@ import {
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
@@ -24,6 +25,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
@@ -37,12 +39,15 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-menu-item";
+import "../../../components/ha-sub-menu";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
   computeDeviceName,
+  updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
@@ -52,6 +57,7 @@ import {
 import { IntegrationManifest } from "../../../data/integration";
 import {
   LabelRegistryEntry,
+  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -62,6 +68,12 @@ import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -90,6 +102,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  @state() private _selected: string[] = [];
 
   @state() private _filter: string = history.state?.filter || "";
 
@@ -535,6 +549,43 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       this._labels
     );
 
+    const labelItems = html`${this._labels?.map((label) => {
+        const color = label.color ? computeCssColor(label.color) : undefined;
+        const selected = this._selected.every((deviceId) =>
+          this.hass.devices[deviceId]?.labels.includes(label.label_id)
+        );
+        const partial =
+          !selected &&
+          this._selected.some((deviceId) =>
+            this.hass.devices[deviceId]?.labels.includes(label.label_id)
+          );
+        return html`<ha-menu-item
+          .value=${label.label_id}
+          .action=${selected ? "remove" : "add"}
+          @click=${this._handleBulkLabel}
+          keep-open
+        >
+          <ha-checkbox
+            slot="start"
+            .checked=${selected}
+            .indeterminate=${partial}
+            reducedTouchTarget
+          ></ha-checkbox>
+          <ha-label style=${color ? `--color: ${color}` : ""}>
+            ${label.icon
+              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+              : nothing}
+            ${label.name}
+          </ha-label>
+        </ha-menu-item>`;
+      })}
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.labels.add_label")}
+        </div></ha-menu-item
+      >`;
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -545,14 +596,23 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .tabs=${configSections.devices}
         .route=${this.route}
         .searchLabel=${this.hass.localize(
-          "ui.panel.config.devices.picker.search"
+          "ui.panel.config.devices.picker.search",
+          { number: devicesOutput.length }
         )}
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${devicesOutput}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         .filter=${this._filter}
         hasFilters
-        .filters=${Object.values(this._filters).filter(
-          (filter) => filter.value?.length
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter.value)
+            ? filter.value.length
+            : filter.value &&
+              Object.values(filter.value).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
         ).length}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
@@ -621,6 +681,49 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
+
+        ${!this.narrow
+          ? html`<ha-button-menu-new slot="selection-bar">
+              <ha-assist-chip
+                slot="trigger"
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_actions.add_label"
+                )}
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>
+              ${labelItems}
+            </ha-button-menu-new>`
+          : html` <ha-button-menu-new has-overflow slot="selection-bar"
+              ><ha-assist-chip
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.bulk_action"
+                )}
+                slot="trigger"
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>
+              <ha-sub-menu>
+                <ha-menu-item slot="item">
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.add_label"
+                    )}
+                  </div>
+                  <ha-svg-icon
+                    slot="end"
+                    .path=${mdiChevronRight}
+                  ></ha-svg-icon>
+                </ha-menu-item>
+                <ha-menu slot="menu">${labelItems}</ha-menu>
+              </ha-sub-menu>
+            </ha-button-menu-new>`}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -700,6 +803,58 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
+  private async _handleBulkLabel(ev) {
+    const label = ev.currentTarget.value;
+    const action = ev.currentTarget.action;
+    this._bulkLabel(label, action);
+  }
+
+  private async _bulkLabel(label: string, action: "add" | "remove") {
+    const promises: Promise<DeviceRegistryEntry>[] = [];
+    this._selected.forEach((deviceId) => {
+      promises.push(
+        updateDeviceRegistryEntry(this.hass, deviceId, {
+          labels:
+            action === "add"
+              ? this.hass.devices[deviceId].labels.concat(label)
+              : this.hass.devices[deviceId].labels.filter(
+                  (lbl) => lbl !== label
+                ),
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
+  }
+
+  private _bulkCreateLabel() {
+    showLabelDetailDialog(this, {
+      createEntry: async (values) => {
+        const label = await createLabelRegistryEntry(this.hass, values);
+        this._bulkLabel(label.label_id, "add");
+        return label;
+      },
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       css`
@@ -720,6 +875,16 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           padding-inline-start: 8px;
           text-transform: uppercase;
           direction: var(--direction);
+        }
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+        }
+        ha-button-menu-new ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
+        }
+        ha-label {
+          --ha-label-background-color: var(--color, var(--grey-color));
+          --ha-label-background-opacity: 0.5;
         }
       `,
       haStyle,

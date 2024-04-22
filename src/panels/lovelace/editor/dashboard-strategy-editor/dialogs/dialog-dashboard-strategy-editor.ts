@@ -172,12 +172,14 @@ class DialogDashboardStrategyEditor extends LitElement {
     `;
   }
 
-  private _takeControl() {
+  private _takeControl(ev) {
+    ev.stopPropagation();
     this._params!.takeControl();
     this.closeDialog();
   }
 
-  private _showRawConfigEditor() {
+  private _showRawConfigEditor(ev) {
+    ev.stopPropagation();
     this._params!.showRawConfigEditor();
     this.closeDialog();
   }

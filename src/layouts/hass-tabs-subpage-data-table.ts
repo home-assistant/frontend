@@ -321,19 +321,28 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-menu-item .value=${undefined} @click=${this._selectAll}
-                    >${localize("ui.components.subpage-data-table.select_all")}
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                    <div slot="headline">
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </div>
                   </ha-menu-item>
-                  <ha-menu-item .value=${undefined} @click=${this._selectNone}
-                    >${localize("ui.components.subpage-data-table.select_none")}
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </div>
                   </ha-menu-item>
                   <md-divider role="separator" tabindex="-1"></md-divider>
                   <ha-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
-                    >${localize(
-                      "ui.components.subpage-data-table.close_select_mode"
-                    )}
+                  >
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.close_select_mode"
+                      )}
+                    </div>
                   </ha-menu-item>
                 </ha-button-menu-new>
                 <p>
@@ -349,37 +358,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           : nothing}
         ${this.showFilters
           ? !showPane
-            ? html`<ha-dialog
-                open
-                hideActions
-                .heading=${localize("ui.components.subpage-data-table.filters")}
-              >
-                <ha-dialog-header slot="heading">
-                  <ha-icon-button
-                    slot="navigationIcon"
-                    .path=${mdiClose}
-                    @click=${this._toggleFilters}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.close_filter"
-                    )}
-                  ></ha-icon-button>
-                  <span slot="title"
-                    >${localize(
-                      "ui.components.subpage-data-table.filters"
-                    )}</span
-                  >
-                  <ha-icon-button
-                    slot="actionItems"
-                    @click=${this._clearFilters}
-                    .path=${mdiFilterVariantRemove}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.clear_filter"
-                    )}
-                  ></ha-icon-button>
-                </ha-dialog-header>
-                <div class="filter-dialog-content">
-                  <slot name="filter-pane"></slot></div
-              ></ha-dialog>`
+            ? nothing
             : html`<div class="pane" slot="pane">
                 <div class="table-header">
                   <ha-assist-chip
@@ -394,13 +373,15 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiFilterVariant}
                     ></ha-svg-icon>
                   </ha-assist-chip>
-                  <ha-icon-button
-                    .path=${mdiFilterVariantRemove}
-                    @click=${this._clearFilters}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.clear_filter"
-                    )}
-                  ></ha-icon-button>
+                  ${this.filters
+                    ? html`<ha-icon-button
+                        .path=${mdiFilterVariantRemove}
+                        @click=${this._clearFilters}
+                        .label=${localize(
+                          "ui.components.subpage-data-table.clear_filter"
+                        )}
+                      ></ha-icon-button>`
+                    : nothing}
                 </div>
                 <div class="pane-content">
                   <slot name="filter-pane"></slot>
@@ -512,6 +493,47 @@ export class HaTabsSubpageDataTable extends LitElement {
             : nothing
         )}
       </ha-menu>
+      ${this.showFilters && !showPane
+        ? html`<ha-dialog
+            open
+            .heading=${localize("ui.components.subpage-data-table.filters")}
+          >
+            <ha-dialog-header slot="heading">
+              <ha-icon-button
+                slot="navigationIcon"
+                .path=${mdiClose}
+                @click=${this._toggleFilters}
+                .label=${localize(
+                  "ui.components.subpage-data-table.close_filter"
+                )}
+              ></ha-icon-button>
+              <span slot="title"
+                >${localize("ui.components.subpage-data-table.filters")}</span
+              >
+              ${this.filters
+                ? html`<ha-icon-button
+                    slot="actionItems"
+                    @click=${this._clearFilters}
+                    .path=${mdiFilterVariantRemove}
+                    .label=${localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
+                  ></ha-icon-button>`
+                : nothing}
+            </ha-dialog-header>
+            <div class="filter-dialog-content">
+              <slot name="filter-pane"></slot>
+            </div>
+            <div slot="primaryAction">
+              <ha-button @click=${this._toggleFilters}>
+                ${this.hass.localize(
+                  "ui.components.subpage-data-table.show_results",
+                  { number: this.data.length }
+                )}
+              </ha-button>
+            </div>
+          </ha-dialog>`
+        : nothing}
     `;
   }
 
@@ -573,6 +595,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     return css`
       :host {
         display: block;
+        height: 100%;
       }
 
       ha-data-table {
@@ -728,7 +751,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         padding: 8px 12px;
         box-sizing: border-box;
         font-size: 14px;
-        --ha-assist-chip-container-color: var(--primary-background-color);
+        --ha-assist-chip-container-color: var(--card-background-color);
       }
 
       .selection-controls {
@@ -755,6 +778,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
       ha-assist-chip {
         --ha-assist-chip-container-shape: 10px;
+        --ha-assist-chip-container-color: var(--card-background-color);
       }
 
       .select-mode-chip {
@@ -777,7 +801,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
 
       .filter-dialog-content {
-        height: calc(100vh - 1px - var(--header-height));
+        height: calc(100vh - 1px - 61px - var(--header-height));
         display: flex;
         flex-direction: column;
       }

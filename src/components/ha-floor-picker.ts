@@ -10,7 +10,10 @@ import {
   ScorableTextItem,
   fuzzyFilterSort,
 } from "../common/string/filter/sequence-matching";
-import { AreaRegistryEntry } from "../data/area_registry";
+import {
+  AreaRegistryEntry,
+  updateAreaRegistryEntry,
+} from "../data/area_registry";
 import {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -437,11 +440,18 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
 
     (ev.target as any).value = this._value;
 
+    this.hass.loadFragmentTranslation("config");
+
     showFloorRegistryDetailDialog(this, {
       suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
-      createEntry: async (values) => {
+      createEntry: async (values, addedAreas) => {
         try {
           const floor = await createFloorRegistryEntry(this.hass, values);
+          addedAreas.forEach((areaId) => {
+            updateAreaRegistryEntry(this.hass, areaId, {
+              floor_id: floor.floor_id,
+            });
+          });
           const floors = [...this._floors!, floor];
           this.comboBox.filteredItems = this._getFloors(
             floors,
