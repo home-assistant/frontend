@@ -186,10 +186,10 @@ export class HaDeviceTrigger extends LitElement {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema): string =>
       localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
+        `component.${trigger.domain}.device_automation.extra_fields.${schema.name}`
       ) ||
       localize(
-        `component.${trigger.domain}.device_automation.extra_fields.${schema.name}`
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
       ) ||
       schema.name;
   }
@@ -198,10 +198,10 @@ export class HaDeviceTrigger extends LitElement {
     // Returns a callback for ha-form to calculate helper texts per schema object
     return (schema): string | undefined =>
       localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields_descriptions.${schema.name}`
+        `component.${trigger.domain}.device_automation.extra_fields_descriptions.${schema.name}`
       ) ||
       localize(
-        `component.${trigger.domain}.device_automation.extra_fields_descriptions.${schema.name}`
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields_descriptions.${schema.name}`
       );
   }
 
