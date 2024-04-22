@@ -40,6 +40,7 @@ export class HaStateControlValvePosition extends LitElement {
 
     return html`
       <ha-control-slider
+        touch-action="none"
         vertical
         .value=${this.value}
         min="0"
