@@ -567,6 +567,11 @@ export class HaTabsSubpageDataTable extends LitElement {
       this._sortDirection = null;
     }
     this._sortColumn = this._sortDirection === null ? undefined : columnId;
+
+    fireEvent(this, "sorting-changed", {
+      column: columnId,
+      direction: this._sortDirection,
+    });
   }
 
   private _handleGroupBy(ev) {
