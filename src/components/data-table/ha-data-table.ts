@@ -142,6 +142,8 @@ export class HaDataTable extends LitElement {
 
   @property() public groupColumn?: string;
 
+  @property({ attribute: false }) public groupOrder?: string[];
+
   @property() public sortColumn?: string;
 
   @property() public sortDirection: SortingDirection = null;
@@ -254,7 +256,8 @@ export class HaDataTable extends LitElement {
       properties.has("_filter") ||
       properties.has("sortColumn") ||
       properties.has("sortDirection") ||
-      properties.has("groupColumn")
+      properties.has("groupColumn") ||
+      properties.has("groupOrder")
     ) {
       this._sortFilterData();
     }
@@ -530,13 +533,24 @@ export class HaDataTable extends LitElement {
         const sorted: {
           [key: string]: DataTableRowData[];
         } = Object.keys(grouped)
-          .sort((a, b) =>
-            stringCompare(
+          .sort((a, b) => {
+            const orderA = this.groupOrder?.indexOf(a) ?? -1;
+            const orderB = this.groupOrder?.indexOf(b) ?? -1;
+            if (orderA !== orderB) {
+              if (orderA === -1) {
+                return 1;
+              }
+              if (orderB === -1) {
+                return -1;
+              }
+              return orderA - orderB;
+            }
+            return stringCompare(
               ["", "-", "—"].includes(a) ? "zzz" : a,
               ["", "-", "—"].includes(b) ? "zzz" : b,
               this.hass.locale.language
-            )
-          )
+            );
+          })
           .reduce((obj, key) => {
             obj[key] = grouped[key];
             return obj;
