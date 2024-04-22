@@ -1,13 +1,13 @@
-import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiChevronDown } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import {
   customElement,
@@ -22,7 +22,9 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
+import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -32,8 +34,6 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { groupBy } from "../../common/util/group-by";
-import { stringCompare } from "../../common/string/compare";
 
 declare global {
   // for fire event
@@ -158,6 +158,8 @@ export class HaDataTable extends LitElement {
 
   @state() private _items: DataTableRowData[] = [];
 
+  @state() private _collapsedGroups: string[] = [];
+
   private _checkableRowsCount?: number;
 
   private _checkedRows: string[] = [];
@@ -248,13 +250,18 @@ export class HaDataTable extends LitElement {
       ).length;
     }
 
+    if (properties.has("groupColumn")) {
+      this._collapsedGroups = [];
+    }
+
     if (
       properties.has("data") ||
       properties.has("columns") ||
       properties.has("_filter") ||
       properties.has("sortColumn") ||
       properties.has("sortDirection") ||
-      properties.has("groupColumn")
+      properties.has("groupColumn") ||
+      properties.has("_collapsedGroups")
     ) {
       this._sortFilterData();
     }
@@ -552,13 +559,25 @@ export class HaDataTable extends LitElement {
               content: html`<div
                 class="mdc-data-table__cell group-header"
                 role="cell"
+                .group=${groupName}
+                @click=${this._collapseGroup}
               >
-                ${groupName === UNDEFINED_GROUP_KEY ? "" : groupName || ""}
+                <ha-icon-button
+                  .path=${mdiChevronDown}
+                  class=${this._collapsedGroups.includes(groupName)
+                    ? "collapsed"
+                    : ""}
+                >
+                </ha-icon-button>
+                ${groupName === UNDEFINED_GROUP_KEY
+                  ? this.hass.localize("ui.components.data-table.ungrouped")
+                  : groupName || ""}
               </div>`,
             });
           }
-
-          groupedItems.push(...rows);
+          if (!this._collapsedGroups.includes(groupName)) {
+            groupedItems.push(...rows);
+          }
         });
 
         this._items = groupedItems;
@@ -678,6 +697,17 @@ export class HaDataTable extends LitElement {
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
+
+  private _collapseGroup = (ev: Event) => {
+    const groupName = (ev.currentTarget as any).group;
+    if (this._collapsedGroups.includes(groupName)) {
+      this._collapsedGroups = this._collapsedGroups.filter(
+        (grp) => grp !== groupName
+      );
+    } else {
+      this._collapsedGroups = [...this._collapsedGroups, groupName];
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [
@@ -931,8 +961,21 @@ export class HaDataTable extends LitElement {
 
         .group-header {
           padding-top: 12px;
+          padding-left: 12px;
+          padding-inline-start: 12px;
           width: 100%;
           font-weight: 500;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+        }
+
+        .group-header ha-icon-button {
+          transition: transform 0.2s ease;
+        }
+
+        .group-header ha-icon-button.collapsed {
+          transform: rotate(180deg);
         }
 
         :host {
