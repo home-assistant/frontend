@@ -3837,6 +3837,14 @@
               "advanced_options": "Advanced options",
               "external_activation": "Allow external activation of remote control",
               "external_activation_secondary": "Allows you to turn on remote control from your Nabu Casa account page, even if you're outside your local network",
+              "strict_connection": "Restrict access to logged in users",
+              "strict_connection_secondary": "When a user is not logged in to your Home Assistant instance, they will not be able to access your instance remotely",
+              "strict_connection_mode": "Mode",
+              "strict_connection_modes": {
+                "disabled": "Disabled",
+                "static_page": "Error page",
+                "drop_connection": "Drop connection"
+              },
               "certificate_info": "Certificate info",
               "certificate_expire": "Will be renewed at {date}",
               "more_info": "More info"

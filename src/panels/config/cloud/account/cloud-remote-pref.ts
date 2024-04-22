@@ -33,7 +33,7 @@ export class CloudRemotePref extends LitElement {
       return nothing;
     }
 
-    const { remote_enabled, remote_allow_remote_enable } =
+    const { remote_enabled, remote_allow_remote_enable, strict_connection } =
       this.cloudStatus.prefs;
 
     const {
@@ -156,6 +156,42 @@ export class CloudRemotePref extends LitElement {
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection_secondary"
+                )}</span
+              >
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection_mode"
+                )}
+                @selected=${this._setStrictConnectionMode}
+                naturalMenuWidth
+                .value=${strict_connection}
+              >
+                <ha-list-item value="disabled">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.disabled"
+                  )}
+                </ha-list-item>
+                <ha-list-item value="static_page">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.static_page"
+                  )}
+                </ha-list-item>
+                <ha-list-item value="drop_connection">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.drop_connection"
+                  )}
+                </ha-list-item>
+              </ha-select>
+            </ha-settings-row>
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.certificate_info"
                 )}</span
               >
@@ -220,6 +256,18 @@ export class CloudRemotePref extends LitElement {
     } catch (err: any) {
       alert(err.message);
       toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _setStrictConnectionMode(ev) {
+    const mode = ev.target.value;
+    try {
+      await updateCloudPref(this.hass, {
+        strict_connection: mode,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(err.message);
     }
   }
 
