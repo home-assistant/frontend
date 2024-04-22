@@ -4026,7 +4026,12 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search {number} devices",
-            "state": "State"
+            "state": "State",
+            "bulk_actions": {
+              "move_area": "Move to area",
+              "no_area": "No area",
+              "add_area": "Add area"
+            }
           }
         },
         "entities": {
