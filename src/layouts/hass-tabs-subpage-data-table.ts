@@ -165,6 +165,8 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property() public initialGroupColumn?: string;
 
+  @property({ attribute: false }) public groupOrder?: string[];
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -422,6 +424,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .sortColumn=${this._sortColumn}
                 .sortDirection=${this._sortDirection}
                 .groupColumn=${this._groupColumn}
+                .groupOrder=${this.groupOrder}
               >
                 ${!this.narrow
                   ? html`
