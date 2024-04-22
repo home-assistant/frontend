@@ -1,10 +1,9 @@
 import { mdiPlus } from "@mdi/js";
-import { CSSResultGroup, css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import { Action, ParallelAction } from "../../../../../data/script";
-import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
@@ -36,18 +35,19 @@ export class HaParallelAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
-      ></ha-automation-action>
-      <ha-button
-        slot="automationExtraButtons"
-        outlined
-        .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.parallel.add_sequence"
-        )}
-        @click=${this._addSequenceAction}
       >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </ha-button>
+        <ha-button
+          slot="automationExtraButtons"
+          outlined
+          .disabled=${this.disabled}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.type.parallel.add_sequence"
+          )}
+          @click=${this._addSequenceAction}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </ha-button>
+      </ha-automation-action>
     `;
   }
 
@@ -73,17 +73,6 @@ export class HaParallelAction extends LitElement implements ActionElement {
         parallel: value,
       },
     });
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .buttons {
-          padding-top: 16px;
-        }
-      `,
-    ];
   }
 }
 
