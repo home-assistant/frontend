@@ -35,15 +35,6 @@ import { filterData, sortData } from "./sort-filter";
 import { groupBy } from "../../common/util/group-by";
 import { stringCompare } from "../../common/string/compare";
 
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "selection-changed": SelectionChangedEvent;
-    "row-click": RowClickedEvent;
-    "sorting-changed": SortingChangedEvent;
-  }
-}
-
 export interface RowClickedEvent {
   id: string;
 }
@@ -213,17 +204,19 @@ export class HaDataTable extends LitElement {
         (column) => column.filterable
       );
 
-      for (const columnId in this.columns) {
-        if (this.columns[columnId].direction) {
-          this.sortDirection = this.columns[columnId].direction!;
-          this.sortColumn = columnId;
+      if (!this.sortColumn) {
+        for (const columnId in this.columns) {
+          if (this.columns[columnId].direction) {
+            this.sortDirection = this.columns[columnId].direction!;
+            this.sortColumn = columnId;
 
-          fireEvent(this, "sorting-changed", {
-            column: columnId,
-            direction: this.sortDirection,
-          });
+            fireEvent(this, "sorting-changed", {
+              column: columnId,
+              direction: this.sortDirection,
+            });
 
-          break;
+            break;
+          }
         }
       }
 
@@ -1030,5 +1023,12 @@ export class HaDataTable extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-data-table": HaDataTable;
+  }
+
+  // for fire event
+  interface HASSDomEvents {
+    "selection-changed": SelectionChangedEvent;
+    "row-click": RowClickedEvent;
+    "sorting-changed": SortingChangedEvent;
   }
 }
