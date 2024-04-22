@@ -21,6 +21,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { storage } from "../../../common/decorators/storage";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
@@ -78,18 +79,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  hasRejectedItems,
-  rejectedItems,
-} from "../../../common/util/promise-all-settled-results";
-import { showAlertDialog } from "../../lovelace/custom-card-helpers";
-import { storage } from "../../../common/decorators/storage";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -132,17 +127,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state()
   _labels!: LabelRegistryEntry[];
-  
+
   @storage({ key: "devices-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
 
   @storage({ key: "devices-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string;
-  
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
-  
+
   private _ignoreLocationChange = false;
 
   public connectedCallback() {
