@@ -671,7 +671,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               )
         ).length}
         .initialGroupColumn=${this._activeGrouping}
-        .initalSorting=${this._activeSorting}
+        .initialSorting=${this._activeSorting}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @sorting-changed=${this._handleSortingChanged}

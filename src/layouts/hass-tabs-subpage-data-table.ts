@@ -158,7 +158,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ type: Boolean }) public showFilters = false;
 
-  @property({ attribute: false }) public initalSorting?: {
+  @property({ attribute: false }) public initialSorting?: {
     column: string;
     direction: SortingDirection;
   };
@@ -196,9 +196,9 @@ export class HaTabsSubpageDataTable extends LitElement {
     if (this.initialGroupColumn) {
       this._setGroupColumn(this.initialGroupColumn);
     }
-    if (this.initalSorting) {
-      this._sortColumn = this.initalSorting.column;
-      this._sortDirection = this.initalSorting.direction;
+    if (this.initialSorting) {
+      this._sortColumn = this.initialSorting.column;
+      this._sortDirection = this.initialSorting.direction;
     }
   }
 
