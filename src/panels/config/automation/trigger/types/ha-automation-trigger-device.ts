@@ -187,11 +187,7 @@ export class HaDeviceTrigger extends LitElement {
     return (schema): string =>
       localize(
         `component.${trigger.domain}.device_automation.extra_fields.${schema.name}`
-      ) ||
-      localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
-      ) ||
-      schema.name;
+      ) || schema.name;
   }
 
   private _extraFieldsComputeHelperCallback(localize, trigger: DeviceTrigger) {
@@ -199,9 +195,6 @@ export class HaDeviceTrigger extends LitElement {
     return (schema): string | undefined =>
       localize(
         `component.${trigger.domain}.device_automation.extra_fields_descriptions.${schema.name}`
-      ) ||
-      localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields_descriptions.${schema.name}`
       );
   }
 

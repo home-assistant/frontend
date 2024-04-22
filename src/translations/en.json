@@ -2862,12 +2862,6 @@
                 "device": {
                   "label": "Device",
                   "trigger": "Trigger",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration (optional)",
-                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
-                  },
                   "description": {
                     "picker": "When something happens to a device. Great way to start."
                   }
