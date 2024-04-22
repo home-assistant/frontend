@@ -783,7 +783,8 @@
         "no-data": "No data",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
-        "clear": "Clear"
+        "clear": "Clear",
+        "ungrouped": "Ungrouped"
       },
       "media-browser": {
         "tts": {
@@ -4052,7 +4053,8 @@
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
-              "status": "Status"
+              "status": "Status",
+              "domain": "Domain"
             },
             "selected": "{number} selected",
             "enable_selected": {
