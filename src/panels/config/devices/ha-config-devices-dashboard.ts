@@ -37,6 +37,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
@@ -83,6 +84,12 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
+import { storage } from "../../../common/decorators/storage";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -125,11 +132,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state()
   _labels!: LabelRegistryEntry[];
+  
+  @storage({ key: "devices-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
 
+  @storage({ key: "devices-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+  
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
-
+  
   private _ignoreLocationChange = false;
 
   public connectedCallback() {
@@ -662,8 +675,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initalSorting=${this._activeSorting}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
@@ -983,6 +1000,14 @@ ${rejected
         return label;
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
