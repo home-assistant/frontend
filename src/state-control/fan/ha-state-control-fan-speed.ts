@@ -111,6 +111,7 @@ export class HaStateControlFanSpeed extends LitElement {
 
     return html`
       <ha-control-slider
+        touch-action="none"
         vertical
         min="0"
         max="100"
