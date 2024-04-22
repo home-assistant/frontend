@@ -3099,13 +3099,6 @@
                 "device": {
                   "label": "Device",
                   "condition": "Condition",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration",
-                    "hvac_mode": "HVAC mode",
-                    "preset_mode": "Preset mode"
-                  },
                   "description": {
                     "picker": "Set of conditions provided by your device. Great way to start."
                   }
@@ -3336,17 +3329,6 @@
                 "device_id": {
                   "label": "Device",
                   "action": "Action",
-                  "extra_fields": {
-                    "code": "Code",
-                    "message": "Message",
-                    "title": "Title",
-                    "position": "[%key:ui::card::cover::position%]",
-                    "mode": "Mode",
-                    "humidity": "Humidity",
-                    "value": "Value",
-                    "brightness_pct": "[%key:ui::card::light::brightness%]",
-                    "flash": "Flash"
-                  },
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
                     "no_device": "Device action"
