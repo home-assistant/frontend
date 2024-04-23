@@ -450,6 +450,8 @@ export class HaDataTable extends LitElement {
           }
           return html`
             <div
+              @mouseover=${this._setTitle}
+              @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
                 "mdc-data-table__cell--flex": column.type === "flex",
@@ -674,6 +676,13 @@ export class HaDataTable extends LitElement {
     const rowId = (ev.currentTarget as any).rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
+
+  private _setTitle(ev: Event) {
+    const target = ev.currentTarget as HTMLElement;
+    if (target.scrollWidth > target.offsetWidth) {
+      target.setAttribute("title", target.innerText);
+    }
+  }
 
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
