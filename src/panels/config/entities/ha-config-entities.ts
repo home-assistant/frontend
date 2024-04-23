@@ -94,6 +94,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { domainToName } from "../../../data/integration";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -110,6 +111,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   localized_platform: string;
+  domain: string;
   label_entries: LabelRegistryEntry[];
 }
 
@@ -260,6 +262,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         filterable: true,
         width: "20%",
+      },
+      domain: {
+        title: localize("ui.panel.config.entities.picker.headers.domain"),
+        sortable: true,
+        hidden: true,
+        filterable: true,
+        groupable: true,
       },
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
@@ -467,9 +476,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ),
           unavailable,
           restored,
-          localized_platform:
-            localize(`component.${entry.platform}.title`) || entry.platform,
+          localized_platform: domainToName(localize, entry.platform),
           area: area ? area.name : "—",
+          domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.restored")
             : unavailable
