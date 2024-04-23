@@ -55,6 +55,8 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
+  @property({ attribute: false }) public initialCollapsedGroups: string[] = [];
+
   /**
    * Object with the columns.
    * @type {Object}
@@ -425,6 +427,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .sortDirection=${this._sortDirection}
                 .groupColumn=${this._groupColumn}
                 .groupOrder=${this.groupOrder}
+                .initialCollapsedGroups=${this.initialCollapsedGroups}
               >
                 ${!this.narrow
                   ? html`
