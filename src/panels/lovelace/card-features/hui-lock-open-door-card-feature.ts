@@ -1,3 +1,4 @@
+import { mdiCheck } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -87,14 +88,17 @@ class HuiLockOpenDoorCardFeature
     }
 
     return html`
-      <ha-control-button-group>
-        ${this._buttonState === "success"
-          ? html`
-              <ha-control-button class="open-success">
+      ${this._buttonState === "success"
+        ? html`
+            <div class="buttons">
+              <p class="open-success">
+                <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
                 ${this.hass.localize("ui.card.lock.open_door_success")}
-              </ha-control-button>
-            `
-          : html`
+              </p>
+            </div>
+          `
+        : html`
+            <ha-control-button-group>
               <ha-control-button
                 .disabled=${!isAvailable(this.stateObj)}
                 class="open-button ${this._buttonState}"
@@ -104,13 +108,19 @@ class HuiLockOpenDoorCardFeature
                   ? this.hass.localize("ui.card.lock.open_door_confirm")
                   : this.hass.localize("ui.card.lock.open_door")}
               </ha-control-button>
-            `}
-      </ha-control-button-group>
+            </ha-control-button-group>
+          `}
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
+      .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0;
+      }
       ha-control-button {
         font-size: 14px;
       }
@@ -125,7 +135,14 @@ class HuiLockOpenDoorCardFeature
         --control-button-background-color: var(--warning-color);
       }
       .open-success {
-        --control-button-background-color: var(--success-color);
+        font-size: 14px;
+        line-height: 14px;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        font-weight: 500;
+        color: var(--success-color);
       }
       ha-control-button-group + ha-attributes:not([empty]) {
         margin-top: 16px;
