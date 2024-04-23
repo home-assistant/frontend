@@ -424,9 +424,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-menu-item
       >`;
+
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+
     const automations = this._automations(
       this.automations,
       this._entityReg,

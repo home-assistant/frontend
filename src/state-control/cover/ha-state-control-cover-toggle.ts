@@ -106,6 +106,7 @@ export class HaStateControlCoverToggle extends LitElement {
 
     return html`
       <ha-control-switch
+        touch-action="none"
         vertical
         reversed
         .checked=${isOn}
