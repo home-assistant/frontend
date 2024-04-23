@@ -43,6 +43,10 @@ export interface SelectionChangedEvent {
   value: string[];
 }
 
+export interface CollapsedChangedEvent {
+  value: string[];
+}
+
 export interface SortingChangedEvent {
   column: string;
   direction: SortingDirection;
@@ -138,6 +142,8 @@ export class HaDataTable extends LitElement {
   @property() public sortColumn?: string;
 
   @property() public sortDirection: SortingDirection = null;
+
+  @property({ attribute: false }) public initialCollapsedGroups?: string[];
 
   @state() private _filterable = false;
 
@@ -245,8 +251,12 @@ export class HaDataTable extends LitElement {
       ).length;
     }
 
-    if (properties.has("groupColumn")) {
+    if (!this.hasUpdated && this.initialCollapsedGroups) {
+      this._collapsedGroups = this.initialCollapsedGroups;
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    } else if (properties.has("groupColumn")) {
       this._collapsedGroups = [];
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
     }
 
     if (
@@ -723,6 +733,7 @@ export class HaDataTable extends LitElement {
     } else {
       this._collapsedGroups = [...this._collapsedGroups, groupName];
     }
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   };
 
   static get styles(): CSSResultGroup {
@@ -1096,5 +1107,6 @@ declare global {
     "selection-changed": SelectionChangedEvent;
     "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;
+    "collapsed-changed": CollapsedChangedEvent;
   }
 }

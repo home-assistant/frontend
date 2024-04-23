@@ -134,6 +134,9 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @storage({ key: "devices-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string;
 
+  @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
+  private _activeCollapsed?: string;
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
@@ -671,11 +674,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               )
         ).length}
         .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
@@ -1003,6 +1008,10 @@ ${rejected
 
   private _handleGroupingChanged(ev: CustomEvent) {
     this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
