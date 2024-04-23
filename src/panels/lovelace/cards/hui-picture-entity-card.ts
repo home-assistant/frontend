@@ -25,6 +25,8 @@ import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureEntityCardConfig } from "./types";
+import { CameraEntity } from "../../../data/camera";
+import { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -68,7 +70,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     if (
-      !["camera", "image"].includes(computeDomain(config.entity)) &&
+      !["camera", "image", "person"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
       !config.camera_image
@@ -108,7 +110,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as
+      | CameraEntity
+      | ImageEntity
+      | PersonEntity;
 
     if (!stateObj) {
       return html`
@@ -143,7 +148,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .image=${domain === "image"
             ? computeImageUrl(stateObj as ImageEntity)
-            : this._config.image}
+            : domain === "person"
+              ? (stateObj as PersonEntity).attributes.picture
+              : this._config.image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${domain === "camera"

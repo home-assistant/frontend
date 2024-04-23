@@ -16,6 +16,7 @@ import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceCard } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
 import { PictureElementsCardConfig } from "./types";
+import { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
@@ -66,6 +67,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       !(
         config.image ||
         config.image_entity ||
+        config.person_entity ||
         config.camera_image ||
         config.state_image
       ) ||
@@ -116,9 +118,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let stateObj: ImageEntity | undefined;
+    let stateObj: ImageEntity | PersonEntity | undefined;
+    let domain: string | undefined;
     if (this._config.image_entity) {
       stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
+      domain = "image";
+    } else if (this._config.person_entity) {
+      stateObj = this.hass.states[this._config.person_entity] as PersonEntity;
+      domain = "person";
     }
 
     return html`
@@ -126,7 +133,11 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         <div id="root">
           <hui-image
             .hass=${this.hass}
-            .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
+            .image=${domain === "image"
+              ? computeImageUrl(stateObj as ImageEntity)
+              : domain === "person"
+                ? (stateObj as PersonEntity).attributes.picture
+                : this._config.image}
             .stateImage=${this._config.state_image}
             .stateFilter=${this._config.state_filter}
             .cameraImage=${this._config.camera_image}

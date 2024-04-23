@@ -1,3 +1,4 @@
+import { HassEntityBase } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export interface BasePerson {
@@ -16,6 +17,10 @@ export interface PersonMutableParams {
   user_id: string | null;
   device_trackers: string[];
   picture: string | null;
+}
+
+export interface PersonEntity extends HassEntityBase {
+  attributes: Person;
 }
 
 export const fetchPersons = (hass: HomeAssistant) =>
