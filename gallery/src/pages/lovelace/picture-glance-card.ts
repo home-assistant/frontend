@@ -20,6 +20,15 @@ const ENTITIES = [
     friendly_name: "Basement Floor Wet",
     device_class: "moisture",
   }),
+  getEntity("person", "paulus", "home", {
+    friendly_name: "Paulus",
+    picture: "/images/paulus.jpg",
+  }),
+  getEntity("sensor", "battery", 35, {
+    device_class: "battery",
+    friendly_name: "Battery",
+    unit_of_measurement: "%",
+  }),
 ];
 
 const CONFIGS = [
@@ -88,6 +97,15 @@ const CONFIGS = [
   entities:
     - switch.decorative_lights
     - light.ceiling_lights
+    `,
+  },
+  {
+    heading: "Person entity",
+    config: `
+- type: picture-glance
+  person_entity: person.paulus
+  entities:
+    - sensor.battery
     `,
   },
   {
