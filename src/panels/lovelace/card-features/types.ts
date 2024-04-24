@@ -18,6 +18,12 @@ export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
 }
 
+export interface ConditionalCardFeatureConfig {
+  type: "conditional";
+  feature: CardFeatureConfig;
+  conditions: Condition[];
+}
+
 export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
@@ -144,6 +150,7 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | ConditionalTileFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig

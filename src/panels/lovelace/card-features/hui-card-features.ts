@@ -24,6 +24,8 @@ export class HuiCardFeatures extends LitElement {
 
   @property({ attribute: false }) public color?: string;
 
+  @property({ type: Boolean }) public editMode = false;
+
   private _featuresElements = new WeakMap<
     LovelaceCardFeatureConfig,
     LovelaceCardFeature | HuiErrorCard
@@ -49,6 +51,7 @@ export class HuiCardFeatures extends LitElement {
       element.hass = this.hass;
       (element as LovelaceCardFeature).stateObj = stateObj;
       (element as LovelaceCardFeature).color = this.color;
+      (element as LovelaceCardFeature).editMode = this.editMode;
     }
 
     return html`${element}`;

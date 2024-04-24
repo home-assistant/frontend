@@ -102,6 +102,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public editMode = false;
+
   @state() private _config?: TileCardConfig;
 
   public setConfig(config: ThermostatCardConfig): void {
@@ -474,6 +476,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .color=${this._config.color}
                 .features=${this._config.features}
+                .editMode=${this.editMode}
               ></hui-card-features>
             `
           : nothing}
