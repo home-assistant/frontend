@@ -529,11 +529,7 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab || this.groupColumn) {
-      const items = [...data];
-
-      if (this.appendRow) {
-        items.push({ append: true, content: this.appendRow });
-      }
+      let items = [...data];
 
       if (this.groupColumn) {
         const grouped = groupBy(items, (item) => item[this.groupColumn!]);
@@ -599,14 +595,18 @@ export class HaDataTable extends LitElement {
           }
         });
 
-        this._items = groupedItems;
-      } else {
-        this._items = items;
+        items = groupedItems;
+      }
+
+      if (this.appendRow) {
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items = [...this._items, { empty: true }];
+        items.push({ empty: true });
       }
+
+      this._items = items;
     } else {
       this._items = data;
     }
