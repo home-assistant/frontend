@@ -177,9 +177,9 @@ export class CloudRemotePref extends LitElement {
                     "ui.panel.config.cloud.account.remote.strict_connection_modes.disabled"
                   )}
                 </ha-list-item>
-                <ha-list-item value="static_page">
+                <ha-list-item value="guard_page">
                   ${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_modes.static_page"
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.guard_page"
                   )}
                 </ha-list-item>
                 <ha-list-item value="drop_connection">

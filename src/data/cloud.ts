@@ -1,7 +1,7 @@
 import { EntityFilter } from "../common/entity/entity_filter";
 import { HomeAssistant } from "../types";
 
-type StrictConnectionMode = "disabled" | "static_page" | "drop_connection";
+type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
 
 interface CloudStatusNotLoggedIn {
   logged_in: false;
