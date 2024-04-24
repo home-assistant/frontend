@@ -302,7 +302,7 @@ export class CloudRemotePref extends LitElement {
   private async _createLoginUrl() {
     try {
       const result = await this.hass.callService(
-        "http",
+        "cloud",
         "create_temporary_strict_connection_url",
         undefined,
         undefined,
