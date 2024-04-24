@@ -5835,7 +5835,14 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "dark_mode": "Dark mode?",
-              "default_zoom": "Default zoom",
+              "appearance": "Appearance",
+              "theme_mode": "Theme Mode",
+              "theme_modes": {
+                "auto": "Auto",
+                "light": "Light",
+                "dark": "Dark"
+              },
+              "default_zoom": "Default Zoom",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },

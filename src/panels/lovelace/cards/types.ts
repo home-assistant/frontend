@@ -3,7 +3,7 @@ import { ActionConfig } from "../../../data/lovelace/config/action";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { Statistic, StatisticType } from "../../../data/recorder";
 import { ForecastType } from "../../../data/weather";
-import { FullCalendarView, TranslationDict } from "../../../types";
+import { FullCalendarView, ThemeMode, TranslationDict } from "../../../types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
 import { LegacyStateFilter } from "../common/evaluate-filter";
 import { Condition, LegacyCondition } from "../common/validate-condition";
@@ -314,6 +314,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;
+  theme_mode?: ThemeMode;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

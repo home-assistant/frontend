@@ -19,7 +19,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ThemeMode } from "../../types";
 import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap } from "./ha-map";
@@ -61,7 +61,8 @@ export class HaLocationsEditor extends LitElement {
 
   @property({ type: Number }) public zoom = 16;
 
-  @property({ type: Boolean }) public darkMode = false;
+  @property({ attribute: "theme-mode", type: String })
+  public themeMode: ThemeMode = "auto";
 
   @state() private _locationMarkers?: Record<string, Marker | Circle>;
 
@@ -133,7 +134,7 @@ export class HaLocationsEditor extends LitElement {
         .layers=${this._getLayers(this._circles, this._locationMarkers)}
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}
-        ?darkMode=${this.darkMode}
+        .themeMode=${this.themeMode}
       ></ha-map>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
