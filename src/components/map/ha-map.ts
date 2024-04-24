@@ -69,7 +69,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public fitZones = false;
 
-  @property({ type: Boolean }) public darkMode = false;
+  @property({ type: Boolean }) public forceDarkMode = false;
+
+  @property({ type: Boolean }) public forceLightMode = false;
 
   @property({ type: Number }) public zoom = 14;
 
@@ -154,7 +156,8 @@ export class HaMap extends ReactiveElement {
     }
 
     if (
-      !changedProps.has("darkMode") &&
+      !changedProps.has("forceDarkMode") &&
+      !changedProps.has("forceLightMode") &&
       (!changedProps.has("hass") ||
         (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
     ) {
@@ -164,11 +167,13 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode || (this.hass.themes.darkMode ?? false);
-    const forcedDark = this.darkMode;
+    const darkMode =
+      !this.forceLightMode &&
+      (this.forceDarkMode || (this.hass.themes.darkMode ?? false));
     const map = this.renderRoot.querySelector("#map");
     map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", forcedDark);
+    map!.classList.toggle("forced-dark", this.forceDarkMode);
+    map!.classList.toggle("forced-light", this.forceLightMode);
   }
 
   private async _loadMap(): Promise<void> {
@@ -398,8 +403,13 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    const className =
-      this.darkMode || this.hass.themes.darkMode ? "dark" : "light";
+    const className = this.forceLightMode
+      ? "light"
+      : this.forceDarkMode
+        ? "dark"
+        : this.hass.themes.darkMode
+          ? "dark"
+          : "light";
 
     for (const entity of this.entities) {
       const stateObj = hass.states[getEntityId(entity)];
@@ -543,26 +553,29 @@ export class HaMap extends ReactiveElement {
         background: #090909;
       }
       #map.forced-dark {
+        color: #ffffff;
         --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
           contrast(1.2) saturate(0.3);
+      }
+      #map.forced-light {
+        background: #ffffff;
+        color: #000000;
+        --map-filter: invert(0);
       }
       #map:active {
         cursor: grabbing;
         cursor: -moz-grabbing;
         cursor: -webkit-grabbing;
       }
-      .light {
-        color: #000000;
-      }
-      .dark {
-        color: #ffffff;
-      }
       .leaflet-tile-pane {
         filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
-        background-color: var(--card-background-color, #1c1c1c);
+        background-color: #1c1c1c;
         color: #ffffff;
+      }
+      .dark .leaflet-bar a:hover {
+        background-color: #313131;
       }
       .leaflet-marker-draggable {
         cursor: move !important;
