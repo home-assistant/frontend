@@ -53,6 +53,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
@@ -443,6 +444,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 entryIds.includes(entity.config_entry_id))
           );
           filter.value!.forEach((domain) => filteredDomains.add(domain));
+        } else if (key === "ha-filter-domains" && filter.value?.length) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            filter.value?.includes(computeDomain(entity.entity_id))
+          );
         } else if (key === "ha-filter-labels" && filter.value?.length) {
           filteredEntities = filteredEntities.filter((entity) =>
             entity.labels.some((lbl) => filter.value!.includes(lbl))
@@ -782,6 +787,15 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
+        <ha-filter-domains
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-domains"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-domains"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-domains>
         <ha-filter-integrations
           .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]?.value}
