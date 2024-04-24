@@ -94,7 +94,7 @@ export class HaFilterDevices extends LitElement {
       ? nothing
       : html`<ha-check-list-item
           .value=${device.id}
-          .selected=${this.value?.includes(device.id)}
+          .selected=${this.value?.includes(device.id) ?? false}
         >
           ${computeDeviceName(device, this.hass)}
         </ha-check-list-item>`;
