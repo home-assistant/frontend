@@ -62,8 +62,8 @@ export class HaFilterStates extends LitElement {
                   (item) =>
                     html`<ha-check-list-item
                       .value=${item.value}
-                      .selected=${this.value?.includes(item.value)}
-                      .graphic=${hasIcon ? "icon" : undefined}
+                      .selected=${this.value?.includes(item.value) ?? false}
+                      .graphic=${hasIcon ? "icon" : null}
                     >
                       ${item.icon
                         ? html`<ha-icon

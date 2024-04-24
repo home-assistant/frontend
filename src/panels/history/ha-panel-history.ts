@@ -1,5 +1,5 @@
 import { mdiDownload, mdiFilterRemove } from "@mdi/js";
-import { differenceInHours } from "date-fns/esm";
+import { differenceInHours } from "date-fns";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -421,6 +421,7 @@ class HaPanelHistory extends LitElement {
       [],
       this.hass.localize,
       sensorNumericDeviceClasses,
+      true,
       true
     );
     // remap states array to statistics array

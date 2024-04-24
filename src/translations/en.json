@@ -377,6 +377,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "location": {
+          "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
+          "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+        },
         "selector": {
           "options": "Selector Options",
           "types": {
@@ -472,7 +477,9 @@
           "clear": "Clear",
           "no_entities": "You don't have any entities",
           "no_match": "No matching entities found",
-          "show_entities": "Show entities"
+          "show_entities": "Show entities",
+          "new_entity": "Create a new entity",
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -776,7 +783,8 @@
         "no-data": "No data",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
-        "clear": "Clear"
+        "clear": "Clear",
+        "ungrouped": "Ungrouped"
       },
       "media-browser": {
         "tts": {
@@ -2243,6 +2251,7 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
+              "display_name": "Display name",
               "device_consumption_energy": "Device consumption energy",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
@@ -3828,6 +3837,19 @@
               "advanced_options": "Advanced options",
               "external_activation": "Allow external activation of remote control",
               "external_activation_secondary": "Allows you to turn on remote control from your Nabu Casa account page, even if you're outside your local network",
+              "strict_connection": "Restrict access to logged in users",
+              "strict_connection_secondary": "When a user is not logged in to your Home Assistant instance, they will not be able to access your instance remotely",
+              "strict_connection_mode": "Mode",
+              "strict_connection_modes": {
+                "disabled": "Disabled",
+                "guard_page": "Guard page",
+                "drop_connection": "Drop connection"
+              },
+              "strict_connection_link": "Create login link",
+              "strict_connection_link_secondary": "You can create a link that will give temporary access to the login page.",
+              "strict_connection_create_link": "Create link",
+              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
+              "strict_connection_copy_link": "Copy link",
               "certificate_info": "Certificate info",
               "certificate_expire": "Will be renewed at {date}",
               "more_info": "More info"
@@ -4017,7 +4039,12 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search {number} devices",
-            "state": "State"
+            "state": "State",
+            "bulk_actions": {
+              "move_area": "Move to area",
+              "no_area": "No area",
+              "add_area": "Add area"
+            }
           }
         },
         "entities": {
@@ -4044,7 +4071,8 @@
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
-              "status": "Status"
+              "status": "Status",
+              "domain": "Domain"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -4119,10 +4147,6 @@
           "confirm_delete": "Are you sure you want to delete this zone?",
           "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
-          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
-          "go_to_core_config": "Go to general configuration?",
-          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New zone",
             "name": "Name",
@@ -4137,7 +4161,8 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update"
+            "update": "Update",
+            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
           },
           "core_location_dialog": "Home Assistant location"
         },
@@ -5935,6 +5960,12 @@
               },
               "light-color-temp": {
                 "label": "Light color temperature"
+              },
+              "lock-commands": {
+                "label": "Lock commands"
+              },
+              "lock-open-door": {
+                "label": "Lock open door"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",

@@ -21,6 +21,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
+import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -33,7 +34,7 @@ export class CloudRemotePref extends LitElement {
       return nothing;
     }
 
-    const { remote_enabled, remote_allow_remote_enable } =
+    const { remote_enabled, remote_allow_remote_enable, strict_connection } =
       this.cloudStatus.prefs;
 
     const {
@@ -156,6 +157,61 @@ export class CloudRemotePref extends LitElement {
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection_secondary"
+                )}</span
+              >
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection_mode"
+                )}
+                @selected=${this._setStrictConnectionMode}
+                naturalMenuWidth
+                .value=${strict_connection}
+              >
+                <ha-list-item value="disabled">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.disabled"
+                  )}
+                </ha-list-item>
+                <ha-list-item value="guard_page">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.guard_page"
+                  )}
+                </ha-list-item>
+                <ha-list-item value="drop_connection">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.strict_connection_modes.drop_connection"
+                  )}
+                </ha-list-item>
+              </ha-select>
+            </ha-settings-row>
+            ${strict_connection !== "disabled"
+              ? html` <ha-settings-row>
+                  <span slot="heading"
+                    >${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_link"
+                    )}</span
+                  >
+                  <span slot="description"
+                    >${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
+                    )}</span
+                  >
+                  <ha-button @click=${this._createLoginUrl}
+                    >${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_create_link"
+                    )}</ha-button
+                  >
+                </ha-settings-row>`
+              : nothing}
+            <ha-settings-row>
+              <span slot="heading"
+                >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.certificate_info"
                 )}</span
               >
@@ -223,12 +279,58 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
+  private async _setStrictConnectionMode(ev) {
+    const mode = ev.target.value;
+    try {
+      await updateCloudPref(this.hass, {
+        strict_connection: mode,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  }
+
   private async _copyURL(ev): Promise<void> {
     const url = ev.currentTarget.url;
     await copyToClipboard(url);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private async _createLoginUrl() {
+    try {
+      const result = await this.hass.callService(
+        "cloud",
+        "create_temporary_strict_connection_url",
+        undefined,
+        undefined,
+        false,
+        true
+      );
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.cloud.account.remote.strict_connection_link"
+        ),
+        text: html`${this.hass.localize(
+            "ui.panel.config.cloud.account.remote.strict_connection_link_created_message"
+          )}
+          <pre>${result.response.url}</pre>
+          <ha-button
+            .url=${result.response.url}
+            @click=${this._copyURL}
+            unelevated
+          >
+            <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.strict_connection_copy_link"
+            )}
+          </ha-button>`,
+      });
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
+    }
   }
 
   static get styles(): CSSResultGroup {

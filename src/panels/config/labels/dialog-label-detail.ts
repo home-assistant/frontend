@@ -7,6 +7,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import "../../../components/ha-textarea";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-color-picker";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -31,6 +32,8 @@ class DialogLabelDetail
 
   @state() private _color!: string;
 
+  @state() private _description!: string;
+
   @state() private _error?: string;
 
   @state() private _params?: LabelDetailDialogParams;
@@ -44,10 +47,12 @@ class DialogLabelDetail
       this._name = this._params.entry.name || "";
       this._icon = this._params.entry.icon || "";
       this._color = this._params.entry.color || "";
+      this._description = this._params.entry.description || "";
     } else {
       this._name = this._params.suggestedName || "";
       this._icon = "";
       this._color = "";
+      this._description = "";
     }
     document.body.addEventListener("keydown", this._handleKeyPress);
   }
@@ -118,6 +123,14 @@ class DialogLabelDetail
                 "ui.panel.config.labels.detail.color"
               )}
             ></ha-color-picker>
+            <ha-textarea
+              .value=${this._description}
+              .configValue=${"description"}
+              @input=${this._input}
+              .label=${this.hass!.localize(
+                "ui.panel.config.labels.detail.description"
+              )}
+            ></ha-textarea>
           </div>
         </div>
         ${this._params.entry && this._params.removeEntry
@@ -169,6 +182,7 @@ class DialogLabelDetail
         name: this._name.trim(),
         icon: this._icon.trim() || null,
         color: this._color.trim() || null,
+        description: this._description.trim() || null,
       };
       if (this._params!.entry) {
         newValue = await this._params!.updateEntry!(values);
@@ -202,12 +216,14 @@ class DialogLabelDetail
         a {
           color: var(--primary-color);
         }
+        ha-textarea,
         ha-textfield,
         ha-icon-picker,
         ha-color-picker {
           display: block;
         }
-        ha-color-picker {
+        ha-color-picker,
+        ha-textarea {
           margin-top: 16px;
         }
       `,

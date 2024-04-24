@@ -10,15 +10,17 @@ import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-relative-time";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-relative-time";
 import {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
@@ -35,7 +37,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import { navigate } from "../../../common/navigate";
+import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -48,6 +50,13 @@ export class HaConfigLabels extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _labels: LabelRegistryEntry[] = [];
+
+  @storage({
+    key: "labels-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
 
   private _columns = memoizeOne((localize: LocalizeFunc) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
@@ -79,6 +88,12 @@ export class HaConfigLabels extends LitElement {
         sortable: true,
         filterable: true,
         grows: true,
+        template: (label) => html`
+          <div>${label.name}</div>
+          ${label.description
+            ? html`<div class="secondary">${label.description}</div>`
+            : nothing}
+        `,
       },
       actions: {
         title: "",
@@ -143,6 +158,8 @@ export class HaConfigLabels extends LitElement {
         .data=${this._data(this._labels)}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         hasFab
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @row-click=${this._editLabel}
         clickable
         id="label_id"
@@ -261,6 +278,10 @@ export class HaConfigLabels extends LitElement {
     navigate(
       `/config/automation/dashboard?historyBack=1&label=${label.label_id}`
     );
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 }
 

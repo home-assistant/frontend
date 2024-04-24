@@ -363,6 +363,8 @@ class PanelEnergy extends LitElement {
           transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
         }
         :host([scrolled]) .header {
           box-shadow: var(
