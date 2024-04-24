@@ -15,6 +15,7 @@ import {
   mdiPlus,
   mdiRobotHappy,
   mdiTag,
+  mdiTextureBox,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
   mdiTransitConnection,
@@ -69,6 +70,7 @@ import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import { createAreaRegistryEntry } from "../../../data/area_registry";
 import {
   AutomationEntity,
   deleteAutomation,
@@ -106,6 +108,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
+import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
@@ -403,6 +406,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
       </ha-menu-item>`;
+
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
@@ -440,9 +444,44 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </div></ha-menu-item
       >`;
 
-    const labelsInOverflow =
-      (this._sizeController.value && this._sizeController.value < 700) ||
+    const areaItems = html`${Object.values(this.hass.areas).map(
+        (area) =>
+          html`<ha-menu-item
+            .value=${area.area_id}
+            @click=${this._handleBulkArea}
+          >
+            ${area.icon
+              ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiTextureBox}
+                ></ha-svg-icon>`}
+            <div slot="headline">${area.name}</div>
+          </ha-menu-item>`
+      )}
+      <ha-menu-item .value=${null} @click=${this._handleBulkArea}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.devices.picker.bulk_actions.no_area"
+          )}
+        </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateArea}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.devices.picker.bulk_actions.add_area"
+          )}
+        </div>
+      </ha-menu-item>`;
+
+    const areasInOverflow =
+      (this._sizeController.value && this._sizeController.value < 900) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+
+    const labelsInOverflow =
+      areasInOverflow &&
+      (!this._sizeController.value || this._sizeController.value < 700);
 
     const automations = this._automations(
       this.automations,
@@ -598,6 +637,22 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                           ></ha-svg-icon>
                         </ha-assist-chip>
                         ${labelItems}
+                      </ha-button-menu-new>`}
+                  ${areasInOverflow
+                    ? nothing
+                    : html`<ha-button-menu-new slot="selection-bar">
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.devices.picker.bulk_actions.move_area"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${areaItems}
                       </ha-button-menu-new>`}`
               : nothing
           }
@@ -659,6 +714,24 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-menu-item>
                     <ha-menu slot="menu">${labelItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing
+            }
+            ${
+              this.narrow || areasInOverflow
+                ? html`<ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.picker.bulk_actions.move_area"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${areaItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -1189,6 +1262,46 @@ ${rejected
         >`,
       });
     }
+  }
+
+  private async _handleBulkArea(ev) {
+    const area = ev.currentTarget.value;
+    this._bulkAddArea(area);
+  }
+
+  private async _bulkAddArea(area: string) {
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          area_id: area,
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
+  }
+
+  private async _bulkCreateArea() {
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        this._bulkAddArea(area.area_id);
+        return area;
+      },
+    });
   }
 
   private async _handleBulkEnable() {
