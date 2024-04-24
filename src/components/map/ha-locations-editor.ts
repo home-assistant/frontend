@@ -133,7 +133,7 @@ export class HaLocationsEditor extends LitElement {
         .layers=${this._getLayers(this._circles, this._locationMarkers)}
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}
-        ?forceDarkMode=${this.darkMode}
+        .themeMode=${this.darkMode ? "dark" : "auto"}
       ></ha-map>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
