@@ -20,6 +20,8 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./search-input-outlined";
 
+export const FILTER_NO_DEVICE = "__NO_DEVICE__";
+
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -31,6 +33,9 @@ export class HaFilterDevices extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "no-device-option" })
+  public noDeviceOption = false;
 
   @state() private _shouldRender = false;
 
@@ -74,6 +79,7 @@ export class HaFilterDevices extends LitElement {
                   .items=${this._devices(
                     this.hass.devices,
                     this._filter || "",
+                    this.noDeviceOption,
                     this.value
                   )}
                   .keyFunction=${this._keyFunction}
@@ -137,9 +143,13 @@ export class HaFilterDevices extends LitElement {
   }
 
   private _devices = memoizeOne(
-    (devices: HomeAssistant["devices"], filter: string, _value) => {
-      const values = Object.values(devices);
-      return values
+    (
+      devices: HomeAssistant["devices"],
+      filter: string,
+      noDeviceOption: boolean,
+      _value
+    ) => {
+      const values = Object.values(devices)
         .filter(
           (device) =>
             !filter ||
@@ -152,6 +162,28 @@ export class HaFilterDevices extends LitElement {
             this.hass.locale.language
           )
         );
+      if (noDeviceOption) {
+        values.unshift({
+          id: FILTER_NO_DEVICE,
+          name: this.hass.localize("ui.panel.config.devices.no_device"),
+          area_id: null,
+          configuration_url: null,
+          config_entries: [],
+          connections: [],
+          disabled_by: null,
+          entry_type: null,
+          identifiers: [],
+          manufacturer: null,
+          model: null,
+          name_by_user: null,
+          sw_version: null,
+          hw_version: null,
+          via_device_id: null,
+          serial_number: null,
+          labels: [],
+        });
+      }
+      return values;
     }
   );
 
@@ -171,7 +203,7 @@ export class HaFilterDevices extends LitElement {
 
     for (const deviceId of this.value) {
       value.push(deviceId);
-      if (this.type) {
+      if (this.type && deviceId !== FILTER_NO_DEVICE) {
         relatedPromises.push(findRelated(this.hass, "device", deviceId));
       }
     }

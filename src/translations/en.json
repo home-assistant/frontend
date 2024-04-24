@@ -3941,6 +3941,7 @@
           "name": "Name",
           "update": "Update",
           "no_devices": "No devices",
+          "no_device": "No device",
           "enabled_label": "Enable {type}",
           "enabled_cause": "The {type} is disabled by {cause}.",
           "disabled_by": {

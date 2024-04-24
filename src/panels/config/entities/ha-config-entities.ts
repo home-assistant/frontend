@@ -52,7 +52,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
@@ -97,6 +96,7 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { FILTER_NO_DEVICE } from "../../../components/ha-filter-devices";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -448,8 +448,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             entity.labels.some((lbl) => filter.value!.includes(lbl))
           );
         } else if (filter.items) {
-          filteredEntities = filteredEntities.filter((entity) =>
-            filter.items!.has(entity.entity_id)
+          filteredEntities = filteredEntities.filter(
+            (entity) =>
+              filter.items!.has(entity.entity_id) ||
+              (key === "ha-filter-devices" &&
+                filter.value?.includes(FILTER_NO_DEVICE) &&
+                !entity.device_id)
           );
         }
       });
@@ -781,6 +785,7 @@ ${
           .expanded=${this._expandedFilter === "ha-filter-devices"}
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
+          no-device-option
         ></ha-filter-devices>
         <ha-filter-integrations
           .hass=${this.hass}
