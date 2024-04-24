@@ -111,7 +111,7 @@
     "fuse.js": "7.0.0",
     "google-timezones-json": "1.2.0",
     "hls.js": "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch",
-    "home-assistant-js-websocket": "9.2.1",
+    "home-assistant-js-websocket": "9.3.0",
     "idb-keyval": "6.2.1",
     "intl-messageformat": "10.5.11",
     "js-yaml": "4.1.0",
