@@ -1,32 +1,32 @@
+import { isToday } from "date-fns";
 import type {
   Circle,
   CircleMarker,
-  LatLngTuple,
   LatLngExpression,
+  LatLngTuple,
   Layer,
   Map,
   Marker,
   Polyline,
 } from "leaflet";
-import { isToday } from "date-fns";
-import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import { CSSResultGroup, PropertyValues, ReactiveElement, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatDateTime } from "../../common/datetime/format_date_time";
+import {
+  formatTimeWeekday,
+  formatTimeWithSeconds,
+} from "../../common/datetime/format_time";
 import {
   LeafletModuleType,
   setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
-import {
-  formatTimeWithSeconds,
-  formatTimeWeekday,
-} from "../../common/datetime/format_time";
-import { formatDateTime } from "../../common/datetime/format_date_time";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ThemeMode } from "../../types";
+import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { isTouch } from "../../util/is_touch";
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -69,9 +69,8 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public fitZones = false;
 
-  @property({ type: Boolean }) public forceDarkMode = false;
-
-  @property({ type: Boolean }) public forceLightMode = false;
+  @property({ attribute: "theme-mode", type: String })
+  public themeMode: ThemeMode = "auto";
 
   @property({ type: Number }) public zoom = 14;
 
@@ -156,8 +155,7 @@ export class HaMap extends ReactiveElement {
     }
 
     if (
-      !changedProps.has("forceDarkMode") &&
-      !changedProps.has("forceLightMode") &&
+      !changedProps.has("themeMode") &&
       (!changedProps.has("hass") ||
         (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
     ) {
@@ -166,14 +164,18 @@ export class HaMap extends ReactiveElement {
     this._updateMapStyle();
   }
 
+  private get _darkMode() {
+    return (
+      this.themeMode === "dark" ||
+      (this.themeMode === "auto" && Boolean(this.hass.themes.darkMode))
+    );
+  }
+
   private _updateMapStyle(): void {
-    const darkMode =
-      !this.forceLightMode &&
-      (this.forceDarkMode || (this.hass.themes.darkMode ?? false));
     const map = this.renderRoot.querySelector("#map");
-    map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", this.forceDarkMode);
-    map!.classList.toggle("forced-light", this.forceLightMode);
+    map!.classList.toggle("dark", this._darkMode);
+    map!.classList.toggle("forced-dark", this.themeMode === "dark");
+    map!.classList.toggle("forced-light", this.themeMode === "light");
   }
 
   private async _loadMap(): Promise<void> {
@@ -403,13 +405,7 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    const className = this.forceLightMode
-      ? "light"
-      : this.forceDarkMode
-        ? "dark"
-        : this.hass.themes.darkMode
-          ? "dark"
-          : "light";
+    const className = this._darkMode ? "dark" : "light";
 
     for (const entity of this.entities) {
       const stateObj = hass.states[getEntityId(entity)];
