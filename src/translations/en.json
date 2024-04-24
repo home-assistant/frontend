@@ -3845,6 +3845,11 @@
                 "guard_page": "Guard page",
                 "drop_connection": "Drop connection"
               },
+              "strict_connection_link": "Create login link",
+              "strict_connection_link_secondary": "You can create a link that will give temporary access to the login page.",
+              "strict_connection_create_link": "Create link",
+              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
+              "strict_connection_copy_link": "Copy link",
               "certificate_info": "Certificate info",
               "certificate_expire": "Will be renewed at {date}",
               "more_info": "More info"
