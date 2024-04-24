@@ -270,7 +270,11 @@ export interface LanguageSelector {
 }
 
 export interface LocationSelector {
-  location: { radius?: boolean; icon?: string } | null;
+  location: {
+    radius?: boolean;
+    radius_readonly?: boolean;
+    icon?: string;
+  } | null;
 }
 
 export interface LocationSelectorValue {
@@ -401,6 +405,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    create_domains?: string[];
   } | null;
 }
 

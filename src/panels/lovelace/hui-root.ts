@@ -640,7 +640,9 @@ class HUIRoot extends LitElement {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
-      hint: this.hass.localize("ui.tips.key_e_hint"),
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.tips.key_e_hint")
+        : undefined,
     });
   }
 
@@ -908,6 +910,8 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: env(safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;

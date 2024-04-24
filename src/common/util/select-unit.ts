@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInWeeks, startOfWeek } from "date-fns/esm";
+import { differenceInDays, differenceInWeeks, startOfWeek } from "date-fns";
 import { FrontendLocaleData } from "../../data/translation";
 import { firstWeekdayIndex } from "../datetime/first_weekday";
 

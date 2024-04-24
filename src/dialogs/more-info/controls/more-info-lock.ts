@@ -9,11 +9,12 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
-import { UNAVAILABLE } from "../../../data/entity";
 import {
   LockEntity,
   LockEntityFeature,
   callProtectedLockService,
+  isAvailable,
+  isJammed,
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
 import type { HomeAssistant } from "../../../types";
@@ -85,15 +86,13 @@ class MoreInfoLock extends LitElement {
       "--state-color": color,
     };
 
-    const isJammed = this.stateObj.state === "jammed";
-
     return html`
       <ha-more-info-state-header
         .hass=${this.hass}
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
       <div class="controls" style=${styleMap(style)}>
-        ${this.stateObj.state === "jammed"
+        ${isJammed(this.stateObj)
           ? html`
               <div class="status">
                 <span></span>
@@ -125,7 +124,7 @@ class MoreInfoLock extends LitElement {
                     `
                   : html`
                       <ha-control-button
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        .disabled=${!isAvailable(this.stateObj)}
                         class="open-button ${this._buttonState}"
                         @click=${this._open}
                       >
@@ -139,7 +138,7 @@ class MoreInfoLock extends LitElement {
           : nothing}
       </div>
       <div>
-        ${isJammed
+        ${isJammed(this.stateObj)
           ? html`
               <ha-control-button-group class="jammed">
                 <ha-control-button @click=${this._unlock}>

@@ -1,12 +1,12 @@
 import { MdMenuItem } from "@material/web/menu/menu-item";
 import "element-internals-polyfill";
-import { CSSResult, css } from "lit";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-menu-item")
 export class HaMenuItem extends MdMenuItem {
-  static override styles: CSSResult[] = [
-    ...MdMenuItem.styles,
+  static override styles = [
+    ...super.styles,
     css`
       :host {
         --ha-icon-display: block;

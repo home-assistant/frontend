@@ -118,6 +118,7 @@ export class HaStateControlLockToggle extends LitElement {
 
     return html`
       <ha-control-switch
+        touch-action="none"
         vertical
         reversed
         .checked=${this._isOn}

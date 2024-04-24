@@ -131,6 +131,8 @@ class PanelDeveloperTools extends LitElement {
           padding-top: env(safe-area-inset-top);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
         }
         .toolbar {
           height: var(--header-height);

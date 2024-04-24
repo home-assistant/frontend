@@ -29,6 +29,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -37,10 +38,15 @@ import {
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
@@ -67,6 +73,11 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../../data/entity_sources";
+import { domainToName } from "../../../data/integration";
+import {
   LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
@@ -86,14 +97,6 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../../data/entity_sources";
-import {
-  hasRejectedItems,
-  rejectedItems,
-} from "../../../common/util/promise-all-settled-results";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -110,6 +113,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   localized_platform: string;
+  domain: string;
   label_entries: LabelRegistryEntry[];
 }
 
@@ -148,6 +152,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   _labels!: LabelRegistryEntry[];
 
   @state() private _entitySources?: EntitySources;
+
+  @storage({ key: "entities-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "entities-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "entities-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -260,6 +277,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         filterable: true,
         width: "20%",
+      },
+      domain: {
+        title: localize("ui.panel.config.entities.picker.headers.domain"),
+        sortable: false,
+        hidden: true,
+        filterable: true,
+        groupable: true,
       },
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
@@ -467,9 +491,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ),
           unavailable,
           restored,
-          localized_platform:
-            localize(`component.${entry.platform}.title`) || entry.platform,
+          localized_platform: domainToName(localize, entry.platform),
           area: area ? area.name : "—",
+          domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.restored")
             : unavailable
@@ -594,6 +618,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .filter=${this._filter}
         selectable
         .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         clickable
         @clear-filter=${this._clearFilter}
@@ -1194,6 +1224,18 @@ ${rejected
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {

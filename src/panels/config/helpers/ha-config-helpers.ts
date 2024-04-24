@@ -24,6 +24,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { storage } from "../../../common/decorators/storage";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
@@ -40,6 +41,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-fab";
@@ -138,6 +140,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @storage({ key: "helpers-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "helpers-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "helpers-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
 
   @state() private _stateItems: HassEntity[] = [];
 
@@ -525,7 +540,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ).length}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${helpers}
-        initialGroupColumn="category"
+        .initialGroupColumn=${this._activeGrouping || "category"}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
@@ -1018,6 +1038,18 @@ ${rejected
         return label;
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
