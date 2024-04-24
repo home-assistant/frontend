@@ -90,12 +90,10 @@ class HuiLockOpenDoorCardFeature
     return html`
       ${this._buttonState === "success"
         ? html`
-            <div class="buttons">
-              <p class="open-success">
-                <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-                ${this.hass.localize("ui.card.lock.open_door_success")}
-              </p>
-            </div>
+            <p class="open-success">
+              <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
+              ${this.hass.localize("ui.card.lock.open_door_success")}
+            </p>
           `
         : html`
             <ha-control-button-group>
@@ -115,12 +113,6 @@ class HuiLockOpenDoorCardFeature
 
   static get styles(): CSSResultGroup {
     return css`
-      .buttons {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 0;
-      }
       ha-control-button {
         font-size: 14px;
       }
@@ -139,10 +131,14 @@ class HuiLockOpenDoorCardFeature
         line-height: 14px;
         display: flex;
         align-items: center;
+        justify-content: center;
         flex-direction: row;
         gap: 8px;
         font-weight: 500;
         color: var(--success-color);
+        margin: 0 12px 12px 12px;
+        height: 40px;
+        text-align: center;
       }
       ha-control-button-group + ha-attributes:not([empty]) {
         margin-top: 16px;
