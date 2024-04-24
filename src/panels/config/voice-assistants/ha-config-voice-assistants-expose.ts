@@ -23,6 +23,7 @@ import {
   DataTableRowData,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
@@ -52,6 +53,7 @@ import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
+import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -86,6 +88,13 @@ export class VoiceAssistantsExpose extends LitElement {
     "cloud.google_assistant" | "cloud.alexa" | "conversation",
     string[] | undefined
   >;
+
+  @storage({
+    key: "voice-expose-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -505,6 +514,8 @@ export class VoiceAssistantsExpose extends LitElement {
         selectable
         .selected=${this._selectedEntities.length}
         clickable
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
@@ -694,6 +705,10 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _clearFilter() {
     navigate(window.location.pathname, { replace: true });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 
   static get styles(): CSSResultGroup {
