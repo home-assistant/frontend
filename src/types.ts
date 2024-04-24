@@ -190,6 +190,7 @@ export interface Context {
 
 export interface ServiceCallResponse {
   context: Context;
+  response?: any;
 }
 
 export interface ServiceCallRequest {
@@ -241,7 +242,8 @@ export interface HomeAssistant {
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
     target?: ServiceCallRequest["target"],
-    notifyOnError?: boolean
+    notifyOnError?: boolean,
+    returnResponse?: boolean
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
