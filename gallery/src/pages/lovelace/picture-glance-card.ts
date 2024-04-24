@@ -22,7 +22,7 @@ const ENTITIES = [
   }),
   getEntity("person", "paulus", "home", {
     friendly_name: "Paulus",
-    picture: "/images/paulus.jpg",
+    entity_picture: "/images/paulus.jpg",
   }),
   getEntity("sensor", "battery", 35, {
     device_class: "battery",

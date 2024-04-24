@@ -149,7 +149,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .image=${domain === "image"
             ? computeImageUrl(stateObj as ImageEntity)
             : domain === "person"
-              ? (stateObj as PersonEntity).attributes.picture
+              ? (stateObj as PersonEntity).attributes.entity_picture
               : this._config.image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
