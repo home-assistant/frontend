@@ -3842,7 +3842,7 @@
               "strict_connection_mode": "Mode",
               "strict_connection_modes": {
                 "disabled": "Disabled",
-                "static_page": "Error page",
+                "guard_page": "Guard page",
                 "drop_connection": "Drop connection"
               },
               "certificate_info": "Certificate info",
