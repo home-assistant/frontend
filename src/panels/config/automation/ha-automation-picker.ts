@@ -111,6 +111,10 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 
 type AutomationItem = AutomationEntity & {
   name: string;
