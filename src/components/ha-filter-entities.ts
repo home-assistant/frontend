@@ -108,7 +108,7 @@ export class HaFilterEntities extends LitElement {
       ? nothing
       : html`<ha-check-list-item
           .value=${entity.entity_id}
-          .selected=${this.value?.includes(entity.entity_id)}
+          .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
         >
           <ha-state-icon
