@@ -1,3 +1,4 @@
+import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import {
@@ -8,6 +9,7 @@ import { debounce } from "../common/util/debounce";
 import {
   FirstWeekday,
   getHassTranslations,
+  getHassTranslationsPre109,
   NumberFormat,
   saveTranslationPreferences,
   TimeFormat,
@@ -70,7 +72,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmetTranslations: Set<string> = new Set();
+    private __loadedFragmentTranslations: Set<string> = new Set();
 
     private __loadedTranslations: {
       // track what things have been loaded
@@ -260,7 +262,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
-      this.__loadedFragmetTranslations = new Set();
+      this.__loadedFragmentTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -284,6 +286,23 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       configFlow?: Parameters<typeof getHassTranslations>[4],
       force = false
     ): Promise<LocalizeFunc> {
+      if (
+        __BACKWARDS_COMPAT__ &&
+        !atLeastVersion(this.hass!.connection.haVersion, 0, 109)
+      ) {
+        if (category !== "state") {
+          return this.hass!.localize;
+        }
+        const resources = await getHassTranslationsPre109(this.hass!, language);
+
+        // Ignore the repsonse if user switched languages before we got response
+        if (this.hass!.language !== language) {
+          return this.hass!.localize;
+        }
+
+        return this._updateResources(language, resources);
+      }
+
       let alreadyLoaded: LoadedTranslationCategory;
 
       if (category in this.__loadedTranslations) {
@@ -366,12 +385,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return undefined;
       }
 
-      if (this.__loadedFragmetTranslations.has(fragment)) {
+      if (this.__loadedFragmentTranslations.has(fragment)) {
         return this.hass!.localize;
       }
-      this.__loadedFragmetTranslations.add(fragment);
+      this.__loadedFragmentTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      return this._updateResources(result.language, result.data);
+      return this._updateResources(language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -383,7 +402,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.__coreProgress = language;
       try {
         const result = await getTranslation(null, language);
-        await this._updateResources(result.language, result.data);
+        await this._updateResources(language, result.data);
       } finally {
         this.__coreProgress = undefined;
       }

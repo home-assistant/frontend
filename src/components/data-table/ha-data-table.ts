@@ -1,4 +1,4 @@
-import { mdiArrowDown, mdiArrowUp, mdiChevronDown } from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -40,6 +40,10 @@ export interface RowClickedEvent {
 }
 
 export interface SelectionChangedEvent {
+  value: string[];
+}
+
+export interface CollapsedChangedEvent {
   value: string[];
 }
 
@@ -138,6 +142,8 @@ export class HaDataTable extends LitElement {
   @property() public sortColumn?: string;
 
   @property() public sortDirection: SortingDirection = null;
+
+  @property({ attribute: false }) public initialCollapsedGroups?: string[];
 
   @state() private _filterable = false;
 
@@ -245,8 +251,12 @@ export class HaDataTable extends LitElement {
       ).length;
     }
 
-    if (properties.has("groupColumn")) {
+    if (!this.hasUpdated && this.initialCollapsedGroups) {
+      this._collapsedGroups = this.initialCollapsedGroups;
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    } else if (properties.has("groupColumn")) {
       this._collapsedGroups = [];
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
     }
 
     if (
@@ -450,6 +460,8 @@ export class HaDataTable extends LitElement {
           }
           return html`
             <div
+              @mouseover=${this._setTitle}
+              @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
                 "mdc-data-table__cell--flex": column.type === "flex",
@@ -517,11 +529,7 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab || this.groupColumn) {
-      const items = [...data];
-
-      if (this.appendRow) {
-        items.push({ append: true, content: this.appendRow });
-      }
+      let items = [...data];
 
       if (this.groupColumn) {
         const grouped = groupBy(items, (item) => item[this.groupColumn!]);
@@ -570,7 +578,7 @@ export class HaDataTable extends LitElement {
                 @click=${this._collapseGroup}
               >
                 <ha-icon-button
-                  .path=${mdiChevronDown}
+                  .path=${mdiChevronUp}
                   class=${this._collapsedGroups.includes(groupName)
                     ? "collapsed"
                     : ""}
@@ -587,14 +595,18 @@ export class HaDataTable extends LitElement {
           }
         });
 
-        this._items = groupedItems;
-      } else {
-        this._items = items;
+        items = groupedItems;
+      }
+
+      if (this.appendRow) {
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items = [...this._items, { empty: true }];
+        items.push({ empty: true });
       }
+
+      this._items = items;
     } else {
       this._items = data;
     }
@@ -675,6 +687,13 @@ export class HaDataTable extends LitElement {
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
 
+  private _setTitle(ev: Event) {
+    const target = ev.currentTarget as HTMLElement;
+    if (target.scrollWidth > target.offsetWidth) {
+      target.setAttribute("title", target.innerText);
+    }
+  }
+
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
     if (this._items.length) {
@@ -714,6 +733,7 @@ export class HaDataTable extends LitElement {
     } else {
       this._collapsedGroups = [...this._collapsedGroups, groupName];
     }
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   };
 
   static get styles(): CSSResultGroup {
@@ -1087,5 +1107,6 @@ declare global {
     "selection-changed": SelectionChangedEvent;
     "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;
+    "collapsed-changed": CollapsedChangedEvent;
   }
 }
