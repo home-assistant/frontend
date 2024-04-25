@@ -473,7 +473,7 @@ export class CloudRemotePref extends LitElement {
         text-decoration: none;
       }
       ha-expansion-panel {
-        margin-top: 8px;
+        margin-top: 16px;
       }
       ha-settings-row {
         padding: 0;
