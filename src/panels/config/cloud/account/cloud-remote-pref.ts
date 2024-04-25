@@ -7,10 +7,13 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
 import { formatDate } from "../../../../common/datetime/format_date";
+import type { HaRadio } from "../../../../components/ha-radio";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import {
   CloudStatusLoggedIn,
@@ -20,8 +23,8 @@ import {
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
+import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -74,6 +77,27 @@ export class CloudRemotePref extends LitElement {
         </ha-card>
       `;
     }
+
+    const createLoginLink =
+      strict_connection !== "disabled"
+        ? html`<ha-settings-row class="login-link">
+            <span slot="heading"
+              >${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.strict_connection_link"
+              )}</span
+            >
+            <span slot="description"
+              >${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
+              )}</span
+            >
+            <ha-button @click=${this._createLoginUrl}
+              >${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.strict_connection_create_link"
+              )}</ha-button
+            >
+          </ha-settings-row>`
+        : nothing;
 
     return html`
       <ha-card
@@ -169,68 +193,85 @@ export class CloudRemotePref extends LitElement {
             </ha-button>
           </div>
 
-          <ha-settings-row>
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.strict_connection"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.strict_connection_secondary"
-              )}</span
-            >
-
-            <ha-switch
-              .checked=${strict_connection === "disabled"}
-              @change=${this._strictConnectionToggleChanged}
-            ></ha-switch>
-          </ha-settings-row>
-
-          ${strict_connection !== "disabled"
-            ? html`<ha-settings-row>
-                <span slot="heading"
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_link"
-                  )}</span
-                >
-                <span slot="description"
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
-                  )}</span
-                >
-                <ha-button @click=${this._createLoginUrl}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_create_link"
-                  )}</ha-button
-                >
-              </ha-settings-row>`
-            : nothing}
-
           <ha-expansion-panel
             outlined
             .header=${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.advanced_options"
+              "ui.panel.config.cloud.account.remote.security_options"
             )}
           >
-            ${strict_connection !== "disabled"
-              ? html` <ha-settings-row>
-                  <span slot="heading"
-                    >${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.guard_page"
-                    )}</span
-                  >
-                  <span slot="description"
-                    >${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.guard_page_secondary"
-                    )}</span
-                  >
-                  <ha-switch
-                    .checked=${strict_connection === "guard_page"}
-                    @change=${this._dropConnectionToggleChanged}
-                  ></ha-switch>
-                </ha-settings-row>`
-              : nothing}
+            <ha-settings-row>
+              <span slot="heading">Remote login access</span>
+              <span slot="description"
+                >Choose what happens when new devices visit your remote access
+                link.</span
+              >
+            </ha-settings-row>
+
+            <div class="strict-connection-container">
+              <ha-formfield>
+                <ha-radio
+                  name="strict-connection-mode"
+                  value="disabled"
+                  .checked=${strict_connection === "disabled"}
+                  @change=${this._strictConnectionModeChanged}
+                ></ha-radio>
+                <div slot="label">
+                  Show login page
+                  <div class="secondary">
+                    Any new device visiting your remote access link are
+                    presented with a login page.
+                  </div>
+                </div>
+              </ha-formfield>
+
+              <ha-formfield>
+                <ha-radio
+                  name="strict-connection-mode"
+                  value="guard_page"
+                  .checked=${strict_connection === "guard_page"}
+                  @change=${this._strictConnectionModeChanged}
+                ></ha-radio>
+                <div slot="label">
+                  Block remote logins
+                  <div class="secondary">
+                    New devices must log in with a temporary access link.
+                    Devices accessing the link that are not logged in will be
+                    presented with a page explaining the restrictions.
+                    <br /><br />
+                    ⚠️ This prevents outsiders from trying to log in to your
+                    system but also your own devices if they have not logged in
+                    previously.
+                  </div>
+                </div>
+              </ha-formfield>
+
+              ${strict_connection === "guard_page" ? createLoginLink : nothing}
+
+              <ha-formfield>
+                <ha-radio
+                  name="strict-connection-mode"
+                  value="drop_connection"
+                  .checked=${strict_connection === "drop_connection"}
+                  @change=${this._strictConnectionModeChanged}
+                ></ha-radio>
+                <div slot="label">
+                  Block remote logins and show nothing
+                  <div class="secondary">
+                    This is the same as the above setting but instead provides a
+                    blank page for additional security.
+                    <br /><br />
+                    ⚠️ This prevents outsiders from snooping the remote web
+                    address and trying to log in, but it may appear as if there
+                    is no system running when users try to access it.
+                  </div>
+                </div>
+              </ha-formfield>
+
+              ${strict_connection === "drop_connection"
+                ? createLoginLink
+                : nothing}
+            </div>
+
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
@@ -321,26 +362,16 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  private async _strictConnectionToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
+  private async _strictConnectionModeChanged(ev) {
+    const toggle = ev.target as HaRadio;
 
-    try {
-      await updateCloudPref(this.hass, {
-        strict_connection: toggle.checked ? "disabled" : "guard_page",
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      alert(err.message);
-      toggle.checked = !toggle.checked;
+    if (ev.target.value === this.cloudStatus?.prefs.strict_connection) {
+      return;
     }
-  }
-
-  private async _dropConnectionToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
 
     try {
       await updateCloudPref(this.hass, {
-        strict_connection: toggle.checked ? "guard_page" : "drop_connection",
+        strict_connection: ev.target.value,
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
@@ -478,6 +509,23 @@ export class CloudRemotePref extends LitElement {
         --mdc-icon-size: 20px;
         color: var(--secondary-text-color);
         direction: var(--direction);
+      }
+      ha-formfield {
+        margin-left: -12px;
+        margin-inline-start: -12px;
+        --ha-formfield-align-items: start;
+      }
+      .secondary {
+        color: var(--secondary-text-color);
+      }
+      .login-link {
+        padding-left: 42px;
+        --paper-item-body-two-line-min-height: 0;
+      }
+      .strict-connection-container {
+        gap: 16px;
+        display: flex;
+        flex-direction: column;
       }
     `;
   }
