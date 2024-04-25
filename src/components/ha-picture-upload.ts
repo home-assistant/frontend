@@ -1,14 +1,9 @@
 import { mdiImagePlus } from "@mdi/js";
-import { LitElement, TemplateResult, css, html, nothing } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
-import {
-  createImage,
-  deleteImage,
-  generateImageThumbnailUrl,
-  getIdFromUrl,
-} from "../data/image_upload";
+import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import {
   CropOptions,
@@ -34,8 +29,6 @@ export class HaPictureUpload extends LitElement {
   @property() public currentImageAltText?: string;
 
   @property({ type: Boolean }) public crop = false;
-
-  @property({ type: Boolean }) public canDelete = false;
 
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
@@ -78,14 +71,6 @@ export class HaPictureUpload extends LitElement {
             )}
           >
           </ha-button>
-          ${this.canDelete
-            ? html`<ha-button
-                class="warning"
-                @click=${this._handleDelete}
-                .label=${this.hass.localize("ui.common.delete")}
-              >
-              </ha-button>`
-            : nothing}
         </div>
       </div>
     </div>`;
@@ -94,15 +79,6 @@ export class HaPictureUpload extends LitElement {
   private _handleChangeClick() {
     this.value = null;
     fireEvent(this, "change");
-  }
-
-  private async _handleDelete() {
-    const id = getIdFromUrl(this.value!);
-    if (id) {
-      await deleteImage(this.hass, id);
-      this.value = null;
-      fireEvent(this, "change");
-    }
   }
 
   private async _handleFilePicked(ev) {

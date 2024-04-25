@@ -83,7 +83,6 @@ export class HaImageSelector extends LitElement {
             `
           : html`
               <ha-picture-upload
-                canDelete
                 .hass=${this.hass}
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
                 @change=${this._pictureChanged}
