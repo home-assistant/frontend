@@ -2941,7 +2941,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)",
+                  "offset": "Offset in seconds or HH:MM:SS (optional)",
                   "description": {
                     "picker": "When the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
