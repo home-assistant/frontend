@@ -4302,12 +4302,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*, @types/leaflet@npm:1.9.11":
-  version: 1.9.11
-  resolution: "@types/leaflet@npm:1.9.11"
+"@types/leaflet@npm:*, @types/leaflet@npm:1.9.12":
+  version: 1.9.12
+  resolution: "@types/leaflet@npm:1.9.12"
   dependencies:
     "@types/geojson": "npm:*"
-  checksum: 10/a7f3936b83f1007fa74f65eee7a905e582966c3218d3a45ad1c713445038e69cdefeb668c8f0cb70bc293e77d3d801b299a90bc2fd33e52ff90fd93f342108a2
+  checksum: 10/ff6dce2f613b97bdc3ceb929e6eeaaa8bef8bbafdf9758935b1d679cbaf76360e366080d77e42da58e41aac146434c5d18c70ec919d37e01e0592f0a4f2e967e
   languageName: node
   linkType: hard
 
@@ -9644,7 +9644,7 @@ __metadata:
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
-    "@types/leaflet": "npm:1.9.11"
+    "@types/leaflet": "npm:1.9.12"
     "@types/leaflet-draw": "npm:1.0.11"
     "@types/luxon": "npm:3.4.2"
     "@types/mocha": "npm:10.0.6"
