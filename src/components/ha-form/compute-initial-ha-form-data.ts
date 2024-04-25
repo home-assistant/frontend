@@ -97,7 +97,9 @@ export const computeInitialHaFormData = (
       ) {
         data[field.name] = {};
       } else {
-        throw new Error("Selector not supported in initial form data");
+        throw new Error(
+          `Selector ${Object.keys(selector)[0]} not supported in initial form data`
+        );
       }
     }
   });
