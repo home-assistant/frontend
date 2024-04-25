@@ -424,7 +424,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         ? {
             physics: {
               barnesHut: {
-                springConstant: 0.05,
+                springConstant: 0,
                 avoidOverlap: 10,
                 damping: 0.09,
               },
