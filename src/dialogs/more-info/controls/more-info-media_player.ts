@@ -62,7 +62,8 @@ class MoreInfoMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
+        ${stateActive(stateObj) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
                 .label=${this.hass.localize(
