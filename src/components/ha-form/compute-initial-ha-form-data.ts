@@ -71,6 +71,10 @@ export const computeInitialHaFormData = (
         if (selector.country?.countries?.length) {
           data[field.name] = selector.country.countries[0];
         }
+      } else if ("language" in selector) {
+        if (selector.language?.languages?.length) {
+          data[field.name] = selector.language.languages[0];
+        }
       } else if ("duration" in selector) {
         data[field.name] = {
           hours: 0,
