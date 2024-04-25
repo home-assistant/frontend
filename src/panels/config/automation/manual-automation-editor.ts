@@ -97,7 +97,7 @@ export class HaManualAutomationEditor extends LitElement {
       <ha-automation-trigger
         role="region"
         aria-labelledby="triggers-heading"
-        .triggers=${this.config.trigger}
+        .triggers=${this.config.trigger || []}
         .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
