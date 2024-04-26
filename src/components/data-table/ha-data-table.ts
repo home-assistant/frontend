@@ -1,4 +1,4 @@
-import { mdiArrowDown, mdiArrowUp, mdiChevronDown } from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   CSSResultGroup,
@@ -578,7 +578,7 @@ export class HaDataTable extends LitElement {
                 @click=${this._collapseGroup}
               >
                 <ha-icon-button
-                  .path=${mdiChevronDown}
+                  .path=${mdiChevronUp}
                   class=${this._collapsedGroups.includes(groupName)
                     ? "collapsed"
                     : ""}
