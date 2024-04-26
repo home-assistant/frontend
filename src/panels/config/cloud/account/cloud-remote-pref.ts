@@ -265,7 +265,7 @@ export class CloudRemotePref extends LitElement {
               </ha-formfield>
             </div>
 
-            ${["guard_page", "drop_connection"].includes(strict_connection)
+            ${strict_connection !== "disabled"
               ? html`
                   <ha-settings-row>
                     <span slot="heading"
@@ -287,7 +287,7 @@ export class CloudRemotePref extends LitElement {
                 `
               : nothing}
 
-            <div class="divider"></div>
+            <hr />
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
@@ -304,7 +304,7 @@ export class CloudRemotePref extends LitElement {
                 @change=${this._toggleAllowRemoteEnabledChanged}
               ></ha-switch>
             </ha-settings-row>
-            <div class="divider"></div>
+            <hr />
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
@@ -548,7 +548,8 @@ export class CloudRemotePref extends LitElement {
         color: var(--secondary-text-color);
         font-size: 12px;
       }
-      .divider {
+      hr {
+        border: none;
         height: 1px;
         background-color: var(--divider-color);
         margin: 8px 0;
