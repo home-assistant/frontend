@@ -78,27 +78,6 @@ export class CloudRemotePref extends LitElement {
       `;
     }
 
-    const createLoginLink =
-      strict_connection !== "disabled"
-        ? html`<ha-settings-row class="login-link">
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.strict_connection_link"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
-              )}</span
-            >
-            <ha-button @click=${this._createLoginUrl}
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.strict_connection_create_link"
-              )}</ha-button
-            >
-          </ha-settings-row>`
-        : nothing;
-
     return html`
       <ha-card
         outlined
@@ -146,19 +125,18 @@ export class CloudRemotePref extends LitElement {
                   )}</ha-alert
                 >`
               : nothing}
-          ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
-          <br />
-          ${this.hass.localize(
-            `ui.panel.config.cloud.account.remote.${
-              remote_connected
-                ? "instance_is_available"
-                : "instance_will_be_available"
-            }`
-          )}
-          ${this.hass.localize(
-            "ui.panel.config.cloud.account.remote.nabu_casa_url"
-          )}.
-
+          <p>
+            ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
+          </p>
+          ${remote_connected
+            ? nothing
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.info_instance_will_be_available"
+                  )}
+                </p>
+              `}
           <div class="url-container">
             <div class="textfield-container">
               <ha-textfield
@@ -216,7 +194,7 @@ export class CloudRemotePref extends LitElement {
                   @change=${this._strictConnectionModeChanged}
                 ></ha-radio>
                 <div slot="label">
-                  Show login page
+                  <div class="primary">Show login page</div>
                   <div class="secondary">
                     Any new device visiting your remote access link are
                     presented with a login page.
@@ -232,7 +210,7 @@ export class CloudRemotePref extends LitElement {
                   @change=${this._strictConnectionModeChanged}
                 ></ha-radio>
                 <div slot="label">
-                  Block remote logins
+                  <div class="primary">Block remote logins</div>
                   <div class="secondary">
                     New devices must log in with a temporary access link.
                     Devices accessing the link that are not logged in will be
@@ -245,8 +223,6 @@ export class CloudRemotePref extends LitElement {
                 </div>
               </ha-formfield>
 
-              ${strict_connection === "guard_page" ? createLoginLink : nothing}
-
               <ha-formfield>
                 <ha-radio
                   name="strict-connection-mode"
@@ -255,7 +231,9 @@ export class CloudRemotePref extends LitElement {
                   @change=${this._strictConnectionModeChanged}
                 ></ha-radio>
                 <div slot="label">
-                  Block remote logins and show nothing
+                  <div class="primary">
+                    Block remote logins and show nothing
+                  </div>
                   <div class="secondary">
                     This is the same as the above setting but instead provides a
                     blank page for additional security.
@@ -266,12 +244,31 @@ export class CloudRemotePref extends LitElement {
                   </div>
                 </div>
               </ha-formfield>
-
-              ${strict_connection === "drop_connection"
-                ? createLoginLink
-                : nothing}
             </div>
 
+            ${["guard_page", "drop_connection"].includes(strict_connection)
+              ? html`
+                  <ha-settings-row>
+                    <span slot="heading"
+                      >${this.hass.localize(
+                        "ui.panel.config.cloud.account.remote.strict_connection_link"
+                      )}</span
+                    >
+                    <span slot="description"
+                      >${this.hass.localize(
+                        "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
+                      )}</span
+                    >
+                    <ha-button @click=${this._createLoginUrl}
+                      >${this.hass.localize(
+                        "ui.panel.config.cloud.account.remote.strict_connection_create_link"
+                      )}</ha-button
+                    >
+                  </ha-settings-row>
+                `
+              : nothing}
+
+            <div class="divider"></div>
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
@@ -288,6 +285,7 @@ export class CloudRemotePref extends LitElement {
                 @change=${this._toggleAllowRemoteEnabledChanged}
               ></ha-switch>
             </ha-settings-row>
+            <div class="divider"></div>
             <ha-settings-row>
               <span slot="heading"
                 >${this.hass.localize(
@@ -515,17 +513,26 @@ export class CloudRemotePref extends LitElement {
         margin-inline-start: -12px;
         --ha-formfield-align-items: start;
       }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .login-link {
-        padding-left: 42px;
-        --paper-item-body-two-line-min-height: 0;
-      }
       .strict-connection-container {
         gap: 16px;
         display: flex;
         flex-direction: column;
+      }
+      .strict-connection-container ha-formfield {
+        --ha-formfield-align-items: start;
+      }
+      .strict-connection-container .primary {
+        font-size: 14px;
+        margin-top: 12px;
+      }
+      .strict-connection-container .secondary {
+        color: var(--secondary-text-color);
+        font-size: 12px;
+      }
+      .divider {
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 8px 0;
       }
     `;
   }
