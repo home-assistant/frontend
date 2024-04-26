@@ -178,11 +178,16 @@ export class CloudRemotePref extends LitElement {
             )}
           >
             <ha-settings-row>
-              <span slot="heading">Remote login access</span>
-              <span slot="description"
-                >Choose what happens when new devices visit your remote access
-                link.</span
-              >
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.strict_connection_secondary"
+                )}
+              </span>
             </ha-settings-row>
 
             <div class="strict-connection-container">
@@ -194,10 +199,15 @@ export class CloudRemotePref extends LitElement {
                   @change=${this._strictConnectionModeChanged}
                 ></ha-radio>
                 <div slot="label">
-                  <div class="primary">Show login page</div>
+                  <div class="primary">
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_disabled"
+                    )}
+                  </div>
                   <div class="secondary">
-                    Any new device visiting your remote access link are
-                    presented with a login page.
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_disabled_secondary"
+                    )}
                   </div>
                 </div>
               </ha-formfield>
@@ -210,15 +220,20 @@ export class CloudRemotePref extends LitElement {
                   @change=${this._strictConnectionModeChanged}
                 ></ha-radio>
                 <div slot="label">
-                  <div class="primary">Block remote logins</div>
+                  <div class="primary">
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page"
+                    )}
+                  </div>
                   <div class="secondary">
-                    New devices must log in with a temporary access link.
-                    Devices accessing the link that are not logged in will be
-                    presented with a page explaining the restrictions.
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page_secondary"
+                    )}
                     <br /><br />
-                    ⚠️ This prevents outsiders from trying to log in to your
-                    system but also your own devices if they have not logged in
-                    previously.
+                    ⚠️
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page_warning"
+                    )}
                   </div>
                 </div>
               </ha-formfield>
@@ -232,15 +247,19 @@ export class CloudRemotePref extends LitElement {
                 ></ha-radio>
                 <div slot="label">
                   <div class="primary">
-                    Block remote logins and show nothing
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection"
+                    )}
                   </div>
                   <div class="secondary">
-                    This is the same as the above setting but instead provides a
-                    blank page for additional security.
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection_secondary"
+                    )}
                     <br /><br />
-                    ⚠️ This prevents outsiders from snooping the remote web
-                    address and trying to log in, but it may appear as if there
-                    is no system running when users try to access it.
+                    ⚠️
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection_warning"
+                    )}
                   </div>
                 </div>
               </ha-formfield>
