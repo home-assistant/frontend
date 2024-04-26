@@ -19,6 +19,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { isUnavailableState } from "../../../data/entity";
 import {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -62,7 +63,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${stateActive(stateObj) &&
+        ${!isUnavailableState(stateObj) &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
