@@ -160,9 +160,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-define-polyfill-provider@npm:0.6.1, @babel/helper-define-polyfill-provider@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "@babel/helper-define-polyfill-provider@npm:0.6.1"
+"@babel/helper-define-polyfill-provider@npm:0.6.2, @babel/helper-define-polyfill-provider@npm:^0.6.1":
+  version: 0.6.2
+  resolution: "@babel/helper-define-polyfill-provider@npm:0.6.2"
   dependencies:
     "@babel/helper-compilation-targets": "npm:^7.22.6"
     "@babel/helper-plugin-utils": "npm:^7.22.5"
@@ -171,7 +171,7 @@ __metadata:
     resolve: "npm:^1.14.2"
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: 10/316e7c0f05d2ae233d5fbb622c6339436da8d2b2047be866b64a16e6996c078a23b4adfebbdb33bc6a9882326a6cc20b95daa79a5e0edc92e9730e36d45fa523
+  checksum: 10/bb32ec12024d3f16e70641bc125d2534a97edbfdabbc9f69001ec9c4ce46f877c7a224c566aa6c8c510c3b0def2e43dc4433bf6a40896ba5ce0cef4ea5ccbcff
   languageName: node
   linkType: hard
 
@@ -9556,7 +9556,7 @@ __metadata:
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
     "@babel/core": "npm:7.24.4"
-    "@babel/helper-define-polyfill-provider": "npm:0.6.1"
+    "@babel/helper-define-polyfill-provider": "npm:0.6.2"
     "@babel/plugin-proposal-decorators": "npm:7.24.1"
     "@babel/plugin-transform-runtime": "npm:7.24.3"
     "@babel/preset-env": "npm:7.24.4"
