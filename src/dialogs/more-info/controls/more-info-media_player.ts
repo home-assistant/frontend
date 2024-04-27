@@ -63,7 +63,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${!isUnavailableState(stateObj) &&
+        ${!isUnavailableState(stateObj.state) &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
