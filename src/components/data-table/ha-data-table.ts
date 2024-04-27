@@ -987,11 +987,11 @@ export class HaDataTable extends LitElement {
         /* custom from here */
 
         .group-header {
-          padding-top: 12px;
           padding-left: 12px;
           padding-inline-start: 12px;
           width: 100%;
           font-weight: 500;
+          font-size: 14px;
           display: flex;
           align-items: center;
           cursor: pointer;
