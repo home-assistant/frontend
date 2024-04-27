@@ -797,6 +797,7 @@ export class HaAutomationTracer extends LitElement {
         description: html`${this.hass.localize(
           `ui.panel.config.automation.trace.messages.${message}`,
           {
+            reason: this.trace.script_execution,
             time: renderFinishedAt(),
             executiontime: renderRuntime(),
           }

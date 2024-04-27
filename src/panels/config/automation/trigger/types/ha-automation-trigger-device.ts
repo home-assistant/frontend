@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
+import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
 import { fullEntitiesContext } from "../../../../../data/context";
 import {
   deviceAutomationsEqual,
@@ -44,7 +45,9 @@ export class HaDeviceTrigger extends LitElement {
 
   private _extraFieldsData = memoizeOne(
     (trigger: DeviceTrigger, capabilities: DeviceCapabilities) => {
-      const extraFieldsData: Record<string, any> = {};
+      const extraFieldsData = computeInitialHaFormData(
+        capabilities.extra_fields
+      );
       capabilities.extra_fields.forEach((item) => {
         if (trigger[item.name] !== undefined) {
           extraFieldsData![item.name] = trigger[item.name];

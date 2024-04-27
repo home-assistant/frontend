@@ -422,7 +422,8 @@ export const computeHistory = (
   entityIds: string[],
   localize: LocalizeFunc,
   sensorNumericalDeviceClasses: string[],
-  splitDeviceClasses = false
+  splitDeviceClasses = false,
+  forceNumeric = false
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -468,6 +469,7 @@ export const computeHistory = (
     let unit: string | undefined;
 
     const isNumeric =
+      forceNumeric ||
       isNumericFromDomain(domain) ||
       (currentState != null &&
         isNumericFromAttributes(currentState.attributes)) ||

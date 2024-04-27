@@ -10,9 +10,11 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
@@ -33,10 +35,10 @@ import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
+import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
@@ -49,6 +51,13 @@ export class HaConfigLovelaceRescources extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _resources: LovelaceResource[] = [];
+
+  @storage({
+    key: "lovelace-resources-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
 
   private _columns = memoize(
     (
@@ -127,6 +136,8 @@ export class HaConfigLovelaceRescources extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.no_resources"
         )}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @row-click=${this._editResource}
         hasFab
         clickable
@@ -235,6 +246,10 @@ export class HaConfigLovelaceRescources extends LitElement {
         }
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 
   static get styles(): CSSResultGroup {

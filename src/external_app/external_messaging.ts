@@ -37,9 +37,11 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
 
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
-  title: string;
-  description: string;
-  alternative_option_label?: string;
+  payload: {
+    title: string;
+    description: string;
+    alternative_option_label?: string;
+  };
 }
 
 interface EMOutgoingMessageBarCodeClose extends EMMessage {
@@ -48,7 +50,9 @@ interface EMOutgoingMessageBarCodeClose extends EMMessage {
 
 interface EMOutgoingMessageBarCodeNotify extends EMMessage {
   type: "bar_code/notify";
-  message: string;
+  payload: {
+    message: string;
+  };
 }
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {

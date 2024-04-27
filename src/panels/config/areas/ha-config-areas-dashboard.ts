@@ -511,6 +511,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        overflow-wrap: anywhere;
       }
       .warning {
         color: var(--error-color);

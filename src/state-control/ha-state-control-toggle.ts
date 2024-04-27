@@ -108,6 +108,7 @@ export class HaStateControlToggle extends LitElement {
 
     return html`
       <ha-control-switch
+        touch-action="none"
         .pathOn=${this.iconPathOn || mdiFlash}
         .pathOff=${this.iconPathOff || mdiFlashOff}
         vertical

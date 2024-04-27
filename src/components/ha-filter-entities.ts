@@ -71,7 +71,7 @@ export class HaFilterEntities extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar">
+              <mwc-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
                     this.hass.states,
@@ -108,7 +108,7 @@ export class HaFilterEntities extends LitElement {
       ? nothing
       : html`<ha-check-list-item
           .value=${entity.entity_id}
-          .selected=${this.value?.includes(entity.entity_id)}
+          .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
         >
           <ha-state-icon
