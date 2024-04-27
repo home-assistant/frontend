@@ -42,8 +42,14 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context";
+import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
+import { FloorRegistryEntry } from "../../../../data/floor_registry";
+import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
   Action,
   NonConditionAction,
@@ -146,6 +152,14 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  _labelReg!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: FloorRegistryEntry[];
+
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -210,7 +224,13 @@ export default class HaAutomationActionRow extends LitElement {
                   .path=${ACTION_ICONS[type!]}
                 ></ha-svg-icon>`}
             ${capitalizeFirstLetter(
-              describeAction(this.hass, this._entityReg, this.action)
+              describeAction(
+                this.hass,
+                this._entityReg,
+                this._labelReg,
+                this._floorReg,
+                this.action
+              )
             )}
           </h3>
 
@@ -573,7 +593,15 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(this.hass, this._entityReg, this.action, undefined, true)
+        describeAction(
+          this.hass,
+          this._entityReg,
+          this._labelReg,
+          this._floorReg,
+          this.action,
+          undefined,
+          true
+        )
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),

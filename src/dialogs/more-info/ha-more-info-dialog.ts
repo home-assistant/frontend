@@ -77,6 +77,8 @@ declare global {
   }
 }
 
+const DEFAULT_VIEW: View = "info";
+
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -85,7 +87,9 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
-  @state() private _currView: View = "info";
+  @state() private _currView: View = DEFAULT_VIEW;
+
+  @state() private _initialView: View = DEFAULT_VIEW;
 
   @state() private _childView?: ChildView;
 
@@ -102,7 +106,8 @@ export class MoreInfoDialog extends LitElement {
       this.closeDialog();
       return;
     }
-    this._currView = params.view || "info";
+    this._currView = params.view || DEFAULT_VIEW;
+    this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
     this.large = false;
     this._loadEntityRegistryEntry();
@@ -127,6 +132,7 @@ export class MoreInfoDialog extends LitElement {
     this._entry = undefined;
     this._childView = undefined;
     this._infoEditMode = false;
+    this._initialView = DEFAULT_VIEW;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -183,8 +189,13 @@ export class MoreInfoDialog extends LitElement {
     if (this._childView) {
       this._childView = undefined;
     } else {
-      this.setView("info");
+      this.setView(this._initialView);
     }
+  }
+
+  private _resetInitialView() {
+    this._initialView = DEFAULT_VIEW;
+    this.setView(DEFAULT_VIEW);
   }
 
   private _goToHistory() {
@@ -262,7 +273,10 @@ export class MoreInfoDialog extends LitElement {
 
     const title = this._childView?.viewTitle ?? name;
 
-    const isInfoView = this._currView === "info" && !this._childView;
+    const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
+    const isSpecificInitialView =
+      this._initialView !== DEFAULT_VIEW && !this._childView;
+    const showCloseIcon = isDefaultView || isSpecificInitialView;
 
     return html`
       <ha-dialog
@@ -274,7 +288,7 @@ export class MoreInfoDialog extends LitElement {
         flexContent
       >
         <ha-dialog-header slot="heading">
-          ${isInfoView
+          ${showCloseIcon
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
@@ -297,7 +311,7 @@ export class MoreInfoDialog extends LitElement {
           <span slot="title" .title=${title} @click=${this._enlarge}>
             ${title}
           </span>
-          ${isInfoView
+          ${isDefaultView
             ? html`
                 ${this.shouldShowHistory(domain)
                   ? html`
@@ -407,7 +421,34 @@ export class MoreInfoDialog extends LitElement {
                     `
                   : nothing}
               `
-            : nothing}
+            : isSpecificInitialView
+              ? html`
+                  <ha-button-menu
+                    corner="BOTTOM_END"
+                    menuCorner="END"
+                    slot="actionItems"
+                    @closed=${stopPropagation}
+                    fixed
+                  >
+                    <ha-icon-button
+                      slot="trigger"
+                      .label=${this.hass.localize("ui.common.menu")}
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+
+                    <ha-list-item
+                      graphic="icon"
+                      @request-selected=${this._resetInitialView}
+                    >
+                      ${this.hass.localize("ui.dialogs.more_info_control.info")}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiInformationOutline}
+                      ></ha-svg-icon>
+                    </ha-list-item>
+                  </ha-button-menu>
+                `
+              : nothing}
         </ha-dialog-header>
         <div
           class="content"

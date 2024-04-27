@@ -33,6 +33,9 @@ export class HaControlSwitch extends LitElement {
   // SVG icon path (if you need a non SVG icon instead, use the provided off icon slot to pass an <ha-icon slot="icon-off"> in)
   @property({ type: String }) pathOff?: string;
 
+  @property({ attribute: "touch-action" })
+  public touchAction?: string;
+
   private _mc?: HammerManager;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -73,7 +76,7 @@ export class HaControlSwitch extends LitElement {
   setupListeners() {
     if (this.switch && !this._mc) {
       this._mc = new Manager(this.switch, {
-        touchAction: this.vertical ? "pan-x" : "pan-y",
+        touchAction: this.touchAction ?? (this.vertical ? "pan-x" : "pan-y"),
       });
       this._mc.add(
         new Swipe({

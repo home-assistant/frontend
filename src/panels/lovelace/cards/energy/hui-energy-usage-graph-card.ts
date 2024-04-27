@@ -4,7 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { endOfToday, isToday, startOfToday } from "date-fns/esm";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -434,10 +434,8 @@ export class HuiEnergyUsageGraphCard
           if (summedData.to_battery) {
             grid_to_battery[start] = used_solar[start] * -1;
             if (grid_to_battery[start] > (summedData.from_grid?.[start] || 0)) {
-              battery_to_grid[start] = Math.min(
-                0,
-                grid_to_battery[start] - (summedData.from_grid?.[start] || 0)
-              );
+              battery_to_grid[start] =
+                grid_to_battery[start] - (summedData.from_grid?.[start] || 0);
               grid_to_battery[start] = summedData.from_grid?.[start];
             }
           }

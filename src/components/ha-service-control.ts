@@ -30,7 +30,10 @@ import {
   entityMeetsTargetSelector,
   expandAreaTarget,
   expandDeviceTarget,
+  expandFloorTarget,
+  expandLabelTarget,
   Selector,
+  TargetSelector,
 } from "../data/selector";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -41,6 +44,7 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import { isHelperDomain } from "../panels/config/helpers/const";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -58,20 +62,12 @@ const showOptionalToggle = (field) =>
   !("boolean" in field.selector && field.default);
 
 interface ExtHassService extends Omit<HassService, "fields"> {
-  fields: {
-    key: string;
-    name?: string;
-    description: string;
-    required?: boolean;
-    advanced?: boolean;
-    default?: any;
-    example?: any;
-    filter?: {
-      supported_features?: number[];
-      attribute?: Record<string, any[]>;
-    };
-    selector?: Selector;
-  }[];
+  fields: Array<
+    Omit<HassService["fields"][string], "selector"> & {
+      key: string;
+      selector?: Selector;
+    }
+  >;
   hasSelector: string[];
 }
 
@@ -275,10 +271,42 @@ export class HaServiceControl extends LitElement {
       ensureArray(
         value?.target?.device_id || value?.data?.device_id
       )?.slice() || [];
-    const targetAreas = ensureArray(
-      value?.target?.area_id || value?.data?.area_id
+    const targetAreas =
+      ensureArray(value?.target?.area_id || value?.data?.area_id)?.slice() ||
+      [];
+    const targetFloors = ensureArray(
+      value?.target?.floor_id || value?.data?.floor_id
     )?.slice();
-    if (targetAreas) {
+    const targetLabels = ensureArray(
+      value?.target?.label_id || value?.data?.label_id
+    )?.slice();
+    if (targetLabels) {
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          targetSelector
+        );
+        targetDevices.push(...expanded.devices);
+        targetEntities.push(...expanded.entities);
+        targetAreas.push(...expanded.areas);
+      });
+    }
+    if (targetFloors) {
+      targetFloors.forEach((floorId) => {
+        const expanded = expandFloorTarget(
+          this.hass,
+          floorId,
+          this.hass.areas,
+          targetSelector
+        );
+        targetAreas.push(...expanded.areas);
+      });
+    }
+    if (targetAreas.length) {
       targetAreas.forEach((areaId) => {
         const expanded = expandAreaTarget(
           this.hass,
@@ -337,6 +365,15 @@ export class HaServiceControl extends LitElement {
     return false;
   }
 
+  private _targetSelector = memoizeOne(
+    (targetSelector: TargetSelector | null | undefined, domain?: string) => {
+      const create_domains = isHelperDomain(domain) ? [domain] : undefined;
+      return targetSelector
+        ? { target: { ...targetSelector, create_domains } }
+        : { target: { create_domains } };
+    }
+  );
+
   protected render() {
     const serviceData = this._getServiceInfo(
       this._value?.service,
@@ -375,157 +412,152 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
-    return html`
-      ${this.hidePicker
-        ? nothing
-        : html`<ha-service-picker
+    return html`${this.hidePicker
+      ? nothing
+      : html`<ha-service-picker
+          .hass=${this.hass}
+          .value=${this._value?.service}
+          .disabled=${this.disabled}
+          @value-changed=${this._serviceChanged}
+        ></ha-service-picker>`}
+    ${this.hideDescription
+      ? nothing
+      : html`
+          <div class="description">
+            ${description ? html`<p>${description}</p>` : ""}
+            ${this._manifest
+              ? html` <a
+                  href=${this._manifest.is_built_in
+                    ? documentationUrl(
+                        this.hass,
+                        `/integrations/${this._manifest.domain}`
+                      )
+                    : this._manifest.documentation}
+                  title=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ha-icon-button
+                    .path=${mdiHelpCircle}
+                    class="help-icon"
+                  ></ha-icon-button>
+                </a>`
+              : nothing}
+          </div>
+        `}
+    ${serviceData && "target" in serviceData
+      ? html`<ha-settings-row .narrow=${this.narrow}>
+          ${hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : ""}
+          <span slot="heading"
+            >${this.hass.localize("ui.components.service-control.target")}</span
+          >
+          <span slot="description"
+            >${this.hass.localize(
+              "ui.components.service-control.target_description"
+            )}</span
+          ><ha-selector
             .hass=${this.hass}
-            .value=${this._value?.service}
+            .selector=${this._targetSelector(
+              serviceData.target as TargetSelector,
+              domain
+            )}
             .disabled=${this.disabled}
-            @value-changed=${this._serviceChanged}
-          ></ha-service-picker>`}
-      ${this.hideDescription
-        ? nothing
-        : html`
-            <div class="description">
-              ${description ? html`<p>${description}</p>` : ""}
-              ${this._manifest
-                ? html` <a
-                    href=${this._manifest.is_built_in
-                      ? documentationUrl(
-                          this.hass,
-                          `/integrations/${this._manifest.domain}`
-                        )
-                      : this._manifest.documentation}
-                    title=${this.hass.localize(
-                      "ui.components.service-control.integration_doc"
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ha-icon-button
-                      .path=${mdiHelpCircle}
-                      class="help-icon"
-                    ></ha-icon-button>
-                  </a>`
-                : nothing}
-            </div>
-          `}
-      ${serviceData && "target" in serviceData
-        ? html`<ha-settings-row .narrow=${this.narrow}>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""}
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.components.service-control.target"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_description"
-              )}</span
-            ><ha-selector
-              .hass=${this.hass}
-              .selector=${serviceData.target
-                ? { target: serviceData.target }
-                : { target: {} }}
-              .disabled=${this.disabled}
-              @value-changed=${this._targetChanged}
-              .value=${this._value?.target}
-            ></ha-selector
-          ></ha-settings-row>`
-        : entityId
-          ? html`<ha-entity-picker
-              .hass=${this.hass}
-              .disabled=${this.disabled}
-              .value=${this._value?.data?.entity_id}
-              .label=${this.hass.localize(
-                `component.${domain}.services.${serviceName}.fields.entity_id.description`
-              ) || entityId.description}
-              @value-changed=${this._entityPicked}
-              allow-custom-entity
-            ></ha-entity-picker>`
-          : ""}
-      ${shouldRenderServiceDataYaml
-        ? html`<ha-yaml-editor
+            @value-changed=${this._targetChanged}
+            .value=${this._value?.target}
+          ></ha-selector
+        ></ha-settings-row>`
+      : entityId
+        ? html`<ha-entity-picker
             .hass=${this.hass}
-            .label=${this.hass.localize("ui.components.service-control.data")}
-            .name=${"data"}
-            .readOnly=${this.disabled}
-            .defaultValue=${this._value?.data}
-            @value-changed=${this._dataChanged}
-          ></ha-yaml-editor>`
-        : filteredFields?.map((dataField) => {
-            const selector = dataField?.selector ?? { text: undefined };
-            const type = Object.keys(selector)[0];
-            const enhancedSelector = [
-              "action",
-              "condition",
-              "trigger",
-            ].includes(type)
-              ? {
-                  [type]: {
-                    ...selector[type],
-                    path: [dataField.key],
-                  },
-                }
-              : selector;
+            .disabled=${this.disabled}
+            .value=${this._value?.data?.entity_id}
+            .label=${this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.entity_id.description`
+            ) || entityId.description}
+            @value-changed=${this._entityPicked}
+            allow-custom-entity
+          ></ha-entity-picker>`
+        : ""}
+    ${shouldRenderServiceDataYaml
+      ? html`<ha-yaml-editor
+          .hass=${this.hass}
+          .label=${this.hass.localize("ui.components.service-control.data")}
+          .name=${"data"}
+          .readOnly=${this.disabled}
+          .defaultValue=${this._value?.data}
+          @value-changed=${this._dataChanged}
+        ></ha-yaml-editor>`
+      : filteredFields?.map((dataField) => {
+          const selector = dataField?.selector ?? { text: undefined };
+          const type = Object.keys(selector)[0];
+          const enhancedSelector = ["action", "condition", "trigger"].includes(
+            type
+          )
+            ? {
+                [type]: {
+                  ...selector[type],
+                  path: [dataField.key],
+                },
+              }
+            : selector;
 
-            const showOptional = showOptionalToggle(dataField);
+          const showOptional = showOptionalToggle(dataField);
 
-            return dataField.selector &&
-              (!dataField.advanced ||
-                this.showAdvanced ||
-                (this._value?.data &&
-                  this._value.data[dataField.key] !== undefined))
-              ? html`<ha-settings-row .narrow=${this.narrow}>
-                  ${!showOptional
-                    ? hasOptional
-                      ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-                      : ""
-                    : html`<ha-checkbox
-                        .key=${dataField.key}
-                        .checked=${this._checkedKeys.has(dataField.key) ||
-                        (this._value?.data &&
-                          this._value.data[dataField.key] !== undefined)}
-                        .disabled=${this.disabled}
-                        @change=${this._checkboxChanged}
-                        slot="prefix"
-                      ></ha-checkbox>`}
-                  <span slot="heading"
-                    >${this.hass.localize(
-                      `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
-                    ) ||
-                    dataField.name ||
-                    dataField.key}</span
-                  >
-                  <span slot="description"
-                    >${this.hass.localize(
-                      `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
-                    ) || dataField?.description}</span
-                  >
-                  <ha-selector
-                    .disabled=${this.disabled ||
-                    (showOptional &&
-                      !this._checkedKeys.has(dataField.key) &&
-                      (!this._value?.data ||
-                        this._value.data[dataField.key] === undefined))}
-                    .hass=${this.hass}
-                    .selector=${enhancedSelector}
-                    .key=${dataField.key}
-                    @value-changed=${this._serviceDataChanged}
-                    .value=${this._value?.data
-                      ? this._value.data[dataField.key]
-                      : undefined}
-                    .placeholder=${dataField.default}
-                    .localizeValue=${this._localizeValueCallback}
-                    @item-moved=${this._itemMoved}
-                  ></ha-selector>
-                </ha-settings-row>`
-              : "";
-          })}
-    `;
+          return dataField.selector &&
+            (!dataField.advanced ||
+              this.showAdvanced ||
+              (this._value?.data &&
+                this._value.data[dataField.key] !== undefined))
+            ? html`<ha-settings-row .narrow=${this.narrow}>
+                ${!showOptional
+                  ? hasOptional
+                    ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+                    : ""
+                  : html`<ha-checkbox
+                      .key=${dataField.key}
+                      .checked=${this._checkedKeys.has(dataField.key) ||
+                      (this._value?.data &&
+                        this._value.data[dataField.key] !== undefined)}
+                      .disabled=${this.disabled}
+                      @change=${this._checkboxChanged}
+                      slot="prefix"
+                    ></ha-checkbox>`}
+                <span slot="heading"
+                  >${this.hass.localize(
+                    `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
+                  ) ||
+                  dataField.name ||
+                  dataField.key}</span
+                >
+                <span slot="description"
+                  >${this.hass.localize(
+                    `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
+                  ) || dataField?.description}</span
+                >
+                <ha-selector
+                  .disabled=${this.disabled ||
+                  (showOptional &&
+                    !this._checkedKeys.has(dataField.key) &&
+                    (!this._value?.data ||
+                      this._value.data[dataField.key] === undefined))}
+                  .hass=${this.hass}
+                  .selector=${enhancedSelector}
+                  .key=${dataField.key}
+                  @value-changed=${this._serviceDataChanged}
+                  .value=${this._value?.data
+                    ? this._value.data[dataField.key]
+                    : undefined}
+                  .placeholder=${dataField.default}
+                  .localizeValue=${this._localizeValueCallback}
+                  @item-moved=${this._itemMoved}
+                ></ha-selector>
+              </ha-settings-row>`
+            : "";
+        })} `;
   }
 
   private _localizeValueCallback = (key: string) => {

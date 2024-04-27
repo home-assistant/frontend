@@ -37,7 +37,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, currentType: string, isNew: boolean) =>
+    (localize: LocalizeFunc, viewType: string) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -64,15 +64,24 @@ export class HuiViewEditor extends LitElement {
                 label: localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`
                 ),
-                disabled:
-                  !isNew &&
-                  (currentType === SECTION_VIEW_LAYOUT
-                    ? type !== SECTION_VIEW_LAYOUT
-                    : type === SECTION_VIEW_LAYOUT),
               })),
             },
           },
         },
+        ...(viewType === SECTION_VIEW_LAYOUT
+          ? ([
+              {
+                name: "max_columns",
+                selector: {
+                  number: {
+                    min: 1,
+                    max: 10,
+                    mode: "slider",
+                  },
+                },
+              },
+            ] as const satisfies HaFormSchema[])
+          : []),
         {
           name: "subview",
           selector: {
@@ -95,21 +104,21 @@ export class HuiViewEditor extends LitElement {
       : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
-  private get _isEmpty(): boolean {
-    return !this._config.sections?.length && !this._config.cards?.length;
-  }
-
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize, this._type, this._isEmpty);
+    const schema = this._schema(this.hass.localize, this._type);
 
     const data = {
       ...this._config,
       type: this._type,
     };
+
+    if (data.max_columns === undefined && this._type === SECTION_VIEW_LAYOUT) {
+      data.max_columns = 4;
+    }
 
     return html`
       <ha-form
@@ -126,8 +135,12 @@ export class HuiViewEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value as LovelaceViewConfig;
 
-    if (config.type === "masonry") {
+    if (config.type === DEFAULT_VIEW_LAYOUT) {
       delete config.type;
+    }
+
+    if (config.type !== SECTION_VIEW_LAYOUT) {
+      delete config.max_columns;
     }
 
     if (
@@ -153,6 +166,10 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
+      case "max_columns":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.max_columns"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
@@ -168,15 +185,6 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.subview_helper"
         );
-      case "type":
-        if (this._isEmpty) return undefined;
-        return this._type === "sections"
-          ? this.hass.localize(
-              "ui.panel.lovelace.editor.edit_view.type_helper_others"
-            )
-          : this.hass.localize(
-              "ui.panel.lovelace.editor.edit_view.type_helper_sections"
-            );
       default:
         return undefined;
     }

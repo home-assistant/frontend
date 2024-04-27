@@ -5,10 +5,9 @@ import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
-import { canRun, ScriptEntity } from "../data/script";
+import { canRun, hasScriptFields, ScriptEntity } from "../data/script";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import { computeObjectId } from "../common/entity/compute_object_id";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("state-card-script")
@@ -59,11 +58,7 @@ class StateCardScript extends LitElement {
   private _runScript(ev: Event) {
     ev.stopPropagation();
 
-    const fields =
-      this.hass!.services.script[computeObjectId(this.stateObj.entity_id)]
-        ?.fields;
-
-    if (fields && Object.keys(fields).length > 0) {
+    if (hasScriptFields(this.hass, this.stateObj.entity_id)) {
       showMoreInfoDialog(this, { entityId: this.stateObj.entity_id });
     } else {
       this._callService("turn_on");

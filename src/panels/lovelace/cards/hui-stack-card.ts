@@ -7,6 +7,7 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";
@@ -34,6 +35,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   @state() protected _cards?: LovelaceCard[];
 
   @state() protected _config?: T;
+
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -87,7 +91,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   static get sharedStyles(): CSSResultGroup {
     return css`
       .card-header {
-        color: var(--ha-card-header-color, --primary-text-color);
+        color: var(--ha-card-header-color, var(--primary-text-color));
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
         font-weight: normal;
@@ -97,6 +101,11 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         line-height: 32px;
         display: block;
         padding: 24px 16px 16px;
+      }
+      :host([ispanel]) #root {
+        --ha-card-border-radius: var(--restore-card-border-radius);
+        --ha-card-border-width: var(--restore-card-border-width);
+        --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
     `;
   }
@@ -111,6 +120,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       (ev) => {
         ev.stopPropagation();
         this._rebuildCard(element, cardConfig);
+        fireEvent(this, "ll-rebuild");
       },
       { once: true }
     );

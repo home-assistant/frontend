@@ -155,7 +155,7 @@ export class HuiTileCardEditor
                 {
                   name: "color",
                   selector: {
-                    ui_color: {},
+                    ui_color: { default_color: true },
                   },
                 },
                 {
