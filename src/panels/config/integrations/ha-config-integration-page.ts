@@ -1412,7 +1412,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: center;
           color: var(--secondary-text-color);
-          width: 100%;
         }
         .overview .card-actions {
           padding: 0;
