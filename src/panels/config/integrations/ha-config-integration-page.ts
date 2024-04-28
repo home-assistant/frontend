@@ -269,6 +269,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     @error=${this._onImageError}
                   />
                 </div>
+                ${this._manifest?.version != null
+                  ? html`<div class="version">${this._manifest.version}</div>`
+                  : nothing}
                 ${this._manifest?.is_built_in === false
                   ? html`<ha-alert alert-type="warning"
                       ><ha-svg-icon
@@ -1403,6 +1406,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .logo-container {
           display: flex;
           justify-content: center;
+        }
+        .version {
+          padding-top: 8px;
+          display: flex;
+          justify-content: center;
+          color: var(--secondary-text-color);
+          width: 100%;
         }
         .overview .card-actions {
           padding: 0;
