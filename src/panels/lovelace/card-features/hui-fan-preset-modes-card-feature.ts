@@ -40,7 +40,7 @@ class HuiFanPresetModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_): FanPresetModesCardFeatureConfig {
+  static getStubConfig(): FanPresetModesCardFeatureConfig {
     return {
       type: "fan-preset-modes",
       style: "dropdown",

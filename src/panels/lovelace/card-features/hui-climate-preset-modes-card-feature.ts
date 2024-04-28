@@ -41,7 +41,7 @@ class HuiClimatePresetModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_): ClimatePresetModesCardFeatureConfig {
+  static getStubConfig(): ClimatePresetModesCardFeatureConfig {
     return {
       type: "climate-preset-modes",
       style: "dropdown",

@@ -41,7 +41,7 @@ class HuiClimateFanModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_): ClimateFanModesCardFeatureConfig {
+  static getStubConfig(): ClimateFanModesCardFeatureConfig {
     return {
       type: "climate-fan-modes",
       style: "dropdown",

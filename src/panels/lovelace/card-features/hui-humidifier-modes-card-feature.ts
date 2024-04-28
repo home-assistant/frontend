@@ -44,7 +44,7 @@ class HuiHumidifierModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_): HumidifierModesCardFeatureConfig {
+  static getStubConfig(): HumidifierModesCardFeatureConfig {
     return {
       type: "humidifier-modes",
       style: "dropdown",

@@ -41,7 +41,7 @@ class HuiClimateSwingModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(_): ClimateSwingModesCardFeatureConfig {
+  static getStubConfig(): ClimateSwingModesCardFeatureConfig {
     return {
       type: "climate-swing-modes",
       style: "dropdown",
