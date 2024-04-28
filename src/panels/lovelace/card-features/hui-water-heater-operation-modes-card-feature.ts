@@ -19,6 +19,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { WaterHeaterOperationModesCardFeatureConfig } from "./types";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsWaterHeaterOperationModesCardFeature = (
   stateObj: HassEntity
@@ -40,13 +41,10 @@ class HuiWaterHeaterOperationModeCardFeature
 
   @state() _currentOperationMode?: OperationMode;
 
-  static getStubConfig(
-    _,
-    stateObj?: HassEntity
-  ): WaterHeaterOperationModesCardFeatureConfig {
+  static getStubConfig(_): WaterHeaterOperationModesCardFeatureConfig {
     return {
       type: "water-heater-operation-modes",
-      operation_modes: stateObj?.attributes.operation_list || [],
+      operation_modes: [],
     };
   }
 
@@ -107,16 +105,16 @@ class HuiWaterHeaterOperationModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const modes = this._config.operation_modes || [];
-
-    const options = modes
-      .filter((mode) => this.stateObj?.attributes.operation_list.includes(mode))
-      .sort(compareWaterHeaterOperationMode)
-      .map<ControlSelectOption>((mode) => ({
-        value: mode,
-        label: this.hass!.formatEntityState(this.stateObj!, mode),
-        path: computeOperationModeIcon(mode),
-      }));
+    const options = filterModes(
+      [...(this.stateObj?.attributes.operation_list || [])].sort(
+        compareWaterHeaterOperationMode
+      ),
+      this._config.operation_modes
+    ).map<ControlSelectOption>((mode) => ({
+      value: mode,
+      label: this.hass!.formatEntityState(this.stateObj!, mode),
+      path: computeOperationModeIcon(mode as OperationMode),
+    }));
 
     return html`
       <div class="container">
