@@ -45,7 +45,6 @@ class HuiClimatePresetModesCardFeature
     return {
       type: "climate-preset-modes",
       style: "dropdown",
-      preset_modes: [],
     };
   }
 

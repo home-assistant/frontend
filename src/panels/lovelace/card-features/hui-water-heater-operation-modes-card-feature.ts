@@ -44,7 +44,6 @@ class HuiWaterHeaterOperationModeCardFeature
   static getStubConfig(): WaterHeaterOperationModesCardFeatureConfig {
     return {
       type: "water-heater-operation-modes",
-      operation_modes: [],
     };
   }
 
