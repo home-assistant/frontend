@@ -2,6 +2,7 @@ import { mdiFileUpload } from "@mdi/js";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-file-upload";
 import "../ha-icon-button";
 import "../ha-textfield";
 import type { HaFormElement, HaFormFileSchema } from "./types";
@@ -13,9 +14,11 @@ export class HaFormFile extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public schema!: HaFormFileSchema;
 
-  @property() public label!: string;
+  @property() public label?: string;
 
   @property() public supportedFormats?: string;
+
+  @property() public accept?: string;
 
   @state() private _file?: File;
 
@@ -28,9 +31,9 @@ export class HaFormFile extends LitElement implements HaFormElement {
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
         .label=${this.label}
-        .supports=${this.schema.supportedFormats}
+        .supports=${this.supportedFormats}
         .value=${this._file}
-        accept=${this.schema.accept || ""}
+        accept=${this.accept || ""}
         @file-picked=${this._setFile}
         @change=${this._handleFileCleared}
       ></ha-file-upload>

@@ -98,8 +98,6 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
 
 export interface HaFormFileSchema extends HaFormBaseSchema {
   type: "file";
-  supportedFormats?: string;
-  accept?: string;
 }
 
 // Type utility to unionize a schema array by flattening any grid schemas
