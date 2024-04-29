@@ -19,6 +19,7 @@ import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
   constant: () => import("./ha-form-constant"),
+  file: () => import("./ha-form-file"),
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),

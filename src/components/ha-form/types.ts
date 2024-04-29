@@ -13,7 +13,8 @@ export type HaFormSchema =
   | HaFormTimeSchema
   | HaFormSelector
   | HaFormGridSchema
-  | HaFormExpandableSchema;
+  | HaFormExpandableSchema
+  | HaFormFileSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -95,6 +96,12 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
   type: "positive_time_period_dict";
 }
 
+export interface HaFormFileSchema extends HaFormBaseSchema {
+  type: "file";
+  supportedFormats?: string;
+  accept?: string;
+}
+
 // Type utility to unionize a schema array by flattening any grid schemas
 export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
@@ -114,7 +121,8 @@ export type HaFormData =
   | HaFormBooleanData
   | HaFormSelectData
   | HaFormMultiSelectData
-  | HaFormTimeData;
+  | HaFormTimeData
+  | HaFormFileData;
 
 export type HaFormStringData = string;
 export type HaFormIntegerData = number;
@@ -123,6 +131,7 @@ export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
 export type HaFormMultiSelectData = string[];
 export type HaFormTimeData = HaDurationData;
+export type HaFormFileData = File;
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema | readonly HaFormSchema[];
