@@ -32,6 +32,8 @@ export class CloudRemotePref extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @state() private _unmaskedUrl = false;
 
   protected render() {
@@ -229,11 +231,15 @@ export class CloudRemotePref extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page_secondary"
                     )}
-                    <br /><br />
-                    ⚠️
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page_warning"
-                    )}
+                    ${strict_connection === "guard_page"
+                      ? html`
+                          <br /><br />
+                          ⚠️
+                          ${this.hass.localize(
+                            "ui.panel.config.cloud.account.remote.strict_connection_option_guard_page_warning"
+                          )}
+                        `
+                      : nothing}
                   </div>
                 </div>
               </ha-formfield>
@@ -255,11 +261,15 @@ export class CloudRemotePref extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection_secondary"
                     )}
-                    <br /><br />
-                    ⚠️
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection_warning"
-                    )}
+                    ${strict_connection === "drop_connection"
+                      ? html`
+                          <br /><br />
+                          ⚠️
+                          ${this.hass.localize(
+                            "ui.panel.config.cloud.account.remote.strict_connection_option_drop_connection_warning"
+                          )}
+                        `
+                      : nothing}
                   </div>
                 </div>
               </ha-formfield>
@@ -267,7 +277,7 @@ export class CloudRemotePref extends LitElement {
 
             ${strict_connection !== "disabled"
               ? html`
-                  <ha-settings-row>
+                  <ha-settings-row .narrow=${this.narrow}>
                     <span slot="heading"
                       >${this.hass.localize(
                         "ui.panel.config.cloud.account.remote.strict_connection_link"
@@ -288,7 +298,7 @@ export class CloudRemotePref extends LitElement {
               : nothing}
 
             <hr />
-            <ha-settings-row>
+            <ha-settings-row wrap-heading>
               <span slot="heading"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.external_activation"
@@ -305,7 +315,7 @@ export class CloudRemotePref extends LitElement {
               ></ha-switch>
             </ha-settings-row>
             <hr />
-            <ha-settings-row>
+            <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.certificate_info"
@@ -494,6 +504,7 @@ export class CloudRemotePref extends LitElement {
       }
       ha-settings-row {
         padding: 0;
+        border-top: none !important;
       }
       ha-expansion-panel {
         --expansion-panel-content-padding: 0 16px;
@@ -543,6 +554,7 @@ export class CloudRemotePref extends LitElement {
       .strict-connection-container .primary {
         font-size: 14px;
         margin-top: 12px;
+        margin-bottom: 4px;
       }
       .strict-connection-container .secondary {
         color: var(--secondary-text-color);
