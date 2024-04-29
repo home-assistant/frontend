@@ -359,6 +359,12 @@ export class CloudRemotePref extends LitElement {
         color: var(--secondary-text-color);
         direction: var(--direction);
       }
+      hr {
+        border: none;
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 8px 0;
+      }
     `;
   }
 }
