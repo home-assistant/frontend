@@ -554,18 +554,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         if (item.error_reason_translation_key) {
           const lokalisePromExc = this.hass
             .loadBackendTranslation("exceptions", item.domain)
-            .then((localize) =>
-              localize(
-                `component.${item.domain}.exceptions.${item.error_reason_translation_key}.message`,
-                item.error_reason_translation_placeholders ?? undefined
-              )
+            .then(
+              (localize) =>
+                localize(
+                  `component.${item.domain}.exceptions.${item.error_reason_translation_key}.message`,
+                  item.error_reason_translation_placeholders ?? undefined
+                ) || item.reason
             );
           stateTextExtra = html`${until(lokalisePromExc)}`;
         } else {
           const lokalisePromError = this.hass
             .loadBackendTranslation("config", item.domain)
-            .then((localize) =>
-              localize(`component.${item.domain}.config.error.${item.reason}`)
+            .then(
+              (localize) =>
+                localize(
+                  `component.${item.domain}.config.error.${item.reason}`
+                ) || item.reason
             );
           stateTextExtra = html`${until(lokalisePromError, item.reason)}`;
         }
