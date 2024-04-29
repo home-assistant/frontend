@@ -62,6 +62,10 @@ export class HaCodeEditor extends ReactiveElement {
   private _iconList?: Completion[];
 
   public set value(value: string) {
+    const valueAsANumber = value as unknown as number;
+    if (!isNaN(valueAsANumber) && valueAsANumber > Number.MAX_SAFE_INTEGER) {
+      value = '"' + value + '"';
+    }
     this._value = value;
   }
 
