@@ -44,6 +44,7 @@ export interface IntegrationManifest {
     | "local_polling"
     | "local_push";
   single_config_entry?: boolean;
+  version?: string;
 }
 export interface IntegrationSetup {
   domain: string;
