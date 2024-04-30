@@ -112,14 +112,14 @@ class PanelEnergy extends LitElement {
           </hui-energy-period-selector>
         </div>
       </div>
-      <hui-view
-        id="view"
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .lovelace=${this._lovelace}
-        .index=${this._viewIndex}
-        @reload-energy-panel=${this._reloadView}
-      ></hui-view>
+      <div id="view" @reload-energy-panel=${this._reloadView}>
+        <hui-view
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .lovelace=${this._lovelace}
+          .index=${this._viewIndex}
+        ></hui-view>
+      </div>
     `;
   }
 
