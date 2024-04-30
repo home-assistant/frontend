@@ -217,6 +217,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       value: "readonly",
       label: localize("ui.panel.config.entities.picker.status.readonly"),
     },
+    {
+      value: "restored",
+      label: localize("ui.panel.config.entities.picker.status.restored"),
+    },
   ]);
 
   private _columns = memoize(
@@ -395,14 +399,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       const showReadOnly =
         !stateFilters?.length || stateFilters.includes("readonly");
-      const showDisabled =
-        !stateFilters?.length || stateFilters.includes("disabled");
-      const showHidden =
-        !stateFilters?.length || stateFilters.includes("hidden");
-      const showUnavailable =
-        !stateFilters?.length || stateFilters.includes("unavailable");
-      const showAvailable =
-        !stateFilters?.length || stateFilters.includes("available");
 
       let filteredEntities = showReadOnly
         ? entities.concat(stateEntities)
@@ -465,33 +461,26 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
 
-      if (!showDisabled) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.disabled_by
-        );
-      }
-
-      if (!showHidden) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.hidden_by
-        );
-      }
-
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
-        const available = entity?.state && !unavailable;
         const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
-        const readonly = entry.readonly;
-        const hidden = !!entry.hidden_by;
 
-        if (!showUnavailable && unavailable) {
-          continue;
-        }
+        const status = restored
+          ? "restored"
+          : unavailable
+            ? "unavailable"
+            : entry.disabled_by
+              ? "disabled"
+              : entry.hidden_by
+                ? "hidden"
+                : entry.readonly
+                  ? "readonly"
+                  : "available";
 
-        if (!showAvailable && available && !readonly && !hidden) {
+        if (stateFilters && !stateFilters.includes(status)) {
           continue;
         }
 
@@ -512,21 +501,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           localized_platform: domainToName(localize, entry.platform),
           area: area ? area.name : "—",
           domain: domainToName(localize, computeDomain(entry.entity_id)),
-          status: restored
-            ? localize("ui.panel.config.entities.picker.status.restored")
-            : unavailable
-              ? localize("ui.panel.config.entities.picker.status.unavailable")
-              : entry.disabled_by
-                ? localize("ui.panel.config.entities.picker.status.disabled")
-                : entry.hidden_by
-                  ? localize("ui.panel.config.entities.picker.status.hidden")
-                  : entry.readonly
-                    ? localize(
-                        "ui.panel.config.entities.picker.status.readonly"
-                      )
-                    : localize(
-                        "ui.panel.config.entities.picker.status.available"
-                      ),
+          status: localize(`ui.panel.config.entities.picker.status.${status}`),
           label_entries: labelsEntries,
         });
       }
@@ -874,7 +849,7 @@ ${
   protected firstUpdated() {
     this._filters = {
       "ha-filter-states": {
-        value: ["available", "unavailable", "readonly"],
+        value: ["available", "unavailable", "readonly", "restored"],
         items: undefined,
       },
     };
