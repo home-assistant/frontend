@@ -4,7 +4,7 @@ import {
   mdiDotsVertical,
   mdiMagnify,
   mdiPower,
-  mdiUpdate,
+  mdiRefresh,
 } from "@mdi/js";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -206,7 +206,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
           <ha-list-item graphic="icon">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item graphic="icon">
