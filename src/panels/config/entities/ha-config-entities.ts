@@ -198,6 +198,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _states = memoize((localize: LocalizeFunc) => [
     {
+      value: "available",
+      label: localize("ui.panel.config.entities.picker.status.available"),
+    },
+    {
       value: "disabled",
       label: localize("ui.panel.config.entities.picker.status.disabled"),
     },
@@ -397,6 +401,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         !stateFilters?.length || stateFilters.includes("hidden");
       const showUnavailable =
         !stateFilters?.length || stateFilters.includes("unavailable");
+      const showAvailable =
+        !stateFilters?.length || stateFilters.includes("available");
 
       let filteredEntities = showReadOnly
         ? entities.concat(stateEntities)
@@ -474,11 +480,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
+        const available = entity?.state && !unavailable;
         const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
+        const readonly = entry.readonly;
+        const hidden = !!entry.hidden_by;
 
         if (!showUnavailable && unavailable) {
+          continue;
+        }
+
+        if (!showAvailable && available && !readonly && !hidden) {
           continue;
         }
 
@@ -861,7 +874,7 @@ ${
   protected firstUpdated() {
     this._filters = {
       "ha-filter-states": {
-        value: ["unavailable", "readonly"],
+        value: ["available", "unavailable", "readonly"],
         items: undefined,
       },
     };
