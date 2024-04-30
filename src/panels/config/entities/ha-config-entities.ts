@@ -28,7 +28,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
-import { stringCompare } from "../../../common/string/compare";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -117,6 +116,9 @@ export interface EntityRow extends StateEntity {
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
+  enabled: string;
+  visible: string;
+  available: string;
 }
 
 @customElement("ha-config-entities")
@@ -197,40 +199,40 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     }
   };
 
-  private _states = memoize((localize: LocalizeFunc) =>
-    [
-      {
-        value: "available",
-        label: localize("ui.panel.config.entities.picker.status.available"),
-      },
-      {
-        value: "disabled",
-        label: localize("ui.panel.config.entities.picker.status.disabled"),
-      },
-      {
-        value: "hidden",
-        label: localize("ui.panel.config.entities.picker.status.hidden"),
-      },
-      {
-        value: "unavailable",
-        label: localize("ui.panel.config.entities.picker.status.unavailable"),
-      },
-      {
-        value: "readonly",
-        label: localize("ui.panel.config.entities.picker.status.readonly"),
-      },
-      {
-        value: "restored",
-        label: localize("ui.panel.config.entities.picker.status.restored"),
-      },
-    ].sort((a, b) =>
-      stringCompare(
-        a.label || a.value,
-        b.label || b.value,
-        this.hass.locale.language
-      )
-    )
-  );
+  private _states = memoize((localize: LocalizeFunc) => [
+    {
+      value: "available",
+      label: localize("ui.panel.config.entities.picker.status.available"),
+    },
+    {
+      value: "unavailable",
+      label: localize("ui.panel.config.entities.picker.status.unavailable"),
+    },
+    {
+      value: "enabled",
+      label: localize("ui.panel.config.entities.picker.status.enabled"),
+    },
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.entities.picker.status.disabled"),
+    },
+    {
+      value: "visible",
+      label: localize("ui.panel.config.entities.picker.status.visible"),
+    },
+    {
+      value: "hidden",
+      label: localize("ui.panel.config.entities.picker.status.hidden"),
+    },
+    {
+      value: "readonly",
+      label: localize("ui.panel.config.entities.picker.status.unmanageable"),
+    },
+    {
+      value: "restored",
+      label: localize("ui.panel.config.entities.picker.status.not_provided"),
+    },
+  ]);
 
   private _columns = memoize(
     (
@@ -327,7 +329,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
-        groupable: true,
         width: "68px",
         template: (entry) =>
           entry.unavailable ||
@@ -356,7 +357,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   <simple-tooltip animation-delay="0" position="left">
                     ${entry.restored
                       ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.restored"
+                          "ui.panel.config.entities.picker.status.not_provided"
                         )
                       : entry.unavailable
                         ? this.hass.localize(
@@ -371,12 +372,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                                 "ui.panel.config.entities.picker.status.hidden"
                               )
                             : this.hass.localize(
-                                "ui.panel.config.entities.picker.status.readonly"
+                                "ui.panel.config.entities.picker.status.unmanageable"
                               )}
                   </simple-tooltip>
                 </div>
               `
             : "—",
+      },
+      available: {
+        title: localize("ui.panel.config.entities.picker.headers.availability"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      visible: {
+        title: localize("ui.panel.config.entities.picker.headers.visibility"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      enabled: {
+        title: localize("ui.panel.config.entities.picker.headers.enabled"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
       },
       labels: {
         title: "",
@@ -406,18 +425,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       const stateFilters = filters["ha-filter-states"]?.value;
 
-      const showReadOnly =
-        !stateFilters?.length || stateFilters.includes("readonly");
+      const showEnabled =
+        !stateFilters?.length || stateFilters.includes("enabled");
       const showDisabled =
         !stateFilters?.length || stateFilters.includes("disabled");
+      const showVisible =
+        !stateFilters?.length || stateFilters.includes("visible");
       const showHidden =
         !stateFilters?.length || stateFilters.includes("hidden");
-      const showUnavailable =
-        !stateFilters?.length || stateFilters.includes("unavailable");
       const showAvailable =
         !stateFilters?.length || stateFilters.includes("available");
+      const showUnavailable =
+        !stateFilters?.length || stateFilters.includes("unavailable");
       const showRestored =
         !stateFilters?.length || stateFilters.includes("restored");
+      const showReadOnly =
+        !stateFilters?.length || stateFilters.includes("readonly");
 
       let filteredEntities = entities.concat(stateEntities);
 
@@ -487,21 +510,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         const hidden = !!entry.hidden_by;
         const disabled = !!entry.disabled_by;
         const readonly = entry.readonly;
-        const available = !(
-          unavailable ||
-          readonly ||
-          restored ||
-          hidden ||
-          disabled
-        );
+        const available = entity?.state && entity.state !== UNAVAILABLE;
 
         if (
           !(
             (showAvailable && available) ||
             (showUnavailable && unavailable) ||
             (showRestored && restored) ||
+            (showVisible && !hidden) ||
             (showHidden && hidden) ||
             (showDisabled && disabled) ||
+            (showEnabled && !disabled) ||
             (showReadOnly && readonly)
           )
         ) {
@@ -526,7 +545,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           area: area ? area.name : "—",
           domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
-            ? localize("ui.panel.config.entities.picker.status.restored")
+            ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
               ? localize("ui.panel.config.entities.picker.status.unavailable")
               : disabled
@@ -535,12 +554,21 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ? localize("ui.panel.config.entities.picker.status.hidden")
                   : readonly
                     ? localize(
-                        "ui.panel.config.entities.picker.status.readonly"
+                        "ui.panel.config.entities.picker.status.unmanageable"
                       )
                     : localize(
                         "ui.panel.config.entities.picker.status.available"
                       ),
           label_entries: labelsEntries,
+          available: unavailable
+            ? localize("ui.panel.config.entities.picker.status.unavailable")
+            : localize("ui.panel.config.entities.picker.status.available"),
+          enabled: disabled
+            ? localize("ui.panel.config.entities.picker.status.disabled")
+            : localize("ui.panel.config.entities.picker.status.enabled"),
+          visible: hidden
+            ? localize("ui.panel.config.entities.picker.status.hidden")
+            : localize("ui.panel.config.entities.picker.status.visible"),
         });
       }
 
@@ -887,7 +915,7 @@ ${
   protected firstUpdated() {
     this._filters = {
       "ha-filter-states": {
-        value: ["unavailable", "readonly", "restored", "available"],
+        value: ["enabled"],
         items: undefined,
       },
     };
@@ -902,10 +930,7 @@ ${
       this._filters = {
         ...this._filters,
         "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
+          value: [],
           items: undefined,
         },
         "ha-filter-integrations": {
@@ -918,10 +943,7 @@ ${
       this._filters = {
         ...this._filters,
         "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
+          value: [],
           items: undefined,
         },
         config_entry: {

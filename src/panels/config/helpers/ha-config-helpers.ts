@@ -309,7 +309,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
                   <simple-tooltip animation-delay="0" position="left">
                     ${this.hass.localize(
-                      "ui.panel.config.entities.picker.status.readonly"
+                      "ui.panel.config.entities.picker.status.unmanageable"
                     )}
                   </simple-tooltip>
                 </div>
