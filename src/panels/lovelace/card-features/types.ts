@@ -75,6 +75,7 @@ export interface ClimatePresetModesCardFeatureConfig {
 
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
+  options?: string[];
 }
 
 export interface NumericInputCardFeatureConfig {

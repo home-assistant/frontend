@@ -9,8 +9,9 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { SelectOptionsCardFeatureConfig } from "./types";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsSelectOptionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -39,6 +40,13 @@ class HuiSelectOptionsCardFeature
     return {
       type: "select-options",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-select-options-card-feature-editor"
+    );
+    return document.createElement("hui-select-options-card-feature-editor");
   }
 
   public setConfig(config: SelectOptionsCardFeatureConfig): void {
@@ -105,6 +113,11 @@ class HuiSelectOptionsCardFeature
 
     const stateObj = this.stateObj;
 
+    const options = filterModes(
+      this.stateObj.attributes.options,
+      this._config.options
+    );
+
     return html`
       <div class="container">
         <ha-control-select-menu
@@ -118,7 +131,7 @@ class HuiSelectOptionsCardFeature
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
         >
-          ${stateObj.attributes.options!.map(
+          ${options.map(
             (option) => html`
               <ha-list-item .value=${option}>
                 ${this.hass!.formatEntityState(stateObj, option)}
