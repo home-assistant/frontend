@@ -66,6 +66,7 @@ export const applyThemesOnElement = (
         "#121212",
         8
       );
+      themeRules["app-theme-color"] = hexBlend(primaryColor, "#121212", 8);
     }
 
     if (primaryColor) {
