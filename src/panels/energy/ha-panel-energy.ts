@@ -112,14 +112,14 @@ class PanelEnergy extends LitElement {
           </hui-energy-period-selector>
         </div>
       </div>
-      <hui-view
-        id="view"
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .lovelace=${this._lovelace}
-        .index=${this._viewIndex}
-        @reload-energy-panel=${this._reloadView}
-      ></hui-view>
+      <div id="view" @reload-energy-panel=${this._reloadView}>
+        <hui-view
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .lovelace=${this._lovelace}
+          .index=${this._viewIndex}
+        ></hui-view>
+      </div>
     `;
   }
 
@@ -401,12 +401,10 @@ class PanelEnergy extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-left: env(safe-area-inset-left);
-          padding-inline-start: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)
