@@ -5996,16 +5996,18 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize fan modes",
                 "fan_modes": "Fan modes"
               },
               "climate-swing-modes": {
                 "label": "Climate swing modes",
+                "swing_modes": "Swing modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
-                "swing_modes": "Swing modes"
+                "customize_modes": "Customize swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
@@ -6014,7 +6016,8 @@
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
-                }
+                },
+                "customize_modes": "Customize HVAC modes"
               },
               "climate-preset-modes": {
                 "label": "Climate preset modes",
@@ -6023,6 +6026,7 @@
                   "dropdown": "Dropdown",
                   "icons": "Icons"
                 },
+                "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
               "fan-preset-modes": {
@@ -6032,6 +6036,7 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::customize_modes%]",
                 "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
@@ -6044,6 +6049,7 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize modes",
                 "modes": "Modes"
               },
               "select-options": {
@@ -6065,7 +6071,8 @@
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
-                "operation_modes": "Operation modes"
+                "operation_modes": "Operation modes",
+                "customize_modes": "Customize operation modes"
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
