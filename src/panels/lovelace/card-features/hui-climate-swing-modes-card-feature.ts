@@ -45,7 +45,6 @@ class HuiClimateSwingModesCardFeature
     return {
       type: "climate-swing-modes",
       style: "dropdown",
-      swing_modes: [],
     };
   }
 
