@@ -54,7 +54,7 @@ export class HaSettingsRow extends LitElement {
       .body[three-line] {
         min-height: var(--paper-item-body-three-line-min-height, 88px);
       }
-      :host(:not([wrap-heading])) > * {
+      :host(:not([wrap-heading])) body > * {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
