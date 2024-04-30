@@ -401,10 +401,22 @@ class PanelEnergy extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
+        }
+        /* Hack to support fixed background image on iOS */
+        #view:after {
+          display: block;
+          content: "";
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          position: fixed;
           background: var(
             --lovelace-background,
             var(--primary-background-color)
           );
+          background-attachment: local;
+          z-index: -1;
         }
         #view > * {
           flex: 1 1 100%;
