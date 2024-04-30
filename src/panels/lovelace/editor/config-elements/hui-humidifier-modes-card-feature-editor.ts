@@ -133,7 +133,7 @@ export class HuiHumidifierModesCardFeatureEditor
       : undefined;
 
     if (customize_modes && !config.modes) {
-      config.modes = stateObj?.attributes.modes || [];
+      config.modes = stateObj?.attributes.available_modes || [];
     }
     if (!customize_modes && config.modes) {
       delete config.modes;

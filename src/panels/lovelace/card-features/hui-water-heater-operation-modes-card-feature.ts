@@ -104,10 +104,12 @@ class HuiWaterHeaterOperationModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
+    const orderedModes = (this.stateObj.attributes.operation_list || [])
+      .concat()
+      .sort(compareWaterHeaterOperationMode);
+
     const options = filterModes(
-      [...(this.stateObj?.attributes.operation_list || [])].sort(
-        compareWaterHeaterOperationMode
-      ),
+      orderedModes,
       this._config.operation_modes
     ).map<ControlSelectOption>((mode) => ({
       value: mode,

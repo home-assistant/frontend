@@ -15,7 +15,7 @@ import {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-import { OPERATION_MODES } from "../../../../data/water_heater";
+import { compareWaterHeaterOperationMode } from "../../../../data/water_heater";
 
 type WaterHeaterOperationModesCardFeatureData =
   WaterHeaterOperationModesCardFeatureConfig & {
@@ -59,14 +59,15 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
                     multiple: true,
                     reorder: true,
                     mode: "list",
-                    options: OPERATION_MODES.filter((mode) =>
-                      stateObj?.attributes.operation_list?.includes(mode)
-                    ).map((mode) => ({
-                      value: mode,
-                      label: stateObj
-                        ? formatEntityState(stateObj, mode)
-                        : mode,
-                    })),
+                    options: (stateObj?.attributes.operation_list || [])
+                      .concat()
+                      .sort(compareWaterHeaterOperationMode)
+                      .map((mode) => ({
+                        value: mode,
+                        label: stateObj
+                          ? formatEntityState(stateObj, mode)
+                          : mode,
+                      })),
                   },
                 },
               },
@@ -115,7 +116,9 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
       : undefined;
 
     if (customize_modes && !config.operation_modes) {
-      config.operation_modes = stateObj?.attributes.operation_modes || [];
+      config.operation_modes = (stateObj?.attributes.operation_list || [])
+        .concat()
+        .sort(compareWaterHeaterOperationMode);
     }
     if (!customize_modes && config.operation_modes) {
       delete config.operation_modes;
@@ -131,7 +134,7 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
       case "operation_modes":
       case "customize_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.water-heater-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.water-heater-operation-modes.${schema.name}`
         );
       default:
         return "";
