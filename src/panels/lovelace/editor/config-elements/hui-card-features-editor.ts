@@ -21,9 +21,9 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
-import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
@@ -53,13 +53,13 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "climate-fan-modes",
-  "climate-swing-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-swing-modes",
   "cover-open-close",
   "cover-position",
-  "cover-tilt",
   "cover-tilt-position",
+  "cover-tilt",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -82,14 +82,15 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
-  "climate-hvac-modes",
   "climate-fan-modes",
-  "climate-swing-modes",
+  "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-swing-modes",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
   "numeric-input",
+  "select-options",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",

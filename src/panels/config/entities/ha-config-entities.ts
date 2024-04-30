@@ -116,6 +116,9 @@ export interface EntityRow extends StateEntity {
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
+  enabled: string;
+  visible: string;
+  available: string;
 }
 
 @customElement("ha-config-entities")
@@ -198,20 +201,36 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _states = memoize((localize: LocalizeFunc) => [
     {
-      value: "disabled",
-      label: localize("ui.panel.config.entities.picker.status.disabled"),
-    },
-    {
-      value: "hidden",
-      label: localize("ui.panel.config.entities.picker.status.hidden"),
+      value: "available",
+      label: localize("ui.panel.config.entities.picker.status.available"),
     },
     {
       value: "unavailable",
       label: localize("ui.panel.config.entities.picker.status.unavailable"),
     },
     {
+      value: "enabled",
+      label: localize("ui.panel.config.entities.picker.status.enabled"),
+    },
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.entities.picker.status.disabled"),
+    },
+    {
+      value: "visible",
+      label: localize("ui.panel.config.entities.picker.status.visible"),
+    },
+    {
+      value: "hidden",
+      label: localize("ui.panel.config.entities.picker.status.hidden"),
+    },
+    {
       value: "readonly",
-      label: localize("ui.panel.config.entities.picker.status.readonly"),
+      label: localize("ui.panel.config.entities.picker.status.unmanageable"),
+    },
+    {
+      value: "restored",
+      label: localize("ui.panel.config.entities.picker.status.not_provided"),
     },
   ]);
 
@@ -310,7 +329,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
-        groupable: true,
         width: "68px",
         template: (entry) =>
           entry.unavailable ||
@@ -339,7 +357,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   <simple-tooltip animation-delay="0" position="left">
                     ${entry.restored
                       ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.restored"
+                          "ui.panel.config.entities.picker.status.not_provided"
                         )
                       : entry.unavailable
                         ? this.hass.localize(
@@ -354,12 +372,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                                 "ui.panel.config.entities.picker.status.hidden"
                               )
                             : this.hass.localize(
-                                "ui.panel.config.entities.picker.status.readonly"
+                                "ui.panel.config.entities.picker.status.unmanageable"
                               )}
                   </simple-tooltip>
                 </div>
               `
             : "—",
+      },
+      available: {
+        title: localize("ui.panel.config.entities.picker.headers.availability"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      visible: {
+        title: localize("ui.panel.config.entities.picker.headers.visibility"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      enabled: {
+        title: localize("ui.panel.config.entities.picker.headers.enabled"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
       },
       labels: {
         title: "",
@@ -389,18 +425,24 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       const stateFilters = filters["ha-filter-states"]?.value;
 
-      const showReadOnly =
-        !stateFilters?.length || stateFilters.includes("readonly");
+      const showEnabled =
+        !stateFilters?.length || stateFilters.includes("enabled");
       const showDisabled =
         !stateFilters?.length || stateFilters.includes("disabled");
+      const showVisible =
+        !stateFilters?.length || stateFilters.includes("visible");
       const showHidden =
         !stateFilters?.length || stateFilters.includes("hidden");
+      const showAvailable =
+        !stateFilters?.length || stateFilters.includes("available");
       const showUnavailable =
         !stateFilters?.length || stateFilters.includes("unavailable");
+      const showRestored =
+        !stateFilters?.length || stateFilters.includes("restored");
+      const showReadOnly =
+        !stateFilters?.length || stateFilters.includes("readonly");
 
-      let filteredEntities = showReadOnly
-        ? entities.concat(stateEntities)
-        : entities;
+      let filteredEntities = entities.concat(stateEntities);
 
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
@@ -459,26 +501,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
 
-      if (!showDisabled) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.disabled_by
-        );
-      }
-
-      if (!showHidden) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.hidden_by
-        );
-      }
-
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
+        const hidden = !!entry.hidden_by;
+        const disabled = !!entry.disabled_by;
+        const readonly = entry.readonly;
+        const available = entity?.state && entity.state !== UNAVAILABLE;
 
-        if (!showUnavailable && unavailable) {
+        if (
+          !(
+            (showAvailable && available) ||
+            (showUnavailable && unavailable) ||
+            (showRestored && restored) ||
+            (showVisible && !hidden) ||
+            (showHidden && hidden) ||
+            (showDisabled && disabled) ||
+            (showEnabled && !disabled) ||
+            (showReadOnly && readonly)
+          )
+        ) {
           continue;
         }
 
@@ -500,21 +545,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           area: area ? area.name : "—",
           domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
-            ? localize("ui.panel.config.entities.picker.status.restored")
+            ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
               ? localize("ui.panel.config.entities.picker.status.unavailable")
-              : entry.disabled_by
+              : disabled
                 ? localize("ui.panel.config.entities.picker.status.disabled")
-                : entry.hidden_by
+                : hidden
                   ? localize("ui.panel.config.entities.picker.status.hidden")
-                  : entry.readonly
+                  : readonly
                     ? localize(
-                        "ui.panel.config.entities.picker.status.readonly"
+                        "ui.panel.config.entities.picker.status.unmanageable"
                       )
                     : localize(
                         "ui.panel.config.entities.picker.status.available"
                       ),
           label_entries: labelsEntries,
+          available: unavailable
+            ? localize("ui.panel.config.entities.picker.status.unavailable")
+            : localize("ui.panel.config.entities.picker.status.available"),
+          enabled: disabled
+            ? localize("ui.panel.config.entities.picker.status.disabled")
+            : localize("ui.panel.config.entities.picker.status.enabled"),
+          visible: hidden
+            ? localize("ui.panel.config.entities.picker.status.hidden")
+            : localize("ui.panel.config.entities.picker.status.visible"),
         });
       }
 
@@ -861,7 +915,7 @@ ${
   protected firstUpdated() {
     this._filters = {
       "ha-filter-states": {
-        value: ["unavailable", "readonly"],
+        value: ["enabled"],
         items: undefined,
       },
     };
@@ -876,10 +930,7 @@ ${
       this._filters = {
         ...this._filters,
         "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
+          value: [],
           items: undefined,
         },
         "ha-filter-integrations": {
@@ -892,10 +943,7 @@ ${
       this._filters = {
         ...this._filters,
         "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
+          value: [],
           items: undefined,
         },
         config_entry: {
