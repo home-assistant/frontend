@@ -47,6 +47,7 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   public showDialog(params: ZHAReconfigureDeviceDialogParams): void {
     this._params = params;
+    this._clusterConfigurationStatuses = new Map();
     this._stages = undefined;
   }
 

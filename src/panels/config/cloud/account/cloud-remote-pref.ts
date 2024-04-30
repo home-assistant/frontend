@@ -1,12 +1,13 @@
-import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
+import { mdiContentCopy, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
@@ -21,13 +22,16 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
-import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() private _unmaskedUrl = false;
 
   protected render() {
     if (!this.cloudStatus) {
@@ -109,36 +113,70 @@ export class CloudRemotePref extends LitElement {
                   )}
                 ></ha-alert>
               `
-            : ""}
-          ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
-          ${this.hass.localize(
-            `ui.panel.config.cloud.account.remote.${
-              remote_connected
-                ? "instance_is_available"
-                : "instance_will_be_available"
-            }`
-          )}
-          <a
-            href="https://${remote_domain}"
-            target="_blank"
-            class="break-word"
-            rel="noreferrer"
-            >${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.nabu_casa_url"
-            )}</a
-          >.
-          <ha-svg-icon
-            .url=${`https://${remote_domain}`}
-            @click=${this._copyURL}
-            .path=${mdiContentCopy}
-          ></ha-svg-icon>
+            : strict_connection === "drop_connection"
+              ? html`<ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.drop_connection_warning_title`
+                  )}
+                  >${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.drop_connection_warning`
+                  )}</ha-alert
+                >`
+              : nothing}
+          <p>
+            ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
+          </p>
+          ${remote_connected
+            ? nothing
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.info_instance_will_be_available"
+                  )}
+                </p>
+              `}
+          <div class="url-container">
+            <div class="textfield-container">
+              <ha-textfield
+                .value=${this._unmaskedUrl
+                  ? `https://${remote_domain}`
+                  : "https://•••••••••••••••••.ui.nabu.casa"}
+                readonly
+                .suffix=${
+                  // reserve some space for the icon.
+                  html`<div style="width: 24px"></div>`
+                }
+              ></ha-textfield>
+              <ha-icon-button
+                class="toggle-unmasked-url"
+                toggles
+                .label=${this.hass.localize(
+                  `ui.panel.config.cloud.account.remote.${this._unmaskedUrl ? "hide" : "show"}_url`
+                )}
+                @click=${this._toggleUnmaskedUrl}
+                .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
+              ></ha-icon-button>
+            </div>
+            <ha-button
+              .url=${`https://${remote_domain}`}
+              @click=${this._copyURL}
+              unelevated
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.copy_link"
+              )}
+            </ha-button>
+          </div>
+
           <ha-expansion-panel
             outlined
             .header=${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.advanced_options"
+              "ui.panel.config.cloud.account.remote.security_options"
             )}
           >
-            <ha-settings-row>
+            <ha-settings-row wrap-heading>
               <span slot="heading"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.external_activation"
@@ -154,62 +192,8 @@ export class CloudRemotePref extends LitElement {
                 @change=${this._toggleAllowRemoteEnabledChanged}
               ></ha-switch>
             </ha-settings-row>
-            <ha-settings-row>
-              <span slot="heading"
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.strict_connection"
-                )}</span
-              >
-              <span slot="description"
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.strict_connection_secondary"
-                )}</span
-              >
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.panel.config.cloud.account.remote.strict_connection_mode"
-                )}
-                @selected=${this._setStrictConnectionMode}
-                naturalMenuWidth
-                .value=${strict_connection}
-              >
-                <ha-list-item value="disabled">
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_modes.disabled"
-                  )}
-                </ha-list-item>
-                <ha-list-item value="guard_page">
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_modes.guard_page"
-                  )}
-                </ha-list-item>
-                <ha-list-item value="drop_connection">
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.strict_connection_modes.drop_connection"
-                  )}
-                </ha-list-item>
-              </ha-select>
-            </ha-settings-row>
-            ${strict_connection !== "disabled"
-              ? html` <ha-settings-row>
-                  <span slot="heading"
-                    >${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.strict_connection_link"
-                    )}</span
-                  >
-                  <span slot="description"
-                    >${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.strict_connection_link_secondary"
-                    )}</span
-                  >
-                  <ha-button @click=${this._createLoginUrl}
-                    >${this.hass.localize(
-                      "ui.panel.config.cloud.account.remote.strict_connection_create_link"
-                    )}</ha-button
-                  >
-                </ha-settings-row>`
-              : nothing}
-            <ha-settings-row>
+            <hr />
+            <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.certificate_info"
@@ -249,6 +233,10 @@ export class CloudRemotePref extends LitElement {
     });
   }
 
+  private _toggleUnmaskedUrl(): void {
+    this._unmaskedUrl = !this._unmaskedUrl;
+  }
+
   private async _toggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
 
@@ -279,58 +267,12 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  private async _setStrictConnectionMode(ev) {
-    const mode = ev.target.value;
-    try {
-      await updateCloudPref(this.hass, {
-        strict_connection: mode,
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      alert(err.message);
-    }
-  }
-
   private async _copyURL(ev): Promise<void> {
     const url = ev.currentTarget.url;
     await copyToClipboard(url);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
-  }
-
-  private async _createLoginUrl() {
-    try {
-      const result = await this.hass.callService(
-        "cloud",
-        "create_temporary_strict_connection_url",
-        undefined,
-        undefined,
-        false,
-        true
-      );
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.cloud.account.remote.strict_connection_link"
-        ),
-        text: html`${this.hass.localize(
-            "ui.panel.config.cloud.account.remote.strict_connection_link_created_message"
-          )}
-          <pre>${result.response.url}</pre>
-          <ha-button
-            .url=${result.response.url}
-            @click=${this._copyURL}
-            unelevated
-          >
-            <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.strict_connection_copy_link"
-            )}
-          </ha-button>`,
-      });
-    } catch (err: any) {
-      showAlertDialog(this, { text: err.message });
-    }
   }
 
   static get styles(): CSSResultGroup {
@@ -343,8 +285,8 @@ export class CloudRemotePref extends LitElement {
       }
       .header-actions {
         position: absolute;
-        right: 24px;
-        inset-inline-end: 24px;
+        right: 16px;
+        inset-inline-end: 16px;
         inset-inline-start: initial;
         top: 24px;
         display: flex;
@@ -378,16 +320,50 @@ export class CloudRemotePref extends LitElement {
       .card-actions a {
         text-decoration: none;
       }
-      ha-svg-icon {
-        --mdc-icon-size: 18px;
-        color: var(--secondary-text-color);
-        cursor: pointer;
+      ha-expansion-panel {
+        margin-top: 16px;
       }
-      ha-formfield {
-        margin-top: 8px;
+      ha-settings-row {
+        padding: 0;
+        border-top: none !important;
       }
       ha-expansion-panel {
+        --expansion-panel-content-padding: 0 16px;
+        --expansion-panel-summary-padding: 0 16px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 16px;
+      }
+      .url-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         margin-top: 8px;
+      }
+      .textfield-container {
+        position: relative;
+        flex: 1;
+      }
+      .textfield-container ha-textfield {
+        display: block;
+      }
+      .toggle-unmasked-url {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        inset-inline-start: initial;
+        inset-inline-end: 8px;
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
+        color: var(--secondary-text-color);
+        direction: var(--direction);
+      }
+      hr {
+        border: none;
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 8px 0;
       }
     `;
   }
