@@ -71,8 +71,8 @@ export class HuiFanPresetModesCardFeatureEditor
                 name: "preset_modes",
                 selector: {
                   select: {
-                    multiple: true,
                     reorder: true,
+                    multiple: true,
                     options:
                       stateObj?.attributes.preset_modes?.map((mode) => ({
                         value: mode,

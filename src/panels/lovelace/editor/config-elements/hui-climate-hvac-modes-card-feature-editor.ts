@@ -72,8 +72,8 @@ export class HuiClimateHvacModesCardFeatureEditor
                 name: "hvac_modes",
                 selector: {
                   select: {
-                    multiple: true,
                     reorder: true,
+                    multiple: true,
                     options: (stateObj?.attributes.hvac_modes || [])
                       .concat()
                       .sort(compareClimateHvacModes)

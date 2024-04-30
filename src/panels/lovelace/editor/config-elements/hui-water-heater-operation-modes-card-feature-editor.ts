@@ -56,9 +56,8 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
                 name: "operation_modes",
                 selector: {
                   select: {
-                    multiple: true,
                     reorder: true,
-                    mode: "list",
+                    multiple: true,
                     options: (stateObj?.attributes.operation_list || [])
                       .concat()
                       .sort(compareWaterHeaterOperationMode)

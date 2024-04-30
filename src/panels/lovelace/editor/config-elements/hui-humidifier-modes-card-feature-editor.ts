@@ -71,9 +71,8 @@ export class HuiHumidifierModesCardFeatureEditor
                 name: "modes",
                 selector: {
                   select: {
-                    multiple: true,
                     reorder: true,
-                    mode: "list",
+                    multiple: true,
                     options:
                       stateObj?.attributes.available_modes?.map((mode) => ({
                         value: mode,

@@ -71,9 +71,8 @@ export class HuiClimatePresetModesCardFeatureEditor
                 name: "preset_modes",
                 selector: {
                   select: {
-                    multiple: true,
                     reorder: true,
-                    mode: "list",
+                    multiple: true,
                     options:
                       stateObj?.attributes.preset_modes?.map((mode) => ({
                         value: mode,
