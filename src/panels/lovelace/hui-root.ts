@@ -1013,8 +1013,6 @@ class HUIRoot extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)

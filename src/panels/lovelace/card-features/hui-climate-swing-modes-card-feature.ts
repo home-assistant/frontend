@@ -15,6 +15,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { ClimateSwingModesCardFeatureConfig } from "./types";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsClimateSwingModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -40,14 +41,10 @@ class HuiClimateSwingModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(
-    _,
-    stateObj?: HassEntity
-  ): ClimateSwingModesCardFeatureConfig {
+  static getStubConfig(): ClimateSwingModesCardFeatureConfig {
     return {
       type: "climate-swing-modes",
       style: "dropdown",
-      swing_modes: stateObj?.attributes.swing_modes || [],
     };
   }
 
@@ -124,25 +121,24 @@ class HuiClimateSwingModesCardFeature
 
     const stateObj = this.stateObj;
 
-    const modes = stateObj.attributes.swing_modes || [];
-
-    const options = modes
-      .filter((mode) => (this._config!.swing_modes || []).includes(mode))
-      .map<ControlSelectOption>((mode) => ({
-        value: mode,
-        label: this.hass!.formatEntityAttributeValue(
-          this.stateObj!,
-          "swing_mode",
-          mode
-        ),
-        icon: html`<ha-attribute-icon
-          slot="graphic"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          attribute="swing_mode"
-          .attributeValue=${mode}
-        ></ha-attribute-icon>`,
-      }));
+    const options = filterModes(
+      stateObj.attributes.swing_modes,
+      this._config!.swing_modes
+    ).map<ControlSelectOption>((mode) => ({
+      value: mode,
+      label: this.hass!.formatEntityAttributeValue(
+        this.stateObj!,
+        "swing_mode",
+        mode
+      ),
+      icon: html`<ha-attribute-icon
+        slot="graphic"
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        attribute="swing_mode"
+        .attributeValue=${mode}
+      ></ha-attribute-icon>`,
+    }));
 
     if (this._config.style === "icons") {
       return html`

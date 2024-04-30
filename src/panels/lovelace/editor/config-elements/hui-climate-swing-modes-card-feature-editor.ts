@@ -17,6 +17,10 @@ import {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
+type ClimateSwingModesCardFeatureData = ClimateSwingModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
+
 @customElement("hui-climate-swing-modes-card-feature-editor")
 export class HuiClimateSwingModesCardFeatureEditor
   extends LitElement
@@ -36,7 +40,8 @@ export class HuiClimateSwingModesCardFeatureEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeValue: FormatEntityAttributeValueFunc,
-      stateObj?: HassEntity
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
     ) =>
       [
         {
@@ -55,23 +60,33 @@ export class HuiClimateSwingModesCardFeatureEditor
           },
         },
         {
-          name: "swing_modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options:
-                stateObj?.attributes.swing_modes?.map((mode) => ({
-                  value: mode,
-                  label: formatEntityAttributeValue(
-                    stateObj,
-                    "swing_mode",
-                    mode
-                  ),
-                })) || [],
-            },
+            boolean: {},
           },
         },
+        ...(customizeModes
+          ? ([
+              {
+                name: "swing_modes",
+                selector: {
+                  select: {
+                    reorder: true,
+                    multiple: true,
+                    options:
+                      stateObj?.attributes.swing_modes?.map((mode) => ({
+                        value: mode,
+                        label: formatEntityAttributeValue(
+                          stateObj,
+                          "swing_mode",
+                          mode
+                        ),
+                      })) || [],
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -84,16 +99,17 @@ export class HuiClimateSwingModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: ClimateSwingModesCardFeatureConfig = {
+    const data: ClimateSwingModesCardFeatureData = {
       style: "dropdown",
-      swing_modes: [],
       ...this._config,
+      customize_modes: this._config.swing_modes !== undefined,
     };
 
     const schema = this._schema(
       this.hass.localize,
       this.hass.formatEntityAttributeValue,
-      stateObj
+      stateObj,
+      data.customize_modes
     );
 
     return html`
@@ -108,7 +124,21 @@ export class HuiClimateSwingModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as ClimateSwingModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.swing_modes) {
+      config.swing_modes = stateObj?.attributes.swing_modes || [];
+    }
+    if (!customize_modes && config.swing_modes) {
+      delete config.swing_modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -117,6 +147,7 @@ export class HuiClimateSwingModesCardFeatureEditor
     switch (schema.name) {
       case "style":
       case "swing_modes":
+      case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.climate-swing-modes.${schema.name}`
         );

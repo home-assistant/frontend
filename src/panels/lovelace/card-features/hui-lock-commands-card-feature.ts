@@ -1,4 +1,4 @@
-import { mdiLock, mdiLockOpen } from "@mdi/js";
+import { mdiLock, mdiLockOpenVariant } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -90,7 +90,7 @@ class HuiLockCommandsCardFeature
             pulse: isLocking(this.stateObj) || isUnlocking(this.stateObj),
           })}
         >
-          <ha-svg-icon .path=${mdiLockOpen}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiLockOpenVariant}></ha-svg-icon>
         </ha-control-button>
       </ha-control-button-group>
     `;

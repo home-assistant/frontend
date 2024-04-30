@@ -18,6 +18,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { HumidifierModesCardFeatureConfig } from "./types";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -43,14 +44,10 @@ class HuiHumidifierModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(
-    _,
-    stateObj?: HassEntity
-  ): HumidifierModesCardFeatureConfig {
+  static getStubConfig(): HumidifierModesCardFeatureConfig {
     return {
       type: "humidifier-modes",
       style: "dropdown",
-      modes: stateObj?.attributes.available_modes || [],
     };
   }
 
@@ -125,25 +122,24 @@ class HuiHumidifierModesCardFeature
 
     const stateObj = this.stateObj;
 
-    const modes = stateObj.attributes.available_modes || [];
-
-    const options = modes
-      .filter((mode) => (this._config!.modes || []).includes(mode))
-      .map<ControlSelectOption>((mode) => ({
-        value: mode,
-        label: this.hass!.formatEntityAttributeValue(
-          this.stateObj!,
-          "mode",
-          mode
-        ),
-        icon: html`<ha-attribute-icon
-          slot="graphic"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          attribute="mode"
-          .attributeValue=${mode}
-        ></ha-attribute-icon>`,
-      }));
+    const options = filterModes(
+      stateObj.attributes.available_modes,
+      this._config!.modes
+    ).map<ControlSelectOption>((mode) => ({
+      value: mode,
+      label: this.hass!.formatEntityAttributeValue(
+        this.stateObj!,
+        "mode",
+        mode
+      ),
+      icon: html`<ha-attribute-icon
+        slot="graphic"
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        attribute="mode"
+        .attributeValue=${mode}
+      ></ha-attribute-icon>`,
+    }));
 
     if (this._config.style === "icons") {
       return html`
