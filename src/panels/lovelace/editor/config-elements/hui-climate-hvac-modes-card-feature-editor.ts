@@ -57,6 +57,7 @@ export class HuiClimateHvacModesCardFeatureEditor
           selector: {
             select: {
               multiple: true,
+              reorder: true,
               mode: "list",
               options: HVAC_MODES.filter((mode) =>
                 stateObj?.attributes.hvac_modes?.includes(mode)

@@ -59,6 +59,7 @@ export class HuiClimateSwingModesCardFeatureEditor
           selector: {
             select: {
               multiple: true,
+              reorder: true,
               mode: "list",
               options:
                 stateObj?.attributes.swing_modes?.map((mode) => ({

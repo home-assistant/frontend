@@ -421,6 +421,7 @@ class HaPanelHistory extends LitElement {
       [],
       this.hass.localize,
       sensorNumericDeviceClasses,
+      true,
       true
     );
     // remap states array to statistics array

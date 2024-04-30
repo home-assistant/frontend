@@ -37,6 +37,7 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
           selector: {
             select: {
               multiple: true,
+              reorder: true,
               mode: "list",
               options: OPERATION_MODES.filter((mode) =>
                 stateObj?.attributes.operation_list?.includes(mode)

@@ -122,7 +122,7 @@ export class HaManualScriptEditor extends LitElement {
       <ha-automation-action
         role="region"
         aria-labelledby="sequence-heading"
-        .actions=${this.config.sequence}
+        .actions=${this.config.sequence || []}
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
         @item-moved=${this._itemMoved}

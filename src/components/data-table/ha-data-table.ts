@@ -1,13 +1,13 @@
-import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import {
   customElement,
@@ -22,7 +22,9 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
+import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -32,23 +34,16 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { groupBy } from "../../common/util/group-by";
-import { stringCompare } from "../../common/string/compare";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "selection-changed": SelectionChangedEvent;
-    "row-click": RowClickedEvent;
-    "sorting-changed": SortingChangedEvent;
-  }
-}
 
 export interface RowClickedEvent {
   id: string;
 }
 
 export interface SelectionChangedEvent {
+  value: string[];
+}
+
+export interface CollapsedChangedEvent {
   value: string[];
 }
 
@@ -142,9 +137,13 @@ export class HaDataTable extends LitElement {
 
   @property() public groupColumn?: string;
 
+  @property({ attribute: false }) public groupOrder?: string[];
+
   @property() public sortColumn?: string;
 
   @property() public sortDirection: SortingDirection = null;
+
+  @property({ attribute: false }) public initialCollapsedGroups?: string[];
 
   @state() private _filterable = false;
 
@@ -157,6 +156,8 @@ export class HaDataTable extends LitElement {
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
   @state() private _items: DataTableRowData[] = [];
+
+  @state() private _collapsedGroups: string[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -213,17 +214,19 @@ export class HaDataTable extends LitElement {
         (column) => column.filterable
       );
 
-      for (const columnId in this.columns) {
-        if (this.columns[columnId].direction) {
-          this.sortDirection = this.columns[columnId].direction!;
-          this.sortColumn = columnId;
+      if (!this.sortColumn) {
+        for (const columnId in this.columns) {
+          if (this.columns[columnId].direction) {
+            this.sortDirection = this.columns[columnId].direction!;
+            this.sortColumn = columnId;
 
-          fireEvent(this, "sorting-changed", {
-            column: columnId,
-            direction: this.sortDirection,
-          });
+            fireEvent(this, "sorting-changed", {
+              column: columnId,
+              direction: this.sortDirection,
+            });
 
-          break;
+            break;
+          }
         }
       }
 
@@ -248,13 +251,23 @@ export class HaDataTable extends LitElement {
       ).length;
     }
 
+    if (!this.hasUpdated && this.initialCollapsedGroups) {
+      this._collapsedGroups = this.initialCollapsedGroups;
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    } else if (properties.has("groupColumn")) {
+      this._collapsedGroups = [];
+      fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+    }
+
     if (
       properties.has("data") ||
       properties.has("columns") ||
       properties.has("_filter") ||
       properties.has("sortColumn") ||
       properties.has("sortDirection") ||
-      properties.has("groupColumn")
+      properties.has("groupColumn") ||
+      properties.has("groupOrder") ||
+      properties.has("_collapsedGroups")
     ) {
       this._sortFilterData();
     }
@@ -447,6 +460,8 @@ export class HaDataTable extends LitElement {
           }
           return html`
             <div
+              @mouseover=${this._setTitle}
+              @focus=${this._setTitle}
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
                 "mdc-data-table__cell--flex": column.type === "flex",
@@ -514,11 +529,7 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab || this.groupColumn) {
-      const items = [...data];
-
-      if (this.appendRow) {
-        items.push({ append: true, content: this.appendRow });
-      }
+      let items = [...data];
 
       if (this.groupColumn) {
         const grouped = groupBy(items, (item) => item[this.groupColumn!]);
@@ -530,13 +541,24 @@ export class HaDataTable extends LitElement {
         const sorted: {
           [key: string]: DataTableRowData[];
         } = Object.keys(grouped)
-          .sort((a, b) =>
-            stringCompare(
+          .sort((a, b) => {
+            const orderA = this.groupOrder?.indexOf(a) ?? -1;
+            const orderB = this.groupOrder?.indexOf(b) ?? -1;
+            if (orderA !== orderB) {
+              if (orderA === -1) {
+                return 1;
+              }
+              if (orderB === -1) {
+                return -1;
+              }
+              return orderA - orderB;
+            }
+            return stringCompare(
               ["", "-", "—"].includes(a) ? "zzz" : a,
               ["", "-", "—"].includes(b) ? "zzz" : b,
               this.hass.locale.language
-            )
-          )
+            );
+          })
           .reduce((obj, key) => {
             obj[key] = grouped[key];
             return obj;
@@ -552,23 +574,39 @@ export class HaDataTable extends LitElement {
               content: html`<div
                 class="mdc-data-table__cell group-header"
                 role="cell"
+                .group=${groupName}
+                @click=${this._collapseGroup}
               >
-                ${groupName === UNDEFINED_GROUP_KEY ? "" : groupName || ""}
+                <ha-icon-button
+                  .path=${mdiChevronUp}
+                  class=${this._collapsedGroups.includes(groupName)
+                    ? "collapsed"
+                    : ""}
+                >
+                </ha-icon-button>
+                ${groupName === UNDEFINED_GROUP_KEY
+                  ? this.hass.localize("ui.components.data-table.ungrouped")
+                  : groupName || ""}
               </div>`,
             });
           }
-
-          groupedItems.push(...rows);
+          if (!this._collapsedGroups.includes(groupName)) {
+            groupedItems.push(...rows);
+          }
         });
 
-        this._items = groupedItems;
-      } else {
-        this._items = items;
+        items = groupedItems;
+      }
+
+      if (this.appendRow) {
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items = [...this._items, { empty: true }];
+        items.push({ empty: true });
       }
+
+      this._items = items;
     } else {
       this._items = data;
     }
@@ -649,6 +687,13 @@ export class HaDataTable extends LitElement {
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
 
+  private _setTitle(ev: Event) {
+    const target = ev.currentTarget as HTMLElement;
+    if (target.scrollWidth > target.offsetWidth) {
+      target.setAttribute("title", target.innerText);
+    }
+  }
+
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
     if (this._items.length) {
@@ -678,6 +723,18 @@ export class HaDataTable extends LitElement {
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
+
+  private _collapseGroup = (ev: Event) => {
+    const groupName = (ev.currentTarget as any).group;
+    if (this._collapsedGroups.includes(groupName)) {
+      this._collapsedGroups = this._collapsedGroups.filter(
+        (grp) => grp !== groupName
+      );
+    } else {
+      this._collapsedGroups = [...this._collapsedGroups, groupName];
+    }
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  };
 
   static get styles(): CSSResultGroup {
     return [
@@ -931,8 +988,21 @@ export class HaDataTable extends LitElement {
 
         .group-header {
           padding-top: 12px;
+          padding-left: 12px;
+          padding-inline-start: 12px;
           width: 100%;
           font-weight: 500;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+        }
+
+        .group-header ha-icon-button {
+          transition: transform 0.2s ease;
+        }
+
+        .group-header ha-icon-button.collapsed {
+          transform: rotate(180deg);
         }
 
         :host {
@@ -1030,5 +1100,13 @@ export class HaDataTable extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-data-table": HaDataTable;
+  }
+
+  // for fire event
+  interface HASSDomEvents {
+    "selection-changed": SelectionChangedEvent;
+    "row-click": RowClickedEvent;
+    "sorting-changed": SortingChangedEvent;
+    "collapsed-changed": CollapsedChangedEvent;
   }
 }

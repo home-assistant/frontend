@@ -67,6 +67,9 @@ export class HaControlSlider extends LitElement {
   @property({ attribute: "tooltip-mode" })
   public tooltipMode: TooltipMode = "interaction";
 
+  @property({ attribute: "touch-action" })
+  public touchAction?: string;
+
   @property({ type: Number })
   public value?: number;
 
@@ -152,7 +155,7 @@ export class HaControlSlider extends LitElement {
   setupListeners() {
     if (this.slider && !this._mc) {
       this._mc = new Manager(this.slider, {
-        touchAction: this.vertical ? "pan-x" : "pan-y",
+        touchAction: this.touchAction ?? (this.vertical ? "pan-x" : "pan-y"),
       });
       this._mc.add(
         new Pan({

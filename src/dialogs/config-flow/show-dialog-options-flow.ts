@@ -65,7 +65,7 @@ export const showOptionsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : "";
+          : step.reason;
       },
 
       renderShowFormStepHeader(hass, step) {
