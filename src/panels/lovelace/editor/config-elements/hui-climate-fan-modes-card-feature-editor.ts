@@ -59,6 +59,7 @@ export class HuiClimateFanModesCardFeatureEditor
           selector: {
             select: {
               multiple: true,
+              reorder: true,
               mode: "list",
               options:
                 stateObj?.attributes.fan_modes?.map((mode) => ({
