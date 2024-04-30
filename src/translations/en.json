@@ -6053,7 +6053,9 @@
                 "modes": "Modes"
               },
               "select-options": {
-                "label": "Select options"
+                "label": "Select options",
+                "options": "Options",
+                "customize_options": "Customize options"
               },
               "numeric-input": {
                 "label": "Numeric input",
