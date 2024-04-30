@@ -17,6 +17,10 @@ import {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
+type FanPresetModesCardFeatureData = FanPresetModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
+
 @customElement("hui-fan-preset-modes-card-feature-editor")
 export class HuiFanPresetModesCardFeatureEditor
   extends LitElement
@@ -95,7 +99,7 @@ export class HuiFanPresetModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data = {
+    const data: FanPresetModesCardFeatureData = {
       style: "dropdown",
       ...this._config,
       customize_modes: this._config.preset_modes !== undefined,
@@ -120,7 +124,8 @@ export class HuiFanPresetModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const { customize_modes, ...config } = ev.detail.value;
+    const { customize_modes, ...config } = ev.detail
+      .value as FanPresetModesCardFeatureData;
 
     const stateObj = this.context?.entity_id
       ? this.hass!.states[this.context?.entity_id]
