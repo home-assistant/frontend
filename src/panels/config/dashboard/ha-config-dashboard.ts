@@ -67,7 +67,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
-          >Twitter</a
+          >X (formerly Twitter)</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
