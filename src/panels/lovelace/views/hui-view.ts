@@ -143,6 +143,11 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._applyTheme();
+  }
+
   public willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
@@ -212,7 +217,7 @@ export class HUIView extends ReactiveElement {
           this.hass.themes !== oldHass.themes ||
           this.hass.selectedTheme !== oldHass.selectedTheme
         ) {
-          applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+          this._applyTheme();
         }
       }
       if (changedProperties.has("narrow")) {
@@ -234,6 +239,28 @@ export class HUIView extends ReactiveElement {
       }
       if (changedProperties.has("_badges")) {
         this._layoutElement.badges = this._badges;
+      }
+    }
+  }
+
+  private _applyTheme() {
+    applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+    if (this._viewConfigTheme) {
+      // Set lovelace background color to root element, so it will be placed under the header too
+      const computedStyles = getComputedStyle(this);
+      let lovelaceBackground = computedStyles.getPropertyValue(
+        "--lovelace-background"
+      );
+      if (!lovelaceBackground) {
+        lovelaceBackground = computedStyles.getPropertyValue(
+          "--primary-background-color"
+        );
+      }
+      if (lovelaceBackground) {
+        this.parentElement?.style.setProperty(
+          "--lovelace-background",
+          lovelaceBackground
+        );
       }
     }
   }

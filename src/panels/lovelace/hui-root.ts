@@ -886,9 +886,9 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      this.style.setProperty("--lovelace-background", configBackground);
+      root.style.setProperty("--lovelace-background", configBackground);
     } else {
-      this.style.removeProperty("--lovelace-background");
+      root.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
