@@ -11,6 +11,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import { supportsFeature } from "../common/entity/supports-feature";
 
 export const FORMAT_TEXT = "text";
 export const FORMAT_NUMBER = "number";
@@ -96,3 +97,9 @@ export const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
     path: mdiShieldOff,
   },
 };
+
+export const supportedAlarmModes = (stateObj: AlarmControlPanelEntity) =>
+  (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
+    const feature = ALARM_MODES[mode].feature;
+    return !feature || supportsFeature(stateObj, feature);
+  });
