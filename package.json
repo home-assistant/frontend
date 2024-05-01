@@ -207,7 +207,7 @@
     "fancy-log": "2.0.0",
     "fs-extra": "11.2.0",
     "glob": "10.3.12",
-    "gulp": "4.0.2",
+    "gulp": "5.0.0",
     "gulp-json-transform": "0.5.0",
     "gulp-merge-json": "2.2.1",
     "gulp-rename": "2.0.0",
