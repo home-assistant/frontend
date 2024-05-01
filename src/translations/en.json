@@ -5970,7 +5970,8 @@
                   "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
                   "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
                   "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
-                }
+                },
+                "customize_modes": "Customize alarm modes"
               },
               "light-brightness": {
                 "label": "Light brightness"
