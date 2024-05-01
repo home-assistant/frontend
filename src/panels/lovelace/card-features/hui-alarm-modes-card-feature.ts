@@ -16,12 +16,14 @@ import {
   AlarmControlPanelEntity,
   AlarmMode,
   ALARM_MODES,
+  supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { AlarmModesCardFeatureConfig } from "./types";
 import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -164,9 +166,12 @@ class HuiAlarmModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const modes = this._modes(this.stateObj, this._config.modes);
+    const supportedModes = supportedAlarmModes(this.stateObj);
 
-    const options = modes.map<ControlSelectOption>((mode) => ({
+    const options = filterModes(
+      supportedModes,
+      this._config.modes
+    ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.localize(`ui.card.alarm_control_panel.modes.${mode}`),
       path: ALARM_MODES[mode].path,
@@ -196,7 +201,7 @@ class HuiAlarmModeCardFeature
           )}
           style=${styleMap({
             "--control-select-color": color,
-            "--modes-count": modes.length.toString(),
+            "--modes-count": options.length.toString(),
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
