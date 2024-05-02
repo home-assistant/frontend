@@ -252,7 +252,7 @@ export interface SequenceAction extends BaseAction {
 }
 
 export interface ParallelAction extends BaseAction {
-  parallel: SequenceAction[];
+  parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
 
 export interface SetConversationResponseAction extends BaseAction {
