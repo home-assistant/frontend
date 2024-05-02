@@ -52,7 +52,7 @@ export const showConfigFlowDialog = (
         ? html`
             <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
           `
-        : "";
+        : step.reason;
     },
 
     renderShowFormStepHeader(hass, step) {

@@ -1,12 +1,28 @@
 import { FormfieldBase } from "@material/mwc-formfield/mwc-formfield-base";
 import { styles } from "@material/mwc-formfield/mwc-formfield.css";
-import { css } from "lit";
+import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-formfield")
 export class HaFormfield extends FormfieldBase {
   @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  protected override render() {
+    const classes = {
+      "mdc-form-field--align-end": this.alignEnd,
+      "mdc-form-field--space-between": this.spaceBetween,
+      "mdc-form-field--nowrap": this.nowrap,
+    };
+
+    return html` <div class="mdc-form-field ${classMap(classes)}">
+      <slot></slot>
+      <label class="mdc-label" @click=${this._labelClick}
+        ><slot name="label">${this.label}</slot></label
+      >
+    </div>`;
+  }
 
   protected _labelClick() {
     const input = this.input as HTMLInputElement | undefined;
@@ -38,6 +54,9 @@ export class HaFormfield extends FormfieldBase {
         margin-right: 10px;
         margin-inline-end: 10px;
         margin-inline-start: inline;
+      }
+      .mdc-form-field {
+        align-items: var(--ha-formfield-align-items, center);
       }
       .mdc-form-field > label {
         direction: var(--direction);

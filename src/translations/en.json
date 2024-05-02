@@ -783,7 +783,8 @@
         "no-data": "No data",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
-        "clear": "Clear"
+        "clear": "Clear",
+        "ungrouped": "Ungrouped"
       },
       "media-browser": {
         "tts": {
@@ -1888,6 +1889,7 @@
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
           "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
+          "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
@@ -2940,7 +2942,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)",
+                  "offset": "Offset in seconds or HH:MM:SS (optional)",
                   "description": {
                     "picker": "When the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
@@ -3828,25 +3830,42 @@
               }
             },
             "remote": {
-              "title": "Remote control",
+              "title": "Remote access",
               "connected": "Connected",
               "not_connected": "Not connected",
               "reconnecting": "Not connected. Trying to reconnect.",
-              "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
+              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
               "cerificate_error": "There was an error generating the certificate, check your logs.",
-              "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
-              "instance_is_available": "Your instance is available at your",
-              "instance_will_be_available": "Your instance will be available at your",
+              "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
+              "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
-              "nabu_casa_url": "Nabu Casa URL",
-              "advanced_options": "Advanced options",
-              "external_activation": "Allow external activation of remote control",
-              "external_activation_secondary": "Allows you to turn on remote control from your Nabu Casa account page, even if you're outside your local network",
-              "certificate_info": "Certificate info",
-              "certificate_expire": "Will be renewed at {date}",
-              "more_info": "More info"
+              "show_url": "Show full URL",
+              "hide_url": "Hide URL",
+              "copy_link": "Copy link",
+              "security_options": "Security options",
+              "strict_connection": "Remote login access",
+              "strict_connection_secondary": "Choose what happens when new devices visit your remote access link.",
+              "strict_connection_option_disabled": "Show login page",
+              "strict_connection_option_disabled_secondary": "Any new device visiting your remote access link are presented with a login page.",
+              "strict_connection_option_guard_page": "Block remote logins",
+              "strict_connection_option_guard_page_secondary": "New devices must log in with a temporary access link. Devices accessing the link that are not logged in will be presented with a page explaining the restrictions.",
+              "strict_connection_option_guard_page_warning": "This prevents outsiders from trying to log in to your system but also your own devices if they have not logged in previously.",
+              "strict_connection_option_drop_connection": "Block remote logins and show nothing",
+              "strict_connection_option_drop_connection_secondary": "This is the same as the above setting but instead provides a blank page for additional security.",
+              "strict_connection_option_drop_connection_warning": "This prevents outsiders from snooping the remote web address and trying to log in, but it may appear as if there is no system running when users try to access it.",
+              "external_activation": "Allow external activation of remote access",
+              "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
+              "drop_connection_warning_title": "Remote log in has been deactivated",
+              "drop_connection_warning": "The below security options may make it appear the system is not running.",
+              "strict_connection_link": "Provide temporary login access",
+              "strict_connection_link_secondary": "This provides a link for new devices to login for the next hour.",
+              "strict_connection_create_link": "Create link",
+              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
+              "certificate_info": "Certificate information",
+              "certificate_expire": "Certificate renewal at {date}",
+              "more_info": "More details"
             },
             "alexa": {
               "title": "Alexa",
@@ -4033,7 +4052,12 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search {number} devices",
-            "state": "State"
+            "state": "State",
+            "bulk_actions": {
+              "move_area": "Move to area",
+              "no_area": "No area",
+              "add_area": "Add area"
+            }
           }
         },
         "entities": {
@@ -4046,12 +4070,14 @@
             "search": "Search {number} entities",
             "unnamed_entity": "Unnamed entity",
             "status": {
-              "restored": "Restored",
               "available": "Available",
               "unavailable": "Unavailable",
+              "enabled": "Enabled",
               "disabled": "Disabled",
-              "readonly": "Read-only",
-              "hidden": "Hidden"
+              "visible": "Visible",
+              "hidden": "Hidden",
+              "not_provided": "Not provided",
+              "unmanageable": "Unmanageable"
             },
             "headers": {
               "state_icon": "State icon",
@@ -4060,7 +4086,11 @@
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
-              "status": "Status"
+              "status": "Status",
+              "domain": "Domain",
+              "availability": "Availability",
+              "visibility": "Visibility",
+              "enabled": "Enabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -5823,7 +5853,14 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "dark_mode": "Dark mode?",
-              "default_zoom": "Default zoom",
+              "appearance": "Appearance",
+              "theme_mode": "Theme Mode",
+              "theme_modes": {
+                "auto": "Auto",
+                "light": "Light",
+                "dark": "Dark"
+              },
+              "default_zoom": "Default Zoom",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -5941,13 +5978,20 @@
                   "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
                   "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
                   "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
-                }
+                },
+                "customize_modes": "Customize alarm modes"
               },
               "light-brightness": {
                 "label": "Light brightness"
               },
               "light-color-temp": {
                 "label": "Light color temperature"
+              },
+              "lock-commands": {
+                "label": "Lock commands"
+              },
+              "lock-open-door": {
+                "label": "Lock open door"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",
@@ -5967,16 +6011,18 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize fan modes",
                 "fan_modes": "Fan modes"
               },
               "climate-swing-modes": {
                 "label": "Climate swing modes",
+                "swing_modes": "Swing modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
-                "swing_modes": "Swing modes"
+                "customize_modes": "Customize swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
@@ -5985,7 +6031,8 @@
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
-                }
+                },
+                "customize_modes": "Customize HVAC modes"
               },
               "climate-preset-modes": {
                 "label": "Climate preset modes",
@@ -5994,6 +6041,7 @@
                   "dropdown": "Dropdown",
                   "icons": "Icons"
                 },
+                "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
               "fan-preset-modes": {
@@ -6003,6 +6051,7 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::customize_modes%]",
                 "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
@@ -6015,10 +6064,13 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize modes",
                 "modes": "Modes"
               },
               "select-options": {
-                "label": "Select options"
+                "label": "Select options",
+                "options": "Options",
+                "customize_options": "Customize options"
               },
               "numeric-input": {
                 "label": "Numeric input",
@@ -6036,7 +6088,8 @@
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
-                "operation_modes": "Operation modes"
+                "operation_modes": "Operation modes",
+                "customize_modes": "Customize operation modes"
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
