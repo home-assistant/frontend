@@ -13,17 +13,17 @@ import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
 import {
+  ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
-  ALARM_MODES,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
+import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { AlarmModesCardFeatureConfig } from "./types";
-import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 import { filterModes } from "./common/filter-modes";
+import { AlarmModesCardFeatureConfig } from "./types";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -43,15 +43,9 @@ class HuiAlarmModeCardFeature
 
   @state() _currentMode?: AlarmMode;
 
-  static getStubConfig(_, stateObj?: HassEntity): AlarmModesCardFeatureConfig {
+  static getStubConfig(): AlarmModesCardFeatureConfig {
     return {
       type: "alarm-modes",
-      modes: stateObj
-        ? (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
-            const feature = ALARM_MODES[mode as AlarmMode].feature;
-            return !feature || supportsFeature(stateObj, feature);
-          })
-        : [],
     };
   }
 
