@@ -7,6 +7,7 @@ export type IframeViewStrategyConfig = {
   type: "iframe";
   url: string;
   title?: string;
+  allow?: string;
 };
 
 @customElement("iframe-view-strategy")
@@ -21,6 +22,7 @@ export class IframeViewStrategy extends ReactiveElement {
         {
           type: "iframe",
           url: config.url,
+          allow: config.allow,
         } as IframeCardConfig,
       ],
     };
