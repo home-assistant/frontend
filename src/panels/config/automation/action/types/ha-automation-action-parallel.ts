@@ -3,7 +3,11 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
-import { Action, ParallelAction } from "../../../../../data/script";
+import {
+  Action,
+  ManualScriptConfig,
+  ParallelAction,
+} from "../../../../../data/script";
 import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
@@ -52,7 +56,11 @@ export class HaParallelAction extends LitElement implements ActionElement {
   }
 
   private _addSequenceAction() {
-    const actions = this.action.parallel.concat({
+    const currentAction = (this.action.parallel as (
+      | ManualScriptConfig
+      | Action
+    )[]) ?? [this.action.parallel as ManualScriptConfig | Action];
+    const actions = currentAction.concat({
       ...HaSequenceAction.defaultConfig,
     });
 
