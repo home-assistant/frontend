@@ -88,27 +88,23 @@ class PanelEnergy extends LitElement {
             collectionKey="energy_dashboard"
           >
             ${this.hass.user?.is_admin
-              ? html`
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._navigateConfig}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.configure")}
-                  </ha-list-item>
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._dumpCSV}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiDownload}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.download_data")}
-                  </ha-list-item>
-                `
+              ? html` <ha-list-item
+                  slot="overflow-menu"
+                  graphic="icon"
+                  @request-selected=${this._navigateConfig}
+                >
+                  <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
+                  ${this.hass!.localize("ui.panel.energy.configure")}
+                </ha-list-item>`
               : nothing}
+            <ha-list-item
+              slot="overflow-menu"
+              graphic="icon"
+              @request-selected=${this._dumpCSV}
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
+              ${this.hass!.localize("ui.panel.energy.download_data")}
+            </ha-list-item>
           </hui-energy-period-selector>
         </div>
       </div>
