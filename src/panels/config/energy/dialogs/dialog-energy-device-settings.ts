@@ -105,7 +105,7 @@ export class DialogEnergyDeviceSettings
           type="text"
           .disabled=${!this._device}
           .value=${this._device?.name || ""}
-          @change=${this._nameChanged}
+          @input=${this._nameChanged}
         >
         </ha-textfield>
 
