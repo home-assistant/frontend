@@ -147,7 +147,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   overrides: [
     {
       // Add plugin to inject various polyfills, excluding the polyfills
-      //themselves to prevent self- injection.
+      // themselves to prevent self- injection.
       plugins: [
         [
           path.join(BABEL_PLUGINS, "custom-polyfill-plugin.js"),
