@@ -19,8 +19,8 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { ClimateHvacModesCardFeatureConfig } from "./types";
 import { filterModes } from "./common/filter-modes";
+import { ClimateHvacModesCardFeatureConfig } from "./types";
 
 export const supportsClimateHvacModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -46,7 +46,6 @@ class HuiClimateHvacModesCardFeature
   static getStubConfig(): ClimateHvacModesCardFeatureConfig {
     return {
       type: "climate-hvac-modes",
-      hvac_modes: [],
     };
   }
 
@@ -120,10 +119,12 @@ class HuiClimateHvacModesCardFeature
 
     const color = stateColorCss(this.stateObj);
 
+    const ordererHvacModes = (this.stateObj.attributes.hvac_modes || [])
+      .concat()
+      .sort(compareClimateHvacModes);
+
     const options = filterModes(
-      [...(this.stateObj?.attributes.hvac_modes || [])].sort(
-        compareClimateHvacModes
-      ),
+      ordererHvacModes,
       this._config.hvac_modes
     ).map<ControlSelectOption>((mode) => ({
       value: mode,

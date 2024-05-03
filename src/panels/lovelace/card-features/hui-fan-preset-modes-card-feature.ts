@@ -44,7 +44,6 @@ class HuiFanPresetModesCardFeature
     return {
       type: "fan-preset-modes",
       style: "dropdown",
-      preset_modes: [],
     };
   }
 

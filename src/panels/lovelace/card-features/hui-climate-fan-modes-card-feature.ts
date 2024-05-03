@@ -45,7 +45,6 @@ class HuiClimateFanModesCardFeature
     return {
       type: "climate-fan-modes",
       style: "dropdown",
-      fan_modes: [],
     };
   }
 

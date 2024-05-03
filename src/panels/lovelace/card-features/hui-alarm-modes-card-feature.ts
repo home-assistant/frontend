@@ -13,15 +13,17 @@ import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
 import {
+  ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
-  ALARM_MODES,
+  supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
+import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { filterModes } from "./common/filter-modes";
 import { AlarmModesCardFeatureConfig } from "./types";
-import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -41,15 +43,9 @@ class HuiAlarmModeCardFeature
 
   @state() _currentMode?: AlarmMode;
 
-  static getStubConfig(_, stateObj?: HassEntity): AlarmModesCardFeatureConfig {
+  static getStubConfig(): AlarmModesCardFeatureConfig {
     return {
       type: "alarm-modes",
-      modes: stateObj
-        ? (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
-            const feature = ALARM_MODES[mode as AlarmMode].feature;
-            return !feature || supportsFeature(stateObj, feature);
-          })
-        : [],
     };
   }
 
@@ -164,9 +160,12 @@ class HuiAlarmModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const modes = this._modes(this.stateObj, this._config.modes);
+    const supportedModes = supportedAlarmModes(this.stateObj);
 
-    const options = modes.map<ControlSelectOption>((mode) => ({
+    const options = filterModes(
+      supportedModes,
+      this._config.modes
+    ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.localize(`ui.card.alarm_control_panel.modes.${mode}`),
       path: ALARM_MODES[mode].path,
@@ -196,7 +195,7 @@ class HuiAlarmModeCardFeature
           )}
           style=${styleMap({
             "--control-select-color": color,
-            "--modes-count": modes.length.toString(),
+            "--modes-count": options.length.toString(),
           })}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >

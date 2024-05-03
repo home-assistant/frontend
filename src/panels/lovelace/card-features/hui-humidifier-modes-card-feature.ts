@@ -48,7 +48,6 @@ class HuiHumidifierModesCardFeature
     return {
       type: "humidifier-modes",
       style: "dropdown",
-      modes: [],
     };
   }
 

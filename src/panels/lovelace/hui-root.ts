@@ -886,9 +886,9 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      this.style.setProperty("--lovelace-background", configBackground);
+      root.style.setProperty("--lovelace-background", configBackground);
     } else {
-      this.style.removeProperty("--lovelace-background");
+      root.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
@@ -1013,8 +1013,6 @@ class HUIRoot extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)
