@@ -89,7 +89,8 @@ const tryDescribeAction = <T extends ActionType>(
     const config = action as ActionTypes["service"];
 
     const targets: string[] = [];
-    if (config.target) {
+    const targetOrData = config.target || config.data;
+    if (targetOrData) {
       for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
@@ -97,12 +98,10 @@ const tryDescribeAction = <T extends ActionType>(
         floor_id: "floors",
         label_id: "labels",
       })) {
-        if (!(key in config.target)) {
+        if (!(key in targetOrData)) {
           continue;
         }
-        const keyConf: string[] = Array.isArray(config.target[key])
-          ? config.target[key]
-          : [config.target[key]];
+        const keyConf: string[] = ensureArray(targetOrData[key]) || [];
 
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
@@ -196,7 +195,10 @@ const tryDescribeAction = <T extends ActionType>(
     ) {
       return hass.localize(
         `${actionTranslationBaseKey}.service.description.service_based_on_template`,
-        { targets: formatListWithAnds(hass.locale, targets) }
+        {
+          hasTargets: targets.length ? "true" : "false",
+          targets: formatListWithAnds(hass.locale, targets),
+        }
       );
     }
 
@@ -212,6 +214,7 @@ const tryDescribeAction = <T extends ActionType>(
           {
             domain: domainToName(hass.localize, domain),
             name: service || config.service,
+            hasTargets: targets.length ? "true" : "false",
             targets: formatListWithAnds(hass.locale, targets),
           }
         );
@@ -223,6 +226,7 @@ const tryDescribeAction = <T extends ActionType>(
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
             : config.service,
+          hasTargets: targets.length ? "true" : "false",
           targets: formatListWithAnds(hass.locale, targets),
         }
       );

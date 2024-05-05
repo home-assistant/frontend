@@ -3248,9 +3248,9 @@
                   "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
                   "has_response": "This service returns a response, enter the name of a variable the response will be saved in",
                   "description": {
-                    "service_based_on_template": "Call a service based on a template on {targets}",
-                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
-                    "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_based_on_template": "Call a service based on a template{hasTargets, select, \n true { on {targets}} \n other {} \n }",
+                    "service_based_on_name": "Call a service ''{name}''{hasTargets, select, \n true { on {targets}} \n other {} \n }",
+                    "service_name": "{domain} ''{name}''{hasTargets, select, \n true { on {targets}} \n other {} \n }",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
