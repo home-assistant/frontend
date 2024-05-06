@@ -80,7 +80,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               )}
             >
               <div class="account-row">
-                <ha-list-item twoline>
+                <ha-list-item noninteractive twoline>
                   ${this.cloudStatus.email.replace(
                     /(\w{3})[\w.-]+@([\w.]+\w)/,
                     "$1***@$2"
@@ -118,7 +118,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                 : ""}
 
               <div class="account-row">
-                <ha-list-item>
+                <ha-list-item noninteractive>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.connection_status"
                   )}:
@@ -187,6 +187,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-remote-pref
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-remote-pref>
 

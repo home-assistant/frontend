@@ -17,6 +17,10 @@ import {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
+type ClimateFanModesCardFeatureData = ClimateFanModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
+
 @customElement("hui-climate-fan-modes-card-feature-editor")
 export class HuiClimateFanModesCardFeatureEditor
   extends LitElement
@@ -36,7 +40,8 @@ export class HuiClimateFanModesCardFeatureEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeValue: FormatEntityAttributeValueFunc,
-      stateObj?: HassEntity
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
     ) =>
       [
         {
@@ -55,19 +60,33 @@ export class HuiClimateFanModesCardFeatureEditor
           },
         },
         {
-          name: "fan_modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options:
-                stateObj?.attributes.fan_modes?.map((mode) => ({
-                  value: mode,
-                  label: formatEntityAttributeValue(stateObj, "fan_mode", mode),
-                })) || [],
-            },
+            boolean: {},
           },
         },
+        ...(customizeModes
+          ? ([
+              {
+                name: "fan_modes",
+                selector: {
+                  select: {
+                    multiple: true,
+                    reorder: true,
+                    options:
+                      stateObj?.attributes.fan_modes?.map((mode) => ({
+                        value: mode,
+                        label: formatEntityAttributeValue(
+                          stateObj,
+                          "fan_mode",
+                          mode
+                        ),
+                      })) || [],
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -80,16 +99,17 @@ export class HuiClimateFanModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: ClimateFanModesCardFeatureConfig = {
+    const data: ClimateFanModesCardFeatureData = {
       style: "dropdown",
-      fan_modes: [],
       ...this._config,
+      customize_modes: this._config.fan_modes !== undefined,
     };
 
     const schema = this._schema(
       this.hass.localize,
       this.hass.formatEntityAttributeValue,
-      stateObj
+      stateObj,
+      data.customize_modes
     );
 
     return html`
@@ -104,7 +124,21 @@ export class HuiClimateFanModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as ClimateFanModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.fan_modes) {
+      config.fan_modes = stateObj?.attributes.fan_modes || [];
+    }
+    if (!customize_modes && config.fan_modes) {
+      delete config.fan_modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -113,6 +147,7 @@ export class HuiClimateFanModesCardFeatureEditor
     switch (schema.name) {
       case "style":
       case "fan_modes":
+      case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.climate-fan-modes.${schema.name}`
         );

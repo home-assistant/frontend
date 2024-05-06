@@ -98,7 +98,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
             title=${ifDefined(this._config.title)}
             src=${this._config.url}
             .sandbox=${`${sandbox_user_params} ${IFRAME_SANDBOX}`}
-            allow="fullscreen"
+            allow=${this._config.allow ?? "fullscreen"}
           ></iframe>
         </div>
       </ha-card>

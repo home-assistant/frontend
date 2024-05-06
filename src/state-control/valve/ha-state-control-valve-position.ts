@@ -40,6 +40,7 @@ export class HaStateControlValvePosition extends LitElement {
 
     return html`
       <ha-control-slider
+        touch-action="none"
         vertical
         .value=${this.value}
         min="0"
@@ -70,8 +71,8 @@ export class HaStateControlValvePosition extends LitElement {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
-        --control-slider-thickness: 100px;
-        --control-slider-border-radius: 24px;
+        --control-slider-thickness: 130px;
+        --control-slider-border-radius: 36px;
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;

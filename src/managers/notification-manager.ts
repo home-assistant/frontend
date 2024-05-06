@@ -27,7 +27,7 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
-    if (this._parameters) {
+    if (this._parameters && this._parameters.message !== parameters.message) {
       this._parameters = undefined;
       await this.updateComplete;
     }

@@ -16,6 +16,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-clickable-list-item";
 import "../../../../components/ha-fab";
@@ -40,11 +41,13 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import { storage } from "../../../../common/decorators/storage";
 
 type DataTableItem = Pick<
   LovelaceDashboard,
@@ -67,6 +70,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 
+  @storage({
+    key: "lovelace-dashboards-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
+
   public willUpdate() {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -74,11 +84,16 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _columns = memoize(
-    (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
+    (
+      narrow: boolean,
+      _language,
+      dashboards,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
-          label: this.hass.localize(
+          label: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
           type: "icon",
@@ -98,7 +113,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
               : nothing,
         },
         title: {
-          title: this.hass.localize(
+          title: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.title"
           ),
           main: true,
@@ -140,7 +155,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       if (!narrow) {
         columns.mode = {
-          title: this.hass.localize(
+          title: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
           ),
           sortable: true,
@@ -154,7 +169,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         };
         if (dashboards.some((dashboard) => dashboard.filename)) {
           columns.filename = {
-            title: this.hass.localize(
+            title: localize(
               "ui.panel.config.lovelace.dashboards.picker.headers.filename"
             ),
             width: "15%",
@@ -163,7 +178,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           };
         }
         columns.require_admin = {
-          title: this.hass.localize(
+          title: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
           ),
           sortable: true,
@@ -175,7 +190,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
               : html`—`,
         };
         columns.show_in_sidebar = {
-          title: this.hass.localize(
+          title: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
@@ -189,7 +204,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       columns.url_path = {
         title: "",
-        label: this.hass.localize(
+        label: localize(
           "ui.panel.config.lovelace.dashboards.picker.headers.url"
         ),
         filterable: true,
@@ -283,9 +298,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .columns=${this._columns(
           this.narrow,
           this.hass.language,
-          this._dashboards
+          this._dashboards,
+          this.hass.localize
         )}
         .data=${this._getItems(this._dashboards)}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
@@ -432,6 +450,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 }
 

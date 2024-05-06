@@ -21,9 +21,9 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
-import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
@@ -35,6 +35,8 @@ import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-hum
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
+import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
@@ -51,9 +53,9 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "climate-fan-modes",
-  "climate-swing-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-swing-modes",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -65,6 +67,8 @@ const UI_FEATURE_TYPES = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "lock-commands",
+  "lock-open-door",
   "numeric-input",
   "select-options",
   "target-humidity",
@@ -78,14 +82,15 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
-  "climate-hvac-modes",
   "climate-fan-modes",
-  "climate-swing-modes",
+  "climate-hvac-modes",
   "climate-preset-modes",
+  "climate-swing-modes",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
   "numeric-input",
+  "select-options",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -111,6 +116,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
+  "lock-commands": supportsLockCommandsCardFeature,
+  "lock-open-door": supportsLockOpenDoorCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,

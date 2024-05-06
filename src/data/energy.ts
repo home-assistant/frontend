@@ -9,9 +9,13 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-} from "date-fns/esm";
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
+import {
+  calcDate,
+  calcDateProperty,
+  calcDateDifferenceProperty,
+} from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -91,6 +95,7 @@ export type EnergySolarForecasts = {
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  name?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -443,12 +448,12 @@ const getEnergyData = async (
         addMonths,
         hass.locale,
         hass.config,
-        -(calcDateProperty(
+        -(calcDateDifferenceProperty(
           end || new Date(),
+          start,
           differenceInMonths,
           hass.locale,
-          hass.config,
-          start
+          hass.config
         ) as number) - 1
       );
     } else {

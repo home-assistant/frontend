@@ -88,38 +88,34 @@ class PanelEnergy extends LitElement {
             collectionKey="energy_dashboard"
           >
             ${this.hass.user?.is_admin
-              ? html`
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._navigateConfig}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiPencil}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.configure")}
-                  </ha-list-item>
-                  <ha-list-item
-                    slot="overflow-menu"
-                    graphic="icon"
-                    @request-selected=${this._dumpCSV}
-                  >
-                    <ha-svg-icon slot="graphic" .path=${mdiDownload}>
-                    </ha-svg-icon>
-                    ${this.hass!.localize("ui.panel.energy.download_data")}
-                  </ha-list-item>
-                `
+              ? html` <ha-list-item
+                  slot="overflow-menu"
+                  graphic="icon"
+                  @request-selected=${this._navigateConfig}
+                >
+                  <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
+                  ${this.hass!.localize("ui.panel.energy.configure")}
+                </ha-list-item>`
               : nothing}
+            <ha-list-item
+              slot="overflow-menu"
+              graphic="icon"
+              @request-selected=${this._dumpCSV}
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiDownload}> </ha-svg-icon>
+              ${this.hass!.localize("ui.panel.energy.download_data")}
+            </ha-list-item>
           </hui-energy-period-selector>
         </div>
       </div>
-      <hui-view
-        id="view"
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .lovelace=${this._lovelace}
-        .index=${this._viewIndex}
-        @reload-energy-panel=${this._reloadView}
-      ></hui-view>
+      <div id="view" @reload-energy-panel=${this._reloadView}>
+        <hui-view
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .lovelace=${this._lovelace}
+          .index=${this._viewIndex}
+        ></hui-view>
+      </div>
     `;
   }
 
@@ -363,6 +359,8 @@ class PanelEnergy extends LitElement {
           transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -399,12 +397,10 @@ class PanelEnergy extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-left: env(safe-area-inset-left);
-          padding-inline-start: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)
