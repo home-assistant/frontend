@@ -124,7 +124,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "target-temperature": supportsTargetTemperatureCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
-  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature
+  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();

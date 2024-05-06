@@ -23,7 +23,7 @@ class HuiConditionalFeature
       type: "conditional",
       conditions: [],
       feature: {
-        type: ""
+        type: "",
       } as any,
     };
   }
