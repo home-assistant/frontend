@@ -6,7 +6,7 @@ import rename from "gulp-rename";
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { Transform } from "node:stream";
+import { PassThrough, Transform } from "node:stream";
 import { finished } from "node:stream/promises";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
@@ -213,7 +213,10 @@ const createTranslations = async () => {
   // TODO: This is a naive interpretation of BCP47 that should be improved.
   //       Will be OK for now as long as we don't have anything more complicated
   // than a base translation + region.
-  gulp.src(`${workDir}/en.json`).pipe(hashStream, { end: false });
+  gulp
+    .src(`${workDir}/en.json`)
+    .pipe(new PassThrough({ objectMode: true }))
+    .pipe(hashStream, { end: false });
   const mergesFinished = [];
   for (const translationFile of translationFiles) {
     const locale = basename(translationFile, ".json");

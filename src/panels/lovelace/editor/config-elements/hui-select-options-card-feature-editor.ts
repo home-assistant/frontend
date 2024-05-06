@@ -3,8 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { FormatEntityAttributeValueFunc } from "../../../../common/translations/entity-state";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -12,17 +11,17 @@ import type {
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
-  ClimatePresetModesCardFeatureConfig,
   LovelaceCardFeatureContext,
+  SelectOptionsCardFeatureConfig,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
-type ClimatePresetModesCardFeatureData = ClimatePresetModesCardFeatureConfig & {
-  customize_modes: boolean;
+type SelectOptionsCardFeatureData = SelectOptionsCardFeatureConfig & {
+  customize_options: boolean;
 };
 
-@customElement("hui-climate-preset-modes-card-feature-editor")
-export class HuiClimatePresetModesCardFeatureEditor
+@customElement("hui-select-options-card-feature-editor")
+export class HuiSelectOptionsCardFeatureEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
@@ -30,57 +29,37 @@ export class HuiClimatePresetModesCardFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: ClimatePresetModesCardFeatureConfig;
+  @state() private _config?: SelectOptionsCardFeatureConfig;
 
-  public setConfig(config: ClimatePresetModesCardFeatureConfig): void {
+  public setConfig(config: SelectOptionsCardFeatureConfig): void {
     this._config = config;
   }
 
   private _schema = memoizeOne(
     (
-      localize: LocalizeFunc,
-      formatEntityAttributeValue: FormatEntityAttributeValueFunc,
+      formatEntityState: FormatEntityStateFunc,
       stateObj: HassEntity | undefined,
-      customizeModes: boolean
+      customizeOptions: boolean
     ) =>
       [
         {
-          name: "style",
-          selector: {
-            select: {
-              multiple: false,
-              mode: "list",
-              options: ["dropdown", "icons"].map((mode) => ({
-                value: mode,
-                label: localize(
-                  `ui.panel.lovelace.editor.features.types.climate-preset-modes.style_list.${mode}`
-                ),
-              })),
-            },
-          },
-        },
-        {
-          name: "customize_modes",
+          name: "customize_options",
           selector: {
             boolean: {},
           },
         },
-        ...(customizeModes
+        ...(customizeOptions
           ? ([
               {
-                name: "preset_modes",
+                name: "options",
                 selector: {
                   select: {
-                    reorder: true,
                     multiple: true,
+                    reorder: true,
                     options:
-                      stateObj?.attributes.preset_modes?.map((mode) => ({
-                        value: mode,
-                        label: formatEntityAttributeValue(
-                          stateObj,
-                          "preset_mode",
-                          mode
-                        ),
+                      stateObj?.attributes.options?.map((option) => ({
+                        value: option,
+                        label: formatEntityState(stateObj, option),
                       })) || [],
                   },
                 },
@@ -99,17 +78,15 @@ export class HuiClimatePresetModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: ClimatePresetModesCardFeatureData = {
-      style: "dropdown",
+    const data: SelectOptionsCardFeatureData = {
       ...this._config,
-      customize_modes: this._config.preset_modes !== undefined,
+      customize_options: this._config.options !== undefined,
     };
 
     const schema = this._schema(
-      this.hass.localize,
-      this.hass.formatEntityAttributeValue,
+      this.hass.formatEntityState,
       stateObj,
-      data.customize_modes
+      data.customize_options
     );
 
     return html`
@@ -124,18 +101,18 @@ export class HuiClimatePresetModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const { customize_modes, ...config } = ev.detail
-      .value as ClimatePresetModesCardFeatureData;
+    const { customize_options, ...config } = ev.detail
+      .value as SelectOptionsCardFeatureData;
 
     const stateObj = this.context?.entity_id
       ? this.hass!.states[this.context?.entity_id]
       : undefined;
 
-    if (customize_modes && !config.preset_modes) {
-      config.preset_modes = stateObj?.attributes.preset_modes || [];
+    if (customize_options && !config.options) {
+      config.options = stateObj?.attributes.options || [];
     }
-    if (!customize_modes && config.preset_modes) {
-      delete config.preset_modes;
+    if (!customize_options && config.options) {
+      delete config.options;
     }
 
     fireEvent(this, "config-changed", { config: config });
@@ -145,11 +122,10 @@ export class HuiClimatePresetModesCardFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "style":
-      case "preset_modes":
-      case "customize_modes":
+      case "options":
+      case "customize_options":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.climate-preset-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.select-options.${schema.name}`
         );
       default:
         return "";
@@ -159,6 +135,6 @@ export class HuiClimatePresetModesCardFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-climate-preset-modes-card-feature-editor": HuiClimatePresetModesCardFeatureEditor;
+    "hui-select-options-card-feature-editor": HuiSelectOptionsCardFeatureEditor;
   }
 }
