@@ -147,8 +147,18 @@ class MoreInfoScript extends LitElement {
       | undefined;
     const newState = this.stateObj;
 
+    const fields =
+      this.hass.services.script[computeObjectId(newState.entity_id)]?.fields;
+
+    const defaultValues = {};
+    Object.keys(fields).forEach((field) => {
+      if (fields[field].default) {
+        defaultValues[field] = fields[field].default;
+      }
+    });
+
     if (newState && (!oldState || oldState.entity_id !== newState.entity_id)) {
-      this._scriptData = { service: newState.entity_id, data: {} };
+      this._scriptData = { service: newState.entity_id, data: defaultValues };
     }
   }
 
