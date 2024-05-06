@@ -565,36 +565,30 @@ export class HaDataTable extends LitElement {
           }, {});
         const groupedItems: DataTableRowData[] = [];
         Object.entries(sorted).forEach(([groupName, rows]) => {
-          if (
-            groupName !== UNDEFINED_GROUP_KEY ||
-            Object.keys(sorted).length > 1
-          ) {
-            groupedItems.push({
-              append: true,
-              content: html`<div
-                class="mdc-data-table__cell group-header"
-                role="cell"
-                .group=${groupName}
-                @click=${this._collapseGroup}
+          groupedItems.push({
+            append: true,
+            content: html`<div
+              class="mdc-data-table__cell group-header"
+              role="cell"
+              .group=${groupName}
+              @click=${this._collapseGroup}
+            >
+              <ha-icon-button
+                .path=${mdiChevronUp}
+                class=${this._collapsedGroups.includes(groupName)
+                  ? "collapsed"
+                  : ""}
               >
-                <ha-icon-button
-                  .path=${mdiChevronUp}
-                  class=${this._collapsedGroups.includes(groupName)
-                    ? "collapsed"
-                    : ""}
-                >
-                </ha-icon-button>
-                ${groupName === UNDEFINED_GROUP_KEY
-                  ? this.hass.localize("ui.components.data-table.ungrouped")
-                  : groupName || ""}
-              </div>`,
-            });
-          }
+              </ha-icon-button>
+              ${groupName === UNDEFINED_GROUP_KEY
+                ? this.hass.localize("ui.components.data-table.ungrouped")
+                : groupName || ""}
+            </div>`,
+          });
           if (!this._collapsedGroups.includes(groupName)) {
             groupedItems.push(...rows);
           }
         });
-
         items = groupedItems;
       }
 
