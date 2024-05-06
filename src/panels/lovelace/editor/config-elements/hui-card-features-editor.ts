@@ -80,7 +80,7 @@ const UI_FEATURE_TYPES = [
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
-const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "alarm-modes",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -124,7 +124,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "target-temperature": supportsTargetTemperatureCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
-  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
+  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature
 };
 
 const customCardFeatures = getCustomCardFeatures();

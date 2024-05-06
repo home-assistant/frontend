@@ -22,12 +22,13 @@ class HuiConditionalFeature
     return {
       type: "conditional",
       conditions: [],
-      feature: {},
+      feature: {
+        type: ""
+      } as any,
     };
   }
 
   protected willUpdate(changedProp: PropertyValues): void {
-    super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       (this._element! as LovelaceCardFeature).stateObj = this.stateObj;
     }
