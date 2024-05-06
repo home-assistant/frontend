@@ -4336,6 +4336,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.merge@npm:4.6.9":
+  version: 4.6.9
+  resolution: "@types/lodash.merge@npm:4.6.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10/d0dd6654547c9d8d905184d14aa5c2a37a1ed1c3204f5ab20b7d591a05f34859ef09d3b72c065e94ca1989abf9109eb8230f67c4d64a5768b1d65b9ed8baf8e7
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:*":
   version: 4.17.0
   resolution: "@types/lodash@npm:4.17.0"
@@ -8779,20 +8788,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-merge-json@npm:2.2.1":
-  version: 2.2.1
-  resolution: "gulp-merge-json@npm:2.2.1"
-  dependencies:
-    json5: "npm:^2.2.3"
-    lodash.clonedeep: "npm:^4.5.0"
-    lodash.mergewith: "npm:^4.6.1"
-    plugin-error: "npm:^2.0.1"
-    through: "npm:^2.3.8"
-    vinyl: "npm:^3.0.0"
-  checksum: 10/fe87fd2101d0a35f2c5d488d546affaa6115d3be376fcf07b56029eed22ccfa8811206ac8bdf13ff79e5f518d0a65d886506204d2bdc3c0f871dc7cfa82c75eb
-  languageName: node
-  linkType: hard
-
 "gulp-rename@npm:2.0.0":
   version: 2.0.0
   resolution: "gulp-rename@npm:2.0.0"
@@ -9025,6 +9020,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.12"
     "@types/leaflet-draw": "npm:1.0.11"
+    "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.4.2"
     "@types/mocha": "npm:10.0.6"
     "@types/qrcode": "npm:1.5.5"
@@ -9078,7 +9074,6 @@ __metadata:
     google-timezones-json: "npm:1.2.0"
     gulp: "npm:5.0.0"
     gulp-json-transform: "npm:0.5.0"
-    gulp-merge-json: "npm:2.2.1"
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.1"
     hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
@@ -9095,6 +9090,7 @@ __metadata:
     lint-staged: "npm:15.2.2"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.3"
+    lodash.merge: "npm:4.6.2"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.4.4"
     magic-string: "npm:0.30.10"
@@ -10665,13 +10661,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.clonedeep@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.clonedeep@npm:4.5.0"
-  checksum: 10/957ed243f84ba6791d4992d5c222ffffca339a3b79dbe81d2eaf0c90504160b500641c5a0f56e27630030b18b8e971ea10b44f928a977d5ced3c8948841b555f
-  languageName: node
-  linkType: hard
-
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -10693,17 +10682,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.merge@npm:^4.6.2":
+"lodash.merge@npm:4.6.2, lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: 10/d0ea2dd0097e6201be083865d50c3fb54fbfbdb247d9cc5950e086c991f448b7ab0cdab0d57eacccb43473d3f2acd21e134db39f22dac2d6c9ba6bf26978e3d6
-  languageName: node
-  linkType: hard
-
-"lodash.mergewith@npm:^4.6.1":
-  version: 4.6.2
-  resolution: "lodash.mergewith@npm:4.6.2"
-  checksum: 10/aea75a4492541a4902ac7e551dc6c54b722da0c187f84385d02e8fc33a7ae3454b837822446e5f63fcd5ad1671534ea408740b776670ea4d9c7890b10105fce0
   languageName: node
   linkType: hard
 
@@ -12073,15 +12055,6 @@ __metadata:
     arr-union: "npm:^3.1.0"
     extend-shallow: "npm:^3.0.2"
   checksum: 10/5cacd34372b909f07125829c2876707f4add64dcdf0dd8bd23d7ceac70eeb961c038a9707a998cc498bf8d478cc81f8d85b82584313926fe61a8fa294f79f3e4
-  languageName: node
-  linkType: hard
-
-"plugin-error@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "plugin-error@npm:2.0.1"
-  dependencies:
-    ansi-colors: "npm:^1.0.1"
-  checksum: 10/9a4f91461cd24cce401112098969991d7aa6b4c94f78e0381234280c07da779570a8b21ab143292b534ec0117c09705a67e5d756c1c303d4706fdd7f861bf5bc
   languageName: node
   linkType: hard
 
@@ -13867,13 +13840,6 @@ __metadata:
   dependencies:
     readable-stream: "npm:3"
   checksum: 10/72c246233d9a989bbebeb6b698ef0b7b9064cb1c47930f79b25d87b6c867e075432811f69b7b2ac8da00ca308191c507bdab913944be8019ac43b036ce88f6ba
-  languageName: node
-  linkType: hard
-
-"through@npm:^2.3.8":
-  version: 2.3.8
-  resolution: "through@npm:2.3.8"
-  checksum: 10/5da78346f70139a7d213b65a0106f3c398d6bc5301f9248b5275f420abc2c4b1e77c2abc72d218dedc28c41efb2e7c312cb76a7730d04f9c2d37d247da3f4198
   languageName: node
   linkType: hard
 
