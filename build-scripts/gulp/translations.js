@@ -1,8 +1,10 @@
+/* eslint-disable max-classes-per-file */
+
 import { deleteAsync } from "del";
 import { glob } from "glob";
 import gulp from "gulp";
-import merge from "gulp-merge-json";
 import rename from "gulp-rename";
+import merge from "lodash.merge";
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -48,6 +50,39 @@ class CustomJSON extends Transform {
         this.push(outFile);
       }
       callback(null);
+    } catch (err) {
+      callback(err);
+    }
+  }
+}
+
+// Transform stream to merge Vinyl JSON files (buffer mode only).
+class MergeJSON extends Transform {
+  _objects = [];
+
+  constructor(stem, startObj = {}, reviver = null) {
+    super({ objectMode: true, allowHalfOpen: false });
+    this._stem = stem;
+    this._startObj = structuredClone(startObj);
+    this._reviver = reviver;
+  }
+
+  async _transform(file, _, callback) {
+    try {
+      this._objects.push(JSON.parse(file.contents.toString(), this._reviver));
+      if (!this._outFile) this._outFile = file.clone({ contents: false });
+      callback(null);
+    } catch (err) {
+      callback(err);
+    }
+  }
+
+  async _flush(callback) {
+    try {
+      const mergedObj = merge(this._startObj, ...this._objects);
+      this._outFile.contents = Buffer.from(JSON.stringify(mergedObj));
+      this._outFile.stem = this._stem;
+      callback(null, this._outFile);
     } catch (err) {
       callback(err);
     }
@@ -131,12 +166,7 @@ const createMasterTranslation = () =>
   gulp
     .src([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])])
     .pipe(new CustomJSON(lokaliseTransform))
-    .pipe(
-      merge({
-        fileName: "en.json",
-        jsonSpace: undefined,
-      })
-    )
+    .pipe(new MergeJSON("en"))
     .pipe(gulp.dest(workDir));
 
 const FRAGMENTS = ["base"];
@@ -233,14 +263,9 @@ const createTranslations = async () => {
         }
       }
     }
-    const mergeStream = gulp.src(mergeFiles, { allowEmpty: true }).pipe(
-      merge({
-        fileName: `${locale}.json`,
-        startObj: enMaster,
-        jsonReviver: emptyReviver,
-        jsonSpace: undefined,
-      })
-    );
+    const mergeStream = gulp
+      .src(mergeFiles, { allowEmpty: true })
+      .pipe(new MergeJSON(locale, enMaster, emptyReviver));
     mergesFinished.push(finished(mergeStream));
     mergeStream.pipe(hashStream, { end: false });
   }
