@@ -83,7 +83,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
         >`,
         newsletter: html`<span class="keep-together"
           ><a
-            href=${documentationUrl(hass, `/newsletter`)}
+            href="https://newsletter.openhomefoundation.org/#/portal/signup"
             target="_blank"
             rel="noreferrer"
             >Newsletter</a
