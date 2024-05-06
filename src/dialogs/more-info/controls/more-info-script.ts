@@ -150,7 +150,6 @@ class MoreInfoScript extends LitElement {
     if (newState && (!oldState || oldState.entity_id !== newState.entity_id)) {
       const fields =
         this.hass.services.script[computeObjectId(newState.entity_id)]?.fields;
-  
       const defaultValues = {};
       Object.keys(fields).forEach((field) => {
         if (fields[field].default) {
