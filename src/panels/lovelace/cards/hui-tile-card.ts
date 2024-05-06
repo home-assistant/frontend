@@ -1,5 +1,3 @@
-import { Ripple } from "@material/mwc-ripple";
-import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -10,13 +8,7 @@ import {
   html,
   nothing,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  queryAsync,
-  state,
-} from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -29,6 +21,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
+import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
@@ -313,36 +306,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return this._renderStateContent(stateObj, "state");
   }
 
-  @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
-
-  @state() private _shouldRenderRipple = false;
-
-  private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
-    this._shouldRenderRipple = true;
-    return this._ripple;
-  });
-
-  @eventOptions({ passive: true })
-  private handleRippleActivate(evt?: Event) {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.startPress(evt);
-  }
-
-  private handleRippleDeactivate() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.endPress();
-  }
-
-  private handleRippleMouseEnter() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.startHover();
-  }
-
-  private handleRippleMouseLeave() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.endHover();
-  }
-
   get hasCardAction() {
     return (
       !this._config?.tap_action ||
@@ -420,17 +383,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           role=${ifDefined(this.hasCardAction ? "button" : undefined)}
           tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
-          @mousedown=${this.handleRippleActivate}
-          @mouseup=${this.handleRippleDeactivate}
-          @mouseenter=${this.handleRippleMouseEnter}
-          @mouseleave=${this.handleRippleMouseLeave}
-          @touchstart=${this.handleRippleActivate}
-          @touchend=${this.handleRippleDeactivate}
-          @touchcancel=${this.handleRippleDeactivate}
         >
-          ${this._shouldRenderRipple
-            ? html`<mwc-ripple></mwc-ripple>`
-            : nothing}
+          <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
         </div>
         <div class="content ${classMap(contentClasses)}">
           <div
@@ -494,7 +448,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         box-shadow: var(--shadow-default), var(--shadow-focus);
       }
       ha-card {
-        --mdc-ripple-color: var(--tile-color);
+        --md-ripple-hover-color: var(--tile-color);
+        --md-ripple-pressed-color: var(--tile-color);
         height: 100%;
         transition:
           box-shadow 180ms ease-in-out,
