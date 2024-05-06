@@ -30,6 +30,10 @@ import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
+import {
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
@@ -99,6 +103,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: AlarmPanelCardConfig;
 
+  @state() private _entry?: ExtEntityRegistryEntry | null;
+
   @query("#alarmCode") private _input?: HaTextField;
 
   public async getCardSize(): Promise<number> {
@@ -143,6 +149,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+    this._loadEntityRegistryEntry();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -165,6 +172,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private async _loadEntityRegistryEntry() {
+    if (!this._config!.entity) {
+      return;
+    }
+    try {
+      this._entry = await getExtendedEntityRegistryEntry(
+        this.hass!,
+        this._config!.entity
+      );
+    } catch (e) {
+      this._entry = null;
+    }
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -183,6 +204,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     const stateLabel = this._stateDisplay(stateObj.state);
+
+    const defaultCode = this._entry?.options?.alarm_control_panel?.default_code;
 
     return html`
       <ha-card>
@@ -222,7 +245,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             `
           )}
         </div>
-        ${!stateObj.attributes.code_format
+        ${!stateObj.attributes.code_format || defaultCode!
           ? nothing
           : html`
               <ha-textfield
@@ -234,7 +257,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                   : "text"}
               ></ha-textfield>
             `}
-        ${stateObj.attributes.code_format !== FORMAT_NUMBER
+        ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode!
           ? nothing
           : html`
               <div id="keypad">
