@@ -984,6 +984,7 @@ export class HaDataTable extends LitElement {
           padding-top: 12px;
           padding-left: 12px;
           padding-inline-start: 12px;
+          padding-inline-end: initial;
           width: 100%;
           font-weight: 500;
           display: flex;
