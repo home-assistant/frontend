@@ -149,7 +149,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-    this._loadEntityRegistryEntry();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -184,6 +183,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     } catch (e) {
       this._entry = null;
     }
+  }
+
+  public async firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    await this._loadEntityRegistryEntry();
   }
 
   protected render() {
