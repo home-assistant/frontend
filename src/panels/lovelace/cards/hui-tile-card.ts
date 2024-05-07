@@ -448,8 +448,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         box-shadow: var(--shadow-default), var(--shadow-focus);
       }
       ha-card {
-        --md-ripple-hover-color: var(--tile-color);
-        --md-ripple-pressed-color: var(--tile-color);
+        --ha-ripple-color: var(--tile-color);
+        --ha-ripple-hover-opacity: 0.05;
+        --ha-ripple-pressed-opacity: 0.1;
         height: 100%;
         transition:
           box-shadow 180ms ease-in-out,

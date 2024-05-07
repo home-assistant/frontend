@@ -2742,7 +2742,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-ripple@npm:0.27.0, @material/mwc-ripple@npm:^0.27.0":
+"@material/mwc-ripple@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-ripple@npm:0.27.0"
   dependencies:
@@ -8983,7 +8983,6 @@ __metadata:
     "@material/mwc-list": "npm:0.27.0"
     "@material/mwc-menu": "npm:0.27.0"
     "@material/mwc-radio": "npm:0.27.0"
-    "@material/mwc-ripple": "npm:0.27.0"
     "@material/mwc-select": "npm:0.27.0"
     "@material/mwc-snackbar": "npm:0.27.0"
     "@material/mwc-switch": "npm:0.27.0"
