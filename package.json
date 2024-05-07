@@ -235,7 +235,7 @@
     "sinon": "17.0.1",
     "source-map-url": "0.4.1",
     "systemjs": "6.15.1",
-    "tar": "7.0.1",
+    "tar": "7.1.0",
     "terser-webpack-plugin": "5.3.10",
     "transform-async-modules-webpack-plugin": "1.1.1",
     "ts-lit-plugin": "2.0.2",
