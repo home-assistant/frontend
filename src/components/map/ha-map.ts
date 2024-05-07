@@ -22,7 +22,6 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -536,7 +535,6 @@ export class HaMap extends ReactiveElement {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(() => {
         this.leafletMap?.invalidateSize({ debounceMoveend: true });
       });

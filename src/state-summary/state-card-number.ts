@@ -6,7 +6,6 @@ import "../components/ha-slider";
 import "../components/ha-textfield";
 import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
-import { loadPolyfillIfNeeded } from "../resources/resize-observer.polyfill";
 import { isUnavailableState } from "../data/entity";
 import { debounce } from "../common/util/debounce";
 
@@ -109,7 +108,6 @@ class StateCardNumber extends LitElement {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );
