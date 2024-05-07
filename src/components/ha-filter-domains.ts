@@ -163,14 +163,14 @@ export class HaFilterDomains extends LitElement {
           align-items: center;
         }
         .header ha-icon-button {
-          margin-inline-start: auto;
+          margin-inline-start: initial;
           margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;
           margin-left: 8px;
           margin-inline-start: 8px;
-          margin-inline-end: 0;
+          margin-inline-end: initial;
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
