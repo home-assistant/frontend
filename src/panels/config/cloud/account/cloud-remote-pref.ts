@@ -541,6 +541,7 @@ export class CloudRemotePref extends LitElement {
       ha-formfield {
         margin-left: -12px;
         margin-inline-start: -12px;
+        margin-inline-end: initial;
         --ha-formfield-align-items: start;
       }
       .strict-connection-container {
