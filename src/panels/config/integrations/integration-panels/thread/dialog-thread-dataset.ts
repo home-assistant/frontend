@@ -72,7 +72,7 @@ class DialogThreadDataset extends LitElement implements HassDialog {
       type: "thread/store_in_platform_keychain",
       payload: {
         mac_extended_address:
-          this._params!.network.routers![0]!.extended_pan_id,
+          this._params!.network.routers![0]!.extended_address,
         border_agent_id: this._params!.network.routers![0]!.border_agent_id,
         active_operational_dataset: this._params!.otbrInfo!.active_dataset_tlvs,
       },
