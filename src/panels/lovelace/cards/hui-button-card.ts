@@ -303,6 +303,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           color: var(--state-color);
           --mdc-icon-size: 100%;
           transition: transform 180ms ease-in-out;
+          pointer-events: none;
         }
 
         ha-state-icon + span {
