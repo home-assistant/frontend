@@ -15,6 +15,7 @@ import "../../../../components/ha-form/ha-form";
 import {
   DEFAULT_ASPECT_RATIO,
   DEVICE_CLASSES,
+  deviceClassesByDomain,
 } from "../../cards/hui-area-card";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -204,11 +205,13 @@ export class HuiAreaCardEditor
     );
     const binarySelectOptions = this._buildBinaryOptions(
       possibleBinaryClasses,
-      this._config.alert_classes || DEVICE_CLASSES.binary_sensor
+      this._config.alert_classes ||
+        deviceClassesByDomain(DEVICE_CLASSES, "binary_sensor")
     );
     const sensorSelectOptions = this._buildSensorOptions(
       possibleSensorClasses,
-      this._config.sensor_classes || DEVICE_CLASSES.sensor
+      this._config.sensor_classes ||
+        deviceClassesByDomain(DEVICE_CLASSES, "sensor")
     );
 
     const schema = this._schema(
@@ -219,8 +222,8 @@ export class HuiAreaCardEditor
 
     const data = {
       camera_view: "auto",
-      alert_classes: DEVICE_CLASSES.binary_sensor,
-      sensor_classes: DEVICE_CLASSES.sensor,
+      alert_classes: deviceClassesByDomain(DEVICE_CLASSES, "binary_sensor"),
+      sensor_classes: deviceClassesByDomain(DEVICE_CLASSES, "sensor"),
       ...this._config,
     };
 
