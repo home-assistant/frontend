@@ -1,11 +1,3 @@
-/**
- * @todo
- * - Verify what happens if incomplete data set is provided e.g.
- *   - grid but no generation,
- *   - no consumers
- *   - no grid
- *   - etc
- */
 import { mdiSolarPower } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
