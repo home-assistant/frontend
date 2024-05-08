@@ -20,7 +20,7 @@ const stateBadgeElementConfigStruct = object({
 });
 
 const SCHEMA = [
-  { name: "entity", selector: { entity: {} } },
+  { name: "entity", required: true, selector: { entity: {} } },
   { name: "title", selector: { text: {} } },
   {
     name: "tap_action",
