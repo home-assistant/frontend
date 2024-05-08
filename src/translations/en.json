@@ -6939,6 +6939,7 @@
         "cards": {
           "energy_usage_graph_title": "Energy usage",
           "energy_solar_graph_title": "Solar production",
+          "energy_elec_flow_title": "Energy flow",
           "energy_gas_graph_title": "Gas consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",

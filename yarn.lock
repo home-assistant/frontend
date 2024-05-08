@@ -1559,6 +1559,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@davethompson/elec-sankey@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@davethompson/elec-sankey@npm:1.0.0"
+  dependencies:
+    "@mdi/js": "npm:^7.4.47"
+    lit: "npm:^2.8.0"
+  checksum: 10/bbba605a0ea9356b8cd9d35697de15cb9cd333b1d8e2408d8882b0484fc614d0a152bafd68810d56e59f80fee73553bcb8f74a3e9c010afa5c6baf0f575db380
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -3213,7 +3223,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:7.4.47":
+"@mdi/js@npm:7.4.47, @mdi/js@npm:^7.4.47":
   version: 7.4.47
   resolution: "@mdi/js@npm:7.4.47"
   checksum: 10/c1a8fc82f23030bccc0cf324b13b73a0034d06140e79f8bc7b0e4e59275624c470e5ca6524d6141ad8c4fe3ad0f314c7af99afb3e38df163eb50d3b13b9eab17
@@ -8929,6 +8939,7 @@ __metadata:
     "@codemirror/search": "npm:6.5.6"
     "@codemirror/state": "npm:6.4.1"
     "@codemirror/view": "npm:6.26.3"
+    "@davethompson/elec-sankey": "npm:1.0.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.12.3"
     "@formatjs/intl-displaynames": "npm:6.6.6"

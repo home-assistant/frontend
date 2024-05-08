@@ -80,6 +80,11 @@ export class EnergyViewStrategy extends ReactiveElement {
         type: "energy-solar-graph",
         collection_key: "energy_dashboard",
       });
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_elec_flow_title"),
+        type: "energy-elec-flow",
+        collection_key: "energy_dashboard",
+      });
     }
 
     // Only include if we have a gas source.

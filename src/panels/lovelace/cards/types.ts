@@ -135,6 +135,11 @@ export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   collection_key?: string;
 }
+export interface EnergyElecFlowCardConfig extends LovelaceCardConfig {
+  type: "energy-elec-flow";
+  title?: string;
+  collection_key?: string;
+}
 
 export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
   type: "energy-solar-graph";
@@ -235,6 +240,14 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
+}
+
+export interface PowerFlowCardConfig extends LovelaceCardConfig {
+  name?: string;
+  power_from_grid_entity?: string;
+  power_to_grid_entity?: string;
+  generation_entities?: string[];
+  consumer_entities?: string[];
 }
 
 export interface ConfigEntity extends EntityConfig {
