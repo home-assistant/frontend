@@ -194,9 +194,10 @@ const tryDescribeAction = <T extends ActionType>(
       (config.service && isTemplate(config.service))
     ) {
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_template`,
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_template`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_template_no_targets`,
         {
-          hasTargets: targets.length ? "true" : "false",
           targets: formatListWithAnds(hass.locale, targets),
         }
       );
@@ -210,23 +211,25 @@ const tryDescribeAction = <T extends ActionType>(
 
       if (config.metadata) {
         return hass.localize(
-          `${actionTranslationBaseKey}.service.description.service_name`,
+          targets.length
+            ? `${actionTranslationBaseKey}.service.description.service_name`
+            : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
             name: service || config.service,
-            hasTargets: targets.length ? "true" : "false",
             targets: formatListWithAnds(hass.locale, targets),
           }
         );
       }
 
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name`,
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_name`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
             : config.service,
-          hasTargets: targets.length ? "true" : "false",
           targets: formatListWithAnds(hass.locale, targets),
         }
       );
