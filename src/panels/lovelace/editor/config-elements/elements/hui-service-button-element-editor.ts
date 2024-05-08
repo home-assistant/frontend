@@ -18,7 +18,7 @@ const serviceButtonElementConfigStruct = object({
 });
 
 const SCHEMA = [
-  { name: "title", selector: { text: {} } },
+  { name: "title", required: true, selector: { text: {} } },
   /* {
     name: "service",
     selector: {
