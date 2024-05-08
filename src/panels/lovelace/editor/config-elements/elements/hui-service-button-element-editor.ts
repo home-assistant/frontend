@@ -25,7 +25,7 @@ const SCHEMA = [
       ui_action: { actions: ["call-service"] as UiAction[] },
     },
   }, */
-  { name: "service", selector: { text: {} } },
+  { name: "service", required: true, selector: { text: {} } },
   { name: "service_data", selector: { object: {} } },
   { name: "style", selector: { object: {} } },
 ] as const;
