@@ -30,7 +30,7 @@ const stateIconElementConfigStruct = object({
 });
 
 const SCHEMA = [
-  { name: "entity", selector: { entity: {} } },
+  { name: "entity", required: true, selector: { entity: {} } },
   { name: "icon", selector: { icon: {} } },
   { name: "title", selector: { text: {} } },
   { name: "state_color", default: true, selector: { boolean: {} } },
