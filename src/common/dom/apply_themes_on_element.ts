@@ -61,8 +61,11 @@ export const applyThemesOnElement = (
     const accentColor = themeSettings?.accentColor;
 
     if (darkMode && primaryColor) {
-      themeRules["app-theme-color"] = hexBlend(primaryColor, "#121212", 8);
-      themeRules["app-header-background-color"] = themeRules["app-theme-color"];
+      themeRules["app-header-background-color"] = hexBlend(
+        primaryColor,
+        "#121212",
+        8
+      );
     }
 
     if (primaryColor) {
