@@ -89,7 +89,8 @@ const tryDescribeAction = <T extends ActionType>(
     const config = action as ActionTypes["service"];
 
     const targets: string[] = [];
-    if (config.target) {
+    const targetOrData = config.target || config.data;
+    if (targetOrData) {
       for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
@@ -97,12 +98,10 @@ const tryDescribeAction = <T extends ActionType>(
         floor_id: "floors",
         label_id: "labels",
       })) {
-        if (!(key in config.target)) {
+        if (!(key in targetOrData)) {
           continue;
         }
-        const keyConf: string[] = Array.isArray(config.target[key])
-          ? config.target[key]
-          : [config.target[key]];
+        const keyConf: string[] = ensureArray(targetOrData[key]) || [];
 
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
@@ -195,8 +194,12 @@ const tryDescribeAction = <T extends ActionType>(
       (config.service && isTemplate(config.service))
     ) {
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_template`,
-        { targets: formatListWithAnds(hass.locale, targets) }
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_template`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_template_no_targets`,
+        {
+          targets: formatListWithAnds(hass.locale, targets),
+        }
       );
     }
 
@@ -208,7 +211,9 @@ const tryDescribeAction = <T extends ActionType>(
 
       if (config.metadata) {
         return hass.localize(
-          `${actionTranslationBaseKey}.service.description.service_name`,
+          targets.length
+            ? `${actionTranslationBaseKey}.service.description.service_name`
+            : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
             name: service || config.service,
@@ -218,7 +223,9 @@ const tryDescribeAction = <T extends ActionType>(
       }
 
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name`,
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_name`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
