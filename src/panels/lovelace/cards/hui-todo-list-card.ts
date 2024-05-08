@@ -469,7 +469,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const item = this._getItem(ev.currentTarget.itemId);
     showTodoItemEditDialog(this, {
-      entity: this._config!.entity!,
+      entity: this._entityId!,
       item,
     });
   }

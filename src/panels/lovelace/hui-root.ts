@@ -63,7 +63,7 @@ import { documentationUrl } from "../../util/documentation-url";
 import { swapView } from "./editor/config-util";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
-import { showDashboardStrategyEditorDialog } from "./strategies/device-registry-detail/show-dialog-dashboard-strategy-editor";
+import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
@@ -75,6 +75,7 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import { LocalizeKeys } from "../../common/translations/localize";
+import { getLovelaceStrategy } from "./strategies/get-strategy";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -639,7 +640,9 @@ class HUIRoot extends LitElement {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
-      hint: this.hass.localize("ui.tips.key_e_hint"),
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.tips.key_e_hint")
+        : undefined,
     });
   }
 
@@ -709,7 +712,7 @@ class HUIRoot extends LitElement {
     this._enableEditMode();
   }
 
-  private _enableEditMode(): void {
+  private async _enableEditMode() {
     if (this._yamlMode) {
       showAlertDialog(this, {
         text: this.hass!.localize("ui.panel.lovelace.editor.yaml_unsupported"),
@@ -720,6 +723,18 @@ class HUIRoot extends LitElement {
       isStrategyDashboard(this.lovelace!.rawConfig) &&
       !isLegacyStrategyConfig(this.lovelace!.rawConfig.strategy)
     ) {
+      const strategyClass = await getLovelaceStrategy(
+        "dashboard",
+        this.lovelace!.rawConfig.strategy.type
+      ).catch((_err) => undefined);
+      if (strategyClass?.noEditor) {
+        showSaveDialog(this, {
+          lovelace: this.lovelace!,
+          mode: "storage",
+          narrow: this.narrow!,
+        });
+        return;
+      }
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,
@@ -871,9 +886,9 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      this.style.setProperty("--lovelace-background", configBackground);
+      root.style.setProperty("--lovelace-background", configBackground);
     } else {
-      this.style.removeProperty("--lovelace-background");
+      root.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
@@ -895,6 +910,8 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: env(safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
@@ -996,8 +1013,6 @@ class HUIRoot extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)

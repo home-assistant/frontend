@@ -23,6 +23,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiWrench,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -36,6 +37,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
@@ -267,6 +269,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     @error=${this._onImageError}
                   />
                 </div>
+                ${this._manifest?.version != null
+                  ? html`<div class="version">${this._manifest.version}</div>`
+                  : nothing}
                 ${this._manifest?.is_built_in === false
                   ? html`<ha-alert alert-type="warning"
                       ><ha-svg-icon
@@ -549,10 +554,28 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
       if (item.reason) {
-        this.hass.loadBackendTranslation("config", item.domain);
-        stateTextExtra = html`${this.hass.localize(
-          `component.${item.domain}.config.error.${item.reason}`
-        ) || item.reason}`;
+        if (item.error_reason_translation_key) {
+          const lokalisePromExc = this.hass
+            .loadBackendTranslation("exceptions", item.domain)
+            .then(
+              (localize) =>
+                localize(
+                  `component.${item.domain}.exceptions.${item.error_reason_translation_key}.message`,
+                  item.error_reason_translation_placeholders ?? undefined
+                ) || item.reason
+            );
+          stateTextExtra = html`${until(lokalisePromExc)}`;
+        } else {
+          const lokalisePromError = this.hass
+            .loadBackendTranslation("config", item.domain)
+            .then(
+              (localize) =>
+                localize(
+                  `component.${item.domain}.config.error.${item.reason}`
+                ) || item.reason
+            );
+          stateTextExtra = html`${until(lokalisePromError, item.reason)}`;
+        }
       } else {
         stateTextExtra = html`
           <br />
@@ -806,6 +829,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </ha-list-item>
             </a>`
           : ""}
+        ${!item.disabled_by &&
+        item.supports_reconfigure &&
+        item.source !== "system"
+          ? html`<ha-list-item
+              @request-selected=${this._handleReconfigure}
+              graphic="icon"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.reconfigure"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiWrench}></ha-svg-icon>
+            </ha-list-item>`
+          : ""}
 
         <ha-list-item
           @request-selected=${this._handleSystemOptions}
@@ -1040,6 +1076,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _handleReconfigure(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._reconfigureIntegration(
+      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
+    );
+  }
+
   private _handleDelete(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -1259,6 +1304,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     });
   }
 
+  private async _reconfigureIntegration(configEntry: ConfigEntry) {
+    showConfigFlowDialog(this, {
+      startFlowHandler: configEntry.domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
+      entryId: configEntry.entry_id,
+    });
+  }
+
   private async _editEntryName(configEntry: ConfigEntry) {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
@@ -1286,6 +1340,26 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _addIntegration() {
+    if (this._manifest?.single_config_entry) {
+      const entries = this._domainConfigEntries(
+        this.domain,
+        this._extraConfigEntries || this.configEntries
+      );
+      if (entries.length > 0) {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.single_config_entry",
+            {
+              integration_name: this._manifest.name,
+            }
+          ),
+        });
+        return;
+      }
+    }
     showAddIntegrationDialog(this, {
       domain: this.domain,
     });
@@ -1336,6 +1410,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .logo-container {
           display: flex;
           justify-content: center;
+        }
+        .version {
+          padding-top: 8px;
+          display: flex;
+          justify-content: center;
+          color: var(--secondary-text-color);
         }
         .overview .card-actions {
           padding: 0;

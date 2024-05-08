@@ -70,6 +70,7 @@ export const DOMAIN_ATTRIBUTES_UNITS = {
     brightness: "%",
   },
   sun: {
+    azimuth: "°",
     elevation: "°",
   },
   vacuum: {

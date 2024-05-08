@@ -4,7 +4,7 @@ import {
   mdiDotsVertical,
   mdiMagnify,
   mdiPower,
-  mdiUpdate,
+  mdiRefresh,
 } from "@mdi/js";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -83,7 +83,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
         >`,
         newsletter: html`<span class="keep-together"
           ><a
-            href=${documentationUrl(hass, `/newsletter`)}
+            href="https://newsletter.openhomefoundation.org/"
             target="_blank"
             rel="noreferrer"
             >Newsletter</a
@@ -93,9 +93,18 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
       weight: 2,
       narrow: true,
     },
-    { content: hass.localize("ui.tips.key_c_hint"), weight: 1, narrow: false },
-    { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false },
   ];
+
+  if (hass?.enableShortcuts) {
+    tips.push(
+      {
+        content: hass.localize("ui.tips.key_c_hint"),
+        weight: 1,
+        narrow: false,
+      },
+      { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false }
+    );
+  }
 
   if (narrow) {
     tips = tips.filter((tip) => tip.narrow);
@@ -197,7 +206,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
           <ha-list-item graphic="icon">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item graphic="icon">
@@ -310,7 +319,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: true,
-      hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.dialogs.quick-bar.key_c_hint")
+        : undefined,
     });
   }
 

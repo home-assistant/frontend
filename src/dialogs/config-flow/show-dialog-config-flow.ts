@@ -23,7 +23,7 @@ export const showConfigFlowDialog = (
     loadDevicesAndAreas: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createConfigFlow(hass, handler),
+        createConfigFlow(hass, handler, dialogParams.entryId),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
@@ -52,7 +52,7 @@ export const showConfigFlowDialog = (
         ? html`
             <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
           `
-        : "";
+        : step.reason;
     },
 
     renderShowFormStepHeader(hass, step) {

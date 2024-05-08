@@ -35,6 +35,7 @@ import { ButtonsHeaderFooterConfig } from "../header-footer/types";
 const HIDE_DOMAIN = new Set([
   "automation",
   "configurator",
+  "conversation",
   "device_tracker",
   "geo_location",
   "persistent_notification",
@@ -112,9 +113,9 @@ export const computeSection = (
       ({
         type: "tile",
         entity,
-        show_entity_picture: ["person", "camera", "image"].includes(
-          computeDomain(entity)
-        ),
+        show_entity_picture:
+          ["person", "camera", "image"].includes(computeDomain(entity)) ||
+          undefined,
       }) as TileCardConfig
   ),
   ...sectionOptions,

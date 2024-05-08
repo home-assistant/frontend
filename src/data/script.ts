@@ -26,6 +26,7 @@ import {
   Trigger,
 } from "./automation";
 import { BlueprintInput } from "./blueprint";
+import { computeObjectId } from "../common/entity/compute_object_id";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -41,6 +42,8 @@ const targetStruct = object({
   entity_id: optional(union([string(), array(string())])),
   device_id: optional(union([string(), array(string())])),
   area_id: optional(union([string(), array(string())])),
+  floor_id: optional(union([string(), array(string())])),
+  label_id: optional(union([string(), array(string())])),
 });
 
 export const serviceActionStruct: Describe<ServiceAction> = assign(
@@ -403,4 +406,12 @@ export const getActionType = (action: Action): ActionType => {
     return "service";
   }
   return "unknown";
+};
+
+export const hasScriptFields = (
+  hass: HomeAssistant,
+  entityId: string
+): boolean => {
+  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  return fields !== undefined && Object.keys(fields).length > 0;
 };

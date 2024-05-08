@@ -26,6 +26,14 @@ export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
 
+export interface LockCommandsCardFeatureConfig {
+  type: "lock-commands";
+}
+
+export interface LockOpenDoorCardFeatureConfig {
+  type: "lock-open-door";
+}
+
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -47,6 +55,12 @@ export interface ClimateFanModesCardFeatureConfig {
   fan_modes?: string[];
 }
 
+export interface ClimateSwingModesCardFeatureConfig {
+  type: "climate-swing-modes";
+  style?: "dropdown" | "icons";
+  swing_modes?: string[];
+}
+
 export interface ClimateHvacModesCardFeatureConfig {
   type: "climate-hvac-modes";
   style?: "dropdown" | "icons";
@@ -61,6 +75,7 @@ export interface ClimatePresetModesCardFeatureConfig {
 
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
+  options?: string[];
 }
 
 export interface NumericInputCardFeatureConfig {
@@ -123,6 +138,7 @@ export interface UpdateActionsCardFeatureConfig {
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
+  | ClimateSwingModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
@@ -136,6 +152,8 @@ export type LovelaceCardFeatureConfig =
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
+  | LockCommandsCardFeatureConfig
+  | LockOpenDoorCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig

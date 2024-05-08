@@ -3,7 +3,7 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import { addHours } from "date-fns/esm";
+import { addHours } from "date-fns";
 import {
   HassEntities,
   HassEntity,
@@ -128,9 +128,11 @@ class HaPanelDevState extends LitElement {
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
-            <ha-tip .hass=${this.hass}
-              >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
-            >
+            ${this.hass.enableShortcuts
+              ? html`<ha-tip .hass=${this.hass}
+                  >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
+                >`
+              : nothing}
             <ha-textfield
               .label=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.states.state"

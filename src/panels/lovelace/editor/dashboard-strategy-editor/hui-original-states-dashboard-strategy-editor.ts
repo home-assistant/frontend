@@ -7,7 +7,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { OriginalStatesDashboardStrategyConfig } from "../../strategies/original-states-dashboard-strategy";
+import { OriginalStatesDashboardStrategyConfig } from "../../strategies/original-states/original-states-dashboard-strategy";
 import { LovelaceStrategyEditor } from "../../strategies/types";
 
 const SCHEMA = [
@@ -38,7 +38,7 @@ const SCHEMA = [
 ] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-original-states-dashboard-strategy-editor")
-export class HuiOriginalStatesDashboarStrategyEditor
+export class HuiOriginalStatesDashboardStrategyEditor
   extends LitElement
   implements LovelaceStrategyEditor
 {
@@ -88,6 +88,6 @@ export class HuiOriginalStatesDashboarStrategyEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-original-states-dashboard-strategy-editor": HuiOriginalStatesDashboarStrategyEditor;
+    "hui-original-states-dashboard-strategy-editor": HuiOriginalStatesDashboardStrategyEditor;
   }
 }
