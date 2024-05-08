@@ -21,9 +21,6 @@ import type { PowerFlowCardConfig } from "./types";
 import "../../../components/chart/ha-elec-sankey";
 import { hasConfigChanged } from "../common/has-changed";
 
-export const DEFAULT_MIN = 0;
-export const DEFAULT_MAX = 100;
-
 @customElement("hui-power-flow-card")
 class HuiPowerFlowCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
