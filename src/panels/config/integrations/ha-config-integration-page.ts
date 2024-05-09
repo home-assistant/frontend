@@ -47,6 +47,9 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
+import "../../../components/ha-list-new";
+import "../../../components/ha-list-item-new";
+import "../../../components/ha-button-menu-new";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -419,17 +422,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       "ui.panel.config.integrations.discovered"
                     )}
                   </h1>
-                  <mwc-list>
+                  <ha-list-new>
                     ${discoveryFlows.map(
                       (flow) =>
-                        html`<ha-list-item
-                          hasMeta
-                          class="discovered"
+                        html`<ha-list-item-new
                           noninteractive
+                          type="text"
+                          class="discovered"
                         >
                           ${flow.localized_title}
                           <ha-button
-                            slot="meta"
+                            slot="end"
                             unelevated
                             .flow=${flow}
                             @click=${this._continueFlow}
@@ -437,9 +440,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.integrations.configure"
                             )}
                           ></ha-button>
-                        </ha-list-item>`
+                        </ha-list-item-new>`
                     )}
-                  </mwc-list>
+                  </ha-list-new>
                 </ha-card>`
               : ""}
             ${attentionFlows.length || attentionEntries.length
@@ -449,19 +452,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `ui.panel.config.integrations.integration_page.attention_entries`
                     )}
                   </h1>
-                  <mwc-list>
+                  <ha-list-new>
                     ${attentionFlows.map((flow) => {
                       const attention = ATTENTION_SOURCES.includes(
                         flow.context.source
                       );
-                      return html`<ha-list-item
-                        hasMeta
-                        class="config_entry ${attention ? "attention" : ""}"
-                        twoLine
+                      return html`<ha-list-item-new
                         noninteractive
+                        type="text"
+                        class="config_entry ${attention ? "attention" : ""}"
                       >
                         ${flow.localized_title}
-                        <span slot="secondary"
+                        <span slot="supporting-text"
                           >${this.hass.localize(
                             `ui.panel.config.integrations.${
                               attention ? "attention" : "discovered"
@@ -469,7 +471,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           )}</span
                         >
                         <ha-button
-                          slot="meta"
+                          slot="end"
                           unelevated
                           .flow=${flow}
                           @click=${this._continueFlow}
@@ -479,12 +481,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             }`
                           )}
                         ></ha-button>
-                      </ha-list-item>`;
+                      </ha-list-item-new>`;
                     })}
                     ${attentionEntries.map((item) =>
                       this._renderConfigEntry(item)
                     )}
-                  </mwc-list>
+                  </ha-list-new>
                 </ha-card>`
               : ""}
 
@@ -505,9 +507,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </div>`
                 : nothing}
-              <mwc-list>
+              <ha-list-new>
                 ${normalEntries.map((item) => this._renderConfigEntry(item))}
-              </mwc-list>
+              </ha-list-new>
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
@@ -671,33 +673,36 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const configPanel = this._configPanel(item.domain, this.hass.panels);
 
-    return html`<ha-list-item
-      hasMeta
-      class="config_entry ${classMap({
+    return html`<ha-list-item-new
+      noninteractive
+      type="button"
+      class=${classMap({
+        config_entry: true,
         "state-not-loaded": item!.state === "not_loaded",
         "state-failed-unload": item!.state === "failed_unload",
         "state-setup": item!.state === "setup_in_progress",
         "state-error": ERROR_STATES.includes(item!.state),
-      })}"
+      })}
       data-entry-id=${item.entry_id}
       .disabled=${item.disabled_by}
       .configEntry=${item}
-      twoline
-      noninteractive
     >
-      ${stateText
-        ? html`
-            <div class="message" slot="meta">
-              <ha-svg-icon .path=${icon}></ha-svg-icon>
-              <div>${this.hass.localize(...stateText)}</div>
-              ${stateTextExtra
-                ? html`<simple-tooltip>${stateTextExtra}</simple-tooltip>`
-                : ""}
-            </div>
-          `
-        : ""}
       ${item.title || domainToName(this.hass.localize, item.domain)}
-      <span slot="secondary">${devicesLine}</span>
+      <div slot="supporting-text">
+        <div>${devicesLine}</div>
+        ${stateText
+          ? html`
+              <div class="message">
+                <ha-svg-icon .path=${icon}></ha-svg-icon>
+                <div>
+                  ${this.hass.localize(...stateText)}${stateTextExtra
+                    ? html`: ${stateTextExtra}`
+                    : ""}
+                </div>
+              </div>
+            `
+          : ""}
+      </div>
       ${item.disabled_by === "user"
         ? html`<mwc-button unelevated slot="meta" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
@@ -722,7 +727,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </mwc-button>
               `
             : ""}
-      <ha-button-menu slot="meta">
+      <ha-button-menu-new positioning="popover" slot="end">
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
@@ -893,8 +898,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ></ha-svg-icon>
             </ha-list-item>`
           : ""}
-      </ha-button-menu>
-    </ha-list-item>`;
+      </ha-button-menu-new>
+    </ha-list-item-new>`;
   }
 
   private async _highlightEntry() {
@@ -1431,30 +1436,30 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-alert:first-of-type {
           margin-top: 16px;
         }
-        ha-list-item.discovered {
+        ha-list-item-new.discovered {
           --mdc-list-item-meta-size: auto;
           --mdc-list-item-meta-display: flex;
           height: 72px;
         }
-        ha-list-item.config_entry {
+        ha-list-item-new.config_entry {
           overflow: visible;
           --mdc-list-item-meta-size: auto;
           --mdc-list-item-meta-display: flex;
         }
-        ha-button-menu ha-list-item {
+        ha-button-menu-new ha-list-item {
           --mdc-list-item-meta-size: 24px;
         }
-        ha-list-item.config_entry::after {
+        ha-list-item-new.config_entry::after {
           position: absolute;
-          top: 0;
+          top: 8px;
           right: 0;
-          bottom: 0;
+          bottom: 8px;
           left: 0;
           opacity: 0.12;
           pointer-events: none;
           content: "";
         }
-        ha-button-menu {
+        ha-button-menu-new {
           flex: 0;
         }
         a {
@@ -1512,6 +1517,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           -webkit-line-clamp: 7;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        ha-list-new {
+          margin-top: 8px;
+          margin-bottom: 8px;
         }
       `,
     ];
