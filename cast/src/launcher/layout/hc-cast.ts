@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+import { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected } from "@mdi/js";
 import { Auth, Connection } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
@@ -83,7 +83,7 @@ class HcCast extends LitElement {
               `
             : html`
                 <div class="section-header">PICK A VIEW</div>
-                <mwc-list .value=${this.castManager.status.lovelacePath || ""}>
+                <mwc-list @action=${this._handlePickView} activatable>
                   ${(
                     this.lovelaceViews ?? [
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
@@ -92,8 +92,10 @@ class HcCast extends LitElement {
                     (view, idx) =>
                       html`<ha-list-item
                         graphic="avatar"
-                        @click=${this._handlePickView}
-                        .value=${view.path || idx}
+                        .activated=${this.castManager.status?.lovelacePath ===
+                        (view.path ?? idx)}
+                        .selected=${this.castManager.status?.lovelacePath ===
+                        (view.path ?? idx)}
                       >
                         ${view.title || view.path}
                         ${view.icon
@@ -180,8 +182,8 @@ class HcCast extends LitElement {
     this.castManager.requestSession();
   }
 
-  private async _handlePickView(ev: Event) {
-    const path = (ev.currentTarget as any).getAttribute("data-path");
+  private async _handlePickView(ev: CustomEvent<ActionDetail>) {
+    const path = this.lovelaceViews![ev.detail.index].path ?? ev.detail.index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }
