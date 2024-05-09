@@ -93,7 +93,7 @@ class HcCast extends LitElement {
                       html`<ha-list-item
                         graphic="avatar"
                         @click=${this._handlePickView}
-                        data-path=${view.path || idx}
+                        .value=${view.path || idx}
                       >
                         ${view.title || view.path}
                         ${view.icon
