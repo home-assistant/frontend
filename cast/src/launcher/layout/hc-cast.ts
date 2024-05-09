@@ -83,7 +83,7 @@ class HcCast extends LitElement {
               `
             : html`
                 <div class="section-header">PICK A VIEW</div>
-                <mwc-list>
+                <mwc-list .value=${this.castManager.status.lovelacePath || ""}>
                   ${(
                     this.lovelaceViews ?? [
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
