@@ -76,12 +76,10 @@ export class HuiEnergyElecFlowCard
         >
           <ha-elec-sankey
             .hass=${this.hass}
-            .gridInRoute=${this._gridInRoute ? this._gridInRoute : undefined}
-            .gridOutRoute=${this._gridOutRoute ? this._gridOutRoute : undefined}
-            .generationInRoutes=${this._generationInRoutes
-              ? this._generationInRoutes
-              : {}}
-            .consumerRoutes=${this._consumerRoutes ? this._consumerRoutes : {}}
+            .gridInRoute=${this._gridInRoute || undefined}
+            .gridOutRoute=${this._gridOutRoute || undefined}
+            .generationInRoutes=${this._generationInRoutes || {}}
+            .consumerRoutes=${this._consumerRoutes || {}}
           ></ha-elec-sankey>
         </div>
       </ha-card>
