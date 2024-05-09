@@ -162,7 +162,7 @@ export class DemoHaBarButton extends LitElement {
       }
       .custom-group {
         --control-button-group-thickness: 100px;
-        --control-button-group-border-radius: 18px;
+        --control-button-group-border-radius: 36px;
         --control-button-group-spacing: 20px;
       }
       .custom-group ha-control-button {

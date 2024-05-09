@@ -59,6 +59,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: "backyard",
@@ -77,6 +78,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: null,
@@ -95,30 +97,37 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
 ];
 
 const AREAS: AreaRegistryEntry[] = [
   {
     area_id: "backyard",
+    floor_id: null,
     name: "Backyard",
     icon: null,
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "bedroom",
+    floor_id: null,
     name: "Bedroom",
     icon: "mdi:bed",
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "livingroom",
+    floor_id: null,
     name: "Livingroom",
     icon: "mdi:sofa",
     picture: null,
     aliases: [],
+    labels: [],
   },
 ];
 

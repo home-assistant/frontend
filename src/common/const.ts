@@ -231,6 +231,7 @@ export const SENSOR_ENTITIES = [
   "calendar",
   "camera",
   "device_tracker",
+  "image",
   "weather",
 ];
 

@@ -54,7 +54,8 @@ export const computeInitialHaFormData = (
         "icon" in selector ||
         "template" in selector ||
         "text" in selector ||
-        "theme" in selector
+        "theme" in selector ||
+        "object" in selector
       ) {
         data[field.name] = "";
       } else if ("number" in selector) {
@@ -69,6 +70,10 @@ export const computeInitialHaFormData = (
       } else if ("country" in selector) {
         if (selector.country?.countries?.length) {
           data[field.name] = selector.country.countries[0];
+        }
+      } else if ("language" in selector) {
+        if (selector.language?.languages?.length) {
+          data[field.name] = selector.language.languages[0];
         }
       } else if ("duration" in selector) {
         data[field.name] = {
@@ -92,7 +97,9 @@ export const computeInitialHaFormData = (
       ) {
         data[field.name] = {};
       } else {
-        throw new Error("Selector not supported in initial form data");
+        throw new Error(
+          `Selector ${Object.keys(selector)[0]} not supported in initial form data`
+        );
       }
     }
   });

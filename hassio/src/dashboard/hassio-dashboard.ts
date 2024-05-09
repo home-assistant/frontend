@@ -1,19 +1,19 @@
-import { mdiStorePlus, mdiUpdate } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { mdiRefresh, mdiStorePlus } from "@mdi/js";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-fab";
+import { reloadHassioAddons } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addons";
-import "../../../src/layouts/hass-subpage";
-import { reloadHassioAddons } from "../../../src/data/hassio/addon";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {
@@ -43,7 +43,7 @@ class HassioDashboard extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           @click=${this._handleCheckUpdates}
-          .path=${mdiUpdate}
+          .path=${mdiRefresh}
           .label=${this.supervisor.localize("store.check_updates")}
         ></ha-icon-button>
         <hassio-addons

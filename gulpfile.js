@@ -1,4 +1,7 @@
 import { globIterate } from "glob";
+import { availableParallelism } from "node:os";
+
+process.env.UV_THREADPOOL_SIZE = availableParallelism();
 
 const gulpImports = [];
 
