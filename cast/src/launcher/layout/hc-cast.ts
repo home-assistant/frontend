@@ -94,7 +94,6 @@ class HcCast extends LitElement {
                         graphic="avatar"
                         @click=${this._handlePickView}
                         data-path=${view.path || idx}
-                        selected=${this.castManager.status?.lovelacePath || ""}
                       >
                         ${view.title || view.path}
                         ${view.icon
