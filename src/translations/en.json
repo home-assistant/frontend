@@ -237,6 +237,7 @@
         "option": "Option"
       },
       "update": {
+        "update_available": "Update available",
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
