@@ -3927,7 +3927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/commons@npm:^3.0.0":
+"@sinonjs/commons@npm:^3.0.0, @sinonjs/commons@npm:^3.0.1":
   version: 3.0.1
   resolution: "@sinonjs/commons@npm:3.0.1"
   dependencies:
@@ -7095,7 +7095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^5.1.0":
+"diff@npm:^5.2.0":
   version: 5.2.0
   resolution: "diff@npm:5.2.0"
   checksum: 10/01b7b440f83a997350a988e9d2f558366c0f90f15be19f4aa7f1bb3109a4e153dfc3b9fbf78e14ea725717017407eeaa2271e3896374a0181e8f52445740846d
@@ -9097,7 +9097,7 @@ __metadata:
     rollup-plugin-visualizer: "npm:5.12.0"
     rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
-    sinon: "npm:17.0.1"
+    sinon: "npm:17.0.2"
     sortablejs: "npm:1.15.2"
     source-map-url: "npm:0.4.1"
     stacktrace-js: "npm:2.0.2"
@@ -11276,7 +11276,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nise@npm:^5.1.5":
+"nise@npm:^5.1.9":
   version: 5.1.9
   resolution: "nise@npm:5.1.9"
   dependencies:
@@ -13081,17 +13081,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:17.0.1":
-  version: 17.0.1
-  resolution: "sinon@npm:17.0.1"
+"sinon@npm:17.0.2":
+  version: 17.0.2
+  resolution: "sinon@npm:17.0.2"
   dependencies:
-    "@sinonjs/commons": "npm:^3.0.0"
+    "@sinonjs/commons": "npm:^3.0.1"
     "@sinonjs/fake-timers": "npm:^11.2.2"
     "@sinonjs/samsam": "npm:^8.0.0"
-    diff: "npm:^5.1.0"
-    nise: "npm:^5.1.5"
-    supports-color: "npm:^7.2.0"
-  checksum: 10/b34f1a97da0be3556ac686c6b649a566c2666eb7f50e75e754928c1c72c96d78f56e56a999227be794c3d9cdaed0bc78d11f38ab303d3079c5bcbcffc0f9c6d5
+    diff: "npm:^5.2.0"
+    nise: "npm:^5.1.9"
+    supports-color: "npm:^7"
+  checksum: 10/08ca7f0811b4f92145e6c041f52b29941cb4f59c77a77eabb2160f602ea54656ccfdbb528d785ee5c34972a83d1ba4fb52dbb0011a7960f09151fcf67a53c238
   languageName: node
   linkType: hard
 
@@ -13629,7 +13629,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^7.0.0, supports-color@npm:^7.1.0, supports-color@npm:^7.2.0":
+"supports-color@npm:^7, supports-color@npm:^7.0.0, supports-color@npm:^7.1.0":
   version: 7.2.0
   resolution: "supports-color@npm:7.2.0"
   dependencies:
