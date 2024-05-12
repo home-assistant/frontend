@@ -425,11 +425,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   <ha-list-new>
                     ${discoveryFlows.map(
                       (flow) =>
-                        html`<ha-list-item-new
-                          noninteractive
-                          type="text"
-                          class="discovered"
-                        >
+                        html`<ha-list-item-new class="discovered">
                           ${flow.localized_title}
                           <ha-button
                             slot="end"
@@ -458,8 +454,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         flow.context.source
                       );
                       return html`<ha-list-item-new
-                        noninteractive
-                        type="text"
                         class="config_entry ${attention ? "attention" : ""}"
                       >
                         ${flow.localized_title}
@@ -674,8 +668,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const configPanel = this._configPanel(item.domain, this.hass.panels);
 
     return html`<ha-list-item-new
-      noninteractive
-      type="button"
       class=${classMap({
         config_entry: true,
         "state-not-loaded": item!.state === "not_loaded",
@@ -704,13 +696,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           : ""}
       </div>
       ${item.disabled_by === "user"
-        ? html`<mwc-button unelevated slot="meta" @click=${this._handleEnable}>
+        ? html`<mwc-button unelevated slot="end" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
           </mwc-button>`
         : configPanel &&
             (item.domain !== "matter" || isDevVersion(this.hass.config.version))
           ? html`<a
-              slot="meta"
+              slot="end"
               href=${`/${configPanel}?config_entry=${item.entry_id}`}
               ><mwc-button>
                 ${this.hass.localize(
@@ -720,7 +712,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             >`
           : item.supports_options && !stateText
             ? html`
-                <mwc-button slot="meta" @click=${this._showOptions}>
+                <mwc-button slot="end" @click=${this._showOptions}>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.configure"
                   )}
