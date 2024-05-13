@@ -139,12 +139,16 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     }
     // User made no selections during setup
     if (
-      this._preferences!.device_consumption.length === 0 &&
-      this._preferences!.energy_sources.length === 0
+      this._preferences.device_consumption.length === 0 &&
+      this._preferences.energy_sources.length === 0
     ) {
       showAlertDialog(this, {
-        title: `No statistics selected`,
-        text: `You must select at least one statistic to finish setting up your Energy dashboard.`,
+        title: this.hass.localize(
+          "ui.panel.energy.setup.no_statistics_selected_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.energy.setup.no_statistics_selected_description"
+        ),
       });
       return;
     }
