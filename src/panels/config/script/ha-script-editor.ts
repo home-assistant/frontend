@@ -186,7 +186,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <ha-list-item
             graphic="icon"
-            @click=${this._promptAutomationAlias}
+            @click=${this._promptScriptAlias}
             .disabled=${!this.scriptId ||
             this._readOnly ||
             this._mode === "yaml"}
@@ -198,7 +198,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-list-item
                   graphic="icon"
-                  @click=${this._promptAutomationMode}
+                  @click=${this._promptScriptMode}
                   .disabled=${this._readOnly || this._mode === "yaml"}
                 >
                   ${this.hass.localize(
@@ -555,29 +555,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private updateEntityId(
-    newId: string | undefined,
-    newAlias: string | undefined
-  ) {
-    const currentAlias = this._config?.alias ?? "";
-    const currentEntityId = this._entityId ?? "";
-
-    if (newId !== this._entityId) {
-      this._setEntityId(newId || undefined);
-      return;
-    }
-
-    const currentComputedEntity = this._computeEntityIdFromAlias(currentAlias);
-
-    if (currentComputedEntity === currentEntityId || !this._entityId) {
-      const newComputedId = newAlias
-        ? this._computeEntityIdFromAlias(newAlias)
-        : undefined;
-
-      this._setEntityId(newComputedId);
-    }
-  }
-
   private _addFields() {
     if ("fields" in this._config!) {
       return;
@@ -673,11 +650,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async _promptAutomationAlias(): Promise<boolean> {
+  private async _promptScriptAlias(): Promise<boolean> {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
-        updateAutomation: (config) => {
+        updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
@@ -688,11 +665,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private async _promptAutomationMode(): Promise<void> {
+  private async _promptScriptMode(): Promise<void> {
     return new Promise((resolve) => {
       showAutomationModeDialog(this, {
         config: this._config!,
-        updateAutomation: (config) => {
+        updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
@@ -720,11 +697,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
 
     if (!this.scriptId) {
-      const saved = await this._promptAutomationAlias();
+      const saved = await this._promptScriptAlias();
       if (!saved) {
         return;
       }
-      this.updateEntityId(undefined, this._config!.alias);
+      const entityId = this._computeEntityIdFromAlias(this._config!.alias);
+      this._setEntityId(entityId);
     }
     const id = this.scriptId || this._entityId || Date.now();
 

@@ -7,13 +7,13 @@ export const loadAutomationRenameDialog = () =>
 
 export interface AutomationRenameDialog {
   config: AutomationConfig;
-  updateAutomation: (config: AutomationConfig) => void;
+  updateConfig: (config: AutomationConfig) => void;
   onClose: () => void;
 }
 
 export interface ScriptRenameDialog {
   config: ScriptConfig;
-  updateAutomation: (config: ScriptConfig) => void;
+  updateConfig: (config: ScriptConfig) => void;
   onClose: () => void;
 }
 

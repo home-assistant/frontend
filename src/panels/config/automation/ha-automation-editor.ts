@@ -688,7 +688,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
-        updateAutomation: (config) => {
+        updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
@@ -703,7 +703,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationModeDialog(this, {
         config: this._config!,
-        updateAutomation: (config) => {
+        updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
           this.requestUpdate();
