@@ -12,11 +12,6 @@ import "./ha-domain-icon";
 import "./search-input-outlined";
 import { computeDomain } from "../common/entity/compute_domain";
 
-type DomainTranslation = {
-  domain: string;
-  translation: string;
-};
-
 @customElement("ha-filter-domains")
 export class HaFilterDomains extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -68,17 +63,17 @@ export class HaFilterDomains extends LitElement {
                   (i) => i,
                   (domain) =>
                     html`<ha-check-list-item
-                      .value=${domain.domain}
-                      .selected=${(this.value || []).includes(domain.domain)}
+                      .value=${domain}
+                      .selected=${(this.value || []).includes(domain)}
                       graphic="icon"
                     >
                       <ha-domain-icon
                         slot="graphic"
                         .hass=${this.hass}
-                        .domain=${domain.domain}
+                        .domain=${domain}
                         brandFallback
                       ></ha-domain-icon>
-                      ${domain.translation}
+                      ${domainToName(this.hass.localize, domain)}
                     </ha-check-list-item>`
                 )}
               </mwc-list> `
@@ -88,22 +83,19 @@ export class HaFilterDomains extends LitElement {
   }
 
   private _domains = memoizeOne((states, filter) => {
-    const domains = new Map<string, DomainTranslation>();
+    const domains = new Set<string>();
     Object.keys(states).forEach((entityId) => {
-      const computedDomain = computeDomain(entityId);
-      domains.set(computedDomain, {
-        domain: computedDomain,
-        translation: domainToName(this.hass.localize, computedDomain),
-      });
+      domains.add(computeDomain(entityId));
     });
 
     return Array.from(domains.values())
       .filter(
-        (entry) => !filter || entry.translation.toLowerCase().includes(filter)
+        (entry) =>
+          !filter ||
+          entry.toLowerCase().includes(filter) ||
+          domainToName(this.hass.localize, entry).toLowerCase().includes(filter)
       )
-      .sort((a, b) =>
-        stringCompare(a.translation, b.translation, this.hass.locale.language)
-      );
+      .sort((a, b) => stringCompare(a, b, this.hass.locale.language));
   });
 
   protected updated(changed) {
