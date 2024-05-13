@@ -19,6 +19,7 @@ import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
+import { getExtendedEntityRegistryEntry } from "../data/entity_registry";
 
 const NONE = "__NONE_OPTION__";
 
@@ -107,13 +108,23 @@ export class HaConversationAgentPicker extends LitElement {
   }
 
   private async _maybeFetchConfigEntry() {
-    if (!this.value || this.value === "homeassistant") {
+    if (!this.value || !(this.value in this.hass.entities)) {
       this._configEntry = undefined;
       return;
     }
     try {
+      const regEntry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        this.value
+      );
+
+      if (!regEntry.config_entry_id) {
+        this._configEntry = undefined;
+        return;
+      }
+
       this._configEntry = (
-        await getConfigEntry(this.hass, this.value)
+        await getConfigEntry(this.hass, regEntry.config_entry_id)
       ).config_entry;
     } catch (err) {
       this._configEntry = undefined;

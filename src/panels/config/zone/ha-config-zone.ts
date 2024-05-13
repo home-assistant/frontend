@@ -573,6 +573,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         flex-grow: 1;
         height: 100%;
       }
+      .flex mwc-list {
+        padding-bottom: 64px;
+      }
       .flex mwc-list,
       .flex .empty {
         border-left: 1px solid var(--divider-color);
