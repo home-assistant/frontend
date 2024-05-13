@@ -73,7 +73,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           filterable: true,
           grows: true,
           template: (tag) =>
-            html`${tag.name}
+            html`${tag.display_name}
             ${narrow
               ? html`<div class="secondary">
                   ${tag.last_scanned_datetime
@@ -86,11 +86,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                 </div>`
               : ""}`,
         },
-      };
-      if (!narrow) {
-        columns.last_scanned_datetime = {
+        last_scanned_datetime: {
           title: localize("ui.panel.config.tag.headers.last_scanned"),
           sortable: true,
+          hidden: narrow,
           direction: "desc",
           width: "20%",
           template: (tag) => html`
@@ -102,8 +101,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                 ></ha-relative-time>`
               : this.hass.localize("ui.panel.config.tag.never_scanned")}
           `,
-        };
-      }
+        },
+      };
       if (this._canWriteTags) {
         columns.write = {
           title: "",
