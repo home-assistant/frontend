@@ -56,6 +56,8 @@ class StateCardAlert extends LitElement {
         }
         ha-entity-toggle {
           margin: -4px -16px -4px 0;
+          margin-inline-start: 0;
+          margin-inline-end: -16px;
           padding: 4px 16px;
         }
       `,

@@ -187,11 +187,14 @@ export const computeStateDisplayFromEntityAttributes = (
   if (
     [
       "button",
+      "conversation",
       "event",
       "image",
       "input_button",
+      "notify",
       "scene",
       "stt",
+      "tag",
       "tts",
       "wake_word",
     ].includes(domain) ||

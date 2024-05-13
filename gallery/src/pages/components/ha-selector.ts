@@ -17,6 +17,10 @@ import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
+import { FloorRegistryEntry } from "../../../../src/data/floor_registry";
+import { LabelRegistryEntry } from "../../../../src/data/label_registry";
+import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
+import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -55,6 +59,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: "backyard",
@@ -73,6 +78,7 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
   {
     area_id: null,
@@ -91,30 +97,78 @@ const DEVICES = [
     hw_version: null,
     via_device_id: null,
     serial_number: null,
+    labels: [],
   },
 ];
 
 const AREAS: AreaRegistryEntry[] = [
   {
     area_id: "backyard",
+    floor_id: "ground",
     name: "Backyard",
     icon: null,
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "bedroom",
+    floor_id: "first",
     name: "Bedroom",
     icon: "mdi:bed",
     picture: null,
     aliases: [],
+    labels: [],
   },
   {
     area_id: "livingroom",
+    floor_id: "ground",
     name: "Livingroom",
     icon: "mdi:sofa",
     picture: null,
     aliases: [],
+    labels: [],
+  },
+];
+
+const FLOORS: FloorRegistryEntry[] = [
+  {
+    floor_id: "ground",
+    name: "Ground floor",
+    level: 0,
+    icon: null,
+    aliases: [],
+  },
+  {
+    floor_id: "first",
+    name: "First floor",
+    level: 1,
+    icon: "mdi:numeric-1",
+    aliases: [],
+  },
+  {
+    floor_id: "second",
+    name: "Second floor",
+    level: 2,
+    icon: "mdi:numeric-2",
+    aliases: [],
+  },
+];
+
+const LABELS: LabelRegistryEntry[] = [
+  {
+    label_id: "energy",
+    name: "Energy",
+    icon: null,
+    color: "yellow",
+    description: null,
+  },
+  {
+    label_id: "entertainment",
+    name: "Entertainment",
+    icon: "mdi:popcorn",
+    color: "blue",
+    description: null,
   },
 ];
 
@@ -125,7 +179,12 @@ const SCHEMAS: {
   {
     name: "One of each",
     input: {
+      label: { name: "Label", selector: { label: {} } },
+      floor: { name: "Floor", selector: { floor: {} } },
+      area: { name: "Area", selector: { area: {} } },
+      device: { name: "Device", selector: { device: {} } },
       entity: { name: "Entity", selector: { entity: {} } },
+      target: { name: "Target", selector: { target: {} } },
       state: {
         name: "State",
         selector: { state: { entity_id: "alarm_control_panel.alarm" } },
@@ -134,15 +193,12 @@ const SCHEMAS: {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },
       },
-      device: { name: "Device", selector: { device: {} } },
       config_entry: {
         name: "Integration",
         selector: { config_entry: {} },
       },
       duration: { name: "Duration", selector: { duration: {} } },
       addon: { name: "Addon", selector: { addon: {} } },
-      area: { name: "Area", selector: { area: {} } },
-      target: { name: "Target", selector: { target: {} } },
       number_box: {
         name: "Number Box",
         selector: {
@@ -291,6 +347,8 @@ const SCHEMAS: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
       device: { name: "Device", selector: { device: { multiple: true } } },
       area: { name: "Area", selector: { area: { multiple: true } } },
+      floor: { name: "Floor", selector: { floor: { multiple: true } } },
+      label: { name: "Label", selector: { label: { multiple: true } } },
       select: {
         name: "Select Multiple",
         selector: {
@@ -347,6 +405,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     mockDeviceRegistry(hass, DEVICES);
     mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
+    mockFloorRegistry(hass, FLOORS);
+    mockLabelRegistry(hass, LABELS);
     mockHassioSupervisor(hass);
     hass.mockWS("auth/sign_path", (params) => params);
     hass.mockWS("media_player/browse_media", this._browseMedia);

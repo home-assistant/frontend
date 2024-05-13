@@ -132,7 +132,7 @@ class LovelaceFullConfigEditor extends LitElement {
             "ui.panel.lovelace.editor.raw_editor.reload"
           ),
         },
-        duration: 0,
+        duration: -1,
         dismissable: false,
       });
     }

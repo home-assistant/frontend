@@ -28,7 +28,15 @@ export const FIXED_DOMAIN_STATES = {
   input_button: [],
   lawn_mower: ["error", "paused", "mowing", "docked"],
   light: ["on", "off"],
-  lock: ["jammed", "locked", "locking", "unlocked", "unlocking"],
+  lock: [
+    "jammed",
+    "locked",
+    "locking",
+    "unlocked",
+    "unlocking",
+    "opening",
+    "open",
+  ],
   media_player: [
     "off",
     "on",

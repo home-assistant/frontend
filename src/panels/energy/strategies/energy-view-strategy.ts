@@ -55,7 +55,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     view.type = "sidebar";
 
     const hasGrid = prefs.energy_sources.find(
-      (source) => source.type === "grid"
+      (source) =>
+        source.type === "grid" &&
+        (source.flow_from?.length || source.flow_to?.length)
     ) as GridSourceTypeEnergyPreference;
     const hasReturn = hasGrid && hasGrid.flow_to.length;
     const hasSolar = prefs.energy_sources.some(
@@ -118,7 +120,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGrid || hasSolar) {
+    if (hasGrid || hasSolar || hasGas || hasWater) {
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"
@@ -162,6 +164,13 @@ export class EnergyViewStrategy extends ReactiveElement {
 
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
+      view.cards!.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_detail_graph_title"
+        ),
+        type: "energy-devices-detail-graph",
+        collection_key: "energy_dashboard",
+      });
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_devices_graph_title"

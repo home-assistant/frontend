@@ -116,6 +116,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   entities: {
     redirect: "/config/entities",
   },
+  labels: {
+    redirect: "/config/labels",
+  },
   energy: {
     component: "energy",
     redirect: "/energy",
@@ -258,7 +261,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   },
   supervisor_logs: {
     // Moved from Supervisor panel in 2022.5
-    redirect: "/config/logs",
+    redirect: "/config/logs?provider=supervisor",
   },
   supervisor_info: {
     // Moved from Supervisor panel in 2022.5

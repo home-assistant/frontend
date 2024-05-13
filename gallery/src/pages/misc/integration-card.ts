@@ -31,10 +31,13 @@ const createConfigEntry = (
   supports_options: false,
   supports_remove_device: false,
   supports_unload: true,
+  supports_reconfigure: true,
   disabled_by: null,
   pref_disable_new_entities: false,
   pref_disable_polling: false,
   reason: null,
+  error_reason_translation_key: null,
+  error_reason_translation_placeholders: null,
   ...override,
 });
 
@@ -198,6 +201,8 @@ const createEntityRegistryEntries = (
     has_entity_name: false,
     unique_id: "updater",
     options: null,
+    labels: [],
+    categories: {},
   },
 ];
 
@@ -221,6 +226,7 @@ const createDeviceRegistryEntries = (
     name_by_user: null,
     disabled_by: null,
     configuration_url: null,
+    labels: [],
   },
 ];
 

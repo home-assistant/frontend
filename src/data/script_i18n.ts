@@ -14,7 +14,9 @@ import {
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
+import { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
+import { LabelRegistryEntry } from "./label_registry";
 import {
   ActionType,
   ActionTypes,
@@ -40,6 +42,8 @@ const actionTranslationBaseKey =
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
+  labelRegistry: LabelRegistryEntry[],
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -48,6 +52,8 @@ export const describeAction = <T extends ActionType>(
     return tryDescribeAction(
       hass,
       entityRegistry,
+      labelRegistry,
+      floorRegistry,
       action,
       actionType,
       ignoreAlias
@@ -66,6 +72,8 @@ export const describeAction = <T extends ActionType>(
 const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
+  labelRegistry: LabelRegistryEntry[],
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -81,25 +89,26 @@ const tryDescribeAction = <T extends ActionType>(
     const config = action as ActionTypes["service"];
 
     const targets: string[] = [];
-    if (config.target) {
-      for (const [key, label] of Object.entries({
+    const targetOrData = config.target || config.data;
+    if (targetOrData) {
+      for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
         entity_id: "entities",
+        floor_id: "floors",
+        label_id: "labels",
       })) {
-        if (!(key in config.target)) {
+        if (!(key in targetOrData)) {
           continue;
         }
-        const keyConf: string[] = Array.isArray(config.target[key])
-          ? config.target[key]
-          : [config.target[key]];
+        const keyConf: string[] = ensureArray(targetOrData[key]) || [];
 
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
             targets.push(
               hass.localize(
                 `${actionTranslationBaseKey}.service.description.target_template`,
-                { name: label }
+                { name }
               )
             );
             break;
@@ -147,6 +156,32 @@ const tryDescribeAction = <T extends ActionType>(
                 )
               );
             }
+          } else if (key === "floor_id") {
+            const floor = floorRegistry.find(
+              (flr) => flr.floor_id === targetThing
+            );
+            if (floor?.name) {
+              targets.push(floor.name);
+            } else {
+              targets.push(
+                hass.localize(
+                  `${actionTranslationBaseKey}.service.description.target_unknown_floor`
+                )
+              );
+            }
+          } else if (key === "label_id") {
+            const label = labelRegistry.find(
+              (lbl) => lbl.label_id === targetThing
+            );
+            if (label?.name) {
+              targets.push(label.name);
+            } else {
+              targets.push(
+                hass.localize(
+                  `${actionTranslationBaseKey}.service.description.target_unknown_label`
+                )
+              );
+            }
           } else {
             targets.push(targetThing);
           }
@@ -159,8 +194,12 @@ const tryDescribeAction = <T extends ActionType>(
       (config.service && isTemplate(config.service))
     ) {
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_template`,
-        { targets: formatListWithAnds(hass.locale, targets) }
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_template`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_template_no_targets`,
+        {
+          targets: formatListWithAnds(hass.locale, targets),
+        }
       );
     }
 
@@ -172,7 +211,9 @@ const tryDescribeAction = <T extends ActionType>(
 
       if (config.metadata) {
         return hass.localize(
-          `${actionTranslationBaseKey}.service.description.service_name`,
+          targets.length
+            ? `${actionTranslationBaseKey}.service.description.service_name`
+            : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
             name: service || config.service,
@@ -182,7 +223,9 @@ const tryDescribeAction = <T extends ActionType>(
       }
 
       return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name`,
+        targets.length
+          ? `${actionTranslationBaseKey}.service.description.service_based_on_name`
+          : `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`

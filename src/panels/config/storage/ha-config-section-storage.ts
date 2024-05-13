@@ -334,6 +334,8 @@ class HaConfigSectionStorage extends LitElement {
       position: relative;
       top: -10px;
       right: 10px;
+      inset-inline-end: 10px;
+      inset-inline-start: initial;
     }
 
     .no-mounts {
