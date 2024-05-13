@@ -44,6 +44,14 @@ export class EnergyViewStrategy extends ReactiveElement {
       return view;
     }
 
+    // No energy sources available, start from scratch
+    if (
+      prefs!.device_consumption.length === 0 &&
+      prefs!.energy_sources.length === 0
+    ) {
+      return setupWizard();
+    }
+
     view.type = "sidebar";
 
     const hasGrid = prefs.energy_sources.find(
