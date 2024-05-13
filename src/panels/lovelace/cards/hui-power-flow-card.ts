@@ -162,16 +162,17 @@ class HuiPowerFlowCard extends LitElement implements LovelaceCard {
 
     if (this._config) {
       for (const id of [
-        this._config.power_from_grid_entity || [],
-        this._config.power_to_grid_entity || [],
+        this._config.power_from_grid_entity,
+        this._config.power_to_grid_entity,
         ...(this._config.generation_entities || []),
         ...(this._config.consumer_entities || []),
       ]) {
-        const oldState = oldHass.states[id] as HassEntity | undefined;
-        const newState = newHass.states[id] as HassEntity | undefined;
-
-        if (oldState !== newState) {
-          return true;
+        if (id) {
+          const oldState = oldHass.states[id] as HassEntity | undefined;
+          const newState = newHass.states[id] as HassEntity | undefined;
+          if (oldState !== newState) {
+            return true;
+          }
         }
       }
     }
