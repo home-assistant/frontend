@@ -6,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 import { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -66,7 +67,14 @@ export class HaManualScriptEditor extends LitElement {
               ${this.hass.localize("ui.panel.config.script.editor.migrate")}
             </mwc-button>
           </ha-alert>`
-        : ""}
+        : nothing}
+      ${this.config.description
+        ? html`<ha-markdown
+            class="description"
+            breaks
+            .content=${this.config.description}
+          ></ha-markdown>`
+        : nothing}
       ${this.config.fields
         ? html`<div class="header">
               <h2 id="fields-heading" class="name">
