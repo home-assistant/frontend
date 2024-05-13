@@ -147,6 +147,7 @@ export interface QRProvisioningInformation {
   manufacturerId: number;
   productType: number;
   productId: number;
+  protocol: string;
   applicationVersion: string;
   maxInclusionRequestInterval?: number | undefined;
   uuid?: string | undefined;
@@ -389,6 +390,7 @@ export interface ZwaveJSProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
   security_classes: SecurityClass[];
+  protocol: string;
   additional_properties: {
     nodeId?: number;
     [prop: string]: any;
