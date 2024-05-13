@@ -694,7 +694,9 @@ export class HuiEnergySourcesTableCard
                     </tr>`;
                   })}`
               )}
-              ${types.grid
+              ${types.grid &&
+              (types.grid?.[0].flow_from?.length ||
+                types.grid?.[0].flow_to?.length)
                 ? html` <tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
