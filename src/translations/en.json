@@ -6929,7 +6929,9 @@
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!",
-          "step": "Step {step} of {steps}"
+          "step": "Step {step} of {steps}",
+          "no_statistics_selected_title": "No statistics selected",
+          "no_statistics_selected_description": "You must select at least one statistic to finish setting up your Energy dashboard."
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
