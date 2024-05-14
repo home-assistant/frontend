@@ -40,6 +40,11 @@ import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
+import { MediaQueriesListener } from "../../../common/dom/media_query";
+import {
+  checkConditionsMet,
+  createConditionMediaQueriesListeners,
+} from "../common/validate-condition";
 
 declare global {
   // for fire event
@@ -76,6 +81,8 @@ export class HUIView extends ReactiveElement {
   private _layoutElement?: LovelaceViewElement;
 
   private _viewConfigTheme?: string;
+
+  private elementListeners = new WeakMap<HuiSection, MediaQueriesListener[]>();
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -136,6 +143,17 @@ export class HUIView extends ReactiveElement {
       },
       { once: true }
     );
+    this._updateElementVisibility(element);
+    const listeners = element.config.visibility
+      ? createConditionMediaQueriesListeners(
+          element.config.visibility,
+          element.hass,
+          (visible) => {
+            element.hidden = !this.lovelace.editMode && !visible;
+          }
+        )
+      : [];
+    this.elementListeners.set(element, listeners);
     return element;
   }
 
@@ -201,6 +219,7 @@ export class HUIView extends ReactiveElement {
         this._sections.forEach((element) => {
           try {
             element.hass = this.hass;
+            this._updateElementVisibility(element);
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
@@ -229,6 +248,7 @@ export class HUIView extends ReactiveElement {
           try {
             element.hass = this.hass;
             element.lovelace = this.lovelace;
+            this._updateElementVisibility(element);
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
@@ -241,6 +261,14 @@ export class HUIView extends ReactiveElement {
         this._layoutElement.badges = this._badges;
       }
     }
+  }
+
+  private _updateElementVisibility(element: HuiSection): void {
+    const visible =
+      this.lovelace.editMode ||
+      !element.config.visibility ||
+      checkConditionsMet(element.config.visibility, element.hass);
+    element.hidden = !visible;
   }
 
   private _applyTheme() {
@@ -440,6 +468,11 @@ export class HUIView extends ReactiveElement {
     sectionElToReplace: HuiSection,
     config: LovelaceSectionConfig
   ): void {
+    const listener = this.elementListeners.get(sectionElToReplace);
+    if (listener) {
+      listener.forEach((unsub) => unsub());
+      this.elementListeners.delete(sectionElToReplace);
+    }
     const newSectionEl = this.createSectionElement(config);
     newSectionEl.index = sectionElToReplace.index;
     if (sectionElToReplace.parentElement) {

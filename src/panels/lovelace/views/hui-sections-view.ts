@@ -1,5 +1,12 @@
 import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
@@ -38,6 +45,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
+  @state() private _sectionCount = 0;
+
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
   }
@@ -51,14 +60,39 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return this._sectionConfigKeys.get(sectionConfig)!;
   }
 
+  private _sectionObserver?: MutationObserver;
+
+  private _computeSectionsCount() {
+    this._sectionCount = this.sections.filter(
+      (section) => !section.hidden
+    ).length;
+  }
+
+  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+    if (!this._sectionObserver) {
+      this._sectionObserver = new MutationObserver(() => {
+        this._computeSectionsCount();
+      });
+    }
+    if (changedProperties.has("sections")) {
+      this._computeSectionsCount();
+      this._sectionObserver.disconnect();
+      this.sections.forEach((section) => {
+        this._sectionObserver!.observe(section, {
+          attributes: true,
+          attributeFilter: ["hidden"],
+        });
+      });
+    }
+  }
+
   protected render() {
     if (!this.lovelace) return nothing;
 
-    const sectionsConfig = this._config?.sections ?? [];
-
+    const sections = this.sections;
+    const totalCount = this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const sectionCount = sectionsConfig.length + (editMode ? 1 : 0);
     const maxColumnsCount = this._config?.max_columns;
 
     return html`
@@ -77,43 +111,47 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           class="container"
           style=${styleMap({
             "--max-columns-count": maxColumnsCount,
-            "--total-count": sectionCount,
+            "--total-count": totalCount,
           })}
         >
           ${repeat(
-            sectionsConfig,
-            (sectionConfig) => this._getKey(sectionConfig),
-            (_sectionConfig, idx) => {
-              const section = this.sections[idx];
+            sections,
+            (section) => this._getKey(section),
+            (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
-                <div class="section">
-                  ${editMode
-                    ? html`
-                        <div class="section-overlay">
-                          <div class="section-actions">
-                            <ha-svg-icon
-                              aria-hidden="true"
-                              class="handle"
-                              .path=${mdiArrowAll}
-                            ></ha-svg-icon>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.edit")}
-                              @click=${this._editSection}
-                              .index=${idx}
-                              .path=${mdiPencil}
-                            ></ha-icon-button>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              @click=${this._deleteSection}
-                              .index=${idx}
-                              .path=${mdiDelete}
-                            ></ha-icon-button>
+                  ${
+                    editMode
+                      ? html`
+                          <div class="section">
+                            <div class="section-overlay">
+                              <div class="section-actions">
+                                <ha-svg-icon
+                                  aria-hidden="true"
+                                  class="handle"
+                                  .path=${mdiArrowAll}
+                                ></ha-svg-icon>
+                                <ha-icon-button
+                                  .label=${this.hass.localize("ui.common.edit")}
+                                  @click=${this._editSection}
+                                  .index=${idx}
+                                  .path=${mdiPencil}
+                                ></ha-icon-button>
+                                <ha-icon-button
+                                  .label=${this.hass.localize(
+                                    "ui.common.delete"
+                                  )}
+                                  @click=${this._deleteSection}
+                                  .index=${idx}
+                                  .path=${mdiDelete}
+                                ></ha-icon-button>
+                              </div>
+                            </div>
+                            ${section}
                           </div>
-                        </div>
-                      `
-                    : nothing}
-                  <div class="section-wrapper">${section}</div>
+                        `
+                      : section
+                  }
                 </div>
               `;
             }

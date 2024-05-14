@@ -24,13 +24,6 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceCard } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
-import {
-  Condition,
-  checkConditionsMet,
-  extractMediaQueries,
-} from "../common/validate-condition";
-import { deepEqual } from "../../../common/util/deep-equal";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 
 @customElement("hui-section")
 export class HuiSection extends ReactiveElement {
@@ -45,10 +38,6 @@ export class HuiSection extends ReactiveElement {
   @property({ type: Number }) public viewIndex!: number;
 
   @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
-
-  private _mediaQueriesListeners: Array<() => void> = [];
-
-  private _mediaQueries: string[] = [];
 
   private _layoutElementType?: string;
 
@@ -103,8 +92,6 @@ export class HuiSection extends ReactiveElement {
       (!oldConfig || this.config !== oldConfig)
     ) {
       this._initializeConfig();
-    } else {
-      this._updateVisibility();
     }
   }
 
@@ -174,36 +161,7 @@ export class HuiSection extends ReactiveElement {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-    }
-    this._updateVisibility();
-  }
-
-  private _updateVisibility() {
-    if (!this._layoutElement) {
-      return;
-    }
-
-    const visibility =
-      !this.config.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass!);
-
-    this._setVisibility(visibility);
-  }
-
-  private _setVisibility(visilibity: boolean) {
-    const element = this._layoutElement;
-    if (!element) {
-      return;
-    }
-    const visible = this.lovelace.editMode || visilibity;
-    this.toggleAttribute("hidden", !visible);
-    if (visible) {
-      element.hass = this.hass;
-      if (!element!.parentElement) {
-        this.appendChild(element!);
-      }
-    } else if (element.parentElement) {
-      this.removeChild(element!);
+      this.appendChild(this._layoutElement!);
     }
   }
 
@@ -279,57 +237,6 @@ export class HuiSection extends ReactiveElement {
     this._cards = this._cards!.map((curCardEl) =>
       curCardEl === cardElToReplace ? newCardEl : curCardEl
     );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._clearMediaQueries();
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._listenMediaQueries();
-    this._updateVisibility();
-  }
-
-  private _clearMediaQueries() {
-    this._mediaQueries = [];
-    while (this._mediaQueriesListeners.length) {
-      this._mediaQueriesListeners.pop()!();
-    }
-  }
-
-  private _listenMediaQueries() {
-    if (!this.config.visibility) {
-      return;
-    }
-
-    const mediaQueries = extractMediaQueries(
-      this.config.visibility.filter((c) => "condition" in c) as Condition[]
-    );
-
-    if (deepEqual(mediaQueries, this._mediaQueries)) return;
-
-    this._mediaQueries = mediaQueries;
-    while (this._mediaQueriesListeners.length) {
-      this._mediaQueriesListeners.pop()!();
-    }
-
-    mediaQueries.forEach((query) => {
-      const listener = listenMediaQuery(query, (matches) => {
-        // For performance, if there is only one condition and it's a screen condition, set the visibility directly
-        if (
-          this.config.visibility!.length === 1 &&
-          "condition" in this.config.visibility![0] &&
-          this.config.visibility![0].condition === "screen"
-        ) {
-          this._setVisibility(matches);
-          return;
-        }
-        this._updateVisibility();
-      });
-      this._mediaQueriesListeners.push(listener);
-    });
   }
 }
 

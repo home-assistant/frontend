@@ -1,4 +1,8 @@
 import { ensureArray } from "../../../common/array/ensure-array";
+import {
+  MediaQueriesListener,
+  listenMediaQuery,
+} from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
@@ -319,4 +323,32 @@ export function extractMediaQueries(conditions: Condition[]): string[] {
     }
     return array;
   }, []);
+}
+
+export function createConditionMediaQueriesListeners(
+  conditions: Condition[],
+  hass: HomeAssistant,
+  onChange: (visibility: boolean) => void
+): MediaQueriesListener[] {
+  const mediaQueries = extractMediaQueries(conditions);
+
+  const listeners: MediaQueriesListener[] = [];
+  mediaQueries.forEach((query) => {
+    const listener = listenMediaQuery(query, (matches) => {
+      // For performance, if there is only one condition and it's a screen condition, set the visibility directly
+      if (
+        conditions.length === 1 &&
+        "condition" in conditions[0] &&
+        conditions[0].condition === "screen"
+      ) {
+        onChange(matches);
+        return;
+      }
+      const visibility = checkConditionsMet(conditions, hass);
+      onChange(visibility);
+    });
+    listeners.push(listener);
+  });
+
+  return listeners;
 }
