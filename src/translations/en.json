@@ -445,6 +445,7 @@
           "was_opened": "was opened",
           "was_closed": "was closed",
           "is_opening": "is opening",
+          "is_opened": "is opened",
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
@@ -3251,6 +3252,9 @@
                     "service_based_on_template": "Call a service based on a template on {targets}",
                     "service_based_on_name": "Call a service ''{name}'' on {targets}",
                     "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_based_on_template_no_targets": "Call a service based on a template",
+                    "service_based_on_name_no_targets": "Call a service ''{name}''",
+                    "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
@@ -6925,7 +6929,9 @@
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!",
-          "step": "Step {step} of {steps}"
+          "step": "Step {step} of {steps}",
+          "no_statistics_selected_title": "No statistics selected",
+          "no_statistics_selected_description": "You must select at least one statistic to finish setting up your Energy dashboard."
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",

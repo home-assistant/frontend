@@ -88,8 +88,8 @@
     "@polymer/paper-tabs": "3.1.0",
     "@polymer/polymer": "3.5.1",
     "@thomasloven/round-slider": "0.6.0",
-    "@vaadin/combo-box": "24.3.11",
-    "@vaadin/vaadin-themable-mixin": "24.3.11",
+    "@vaadin/combo-box": "24.3.12",
+    "@vaadin/vaadin-themable-mixin": "24.3.12",
     "@vibrant/color": "3.2.1-alpha.1",
     "@vibrant/core": "3.2.1-alpha.1",
     "@vibrant/quantizer-mmcq": "3.2.1-alpha.1",
@@ -112,7 +112,7 @@
     "hls.js": "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch",
     "home-assistant-js-websocket": "9.3.0",
     "idb-keyval": "6.2.1",
-    "intl-messageformat": "10.5.11",
+    "intl-messageformat": "10.5.12",
     "js-yaml": "4.1.0",
     "leaflet": "1.9.4",
     "leaflet-draw": "1.0.4",
@@ -191,7 +191,7 @@
     "@web/dev-server-rollup": "0.4.1",
     "babel-loader": "9.1.3",
     "babel-plugin-template-html-minifier": "4.1.0",
-    "chai": "5.1.0",
+    "chai": "5.1.1",
     "del": "7.1.0",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
@@ -206,7 +206,7 @@
     "eslint-plugin-wc": "2.1.0",
     "fancy-log": "2.0.0",
     "fs-extra": "11.2.0",
-    "glob": "10.3.12",
+    "glob": "10.3.14",
     "gulp": "5.0.0",
     "gulp-json-transform": "0.5.0",
     "gulp-rename": "2.0.0",
@@ -231,7 +231,7 @@
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-visualizer": "5.12.0",
     "serve-handler": "6.1.5",
-    "sinon": "17.0.1",
+    "sinon": "17.0.2",
     "source-map-url": "0.4.1",
     "systemjs": "6.15.1",
     "tar": "7.1.0",
@@ -257,5 +257,5 @@
     "sortablejs@1.15.2": "patch:sortablejs@npm%3A1.15.2#~/.yarn/patches/sortablejs-npm-1.15.2-73347ae85a.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
-  "packageManager": "yarn@4.2.1"
+  "packageManager": "yarn@4.2.2"
 }

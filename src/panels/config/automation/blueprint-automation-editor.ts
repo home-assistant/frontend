@@ -1,11 +1,12 @@
 import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import "../../../components/ha-markdown";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
@@ -26,7 +27,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
             </mwc-button>
           </ha-alert>`
-        : ""}
+        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -42,8 +43,12 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
           `
         : ""}
       ${this.config.description
-        ? html`<p class="description">${this.config.description}</p>`
-        : ""}
+        ? html`<ha-markdown
+            class="description"
+            breaks
+            .content=${this.config.description}
+          ></ha-markdown>`
+        : nothing}
       ${this.renderCard()}
     `;
   }
