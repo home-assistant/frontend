@@ -151,7 +151,6 @@ export interface QRProvisioningInformation {
   maxInclusionRequestInterval?: number | undefined;
   uuid?: string | undefined;
   supportedProtocols?: Protocols[] | undefined;
-  [key: string]: any; // Allow for additional properties
 }
 
 export interface PlannedProvisioningEntry {
