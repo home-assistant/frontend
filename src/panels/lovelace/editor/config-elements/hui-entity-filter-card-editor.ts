@@ -7,6 +7,7 @@ import {
   array,
   assert,
   assign,
+  boolean,
   literal,
   number,
   object,
@@ -44,6 +45,7 @@ const cardConfigStruct = assign(
         type: optional(union([literal("entities"), literal("glance")])),
       })
     ),
+    show_empty: optional(boolean()),
     entities: array(entitiesConfigStruct),
     conditions: optional(array(any())),
   })
@@ -52,6 +54,7 @@ const cardConfigStruct = assign(
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "type", selector: { text: {} } },
+  { name: "show_empty", selector: { boolean: {} } },
 ] as const;
 
 @customElement("hui-entity-filter-card-editor")
