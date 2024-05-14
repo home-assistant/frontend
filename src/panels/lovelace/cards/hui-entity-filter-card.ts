@@ -13,7 +13,7 @@ import {
   extractConditionEntityIds,
 } from "../common/validate-condition";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { HuiCard } from "./hui-card";
 import { EntityFilterCardConfig } from "./types";
 
@@ -22,6 +22,11 @@ export class HuiEntityFilterCard
   extends ReactiveElement
   implements LovelaceCard
 {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-entity-filter-card-editor");
+    return document.createElement("hui-entity-filter-card-editor");
+  }
+
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
