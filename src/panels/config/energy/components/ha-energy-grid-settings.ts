@@ -449,11 +449,7 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    try {
-      await this._savePreferences(preferences);
-    } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
-    }
+    await this._deleteSource(preferences);
   }
 
   private async _deleteToSource(ev) {
@@ -479,16 +475,34 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    try {
-      await this._savePreferences(preferences);
-    } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+    await this._deleteSource(preferences);
+  }
+
+  private async _deleteSource(preferences: EnergyPreferences) {
+    // Check if grid sources became an empty type and remove if so
+    const hasEmptyGridSources = preferences.energy_sources.some(
+      (source) =>
+        source.type === "grid" &&
+        source.flow_from.length === 0 &&
+        source.flow_to.length === 0
+    );
+
+    if (hasEmptyGridSources) {
+      preferences.energy_sources = preferences.energy_sources.filter(
+        (source) => source.type !== "grid"
+      );
     }
+
+    await this._savePreferences(preferences);
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {
-    const result = await saveEnergyPreferences(this.hass, preferences);
-    fireEvent(this, "value-changed", { value: result });
+    try {
+      const result = await saveEnergyPreferences(this.hass, preferences);
+      fireEvent(this, "value-changed", { value: result });
+    } catch (err: any) {
+      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+    }
   }
 
   static get styles(): CSSResultGroup {
