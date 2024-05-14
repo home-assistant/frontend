@@ -358,6 +358,10 @@ export const localizeStateMessage = (
           return localize(`${LOGBOOK_LOCALIZE_PATH}.is_locking`);
         case "unlocking":
           return localize(`${LOGBOOK_LOCALIZE_PATH}.is_unlocking`);
+        case "opening":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
+        case "open":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opened`);
         case "locked":
           return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
         case "jammed":
