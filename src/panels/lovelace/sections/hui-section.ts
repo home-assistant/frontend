@@ -37,6 +37,9 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public viewIndex!: number;
 
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: Boolean, reflect: true }) public hidden = false;
+
   @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   private _layoutElementType?: string;
@@ -118,6 +121,9 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
+      if (changedProperties.has("hidden")) {
+        this._updateElement();
+      }
     }
   }
 
@@ -161,7 +167,18 @@ export class HuiSection extends ReactiveElement {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-      this.appendChild(this._layoutElement!);
+      this._updateElement();
+    }
+  }
+
+  private _updateElement() {
+    if (!this._layoutElement) {
+      return;
+    }
+    if (this.hidden && this._layoutElement.parentElement) {
+      this.removeChild(this._layoutElement);
+    } else if (!this.hidden && !this._layoutElement.parentElement) {
+      this.appendChild(this._layoutElement);
     }
   }
 
