@@ -1,4 +1,4 @@
-import IntlMessageFormat from "intl-messageformat";
+import type { IntlMessageFormat } from "intl-messageformat";
 import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
@@ -89,9 +89,8 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  await import("../../resources/polyfills/intl-polyfill").then(() =>
-    polyfillLocaleData(language)
-  );
+  const { IntlMessageFormat } = await import("intl-messageformat");
+  await polyfillLocaleData(language);
 
   // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
