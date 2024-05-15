@@ -1,5 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -10,6 +11,10 @@ import {
 } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
+import {
+  checkConditionsMet,
+  createConditionMediaQueriesListeners,
+} from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import {
   createErrorCardConfig,
@@ -37,14 +42,13 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public viewIndex!: number;
 
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ type: Boolean, reflect: true }) public hidden = false;
-
   @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
+
+  private _listeners: MediaQueriesListener[] = [];
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -98,6 +102,17 @@ export class HuiSection extends ReactiveElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._clearMediaQueries();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._listenMediaQueries();
+    this._updateElement();
+  }
+
   protected update(changedProperties) {
     super.update(changedProperties);
 
@@ -112,7 +127,6 @@ export class HuiSection extends ReactiveElement {
             this._rebuildCard(element, createErrorCardConfig(e.message, null));
           }
         });
-
         this._layoutElement.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
@@ -121,10 +135,30 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
-      if (changedProperties.has("hidden")) {
+      if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
         this._updateElement();
       }
     }
+  }
+
+  private _clearMediaQueries() {
+    this._listeners.forEach((unsub) => unsub());
+    this._listeners = [];
+  }
+
+  private _listenMediaQueries() {
+    if (!this.config.visibility) {
+      return;
+    }
+
+    this._listeners = createConditionMediaQueriesListeners(
+      this.config.visibility,
+      this.hass,
+      (visibility) => {
+        const visible = visibility || this.lovelace!.editMode;
+        this._updateElement(visible);
+      }
+    );
   }
 
   private async _initializeConfig() {
@@ -171,13 +205,21 @@ export class HuiSection extends ReactiveElement {
     }
   }
 
-  private _updateElement() {
+  private _updateElement(forceVisible?: boolean) {
     if (!this._layoutElement) {
       return;
     }
-    if (this.hidden && this._layoutElement.parentElement) {
+    const visible =
+      forceVisible ??
+      (this.lovelace.editMode ||
+        !this.config.visibility ||
+        checkConditionsMet(this.config.visibility, this.hass));
+
+    this.style.setProperty("display", visible ? "" : "none");
+    this.toggleAttribute("hidden", !visible);
+    if (!visible && this._layoutElement.parentElement) {
       this.removeChild(this._layoutElement);
-    } else if (!this.hidden && !this._layoutElement.parentElement) {
+    } else if (visible && !this._layoutElement.parentElement) {
       this.appendChild(this._layoutElement);
     }
   }

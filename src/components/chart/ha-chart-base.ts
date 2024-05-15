@@ -313,7 +313,11 @@ export class HaChartBase extends LitElement {
     `;
   }
 
+  private _loading = false;
+
   private async _setupChart() {
+    if (this._loading) return;
+    this._loading = true;
     const ctx: CanvasRenderingContext2D = this.renderRoot
       .querySelector("canvas")!
       .getContext("2d")!;
@@ -338,6 +342,7 @@ export class HaChartBase extends LitElement {
       options: this._createOptions(),
       plugins: this._createPlugins(),
     });
+    this._loading = false;
   }
 
   private _createOptions() {

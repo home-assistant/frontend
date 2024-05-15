@@ -178,7 +178,11 @@ export class HaMap extends ReactiveElement {
     map!.classList.toggle("forced-light", this.themeMode === "light");
   }
 
+  private _loading = false;
+
   private async _loadMap(): Promise<void> {
+    if (this._loading) return;
+    this._loading = true;
     let map = this.shadowRoot!.getElementById("map");
     if (!map) {
       map = document.createElement("div");
@@ -188,6 +192,7 @@ export class HaMap extends ReactiveElement {
     [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
     this._updateMapStyle();
     this._loaded = true;
+    this._loading = false;
   }
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
