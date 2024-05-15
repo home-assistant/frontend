@@ -54,6 +54,8 @@ import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 import { storage } from "../../../common/decorators/storage";
+import { domainToName } from "../../../data/integration";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -96,6 +98,12 @@ export class VoiceAssistantsExpose extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
+  @storage({ key: "devices-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
+  private _activeCollapsed?: string;
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -136,9 +144,19 @@ export class VoiceAssistantsExpose extends LitElement {
           <div class="secondary">${entry.entity_id}</div>
         `,
       },
+      domain: {
+        title: localize(
+          "ui.panel.config.voice_assistants.expose.headers.domain"
+        ),
+        sortable: false,
+        hidden: true,
+        filterable: true,
+        groupable: true,
+      },
       area: {
         title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
         sortable: true,
+        groupable: true,
         hidden: narrow,
         filterable: true,
         width: "15%",
@@ -252,6 +270,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _filteredEntities = memoize(
     (
+      localize: LocalizeFunc,
       entities: Record<string, ExtEntityRegistryEntry>,
       exposedEntities: Record<string, ExposeEntitySettings>,
       devices: HomeAssistant["devices"],
@@ -332,6 +351,7 @@ export class VoiceAssistantsExpose extends LitElement {
             this.hass.localize(
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
+          domain: domainToName(localize, computeDomain(entityState.entity_id)),
           area: area ? area.name : "—",
           assistants: Object.keys(
             exposedEntities?.[entityState.entity_id]
@@ -479,6 +499,7 @@ export class VoiceAssistantsExpose extends LitElement {
     }
 
     const filteredEntities = this._filteredEntities(
+      this.hass.localize,
       this._extEntities,
       this.exposedEntities,
       this.hass.devices,
@@ -515,8 +536,12 @@ export class VoiceAssistantsExpose extends LitElement {
         .selected=${this._selectedEntities.length}
         clickable
         .initialSorting=${this._activeSorting}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
         @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
@@ -709,6 +734,14 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
