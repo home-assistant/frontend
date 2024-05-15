@@ -120,38 +120,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
-                  ${
-                    editMode
-                      ? html`
-                          <div class="section">
-                            <div class="section-overlay">
-                              <div class="section-actions">
-                                <ha-svg-icon
-                                  aria-hidden="true"
-                                  class="handle"
-                                  .path=${mdiArrowAll}
-                                ></ha-svg-icon>
-                                <ha-icon-button
-                                  .label=${this.hass.localize("ui.common.edit")}
-                                  @click=${this._editSection}
-                                  .index=${idx}
-                                  .path=${mdiPencil}
-                                ></ha-icon-button>
-                                <ha-icon-button
-                                  .label=${this.hass.localize(
-                                    "ui.common.delete"
-                                  )}
-                                  @click=${this._deleteSection}
-                                  .index=${idx}
-                                  .path=${mdiDelete}
-                                ></ha-icon-button>
-                              </div>
-                            </div>
-                            ${section}
+                <div class="section">
+                  ${editMode
+                    ? html`
+                        <div class="section-overlay">
+                          <div class="section-actions">
+                            <ha-svg-icon
+                              aria-hidden="true"
+                              class="handle"
+                              .path=${mdiArrowAll}
+                            ></ha-svg-icon>
+                            <ha-icon-button
+                              .label=${this.hass.localize("ui.common.edit")}
+                              @click=${this._editSection}
+                              .index=${idx}
+                              .path=${mdiPencil}
+                            ></ha-icon-button>
+                            <ha-icon-button
+                              .label=${this.hass.localize("ui.common.delete")}
+                              @click=${this._deleteSection}
+                              .index=${idx}
+                              .path=${mdiDelete}
+                            ></ha-icon-button>
                           </div>
-                        `
-                      : section
-                  }
+                        </div>
+                      `
+                    : nothing}
+                  ${section}
                 </div>
               `;
             }
@@ -297,6 +292,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .section {
         border-radius: var(--ha-card-border-radius, 12px);
+      }
+
+      .section:not(:has(> *:not([hidden]))) {
+        display: none;
       }
 
       .container {
