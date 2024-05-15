@@ -10,6 +10,7 @@ import {
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
+import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { mockConfigEntries } from "./stubs/config_entries";
 import { mockEnergy } from "./stubs/energy";
@@ -17,14 +18,16 @@ import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFrontend } from "./stubs/frontend";
+import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockRecorder } from "./stubs/recorder";
-import { mockTodo } from "./stubs/todo";
+import { mockSensor } from "./stubs/sensor";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
+import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
 
 @customElement("ha-demo")
@@ -50,14 +53,17 @@ export class HaDemo extends HomeAssistantAppEl {
     mockHistory(hass);
     mockRecorder(hass);
     mockTodo(hass);
+    mockSensor(hass);
     mockSystemLog(hass);
     mockTemplate(hass);
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
     mockConfigEntries(hass);
+    mockAreaRegistry(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
@@ -68,6 +74,8 @@ export class HaDemo extends HomeAssistantAppEl {
         id: "sensor.co2_intensity",
         name: null,
         icon: null,
+        labels: [],
+        categories: {},
         platform: "co2signal",
         hidden_by: null,
         entity_category: null,
@@ -84,6 +92,8 @@ export class HaDemo extends HomeAssistantAppEl {
         id: "sensor.co2_intensity",
         name: null,
         icon: null,
+        labels: [],
+        categories: {},
         platform: "co2signal",
         hidden_by: null,
         entity_category: null,

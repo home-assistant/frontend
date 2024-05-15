@@ -1,14 +1,13 @@
-import { mdiShieldOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-outlined-button";
+import "../../../components/ha-control-button";
 import "../../../components/ha-state-icon";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
-import { showEnterCodeDialogDialog } from "../../enter-code/show-enter-code-dialog";
+import { showEnterCodeDialog } from "../../enter-code/show-enter-code-dialog";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -22,7 +21,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
     let code: string | undefined;
 
     if (this.stateObj!.attributes.code_format) {
-      const response = await showEnterCodeDialogDialog(this, {
+      const response = await showEnterCodeDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
         title: this.hass.localize("ui.card.alarm_control_panel.disarm"),
         submitText: this.hass.localize("ui.card.alarm_control_panel.disarm"),
@@ -57,15 +56,10 @@ class MoreInfoAlarmControlPanel extends LitElement {
         ${["triggered", "arming", "pending"].includes(this.stateObj.state)
           ? html`
               <div class="status">
-                <span></span>
                 <div class="icon">
                   <ha-state-icon .hass=${this.hass} .stateObj=${this.stateObj}>
                   </ha-state-icon>
                 </div>
-                <ha-outlined-button @click=${this._disarm}>
-                  ${this.hass.localize("ui.card.alarm_control_panel.disarm")}
-                  <ha-svg-icon slot="icon" .path=${mdiShieldOff}></ha-svg-icon>
-                </ha-outlined-button>
               </div>
             `
           : html`
@@ -76,7 +70,15 @@ class MoreInfoAlarmControlPanel extends LitElement {
               </ha-state-control-alarm_control_panel-modes>
             `}
       </div>
-      <span></span>
+      <div>
+        ${["triggered", "arming", "pending"].includes(this.stateObj.state)
+          ? html`
+              <ha-control-button @click=${this._disarm} class="disarm">
+                ${this.hass.localize("ui.card.alarm_control_panel.disarm")}
+              </ha-control-button>
+            `
+          : nothing}
+      </div>
     `;
   }
 
@@ -127,8 +129,12 @@ class MoreInfoAlarmControlPanel extends LitElement {
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;
         }
-        .status ha-outlined-button {
-          margin-top: 32px;
+        ha-control-button.disarm {
+          height: 60px;
+          min-width: 130px;
+          max-width: 200px;
+          margin: 0 auto;
+          --control-button-border-radius: 24px;
         }
       `,
     ];

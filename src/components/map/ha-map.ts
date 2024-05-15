@@ -1,15 +1,21 @@
+import { isToday } from "date-fns";
 import type {
   Circle,
   CircleMarker,
-  LatLngTuple,
   LatLngExpression,
+  LatLngTuple,
   Layer,
   Map,
   Marker,
   Polyline,
 } from "leaflet";
-import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import { CSSResultGroup, PropertyValues, ReactiveElement, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatDateTime } from "../../common/datetime/format_date_time";
+import {
+  formatTimeWeekday,
+  formatTimeWithSeconds,
+} from "../../common/datetime/format_time";
 import {
   LeafletModuleType,
   setupLeafletMap,
@@ -17,22 +23,24 @@ import {
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ThemeMode } from "../../types";
+import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { isTouch } from "../../util/is_touch";
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
 export interface HaMapPathPoint {
   point: LatLngTuple;
-  tooltip: string;
+  timestamp: Date;
 }
 export interface HaMapPaths {
   points: HaMapPathPoint[];
   color?: string;
+  name?: string;
   gradualOpacity?: number;
+  fullDatetime?: boolean;
 }
 
 export interface HaMapEntity {
@@ -61,7 +69,8 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public fitZones = false;
 
-  @property({ type: Boolean }) public darkMode = false;
+  @property({ attribute: "theme-mode", type: String })
+  public themeMode: ThemeMode = "auto";
 
   @property({ type: Number }) public zoom = 14;
 
@@ -146,7 +155,7 @@ export class HaMap extends ReactiveElement {
     }
 
     if (
-      !changedProps.has("darkMode") &&
+      !changedProps.has("themeMode") &&
       (!changedProps.has("hass") ||
         (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
     ) {
@@ -155,12 +164,18 @@ export class HaMap extends ReactiveElement {
     this._updateMapStyle();
   }
 
+  private get _darkMode() {
+    return (
+      this.themeMode === "dark" ||
+      (this.themeMode === "auto" && Boolean(this.hass.themes.darkMode))
+    );
+  }
+
   private _updateMapStyle(): void {
-    const darkMode = this.darkMode || (this.hass.themes.darkMode ?? false);
-    const forcedDark = this.darkMode;
     const map = this.renderRoot.querySelector("#map");
-    map!.classList.toggle("dark", darkMode);
-    map!.classList.toggle("forced-dark", forcedDark);
+    map!.classList.toggle("dark", this._darkMode);
+    map!.classList.toggle("forced-dark", this.themeMode === "dark");
+    map!.classList.toggle("forced-light", this.themeMode === "light");
   }
 
   private async _loadMap(): Promise<void> {
@@ -242,6 +257,30 @@ export class HaMap extends ReactiveElement {
     });
   }
 
+  private _computePathTooltip(path: HaMapPaths, point: HaMapPathPoint): string {
+    let formattedTime: string;
+    if (path.fullDatetime) {
+      formattedTime = formatDateTime(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else if (isToday(point.timestamp)) {
+      formattedTime = formatTimeWithSeconds(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else {
+      formattedTime = formatTimeWeekday(
+        point.timestamp,
+        this.hass.locale,
+        this.hass.config
+      );
+    }
+    return `${path.name}<br>${formattedTime}`;
+  }
+
   private _drawPaths(): void {
     const hass = this.hass;
     const map = this.leafletMap;
@@ -289,7 +328,10 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindTooltip(path.points[pointIndex].tooltip, { direction: "top" })
+            .bindTooltip(
+              this._computePathTooltip(path, path.points[pointIndex]),
+              { direction: "top" }
+            )
         );
 
         // DRAW line between this and next point
@@ -319,7 +361,10 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindTooltip(path.points[pointIndex].tooltip, { direction: "top" })
+            .bindTooltip(
+              this._computePathTooltip(path, path.points[pointIndex]),
+              { direction: "top" }
+            )
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
@@ -360,8 +405,7 @@ export class HaMap extends ReactiveElement {
       "--dark-primary-color"
     );
 
-    const className =
-      this.darkMode || this.hass.themes.darkMode ? "dark" : "light";
+    const className = this._darkMode ? "dark" : "light";
 
     for (const entity of this.entities) {
       const stateObj = hass.states[getEntityId(entity)];
@@ -505,26 +549,29 @@ export class HaMap extends ReactiveElement {
         background: #090909;
       }
       #map.forced-dark {
+        color: #ffffff;
         --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
           contrast(1.2) saturate(0.3);
+      }
+      #map.forced-light {
+        background: #ffffff;
+        color: #000000;
+        --map-filter: invert(0);
       }
       #map:active {
         cursor: grabbing;
         cursor: -moz-grabbing;
         cursor: -webkit-grabbing;
       }
-      .light {
-        color: #000000;
-      }
-      .dark {
-        color: #ffffff;
-      }
       .leaflet-tile-pane {
         filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
-        background-color: var(--card-background-color, #1c1c1c);
+        background-color: #1c1c1c;
         color: #ffffff;
+      }
+      .dark .leaflet-bar a:hover {
+        background-color: #313131;
       }
       .leaflet-marker-draggable {
         cursor: move !important;
@@ -556,6 +603,7 @@ export class HaMap extends ReactiveElement {
         color: white !important;
         border-radius: 4px;
         box-shadow: none !important;
+        text-align: center;
       }
     `;
   }

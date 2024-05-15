@@ -1,5 +1,4 @@
 import { mdiImageFilterCenterFocus } from "@mdi/js";
-import { isToday } from "date-fns";
 import { HassEntities } from "home-assistant-js-websocket";
 import { LatLngTuple } from "leaflet";
 import {
@@ -14,12 +13,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import {
-  formatTimeWithSeconds,
-  formatTimeWeekday,
-} from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
@@ -143,7 +138,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { type: "map", entities: foundEntities };
+    return { type: "map", entities: foundEntities, theme_mode: "auto" };
   }
 
   protected render() {
@@ -156,6 +151,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         (${this._error.code})
       </ha-alert>`;
     }
+
+    const isDarkMode =
+      this._config.dark_mode || this._config.theme_mode === "dark"
+        ? true
+        : this._config.theme_mode === "light"
+          ? false
+          : this.hass.themes.darkMode;
+
+    const themeMode =
+      this._config.theme_mode || (this._config.dark_mode ? "dark" : "auto");
+
     return html`
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
@@ -166,7 +172,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
-            ?darkMode=${this._config.dark_mode}
+            .themeMode=${themeMode}
             interactiveZones
             renderPassive
           ></ha-map>
@@ -175,6 +181,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               "ui.panel.lovelace.cards.map.reset_focus"
             )}
             .path=${mdiImageFilterCenterFocus}
+            style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
             @click=${this._fitMap}
             tabindex="0"
           ></ha-icon-button>
@@ -391,28 +398,23 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           }
           const p = {} as HaMapPathPoint;
           p.point = [latitude, longitude] as LatLngTuple;
-          const t = new Date(entityState.lu * 1000);
-          if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
-            // if showing > 6 days in the history trail, show the full
-            // date and time
-            p.tooltip = formatDateTime(t, this.hass.locale, this.hass.config);
-          } else if (isToday(t)) {
-            p.tooltip = formatTimeWithSeconds(
-              t,
-              this.hass.locale,
-              this.hass.config
-            );
-          } else {
-            p.tooltip = formatTimeWeekday(
-              t,
-              this.hass.locale,
-              this.hass.config
-            );
-          }
+          p.timestamp = new Date(entityState.lu * 1000);
           points.push(p);
         }
+
+        const entityConfig = this._configEntities?.find(
+          (e) => e.entity === entityId
+        );
+        const name =
+          entityConfig?.name ??
+          (entityId in this.hass.states
+            ? computeStateName(this.hass.states[entityId])
+            : entityId);
+
         paths.push({
           points,
+          name,
+          fullDatetime: (config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW) > 144,
           color: this._getColor(entityId),
           gradualOpacity: 0.8,
         });

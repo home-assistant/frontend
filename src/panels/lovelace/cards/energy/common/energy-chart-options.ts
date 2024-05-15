@@ -5,7 +5,7 @@ import {
   subHours,
   differenceInDays,
   differenceInHours,
-} from "date-fns/esm";
+} from "date-fns";
 import { FrontendLocaleData } from "../../../../../data/translation";
 import {
   formatNumber,

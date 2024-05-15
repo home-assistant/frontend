@@ -2,10 +2,12 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, query } from "lit/decorators";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
+import { LockEntityFeature } from "../../../../src/data/lock";
 import { VacuumEntityFeature } from "../../../../src/data/vacuum";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("switch", "tv_outlet", "on", {
@@ -18,6 +20,11 @@ const ENTITIES = [
   }),
   getEntity("light", "unavailable", "unavailable", {
     friendly_name: "Unavailable entity",
+  }),
+  getEntity("lock", "front_door", "locked", {
+    friendly_name: "Front Door Lock",
+    device_class: "lock",
+    supported_features: LockEntityFeature.OPEN,
   }),
   getEntity("climate", "thermostat", "heat", {
     current_temperature: 73,
@@ -138,6 +145,24 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Lock commands feature",
+    config: `
+- type: tile
+  entity: lock.front_door
+  features:
+    - type: "lock-commands"
+    `,
+  },
+  {
+    heading: "Lock open door feature",
+    config: `
+- type: tile
+  entity: lock.front_door
+  features:
+    - type: "lock-open-door"
+    `,
+  },
+  {
     heading: "Vacuum commands feature",
     config: `
 - type: tile
@@ -184,6 +209,7 @@ class DemoTile extends LitElement {
     hass.updateTranslations(null, "en");
     hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
+    mockIcons(hass);
   }
 }
 

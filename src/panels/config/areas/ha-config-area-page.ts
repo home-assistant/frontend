@@ -215,7 +215,12 @@ class HaConfigAreaPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${area.name}
+        .header=${html`${area.icon
+          ? html`<ha-icon
+              .icon=${area.icon}
+              style="margin-inline-end: 8px;"
+            ></ha-icon>`
+          : nothing}${area.name}`}
       >
         <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
@@ -568,7 +573,7 @@ class HaConfigAreaPage extends LitElement {
       <a
         href=${ifDefined(
           entityState.attributes.id
-            ? `/config/automation/edit/${entityState.attributes.id}`
+            ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
             : undefined
         )}
       >
@@ -710,6 +715,8 @@ class HaConfigAreaPage extends LitElement {
           position: absolute;
           top: 4px;
           right: 4px;
+          inset-inline-end: 4px;
+          inset-inline-start: initial;
           display: none;
         }
         .img-container:hover .img-edit-btn {
@@ -735,6 +742,11 @@ class HaConfigAreaPage extends LitElement {
           text-align: center;
           padding: 16px;
           color: var(--secondary-text-color);
+        }
+
+        mwc-button > ha-svg-icon {
+          margin-inline-start: 0;
+          margin-inline-end: 8px;
         }
       `,
     ];

@@ -3,7 +3,7 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import { addHours } from "date-fns/esm";
+import { addHours } from "date-fns";
 import {
   HassEntities,
   HassEntity,
@@ -16,9 +16,7 @@ import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
@@ -68,8 +66,6 @@ class HaPanelDevState extends LitElement {
   private _showAttributes = true;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
-
-  @property({ type: Boolean, reflect: true }) public rtl = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -132,9 +128,11 @@ class HaPanelDevState extends LitElement {
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
-            <ha-tip .hass=${this.hass}
-              >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
-            >
+            ${this.hass.enableShortcuts
+              ? html`<ha-tip .hass=${this.hass}
+                  >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
+                >`
+              : nothing}
             <ha-textfield
               .label=${this.hass.localize(
                 "ui.panel.developer-tools.tabs.states.state"
@@ -323,14 +321,6 @@ class HaPanelDevState extends LitElement {
         </table>
       </div>
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.locale !== this.hass.locale) {
-      toggleAttribute(this, "rtl", computeRTL(this.hass));
-    }
   }
 
   private _copyEntity(ev) {
@@ -626,7 +616,8 @@ class HaPanelDevState extends LitElement {
 
         .entities th {
           padding: 0 8px;
-          text-align: left;
+          text-align: var(--float-start);
+          direction: var(--direction);
         }
 
         .filters th {
@@ -650,15 +641,6 @@ class HaPanelDevState extends LitElement {
         th.attributes ha-checkbox {
           position: absolute;
           bottom: -8px;
-        }
-
-        :host([rtl]) .entities th {
-          text-align: right;
-          direction: rtl;
-        }
-
-        :host([rtl]) .filters {
-          direction: rtl;
         }
 
         .entities tr {

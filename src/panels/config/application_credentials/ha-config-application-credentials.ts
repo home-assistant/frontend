@@ -1,14 +1,6 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -59,32 +51,37 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
+          sortable: true,
           direction: "asc",
           grows: true,
-          template: (entry) => html`${entry.name}`,
         },
         client_id: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.client_id"
           ),
           width: "30%",
-          direction: "asc",
           hidden: narrow,
-          template: (entry) => html`${entry.client_id}`,
         },
-        application: {
+        localizedDomain: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.application"
           ),
           sortable: true,
           width: "30%",
           direction: "asc",
-          template: (entry) => html`${domainToName(localize, entry.domain)}`,
         },
       };
 
       return columns;
     }
+  );
+
+  private _getApplicationCredentials = memoizeOne(
+    (applicationCredentials: ApplicationCredential[], localize: LocalizeFunc) =>
+      applicationCredentials.map((credential) => ({
+        ...credential,
+        localizedDomain: domainToName(localize, credential.domain),
+      }))
   );
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -102,56 +99,40 @@ export class HaConfigApplicationCredentials extends LitElement {
         backPath="/config"
         .tabs=${configSections.devices}
         .columns=${this._columns(this.narrow, this.hass.localize)}
-        .data=${this._applicationCredentials}
+        .data=${this._getApplicationCredentials(
+          this._applicationCredentials,
+          this.hass.localize
+        )}
         hasFab
         selectable
+        .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
       >
-        ${this._selected.length
-          ? html`
-              <div
-                class=${classMap({
-                  "header-toolbar": this.narrow,
-                  "table-header": !this.narrow,
-                })}
-                slot="header"
-              >
-                <p class="selected-txt">
-                  ${this.hass.localize(
-                    "ui.panel.config.application_credentials.picker.selected",
-                    { number: this._selected.length }
+        <div class="header-btns" slot="selection-bar">
+          ${!this.narrow
+            ? html`
+                <mwc-button @click=${this._removeSelected} class="warning"
+                  >${this.hass.localize(
+                    "ui.panel.config.application_credentials.picker.remove_selected.button"
+                  )}</mwc-button
+                >
+              `
+            : html`
+                <ha-icon-button
+                  class="warning"
+                  id="remove-btn"
+                  @click=${this._removeSelected}
+                  .path=${mdiDelete}
+                  .label=${this.hass.localize("ui.common.remove")}
+                ></ha-icon-button>
+                <ha-help-tooltip
+                  .label=${this.hass.localize(
+                    "ui.panel.config.application_credentials.picker.remove_selected.button"
                   )}
-                </p>
-                <div class="header-btns">
-                  ${!this.narrow
-                    ? html`
-                        <mwc-button
-                          @click=${this._removeSelected}
-                          class="warning"
-                          >${this.hass.localize(
-                            "ui.panel.config.application_credentials.picker.remove_selected.button"
-                          )}</mwc-button
-                        >
-                      `
-                    : html`
-                        <ha-icon-button
-                          class="warning"
-                          id="remove-btn"
-                          @click=${this._removeSelected}
-                          .path=${mdiDelete}
-                          .label=${this.hass.localize("ui.common.remove")}
-                        ></ha-icon-button>
-                        <ha-help-tooltip
-                          .label=${this.hass.localize(
-                            "ui.panel.config.application_credentials.picker.remove_selected.button"
-                          )}
-                        >
-                        </ha-help-tooltip>
-                      `}
-                </div>
-              </div>
-            `
-          : nothing}
+                >
+                </ha-help-tooltip>
+              `}
+        </div>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(

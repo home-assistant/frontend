@@ -1,3 +1,4 @@
+import colors from "color-name";
 import { expandHex } from "./hex";
 
 const rgb_hex = (component: number): string => {
@@ -126,3 +127,18 @@ export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
 
 export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 255]);
+
+export function theme2hex(themeColor: string): string {
+  if (themeColor.startsWith("#")) {
+    return themeColor;
+  }
+
+  const rgbFromColorName = colors[themeColor];
+  if (!rgbFromColorName) {
+    // We have a named color, and there's nothing in the table,
+    // so nothing further we can do with it.
+    // Compare/border/background color will all be the same.
+    return themeColor;
+  }
+  return rgb2hex(rgbFromColorName);
+}

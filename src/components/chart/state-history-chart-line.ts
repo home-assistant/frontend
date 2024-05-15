@@ -111,7 +111,7 @@ export class StateHistoryChartLine extends LitElement {
                 config: this.hass.config,
               },
             },
-            suggestedMin: this.startTime,
+            min: this.startTime,
             suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,
@@ -220,7 +220,12 @@ export class StateHistoryChartLine extends LitElement {
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
         onClick: (e: any) => {
-          if (!this.clickForMoreInfo) {
+          if (
+            !this.clickForMoreInfo ||
+            !(e.native instanceof MouseEvent) ||
+            (e.native instanceof PointerEvent &&
+              e.native.pointerType !== "mouse")
+          ) {
             return;
           }
 

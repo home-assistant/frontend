@@ -3,7 +3,6 @@ import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-help-tooltip";
@@ -99,7 +98,6 @@ class DialogUserDetail extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.users.editor.local_only"
                 )}
-                .dir=${computeRTLDirection(this.hass)}
               >
                 <ha-switch
                   .disabled=${user.system_generated}
@@ -114,7 +112,6 @@ class DialogUserDetail extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.users.editor.admin"
                 )}
-                .dir=${computeRTLDirection(this.hass)}
               >
                 <ha-switch
                   .disabled=${user.system_generated || user.is_owner}
@@ -137,7 +134,6 @@ class DialogUserDetail extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.users.editor.active"
                 )}
-                .dir=${computeRTLDirection(this.hass)}
               >
                 <ha-switch
                   .disabled=${user.system_generated || user.is_owner}
