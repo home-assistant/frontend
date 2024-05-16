@@ -22,9 +22,9 @@ export const supportsLockOpenDoorCardFeature = (stateObj: HassEntity) => {
 };
 
 const CONFIRM_TIMEOUT_SECOND = 5;
-const OPENED_TIMEOUT_SECOND = 3;
+const DONE_TIMEOUT_SECOND = 2;
 
-type ButtonState = "normal" | "confirm" | "success";
+type ButtonState = "normal" | "confirm" | "done";
 
 @customElement("hui-lock-open-door-card-feature")
 class HuiLockOpenDoorCardFeature
@@ -74,7 +74,7 @@ class HuiLockOpenDoorCardFeature
     }
     callProtectedLockService(this, this.hass, this.stateObj!, "open");
 
-    this._setButtonState("success", OPENED_TIMEOUT_SECOND);
+    this._setButtonState("done", DONE_TIMEOUT_SECOND);
   }
 
   protected render() {
@@ -88,11 +88,11 @@ class HuiLockOpenDoorCardFeature
     }
 
     return html`
-      ${this._buttonState === "success"
+      ${this._buttonState === "done"
         ? html`
-            <p class="open-success">
+            <p class="open-done">
               <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-              ${this.hass.localize("ui.card.lock.open_door_success")}
+              ${this.hass.localize("ui.card.lock.open_door_done")}
             </p>
           `
         : html`
@@ -126,7 +126,7 @@ class HuiLockOpenDoorCardFeature
       .open-button.confirm {
         --control-button-background-color: var(--warning-color);
       }
-      .open-success {
+      .open-done {
         font-size: 14px;
         line-height: 14px;
         display: flex;
@@ -139,9 +139,6 @@ class HuiLockOpenDoorCardFeature
         margin: 0 12px 12px 12px;
         height: 40px;
         text-align: center;
-      }
-      ha-control-button-group + ha-attributes:not([empty]) {
-        margin-top: 16px;
       }
     `;
   }
