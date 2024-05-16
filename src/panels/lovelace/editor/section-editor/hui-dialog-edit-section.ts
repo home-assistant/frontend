@@ -29,6 +29,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../conditions/ha-card-conditions-editor";
+import "./hui-section-settings-editor";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
@@ -103,7 +104,13 @@ export class HuiDialogEditSection
     } else {
       switch (this._curTab) {
         case "tab-settings":
-          content = html`Settings`;
+          content = html`
+          <hui-section-settings-editor
+              .hass=${this.hass}
+              .config=${this._config}
+              @value-changed=${this._handleSettingsChanged}
+            >
+            </ha-card-conditions-editor>`;
           break;
         case "tab-visibility":
           content = html`
@@ -220,6 +227,11 @@ export class HuiDialogEditSection
       delete newConfig.visibility;
     }
     this._config = newConfig;
+  }
+
+  private _handleSettingsChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    this._config = ev.detail.value;
   }
 
   private _handleTabSelected(ev: CustomEvent): void {
