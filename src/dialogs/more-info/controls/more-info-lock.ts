@@ -13,7 +13,7 @@ import {
   LockEntity,
   LockEntityFeature,
   callProtectedLockService,
-  isAvailable,
+  canOpen,
   isJammed,
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
@@ -124,7 +124,7 @@ class MoreInfoLock extends LitElement {
                     `
                   : html`
                       <ha-control-button
-                        .disabled=${!isAvailable(this.stateObj)}
+                        .disabled=${!canOpen(this.stateObj)}
                         class="open-button ${this._buttonState}"
                         @click=${this._open}
                       >

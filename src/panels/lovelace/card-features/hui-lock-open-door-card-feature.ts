@@ -8,9 +8,9 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import {
-  LockEntityFeature,
   callProtectedLockService,
-  isAvailable,
+  canOpen,
+  LockEntityFeature,
 } from "../../../data/lock";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
@@ -98,7 +98,7 @@ class HuiLockOpenDoorCardFeature
         : html`
             <ha-control-button-group>
               <ha-control-button
-                .disabled=${!isAvailable(this.stateObj)}
+                .disabled=${!canOpen(this.stateObj)}
                 class="open-button ${this._buttonState}"
                 @click=${this._open}
               >
