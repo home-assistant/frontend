@@ -150,7 +150,7 @@ export class HuiSection extends ReactiveElement {
     if (!this.config.visibility) {
       return;
     }
-
+    this._clearMediaQueries();
     this._listeners = createConditionMediaQueriesListeners(
       this.config.visibility,
       this.hass,
