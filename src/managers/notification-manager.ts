@@ -63,8 +63,6 @@ class NotificationManager extends LitElement {
         leading
         open
         dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
-        .fill-color="var(--ha-toast-background-color, rgb(51, 51, 51)"
-        .label-ink-color="var(--ha-toast-text-color, rgba(255, 255, 255, 0.87)"
         .labelText=${this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
         @MDCSnackbar:closed=${this._toastClosed}
@@ -89,6 +87,20 @@ class NotificationManager extends LitElement {
       </ha-toast>
     `;
   }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .mdc-snackbar__surface  {
+          background-color: var(--ha-toast-background-color, rgba(51, 51, 51, 1));
+          color: var(--ha-toast-text-color, rgba(255, 255, 255, 0.87));
+         }
+      `,
+    ];
+  }
+}
+
 
   private buttonClicked() {
     this._toast?.close("action");
