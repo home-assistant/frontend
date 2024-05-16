@@ -28,8 +28,13 @@ import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/secti
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { findLovelaceContainer } from "../lovelace-path";
+import "../conditions/ha-card-conditions-editor";
+import {
+  findLovelaceContainer,
+  updateLovelaceContainer,
+} from "../lovelace-path";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
+import { Condition } from "../../common/validate-condition";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -77,7 +82,7 @@ export class HuiDialogEditSection
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this._params || !this._config) {
       return nothing;
     }
 
@@ -101,7 +106,14 @@ export class HuiDialogEditSection
           content = html`Settings`;
           break;
         case "tab-visibility":
-          content = html`Visibility`;
+          content = html`
+            <ha-card-conditions-editor
+              .hass=${this.hass}
+              .conditions=${this._config.visibility ?? []}
+              @value-changed=${this._handleConditionChanged}
+            >
+            </ha-card-conditions-editor>
+          `;
           break;
       }
     }
@@ -197,6 +209,19 @@ export class HuiDialogEditSection
     `;
   }
 
+  private _handleConditionChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const conditions = ev.detail.value as Condition[];
+    const newConfig: LovelaceSectionRawConfig = {
+      ...this._config,
+      visibility: conditions,
+    };
+    if (newConfig.visibility?.length === 0) {
+      delete newConfig.visibility;
+    }
+    this._config = newConfig;
+  }
+
   private _handleTabSelected(ev: CustomEvent): void {
     if (!ev.detail.value) {
       return;
@@ -237,6 +262,16 @@ export class HuiDialogEditSection
   }
 
   private async _save(): Promise<void> {
+    if (!this._params || !this._config) {
+      return;
+    }
+    const newConfig = updateLovelaceContainer(
+      this._params.lovelaceConfig,
+      [this._params.viewIndex, this._params.sectionIndex],
+      this._config
+    );
+
+    this._params.saveConfig(newConfig);
     this.closeDialog();
   }
 
