@@ -3,7 +3,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  nothing,
+  nothing
 } from "lit";
 import { property, state, query } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
@@ -95,14 +95,12 @@ class NotificationManager extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      css`
-        .mdc-snackbar__surface  {
-          background-color: var(--ha-toast-background-color, rgba(51, 51, 51, 1));
-          color: var(--ha-toast-text-color, rgba(255, 255, 255, 0.87));
-         }
-      `,
-    ];
+    return css`
+      .mdc-snackbar__surface  {
+        background-color: var(--ha-toast-background-color, rgba(51, 51, 51, 1));
+        color: var(--ha-toast-text-color, rgba(255, 255, 255, 0.87));
+       }
+    `,
   }
 }
 
