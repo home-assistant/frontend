@@ -100,7 +100,7 @@ class NotificationManager extends LitElement {
         background-color: var(--ha-toast-background-color, rgba(51, 51, 51, 1));
         color: var(--ha-toast-text-color, rgba(255, 255, 255, 0.87));
        }
-    `,
+    `;
   }
 }
 
