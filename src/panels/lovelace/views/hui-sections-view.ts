@@ -186,38 +186,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       viewIndex: this.index!,
       sectionIndex: index,
     });
-
-    // const section = findLovelaceContainer(
-    //   this.lovelace!.config,
-    //   path
-    // ) as LovelaceRawSectionConfig;
-
-    // const newTitle = !section.title;
-
-    // const title = await showPromptDialog(this, {
-    //   title: this.hass.localize(
-    //     `ui.panel.lovelace.editor.edit_section_title.${newTitle ? "title_new" : "title"}`
-    //   ),
-    //   inputLabel: this.hass.localize(
-    //     "ui.panel.lovelace.editor.edit_section_title.input_label"
-    //   ),
-    //   inputType: "string",
-    //   defaultValue: section.title,
-    //   confirmText: newTitle
-    //     ? this.hass.localize("ui.common.add")
-    //     : this.hass.localize("ui.common.save"),
-    // });
-
-    // if (title === null) {
-    //   return;
-    // }
-
-    // const newConfig = updateLovelaceContainer(this.lovelace!.config, path, {
-    //   ...section,
-    //   title: title || undefined,
-    // });
-
-    // this.lovelace!.saveConfig(newConfig);
   }
 
   private async _deleteSection(ev) {

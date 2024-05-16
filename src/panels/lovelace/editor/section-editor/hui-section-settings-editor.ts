@@ -30,17 +30,27 @@ export class HuiDialogEditSection extends LitElement {
       title: this.config.title || "",
     };
 
-    return html`<ha-form
-      .hass=${this.hass}
-      .data=${data}
-      .schema=${SCHEMA}
-      .computeLabel=${this._computeLabel}
-      @value-changed=${this._valueChanged}
-      dialogInitialFocus
-    ></ha-form>`;
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabel}
+        .computeHelper=${this._computeHelper}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
   }
 
-  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) => schema.name;
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass.localize(
+      `ui.panel.lovelace.editor.edit_section.settings.${schema.name}`
+    );
+
+  private _computeHelper = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass.localize(
+      `ui.panel.lovelace.editor.edit_section.settings.${schema.name}_helper`
+    ) || "";
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();

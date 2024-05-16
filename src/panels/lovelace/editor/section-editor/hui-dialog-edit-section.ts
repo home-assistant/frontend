@@ -28,14 +28,13 @@ import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/secti
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../conditions/ha-card-conditions-editor";
-import "./hui-section-settings-editor";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
 } from "../lovelace-path";
+import "./hui-section-settings-editor";
+import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import { Condition } from "../../common/validate-condition";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -105,21 +104,22 @@ export class HuiDialogEditSection
       switch (this._curTab) {
         case "tab-settings":
           content = html`
-          <hui-section-settings-editor
+            <hui-section-settings-editor
               .hass=${this.hass}
               .config=${this._config}
-              @value-changed=${this._handleSettingsChanged}
+              @value-changed=${this._configChanged}
             >
-            </ha-card-conditions-editor>`;
+            </hui-section-settings-editor>
+          `;
           break;
         case "tab-visibility":
           content = html`
-            <ha-card-conditions-editor
+            <hui-section-visibility-editor
               .hass=${this.hass}
-              .conditions=${this._config.visibility ?? []}
-              @value-changed=${this._handleConditionChanged}
+              .config=${this._config}
+              @value-changed=${this._configChanged}
             >
-            </ha-card-conditions-editor>
+            </hui-section-visibility-editor>
           `;
           break;
       }
@@ -216,20 +216,7 @@ export class HuiDialogEditSection
     `;
   }
 
-  private _handleConditionChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const conditions = ev.detail.value as Condition[];
-    const newConfig: LovelaceSectionRawConfig = {
-      ...this._config,
-      visibility: conditions,
-    };
-    if (newConfig.visibility?.length === 0) {
-      delete newConfig.visibility;
-    }
-    this._config = newConfig;
-  }
-
-  private _handleSettingsChanged(ev: CustomEvent): void {
+  private _configChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this._config = ev.detail.value;
   }
