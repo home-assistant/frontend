@@ -1,3 +1,4 @@
+import { mdiFilterVariantRemove } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -14,10 +15,11 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
 import { findRelated, RelatedResult } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-state-icon";
-import "./ha-check-list-item";
 import { loadVirtualizer } from "../resources/virtualizer";
+import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
+import "./ha-state-icon";
+import "./search-input-outlined";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -32,6 +34,8 @@ export class HaFilterEntities extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @state() private _shouldRender = false;
+
+  @state() private _filter?: string;
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
@@ -52,14 +56,30 @@ export class HaFilterEntities extends LitElement {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.entities.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
           ? html`
-              <mwc-list class="ha-scrollbar">
+              <search-input-outlined
+                .hass=${this.hass}
+                .filter=${this._filter}
+                @value-changed=${this._handleSearchChange}
+              >
+              </search-input-outlined>
+              <mwc-list class="ha-scrollbar" multi>
                 <lit-virtualizer
-                  .items=${this._entities(this.hass.states, this.type)}
+                  .items=${this._entities(
+                    this.hass.states,
+                    this.type,
+                    this._filter || "",
+                    this.value
+                  )}
+                  .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
                 >
@@ -76,24 +96,28 @@ export class HaFilterEntities extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
   }
 
+  private _keyFunction = (entity) => entity?.entity_id;
+
   private _renderItem = (entity) =>
-    html`<ha-check-list-item
-      .value=${entity.entity_id}
-      .selected=${this.value?.includes(entity.entity_id)}
-      graphic="icon"
-    >
-      <ha-state-icon
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${entity}
-      ></ha-state-icon>
-      ${computeStateName(entity)}
-    </ha-check-list-item>`;
+    !entity
+      ? nothing
+      : html`<ha-check-list-item
+          .value=${entity.entity_id}
+          .selected=${this.value?.includes(entity.entity_id) ?? false}
+          graphic="icon"
+        >
+          <ha-state-icon
+            slot="graphic"
+            .hass=${this.hass}
+            .stateObj=${entity}
+          ></ha-state-icon>
+          ${computeStateName(entity)}
+        </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -118,12 +142,27 @@ export class HaFilterEntities extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value.toLowerCase();
+  }
+
   private _entities = memoizeOne(
-    (states: HomeAssistant["states"], type: this["type"]) => {
+    (
+      states: HomeAssistant["states"],
+      type: this["type"],
+      filter: string,
+      _value
+    ) => {
       const values = Object.values(states);
       return values
         .filter(
-          (entityState) => !type || computeStateDomain(entityState) !== type
+          (entityState) =>
+            (!type || computeStateDomain(entityState) !== type) &&
+            (!filter ||
+              entityState.entity_id.toLowerCase().includes(filter) ||
+              entityState.attributes.friendly_name
+                ?.toLowerCase()
+                .includes(filter))
         )
         .sort((a, b) =>
           stringCompare(
@@ -170,6 +209,15 @@ export class HaFilterEntities extends LitElement {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -188,6 +236,10 @@ export class HaFilterEntities extends LitElement {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;
@@ -208,6 +260,10 @@ export class HaFilterEntities extends LitElement {
         ha-check-list-item {
           --mdc-list-item-graphic-margin: 16px;
           width: 100%;
+        }
+        search-input-outlined {
+          display: block;
+          padding: 0 8px;
         }
       `,
     ];

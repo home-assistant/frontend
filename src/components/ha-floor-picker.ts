@@ -10,7 +10,10 @@ import {
   ScorableTextItem,
   fuzzyFilterSort,
 } from "../common/string/filter/sequence-matching";
-import { AreaRegistryEntry } from "../data/area_registry";
+import {
+  AreaRegistryEntry,
+  updateAreaRegistryEntry,
+} from "../data/area_registry";
 import {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -23,11 +26,9 @@ import {
   getFloorAreaLookup,
   subscribeFloorRegistry,
 } from "../data/floor_registry";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { showFloorRegistryDetailDialog } from "../panels/config/areas/show-dialog-floor-registry-detail";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
@@ -38,10 +39,14 @@ import "./ha-list-item";
 
 type ScorableFloorRegistryEntry = ScorableTextItem & FloorRegistryEntry;
 
+const ADD_NEW_ID = "___ADD_NEW___";
+const NO_FLOORS_ID = "___NO_FLOORS___";
+const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
+
 const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) =>
   html`<ha-list-item
     graphic="icon"
-    class=${classMap({ "add-new": item.floor_id === "add_new" })}
+    class=${classMap({ "add-new": item.floor_id === ADD_NEW_ID })}
   >
     <ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>
     ${item.name}
@@ -146,18 +151,6 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       noAdd: this["noAdd"],
       excludeFloors: this["excludeFloors"]
     ): FloorRegistryEntry[] => {
-      if (!floors.length) {
-        return [
-          {
-            floor_id: "no_floors",
-            name: this.hass.localize("ui.components.floor-picker.no_floors"),
-            icon: null,
-            level: 0,
-            aliases: [],
-          },
-        ];
-      }
-
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -282,7 +275,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       if (areaIds) {
         const floorAreaLookup = getFloorAreaLookup(areas);
         outputFloors = outputFloors.filter((floor) =>
-          floorAreaLookup[floor.floor_id].some((area) =>
+          floorAreaLookup[floor.floor_id]?.some((area) =>
             areaIds!.includes(area.area_id)
           )
         );
@@ -297,10 +290,10 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
       if (!outputFloors.length) {
         outputFloors = [
           {
-            floor_id: "no_floors",
-            name: this.hass.localize("ui.components.floor-picker.no_match"),
+            floor_id: NO_FLOORS_ID,
+            name: this.hass.localize("ui.components.floor-picker.no_floors"),
             icon: null,
-            level: 0,
+            level: null,
             aliases: [],
           },
         ];
@@ -311,10 +304,10 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         : [
             ...outputFloors,
             {
-              floor_id: "add_new",
+              floor_id: ADD_NEW_ID,
               name: this.hass.localize("ui.components.floor-picker.add_new"),
               icon: "mdi:plus",
-              level: 0,
+              level: null,
               aliases: [],
             },
           ];
@@ -341,7 +334,7 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         this.excludeFloors
       ).map((floor) => ({
         ...floor,
-        strings: [floor.floor_id, floor.name], // ...floor.aliases
+        strings: [floor.floor_id, floor.name, ...floor.aliases],
       }));
       this.comboBox.items = floors;
       this.comboBox.filteredItems = floors;
@@ -385,20 +378,36 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
 
     const filteredItems = fuzzyFilterSort<ScorableFloorRegistryEntry>(
       filterString,
-      target.items || []
+      target.items?.filter(
+        (item) => ![NO_FLOORS_ID, ADD_NEW_ID].includes(item.label_id)
+      ) || []
     );
-    if (!this.noAdd && filteredItems?.length === 0) {
-      this._suggestion = filterString;
-      this.comboBox.filteredItems = [
-        {
-          floor_id: "add_new_suggestion",
-          name: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
-            { name: this._suggestion }
-          ),
-          picture: null,
-        },
-      ];
+    if (filteredItems.length === 0) {
+      if (this.noAdd) {
+        this.comboBox.filteredItems = [
+          {
+            floor_id: NO_FLOORS_ID,
+            name: this.hass.localize("ui.components.floor-picker.no_match"),
+            icon: null,
+            level: null,
+            aliases: [],
+          },
+        ] as FloorRegistryEntry[];
+      } else {
+        this._suggestion = filterString;
+        this.comboBox.filteredItems = [
+          {
+            floor_id: ADD_NEW_SUGGESTION_ID,
+            name: this.hass.localize(
+              "ui.components.floor-picker.add_new_sugestion",
+              { name: this._suggestion }
+            ),
+            icon: "mdi:plus",
+            level: null,
+            aliases: [],
+          },
+        ] as FloorRegistryEntry[];
+      }
     } else {
       this.comboBox.filteredItems = filteredItems;
     }
@@ -416,11 +425,13 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
-    if (newValue === "no_floors") {
+    if (newValue === NO_FLOORS_ID) {
       newValue = "";
+      this.comboBox.setInputValue("");
+      return;
     }
 
-    if (!["add_new_suggestion", "add_new"].includes(newValue)) {
+    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
       if (newValue !== this._value) {
         this._setValue(newValue);
       }
@@ -428,24 +439,18 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
     }
 
     (ev.target as any).value = this._value;
-    showPromptDialog(this, {
-      title: this.hass.localize("ui.components.floor-picker.add_dialog.title"),
-      text: this.hass.localize("ui.components.floor-picker.add_dialog.text"),
-      confirmText: this.hass.localize(
-        "ui.components.floor-picker.add_dialog.add"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.components.floor-picker.add_dialog.name"
-      ),
-      defaultValue:
-        newValue === "add_new_suggestion" ? this._suggestion : undefined,
-      confirm: async (name) => {
-        if (!name) {
-          return;
-        }
+
+    this.hass.loadFragmentTranslation("config");
+
+    showFloorRegistryDetailDialog(this, {
+      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
+      createEntry: async (values, addedAreas) => {
         try {
-          const floor = await createFloorRegistryEntry(this.hass, {
-            name,
+          const floor = await createFloorRegistryEntry(this.hass, values);
+          addedAreas.forEach((areaId) => {
+            updateAreaRegistryEntry(this.hass, areaId, {
+              floor_id: floor.floor_id,
+            });
           });
           const floors = [...this._floors!, floor];
           this.comboBox.filteredItems = this._getFloors(
@@ -467,18 +472,16 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
         } catch (err: any) {
           showAlertDialog(this, {
             title: this.hass.localize(
-              "ui.components.floor-picker.add_dialog.failed_create_floor"
+              "ui.components.floor-picker.failed_create_floor"
             ),
             text: err.message,
           });
         }
       },
-      cancel: () => {
-        this._setValue(undefined);
-        this._suggestion = undefined;
-        this.comboBox.setInputValue("");
-      },
     });
+
+    this._suggestion = undefined;
+    this.comboBox.setInputValue("");
   }
 
   private _setValue(value?: string) {

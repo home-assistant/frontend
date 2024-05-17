@@ -1,11 +1,12 @@
 import { SelectedDetail } from "@material/mwc-list";
+import { mdiFilterVariantRemove } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
 import "./ha-check-list-item";
+import "./ha-expansion-panel";
 import "./ha-icon";
 
 @customElement("ha-filter-states")
@@ -43,7 +44,11 @@ export class HaFilterStates extends LitElement {
         <div slot="header" class="header">
           ${this.label}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -57,8 +62,8 @@ export class HaFilterStates extends LitElement {
                   (item) =>
                     html`<ha-check-list-item
                       .value=${item.value}
-                      .selected=${this.value?.includes(item.value)}
-                      .graphic=${hasIcon ? "icon" : undefined}
+                      .selected=${this.value?.includes(item.value) ?? false}
+                      .graphic=${hasIcon ? "icon" : null}
                     >
                       ${item.icon
                         ? html`<ha-icon
@@ -118,6 +123,15 @@ export class HaFilterStates extends LitElement {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -136,6 +150,10 @@ export class HaFilterStates extends LitElement {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;

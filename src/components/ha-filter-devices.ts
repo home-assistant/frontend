@@ -1,3 +1,4 @@
+import { mdiFilterVariantRemove } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -13,10 +14,11 @@ import { stringCompare } from "../common/string/compare";
 import { computeDeviceName } from "../data/device_registry";
 import { findRelated, RelatedResult } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
-import "./ha-check-list-item";
 import { loadVirtualizer } from "../resources/virtualizer";
+import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
+import "./ha-expansion-panel";
+import "./search-input-outlined";
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
@@ -31,6 +33,8 @@ export class HaFilterDevices extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _shouldRender = false;
+
+  @state() private _filter?: string;
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
@@ -51,30 +55,49 @@ export class HaFilterDevices extends LitElement {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.devices.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
-          ? html`<mwc-list class="ha-scrollbar">
-              <lit-virtualizer
-                .items=${this._devices(this.hass.devices)}
-                .renderItem=${this._renderItem}
-                @click=${this._handleItemClick}
+          ? html`<search-input-outlined
+                .hass=${this.hass}
+                .filter=${this._filter}
+                @value-changed=${this._handleSearchChange}
               >
-              </lit-virtualizer>
-            </mwc-list>`
+              </search-input-outlined>
+              <mwc-list class="ha-scrollbar" multi>
+                <lit-virtualizer
+                  .items=${this._devices(
+                    this.hass.devices,
+                    this._filter || "",
+                    this.value
+                  )}
+                  .keyFunction=${this._keyFunction}
+                  .renderItem=${this._renderItem}
+                  @click=${this._handleItemClick}
+                >
+                </lit-virtualizer>
+              </mwc-list>`
           : nothing}
       </ha-expansion-panel>
     `;
   }
 
+  private _keyFunction = (device) => device?.id;
+
   private _renderItem = (device) =>
-    html`<ha-check-list-item
-      .value=${device.id}
-      .selected=${this.value?.includes(device.id)}
-    >
-      ${computeDeviceName(device, this.hass)}
-    </ha-check-list-item>`;
+    !device
+      ? nothing
+      : html`<ha-check-list-item
+          .value=${device.id}
+          .selected=${this.value?.includes(device.id) ?? false}
+        >
+          ${computeDeviceName(device, this.hass)}
+        </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -96,7 +119,7 @@ export class HaFilterDevices extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
   }
@@ -109,16 +132,28 @@ export class HaFilterDevices extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _devices = memoizeOne((devices: HomeAssistant["devices"]) => {
-    const values = Object.values(devices);
-    return values.sort((a, b) =>
-      stringCompare(
-        a.name_by_user || a.name || "",
-        b.name_by_user || b.name || "",
-        this.hass.locale.language
-      )
-    );
-  });
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value.toLowerCase();
+  }
+
+  private _devices = memoizeOne(
+    (devices: HomeAssistant["devices"], filter: string, _value) => {
+      const values = Object.values(devices);
+      return values
+        .filter(
+          (device) =>
+            !filter ||
+            computeDeviceName(device, this.hass).toLowerCase().includes(filter)
+        )
+        .sort((a, b) =>
+          stringCompare(
+            computeDeviceName(a, this.hass),
+            computeDeviceName(b, this.hass),
+            this.hass.locale.language
+          )
+        );
+    }
+  );
 
   private async _findRelated() {
     const relatedPromises: Promise<RelatedResult>[] = [];
@@ -155,6 +190,15 @@ export class HaFilterDevices extends LitElement {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -175,6 +219,10 @@ export class HaFilterDevices extends LitElement {
           display: flex;
           align-items: center;
         }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
+        }
         .badge {
           display: inline-block;
           margin-left: 8px;
@@ -193,6 +241,10 @@ export class HaFilterDevices extends LitElement {
         }
         ha-check-list-item {
           width: 100%;
+        }
+        search-input-outlined {
+          display: block;
+          padding: 0 8px;
         }
       `,
     ];

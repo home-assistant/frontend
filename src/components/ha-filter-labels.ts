@@ -1,14 +1,15 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
+import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiPlus } from "@mdi/js";
+import { repeat } from "lit/directives/repeat";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
+import { navigate } from "../common/navigate";
 import {
   LabelRegistryEntry,
-  createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -18,7 +19,6 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-label";
-import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -53,7 +53,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.labels.caption")}
           ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>`
+            ? html`<div class="badge">${this.value?.length}</div>
+                <ha-icon-button
+                  .path=${mdiFilterVariantRemove}
+                  @click=${this._clearFilter}
+                ></ha-icon-button>`
             : nothing}
         </div>
         ${this._shouldRender
@@ -63,26 +67,30 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 class="ha-scrollbar"
                 multi
               >
-                ${this._labels.map((label) => {
-                  const color = label.color
-                    ? computeCssColor(label.color)
-                    : undefined;
-                  return html`<ha-check-list-item
-                    .value=${label.label_id}
-                    .selected=${this.value?.includes(label.label_id)}
-                    hasMeta
-                  >
-                    <ha-label style=${color ? `--color: ${color}` : ""}>
-                      ${label.icon
-                        ? html`<ha-icon
-                            slot="icon"
-                            .icon=${label.icon}
-                          ></ha-icon>`
-                        : nothing}
-                      ${label.name}
-                    </ha-label>
-                  </ha-check-list-item>`;
-                })}
+                ${repeat(
+                  this._labels,
+                  (label) => label.label_id,
+                  (label) => {
+                    const color = label.color
+                      ? computeCssColor(label.color)
+                      : undefined;
+                    return html`<ha-check-list-item
+                      .value=${label.label_id}
+                      .selected=${(this.value || []).includes(label.label_id)}
+                      hasMeta
+                    >
+                      <ha-label style=${color ? `--color: ${color}` : ""}>
+                        ${label.icon
+                          ? html`<ha-icon
+                              slot="icon"
+                              .icon=${label.icon}
+                            ></ha-icon>`
+                          : nothing}
+                        ${label.name}
+                      </ha-label>
+                    </ha-check-list-item>`;
+                  }
+                )}
               </mwc-list>
             `
           : nothing}
@@ -90,11 +98,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       ${this.expanded
         ? html`<ha-list-item
             graphic="icon"
-            @click=${this._addLabel}
+            @click=${this._manageLabels}
             class="add"
           >
-            <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.labels.add_label")}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.labels.manage_labels")}
           </ha-list-item>`
         : nothing}
     `;
@@ -110,10 +118,8 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _addLabel() {
-    showLabelDetailDialog(this, {
-      createEntry: (values) => createLabelRegistryEntry(this.hass, values),
-    });
+  private _manageLabels() {
+    navigate("/config/labels");
   }
 
   private _expandedWillChange(ev) {
@@ -148,6 +154,15 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _clearFilter(ev) {
+    ev.preventDefault();
+    this.value = undefined;
+    fireEvent(this, "data-table-filter-changed", {
+      value: undefined,
+      items: undefined,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
@@ -167,6 +182,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         .header {
           display: flex;
           align-items: center;
+        }
+        .header ha-icon-button {
+          margin-inline-start: auto;
+          margin-inline-end: 8px;
         }
         .badge {
           display: inline-block;

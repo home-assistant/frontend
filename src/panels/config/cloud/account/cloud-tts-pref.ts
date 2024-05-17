@@ -188,6 +188,7 @@ export class CloudTTSPref extends LitElement {
       }
       .row > * {
         flex: 1;
+        width: 0;
       }
       .row > *:first-child {
         margin-right: 8px;

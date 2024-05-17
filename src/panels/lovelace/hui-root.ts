@@ -640,7 +640,9 @@ class HUIRoot extends LitElement {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
-      hint: this.hass.localize("ui.tips.key_e_hint"),
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.tips.key_e_hint")
+        : undefined,
     });
   }
 
@@ -884,9 +886,9 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      this.style.setProperty("--lovelace-background", configBackground);
+      root.style.setProperty("--lovelace-background", configBackground);
     } else {
-      this.style.removeProperty("--lovelace-background");
+      root.style.removeProperty("--lovelace-background");
     }
 
     root.appendChild(view);
@@ -908,6 +910,8 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
+          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
+          backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: env(safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
@@ -1009,8 +1013,6 @@ class HUIRoot extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-        }
-        hui-view {
           background: var(
             --lovelace-background,
             var(--primary-background-color)

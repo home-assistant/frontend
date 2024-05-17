@@ -78,6 +78,7 @@ class LightColorTempPicker extends LitElement {
 
     return html`
       <ha-control-slider
+        touch-action="none"
         inverted
         vertical
         .value=${this._ctPickerValue}
@@ -190,7 +191,7 @@ class LightColorTempPicker extends LitElement {
           max-height: 320px;
           min-height: 200px;
           --control-slider-thickness: 130px;
-          --control-slider-border-radius: 48px;
+          --control-slider-border-radius: 36px;
           --control-slider-color: var(--primary-color);
           --control-slider-background: -webkit-linear-gradient(
             top,

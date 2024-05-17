@@ -377,6 +377,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "location": {
+          "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
+          "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+        },
         "selector": {
           "options": "Selector Options",
           "types": {
@@ -440,6 +445,7 @@
           "was_opened": "was opened",
           "was_closed": "was closed",
           "is_opening": "is opening",
+          "is_opened": "is opened",
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
@@ -472,7 +478,9 @@
           "clear": "Clear",
           "no_entities": "You don't have any entities",
           "no_match": "No matching entities found",
-          "show_entities": "Show entities"
+          "show_entities": "Show entities",
+          "new_entity": "Create a new entity",
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -501,11 +509,19 @@
       },
       "subpage-data-table": {
         "filters": "Filters",
+        "show_results": "show {number} results",
+        "clear_filter": "Clear filter",
+        "close_filter": "Close filters",
+        "exit_selection_mode": "Exit selection mode",
+        "enter_selection_mode": "Enter selection mode",
         "sort_by": "Sort by {sortColumn}",
         "group_by": "Group by {groupColumn}",
         "dont_group_by": "Don't group",
         "select": "Select",
-        "selected": "Selected {selected}"
+        "selected": "Selected {selected}",
+        "close_select_mode": "Close selection mode",
+        "select_all": "Select all",
+        "select_none": "Select none"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -564,6 +580,7 @@
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
         "no_categories": "You don't have any categories",
+        "no_match": "No matching categories found",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -592,13 +609,7 @@
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "unassigned_areas": "Unassigned areas",
-        "add_dialog": {
-          "title": "Add new area",
-          "text": "Enter the name of the new area.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_area": "Failed to create area."
-        }
+        "failed_create_area": "Failed to create area."
       },
       "floor-picker": {
         "clear": "Clear",
@@ -608,13 +619,7 @@
         "add_new": "Add new floor…",
         "no_floors": "You don't have any floors",
         "no_match": "No matching floors found",
-        "add_dialog": {
-          "title": "Add new floor",
-          "text": "Enter the name of the new floor.",
-          "name": "Name",
-          "add": "Add",
-          "failed_create_floor": "Failed to create floor."
-        }
+        "failed_create_floor": "Failed to create floor."
       },
       "area-filter": {
         "title": "Areas",
@@ -779,7 +784,8 @@
         "no-data": "No data",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
-        "clear": "Clear"
+        "clear": "Clear",
+        "ungrouped": "Ungrouped"
       },
       "media-browser": {
         "tts": {
@@ -1118,6 +1124,7 @@
         "edit": "Edit entity",
         "details": "Details",
         "back_to_info": "Back to info",
+        "info": "Information",
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
@@ -1869,6 +1876,7 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
+          "multiselect": { "failed": "Failed to update {number} items." },
           "learn_more": "Learn more"
         },
         "updates": {
@@ -1882,6 +1890,7 @@
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
           "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
+          "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
@@ -1930,7 +1939,10 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this floor.",
+            "areas_section": "Areas",
+            "areas_description": "Specify the areas that are on this floor.",
+            "add_area": "Add area"
           }
         },
         "category": {
@@ -1965,6 +1977,7 @@
             "color": "Color"
           },
           "add_label": "Add label",
+          "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
@@ -2240,6 +2253,7 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
+              "display_name": "Display name",
               "device_consumption_energy": "Device consumption energy",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
@@ -2265,10 +2279,12 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
-              "editable": "Editable"
+              "editable": "Editable",
+              "category": "Category"
             },
             "create_helper": "Create helper",
-            "no_helpers": "Looks like you don't have any helpers yet!"
+            "no_helpers": "Looks like you don't have any helpers yet!",
+            "search": "Search {number} helpers"
           },
           "dialog": {
             "create": "Create",
@@ -2634,6 +2650,7 @@
             "headers": {
               "name": "Name",
               "area": "Area",
+              "domain": "Domain",
               "assistants": "Assistants",
               "aliases": "Aliases"
             },
@@ -2669,6 +2686,7 @@
             "edit_automation": "Edit automation",
             "dev_automation": "Debug automation",
             "show_info_automation": "Show info about automation",
+            "show_settings": "Show settings",
             "delete": "[%key:ui::common::delete%]",
             "delete_confirm_title": "Delete automation?",
             "delete_confirm_text": "{name} will be permanently deleted.",
@@ -2681,13 +2699,23 @@
             "assign_category": "Assign category",
             "no_category_support": "You can't assign an category to this automation",
             "no_category_entity_reg": "To assign an category to an automation it needs to have a unique ID.",
+            "search": "Search {number} automations",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
+            },
+            "bulk_action": "Action",
+            "bulk_actions": {
+              "move_category": "Move to category",
+              "no_category": "No category",
+              "add_label": "Add label",
+              "enable": "Enable",
+              "disable": "Disable"
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
@@ -2916,7 +2944,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
-                  "offset": "Offset (optional)",
+                  "offset": "Offset in seconds or HH:MM:SS (optional)",
                   "description": {
                     "picker": "When the sun sets or rises.",
                     "sets": "When the sun sets{hasDuration, select, \n true { offset by {duration}} \n other {}\n }",
@@ -3225,11 +3253,16 @@
                     "service_based_on_template": "Call a service based on a template on {targets}",
                     "service_based_on_name": "Call a service ''{name}'' on {targets}",
                     "service_name": "{domain} ''{name}'' on {targets}",
+                    "service_based_on_template_no_targets": "Call a service based on a template",
+                    "service_based_on_name_no_targets": "Call a service ''{name}''",
+                    "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Call a service",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area"
+                    "target_unknown_area": "unknown area",
+                    "target_unknown_floor": "unknown floor",
+                    "target_unknown_label": "unknown label"
                   }
                 },
                 "play_media": {
@@ -3553,7 +3586,8 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -3562,7 +3596,8 @@
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
-            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay."
+            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
+            "search": "Search {number} scripts"
           },
           "dialog_new": {
             "header": "Create script",
@@ -3662,14 +3697,16 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
             "no_category_support": "You can't assign an category to this scene",
             "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
-            "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV."
+            "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
+            "search": "Search {number} scenes"
           },
           "editor": {
             "default_name": "New scene",
@@ -3790,25 +3827,42 @@
               }
             },
             "remote": {
-              "title": "Remote control",
+              "title": "Remote access",
               "connected": "Connected",
               "not_connected": "Not connected",
               "reconnecting": "Not connected. Trying to reconnect.",
-              "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
+              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
               "cerificate_error": "There was an error generating the certificate, check your logs.",
-              "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
-              "instance_is_available": "Your instance is available at your",
-              "instance_will_be_available": "Your instance will be available at your",
+              "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
+              "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
-              "nabu_casa_url": "Nabu Casa URL",
-              "advanced_options": "Advanced options",
-              "external_activation": "Allow external activation of remote control",
-              "external_activation_secondary": "Allows you to turn on remote control from your Nabu Casa account page, even if you're outside your local network",
-              "certificate_info": "Certificate info",
-              "certificate_expire": "Will be renewed at {date}",
-              "more_info": "More info"
+              "show_url": "Show full URL",
+              "hide_url": "Hide URL",
+              "copy_link": "Copy link",
+              "security_options": "Security options",
+              "strict_connection": "Remote login access",
+              "strict_connection_secondary": "Choose what happens when new devices visit your remote access link.",
+              "strict_connection_option_disabled": "Show login page",
+              "strict_connection_option_disabled_secondary": "Any new device visiting your remote access link are presented with a login page.",
+              "strict_connection_option_guard_page": "Block remote logins",
+              "strict_connection_option_guard_page_secondary": "New devices must log in with a temporary access link. Devices accessing the link that are not logged in will be presented with a page explaining the restrictions.",
+              "strict_connection_option_guard_page_warning": "This prevents outsiders from trying to log in to your system but also your own devices if they have not logged in previously.",
+              "strict_connection_option_drop_connection": "Block remote logins and show nothing",
+              "strict_connection_option_drop_connection_secondary": "This is the same as the above setting but instead provides a blank page for additional security.",
+              "strict_connection_option_drop_connection_warning": "This prevents outsiders from snooping the remote web address and trying to log in, but it may appear as if there is no system running when users try to access it.",
+              "external_activation": "Allow external activation of remote access",
+              "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
+              "drop_connection_warning_title": "Remote log in has been deactivated",
+              "drop_connection_warning": "The below security options may make it appear the system is not running.",
+              "strict_connection_link": "Provide temporary login access",
+              "strict_connection_link_secondary": "This provides a link for new devices to login for the next hour.",
+              "strict_connection_create_link": "Create link",
+              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
+              "certificate_info": "Certificate information",
+              "certificate_expire": "Certificate renewal at {date}",
+              "more_info": "More details"
             },
             "alexa": {
               "title": "Alexa",
@@ -3994,8 +4048,13 @@
           "confirm_delete": "Are you sure you want to delete this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
-            "search": "Search devices",
-            "state": "State"
+            "search": "Search {number} devices",
+            "state": "State",
+            "bulk_actions": {
+              "move_area": "Move to area",
+              "no_area": "No area",
+              "add_area": "Add area"
+            }
           }
         },
         "entities": {
@@ -4005,15 +4064,17 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search entities",
+            "search": "Search {number} entities",
             "unnamed_entity": "Unnamed entity",
             "status": {
-              "restored": "Restored",
               "available": "Available",
               "unavailable": "Unavailable",
+              "enabled": "Enabled",
               "disabled": "Disabled",
-              "readonly": "Read-only",
-              "hidden": "Hidden"
+              "visible": "Visible",
+              "hidden": "Hidden",
+              "not_provided": "Not provided",
+              "unmanageable": "Unmanageable"
             },
             "headers": {
               "state_icon": "State icon",
@@ -4022,7 +4083,11 @@
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
-              "status": "Status"
+              "status": "Status",
+              "domain": "Domain",
+              "availability": "Availability",
+              "visibility": "Visibility",
+              "enabled": "Enabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -4046,6 +4111,9 @@
               "button": "Hide selected",
               "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
+            },
+            "unhide_selected": {
+              "button": "Unhide selected"
             }
           }
         },
@@ -4094,10 +4162,6 @@
           "confirm_delete": "Are you sure you want to delete this zone?",
           "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
-          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
-          "go_to_core_config": "Go to general configuration?",
-          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New zone",
             "name": "Name",
@@ -4112,7 +4176,8 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update"
+            "update": "Update",
+            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
           },
           "core_location_dialog": "Home Assistant location"
         },
@@ -5785,7 +5850,14 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "dark_mode": "Dark mode?",
-              "default_zoom": "Default zoom",
+              "appearance": "Appearance",
+              "theme_mode": "Theme Mode",
+              "theme_modes": {
+                "auto": "Auto",
+                "light": "Light",
+                "dark": "Dark"
+              },
+              "default_zoom": "Default Zoom",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -5903,13 +5975,20 @@
                   "armed_vacation": "[%key:ui::card::alarm_control_panel::modes::armed_vacation%]",
                   "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
                   "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
-                }
+                },
+                "customize_modes": "Customize alarm modes"
               },
               "light-brightness": {
                 "label": "Light brightness"
               },
               "light-color-temp": {
                 "label": "Light color temperature"
+              },
+              "lock-commands": {
+                "label": "Lock commands"
+              },
+              "lock-open-door": {
+                "label": "Lock open door"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",
@@ -5929,16 +6008,18 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize fan modes",
                 "fan_modes": "Fan modes"
               },
               "climate-swing-modes": {
                 "label": "Climate swing modes",
+                "swing_modes": "Swing modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
-                "swing_modes": "Swing modes"
+                "customize_modes": "Customize swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
@@ -5947,7 +6028,8 @@
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
-                }
+                },
+                "customize_modes": "Customize HVAC modes"
               },
               "climate-preset-modes": {
                 "label": "Climate preset modes",
@@ -5956,6 +6038,7 @@
                   "dropdown": "Dropdown",
                   "icons": "Icons"
                 },
+                "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
               "fan-preset-modes": {
@@ -5965,6 +6048,7 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::customize_modes%]",
                 "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
               "humidifier-toggle": {
@@ -5977,10 +6061,13 @@
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
+                "customize_modes": "Customize modes",
                 "modes": "Modes"
               },
               "select-options": {
-                "label": "Select options"
+                "label": "Select options",
+                "options": "Options",
+                "customize_options": "Customize options"
               },
               "numeric-input": {
                 "label": "Numeric input",
@@ -5998,7 +6085,8 @@
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
-                "operation_modes": "Operation modes"
+                "operation_modes": "Operation modes",
+                "customize_modes": "Customize operation modes"
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
@@ -6842,7 +6930,9 @@
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!",
-          "step": "Step {step} of {steps}"
+          "step": "Step {step} of {steps}",
+          "no_statistics_selected_title": "No statistics selected",
+          "no_statistics_selected_description": "You must select at least one statistic to finish setting up your Energy dashboard."
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
@@ -6866,6 +6956,8 @@
         "remove_all": "Remove all selections",
         "download_data": "Download data",
         "download_data_error": "Unable to download data",
+        "add_card": "Add current view as card",
+        "add_card_error": "Unable to add card",
         "error_no_data": "You need to select data first."
       }
     },

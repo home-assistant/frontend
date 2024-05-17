@@ -187,7 +187,7 @@ export class DemoHaControlSelect extends LitElement {
         --mdc-icon-size: 24px;
         --control-select-color: var(--state-fan-active-color);
         --control-select-thickness: 130px;
-        --control-select-border-radius: 48px;
+        --control-select-border-radius: 36px;
       }
       .vertical-selects {
         height: 300px;

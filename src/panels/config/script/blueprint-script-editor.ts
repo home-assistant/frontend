@@ -1,9 +1,11 @@
-import { html } from "lit";
+import "@material/mwc-button/mwc-button";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
 import { BlueprintScriptConfig } from "../../../data/script";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import "../../../components/ha-markdown";
 
 @customElement("blueprint-script-editor")
 export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
@@ -22,7 +24,14 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
               ${this.hass.localize("ui.panel.config.script.editor.migrate")}
             </mwc-button>
           </ha-alert>`
-        : ""}
+        : nothing}
+      ${this.config.description
+        ? html`<ha-markdown
+            class="description"
+            breaks
+            .content=${this.config.description}
+          ></ha-markdown>`
+        : nothing}
       ${this.renderCard()}
     `;
   }

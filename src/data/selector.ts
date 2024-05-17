@@ -13,6 +13,7 @@ import {
   EntityRegistryEntry,
 } from "./entity_registry";
 import { EntitySources } from "./entity_sources";
+import { isHelperDomain } from "../panels/config/helpers/const";
 
 export type Selector =
   | ActionSelector
@@ -31,6 +32,7 @@ export type Selector =
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | FloorSelector
   | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
@@ -170,6 +172,14 @@ export interface DeviceSelector {
   } | null;
 }
 
+export interface FloorSelector {
+  floor: {
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    multiple?: boolean;
+  } | null;
+}
+
 export interface LegacyDeviceSelector {
   device: DeviceSelector["device"] & {
     /**
@@ -261,7 +271,11 @@ export interface LanguageSelector {
 }
 
 export interface LocationSelector {
-  location: { radius?: boolean; icon?: string } | null;
+  location: {
+    radius?: boolean;
+    radius_readonly?: boolean;
+    icon?: string;
+  } | null;
 }
 
 export interface LocationSelectorValue {
@@ -807,4 +821,35 @@ export const handleLegacyDeviceSelector = (
   return {
     device: rest,
   };
+};
+
+export const computeCreateDomains = (
+  selector: EntitySelector | TargetSelector
+): undefined | string[] => {
+  let entityFilters: EntitySelectorFilter[] | undefined;
+
+  if ("target" in selector) {
+    entityFilters = ensureArray(selector.target?.entity);
+  } else if ("entity" in selector) {
+    if (selector.entity?.include_entities) {
+      return undefined;
+    }
+    entityFilters = ensureArray(selector.entity?.filter);
+  }
+  if (!entityFilters) {
+    return undefined;
+  }
+
+  const createDomains = entityFilters.flatMap((entityFilter) =>
+    !entityFilter.integration &&
+    !entityFilter.device_class &&
+    !entityFilter.supported_features &&
+    entityFilter.domain
+      ? ensureArray(entityFilter.domain).filter((domain) =>
+          isHelperDomain(domain)
+        )
+      : []
+  );
+
+  return [...new Set(createDomains)];
 };

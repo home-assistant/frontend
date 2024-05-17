@@ -108,7 +108,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
     const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
-    card.toggleAttribute("no-border", true);
 
     if (this.isStrategy || !this.lovelace?.editMode) {
       card.editMode = false;
@@ -117,7 +116,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const wrapper = document.createElement("hui-card-options");
-    wrapper.toggleAttribute("no-border", true);
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
@@ -137,7 +135,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
         --restore-card-box-shadow: var(--ha-card-box-shadow, none);
       }
 
-      [no-border] {
+      * {
         --ha-card-border-radius: 0;
         --ha-card-border-width: 0;
         --ha-card-box-shadow: none;

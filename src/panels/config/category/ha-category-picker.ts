@@ -188,9 +188,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         this.comboBox.filteredItems = [
           {
             category_id: NO_CATEGORIES_ID,
-            name: this.hass.localize(
-              "ui.components.category-picker.no_categories"
-            ),
+            name: this.hass.localize("ui.components.category-picker.no_match"),
             icon: null,
           },
         ] as ScorableCategoryRegistryEntry[];
@@ -238,6 +236,8 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     }
 
     (ev.target as any).value = this._value;
+
+    this.hass.loadFragmentTranslation("config");
 
     showCategoryRegistryDetailDialog(this, {
       scope: this.scope!,

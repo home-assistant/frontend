@@ -7,6 +7,7 @@ import {
   nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";
@@ -34,6 +35,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   @state() protected _cards?: LovelaceCard[];
 
   @state() protected _config?: T;
+
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -88,6 +92,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     return css`
       .card-header {
         color: var(--ha-card-header-color, var(--primary-text-color));
+        text-align: var(--ha-stack-title-text-align, start);
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
         font-weight: normal;
@@ -98,10 +103,10 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         display: block;
         padding: 24px 16px 16px;
       }
-      #root {
-        --ha-card-border-radius: var(--restore-card-border-radius, inherit);
-        --ha-card-border-width: var(--restore-card-border-width, inherit);
-        --ha-card-box-shadow: var(--restore-card-border-shadow, inherit);
+      :host([ispanel]) #root {
+        --ha-card-border-radius: var(--restore-card-border-radius);
+        --ha-card-border-width: var(--restore-card-border-width);
+        --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
     `;
   }
@@ -116,6 +121,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       (ev) => {
         ev.stopPropagation();
         this._rebuildCard(element, cardConfig);
+        fireEvent(this, "ll-rebuild");
       },
       { once: true }
     );

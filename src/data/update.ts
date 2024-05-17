@@ -118,6 +118,10 @@ export const checkForEntityUpdates = async (
     return;
   }
 
+  showToast(element, {
+    message: hass.localize("ui.panel.config.updates.checking_updates"),
+  });
+
   let updated = 0;
 
   const unsubscribeEvents = await hass.connection.subscribeEvents<HassEvent>(

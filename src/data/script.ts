@@ -93,6 +93,7 @@ export type ScriptConfig = ManualScriptConfig | BlueprintScriptConfig;
 
 export interface ManualScriptConfig {
   alias: string;
+  description?: string;
   sequence: Action | Action[];
   icon?: string;
   mode?: (typeof MODES)[number];

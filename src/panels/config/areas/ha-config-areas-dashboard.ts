@@ -23,9 +23,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-sortable";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
+  updateAreaRegistryEntry,
 } from "../../../data/area_registry";
 import {
   FloorRegistryEntry,
@@ -49,6 +51,10 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+
+const UNASSIGNED_PATH = ["__unassigned__"];
+
+const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
@@ -187,13 +193,22 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                     >
                   </ha-button-menu>
                 </div>
-                <div class="areas">
-                  ${floor.areas.map((area) => this._renderArea(area))}
-                </div>
+                <ha-sortable
+                  handle-selector="a"
+                  draggable-selector="a"
+                  @item-moved=${this._areaMoved}
+                  group="floor"
+                  .options=${SORT_OPTIONS}
+                  .path=${[floor.floor_id]}
+                >
+                  <div class="areas">
+                    ${floor.areas.map((area) => this._renderArea(area))}
+                  </div>
+                </ha-sortable>
               </div>`
           )}
           ${areasAndFloors?.unassisgnedAreas.length
-            ? html`<div class="unassigned">
+            ? html`<div class="floor">
                 <div class="header">
                   <h2>
                     ${this.hass.localize(
@@ -201,11 +216,20 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
                     )}
                   </h2>
                 </div>
-                <div class="areas">
-                  ${areasAndFloors?.unassisgnedAreas.map((area) =>
-                    this._renderArea(area)
-                  )}
-                </div>
+                <ha-sortable
+                  handle-selector="a"
+                  draggable-selector="a"
+                  @item-moved=${this._areaMoved}
+                  group="floor"
+                  .options=${SORT_OPTIONS}
+                  .path=${UNASSIGNED_PATH}
+                >
+                  <div class="areas">
+                    ${areasAndFloors?.unassisgnedAreas.map((area) =>
+                      this._renderArea(area)
+                    )}
+                  </div>
+                </ha-sortable>
               </div>`
             : nothing}
         </div>
@@ -247,7 +271,14 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
             ? html`<ha-icon .icon=${area.icon}></ha-icon>`
             : ""}
         </div>
-        <h1 class="card-header">${area.name}</h1>
+        <div class="card-header">
+          ${area.name}
+          <ha-icon-button
+            .area=${area}
+            .path=${mdiPencil}
+            @click=${this._openAreaDetails}
+          ></ha-icon-button>
+        </div>
         <div class="card-content">
           <div>
             ${formatListWithAnds(
@@ -279,6 +310,39 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
+  }
+
+  private _openAreaDetails(ev) {
+    ev.preventDefault();
+    const area = ev.currentTarget.area;
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: async (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
+  }
+
+  private async _areaMoved(ev) {
+    const areasAndFloors = this._processAreas(
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this._floors!
+    );
+    let area: AreaRegistryEntry;
+    if (ev.detail.oldPath === UNASSIGNED_PATH) {
+      area = areasAndFloors.unassisgnedAreas[ev.detail.oldIndex];
+    } else {
+      const oldFloor = areasAndFloors.floors!.find(
+        (floor) => floor.floor_id === ev.detail.oldPath[0]
+      );
+      area = oldFloor!.areas[ev.detail.oldIndex];
+    }
+
+    await updateAreaRegistryEntry(this.hass, area.area_id, {
+      floor_id:
+        ev.detail.newPath === UNASSIGNED_PATH ? null : ev.detail.newPath[0],
+    });
   }
 
   private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
@@ -350,10 +414,31 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   private _openFloorDialog(entry?: FloorRegistryEntry) {
     showFloorRegistryDetailDialog(this, {
       entry,
-      createEntry: async (values) =>
-        createFloorRegistryEntry(this.hass!, values),
-      updateEntry: async (values) =>
-        updateFloorRegistryEntry(this.hass!, entry!.floor_id, values),
+      createEntry: async (values, addedAreas) => {
+        const floor = await createFloorRegistryEntry(this.hass!, values);
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+      },
+      updateEntry: async (values, addedAreas, removedAreas) => {
+        const floor = await updateFloorRegistryEntry(
+          this.hass!,
+          entry!.floor_id,
+          values
+        );
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+        removedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: null,
+          });
+        });
+      },
     });
   }
 
@@ -422,9 +507,11 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
         min-height: 16px;
         color: var(--secondary-text-color);
       }
-      .floor {
-        --primary-color: var(--secondary-text-color);
-        margin-inline-end: 8px;
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow-wrap: anywhere;
       }
       .warning {
         color: var(--error-color);
