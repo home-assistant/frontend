@@ -1,5 +1,4 @@
 import { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field";
-import "element-internals-polyfill";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { literal } from "lit/static-html";

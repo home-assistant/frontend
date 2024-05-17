@@ -1,6 +1,5 @@
 import { AttachableController } from "@material/web/internal/controller/attachable-controller";
 import { MdRipple } from "@material/web/ripple/ripple";
-import "element-internals-polyfill";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

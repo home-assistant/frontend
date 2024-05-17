@@ -2,6 +2,18 @@ import defineProvider from "@babel/helper-define-polyfill-provider";
 
 // List of polyfill keys with supported browser targets for the functionality
 const PolyfillSupport = {
+  // Note states and shadowRoot properties should be supported.
+  "element-internals": {
+    android: 90,
+    chrome: 90,
+    edge: 90,
+    firefox: 126,
+    ios: 17.4,
+    opera: 76,
+    opera_mobile: 64,
+    safari: 17.4,
+    samsung: 15.0,
+  },
   fetch: {
     android: 42,
     chrome: 42,
@@ -33,7 +45,12 @@ const polyfillMap = {
     Proxy: { key: "proxy", module: "proxy-polyfill" },
     fetch: { key: "fetch", module: "unfetch/polyfill" },
   },
-  instance: {},
+  instance: {
+    attachInternals: {
+      key: "element-internals",
+      module: "element-internals-polyfill",
+    },
+  },
   static: {},
 };
 
@@ -49,7 +66,9 @@ export default defineProvider(
         if (polyfill && shouldInjectPolyfill(polyfill.desc.key)) {
           debug(polyfill.desc.key);
           utils.injectGlobalImport(polyfill.desc.module);
+          return true;
         }
+        return false;
       },
     };
   }
