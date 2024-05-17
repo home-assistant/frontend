@@ -12,8 +12,8 @@ import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
-  Blueprint,
   BlueprintInput,
+  BlueprintInputSection,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
@@ -33,28 +33,9 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   @state() protected _blueprints?: Blueprints;
 
-  private _sections: Record<string, { key: string; input: BlueprintInput }[]> =
-    {};
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._getBlueprints();
-  }
-
-  protected willUpdate(changedProps) {
-    if (changedProps.has("config") || changedProps.has("_blueprints")) {
-      const blueprint = this._blueprint;
-      this._sections = {};
-      if (blueprint && !("error" in blueprint) && blueprint?.metadata?.input) {
-        Object.entries(blueprint.metadata.input).forEach(([key, value]) => {
-          if (value?.section) {
-            const sectionId = value.section;
-            this._sections[sectionId] = this._sections[sectionId] || [];
-            this._sections[sectionId].push({ key, input: value });
-          }
-        });
-      }
-    }
   }
 
   protected get _blueprint(): BlueprintOrError | undefined {
@@ -70,7 +51,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   protected renderCard() {
     const blueprint = this._blueprint;
-    const renderedSections = new Set<string>();
     let border = true;
     return html`
       <ha-card
@@ -117,14 +97,10 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
               Object.keys(blueprint.metadata.input).length
                 ? Object.entries(blueprint.metadata.input).map(
                     ([key, value]) => {
-                      if (value?.section) {
-                        key = value.section;
-                        if (!renderedSections.has(key)) {
-                          renderedSections.add(key);
-                          border = false;
-                          return this.renderSection(key);
-                        }
-                        return nothing;
+                      if (value && "input" in value) {
+                        const section = this.renderSection(key, value);
+                        border = false;
+                        return section;
                       }
                       const row = this.renderSettingRow(key, value, border);
                       border = true;
@@ -141,14 +117,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     `;
   }
 
-  private renderSection(sectionKey: string) {
-    const blueprint = this._blueprint as Blueprint;
-    const section = blueprint?.metadata?.input_sections?.[sectionKey];
+  private renderSection(sectionKey: string, section: BlueprintInputSection) {
     const title = section?.name || sectionKey;
-    const anyRequired = this._sections[sectionKey].some(
-      (item) => item.input.default === undefined
-    );
-    const expanded = !section?.collapsed || anyRequired;
+    const anyRequired =
+      section.input &&
+      Object.values(section.input).some(
+        (item) => item === null || item.default === undefined
+      );
+    const expanded = !section.collapsed || anyRequired;
 
     return html` <ha-expansion-panel
       outlined
@@ -168,14 +144,20 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         ${section?.description
           ? html`<ha-markdown .content=${section.description}></ha-markdown>`
           : nothing}
-        ${this._sections[sectionKey].map((item) =>
-          this.renderSettingRow(item.key, item.input, true)
-        )}
+        ${section.input
+          ? Object.entries(section.input).map(([key, value]) =>
+              this.renderSettingRow(key, value, true)
+            )
+          : nothing}
       </div>
     </ha-expansion-panel>`;
   }
 
-  private renderSettingRow(key: string, value: any, border: boolean) {
+  private renderSettingRow(
+    key: string,
+    value: BlueprintInput | null,
+    border: boolean
+  ) {
     const selector = value?.selector ?? { text: undefined };
     const type = Object.keys(selector)[0];
     const enhancedSelector = ["action", "condition", "trigger"].includes(type)
@@ -292,6 +274,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         }
         ha-card.blueprint {
           margin: 0 auto;
+          margin-bottom: 64px;
         }
         .padding {
           padding: 16px;
