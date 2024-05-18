@@ -87,8 +87,14 @@ export class HaFilterDomains extends LitElement {
     Object.keys(states).forEach((entityId) => {
       domains.add(computeDomain(entityId));
     });
-    return Array.from(domains)
-      .filter((domain) => !filter || domain.toLowerCase().includes(filter))
+
+    return Array.from(domains.values())
+      .filter(
+        (entry) =>
+          !filter ||
+          entry.toLowerCase().includes(filter) ||
+          domainToName(this.hass.localize, entry).toLowerCase().includes(filter)
+      )
       .sort((a, b) => stringCompare(a, b, this.hass.locale.language));
   });
 
