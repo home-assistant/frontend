@@ -2650,6 +2650,7 @@
             "headers": {
               "name": "Name",
               "area": "Area",
+              "domain": "Domain",
               "assistants": "Assistants",
               "aliases": "Aliases"
             },
