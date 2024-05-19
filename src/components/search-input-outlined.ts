@@ -79,7 +79,7 @@ class SearchInputOutlined extends LitElement {
   }
 
   private async _filterInputChanged(e) {
-    this._filterChanged(e.target.value);
+    this._filterChanged(e.target.value?.trim());
   }
 
   private async _clearSearch() {
