@@ -1469,7 +1469,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.16.0":
+"@codemirror/autocomplete@npm:6.16.0, @codemirror/autocomplete@npm:^6.0.0":
   version: 6.16.0
   resolution: "@codemirror/autocomplete@npm:6.16.0"
   dependencies:
@@ -1495,6 +1495,20 @@ __metadata:
     "@codemirror/view": "npm:^6.0.0"
     "@lezer/common": "npm:^1.1.0"
   checksum: 10/2fa3e42e02e50a02cbf55c48c3f3f7891453c841b6399834a2898f4f3a286074ef13646341a60a89b53bd8372ed5885740ced869b9482e115a73305f792971fe
+  languageName: node
+  linkType: hard
+
+"@codemirror/lang-yaml@npm:6.1.1":
+  version: 6.1.1
+  resolution: "@codemirror/lang-yaml@npm:6.1.1"
+  dependencies:
+    "@codemirror/autocomplete": "npm:^6.0.0"
+    "@codemirror/language": "npm:^6.0.0"
+    "@codemirror/state": "npm:^6.0.0"
+    "@lezer/common": "npm:^1.2.0"
+    "@lezer/highlight": "npm:^1.2.0"
+    "@lezer/yaml": "npm:^1.0.0"
+  checksum: 10/b751727c5fed180e28718a3ec8277835e62e2e760ed18f3a1594062e80b7b241c02aed189d63443e50216db3eb688a3dbe7baa634bdacf3909937fcf341b414b
   languageName: node
   linkType: hard
 
@@ -2110,14 +2124,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0":
+"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0, @lezer/common@npm:^1.2.0":
   version: 1.2.1
   resolution: "@lezer/common@npm:1.2.1"
   checksum: 10/b362ed2e97664e4b36b3dbff49b52d1bfc5accc0152b577fefd46e585d012ff685d1fd336d75d80066e01c0505b1135d4cf69be5e330b5bfec2e2650c437bcae
   languageName: node
   linkType: hard
 
-"@lezer/highlight@npm:1.2.0, @lezer/highlight@npm:^1.0.0":
+"@lezer/highlight@npm:1.2.0, @lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.2.0":
   version: 1.2.0
   resolution: "@lezer/highlight@npm:1.2.0"
   dependencies:
@@ -2126,12 +2140,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/lr@npm:^1.0.0":
+"@lezer/lr@npm:^1.0.0, @lezer/lr@npm:^1.4.0":
   version: 1.4.0
   resolution: "@lezer/lr@npm:1.4.0"
   dependencies:
     "@lezer/common": "npm:^1.0.0"
   checksum: 10/7391d0d08e54cd9e4f4d46e6ee6aa81fbaf079b22ed9c13d01fc9928e0ffd16d0c2d21b2cedd55675ad6c687277db28349ea8db81c9c69222cd7e7c40edd026e
+  languageName: node
+  linkType: hard
+
+"@lezer/yaml@npm:^1.0.0":
+  version: 1.0.3
+  resolution: "@lezer/yaml@npm:1.0.3"
+  dependencies:
+    "@lezer/common": "npm:^1.2.0"
+    "@lezer/highlight": "npm:^1.0.0"
+    "@lezer/lr": "npm:^1.4.0"
+  checksum: 10/6697b964403dc5dec9186732c5997675e5140ef5dddc8371dd28fa194d8431d8a7d5f18670be47b81a0b4ad6cbfe82e4f7c9c6f06e6f763bd100f7a38908baf5
   languageName: node
   linkType: hard
 
@@ -8924,6 +8949,7 @@ __metadata:
     "@bundle-stats/plugin-webpack-filter": "npm:4.12.2"
     "@codemirror/autocomplete": "npm:6.16.0"
     "@codemirror/commands": "npm:6.5.0"
+    "@codemirror/lang-yaml": "npm:6.1.1"
     "@codemirror/language": "npm:6.10.1"
     "@codemirror/legacy-modes": "npm:6.4.0"
     "@codemirror/search": "npm:6.5.6"

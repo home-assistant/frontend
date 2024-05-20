@@ -5,7 +5,7 @@ import {
   syntaxHighlighting,
 } from "@codemirror/language";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
-import { yaml } from "@codemirror/legacy-modes/mode/yaml";
+import { yaml } from "@codemirror/lang-yaml";
 import { Compartment } from "@codemirror/state";
 import { EditorView, KeyBinding } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
@@ -28,7 +28,7 @@ export { tags } from "@lezer/highlight";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),
-  yaml: StreamLanguage.define(yaml),
+  yaml: yaml(),
 };
 
 export const langCompartment = new Compartment();
