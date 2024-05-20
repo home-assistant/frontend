@@ -17,6 +17,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
 
@@ -38,6 +39,9 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     needle: optional(boolean()),
     segments: optional(array(gaugeSegmentStruct)),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
   })
 );
 
