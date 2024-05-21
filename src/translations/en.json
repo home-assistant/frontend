@@ -5531,10 +5531,19 @@
             "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
             "text_unnamed_section_cards": "This section and all its cards will be deleted."
           },
-          "edit_section_title": {
-            "title": "Edit name",
-            "title_new": "Add name",
-            "input_label": "Name"
+          "edit_section": {
+            "header": "Edit section",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
+            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "settings": {
+              "title": "Title",
+              "title_helper": "The title will appear at the top of section. Leave empty to hide the title."
+            },
+            "visibility": {
+              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
+            }
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
