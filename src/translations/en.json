@@ -3622,6 +3622,8 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+            "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",

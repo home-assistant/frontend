@@ -124,7 +124,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       this._error = "Name is required";
       return;
     }
-    this._params.updateAutomation({
+    this._params.updateConfig({
       ...this._params.config,
       alias: this._newName,
       description: this._newDescription,
