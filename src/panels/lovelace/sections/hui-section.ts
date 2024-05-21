@@ -10,16 +10,13 @@ import {
   isStrategySection,
 } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import "../cards/hui-card";
+import type { HuiCard } from "../cards/hui-card";
 import {
-  checkConditionsMet,
   attachConditionMediaQueriesListeners,
+  checkConditionsMet,
 } from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-} from "../create-element/create-element-base";
+import { createErrorCardConfig } from "../create-element/create-element-base";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -27,7 +24,7 @@ import { deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
 
 @customElement("hui-section")
@@ -42,7 +39,7 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public viewIndex!: number;
 
-  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: HuiCard[] = [];
 
   private _layoutElementType?: string;
 
@@ -52,14 +49,9 @@ export class HuiSection extends ReactiveElement {
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorCardElement(
-        createErrorCardConfig(e.message, cardConfig)
-      );
-    }
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.config = cardConfig;
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -267,29 +259,15 @@ export class HuiSection extends ReactiveElement {
 
     this._cards = config.cards.map((cardConfig) => {
       const element = this.createCardElement(cardConfig);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorCardElement(
-          createErrorCardConfig(e.message, cardConfig)
-        );
-      }
       return element;
     });
   }
 
   private _rebuildCard(
-    cardElToReplace: LovelaceCard,
+    cardElToReplace: HuiCard,
     config: LovelaceCardConfig
   ): void {
-    let newCardEl = this.createCardElement(config);
-    try {
-      newCardEl.hass = this.hass;
-    } catch (e: any) {
-      newCardEl = createErrorCardElement(
-        createErrorCardConfig(e.message, config)
-      );
-    }
+    const newCardEl = this.createCardElement(config);
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
