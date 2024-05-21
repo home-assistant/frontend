@@ -32,10 +32,11 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import "../../../components/ha-list-item";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -49,7 +50,10 @@ import {
 } from "../../../data/automation";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { fetchEntityRegistry } from "../../../data/entity_registry";
+import {
+  fetchEntityRegistry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -98,6 +102,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _config?: AutomationConfig;
+
+  @state() private _icon?: string;
 
   @state() private _dirty = false;
 
@@ -461,6 +467,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         sub(this._config)
       );
     }
+
+    if (changedProps.has("hass")) {
+      if (this._entityId && !this._dirty) {
+        this._icon = this.hass.entities[this._entityId]?.icon;
+      }
+    }
   }
 
   private _setEntityId() {
@@ -468,6 +480,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       (entity: AutomationEntity) => entity.attributes.id === this.automationId
     );
     this._entityId = automation?.entity_id;
+
+    if (this._entityId) {
+      this._icon = this.hass.entities[this._entityId]?.icon;
+    }
   }
 
   private async _checkValidation() {
@@ -688,8 +704,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
-        updateConfig: (config) => {
+        updateConfig: (config, icon) => {
           this._config = config;
+          this._icon = icon;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
@@ -726,6 +743,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._validationErrors = undefined;
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
+      if (this._entityId) {
+        await updateEntityRegistryEntry(this.hass, this._entityId, {
+          icon: this._icon,
+        });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
