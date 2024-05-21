@@ -14,7 +14,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
-import { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -193,10 +192,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const path = [this.index!, index] as [number, number];
 
-    const section = findLovelaceContainer(
-      this.lovelace!.config,
-      path
-    ) as LovelaceSectionRawConfig;
+    const section = findLovelaceContainer(this.lovelace!.config, path);
 
     const title = section.title?.trim();
     const cardCount = "cards" in section && section.cards?.length;

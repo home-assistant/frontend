@@ -70,7 +70,7 @@ export class HuiDialogEditSection
     this._config = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
       this._params.sectionIndex,
-    ]) as LovelaceSectionRawConfig;
+    ]);
   }
 
   public closeDialog() {
