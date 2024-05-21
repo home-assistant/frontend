@@ -9,6 +9,7 @@ import {
   number,
   object,
   optional,
+  refine,
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -20,6 +21,9 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
+import { UiAction } from "../../components/hui-action-editor";
+
+const TAP_ACTIONS = ["navigate", "url", "call-service", "none"];
 
 const gaugeSegmentStruct = object({
   from: number(),
@@ -39,7 +43,11 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     needle: optional(boolean()),
     segments: optional(array(gaugeSegmentStruct)),
-    tap_action: optional(actionConfigStruct),
+    tap_action: optional(
+      refine(actionConfigStruct, TAP_ACTIONS.toString(), (value) =>
+        TAP_ACTIONS.includes(value.action)
+      )
+    ),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
   })
@@ -125,6 +133,15 @@ export class HuiGaugeCardEditor
               },
             ] as const)
           : []),
+        {
+          name: "tap_action",
+          selector: {
+            ui_action: {
+              actions: TAP_ACTIONS as UiAction[],
+              default_action: "more-info",
+            },
+          },
+        },
       ] as const
   );
 
@@ -214,6 +231,12 @@ export class HuiGaugeCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.unit"
         );
+      case "tap_action":
+        return `${this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
       default:
         // "green" | "yellow" | "red"
         return this.hass!.localize(
