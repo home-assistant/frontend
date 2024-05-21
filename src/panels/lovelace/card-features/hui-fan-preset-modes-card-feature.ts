@@ -15,6 +15,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { FanPresetModesCardFeatureConfig } from "./types";
+import { filterModes } from "./common/filter-modes";
 
 export const supportsFanPresetModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -39,14 +40,10 @@ class HuiFanPresetModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  static getStubConfig(
-    _,
-    stateObj?: HassEntity
-  ): FanPresetModesCardFeatureConfig {
+  static getStubConfig(): FanPresetModesCardFeatureConfig {
     return {
       type: "fan-preset-modes",
       style: "dropdown",
-      preset_modes: stateObj?.attributes.preset_modes || [],
     };
   }
 
@@ -121,25 +118,24 @@ class HuiFanPresetModesCardFeature
 
     const stateObj = this.stateObj;
 
-    const modes = stateObj.attributes.preset_modes || [];
-
-    const options = modes
-      .filter((mode) => (this._config!.preset_modes || []).includes(mode))
-      .map<ControlSelectOption>((mode) => ({
-        value: mode,
-        label: this.hass!.formatEntityAttributeValue(
-          this.stateObj!,
-          "preset_mode",
-          mode
-        ),
-        icon: html`<ha-attribute-icon
-          slot="graphic"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          attribute="preset_mode"
-          .attributeValue=${mode}
-        ></ha-attribute-icon>`,
-      }));
+    const options = filterModes(
+      stateObj.attributes.preset_modes,
+      this._config!.preset_modes
+    ).map<ControlSelectOption>((mode) => ({
+      value: mode,
+      label: this.hass!.formatEntityAttributeValue(
+        this.stateObj!,
+        "preset_mode",
+        mode
+      ),
+      icon: html`<ha-attribute-icon
+        slot="graphic"
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        attribute="preset_mode"
+        .attributeValue=${mode}
+      ></ha-attribute-icon>`,
+    }));
 
     if (this._config.style === "icons") {
       return html`

@@ -1,6 +1,8 @@
 import { EntityFilter } from "../common/entity/entity_filter";
 import { HomeAssistant } from "../types";
 
+type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
+
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
@@ -19,6 +21,7 @@ export interface CloudPreferences {
   alexa_enabled: boolean;
   remote_enabled: boolean;
   remote_allow_remote_enable: boolean;
+  strict_connection: StrictConnectionMode;
   google_secure_devices_pin: string | undefined;
   cloudhooks: { [webhookId: string]: CloudWebhook };
   alexa_report_state: boolean;
@@ -141,11 +144,17 @@ export const updateCloudPref = (
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
+    strict_connection?: CloudPreferences["strict_connection"];
   }
 ) =>
   hass.callWS({
     type: "cloud/update_prefs",
     ...prefs,
+  });
+
+export const removeCloudData = (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "cloud/remove_data",
   });
 
 export const updateCloudGoogleEntityConfig = (

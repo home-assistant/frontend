@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import "@material/web/divider/divider";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
@@ -557,7 +556,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ></ha-svg-icon
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-list-item-new>
-                <md-divider></md-divider>`
+                <md-divider role="separator" tabindex="-1"></md-divider>`
             : ""}
           ${repeat(
             items,

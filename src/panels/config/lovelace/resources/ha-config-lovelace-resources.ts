@@ -10,9 +10,11 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
@@ -36,6 +38,7 @@ import { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
+import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
@@ -49,10 +52,20 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @state() private _resources: LovelaceResource[] = [];
 
+  @storage({
+    key: "lovelace-resources-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
+
   private _columns = memoize(
-    (_language): DataTableColumnContainer<LovelaceResource> => ({
+    (
+      _language,
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<LovelaceResource> => ({
       url: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.lovelace.resources.picker.headers.url"
         ),
         sortable: true,
@@ -62,7 +75,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         forceLTR: true,
       },
       type: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.lovelace.resources.picker.headers.type"
         ),
         sortable: true,
@@ -118,11 +131,13 @@ export class HaConfigLovelaceRescources extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${lovelaceResourcesTabs}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.hass.language, this.hass.localize)}
         .data=${this._resources}
         .noDataText=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.no_resources"
         )}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @row-click=${this._editResource}
         hasFab
         clickable
@@ -231,6 +246,10 @@ export class HaConfigLovelaceRescources extends LitElement {
         }
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 
   static get styles(): CSSResultGroup {

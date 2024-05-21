@@ -1,6 +1,6 @@
 import "element-internals-polyfill";
 import { MdCircularProgress } from "@material/web/progress/circular-progress";
-import { CSSResult, PropertyValues, css } from "lit";
+import { PropertyValues, css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")
@@ -32,17 +32,15 @@ export class HaCircularProgress extends MdCircularProgress {
     }
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      ...super.styles,
-      css`
-        :host {
-          --md-sys-color-primary: var(--primary-color);
-          --md-circular-progress-size: 48px;
-        }
-      `,
-    ];
-  }
+  static override styles = [
+    ...super.styles,
+    css`
+      :host {
+        --md-sys-color-primary: var(--primary-color);
+        --md-circular-progress-size: 48px;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -72,7 +72,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmetTranslations: Set<string> = new Set();
+    private __loadedFragmentTranslations: Set<string> = new Set();
 
     private __loadedTranslations: {
       // track what things have been loaded
@@ -262,7 +262,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
-      this.__loadedFragmetTranslations = new Set();
+      this.__loadedFragmentTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -385,12 +385,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return undefined;
       }
 
-      if (this.__loadedFragmetTranslations.has(fragment)) {
+      if (this.__loadedFragmentTranslations.has(fragment)) {
         return this.hass!.localize;
       }
-      this.__loadedFragmetTranslations.add(fragment);
+      this.__loadedFragmentTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
-      return this._updateResources(result.language, result.data);
+      return this._updateResources(language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -402,7 +402,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.__coreProgress = language;
       try {
         const result = await getTranslation(null, language);
-        await this._updateResources(result.language, result.data);
+        await this._updateResources(language, result.data);
       } finally {
         this.__coreProgress = undefined;
       }

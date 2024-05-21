@@ -48,7 +48,7 @@ class DialogCommunity extends LitElement {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="https://www.home-assistant.io/newsletter/"
+          href="https://newsletter.openhomefoundation.org/"
         >
           <ha-list-item hasMeta graphic="icon">
             <img src="/static/icons/favicon-192x192.png" slot="graphic" />

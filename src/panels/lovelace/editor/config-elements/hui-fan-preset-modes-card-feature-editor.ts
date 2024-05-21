@@ -17,6 +17,10 @@ import {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
+type FanPresetModesCardFeatureData = FanPresetModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
+
 @customElement("hui-fan-preset-modes-card-feature-editor")
 export class HuiFanPresetModesCardFeatureEditor
   extends LitElement
@@ -36,7 +40,8 @@ export class HuiFanPresetModesCardFeatureEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeValue: FormatEntityAttributeValueFunc,
-      stateObj?: HassEntity
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
     ) =>
       [
         {
@@ -55,23 +60,33 @@ export class HuiFanPresetModesCardFeatureEditor
           },
         },
         {
-          name: "preset_modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options:
-                stateObj?.attributes.preset_modes?.map((mode) => ({
-                  value: mode,
-                  label: formatEntityAttributeValue(
-                    stateObj,
-                    "preset_mode",
-                    mode
-                  ),
-                })) || [],
-            },
+            boolean: {},
           },
         },
+        ...(customizeModes
+          ? ([
+              {
+                name: "preset_modes",
+                selector: {
+                  select: {
+                    reorder: true,
+                    multiple: true,
+                    options:
+                      stateObj?.attributes.preset_modes?.map((mode) => ({
+                        value: mode,
+                        label: formatEntityAttributeValue(
+                          stateObj,
+                          "preset_mode",
+                          mode
+                        ),
+                      })) || [],
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -84,16 +99,17 @@ export class HuiFanPresetModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: FanPresetModesCardFeatureConfig = {
+    const data: FanPresetModesCardFeatureData = {
       style: "dropdown",
-      preset_modes: [],
       ...this._config,
+      customize_modes: this._config.preset_modes !== undefined,
     };
 
     const schema = this._schema(
       this.hass.localize,
       this.hass.formatEntityAttributeValue,
-      stateObj
+      stateObj,
+      data.customize_modes
     );
 
     return html`
@@ -108,7 +124,21 @@ export class HuiFanPresetModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as FanPresetModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.preset_modes) {
+      config.preset_modes = stateObj?.attributes.preset_modes || [];
+    }
+    if (!customize_modes && config.preset_modes) {
+      delete config.preset_modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -117,6 +147,7 @@ export class HuiFanPresetModesCardFeatureEditor
     switch (schema.name) {
       case "style":
       case "preset_modes":
+      case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.fan-preset-modes.${schema.name}`
         );

@@ -42,6 +42,8 @@ const targetStruct = object({
   entity_id: optional(union([string(), array(string())])),
   device_id: optional(union([string(), array(string())])),
   area_id: optional(union([string(), array(string())])),
+  floor_id: optional(union([string(), array(string())])),
+  label_id: optional(union([string(), array(string())])),
 });
 
 export const serviceActionStruct: Describe<ServiceAction> = assign(
@@ -91,6 +93,7 @@ export type ScriptConfig = ManualScriptConfig | BlueprintScriptConfig;
 
 export interface ManualScriptConfig {
   alias: string;
+  description?: string;
   sequence: Action | Action[];
   icon?: string;
   mode?: (typeof MODES)[number];

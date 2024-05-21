@@ -1,5 +1,11 @@
-import { mdiDownload, mdiFilterRemove } from "@mdi/js";
-import { differenceInHours } from "date-fns/esm";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiFilterRemove,
+  mdiImagePlus,
+} from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list";
+import { differenceInHours } from "date-fns";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -9,6 +15,7 @@ import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -22,42 +29,37 @@ import type { StateHistoryCharts } from "../../components/chart/state-history-ch
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
+import "../../components/ha-button-menu";
+import "../../components/ha-list-item";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
 import {
-  AreaDeviceLookup,
-  AreaEntityLookup,
-  getAreaDeviceLookup,
-  getAreaEntityLookup,
-} from "../../data/area_registry";
-import {
-  DeviceEntityLookup,
-  getDeviceEntityLookup,
-  subscribeDeviceRegistry,
-} from "../../data/device_registry";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
-import {
-  HistoryResult,
-  computeHistory,
-  subscribeHistory,
-  HistoryStates,
   EntityHistoryState,
+  HistoryResult,
+  HistoryStates,
+  LineChartState,
   LineChartUnit,
   computeGroupKey,
-  LineChartState,
+  computeHistory,
+  subscribeHistory,
 } from "../../data/history";
-import { fetchStatistics, Statistics } from "../../data/recorder";
+import { Statistics, fetchStatistics } from "../../data/recorder";
+import {
+  expandAreaTarget,
+  expandDeviceTarget,
+  expandFloorTarget,
+  expandLabelTarget,
+} from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
-class HaPanelHistory extends SubscribeMixin(LitElement) {
+class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) public narrow = false;
@@ -82,12 +84,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _mungedStateHistory?: HistoryResult;
 
   @state() private _statisticsHistory?: HistoryResult;
-
-  @state() private _deviceEntityLookup?: DeviceEntityLookup;
-
-  @state() private _areaEntityLookup?: AreaEntityLookup;
-
-  @state() private _areaDeviceLookup?: AreaDeviceLookup;
 
   @state()
   private _showBack?: boolean;
@@ -121,18 +117,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._deviceEntityLookup = getDeviceEntityLookup(entities);
-        this._areaEntityLookup = getAreaEntityLookup(entities);
-      }),
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._areaDeviceLookup = getAreaDeviceLookup(devices);
-      }),
-    ];
   }
 
   private _goBack(): void {
@@ -169,13 +153,23 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               ></ha-icon-button>
             `
           : ""}
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._downloadHistory}
-          .disabled=${this._isLoading}
-          .path=${mdiDownload}
-          .label=${this.hass.localize("ui.panel.history.download_data")}
-        ></ha-icon-button>
+        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+            ${this.hass.localize("ui.panel.history.download_data")}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+            ${this.hass.localize("ui.panel.history.add_card")}
+            <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
 
         <div class="flex content">
           <div class="filters">
@@ -332,7 +326,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const entityIds = searchParams.entity_id;
     const deviceIds = searchParams.device_id;
     const areaIds = searchParams.area_id;
-    if (entityIds || deviceIds || areaIds) {
+    const floorIds = searchParams.floor_id;
+    const labelsIds = searchParams.label_id;
+    if (entityIds || deviceIds || areaIds || floorIds || labelsIds) {
       this._targetPickerValue = {};
     }
     if (entityIds) {
@@ -346,6 +342,14 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (areaIds) {
       const splitIds = areaIds.split(",");
       this._targetPickerValue!.area_id = splitIds;
+    }
+    if (floorIds) {
+      const splitIds = floorIds.split(",");
+      this._targetPickerValue!.floor_id = splitIds;
+    }
+    if (labelsIds) {
+      const splitIds = labelsIds.split(",");
+      this._targetPickerValue!.label_id = splitIds;
     }
 
     const startDate = searchParams.start_date;
@@ -436,6 +440,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       [],
       this.hass.localize,
       sensorNumericDeviceClasses,
+      true,
       true
     );
     // remap states array to statistics array
@@ -522,95 +527,77 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _getEntityIds(): string[] {
     return this.__getEntityIds(
       this._targetPickerValue,
-      this._deviceEntityLookup,
-      this._areaEntityLookup,
-      this._areaDeviceLookup
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas
     );
   }
 
   private __getEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
-      deviceEntityLookup: DeviceEntityLookup | undefined,
-      areaEntityLookup: AreaEntityLookup | undefined,
-      areaDeviceLookup: AreaDeviceLookup | undefined
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
     ): string[] => {
-      if (
-        !targetPickerValue ||
-        deviceEntityLookup === undefined ||
-        areaEntityLookup === undefined ||
-        areaDeviceLookup === undefined
-      ) {
+      if (!targetPickerValue) {
         return [];
       }
 
-      const entityIds = new Set<string>();
-      let {
-        area_id: searchingAreaId,
-        device_id: searchingDeviceId,
-        entity_id: searchingEntityId,
-      } = targetPickerValue;
+      const targetSelector = { target: {} };
+      const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
+      const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
+      const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
+      const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
+      const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
 
-      if (searchingAreaId) {
-        searchingAreaId = ensureArray(searchingAreaId);
-        for (const singleSearchingAreaId of searchingAreaId) {
-          const foundEntities = areaEntityLookup[singleSearchingAreaId];
-          if (foundEntities?.length) {
-            for (const foundEntity of foundEntities) {
-              if (foundEntity.entity_category === null) {
-                entityIds.add(foundEntity.entity_id);
-              }
-            }
-          }
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          areas,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
 
-          const foundDevices = areaDeviceLookup[singleSearchingAreaId];
-          if (!foundDevices?.length) {
-            continue;
-          }
+      targetFloors.forEach((floorId) => {
+        const expanded = expandFloorTarget(
+          this.hass,
+          floorId,
+          areas,
+          targetSelector
+        );
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
 
-          for (const foundDevice of foundDevices) {
-            const foundDeviceEntities = deviceEntityLookup[foundDevice.id];
-            if (!foundDeviceEntities?.length) {
-              continue;
-            }
+      targetAreas.forEach((areaId) => {
+        const expanded = expandAreaTarget(
+          this.hass,
+          areaId,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
 
-            for (const foundDeviceEntity of foundDeviceEntities) {
-              if (
-                (!foundDeviceEntity.area_id ||
-                  foundDeviceEntity.area_id === singleSearchingAreaId) &&
-                foundDeviceEntity.entity_category === null
-              ) {
-                entityIds.add(foundDeviceEntity.entity_id);
-              }
-            }
-          }
-        }
-      }
+      targetDevices.forEach((deviceId) => {
+        const expanded = expandDeviceTarget(
+          this.hass,
+          deviceId,
+          entities,
+          targetSelector
+        );
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
 
-      if (searchingDeviceId) {
-        searchingDeviceId = ensureArray(searchingDeviceId);
-        for (const singleSearchingDeviceId of searchingDeviceId) {
-          const foundEntities = deviceEntityLookup[singleSearchingDeviceId];
-          if (!foundEntities?.length) {
-            continue;
-          }
-
-          for (const foundEntity of foundEntities) {
-            if (foundEntity.entity_category === null) {
-              entityIds.add(foundEntity.entity_id);
-            }
-          }
-        }
-      }
-
-      if (searchingEntityId) {
-        searchingEntityId = ensureArray(searchingEntityId);
-        for (const singleSearchingEntityId of searchingEntityId) {
-          entityIds.add(singleSearchingEntityId);
-        }
-      }
-
-      return [...entityIds];
+      return Array.from(targetEntities);
     }
   );
 
@@ -639,6 +626,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         ","
       );
     }
+    if (this._targetPickerValue.label_id) {
+      params.label_id = ensureArray(this._targetPickerValue.label_id).join(",");
+    }
+    if (this._targetPickerValue.floor_id) {
+      params.floor_id = ensureArray(this._targetPickerValue.floor_id).join(",");
+    }
     if (this._targetPickerValue.area_id) {
       params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
     }
@@ -657,6 +650,17 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._downloadHistory();
+        break;
+      case 1:
+        this._suggestCard();
+        break;
+    }
   }
 
   private _downloadHistory() {
@@ -738,7 +742,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
-        csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+        const safeState = /,|"/.test(s.state)
+          ? `"${s.state.replaceAll('"', '""')}"`
+          : s.state;
+        csv.push(`${entityId},${safeState},${formatDate(s.last_changed)}\n`);
       }
     }
     csv[0] = headers.join(",") + "\n";
@@ -747,6 +754,41 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     });
     const url = window.URL.createObjectURL(blob);
     fileDownload(url, "history.csv");
+  }
+
+  private _suggestCard() {
+    const entities = this._getEntityIds();
+    if (entities.length === 0 || !this._mungedStateHistory) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.history.add_card_error"),
+        text: this.hass.localize("ui.panel.history.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
+    // If you pick things like "This week", the end date can be in the future
+    const endDateTime = Math.min(this._endDate.getTime(), Date.now());
+    const cards = [
+      {
+        title: this.hass.localize("panel.history"),
+        type: "history-graph",
+        hours_to_show: Math.round(
+          (endDateTime - this._startDate.getTime()) / 1000 / 60 / 60
+        ),
+        entities,
+      },
+    ];
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      cards,
+      {
+        title: this.hass.localize("panel.history"),
+        cards,
+      },
+      entities
+    );
   }
 
   static get styles() {

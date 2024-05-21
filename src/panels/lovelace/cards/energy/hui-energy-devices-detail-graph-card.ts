@@ -4,7 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { endOfToday, startOfToday } from "date-fns/esm";
+import { endOfToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,7 +17,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../../common/color/colors";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -202,6 +202,8 @@ export class HuiEnergyDevicesDetailGraphCard
     const data = energyData.stats;
     const compareData = energyData.statsCompare;
 
+    const computedStyle = getComputedStyle(this);
+
     const growthValues = {};
     energyData.prefs.device_consumption.forEach((device) => {
       const value =
@@ -222,6 +224,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const { data: processedData, dataExtras: processedDataExtras } =
       this._processDataSet(
+        computedStyle,
         data,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
@@ -254,6 +257,7 @@ export class HuiEnergyDevicesDetailGraphCard
         data: processedCompareData,
         dataExtras: processedCompareDataExtras,
       } = this._processDataSet(
+        computedStyle,
         compareData,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
@@ -278,6 +282,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _processDataSet(
+    computedStyle: CSSStyleDeclaration,
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
     devices: DeviceConsumptionEnergyPreference[],
@@ -288,7 +293,7 @@ export class HuiEnergyDevicesDetailGraphCard
     const dataExtras: ChartDatasetExtra[] = [];
 
     devices.forEach((source, idx) => {
-      const color = getColorByIndex(idx);
+      const color = getGraphColorByIndex(idx, computedStyle);
 
       let prevStart: number | null = null;
 
@@ -328,11 +333,13 @@ export class HuiEnergyDevicesDetailGraphCard
       );
 
       data.push({
-        label: getStatisticLabel(
-          this.hass,
-          source.stat_consumption,
-          statisticsMetaData[source.stat_consumption]
-        ),
+        label:
+          source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_consumption,
+            statisticsMetaData[source.stat_consumption]
+          ),
         hidden:
           this._hiddenStats.has(source.stat_consumption) || itemExceedsMax,
         borderColor: compare ? color + "7F" : color,

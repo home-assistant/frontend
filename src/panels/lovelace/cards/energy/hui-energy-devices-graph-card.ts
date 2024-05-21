@@ -18,7 +18,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../../common/color/colors";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   formatNumber,
@@ -127,11 +127,7 @@ export class HuiEnergyDevicesGraphCard
               const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              return getStatisticLabel(
-                this.hass,
-                statisticId as any,
-                this._data?.statsMetadata[statisticId]
-              );
+              return this.getDeviceName(statisticId as any as string);
             },
           },
         },
@@ -149,11 +145,7 @@ export class HuiEnergyDevicesGraphCard
           callbacks: {
             title: (item) => {
               const statisticId = item[0].label;
-              return getStatisticLabel(
-                this.hass,
-                statisticId,
-                this._data?.statsMetadata[statisticId]
-              );
+              return this.getDeviceName(statisticId);
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -180,6 +172,19 @@ export class HuiEnergyDevicesGraphCard
       },
     })
   );
+
+  private getDeviceName(statisticId: string): string {
+    return (
+      this._data?.prefs.device_consumption.find(
+        (d) => d.stat_consumption === statisticId
+      )?.name ||
+      getStatisticLabel(
+        this.hass,
+        statisticId,
+        this._data?.statsMetadata[statisticId]
+      )
+    );
+  }
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
     const data = energyData.stats;
@@ -253,15 +258,17 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.length = this._config?.max_devices || chartData.length;
 
+    const computedStyle = getComputedStyle(this);
+
     chartData.forEach((d: any) => {
-      const color = getColorByIndex(d.idx);
+      const color = getGraphColorByIndex(d.idx, computedStyle);
 
       borderColor.push(color);
       backgroundColor.push(color + "7F");
     });
 
     chartDataCompare.forEach((d: any) => {
-      const color = getColorByIndex(d.idx);
+      const color = getGraphColorByIndex(d.idx, computedStyle);
 
       borderColorCompare.push(color + "7F");
       backgroundColorCompare.push(color + "32");
