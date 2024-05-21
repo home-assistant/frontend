@@ -28,6 +28,7 @@ import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
+import { storage } from "../../../common/decorators/storage";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
@@ -98,7 +99,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _config?: AutomationConfig;
 
-  @state() private _dirty = false;
+  @storage({
+    key: "pageDirty",
+    state: true,
+    subscribe: false,
+  })
+  private _dirty = false;
 
   @state() private _errors?: string;
 
@@ -116,6 +122,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._dirty = false;
+  }
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
