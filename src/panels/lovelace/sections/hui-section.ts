@@ -51,7 +51,8 @@ export class HuiSection extends ReactiveElement {
   public createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.config = cardConfig;
+    element.lovelace = this.lovelace;
+    element.setConfig(cardConfig);
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -123,6 +124,14 @@ export class HuiSection extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+        this._cards.forEach((element) => {
+          try {
+            element.hass = this.hass;
+            element.lovelace = this.lovelace;
+          } catch (e: any) {
+            this._rebuildCard(element, createErrorCardConfig(e.message, null));
+          }
+        });
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;

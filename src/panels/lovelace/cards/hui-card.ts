@@ -1,8 +1,9 @@
 import { PropertyValues, ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
 import { createCardElement } from "../create-element/create-card-element";
 import type { Lovelace, LovelaceCard } from "../types";
 
@@ -12,7 +13,7 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public config!: LovelaceCardConfig;
+  @state() public _config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -20,17 +21,38 @@ export class HuiCard extends ReactiveElement {
     return this;
   }
 
-  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
-    super.willUpdate(changedProperties);
-    const oldConfig = changedProperties.get("config");
-
-    // If config has changed, create element if necessary and set all values.
-    if (
-      changedProperties.has("config") &&
-      (!oldConfig || this.config !== oldConfig)
-    ) {
-      this._initializeConfig();
+  public getCardSize(): number | Promise<number> {
+    if (this._element) {
+      const size = computeCardSize(this._element);
+      return size;
     }
+    return 1;
+  }
+
+  public getLayoutOptions() {
+    if (this._element) {
+      if (this._element.getLayoutOptions) {
+        return this._element.getLayoutOptions();
+      }
+      return {};
+    }
+    return {};
+  }
+
+  public setConfig(config: LovelaceCardConfig): void {
+    if (this._config === config) {
+      return;
+    }
+    this._config = config;
+    this._element = createCardElement(config) as LovelaceCard;
+
+    this._element!.hass = this.hass;
+    this._element!.editMode = this.lovelace.editMode;
+
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+    this.appendChild(this._element!);
   }
 
   protected update(changedProperties: PropertyValues<typeof this>) {
@@ -44,20 +66,6 @@ export class HuiCard extends ReactiveElement {
         this._element.editMode = this.lovelace.editMode;
       }
     }
-  }
-
-  private async _initializeConfig() {
-    const cardConfig = this.config;
-
-    this._element = createCardElement(cardConfig) as LovelaceCard;
-
-    this._element!.hass = this.hass;
-    this._element!.editMode = this.lovelace.editMode;
-
-    while (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
-    this.appendChild(this._element!);
   }
 }
 
