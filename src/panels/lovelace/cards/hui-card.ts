@@ -5,7 +5,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { createCardElement } from "../create-element/create-card-element";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
@@ -29,14 +29,16 @@ export class HuiCard extends ReactiveElement {
     return 1;
   }
 
-  public getLayoutOptions() {
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    const configOptions = this._config?.layout_options ?? {};
     if (this._element) {
-      if (this._element.getLayoutOptions) {
-        return this._element.getLayoutOptions();
-      }
-      return {};
+      const cardOptions = this._element.getLayoutOptions?.() ?? {};
+      return {
+        ...cardOptions,
+        ...configOptions,
+      };
     }
-    return {};
+    return configOptions;
   }
 
   public setConfig(config: LovelaceCardConfig): void {
