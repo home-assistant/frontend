@@ -182,17 +182,20 @@ export class HaMap extends ReactiveElement {
 
   private async _loadMap(): Promise<void> {
     if (this._loading) return;
-    this._loading = true;
     let map = this.shadowRoot!.getElementById("map");
     if (!map) {
       map = document.createElement("div");
       map.id = "map";
       this.shadowRoot!.append(map);
     }
-    [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
-    this._updateMapStyle();
-    this._loaded = true;
-    this._loading = false;
+    this._loading = true;
+    try {
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      this._updateMapStyle();
+      this._loaded = true;
+    } finally {
+      this._loading = false;
+    }
   }
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {

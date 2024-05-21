@@ -7,7 +7,7 @@ import { ConditionalCardConfig } from "../cards/types";
 import {
   Condition,
   checkConditionsMet,
-  createConditionMediaQueriesListeners,
+  attachConditionMediaQueriesListeners,
   extractMediaQueries,
   validateConditionalConfig,
 } from "../common/validate-condition";
@@ -84,7 +84,7 @@ export class HuiConditionalBase extends ReactiveElement {
 
     this._clearMediaQueries();
 
-    this._listeners = createConditionMediaQueriesListeners(
+    this._listeners = attachConditionMediaQueriesListeners(
       supportedConditions,
       this.hass,
       (visibility) => {

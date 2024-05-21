@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import {
   checkConditionsMet,
-  createConditionMediaQueriesListeners,
+  attachConditionMediaQueriesListeners,
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import {
@@ -151,7 +151,7 @@ export class HuiSection extends ReactiveElement {
       return;
     }
     this._clearMediaQueries();
-    this._listeners = createConditionMediaQueriesListeners(
+    this._listeners = attachConditionMediaQueriesListeners(
       this.config.visibility,
       this.hass,
       (visibility) => {
