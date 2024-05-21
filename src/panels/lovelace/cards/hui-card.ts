@@ -46,10 +46,9 @@ export class HuiCard extends ReactiveElement {
       return;
     }
     this._config = config;
-    this._element = createCardElement(config) as LovelaceCard;
-
-    this._element!.hass = this.hass;
-    this._element!.editMode = this.lovelace.editMode;
+    this._element = createCardElement(config);
+    this._element.hass = this.hass;
+    this._element.editMode = this.lovelace.editMode;
 
     while (this.lastChild) {
       this.removeChild(this.lastChild);

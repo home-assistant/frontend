@@ -99,7 +99,8 @@ export class HuiConditionalBase extends ReactiveElement {
     if (
       changed.has("_element") ||
       changed.has("_config") ||
-      changed.has("hass")
+      changed.has("hass") ||
+      changed.has("editMode")
     ) {
       this._listenMediaQueries();
       this._updateVisibility();
