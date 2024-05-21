@@ -8,6 +8,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { any, array, assert, assign, object, optional } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
@@ -142,6 +143,11 @@ export class HuiConditionalCardEditor
             </div>
           `
         : html`
+            <ha-alert alert-type="info">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.condition-editor.explanation"
+              )}
+            </ha-alert>
             <ha-card-conditions-editor
               .hass=${this.hass}
               .conditions=${this._config.conditions}
@@ -230,6 +236,10 @@ export class HuiConditionalCardEditor
       css`
         mwc-tab-bar {
           border-bottom: 1px solid var(--divider-color);
+        }
+        ha-alert {
+          display: block;
+          margin-top: 12px;
         }
         .card {
           margin-top: 8px;

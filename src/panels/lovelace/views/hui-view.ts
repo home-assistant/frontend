@@ -148,7 +148,7 @@ export class HUIView extends ReactiveElement {
     this._applyTheme();
   }
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
     super.willUpdate(changedProperties);
 
     /*
@@ -161,7 +161,7 @@ export class HUIView extends ReactiveElement {
           - lovelace changes if edit mode is enabled or config has changed
     */
 
-    const oldLovelace = changedProperties.get("lovelace") as this["lovelace"];
+    const oldLovelace = changedProperties.get("lovelace");
 
     // If config has changed, create element if necessary and set all values.
     if (

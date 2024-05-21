@@ -313,31 +313,38 @@ export class HaChartBase extends LitElement {
     `;
   }
 
+  private _loading = false;
+
   private async _setupChart() {
+    if (this._loading) return;
     const ctx: CanvasRenderingContext2D = this.renderRoot
       .querySelector("canvas")!
       .getContext("2d")!;
+    this._loading = true;
+    try {
+      const ChartConstructor = (await import("../../resources/chartjs")).Chart;
 
-    const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+      const computedStyles = getComputedStyle(this);
 
-    const computedStyles = getComputedStyle(this);
+      ChartConstructor.defaults.borderColor =
+        computedStyles.getPropertyValue("--divider-color");
+      ChartConstructor.defaults.color = computedStyles.getPropertyValue(
+        "--secondary-text-color"
+      );
+      ChartConstructor.defaults.font.family =
+        computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
+        computedStyles.getPropertyValue("--mdc-typography-font-family") ||
+        "Roboto, Noto, sans-serif";
 
-    ChartConstructor.defaults.borderColor =
-      computedStyles.getPropertyValue("--divider-color");
-    ChartConstructor.defaults.color = computedStyles.getPropertyValue(
-      "--secondary-text-color"
-    );
-    ChartConstructor.defaults.font.family =
-      computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
-      computedStyles.getPropertyValue("--mdc-typography-font-family") ||
-      "Roboto, Noto, sans-serif";
-
-    this.chart = new ChartConstructor(ctx, {
-      type: this.chartType,
-      data: this.data,
-      options: this._createOptions(),
-      plugins: this._createPlugins(),
-    });
+      this.chart = new ChartConstructor(ctx, {
+        type: this.chartType,
+        data: this.data,
+        options: this._createOptions(),
+        plugins: this._createPlugins(),
+      });
+    } finally {
+      this._loading = false;
+    }
   }
 
   private _createOptions() {
