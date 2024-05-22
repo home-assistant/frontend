@@ -359,7 +359,13 @@ export class HcMain extends HassElement {
   }
 
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
-    castContext.setApplicationState(lovelaceConfig.title || "");
+    const title =
+      this._urlPath === "lovelace"
+        ? this.hass!.localize("panel.states")
+        : Object.values(this.hass!.panels).find(
+            (p) => p.url_path === this._urlPath
+          )?.title;
+    castContext.setApplicationState(title || "");
     this._lovelaceConfig = lovelaceConfig;
   }
 

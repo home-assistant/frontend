@@ -61,7 +61,13 @@ class HcLovelace extends LitElement {
       const index = this._viewIndex;
 
       if (index !== undefined) {
-        const dashboardTitle = this.lovelaceConfig.title || this.urlPath;
+        const title =
+          this.urlPath === "lovelace"
+            ? this.hass!.localize("panel.states")
+            : Object.values(this.hass!.panels).find(
+                (p) => p.url_path === this.urlPath
+              )?.title;
+        const dashboardTitle = title || this.urlPath;
 
         const viewTitle =
           this.lovelaceConfig.views[index].title ||
