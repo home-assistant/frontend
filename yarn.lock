@@ -1610,16 +1610,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ecma402-abstract@npm:1.18.3":
-  version: 1.18.3
-  resolution: "@formatjs/ecma402-abstract@npm:1.18.3"
-  dependencies:
-    "@formatjs/intl-localematcher": "npm:0.5.4"
-    tslib: "npm:^2.4.0"
-  checksum: 10/1a27aee1e22bd3c9b98ed17578be10adde02161e39da40a6f2f67970f77eaaeafca17e912abaf6f16b771701e72bde55879b1374dd7a28d9ad8f37e5bb2fae5e
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:2.0.0":
   version: 2.0.0
   resolution: "@formatjs/ecma402-abstract@npm:2.0.0"
@@ -1682,12 +1672,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-enumerator@npm:1.4.6":
-  version: 1.4.6
-  resolution: "@formatjs/intl-enumerator@npm:1.4.6"
+"@formatjs/intl-enumerator@npm:1.4.7":
+  version: 1.4.7
+  resolution: "@formatjs/intl-enumerator@npm:1.4.7"
   dependencies:
     tslib: "npm:^2.4.0"
-  checksum: 10/35fd4f6b49005ffe701ce291d8c3b8308310c686667d5420b66739779cb4829680b8189457c1706f396f05d4496792f90af69e8b30d4a1031e26c45012fa6aca
+  checksum: 10/14234c9de2a5143d4839a032e2a876b3acd75c6107868b4d771969354c359f4fa2256d9385ca8bec196273ea7b844d7f6d598ca0ca3832c06e14573494aaf561
   languageName: node
   linkType: hard
 
@@ -1711,15 +1701,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:3.4.6":
-  version: 3.4.6
-  resolution: "@formatjs/intl-locale@npm:3.4.6"
+"@formatjs/intl-locale@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@formatjs/intl-locale@npm:4.0.0"
   dependencies:
-    "@formatjs/ecma402-abstract": "npm:1.18.3"
-    "@formatjs/intl-enumerator": "npm:1.4.6"
+    "@formatjs/ecma402-abstract": "npm:2.0.0"
+    "@formatjs/intl-enumerator": "npm:1.4.7"
     "@formatjs/intl-getcanonicallocales": "npm:2.3.0"
     tslib: "npm:^2.4.0"
-  checksum: 10/e900d7ac3fc6ecddf5d07d6f56b593934e9e567e7e9b0695b869f76c69ba5da3bd59d53688498f9f6798968ac1dea10353866c737fb455ad4709a2bd98ea1ea9
+  checksum: 10/5c7ba139800498ca381ca7df708b18127a2bc9187e7d9fce8234426e2e1a8552a6cc44d370e3998afad46a43cd082ccc5a4b00ef738167552c1756f56e7dd4ca
   languageName: node
   linkType: hard
 
@@ -8958,7 +8948,7 @@ __metadata:
     "@formatjs/intl-displaynames": "npm:6.6.8"
     "@formatjs/intl-getcanonicallocales": "npm:2.3.0"
     "@formatjs/intl-listformat": "npm:7.5.7"
-    "@formatjs/intl-locale": "npm:3.4.6"
+    "@formatjs/intl-locale": "npm:4.0.0"
     "@formatjs/intl-numberformat": "npm:8.10.3"
     "@formatjs/intl-pluralrules": "npm:5.2.14"
     "@formatjs/intl-relativetimeformat": "npm:11.2.14"

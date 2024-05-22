@@ -39,7 +39,7 @@
     "@formatjs/intl-displaynames": "6.6.8",
     "@formatjs/intl-getcanonicallocales": "2.3.0",
     "@formatjs/intl-listformat": "7.5.7",
-    "@formatjs/intl-locale": "3.4.6",
+    "@formatjs/intl-locale": "4.0.0",
     "@formatjs/intl-numberformat": "8.10.3",
     "@formatjs/intl-pluralrules": "5.2.14",
     "@formatjs/intl-relativetimeformat": "11.2.14",
