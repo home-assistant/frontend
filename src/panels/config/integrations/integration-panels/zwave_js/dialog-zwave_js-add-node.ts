@@ -237,8 +237,12 @@ class DialogZWaveJSAddNode extends LitElement {
                         : ""}
                       <div class="flex-column">
                         ${this._requestedGrant?.securityClasses
-                          .sort()
-                          .reverse()
+                          .sort((a, b) => {
+                            // Put highest security classes at the top, S0 at the bottom
+                            if (a === SecurityClass.S0_Legacy) return 1;
+                            if (b === SecurityClass.S0_Legacy) return -1;
+                            return b - a;
+                          })
                           .map(
                             (securityClass) =>
                               html`<ha-formfield
