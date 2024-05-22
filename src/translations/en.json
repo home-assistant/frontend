@@ -4873,7 +4873,7 @@
               "description": "Example: Lighting, Sensors and Security Systems"
             },
             "S2_AccessControl": {
-              "title": "S2 access control",
+              "title": "S2 Access Control",
               "description": "Example: Door locks and garage doors"
             },
             "S0_Legacy": {
