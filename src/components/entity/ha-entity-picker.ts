@@ -407,7 +407,7 @@ export class HaEntityPicker extends LitElement {
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    const newValue = ev.detail.value.trim();
 
     if (newValue && newValue.startsWith(CREATE_ID)) {
       const domain = newValue.substring(CREATE_ID.length);
@@ -427,7 +427,7 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value.toLowerCase();
+    const filterString = ev.detail.value.trim().toLowerCase();
     target.filteredItems = filterString.length
       ? fuzzyFilterSort<HassEntityWithCachedName>(filterString, this._states)
       : this._states;
