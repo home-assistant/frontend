@@ -1,6 +1,13 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiClockOutline, mdiDelete, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiAndroid,
+  mdiApple,
+  mdiClockOutline,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiWeb,
+} from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -77,6 +84,14 @@ class HaRefreshTokens extends LitElement {
             ? refreshTokens!.map(
                 (token) => html`
                   <ha-settings-row three-line>
+                    <ha-svg-icon
+                      slot="prefix"
+                      .path=${token.client_id === iOSclientId
+                        ? mdiApple
+                        : token.client_id === androidClientId
+                          ? mdiAndroid
+                          : mdiWeb}
+                    ></ha-svg-icon>
                     <span slot="heading" class="primary">
                       ${this._formatTokenName(token)}
                       ${token.is_current
@@ -199,7 +214,7 @@ class HaRefreshTokens extends LitElement {
         ),
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_remove_expiration_text",
-          { name: token.client_name || token.client_id }
+          { name: this._formatTokenName(token) }
         ),
         confirmText: this.hass.localize("ui.common.remove"),
         destructive: true,
@@ -209,7 +224,7 @@ class HaRefreshTokens extends LitElement {
     }
     try {
       await this.hass.callWS({
-        type: "auth/remove_expiry_date_refresh_token",
+        type: "auth/remove_expiration_date_refresh_token",
         refresh_token_id: token.id,
       });
       fireEvent(this, "hass-refresh-tokens");
@@ -231,7 +246,7 @@ class HaRefreshTokens extends LitElement {
         ),
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete_text",
-          { name: token.client_name || token.client_id }
+          { name: this._formatTokenName(token) }
         ),
         confirmText: this.hass.localize("ui.common.delete"),
         destructive: true,
@@ -305,6 +320,11 @@ class HaRefreshTokens extends LitElement {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
+        }
+        ha-settings-row ha-svg-icon {
+          margin-right: 12px;
+          margin-inline-start: initial;
+          margin-inline-end: 12px;
         }
       `,
     ];
