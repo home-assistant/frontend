@@ -94,15 +94,6 @@ class HaRefreshTokens extends LitElement {
                     ></ha-svg-icon>
                     <span slot="heading" class="primary">
                       ${this._formatTokenName(token)}
-                      ${token.is_current
-                        ? html`
-                            <ha-label dense>
-                              ${this.hass.localize(
-                                "ui.panel.profile.refresh_tokens.current"
-                              )}
-                            </ha-label>
-                          `
-                        : nothing}
                     </span>
                     <div slot="description">
                       ${this.hass.localize(
@@ -116,20 +107,28 @@ class HaRefreshTokens extends LitElement {
                       )}
                     </div>
                     <div slot="description">
-                      ${token.last_used_at
-                        ? this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.last_used",
-                            {
-                              date: relativeTime(
-                                new Date(token.last_used_at),
-                                this.hass.locale
-                              ),
-                              location: token.last_used_ip,
-                            }
-                          )
-                        : this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.not_used"
-                          )}
+                      ${token.is_current
+                        ? html`
+                            <span class="current-session">
+                              <span class="dot"></span> ${this.hass.localize(
+                                "ui.panel.profile.refresh_tokens.current_session"
+                              )}
+                            </span>
+                          `
+                        : token.last_used_at
+                          ? this.hass.localize(
+                              "ui.panel.profile.refresh_tokens.last_used",
+                              {
+                                date: relativeTime(
+                                  new Date(token.last_used_at),
+                                  this.hass.locale
+                                ),
+                                location: token.last_used_ip,
+                              }
+                            )
+                          : this.hass.localize(
+                              "ui.panel.profile.refresh_tokens.not_used"
+                            )}
                     </div>
                     <div slot="description">
                       ${token.expire_at
@@ -310,16 +309,17 @@ class HaRefreshTokens extends LitElement {
         ha-list-item[disabled] ha-svg-icon {
           color: var(--disabled-text-color) !important;
         }
-        ha-settings-row .primary {
-          display: flex;
+        ha-settings-row .current-session {
+          display: inline-flex;
           align-items: center;
-          flex-direction: row;
-          flex-wrap: wrap;
         }
-        ha-settings-row .primary ha-label {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
+        ha-settings-row .dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          background-color: var(--success-color);
+          border-radius: 50%;
+          margin-right: 6px;
         }
         ha-settings-row ha-svg-icon {
           margin-right: 12px;

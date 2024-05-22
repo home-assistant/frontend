@@ -6369,7 +6369,7 @@
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Unused refresh tokens will be automatically removed after 90 days. The following refresh tokens are currently active for your account.",
           "ios_app": "iOS app",
           "android_app": "Android app",
-          "current": "Current",
+          "current_session": "Your current session",
           "created_at": "Created {date}",
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
