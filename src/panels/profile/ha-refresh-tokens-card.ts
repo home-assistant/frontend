@@ -1,21 +1,34 @@
-import { mdiDelete } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { ActionDetail } from "@material/mwc-list";
+import { mdiClockOutline, mdiDelete, mdiDotsVertical } from "@mdi/js";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button-menu";
 import "../../components/ha-card";
-import "../../components/ha-settings-row";
 import "../../components/ha-icon-button";
-import { RefreshToken } from "../../data/refresh_token";
+import "../../components/ha-label";
+import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";
+import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+
+const iOSclientId = "https://home-assistant.io/iOS";
+const androidClientId = "https://home-assistant.io/android";
 
 const compareTokenLastUsedAt = (tokenA: RefreshToken, tokenB: RefreshToken) => {
   const timeA = tokenA.last_used_at ? new Date(tokenA.last_used_at) : 0;
@@ -42,91 +55,186 @@ class HaRefreshTokens extends LitElement {
         .sort(compareTokenLastUsedAt)
   );
 
+  private _formatTokenName = (token: RefreshToken): string => {
+    if (token.client_id === iOSclientId) {
+      return this.hass.localize("ui.panel.profile.refresh_tokens.ios_app");
+    }
+    if (token.client_id === androidClientId) {
+      return this.hass.localize("ui.panel.profile.refresh_tokens.android_app");
+    }
+    return token.client_name || token.client_id;
+  };
+
   protected render(): TemplateResult {
     const refreshTokens = this._refreshTokens(this.refreshTokens!);
-    return html`<ha-card
-      .header=${this.hass.localize("ui.panel.profile.refresh_tokens.header")}
-    >
-      <div class="card-content">
-        ${this.hass.localize("ui.panel.profile.refresh_tokens.description")}
-        ${refreshTokens?.length
-          ? refreshTokens!.map(
-              (token) =>
-                html`<ha-settings-row three-line>
-                  <span slot="heading"
-                    >${this.hass.localize(
-                      "ui.panel.profile.refresh_tokens.token_title",
-                      { clientId: token.client_id }
-                    )}
-                  </span>
-                  <div slot="description">
-                    ${this.hass.localize(
-                      "ui.panel.profile.refresh_tokens.created_at",
-                      {
-                        date: relativeTime(
-                          new Date(token.created_at),
-                          this.hass.locale
-                        ),
-                      }
-                    )}
-                  </div>
-                  <div slot="description">
-                    ${token.last_used_at
-                      ? this.hass.localize(
-                          "ui.panel.profile.refresh_tokens.last_used",
-                          {
-                            date: relativeTime(
-                              new Date(token.last_used_at),
-                              this.hass.locale
-                            ),
-                            location: token.last_used_ip,
-                          }
-                        )
-                      : this.hass.localize(
-                          "ui.panel.profile.refresh_tokens.not_used"
-                        )}
-                  </div>
-                  <div>
-                    ${token.is_current
-                      ? html`<simple-tooltip
-                          animation-delay="0"
-                          position="left"
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.current_token_tooltip"
+    return html`
+      <ha-card
+        .header=${this.hass.localize("ui.panel.profile.refresh_tokens.header")}
+      >
+        <div class="card-content">
+          ${this.hass.localize("ui.panel.profile.refresh_tokens.description")}
+          ${refreshTokens?.length
+            ? refreshTokens!.map(
+                (token) => html`
+                  <ha-settings-row three-line>
+                    <span slot="heading" class="primary">
+                      ${this._formatTokenName(token)}
+                      ${token.is_current
+                        ? html`
+                            <ha-label dense>
+                              ${this.hass.localize(
+                                "ui.panel.profile.refresh_tokens.current"
+                              )}
+                            </ha-label>
+                          `
+                        : nothing}
+                    </span>
+                    <div slot="description">
+                      ${this.hass.localize(
+                        "ui.panel.profile.refresh_tokens.created_at",
+                        {
+                          date: relativeTime(
+                            new Date(token.created_at),
+                            this.hass.locale
+                          ),
+                        }
+                      )}
+                    </div>
+                    <div slot="description">
+                      ${token.last_used_at
+                        ? this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.last_used",
+                            {
+                              date: relativeTime(
+                                new Date(token.last_used_at),
+                                this.hass.locale
+                              ),
+                              location: token.last_used_ip,
+                            }
+                          )
+                        : this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.not_used"
                           )}
-                        </simple-tooltip>`
-                      : ""}
-                    <ha-icon-button
-                      .token=${token}
-                      .disabled=${token.is_current}
-                      .label=${this.hass.localize("ui.common.delete")}
-                      .path=${mdiDelete}
-                      @click=${this._deleteToken}
-                    ></ha-icon-button>
-                  </div>
-                </ha-settings-row>`
-            )
-          : ""}
-      </div>
-      <div class="card-actions">
-        <mwc-button class="warning" @click=${this._deleteAllTokens}>
-          ${this.hass.localize(
-            "ui.panel.profile.refresh_tokens.delete_all_tokens"
-          )}
-        </mwc-button>
-      </div>
-    </ha-card>`;
+                    </div>
+                    <div slot="description">
+                      ${token.expire_at
+                        ? this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.expire_after_90_days"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.never_expire"
+                          )}
+                    </div>
+                    <div>
+                      <ha-button-menu
+                        corner="BOTTOM_END"
+                        menuCorner="END"
+                        @action=${this._handleAction}
+                        .token=${token}
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        <ha-list-item
+                          graphic="icon"
+                          .disabled=${!token.expire_at}
+                        >
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiClockOutline}
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
+                            "ui.panel.profile.refresh_tokens.remove_expiration"
+                          )}
+                        </ha-list-item>
+                        <ha-list-item
+                          graphic="icon"
+                          class="warning"
+                          .disabled=${token.is_current}
+                        >
+                          <ha-svg-icon
+                            class="warning"
+                            slot="graphic"
+                            .path=${mdiDelete}
+                          ></ha-svg-icon>
+                          ${this.hass.localize("ui.common.delete")}
+                        </ha-list-item>
+                      </ha-button-menu>
+                    </div>
+                  </ha-settings-row>
+                `
+              )
+            : nothing}
+        </div>
+        <div class="card-actions">
+          <mwc-button class="warning" @click=${this._deleteAllTokens}>
+            ${this.hass.localize(
+              "ui.panel.profile.refresh_tokens.delete_all_tokens"
+            )}
+          </mwc-button>
+        </div>
+      </ha-card>
+    `;
   }
 
-  private async _deleteToken(ev: Event): Promise<void> {
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
     const token = (ev.currentTarget as any).token;
+    switch (ev.detail.index) {
+      case 0:
+        this._removeExpiration(token);
+        break;
+      case 1:
+        this._deleteToken(token);
+        break;
+    }
+  }
+
+  private async _removeExpiration(token: RefreshToken): Promise<void> {
     if (
       !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.confirm_remove_expiration_title"
+        ),
         text: this.hass.localize(
-          "ui.panel.profile.refresh_tokens.confirm_delete",
+          "ui.panel.profile.refresh_tokens.confirm_remove_expiration_text",
           { name: token.client_name || token.client_id }
         ),
+        confirmText: this.hass.localize("ui.common.remove"),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+    try {
+      await this.hass.callWS({
+        type: "auth/remove_expiry_date_refresh_token",
+        refresh_token_id: token.id,
+      });
+      fireEvent(this, "hass-refresh-tokens");
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.remove_expiration_failed"
+        ),
+        text: err.message,
+      });
+    }
+  }
+
+  private async _deleteToken(token: RefreshToken): Promise<void> {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.confirm_delete_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.confirm_delete_text",
+          { name: token.client_name || token.client_id }
+        ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return;
@@ -182,6 +290,21 @@ class HaRefreshTokens extends LitElement {
         }
         ha-icon-button {
           color: var(--primary-text-color);
+        }
+        ha-list-item[disabled],
+        ha-list-item[disabled] ha-svg-icon {
+          color: var(--disabled-text-color) !important;
+        }
+        ha-settings-row .primary {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        ha-settings-row .primary ha-label {
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
       `,
     ];
