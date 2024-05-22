@@ -6380,7 +6380,7 @@
           "confirm_remove_expiration_text": "The refresh token for ''{name}'' will never expire. Removing the expiration date can reduce the security. Only disable expiration date on refresh token on devices which are rarely used (+90 days between usage).",
           "remove_expiration_failed": "Failed to remove refresh token expiration",
           "confirm_delete_title": "Delete refresh token?",
-          "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. The associated device will be disconnected.",
+          "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This will end the login session on the associated device.",
           "delete_all_tokens": "Delete all tokens",
           "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
