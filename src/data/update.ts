@@ -192,7 +192,6 @@ export const computeUpdateStateDisplay = (
       return hass.localize("ui.card.update.installing");
     }
 
-    return hass.formatEntityState(stateObj);
   }
 
   return hass.formatEntityState(stateObj);
