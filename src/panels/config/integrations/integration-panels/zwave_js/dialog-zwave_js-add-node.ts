@@ -5,9 +5,10 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
-import { HaCheckbox } from "../../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-qr-scanner";
 import "../../../../../components/ha-radio";
@@ -236,8 +237,12 @@ class DialogZWaveJSAddNode extends LitElement {
                         : ""}
                       <div class="flex-column">
                         ${this._requestedGrant?.securityClasses
-                          .sort()
-                          .reverse()
+                          .sort((a, b) => {
+                            // Put highest security classes at the top, S0 at the bottom
+                            if (a === SecurityClass.S0_Legacy) return 1;
+                            if (b === SecurityClass.S0_Legacy) return -1;
+                            return b - a;
+                          })
                           .map(
                             (securityClass) =>
                               html`<ha-formfield

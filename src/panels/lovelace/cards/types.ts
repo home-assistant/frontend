@@ -235,6 +235,9 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ConfigEntity extends EntityConfig {
