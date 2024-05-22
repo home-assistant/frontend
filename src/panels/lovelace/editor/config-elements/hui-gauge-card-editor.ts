@@ -23,7 +23,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
 import { UiAction } from "../../components/hui-action-editor";
 
-const TAP_ACTIONS = ["navigate", "url", "call-service", "none"];
+const TAP_ACTIONS: UiActions[] = ["navigate", "url", "call-service", "none"];
 
 const gaugeSegmentStruct = object({
   from: number(),
@@ -137,7 +137,7 @@ export class HuiGaugeCardEditor
           name: "tap_action",
           selector: {
             ui_action: {
-              actions: TAP_ACTIONS as UiAction[],
+              actions: TAP_ACTIONS,
               default_action: "more-info",
             },
           },
