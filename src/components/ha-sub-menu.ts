@@ -1,7 +1,6 @@
-import { customElement } from "lit/decorators";
-import "element-internals-polyfill";
-import { css } from "lit";
 import { MdSubMenu } from "@material/web/menu/sub-menu";
+import { css } from "lit";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-sub-menu")
 export class HaSubMenu extends MdSubMenu {
