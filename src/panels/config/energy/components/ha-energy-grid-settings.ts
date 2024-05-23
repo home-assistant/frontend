@@ -22,6 +22,7 @@ import {
   EnergyPreferencesValidation,
   energySourcesByType,
   EnergyValidationIssue,
+  EnergySource,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
@@ -482,18 +483,18 @@ export class EnergyGridSettings extends LitElement {
 
   private _removeEmptySources(preferences: EnergyPreferences) {
     // Check if grid sources became an empty type and remove if so
-    const hasEmptyGridSources = preferences.energy_sources.some(
-      (source) =>
-        source.type === "grid" &&
-        source.flow_from.length === 0 &&
-        source.flow_to.length === 0
-    );
-
-    if (hasEmptyGridSources) {
-      preferences.energy_sources = preferences.energy_sources.filter(
-        (source) => source.type !== "grid"
-      );
-    }
+    preferences.energy_sources = preferences.energy_sources.reduce<
+      EnergySource[]
+    >((acc, source) => {
+      if (
+        source.type !== "grid" ||
+        source.flow_from.length > 0 ||
+        source.flow_to.length > 0
+      ) {
+        acc.push(source);
+      }
+      return acc;
+    }, []);
 
     return preferences;
   }
