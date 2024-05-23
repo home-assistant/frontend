@@ -449,7 +449,8 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    await this._deleteSource(preferences);
+    const cleanedPreferences = this._removeEmptySources(preferences);
+    await this._savePreferences(cleanedPreferences);
   }
 
   private async _deleteToSource(ev) {
@@ -475,10 +476,11 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    await this._deleteSource(preferences);
+    const cleanedPreferences = this._removeEmptySources(preferences);
+    await this._savePreferences(cleanedPreferences);
   }
 
-  private async _deleteSource(preferences: EnergyPreferences) {
+  private _removeEmptySources(preferences: EnergyPreferences) {
     // Check if grid sources became an empty type and remove if so
     const hasEmptyGridSources = preferences.energy_sources.some(
       (source) =>
@@ -493,7 +495,7 @@ export class EnergyGridSettings extends LitElement {
       );
     }
 
-    await this._savePreferences(preferences);
+    return preferences;
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {
