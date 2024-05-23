@@ -3,7 +3,8 @@ import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAndroid,
   mdiApple,
-  mdiClockOutline,
+  mdiClockCheckOutline,
+  mdiClockRemoveOutline,
   mdiDelete,
   mdiDotsVertical,
   mdiWeb,
@@ -151,17 +152,20 @@ class HaRefreshTokens extends LitElement {
                           .label=${this.hass.localize("ui.common.menu")}
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
-                        <ha-list-item
-                          graphic="icon"
-                          .disabled=${!token.expire_at}
-                        >
+                        <ha-list-item graphic="icon">
                           <ha-svg-icon
                             slot="graphic"
-                            .path=${mdiClockOutline}
+                            .path=${token.expire_at
+                              ? mdiClockRemoveOutline
+                              : mdiClockCheckOutline}
                           ></ha-svg-icon>
-                          ${this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.remove_expiration"
-                          )}
+                          ${token.expire_at
+                            ? this.hass.localize(
+                                "ui.panel.profile.refresh_tokens.disable_token_expiration"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.profile.refresh_tokens.enable_token_expiration"
+                              )}
                         </ha-list-item>
                         <ha-list-item
                           graphic="icon"
@@ -197,7 +201,7 @@ class HaRefreshTokens extends LitElement {
     const token = (ev.currentTarget as any).token;
     switch (ev.detail.index) {
       case 0:
-        this._removeExpiration(token);
+        this._toggleTokenExpiration(token);
         break;
       case 1:
         this._deleteToken(token);
@@ -205,26 +209,31 @@ class HaRefreshTokens extends LitElement {
     }
   }
 
-  private async _removeExpiration(token: RefreshToken): Promise<void> {
-    if (
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.profile.refresh_tokens.confirm_remove_expiration_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.profile.refresh_tokens.confirm_remove_expiration_text",
-          { name: this._formatTokenName(token) }
-        ),
-        confirmText: this.hass.localize("ui.common.remove"),
-        destructive: true,
-      }))
-    ) {
-      return;
+  private async _toggleTokenExpiration(token: RefreshToken): Promise<void> {
+    const disable = Boolean(token.expire_at);
+    if (disable) {
+      if (
+        !(await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.profile.refresh_tokens.confirm_disable_token_expiration_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.profile.refresh_tokens.confirm_disable_token_expiration_text",
+            { name: this._formatTokenName(token) }
+          ),
+          confirmText: this.hass.localize("ui.common.disable"),
+          destructive: true,
+        }))
+      ) {
+        return;
+      }
     }
+
     try {
       await this.hass.callWS({
-        type: "auth/remove_expiration_date_refresh_token",
+        type: "auth/edit_expiry_date_refresh_token",
         refresh_token_id: token.id,
+        disable_expiry_date: disable,
       });
       fireEvent(this, "hass-refresh-tokens");
     } catch (err: any) {
@@ -321,7 +330,7 @@ class HaRefreshTokens extends LitElement {
           border-radius: 50%;
           margin-right: 6px;
         }
-        ha-settings-row ha-svg-icon {
+        ha-settings-row > ha-svg-icon {
           margin-right: 12px;
           margin-inline-start: initial;
           margin-inline-end: 12px;
