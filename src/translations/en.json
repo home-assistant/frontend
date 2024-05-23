@@ -6377,7 +6377,7 @@
           "never_expire": "Never expires",
           "remove_expiration": "Remove expiration",
           "confirm_remove_expiration_title": "Remove expiration date?",
-          "confirm_remove_expiration_text": "The refresh token for ''{name}'' will never expire. Removing the expiration date can reduce the security. Only disable expiration date on refresh token on devices which are rarely used (+90 days between usage).",
+          "confirm_remove_expiration_text": "The refresh token for ''{name}'' will never expire. Removing token expiration can reduce security. Only remove token expiration on devices that are infrequently used (+90 days between use).",
           "remove_expiration_failed": "Failed to remove refresh token expiration",
           "confirm_delete_title": "Delete refresh token?",
           "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This will end the login session on the associated device.",
