@@ -59,7 +59,7 @@ class HaRefreshTokens extends LitElement {
   private _refreshTokens = memoizeOne(
     (refreshTokens: RefreshToken[]): RefreshToken[] =>
       refreshTokens
-        ?.filter((token) => token.type === "normal")
+        .filter((token) => token.type === "normal")
         .sort(compareTokenLastUsedAt)
   );
 
@@ -74,15 +74,17 @@ class HaRefreshTokens extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const refreshTokens = this._refreshTokens(this.refreshTokens!);
+    const refreshTokens = this.refreshTokens
+      ? this._refreshTokens(this.refreshTokens)
+      : [];
     return html`
       <ha-card
         .header=${this.hass.localize("ui.panel.profile.refresh_tokens.header")}
       >
         <div class="card-content">
           ${this.hass.localize("ui.panel.profile.refresh_tokens.description")}
-          ${refreshTokens?.length
-            ? refreshTokens!.map(
+          ${refreshTokens.length
+            ? refreshTokens.map(
                 (token) => html`
                   <ha-settings-row three-line>
                     <ha-svg-icon
