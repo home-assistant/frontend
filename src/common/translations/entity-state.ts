@@ -21,7 +21,8 @@ export const computeFormatFunctions = async (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
-  entities: HomeAssistant["entities"]
+  entities: HomeAssistant["entities"],
+  sensorNumericDeviceClasses: string[]
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
@@ -35,7 +36,15 @@ export const computeFormatFunctions = async (
 
   return {
     formatEntityState: (stateObj, state) =>
-      computeStateDisplay(localize, stateObj, locale, config, entities, state),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        locale,
+        sensorNumericDeviceClasses,
+        config,
+        entities,
+        state
+      ),
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       computeAttributeValueDisplay(
         localize,

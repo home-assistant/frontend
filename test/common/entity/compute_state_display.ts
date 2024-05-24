@@ -18,6 +18,8 @@ describe("computeStateDisplay", () => {
   const localize = (message, ...args) =>
     message + (args.length ? ": " + args.join(",") : "");
 
+  const numericDeviceClasses = [];
+
   beforeEach(() => {
     localeData = {
       language: "en",
@@ -36,7 +38,14 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "component.binary_sensor.entity_component._.state.off"
     );
   });
@@ -50,7 +59,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "component.binary_sensor.state.moisture.off"
     );
   });
@@ -70,7 +86,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "component.binary_sensor.state.invalid_device_class.off"
     );
   });
@@ -84,7 +107,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "123 m"
     );
   });
@@ -98,7 +128,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "1,234.5 m"
     );
   });
@@ -112,7 +149,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "1,234.5"
     );
   });
@@ -132,7 +176,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "state.default.unknown"
     );
   });
@@ -152,7 +203,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "state.default.unavailable"
     );
   });
@@ -172,7 +230,14 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "component.sensor.entity_component._.state.custom_state"
     );
   });
@@ -194,14 +259,28 @@ describe("computeStateDisplay", () => {
     };
     it("Uses am/pm time format", () => {
       assert.strictEqual(
-        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          numericDeviceClasses,
+          demoConfig,
+          {}
+        ),
         "November 18, 2017 at 11:12 PM"
       );
     });
     it("Uses 24h time format", () => {
       localeData.time_format = TimeFormat.twenty_four;
       assert.strictEqual(
-        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          numericDeviceClasses,
+          demoConfig,
+          {}
+        ),
         "November 18, 2017 at 23:12"
       );
     });
@@ -223,7 +302,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "November 18, 2017"
     );
   });
@@ -246,14 +332,28 @@ describe("computeStateDisplay", () => {
     it("Uses am/pm time format", () => {
       localeData.time_format = TimeFormat.am_pm;
       assert.strictEqual(
-        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          numericDeviceClasses,
+          demoConfig,
+          {}
+        ),
         "11:12 PM"
       );
     });
     it("Uses 24h time format", () => {
       localeData.time_format = TimeFormat.twenty_four;
       assert.strictEqual(
-        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          numericDeviceClasses,
+          demoConfig,
+          {}
+        ),
         "23:12"
       );
     });
@@ -280,6 +380,7 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
+          numericDeviceClasses,
           demoConfig,
           {},
           "2021-07-04 15:40:03"
@@ -294,6 +395,7 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
+          numericDeviceClasses,
           demoConfig,
           {},
           "2021-07-04 15:40:03"
@@ -323,6 +425,7 @@ describe("computeStateDisplay", () => {
         localize,
         stateObj,
         localeData,
+        numericDeviceClasses,
         demoConfig,
         {},
         "2021-07-04"
@@ -353,6 +456,7 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
+          numericDeviceClasses,
           demoConfig,
           {},
           "17:05:07"
@@ -367,6 +471,7 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
+          numericDeviceClasses,
           demoConfig,
           {},
           "17:05:07"
@@ -389,7 +494,14 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "state.default.unavailable"
     );
   });
@@ -404,7 +516,14 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
+      computeStateDisplay(
+        altLocalize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        {}
+      ),
       "My Custom State"
     );
   });
@@ -422,7 +541,14 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData, demoConfig, entities),
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        entities
+      ),
       "component.custom_integration.entity.sensor.custom_translation.state.custom_state"
     );
   });
