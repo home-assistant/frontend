@@ -84,14 +84,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             }
           : this.hass.selectedTheme;
 
-      const themeName =
-        themeSettings?.theme ||
-        (darkPreferred && this.hass.themes.default_dark_theme
-          ? this.hass.themes.default_dark_theme
-          : this.hass.themes.default_theme);
-
       let darkMode =
         themeSettings?.dark === undefined ? darkPreferred : themeSettings.dark;
+
+      const themeName =
+        themeSettings?.theme ||
+        (darkMode && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme
+          : this.hass.themes.default_theme);
 
       const selectedTheme = themeName
         ? this.hass.themes.themes[themeName]
