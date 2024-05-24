@@ -54,7 +54,6 @@ import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-energy-period-selector")
@@ -89,7 +88,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measure(), 250, false)
       );
