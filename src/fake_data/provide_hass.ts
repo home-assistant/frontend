@@ -119,7 +119,8 @@ export const provideHass = (
       hass().localize,
       hass().locale,
       hass().config,
-      hass().entities
+      hass().entities,
+      [] // numericDeviceClasses
     );
     hass().updateHass({
       formatEntityState,
