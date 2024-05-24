@@ -4870,7 +4870,7 @@
             },
             "S2_Authenticated": {
               "title": "S2 Authenticated",
-              "description": "Example: Lighting, Sensors and Security Systems"
+              "description": "Example: Lighting, sensors and security systems"
             },
             "S2_AccessControl": {
               "title": "S2 Access Control",
