@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
@@ -61,12 +62,11 @@ class HcLovelace extends LitElement {
       const index = this._viewIndex;
 
       if (index !== undefined) {
-        const title =
-          this.urlPath === "lovelace"
-            ? this.hass!.localize("panel.states")
-            : Object.values(this.hass!.panels).find(
-                (p) => p.url_path === this.urlPath
-              )?.title;
+        const title = getPanelTitleFromUrlPath(
+          this.hass,
+          this.urlPath || "lovelace"
+        );
+
         const dashboardTitle = title || this.urlPath;
 
         const viewTitle =

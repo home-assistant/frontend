@@ -81,6 +81,7 @@ import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { getPanelTitle } from "../../data/panel";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -286,6 +287,10 @@ class HUIRoot extends LitElement {
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
+    const dashboardTitle = this.panel
+      ? getPanelTitle(this.hass, this.panel)
+      : undefined;
+
     return html`
       <div
         class=${classMap({
@@ -297,7 +302,7 @@ class HUIRoot extends LitElement {
             ${this._editMode
               ? html`
                   <div class="main-title">
-                    ${this.panel?.title ||
+                    ${dashboardTitle ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <ha-icon-button
                       slot="actionItems"
@@ -369,7 +374,7 @@ class HUIRoot extends LitElement {
                         `
                       : html`
                           <div class="main-title">
-                            ${views[0]?.title ?? this.panel?.title}
+                            ${views[0]?.title ?? dashboardTitle}
                           </div>
                         `}
                   <div class="action-items">${this._renderActionItems()}</div>
