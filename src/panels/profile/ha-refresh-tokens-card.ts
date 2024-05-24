@@ -238,12 +238,16 @@ class HaRefreshTokens extends LitElement {
         disable_expiry_date: disable,
       });
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        typeof err === "object" && err !== null && "message" in err
+          ? (err.message as string)
+          : String(err);
       await showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.profile.refresh_tokens.remove_expiration_failed"
+          `ui.panel.profile.refresh_tokens.${disable ? "disable" : "enable"}_expiration_failed`
         ),
-        text: err.message,
+        text: message,
       });
     }
   }
