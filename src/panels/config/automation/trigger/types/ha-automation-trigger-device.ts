@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { deepEqual } from "../../../../../common/util/deep-equal";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
@@ -125,6 +126,20 @@ export class HaDeviceTrigger extends LitElement {
     this._capabilities = trigger.domain
       ? await fetchDeviceTriggerCapabilities(this.hass, trigger)
       : undefined;
+
+    if (this._capabilities) {
+      // Match yaml to what is displayed in the form from computeInitialHaFormData
+      const newTrigger = {
+        ...this.trigger,
+        ...this._extraFieldsData(this.trigger, this._capabilities),
+      };
+
+      if (!deepEqual(this.trigger, newTrigger)) {
+        fireEvent(this, "value-changed", {
+          value: newTrigger,
+        });
+      }
+    }
   }
 
   private _devicePicked(ev) {
