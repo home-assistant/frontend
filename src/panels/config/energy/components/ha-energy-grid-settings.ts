@@ -22,6 +22,7 @@ import {
   EnergyPreferencesValidation,
   energySourcesByType,
   EnergyValidationIssue,
+  EnergySource,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
@@ -449,11 +450,8 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    try {
-      await this._savePreferences(preferences);
-    } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
-    }
+    const cleanedPreferences = this._removeEmptySources(preferences);
+    await this._savePreferences(cleanedPreferences);
   }
 
   private async _deleteToSource(ev) {
@@ -479,16 +477,35 @@ export class EnergyGridSettings extends LitElement {
       ),
     };
 
-    try {
-      await this._savePreferences(preferences);
-    } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
-    }
+    const cleanedPreferences = this._removeEmptySources(preferences);
+    await this._savePreferences(cleanedPreferences);
+  }
+
+  private _removeEmptySources(preferences: EnergyPreferences) {
+    // Check if grid sources became an empty type and remove if so
+    preferences.energy_sources = preferences.energy_sources.reduce<
+      EnergySource[]
+    >((acc, source) => {
+      if (
+        source.type !== "grid" ||
+        source.flow_from.length > 0 ||
+        source.flow_to.length > 0
+      ) {
+        acc.push(source);
+      }
+      return acc;
+    }, []);
+
+    return preferences;
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {
-    const result = await saveEnergyPreferences(this.hass, preferences);
-    fireEvent(this, "value-changed", { value: result });
+    try {
+      const result = await saveEnergyPreferences(this.hass, preferences);
+      fireEvent(this, "value-changed", { value: result });
+    } catch (err: any) {
+      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+    }
   }
 
   static get styles(): CSSResultGroup {

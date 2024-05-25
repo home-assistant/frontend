@@ -22,7 +22,6 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { loadPolyfillIfNeeded } from "../../resources/resize-observer.polyfill";
 import { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -178,16 +177,24 @@ export class HaMap extends ReactiveElement {
     map!.classList.toggle("forced-light", this.themeMode === "light");
   }
 
+  private _loading = false;
+
   private async _loadMap(): Promise<void> {
+    if (this._loading) return;
     let map = this.shadowRoot!.getElementById("map");
     if (!map) {
       map = document.createElement("div");
       map.id = "map";
       this.shadowRoot!.append(map);
     }
-    [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
-    this._updateMapStyle();
-    this._loaded = true;
+    this._loading = true;
+    try {
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      this._updateMapStyle();
+      this._loaded = true;
+    } finally {
+      this._loading = false;
+    }
   }
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
@@ -528,7 +535,6 @@ export class HaMap extends ReactiveElement {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(() => {
         this.leafletMap?.invalidateSize({ debounceMoveend: true });
       });

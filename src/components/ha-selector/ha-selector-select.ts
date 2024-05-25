@@ -278,6 +278,14 @@ export class HaSelectSelector extends LitElement {
 
   private _valueChanged(ev) {
     ev.stopPropagation();
+
+    if (ev.detail?.index === -1 && this.value !== undefined) {
+      fireEvent(this, "value-changed", {
+        value: undefined,
+      });
+      return;
+    }
+
     const value = ev.detail?.value || ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
