@@ -412,6 +412,9 @@
             "manual": "Manual Entry"
           }
         },
+        "template": {
+          "yaml_warning": "It looks like you may be attempting to insert template related YAML into this field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' )."
+        },
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"
