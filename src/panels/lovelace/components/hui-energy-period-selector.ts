@@ -261,9 +261,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         </div>
 
         ${!this.narrow
-          ? html`<mwc-button dense outlined @click=${this._pickToday}>
+          ? html`<mwc-button dense outlined @click=${this._pickNow}>
               ${this.hass.localize(
-                "ui.panel.lovelace.components.energy_period_selector.today"
+                "ui.panel.lovelace.components.energy_period_selector.now"
               )}
             </mwc-button>`
           : nothing}
@@ -376,7 +376,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._updateCollectionPeriod();
   }
 
-  private _pickToday() {
+  private _pickNow() {
     if (!this._startDate) return;
 
     const range = this._simpleRange(

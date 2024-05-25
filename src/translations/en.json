@@ -6183,7 +6183,7 @@
             "invalid_format": "Invalid display format"
           },
           "energy_period_selector": {
-            "today": "Today",
+            "now": "Now",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
