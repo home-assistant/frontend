@@ -1,5 +1,6 @@
 import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import { Action, SequenceAction } from "../../../../../data/script";
@@ -24,12 +25,17 @@ export class HaSequenceAction extends LitElement implements ActionElement {
     };
   }
 
+  private _getMemoizedPath = memoizeOne((path: ItemPath | undefined) => [
+    ...(path ?? []),
+    "sequence",
+  ]);
+
   protected render() {
     const { action } = this;
 
     return html`
       <ha-automation-action
-        .path=${[...(this.path ?? []), "sequence"]}
+        .path=${this._getMemoizedPath(this.path)}
         .actions=${action.sequence}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
