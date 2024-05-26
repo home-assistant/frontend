@@ -65,6 +65,12 @@ const ACTIONS = [
     },
   },
   {
+    sequence: [
+      { scene: "scene.kitchen_morning" },
+      { service: "light.turn_off", target: { entity_id: "light.kitchen" } },
+    ],
+  },
+  {
     parallel: [
       { scene: "scene.kitchen_morning" },
       {
