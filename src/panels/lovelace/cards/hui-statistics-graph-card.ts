@@ -1,3 +1,4 @@
+import { toZonedTime } from "date-fns-tz";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -248,16 +249,33 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._metadata = statisticsMetaData;
   }
 
+  private datetimeEntityToDate(entityId: string, end?: boolean) {
+    if (!this.hass || !this._config) {
+      return undefined;
+    }
+
+    const attributes = this.hass.states[entityId]?.attributes;
+    if (!attributes) {
+      return undefined;
+    }
+
+    return toZonedTime(
+      new Date(
+        attributes.year,
+        attributes.month - 1,
+        attributes.day,
+        attributes.hour || end ? 23 : 0,
+        attributes.minute || end ? 59 : 0
+      ),
+      this.hass.config.time_zone
+    );
+  }
+
   private async _getStatistics(): Promise<void> {
     let startDate: Date | undefined;
     let endDate: Date | undefined;
-    if (
-      this.hass &&
-      this._config &&
-      this._config.start_date &&
-      this.hass.states[this._config.start_date]
-    ) {
-      startDate = new Date(this.hass.states[this._config.start_date]?.state);
+    if (this.hass && this._config && this._config.start_date) {
+      startDate = this.datetimeEntityToDate(this._config.start_date);
     }
     if (!startDate || isNaN(startDate.getTime())) {
       startDate = new Date();
@@ -270,13 +288,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       );
     }
 
-    if (
-      this.hass &&
-      this._config &&
-      this._config.end_date &&
-      this.hass.states[this._config.end_date]
-    ) {
-      endDate = new Date(this.hass.states[this._config.end_date]?.state);
+    if (this.hass && this._config && this._config.end_date) {
+      endDate = this.datetimeEntityToDate(this._config.end_date, true);
     }
     if (!endDate || isNaN(endDate.getTime())) {
       endDate = undefined;
