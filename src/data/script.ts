@@ -278,6 +278,7 @@ export type NonConditionAction =
   | VariablesAction
   | PlayMediaAction
   | StopAction
+  | SequenceAction
   | ParallelAction
   | UnknownAction;
 
