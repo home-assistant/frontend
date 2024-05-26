@@ -3418,10 +3418,17 @@
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
+                "sequence": {
+                  "label": "Run in sequence",
+                  "description": {
+                    "picker": "Run a group of actions in sequence.",
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in sequence"
+                  }
+                },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "Perform a sequence of actions in parallel.",
+                    "picker": "Perform actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
