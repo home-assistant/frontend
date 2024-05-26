@@ -249,7 +249,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             `
           )}
         </div>
-        ${!stateObj.attributes.code_format || defaultCode!
+        ${!stateObj.attributes.code_format || defaultCode
           ? nothing
           : html`
               <ha-textfield
@@ -261,7 +261,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                   : "text"}
               ></ha-textfield>
             `}
-        ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode!
+        ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode
           ? nothing
           : html`
               <div id="keypad">
