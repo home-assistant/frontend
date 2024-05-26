@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -33,6 +33,7 @@ import type { LovelaceCard } from "../types";
 import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
+  subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 
@@ -107,6 +108,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @query("#alarmCode") private _input?: HaTextField;
 
+  private _unsubEntityRegistry?: UnsubscribeFunc;
+
+  public connectedCallback() {
+    super.connectedCallback();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubEntityRegistry) {
+      this._unsubEntityRegistry();
+      this._unsubEntityRegistry = undefined;
+    }
+  }
+
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
       return 9;
@@ -140,14 +155,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     const oldConfig = changedProps.get("_config") as
       | AlarmPanelCardConfig
       | undefined;
-    if (changedProps.has("hass")) {
-      const entityId = this._config?.entity;
-      if (entityId) {
-        if (oldHass?.entities[entityId] !== this.hass?.entities[entityId]) {
-          this._loadEntityRegistryEntry();
-        }
-      }
-    }
+
     if (
       !oldHass ||
       !oldConfig ||
@@ -183,9 +191,18 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       return;
     }
     try {
-      this._entry = await getExtendedEntityRegistryEntry(
-        this.hass!,
-        this._config!.entity
+      this._unsubEntityRegistry = subscribeEntityRegistry(
+        this.hass!.connection,
+        async (entries) => {
+          if (
+            entries.some((entry) => entry.entity_id === this._config!.entity)
+          ) {
+            this._entry = await getExtendedEntityRegistryEntry(
+              this.hass!,
+              this._config!.entity
+            );
+          }
+        }
       );
     } catch (e) {
       this._entry = null;
