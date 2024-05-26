@@ -140,7 +140,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     const oldConfig = changedProps.get("_config") as
       | AlarmPanelCardConfig
       | undefined;
+    const entityId = this._config?.entity;
 
+    if (entityId) {
+      if (oldHass?.entities[entityId] !== this.hass?.entities[entityId]) {
+        this._loadEntityRegistryEntry();
+      }
+    }
     if (
       !oldHass ||
       !oldConfig ||
