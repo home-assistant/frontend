@@ -131,38 +131,63 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
+      this.hasDateEntitiesChanged(changedProps) ||
       changedProps.size > 1 ||
       !changedProps.has("hass")
     );
   }
 
+  private hasDateEntitiesChanged(changedProps: PropertyValues): boolean {
+    if (
+      this._config &&
+      this.hass &&
+      (this._config.start_date || this._config.end_date) &&
+      changedProps.has("hass")
+    ) {
+      const oldHass = changedProps.get("hass");
+      if (
+        oldHass.states[this._config.start_date] !==
+          this.hass.states[this._config.start_date] ||
+        oldHass.states[this._config.end_date] !==
+          this.hass.states[this._config.end_date]
+      )
+        return true;
+    }
+    return false;
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!this._config || !changedProps.has("_config")) {
+    if (!this._config) {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as
-      | StatisticsGraphCardConfig
-      | undefined;
+    if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as
+        | StatisticsGraphCardConfig
+        | undefined;
 
-    if (
-      changedProps.has("_config") &&
-      oldConfig?.entities !== this._config.entities
-    ) {
-      this._getStatisticsMetaData(this._entities).then(() => {
-        this._setFetchStatisticsTimer();
-      });
-      return;
-    }
+      if (oldConfig?.entities !== this._config.entities) {
+        this._getStatisticsMetaData(this._entities).then(() => {
+          this._setFetchStatisticsTimer();
+        });
+        return;
+      }
 
-    if (
-      changedProps.has("_config") &&
-      (oldConfig?.stat_types !== this._config.stat_types ||
+      if (
+        oldConfig?.stat_types !== this._config.stat_types ||
         oldConfig?.days_to_show !== this._config.days_to_show ||
+        oldConfig?.start_date !== this._config.start_date ||
+        oldConfig?.end_date !== this._config.end_date ||
         oldConfig?.period !== this._config.period ||
-        oldConfig?.unit !== this._config.unit)
-    ) {
+        oldConfig?.unit !== this._config.unit
+      ) {
+        this._setFetchStatisticsTimer();
+        return;
+      }
+    }
+
+    if (this.hasDateEntitiesChanged(changedProps)) {
       this._setFetchStatisticsTimer();
     }
   }
@@ -224,14 +249,39 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatistics(): Promise<void> {
-    const startDate = new Date();
-    startDate.setTime(
-      startDate.getTime() -
-        1000 *
-          60 *
-          60 *
-          (24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1)
-    );
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    if (
+      this.hass &&
+      this._config &&
+      this._config.start_date &&
+      this.hass.states[this._config.start_date]
+    ) {
+      startDate = new Date(this.hass.states[this._config.start_date]?.state);
+    }
+    if (!startDate || isNaN(startDate.getTime())) {
+      startDate = new Date();
+      startDate.setTime(
+        startDate.getTime() -
+          1000 *
+            60 *
+            60 *
+            (24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1)
+      );
+    }
+
+    if (
+      this.hass &&
+      this._config &&
+      this._config.end_date &&
+      this.hass.states[this._config.end_date]
+    ) {
+      endDate = new Date(this.hass.states[this._config.end_date]?.state);
+    }
+    if (!endDate || isNaN(endDate.getTime())) {
+      endDate = undefined;
+    }
+
     try {
       let unitClass;
       if (this._config!.unit && this._metadata) {
@@ -257,7 +307,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       const statistics = await fetchStatistics(
         this.hass!,
         startDate,
-        undefined,
+        endDate,
         this._entities,
         this._config!.period,
         unitconfig,
