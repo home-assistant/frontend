@@ -95,20 +95,18 @@ class HuiHumidifierToggleCardFeature
     }));
 
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentState}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
-          style=${styleMap({
-            "--control-select-color": color,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentState}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
+        style=${styleMap({
+          "--control-select-color": color,
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
@@ -120,10 +118,6 @@ class HuiHumidifierToggleCardFeature
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

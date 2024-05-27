@@ -88,35 +88,11 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
       const speed = fanPercentageToSpeed(this.stateObj, percentage);
 
       return html`
-        <div class="container">
-          <ha-control-select
-            .options=${options}
-            .value=${speed}
-            @value-changed=${this._speedValueChanged}
-            hide-label
-            .ariaLabel=${computeAttributeNameDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.entities,
-              "percentage"
-            )}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
-          >
-          </ha-control-select>
-        </div>
-      `;
-    }
-
-    const value = Math.max(Math.round(percentage), 0);
-
-    return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          .step=${this.stateObj.attributes.percentage_step ?? 1}
-          @value-changed=${this._valueChanged}
+        <ha-control-select
+          .options=${options}
+          .value=${speed}
+          @value-changed=${this._speedValueChanged}
+          hide-label
           .ariaLabel=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
@@ -124,10 +100,30 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
             "percentage"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+        >
+        </ha-control-select>
+      `;
+    }
+
+    const value = Math.max(Math.round(percentage), 0);
+
+    return html`
+      <ha-control-slider
+        .value=${value}
+        min="0"
+        max="100"
+        .step=${this.stateObj.attributes.percentage_step ?? 1}
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "percentage"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -169,10 +165,6 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

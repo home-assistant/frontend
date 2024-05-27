@@ -119,27 +119,25 @@ class HuiSelectOptionsCardFeature
     );
 
     return html`
-      <div class="container">
-        <ha-control-select-menu
-          show-arrow
-          hide-label
-          .label=${this.hass.localize("ui.card.select.option")}
-          .value=${stateObj.state}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._valueChanged}
-          @closed=${stopPropagation}
-        >
-          ${options.map(
-            (option) => html`
-              <ha-list-item .value=${option}>
-                ${this.hass!.formatEntityState(stateObj, option)}
-              </ha-list-item>
-            `
-          )}
-        </ha-control-select-menu>
-      </div>
+      <ha-control-select-menu
+        show-arrow
+        hide-label
+        .label=${this.hass.localize("ui.card.select.option")}
+        .value=${stateObj.state}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        fixedMenuPosition
+        naturalMenuWidth
+        @selected=${this._valueChanged}
+        @closed=${stopPropagation}
+      >
+        ${options.map(
+          (option) => html`
+            <ha-list-item .value=${option}>
+              ${this.hass!.formatEntityState(stateObj, option)}
+            </ha-list-item>
+          `
+        )}
+      </ha-control-select-menu>
     `;
   }
 
@@ -152,10 +150,6 @@ class HuiSelectOptionsCardFeature
         line-height: 1.2;
         display: block;
         width: 100%;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

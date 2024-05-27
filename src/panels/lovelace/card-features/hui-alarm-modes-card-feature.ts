@@ -184,23 +184,21 @@ class HuiAlarmModeCardFeature
       `;
     }
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentMode}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize(
-            "ui.card.alarm_control_panel.modes_label"
-          )}
-          style=${styleMap({
-            "--control-select-color": color,
-            "--modes-count": options.length.toString(),
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentMode}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize(
+          "ui.card.alarm_control_panel.modes_label"
+        )}
+        style=${styleMap({
+          "--control-select-color": color,
+          "--modes-count": options.length.toString(),
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
@@ -214,12 +212,7 @@ class HuiAlarmModeCardFeature
         --control-select-button-border-radius: 10px;
       }
       ha-control-button-group {
-        margin: 0 12px 12px 12px;
         --control-button-group-spacing: 12px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

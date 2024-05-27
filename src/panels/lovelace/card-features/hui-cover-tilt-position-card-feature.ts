@@ -78,27 +78,26 @@ class HuiCoverTiltPositionCardFeature
     };
 
     return html`
-      <div class="container" style=${styleMap(style)}>
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          mode="cursor"
-          inverted
-          @value-changed=${this._valueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "current_tilt_position"
-          )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
-          .locale=${this.hass.locale}
-        >
-          <div slot="background" class="gradient"></div
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        style=${styleMap(style)}
+        .value=${value}
+        min="0"
+        max="100"
+        mode="cursor"
+        inverted
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "current_tilt_position"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
+        .locale=${this.hass.locale}
+      >
+        <div slot="background" class="gradient"></div
+      ></ha-control-slider>
     `;
   }
 
@@ -121,10 +120,6 @@ class HuiCoverTiltPositionCardFeature
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
       .gradient {
         background: -webkit-linear-gradient(left, ${GRADIENT});

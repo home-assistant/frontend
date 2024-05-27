@@ -173,7 +173,6 @@ class HuiLawnMowerCommandCardFeature
   static get styles() {
     return css`
       ha-control-button-group {
-        margin: 0 12px 12px 12px;
         --control-button-group-spacing: 12px;
       }
     `;

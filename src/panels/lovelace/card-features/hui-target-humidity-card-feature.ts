@@ -84,22 +84,17 @@ class HuiTargetHumidityCardFeature
     }
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${this.stateObj.attributes.humidity}
-          .min=${this._min}
-          .max=${this._max}
-          .step=${this._step}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "humidity"
-          )}
-          unit="%"
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${this.stateObj.attributes.humidity}
+        .min=${this._min}
+        .max=${this._max}
+        .step=${this._step}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.formatEntityAttributeName(this.stateObj, "humidity")}
+        unit="%"
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -111,10 +106,6 @@ class HuiTargetHumidityCardFeature
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

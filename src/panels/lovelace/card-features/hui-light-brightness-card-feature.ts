@@ -58,19 +58,17 @@ class HuiLightBrightnessCardFeature
         : undefined;
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${position}
-          min="1"
-          max="100"
-          .showHandle=${stateActive(this.stateObj)}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.card.light.brightness")}
-          unit="%"
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${position}
+        min="1"
+        max="100"
+        .showHandle=${stateActive(this.stateObj)}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.localize("ui.card.light.brightness")}
+        unit="%"
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -92,9 +90,6 @@ class HuiLightBrightnessCardFeature
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        width: auto;
       }
     `;
   }

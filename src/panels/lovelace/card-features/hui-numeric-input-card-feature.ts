@@ -82,29 +82,27 @@ class HuiNumericInputCardFeature
     const stateObj = this.stateObj;
 
     return html`
-      <div class="container">
-        ${this._config.style === "buttons"
-          ? html`<ha-control-number-buttons
-              value=${stateObj.state}
-              min=${stateObj.attributes.min}
-              max=${stateObj.attributes.max}
-              step=${stateObj.attributes.step}
-              @value-changed=${this._setValue}
-              .disabled=${isUnavailableState(stateObj.state)}
-              .unit=${stateObj.attributes.unit_of_measurement}
-              .locale=${this.hass.locale}
-            ></ha-control-number-buttons>`
-          : html`<ha-control-slider
-              value=${stateObj.state}
-              min=${stateObj.attributes.min}
-              max=${stateObj.attributes.max}
-              step=${stateObj.attributes.step}
-              @value-changed=${this._setValue}
-              .disabled=${isUnavailableState(stateObj.state)}
-              .unit=${stateObj.attributes.unit_of_measurement}
-              .locale=${this.hass.locale}
-            ></ha-control-slider>`}
-      </div>
+      ${this._config.style === "buttons"
+        ? html`<ha-control-number-buttons
+            value=${stateObj.state}
+            min=${stateObj.attributes.min}
+            max=${stateObj.attributes.max}
+            step=${stateObj.attributes.step}
+            @value-changed=${this._setValue}
+            .disabled=${isUnavailableState(stateObj.state)}
+            .unit=${stateObj.attributes.unit_of_measurement}
+            .locale=${this.hass.locale}
+          ></ha-control-number-buttons>`
+        : html`<ha-control-slider
+            value=${stateObj.state}
+            min=${stateObj.attributes.min}
+            max=${stateObj.attributes.max}
+            step=${stateObj.attributes.step}
+            @value-changed=${this._setValue}
+            .disabled=${isUnavailableState(stateObj.state)}
+            .unit=${stateObj.attributes.unit_of_measurement}
+            .locale=${this.hass.locale}
+          ></ha-control-slider>`}
     `;
   }
 
@@ -119,10 +117,6 @@ class HuiNumericInputCardFeature
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

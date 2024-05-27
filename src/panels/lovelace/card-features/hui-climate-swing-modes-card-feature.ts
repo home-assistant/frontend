@@ -142,57 +142,53 @@ class HuiClimateSwingModesCardFeature
 
     if (this._config.style === "icons") {
       return html`
-        <div class="container">
-          <ha-control-select
-            .options=${options}
-            .value=${this._currentSwingMode}
-            @value-changed=${this._valueChanged}
-            hide-label
-            .ariaLabel=${this.hass!.formatEntityAttributeName(
-              stateObj,
-              "swing_mode"
-            )}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
-          >
-          </ha-control-select>
-        </div>
+        <ha-control-select
+          .options=${options}
+          .value=${this._currentSwingMode}
+          @value-changed=${this._valueChanged}
+          hide-label
+          .ariaLabel=${this.hass!.formatEntityAttributeName(
+            stateObj,
+            "swing_mode"
+          )}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+        >
+        </ha-control-select>
       `;
     }
 
     return html`
-      <div class="container">
-        <ha-control-select-menu
-          show-arrow
-          hide-label
-          .label=${this.hass!.formatEntityAttributeName(stateObj, "swing_mode")}
-          .value=${this._currentSwingMode}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._valueChanged}
-          @closed=${stopPropagation}
-        >
-          ${this._currentSwingMode
-            ? html`<ha-attribute-icon
-                slot="icon"
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                attribute="swing_mode"
-                .attributeValue=${this._currentSwingMode}
-              ></ha-attribute-icon>`
-            : html` <ha-svg-icon
-                slot="icon"
-                .path=${mdiArrowOscillating}
-              ></ha-svg-icon>`}
-          ${options.map(
-            (option) => html`
-              <ha-list-item .value=${option.value} graphic="icon">
-                ${option.icon}${option.label}
-              </ha-list-item>
-            `
-          )}
-        </ha-control-select-menu>
-      </div>
+      <ha-control-select-menu
+        show-arrow
+        hide-label
+        .label=${this.hass!.formatEntityAttributeName(stateObj, "swing_mode")}
+        .value=${this._currentSwingMode}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        fixedMenuPosition
+        naturalMenuWidth
+        @selected=${this._valueChanged}
+        @closed=${stopPropagation}
+      >
+        ${this._currentSwingMode
+          ? html`<ha-attribute-icon
+              slot="icon"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              attribute="swing_mode"
+              .attributeValue=${this._currentSwingMode}
+            ></ha-attribute-icon>`
+          : html` <ha-svg-icon
+              slot="icon"
+              .path=${mdiArrowOscillating}
+            ></ha-svg-icon>`}
+        ${options.map(
+          (option) => html`
+            <ha-list-item .value=${option.value} graphic="icon">
+              ${option.icon}${option.label}
+            </ha-list-item>
+          `
+        )}
+      </ha-control-select-menu>
     `;
   }
 
@@ -212,10 +208,6 @@ class HuiClimateSwingModesCardFeature
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

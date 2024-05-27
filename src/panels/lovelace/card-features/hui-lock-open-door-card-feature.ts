@@ -117,7 +117,6 @@ class HuiLockOpenDoorCardFeature
         font-size: 14px;
       }
       ha-control-button-group {
-        margin: 0 12px 12px 12px;
         --control-button-group-spacing: 12px;
       }
       .open-button {
@@ -136,7 +135,6 @@ class HuiLockOpenDoorCardFeature
         gap: 8px;
         font-weight: 500;
         color: var(--success-color);
-        margin: 0 12px 12px 12px;
         height: 40px;
         text-align: center;
       }

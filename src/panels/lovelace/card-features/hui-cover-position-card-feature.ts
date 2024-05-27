@@ -78,26 +78,25 @@ class HuiCoverPositionCardFeature
     };
 
     return html`
-      <div class="container" style=${styleMap(style)}>
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          step="1"
-          inverted
-          show-handle
-          @value-changed=${this._valueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "current_position"
-          )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        style=${styleMap(style)}
+        .value=${value}
+        min="0"
+        max="100"
+        step="1"
+        inverted
+        show-handle
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "current_position"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -119,10 +118,6 @@ class HuiCoverPositionCardFeature
         --control-slider-background-opacity: 0.2;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

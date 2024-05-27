@@ -73,23 +73,21 @@ class HuiLightColorTempCardFeature
     const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${position}
-          mode="cursor"
-          .showHandle=${stateActive(this.stateObj)}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.card.light.color_temperature")}
-          .min=${minKelvin}
-          .max=${maxKelvin}
-          style=${styleMap({
-            "--gradient": gradient,
-          })}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${position}
+        mode="cursor"
+        .showHandle=${stateActive(this.stateObj)}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.localize("ui.card.light.color_temperature")}
+        .min=${minKelvin}
+        .max=${maxKelvin}
+        style=${styleMap({
+          "--gradient": gradient,
+        })}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -118,9 +116,6 @@ class HuiLightColorTempCardFeature
         --control-slider-background-opacity: 1;
         --control-slider-thickness: 40px;
         --control-slider-border-radius: 10px;
-      }
-      .container {
-        width: auto;
       }
     `;
   }

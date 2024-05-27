@@ -118,20 +118,18 @@ class HuiWaterHeaterOperationModeCardFeature
     }));
 
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentOperationMode}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize("ui.card.water_heater.mode")}
-          style=${styleMap({
-            "--control-select-color": color,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentOperationMode}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize("ui.card.water_heater.mode")}
+        style=${styleMap({
+          "--control-select-color": color,
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
@@ -145,12 +143,7 @@ class HuiWaterHeaterOperationModeCardFeature
         --control-select-button-border-radius: 10px;
       }
       ha-control-button-group {
-        margin: 0 12px 12px 12px;
         --control-button-group-spacing: 12px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
       }
     `;
   }

@@ -139,55 +139,51 @@ class HuiClimateHvacModesCardFeature
 
     if (this._config.style === "dropdown") {
       return html`
-        <div class="container">
-          <ha-control-select-menu
-            show-arrow
-            hide-label
-            .label=${this.hass.localize("ui.card.climate.mode")}
-            .value=${this._currentHvacMode}
-            .disabled=${this.stateObj.state === UNAVAILABLE}
-            fixedMenuPosition
-            naturalMenuWidth
-            @selected=${this._valueChanged}
-            @closed=${stopPropagation}
-          >
-            ${this._currentHvacMode
-              ? html`
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${climateHvacModeIcon(this._currentHvacMode)}
-                  ></ha-svg-icon>
-                `
-              : html`
-                  <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
-                `}
-            ${options.map(
-              (option) => html`
-                <ha-list-item .value=${option.value} graphic="icon">
-                  ${option.icon}${option.label}
-                </ha-list-item>
+        <ha-control-select-menu
+          show-arrow
+          hide-label
+          .label=${this.hass.localize("ui.card.climate.mode")}
+          .value=${this._currentHvacMode}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          fixedMenuPosition
+          naturalMenuWidth
+          @selected=${this._valueChanged}
+          @closed=${stopPropagation}
+        >
+          ${this._currentHvacMode
+            ? html`
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${climateHvacModeIcon(this._currentHvacMode)}
+                ></ha-svg-icon>
               `
-            )}
-          </ha-control-select-menu>
-        </div>
+            : html`
+                <ha-svg-icon slot="icon" .path=${mdiThermostat}></ha-svg-icon>
+              `}
+          ${options.map(
+            (option) => html`
+              <ha-list-item .value=${option.value} graphic="icon">
+                ${option.icon}${option.label}
+              </ha-list-item>
+            `
+          )}
+        </ha-control-select-menu>
       `;
     }
 
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentHvacMode}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize("ui.card.climate.mode")}
-          style=${styleMap({
-            "--control-select-color": color,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentHvacMode}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize("ui.card.climate.mode")}
+        style=${styleMap({
+          "--control-select-color": color,
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
@@ -206,9 +202,6 @@ class HuiClimateHvacModesCardFeature
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
-      }
-      .container {
-        width: auto;
       }
     `;
   }
