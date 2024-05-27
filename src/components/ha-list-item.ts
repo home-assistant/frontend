@@ -100,6 +100,7 @@ export class HaListItem extends ListItemBase {
             span.material-icons:first-of-type,
             span.material-icons:last-of-type {
               direction: rtl !important;
+              --direction: rtl;
             }
           `
         : css``,
