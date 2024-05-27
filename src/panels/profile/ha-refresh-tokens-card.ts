@@ -136,10 +136,16 @@ class HaRefreshTokens extends LitElement {
                     <div slot="description">
                       ${token.expire_at
                         ? this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.expire_after_90_days"
+                            "ui.panel.profile.refresh_tokens.expires_in",
+                            {
+                              date: relativeTime(
+                                new Date(token.expire_at),
+                                this.hass.locale
+                              ),
+                            }
                           )
                         : this.hass.localize(
-                            "ui.panel.profile.refresh_tokens.never_expire"
+                            "ui.panel.profile.refresh_tokens.never_expires"
                           )}
                     </div>
                     <div>
