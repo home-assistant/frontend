@@ -206,6 +206,7 @@ export class HaTextField extends TextFieldBase {
             .mdc-floating-label,
           .mdc-text-field__input[type="number"] {
             direction: rtl;
+            --direction: rtl;
           }
         `
       : css``,
