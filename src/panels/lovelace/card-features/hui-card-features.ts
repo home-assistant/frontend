@@ -75,7 +75,7 @@ export class HuiCardFeatures extends LitElement {
       return nothing;
     }
 
-    if (this.layout?.type === "compact") {
+    if (this.layout === "compact") {
       const currentFeature = this.features[this._currentFeatureIndex];
       return html`
         <div class="container horizontal">
@@ -95,7 +95,7 @@ export class HuiCardFeatures extends LitElement {
       `;
     }
 
-    const containerClass = this.layout?.type ? ` ${this.layout.type}` : "";
+    const containerClass = this.layout ? ` ${this.layout}` : "";
 
     return html`
       <div class="container${containerClass}">

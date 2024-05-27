@@ -126,12 +126,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       grid_columns: 2,
       grid_rows: 1,
     };
-    const featureLayoutType = this._config?.feature_layout?.type || "vertical";
+    const featureLayout = this._config?.feature_layout || "vertical";
 
     if (this._config?.features?.length) {
-      if (featureLayoutType === "compact") {
+      if (featureLayout === "compact") {
         options.grid_rows += 1;
-      } else if (featureLayoutType === "horizontal") {
+      } else if (featureLayout === "horizontal") {
         options.grid_rows += 1;
         options.grid_columns = 4;
       } else {
