@@ -1,3 +1,4 @@
+import { mdiSwapHorizontal } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -9,7 +10,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-control-button";
-import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { LovelaceCardFeatureLayout } from "../cards/types";
@@ -86,7 +87,7 @@ export class HuiCardFeatures extends LitElement {
                   @click=${this._next}
                   .label=${"Next"}
                 >
-                  <ha-icon-next></ha-icon-next>
+                  <ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>
                 </ha-control-button>
               `
             : nothing}
@@ -132,6 +133,9 @@ export class HuiCardFeatures extends LitElement {
       }
       .next {
         flex: none !important;
+        --control-button-background-opacity: 0;
+        --control-button-padding: 0;
+        width: 32px;
       }
     `;
   }
