@@ -50,11 +50,7 @@ import {
 } from "../../../data/automation";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  EntityRegistryDisplayEntry,
-  fetchEntityRegistry,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -104,8 +100,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _config?: AutomationConfig;
 
-  @state() private _icon?: string;
-
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -124,10 +118,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   > = {};
 
   private _configSubscriptionsId = 1;
-
-  private get _entry(): EntityRegistryDisplayEntry | undefined {
-    return this._entityId ? this.hass.entities[this._entityId] : undefined;
-  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -472,12 +462,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         sub(this._config)
       );
     }
-
-    if (changedProps.has("hass")) {
-      if (this._entry && !this._dirty) {
-        this._icon = this._entry.icon;
-      }
-    }
   }
 
   private _setEntityId() {
@@ -485,10 +469,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       (entity: AutomationEntity) => entity.attributes.id === this.automationId
     );
     this._entityId = automation?.entity_id;
-
-    if (this._entry) {
-      this._icon = this._entry.icon;
-    }
   }
 
   private async _checkValidation() {
@@ -709,11 +689,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
-        icon: this._icon,
-        supportsIcon: this._entry !== undefined,
-        updateConfig: (config, icon) => {
+        domain: "automation",
+        updateConfig: (config) => {
           this._config = config;
-          this._icon = icon;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
@@ -750,11 +728,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._validationErrors = undefined;
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
-      if (this._entry && this._entry.icon !== this._icon) {
-        await updateEntityRegistryEntry(this.hass, this._entry.entity_id, {
-          icon: this._icon,
-        });
-      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {

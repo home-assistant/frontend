@@ -7,23 +7,21 @@ export const loadAutomationRenameDialog = () =>
 
 export interface AutomationRenameDialogParams {
   config: AutomationConfig;
-  supportsIcon: boolean;
-  updateConfig: (config: AutomationConfig, icon: string | undefined) => void;
-  icon: string | undefined;
+  domain: "automation";
+  updateConfig: (config: AutomationConfig) => void;
   onClose: () => void;
 }
 
-export interface ScriptnRenameDialogParams {
+export interface ScriptRenameDialogParams {
   config: ScriptConfig;
-  supportsIcon: boolean;
+  domain: "script";
   updateConfig: (config: ScriptConfig) => void;
-  icon: string | undefined;
   onClose: () => void;
 }
 
 export const showAutomationRenameDialog = (
   element: HTMLElement,
-  dialogParams: AutomationRenameDialogParams | ScriptnRenameDialogParams
+  dialogParams: AutomationRenameDialogParams | ScriptRenameDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-dialog-automation-rename",

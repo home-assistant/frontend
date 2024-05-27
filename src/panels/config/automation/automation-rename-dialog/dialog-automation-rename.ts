@@ -12,7 +12,10 @@ import "../../../../components/ha-textfield";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type { AutomationRenameDialogParams } from "./show-dialog-automation-rename";
+import type {
+  AutomationRenameDialogParams,
+  ScriptRenameDialogParams,
+} from "./show-dialog-automation-rename";
 
 @customElement("ha-dialog-automation-rename")
 class DialogAutomationRename extends LitElement implements HassDialog {
@@ -22,7 +25,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
 
   @state() private _error?: string;
 
-  private _params!: AutomationRenameDialogParams;
+  private _params!: AutomationRenameDialogParams | ScriptRenameDialogParams;
 
   private _newName?: string;
 
@@ -30,10 +33,12 @@ class DialogAutomationRename extends LitElement implements HassDialog {
 
   private _newDescription?: string;
 
-  public showDialog(params: AutomationRenameDialogParams): void {
+  public showDialog(
+    params: AutomationRenameDialogParams | ScriptRenameDialogParams
+  ): void {
     this._opened = true;
     this._params = params;
-    this._newIcon = params.icon;
+    this._newIcon = "icon" in params.config ? params.config.icon : undefined;
     this._newName =
       params.config.alias ||
       this.hass.localize("ui.panel.config.automation.editor.default_name");
@@ -88,22 +93,24 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           @input=${this._valueChanged}
         ></ha-textfield>
 
-        ${this._params.supportsIcon
-          ? html`<ha-icon-picker
-              .hass=${this.hass}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.icon"
-              )}
-              .value=${this._newIcon}
-              @value-changed=${this._iconChanged}
-            >
-              <ha-domain-icon
-                slot="fallback"
-                domain="automation"
+        ${this._params.domain === "script"
+          ? html`
+              <ha-icon-picker
                 .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.icon"
+                )}
+                .value=${this._newIcon}
+                @value-changed=${this._iconChanged}
               >
-              </ha-domain-icon>
-            </ha-icon-picker>`
+                <ha-domain-icon
+                  slot="fallback"
+                  domain=${this._params.domain}
+                  .hass=${this.hass}
+                >
+                </ha-domain-icon>
+              </ha-icon-picker>
+            `
           : nothing}
         <ha-textarea
           .label=${this.hass.localize(
@@ -152,14 +159,21 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       this._error = "Name is required";
       return;
     }
-    this._params.updateConfig(
-      {
+    if (this._params.domain === "script") {
+      this._params.updateConfig({
         ...this._params.config,
         alias: this._newName,
         description: this._newDescription,
-      },
-      this._params.supportsIcon ? this._newIcon : undefined
-    );
+        icon: this._newIcon,
+      });
+    } else {
+      this._params.updateConfig({
+        ...this._params.config,
+        alias: this._newName,
+        description: this._newDescription,
+      });
+    }
+
     this.closeDialog();
   }
 

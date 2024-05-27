@@ -33,16 +33,12 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import "../../../components/ha-list-item";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   ScriptConfig,
   deleteScript,
@@ -54,6 +50,7 @@ import {
   triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -64,7 +61,6 @@ import { showAutomationRenameDialog } from "../automation/automation-rename-dial
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -85,8 +81,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _idError = false;
 
-  @state() private _icon?: string;
-
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -101,10 +95,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private _manualEditor?: HaManualScriptEditor;
 
   @state() private _validationErrors?: (string | TemplateResult)[];
-
-  private get _entry(): EntityRegistryDisplayEntry | undefined {
-    return this._entityId ? this.hass.entities[this._entityId] : undefined;
-  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -419,12 +409,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._readOnly = true;
     }
-
-    if (changedProps.has("hass")) {
-      if (this._entry && !this._dirty) {
-        this._icon = this._entry.icon;
-      }
-    }
   }
 
   private _setEntityId(id?: string) {
@@ -433,10 +417,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._idError = true;
     } else {
       this._idError = false;
-    }
-
-    if (this._entry) {
-      this._icon = this._entry.icon;
     }
   }
 
@@ -674,8 +654,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
-        icon: this._icon,
-        supportsIcon: this._entry !== undefined,
+        domain: "script",
         updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
@@ -734,11 +713,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         "config/script/config/" + id,
         this._config
       );
-      if (this._entry && this._entry.icon !== this._icon) {
-        await updateEntityRegistryEntry(this.hass, this._entry.entity_id, {
-          icon: this._icon,
-        });
-      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
