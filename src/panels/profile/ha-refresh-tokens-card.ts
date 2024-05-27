@@ -35,7 +35,9 @@ import {
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
+// Client ID used by iOS app
 const iOSclientId = "https://home-assistant.io/iOS";
+// Client ID used by Android app
 const androidClientId = "https://home-assistant.io/android";
 
 const compareTokenLastUsedAt = (tokenA: RefreshToken, tokenB: RefreshToken) => {
