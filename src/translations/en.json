@@ -190,7 +190,7 @@
         "open": "Open",
         "open_door": "Open door",
         "open_door_confirm": "Really open?",
-        "open_door_success": "Door open"
+        "open_door_done": "Done"
       },
       "media_player": {
         "source": "Source",
@@ -2349,7 +2349,7 @@
           "description": "Configure your hub and connected hardware",
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
-            "title": "All Hardware",
+            "title": "All hardware",
             "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
@@ -3418,10 +3418,17 @@
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
+                "sequence": {
+                  "label": "Run in sequence",
+                  "description": {
+                    "picker": "Run a group of actions in sequence.",
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in sequence"
+                  }
+                },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "Perform a sequence of actions in parallel.",
+                    "picker": "Perform actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
@@ -3622,6 +3629,8 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+            "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
@@ -3842,24 +3851,10 @@
               "hide_url": "Hide URL",
               "copy_link": "Copy link",
               "security_options": "Security options",
-              "strict_connection": "Remote login access",
-              "strict_connection_secondary": "Choose what happens when new devices visit your remote access link.",
-              "strict_connection_option_disabled": "Show login page",
-              "strict_connection_option_disabled_secondary": "Any new device visiting your remote access link are presented with a login page.",
-              "strict_connection_option_guard_page": "Block remote logins",
-              "strict_connection_option_guard_page_secondary": "New devices must log in with a temporary access link. Devices accessing the link that are not logged in will be presented with a page explaining the restrictions.",
-              "strict_connection_option_guard_page_warning": "This prevents outsiders from trying to log in to your system but also your own devices if they have not logged in previously.",
-              "strict_connection_option_drop_connection": "Block remote logins and show nothing",
-              "strict_connection_option_drop_connection_secondary": "This is the same as the above setting but instead provides a blank page for additional security.",
-              "strict_connection_option_drop_connection_warning": "This prevents outsiders from snooping the remote web address and trying to log in, but it may appear as if there is no system running when users try to access it.",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
               "drop_connection_warning_title": "Remote log in has been deactivated",
               "drop_connection_warning": "The below security options may make it appear the system is not running.",
-              "strict_connection_link": "Provide temporary login access",
-              "strict_connection_link_secondary": "This provides a link for new devices to login for the next hour.",
-              "strict_connection_create_link": "Create link",
-              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details"
@@ -4721,15 +4716,15 @@
           },
           "hard_reset_controller": {
             "NotStarted": {
-              "title": "Reset Controller to Factory Settings",
+              "title": "Reset controller to factory settings",
               "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
             },
             "InProgress": {
-              "title": "Resetting Controller",
+              "title": "Resetting controller",
               "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
             },
             "Done": {
-              "title": "Controller Reset Complete",
+              "title": "Controller reset complete",
               "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
             },
             "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
@@ -4868,10 +4863,10 @@
             },
             "S2_Authenticated": {
               "title": "S2 Authenticated",
-              "description": "Example: Lighting, Sensors and Security Systems"
+              "description": "Example: Lighting, sensors and security systems"
             },
             "S2_AccessControl": {
-              "title": "S2 access control",
+              "title": "S2 Access Control",
               "description": "Example: Door locks and garage doors"
             },
             "S0_Legacy": {
@@ -4890,7 +4885,7 @@
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
-            "title": "Remove a Failed Z-Wave device",
+            "title": "Remove a failed Z-Wave device",
             "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
             "remove_device": "Remove device",
             "in_progress": "The device removal is in progress.",
@@ -5106,7 +5101,7 @@
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
             "hostname": {
-              "title": "Host Name",
+              "title": "Host name",
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
@@ -5531,10 +5526,19 @@
             "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
             "text_unnamed_section_cards": "This section and all its cards will be deleted."
           },
-          "edit_section_title": {
-            "title": "Edit name",
-            "title_new": "Add name",
-            "input_label": "Name"
+          "edit_section": {
+            "header": "Edit section",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
+            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "settings": {
+              "title": "Title",
+              "title_helper": "The title will appear at the top of section. Leave empty to hide the title."
+            },
+            "visibility": {
+              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
+            }
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -7044,7 +7048,7 @@
             "description": "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens."
           },
           "full_access": {
-            "title": "Full Hardware access",
+            "title": "Full hardware access",
             "description": "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
           },
           "hassio_api": {

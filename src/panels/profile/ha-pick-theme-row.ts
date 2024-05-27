@@ -37,6 +37,8 @@ export class HaPickThemeRow extends LitElement {
   protected render(): TemplateResult {
     const hasThemes =
       this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
+
+    const curThemeIsUseDefault = this.hass.selectedTheme?.theme === "";
     const curTheme = this.hass.selectedTheme?.theme
       ? this.hass.selectedTheme?.theme
       : this.hass.themes.darkMode
@@ -86,6 +88,9 @@ export class HaPickThemeRow extends LitElement {
         </ha-select>
       </ha-settings-row>
       ${curTheme === HOME_ASSISTANT_THEME ||
+      (curThemeIsUseDefault &&
+        this.hass.themes.default_dark_theme &&
+        this.hass.themes.default_theme) ||
       this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">
             <ha-formfield

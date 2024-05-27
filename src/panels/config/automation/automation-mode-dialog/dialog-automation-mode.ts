@@ -138,7 +138,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
   }
 
   private _save(): void {
-    this._params.updateAutomation({
+    this._params.updateConfig({
       ...this._params.config,
       mode: this._newMode,
       max: this._newMax,

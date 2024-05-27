@@ -226,7 +226,7 @@ export const addSection = (
   viewIndex: number,
   sectionConfig: LovelaceSectionRawConfig
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  const view = findLovelaceContainer(config, [viewIndex]);
   if (isStrategyView(view)) {
     throw new Error("Deleting sections in a strategy is not supported.");
   }
@@ -246,7 +246,7 @@ export const deleteSection = (
   viewIndex: number,
   sectionIndex: number
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  const view = findLovelaceContainer(config, [viewIndex]);
   if (isStrategyView(view)) {
     throw new Error("Deleting sections in a strategy is not supported.");
   }
@@ -267,7 +267,7 @@ export const insertSection = (
   sectionIndex: number,
   sectionConfig: LovelaceSectionRawConfig
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]) as LovelaceViewConfig;
+  const view = findLovelaceContainer(config, [viewIndex]);
   if (isStrategyView(view)) {
     throw new Error("Inserting sections in a strategy is not supported.");
   }
@@ -291,10 +291,7 @@ export const moveSection = (
   fromPath: [number, number],
   toPath: [number, number]
 ): LovelaceConfig => {
-  const section = findLovelaceContainer(
-    config,
-    fromPath
-  ) as LovelaceSectionRawConfig;
+  const section = findLovelaceContainer(config, fromPath);
 
   let newConfig = deleteSection(config, fromPath[0], fromPath[1]);
   newConfig = insertSection(newConfig, toPath[0], toPath[1], section);

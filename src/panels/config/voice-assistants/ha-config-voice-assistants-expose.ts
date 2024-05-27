@@ -98,10 +98,18 @@ export class VoiceAssistantsExpose extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
-  @storage({ key: "devices-table-grouping", state: false, subscribe: false })
+  @storage({
+    key: "voice-expose-table-grouping",
+    state: false,
+    subscribe: false,
+  })
   private _activeGrouping?: string;
 
-  @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
+  @storage({
+    key: "voice-expose-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
   private _activeCollapsed?: string;
 
   @query("hass-tabs-subpage-data-table", true)
