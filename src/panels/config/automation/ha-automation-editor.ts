@@ -51,6 +51,7 @@ import {
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
+  EntityRegistryDisplayEntry,
   fetchEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -123,6 +124,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  private get _entry(): EntityRegistryDisplayEntry | undefined {
+    return this._entityId ? this.hass.entities[this._entityId] : undefined;
+  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -469,8 +474,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
 
     if (changedProps.has("hass")) {
-      if (this._entityId && !this._dirty) {
-        this._icon = this.hass.entities[this._entityId]?.icon;
+      if (this._entry && !this._dirty) {
+        this._icon = this._entry.icon;
       }
     }
   }
@@ -481,8 +486,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     );
     this._entityId = automation?.entity_id;
 
-    if (this._entityId) {
-      this._icon = this.hass.entities[this._entityId]?.icon;
+    if (this._entry) {
+      this._icon = this._entry.icon;
     }
   }
 
@@ -704,6 +709,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
+        icon: this._icon,
+        supportsIcon: this._entry !== undefined,
         updateConfig: (config, icon) => {
           this._config = config;
           this._icon = icon;
@@ -743,8 +750,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._validationErrors = undefined;
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
-      if (this._entityId) {
-        await updateEntityRegistryEntry(this.hass, this._entityId, {
+      if (this._entry && this._entry.icon !== this._icon) {
+        await updateEntityRegistryEntry(this.hass, this._entry.entity_id, {
           icon: this._icon,
         });
       }

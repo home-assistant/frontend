@@ -88,19 +88,23 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           @input=${this._valueChanged}
         ></ha-textfield>
 
-        <ha-icon-picker
-          .hass=${this.hass}
-          .label=${this.hass.localize("ui.panel.config.automation.editor.icon")}
-          .value=${this._newIcon}
-          @value-changed=${this._iconChanged}
-        >
-          <ha-domain-icon
-            slot="fallback"
-            domain="automation"
-            .hass=${this.hass}
-          >
-          </ha-domain-icon>
-        </ha-icon-picker>
+        ${this._params.supportsIcon
+          ? html`<ha-icon-picker
+              .hass=${this.hass}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.icon"
+              )}
+              .value=${this._newIcon}
+              @value-changed=${this._iconChanged}
+            >
+              <ha-domain-icon
+                slot="fallback"
+                domain="automation"
+                .hass=${this.hass}
+              >
+              </ha-domain-icon>
+            </ha-icon-picker>`
+          : nothing}
         <ha-textarea
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.description.label"
@@ -154,7 +158,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         alias: this._newName,
         description: this._newDescription,
       },
-      this._newIcon
+      this._params.supportsIcon ? this._newIcon : undefined
     );
     this.closeDialog();
   }

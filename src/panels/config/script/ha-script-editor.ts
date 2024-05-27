@@ -38,7 +38,11 @@ import "../../../components/ha-yaml-editor";
 import "../../../components/ha-list-item";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   ScriptConfig,
   deleteScript,
@@ -81,6 +85,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _idError = false;
 
+  @state() private _icon?: string;
+
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -95,6 +101,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private _manualEditor?: HaManualScriptEditor;
 
   @state() private _validationErrors?: (string | TemplateResult)[];
+
+  private get _entry(): EntityRegistryDisplayEntry | undefined {
+    return this._entityId ? this.hass.entities[this._entityId] : undefined;
+  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -409,6 +419,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._readOnly = true;
     }
+
+    if (changedProps.has("hass")) {
+      if (this._entry && !this._dirty) {
+        this._icon = this._entry.icon;
+      }
+    }
   }
 
   private _setEntityId(id?: string) {
@@ -417,6 +433,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._idError = true;
     } else {
       this._idError = false;
+    }
+
+    if (this._entry) {
+      this._icon = this._entry.icon;
     }
   }
 
@@ -654,6 +674,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
+        icon: this._icon,
+        supportsIcon: this._entry !== undefined,
         updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
@@ -712,6 +734,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         "config/script/config/" + id,
         this._config
       );
+      if (this._entry && this._entry.icon !== this._icon) {
+        await updateEntityRegistryEntry(this.hass, this._entry.entity_id, {
+          icon: this._icon,
+        });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {

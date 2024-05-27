@@ -5,14 +5,17 @@ import type { ScriptConfig } from "../../../../data/script";
 export const loadAutomationRenameDialog = () =>
   import("./dialog-automation-rename");
 
-export interface AutomationRenameDialog {
+export interface AutomationRenameDialogParams {
   config: AutomationConfig;
+  supportsIcon: boolean;
   updateConfig: (config: AutomationConfig, icon: string | undefined) => void;
+  icon: string | undefined;
   onClose: () => void;
 }
 
-export interface ScriptRenameDialog {
+export interface ScriptnRenameDialogParams {
   config: ScriptConfig;
+  supportsIcon: boolean;
   updateConfig: (config: ScriptConfig) => void;
   icon: string | undefined;
   onClose: () => void;
@@ -20,7 +23,7 @@ export interface ScriptRenameDialog {
 
 export const showAutomationRenameDialog = (
   element: HTMLElement,
-  dialogParams: AutomationRenameDialog | ScriptRenameDialog
+  dialogParams: AutomationRenameDialogParams | ScriptnRenameDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-dialog-automation-rename",
