@@ -91,14 +91,28 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             ></ha-icon-button>
           </a>
         </ha-dialog-header>
-        <ha-list-new>
-          ${MODES.map(
-            (mode) => html`
+        <ha-list-new
+          role="listbox"
+          tabindex="0"
+          aria-activedescendant="option-${this._newMode}"
+          aria-label=${this.hass.localize(
+            "ui.panel.config.automation.editor.modes.label"
+          )}
+        >
+          ${MODES.map((mode) => {
+            const label = this.hass.localize(
+              `ui.panel.config.automation.editor.modes.${mode}`
+            );
+            return html`
               <ha-list-item-new
                 class="option"
                 type="button"
                 @click=${this._modeChanged}
                 .value=${mode}
+                id="option-${mode}"
+                role="option"
+                aria-label=${label}
+                aria-selected=${this._newMode === mode}
               >
                 <div slot="start">
                   <ha-radio
@@ -120,8 +134,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                   )}
                 </div>
               </ha-list-item-new>
-            `
-          )}
+            `;
+          })}
         </ha-list-new>
 
         ${isMaxMode(this._newMode)
