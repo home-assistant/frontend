@@ -220,8 +220,8 @@ class HaRefreshTokens extends LitElement {
   }
 
   private async _toggleTokenExpiration(token: RefreshToken): Promise<void> {
-    const disable = Boolean(token.expire_at);
-    if (disable) {
+    const enable = !token.expire_at;
+    if (!enable) {
       if (
         !(await showConfirmationDialog(this, {
           title: this.hass.localize(
@@ -241,9 +241,9 @@ class HaRefreshTokens extends LitElement {
 
     try {
       await this.hass.callWS({
-        type: "auth/edit_expiry_date_refresh_token",
+        type: "auth/refresh_token_set_expiry",
         refresh_token_id: token.id,
-        disable_expiry_date: disable,
+        enable_expiry: enable,
       });
       fireEvent(this, "hass-refresh-tokens");
     } catch (err: unknown) {
@@ -253,7 +253,7 @@ class HaRefreshTokens extends LitElement {
           : String(err);
       await showAlertDialog(this, {
         title: this.hass.localize(
-          `ui.panel.profile.refresh_tokens.${disable ? "disable" : "enable"}_expiration_failed`
+          `ui.panel.profile.refresh_tokens.${enable ? "enable" : "disable"}_expiration_failed`
         ),
         text: message,
       });
