@@ -736,7 +736,10 @@ export class HaDataTable extends LitElement {
   }
 
   public collapseAllGroups() {
-    if (!this.groupColumn) {
+    if (
+      !this.groupColumn ||
+      !this.data.some((item) => item[this.groupColumn!])
+    ) {
       return;
     }
     const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
