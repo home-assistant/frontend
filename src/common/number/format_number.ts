@@ -65,20 +65,10 @@ export const formatNumber = (
     localeOptions?.number_format !== NumberFormat.none &&
     !Number.isNaN(Number(num))
   ) {
-    try {
-      return new Intl.NumberFormat(
-        locale,
-        getDefaultFormatOptions(num, options)
-      ).format(Number(num));
-    } catch (err: any) {
-      // Don't fail when using "TEST" language
-      // eslint-disable-next-line no-console
-      console.error(err);
-      return new Intl.NumberFormat(
-        undefined,
-        getDefaultFormatOptions(num, options)
-      ).format(Number(num));
-    }
+    return new Intl.NumberFormat(
+      locale,
+      getDefaultFormatOptions(num, options)
+    ).format(Number(num));
   }
 
   if (
