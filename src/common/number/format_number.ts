@@ -63,8 +63,7 @@ export const formatNumber = (
 
   if (
     localeOptions?.number_format !== NumberFormat.none &&
-    !Number.isNaN(Number(num)) &&
-    Intl
+    !Number.isNaN(Number(num))
   ) {
     try {
       return new Intl.NumberFormat(
@@ -85,8 +84,7 @@ export const formatNumber = (
   if (
     !Number.isNaN(Number(num)) &&
     num !== "" &&
-    localeOptions?.number_format === NumberFormat.none &&
-    Intl
+    localeOptions?.number_format === NumberFormat.none
   ) {
     // If NumberFormat is none, use en-US format without grouping.
     return new Intl.NumberFormat(

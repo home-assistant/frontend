@@ -281,14 +281,10 @@ export class HaCountryPicker extends LitElement {
   private _getOptions = memoizeOne(
     (language?: string, countries?: string[]) => {
       let options: { label: string; value: string }[] = [];
-      const countryDisplayNames =
-        Intl && "DisplayNames" in Intl
-          ? new Intl.DisplayNames(language, {
-              type: "region",
-              fallback: "code",
-            })
-          : undefined;
-
+      const countryDisplayNames = new Intl.DisplayNames(language, {
+        type: "region",
+        fallback: "code",
+      });
       if (countries) {
         options = countries.map((country) => ({
           value: country,

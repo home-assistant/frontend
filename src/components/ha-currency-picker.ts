@@ -169,12 +169,9 @@ const CURRENCIES = [
 ];
 
 const curSymbol = (currency: string, locale?: string) =>
-  Intl && "NumberFormat" in Intl
-    ? new Intl.NumberFormat(locale, { style: "currency", currency })
-        .formatToParts(1)
-        .find((x) => x.type === "currency")?.value
-    : currency;
-
+  new Intl.NumberFormat(locale, { style: "currency", currency })
+    .formatToParts(1)
+    .find((x) => x.type === "currency")?.value;
 @customElement("ha-currency-picker")
 export class HaCurrencyPicker extends LitElement {
   @property() public language = "en";
@@ -188,13 +185,10 @@ export class HaCurrencyPicker extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   private _getOptions = memoizeOne((language?: string) => {
-    const currencyDisplayNames =
-      Intl && "DisplayNames" in Intl
-        ? new Intl.DisplayNames(language, {
-            type: "currency",
-            fallback: "code",
-          })
-        : undefined;
+    const currencyDisplayNames = new Intl.DisplayNames(language, {
+      type: "currency",
+      fallback: "code",
+    });
     const options = CURRENCIES.map((currency) => ({
       value: currency,
       label: `${
