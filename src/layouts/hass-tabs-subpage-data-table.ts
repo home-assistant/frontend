@@ -10,6 +10,8 @@ import {
   mdiFilterVariantRemove,
   mdiFormatListChecks,
   mdiMenuDown,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -466,7 +468,6 @@ export class HaTabsSubpageDataTable extends LitElement {
               `
             : nothing
         )}
-        <md-divider role="separator" tabindex="-1"></md-divider>
         <ha-menu-item
           .value=${undefined}
           @click=${this._handleGroupBy}
@@ -474,6 +475,27 @@ export class HaTabsSubpageDataTable extends LitElement {
           class=${classMap({ selected: this._groupColumn === undefined })}
         >
           ${localize("ui.components.subpage-data-table.dont_group_by")}
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item
+          @click=${this._collapseAllGroups}
+          .disabled=${this._groupColumn === undefined}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiUnfoldLessHorizontal}
+          ></ha-svg-icon>
+          ${localize("ui.components.subpage-data-table.collapse_all_groups")}
+        </ha-menu-item>
+        <ha-menu-item
+          @click=${this._expandAllGroups}
+          .disabled=${this._groupColumn === undefined}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiUnfoldMoreHorizontal}
+          ></ha-svg-icon>
+          ${localize("ui.components.subpage-data-table.expand_all_groups")}
         </ha-menu-item>
       </ha-menu>
       <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
@@ -584,6 +606,14 @@ export class HaTabsSubpageDataTable extends LitElement {
   private _setGroupColumn(columnId: string) {
     this._groupColumn = columnId;
     fireEvent(this, "grouping-changed", { value: columnId });
+  }
+
+  private _collapseAllGroups() {
+    this._dataTable.collapseAllGroups();
+  }
+
+  private _expandAllGroups() {
+    this._dataTable.expandAllGroups();
   }
 
   private _enableSelectMode() {
