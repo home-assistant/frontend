@@ -9,7 +9,6 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item-new";
 import "../../../../components/ha-list-new";
 import "../../../../components/ha-radio";
-import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
 
 import {
