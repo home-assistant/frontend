@@ -2777,9 +2777,13 @@
               "label": "Mode",
               "learn_more": "Learn about modes",
               "single": "Single",
+              "single_description": "Do not start a new run. Issue a warning.",
               "restart": "Restart",
+              "restart_description": "Start a new run after first stopping the previous run.",
               "queued": "Queued",
-              "parallel": "Parallel"
+              "queued_description": "Start a new run after all previous runs complete.",
+              "parallel": "Parallel",
+              "parallel_description": "Start a new, independent run in parallel with previous runs."
             },
             "max": {
               "queued": "Queue length",
