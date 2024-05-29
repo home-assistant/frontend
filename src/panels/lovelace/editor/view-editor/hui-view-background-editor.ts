@@ -23,17 +23,11 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    let backgroundUrl: string | null = null;
-
-    if (typeof this._config?.background === "string") {
-      const backgroundUrlRegex = /url\(['"]?([^'"]+)['"]?\)/;
-      const backgroundUrlMatch = backgroundUrlRegex.exec(
-        this._config?.background || ""
-      );
-      backgroundUrl = backgroundUrlMatch ? backgroundUrlMatch[1] : null;
-    } else if (this._config?.background?.image) {
-      backgroundUrl = this._config?.background?.image;
-    }
+    const background = this._config?.background;
+    const backgroundUrl =
+      typeof background === "string"
+        ? background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1]
+        : background?.image;
 
     return html`
       <ha-selector-image
