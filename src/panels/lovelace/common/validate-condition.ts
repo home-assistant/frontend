@@ -327,27 +327,13 @@ export function extractMediaQueries(conditions: Condition[]): string[] {
 
 export function attachConditionMediaQueriesListeners(
   conditions: Condition[],
-  hass: HomeAssistant,
   onChange: (visibility: boolean) => void
 ): MediaQueriesListener[] {
-  // For performance, if there is only one condition and it's a screen condition, set the visibility directly
-  if (
-    conditions.length === 1 &&
-    conditions[0].condition === "screen" &&
-    conditions[0].media_query
-  ) {
-    const listener = listenMediaQuery(conditions[0].media_query, (matches) => {
-      onChange(matches);
-    });
-    return [listener];
-  }
-
   const mediaQueries = extractMediaQueries(conditions);
 
   const listeners = mediaQueries.map((query) => {
-    const listener = listenMediaQuery(query, () => {
-      const visibility = checkConditionsMet(conditions, hass);
-      onChange(visibility);
+    const listener = listenMediaQuery(query, (matches) => {
+      onChange(matches);
     });
     return listener;
   });

@@ -3,13 +3,16 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import "../../sections/hui-section";
 import { addCards, addSection } from "../config-util";
 import {
   LovelaceContainerPath,
@@ -18,7 +21,6 @@ import {
 import "./hui-card-preview";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 @customElement("hui-dialog-suggest-card")
 export class HuiDialogSuggestCard extends LitElement {

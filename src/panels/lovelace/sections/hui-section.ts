@@ -10,16 +10,13 @@ import {
   isStrategySection,
 } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import "../cards/hui-card";
+import type { HuiCard } from "../cards/hui-card";
 import {
-  checkConditionsMet,
   attachConditionMediaQueriesListeners,
+  checkConditionsMet,
 } from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-} from "../create-element/create-element-base";
+import { createErrorCardConfig } from "../create-element/create-element-base";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -27,7 +24,7 @@ import { deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
 
 @customElement("hui-section")
@@ -42,7 +39,7 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public viewIndex!: number;
 
-  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: HuiCard[] = [];
 
   private _layoutElementType?: string;
 
@@ -52,14 +49,10 @@ export class HuiSection extends ReactiveElement {
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorCardElement(
-        createErrorCardConfig(e.message, cardConfig)
-      );
-    }
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.lovelace = this.lovelace;
+    element.setConfig(cardConfig);
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -131,6 +124,13 @@ export class HuiSection extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+        this._cards.forEach((element) => {
+          try {
+            element.lovelace = this.lovelace;
+          } catch (e: any) {
+            this._rebuildCard(element, createErrorCardConfig(e.message, null));
+          }
+        });
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
@@ -147,16 +147,20 @@ export class HuiSection extends ReactiveElement {
   }
 
   private _listenMediaQueries() {
-    if (!this.config.visibility) {
+    this._clearMediaQueries();
+    if (!this.config?.visibility) {
       return;
     }
-    this._clearMediaQueries();
+    const conditions = this.config.visibility;
+    const hasOnlyMediaQuery =
+      conditions.length === 1 &&
+      conditions[0].condition === "screen" &&
+      conditions[0].media_query != null;
+
     this._listeners = attachConditionMediaQueriesListeners(
       this.config.visibility,
-      this.hass,
-      (visibility) => {
-        const visible = visibility || this.lovelace!.editMode;
-        this._updateElement(visible);
+      (matches) => {
+        this._updateElement(hasOnlyMediaQuery && matches);
       }
     );
   }
@@ -210,10 +214,10 @@ export class HuiSection extends ReactiveElement {
       return;
     }
     const visible =
-      forceVisible ??
-      (this.lovelace.editMode ||
-        !this.config.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+      forceVisible ||
+      this.lovelace.editMode ||
+      !this.config.visibility ||
+      checkConditionsMet(this.config.visibility, this.hass);
 
     this.style.setProperty("display", visible ? "" : "none");
     this.toggleAttribute("hidden", !visible);
@@ -267,29 +271,15 @@ export class HuiSection extends ReactiveElement {
 
     this._cards = config.cards.map((cardConfig) => {
       const element = this.createCardElement(cardConfig);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorCardElement(
-          createErrorCardConfig(e.message, cardConfig)
-        );
-      }
       return element;
     });
   }
 
   private _rebuildCard(
-    cardElToReplace: LovelaceCard,
+    cardElToReplace: HuiCard,
     config: LovelaceCardConfig
   ): void {
-    let newCardEl = this.createCardElement(config);
-    try {
-      newCardEl.hass = this.hass;
-    } catch (e: any) {
-      newCardEl = createErrorCardElement(
-        createErrorCardConfig(e.message, config)
-      );
-    }
+    const newCardEl = this.createCardElement(config);
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
