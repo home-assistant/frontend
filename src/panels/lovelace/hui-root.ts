@@ -785,23 +785,26 @@ class HUIRoot extends LitElement {
         await updateDashboard(this.hass!, dashboard!.id, values);
       },
       removeDashboard: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
-              { dashboard_title: dashboard!.title }
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
-            ),
-            confirmText: this.hass!.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
+        const confirm = await showConfirmationDialog(this, {
+          title: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+            { dashboard_title: dashboard!.title }
+          ),
+          text: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+          ),
+          confirmText: this.hass!.localize("ui.common.delete"),
+          destructive: true,
+        });
+        if (!confirm) {
           return false;
         }
-        await deleteDashboard(this.hass!, dashboard!.id);
-        return true;
+        try {
+          await deleteDashboard(this.hass!, dashboard!.id);
+          return true;
+        } catch (err: any) {
+          return false;
+        }
       },
     });
   }
