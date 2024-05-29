@@ -33,9 +33,9 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import "../../../components/ha-list-item";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -50,6 +50,7 @@ import {
   triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -60,7 +61,6 @@ import { showAutomationRenameDialog } from "../automation/automation-rename-dial
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -654,6 +654,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
+        domain: "script",
         updateConfig: (config) => {
           this._config = config;
           this._dirty = true;

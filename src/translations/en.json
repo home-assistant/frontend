@@ -2768,6 +2768,7 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "icon": "Icon",
             "blueprint": {
               "header": "Blueprint",
               "blueprint_to_use": "Blueprint to use",
