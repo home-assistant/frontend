@@ -803,9 +803,6 @@ class HUIRoot extends LitElement {
         await deleteDashboard(this.hass!, dashboard!.id);
         return true;
       },
-      createDashboard: async () => {
-        // Not applicable here because we are editing an existing dashboard
-      },
     });
   }
 
