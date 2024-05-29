@@ -84,11 +84,17 @@ export class HuiConditionalBase extends ReactiveElement {
 
     this._clearMediaQueries();
 
+    const conditions = this._config.conditions;
+    const hasOnlyMediaQuery =
+      conditions.length === 1 &&
+      "condition" in conditions[0] &&
+      conditions[0].condition === "screen" &&
+      !!conditions[0].media_query;
+
     this._listeners = attachConditionMediaQueriesListeners(
       supportedConditions,
-      this.hass,
-      (visibility) => {
-        this._setVisibility(visibility);
+      (matches) => {
+        this._setVisibility(hasOnlyMediaQuery && matches);
       }
     );
   }

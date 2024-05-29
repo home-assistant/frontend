@@ -148,16 +148,20 @@ export class HuiSection extends ReactiveElement {
   }
 
   private _listenMediaQueries() {
-    if (!this.config.visibility) {
+    this._clearMediaQueries();
+    if (!this.config?.visibility) {
       return;
     }
-    this._clearMediaQueries();
+    const conditions = this.config.visibility;
+    const hasOnlyMediaQuery =
+      conditions.length === 1 &&
+      conditions[0].condition === "screen" &&
+      conditions[0].media_query != null;
+
     this._listeners = attachConditionMediaQueriesListeners(
       this.config.visibility,
-      this.hass,
-      (visibility) => {
-        const visible = visibility || this.lovelace!.editMode;
-        this._updateElement(visible);
+      (matches) => {
+        this._updateElement(hasOnlyMediaQuery && matches);
       }
     );
   }
@@ -211,10 +215,10 @@ export class HuiSection extends ReactiveElement {
       return;
     }
     const visible =
-      forceVisible ??
-      (this.lovelace.editMode ||
-        !this.config.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+      forceVisible ||
+      this.lovelace.editMode ||
+      !this.config.visibility ||
+      checkConditionsMet(this.config.visibility, this.hass);
 
     this.style.setProperty("display", visible ? "" : "none");
     this.toggleAttribute("hidden", !visible);

@@ -1,16 +1,16 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { createCardElement } from "../create-element/create-card-element";
-import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
 import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
 } from "../common/validate-condition";
+import { createCardElement } from "../create-element/create-card-element";
+import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
@@ -100,25 +100,29 @@ export class HuiCard extends ReactiveElement {
     if (!this._config?.visibility) {
       return;
     }
+    const conditions = this._config.visibility;
+    const hasOnlyMediaQuery =
+      conditions.length === 1 &&
+      conditions[0].condition === "screen" &&
+      !!conditions[0].media_query;
+
     this._listeners = attachConditionMediaQueriesListeners(
       this._config.visibility,
-      this.hass,
-      (visibility) => {
-        const visible = visibility || this.lovelace!.editMode;
-        this._updateElement(visible);
+      (matches) => {
+        this._updateElement(hasOnlyMediaQuery && matches);
       }
     );
   }
 
   private _updateElement(forceVisible?: boolean) {
-    if (!this._element || !this._config?.visibility) {
+    if (!this._element) {
       return;
     }
     const visible =
-      forceVisible ??
-      (this.lovelace.editMode ||
-        !this._config.visibility ||
-        checkConditionsMet(this._config.visibility, this.hass));
+      forceVisible ||
+      this.lovelace.editMode ||
+      !this._config?.visibility ||
+      checkConditionsMet(this._config.visibility, this.hass);
 
     this.style.setProperty("display", visible ? "" : "none");
     this.toggleAttribute("hidden", !visible);
