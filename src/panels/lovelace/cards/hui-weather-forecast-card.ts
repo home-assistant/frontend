@@ -31,7 +31,6 @@ import {
   weatherAttrIcons,
   weatherSVGStyles,
 } from "../../../data/weather";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -419,7 +418,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

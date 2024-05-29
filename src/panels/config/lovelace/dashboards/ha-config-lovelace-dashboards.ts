@@ -16,6 +16,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-clickable-list-item";
 import "../../../../components/ha-fab";
@@ -46,6 +47,7 @@ import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboar
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import { storage } from "../../../../common/decorators/storage";
 
 type DataTableItem = Pick<
   LovelaceDashboard,
@@ -67,6 +69,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _dashboards: LovelaceDashboard[] = [];
+
+  @storage({
+    key: "lovelace-dashboards-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
 
   public willUpdate() {
     if (!this.hasUpdated) {
@@ -293,6 +302,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this.hass.localize
         )}
         .data=${this._getItems(this._dashboards)}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
@@ -439,6 +450,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
   }
 }
 

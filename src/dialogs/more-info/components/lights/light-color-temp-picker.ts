@@ -78,6 +78,7 @@ class LightColorTempPicker extends LitElement {
 
     return html`
       <ha-control-slider
+        touch-action="none"
         inverted
         vertical
         .value=${this._ctPickerValue}

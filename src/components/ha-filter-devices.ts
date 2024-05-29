@@ -69,7 +69,7 @@ export class HaFilterDevices extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar">
+              <mwc-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._devices(
                     this.hass.devices,
@@ -94,7 +94,7 @@ export class HaFilterDevices extends LitElement {
       ? nothing
       : html`<ha-check-list-item
           .value=${device.id}
-          .selected=${this.value?.includes(device.id)}
+          .selected=${this.value?.includes(device.id) ?? false}
         >
           ${computeDeviceName(device, this.hass)}
         </ha-check-list-item>`;

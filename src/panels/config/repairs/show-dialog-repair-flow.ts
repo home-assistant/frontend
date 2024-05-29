@@ -64,7 +64,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : "";
+          : step.reason;
       },
 
       renderShowFormStepHeader(hass, step) {

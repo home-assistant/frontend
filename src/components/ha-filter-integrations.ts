@@ -55,7 +55,11 @@ export class HaFilterIntegrations extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar" @click=${this._handleItemClick}>
+              <mwc-list
+                class="ha-scrollbar"
+                @click=${this._handleItemClick}
+                multi
+              >
                 ${repeat(
                   this._integrations(this._manifests, this._filter, this.value),
                   (i) => i.domain,

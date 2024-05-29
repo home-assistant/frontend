@@ -173,7 +173,7 @@ export interface WaterSourceTypeEnergyPreference {
   unit_of_measurement?: string | null;
 }
 
-type EnergySource =
+export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference

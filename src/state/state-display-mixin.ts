@@ -1,4 +1,5 @@
 import { computeFormatFunctions } from "../common/translations/entity-state";
+import { getSensorNumericDeviceClasses } from "../data/sensor";
 import { Constructor, HomeAssistant } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -31,6 +32,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
     private _updateStateDisplay = async () => {
       if (!this.hass) return;
+
+      const { numeric_device_classes: sensorNumericDeviceClasses } =
+        await getSensorNumericDeviceClasses(this.hass);
+
       const {
         formatEntityState,
         formatEntityAttributeName,
@@ -39,7 +44,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         this.hass.localize,
         this.hass.locale,
         this.hass.config,
-        this.hass.entities
+        this.hass.entities,
+        sensorNumericDeviceClasses
       );
       this._updateHass({
         formatEntityState,
