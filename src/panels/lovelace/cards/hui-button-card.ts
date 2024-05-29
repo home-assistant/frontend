@@ -134,9 +134,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return config && (config.state_color ?? domain === "light");
   }
 
-  public getCardSize(): number {
+  public getCardSize(hScale?: number): number {
     return (
-      (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
+      (this._config?.show_icon ? 4 * (hScale || 1) : 0) +
+      (this._config?.show_name ? 1 : 0)
     );
   }
 
