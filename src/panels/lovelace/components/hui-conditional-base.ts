@@ -94,7 +94,11 @@ export class HuiConditionalBase extends ReactiveElement {
     this._listeners = attachConditionMediaQueriesListeners(
       supportedConditions,
       (matches) => {
-        this._setVisibility(hasOnlyMediaQuery && matches);
+        if (hasOnlyMediaQuery) {
+          this._setVisibility(matches);
+          return;
+        }
+        this._updateVisibility();
       }
     );
   }
