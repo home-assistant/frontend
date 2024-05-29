@@ -86,10 +86,17 @@ class HcLovelace extends LitElement {
           this.lovelaceConfig.views[index].background ||
           this.lovelaceConfig.background;
 
-        if (configBackground) {
+        const backgroundStyle =
+          typeof configBackground === "string"
+            ? configBackground
+            : configBackground?.image
+              ? `center / cover no-repeat url('${configBackground.image}')`
+              : undefined;
+
+        if (backgroundStyle) {
           this._huiView!.style.setProperty(
             "--lovelace-background",
-            configBackground
+            backgroundStyle
           );
         } else {
           this._huiView!.style.removeProperty("--lovelace-background");
