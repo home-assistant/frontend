@@ -751,13 +751,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               items.intersection(filter.items)
             : new Set([...items].filter((x) => filter.items!.has(x)));
       }
-      if (key === "ha-filter-labels" && filter.value?.length) {
+      if (
+        key === "ha-filter-labels" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const labelItems: Set<string> = new Set();
         this._stateItems
           .filter((stateItem) =>
             this._entityReg
               .find((reg) => reg.entity_id === stateItem.entity_id)
-              ?.labels.some((lbl) => filter.value!.includes(lbl))
+              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
         if (!items) {
@@ -770,7 +774,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
       }
-      if (key === "ha-filter-categories" && filter.value?.length) {
+      if (
+        key === "ha-filter-categories" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const categoryItems: Set<string> = new Set();
         this._stateItems
           .filter(
