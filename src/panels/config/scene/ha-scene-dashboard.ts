@@ -104,6 +104,11 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -132,10 +137,15 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _filteredScenes?: string[] | null;
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "scene-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -783,7 +793,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters[type] = ev.detail;
+    this._filters = { ...this._filters, [type]: ev.detail };
     this._applyFilters();
   }
 
@@ -802,7 +812,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               items.intersection(filter.items)
             : new Set([...items].filter((x) => filter.items!.has(x)));
       }
-      if (key === "ha-filter-categories" && filter.value?.length) {
+      if (
+        key === "ha-filter-categories" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const categoryItems: Set<string> = new Set();
         this.scenes
           .filter(
@@ -822,13 +836,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
       }
-      if (key === "ha-filter-labels" && filter.value?.length) {
+      if (
+        key === "ha-filter-labels" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const labelItems: Set<string> = new Set();
         this.scenes
           .filter((scene) =>
             this._entityReg
               .find((reg) => reg.entity_id === scene.entity_id)
-              ?.labels.some((lbl) => filter.value!.includes(lbl))
+              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
           )
           .forEach((scene) => labelItems.add(scene.entity_id));
         if (!items) {

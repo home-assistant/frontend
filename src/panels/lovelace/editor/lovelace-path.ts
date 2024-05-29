@@ -46,7 +46,15 @@ export const getLovelaceContainerPath = (
   path: LovelaceCardPath
 ): LovelaceContainerPath => path.slice(0, -1) as LovelaceContainerPath;
 
-export const findLovelaceContainer = (
+type FindLovelaceContainer = {
+  (config: LovelaceConfig, path: [number]): LovelaceViewRawConfig;
+  (config: LovelaceConfig, path: [number, number]): LovelaceSectionRawConfig;
+  (
+    config: LovelaceConfig,
+    path: LovelaceContainerPath
+  ): LovelaceViewRawConfig | LovelaceSectionRawConfig;
+};
+export const findLovelaceContainer: FindLovelaceContainer = (
   config: LovelaceConfig,
   path: LovelaceContainerPath
 ): LovelaceViewRawConfig | LovelaceSectionRawConfig => {

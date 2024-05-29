@@ -1,4 +1,5 @@
-import { LovelaceLayoutOptions } from "../../../panels/lovelace/types";
+import type { Condition } from "../../../panels/lovelace/common/validate-condition";
+import type { LovelaceLayoutOptions } from "../../../panels/lovelace/types";
 
 export interface LovelaceCardConfig {
   index?: number;
@@ -7,4 +8,5 @@ export interface LovelaceCardConfig {
   layout_options?: LovelaceLayoutOptions;
   type: string;
   [key: string]: any;
+  visibility?: Condition[];
 }

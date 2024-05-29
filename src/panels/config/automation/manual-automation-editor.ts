@@ -59,14 +59,14 @@ export class HaManualAutomationEditor extends LitElement {
               </mwc-button>
             </ha-alert>
           `
-        : ""}
+        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
             breaks
             .content=${this.config.description}
           ></ha-markdown>`
-        : ""}
+        : nothing}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(

@@ -96,6 +96,11 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 type HelperItem = {
   id: string;
@@ -164,10 +169,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "helpers-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -722,7 +732,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters[type] = ev.detail;
+    this._filters = { ...this._filters, [type]: ev.detail };
     this._applyFilters();
   }
 
@@ -741,13 +751,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               items.intersection(filter.items)
             : new Set([...items].filter((x) => filter.items!.has(x)));
       }
-      if (key === "ha-filter-labels" && filter.value?.length) {
+      if (
+        key === "ha-filter-labels" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const labelItems: Set<string> = new Set();
         this._stateItems
           .filter((stateItem) =>
             this._entityReg
               .find((reg) => reg.entity_id === stateItem.entity_id)
-              ?.labels.some((lbl) => filter.value!.includes(lbl))
+              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
         if (!items) {
@@ -760,7 +774,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
       }
-      if (key === "ha-filter-categories" && filter.value?.length) {
+      if (
+        key === "ha-filter-categories" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const categoryItems: Set<string> = new Set();
         this._stateItems
           .filter(

@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCast, mdiCastConnected } from "@mdi/js";
+import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
@@ -104,8 +104,11 @@ class HcCast extends LitElement {
                                 slot="item-icon"
                               ></ha-icon>
                             `
-                          : ""}
-                        ${view.title || view.path}
+                          : html`<ha-svg-icon
+                              slot="item-icon"
+                              .path=${mdiViewDashboard}
+                            ></ha-svg-icon>`}
+                        ${view.title || view.path || "Unnamed view"}
                       </paper-icon-item>
                     `
                   )}
@@ -250,7 +253,8 @@ class HcCast extends LitElement {
         padding-top: 0;
       }
 
-      paper-listbox ha-icon {
+      paper-listbox ha-icon,
+      paper-listbox ha-svg-icon {
         padding: 12px;
         color: var(--secondary-text-color);
       }

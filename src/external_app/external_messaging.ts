@@ -129,6 +129,15 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
+  type: "thread/store_in_platform_keychain";
+  payload: {
+    mac_extended_address: string;
+    border_agent_id: string | null;
+    active_operational_dataset: string;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -146,7 +155,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageMatterCommission
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
-  | EMOutgoingMessageThemeUpdate;
+  | EMOutgoingMessageThemeUpdate
+  | EMOutgoingMessageThreadStoreInPlatformKeychain;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -239,6 +249,7 @@ export interface ExternalConfig {
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
+  canTransferThreadCredentialsToKeychain: boolean;
   hasAssist: boolean;
   hasBarCodeScanner: number;
 }

@@ -1,7 +1,4 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-ripple";
-import type { Ripple } from "@material/mwc-ripple";
-import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -11,18 +8,13 @@ import {
   html,
   nothing,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  queryAsync,
-  state,
-} from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-card";
 import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -54,10 +46,6 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 
-  @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
-
-  @state() private _shouldRenderRipple = false;
-
   protected render(): TemplateResult {
     const entryState = this._getState(this.items);
 
@@ -79,17 +67,8 @@ export class HaIntegrationCard extends LitElement {
         <a
           href=${`/config/integrations/integration/${this.domain}`}
           class="ripple-anchor"
-          @focus=${this.handleRippleFocus}
-          @blur=${this.handleRippleBlur}
-          @mouseenter=${this.handleRippleMouseEnter}
-          @mouseleave=${this.handleRippleMouseLeave}
-          @mousedown=${this.handleRippleActivate}
-          @mouseup=${this.handleRippleDeactivate}
-          @touchstart=${this.handleRippleActivate}
-          @touchend=${this.handleRippleDeactivate}
-          @touchcancel=${this.handleRippleDeactivate}
         >
-          ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
+          <ha-ripple></ha-ripple>
           <ha-integration-header
             .hass=${this.hass}
             .domain=${this.domain}
@@ -242,36 +221,6 @@ export class HaIntegrationCard extends LitElement {
     }
   );
 
-  private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
-    this._shouldRenderRipple = true;
-    return this._ripple;
-  });
-
-  @eventOptions({ passive: true })
-  private handleRippleActivate(evt?: Event) {
-    this._rippleHandlers.startPress(evt);
-  }
-
-  private handleRippleDeactivate() {
-    this._rippleHandlers.endPress();
-  }
-
-  private handleRippleFocus() {
-    this._rippleHandlers.startFocus();
-  }
-
-  private handleRippleBlur() {
-    this._rippleHandlers.endFocus();
-  }
-
-  protected handleRippleMouseEnter() {
-    this._rippleHandlers.startHover();
-  }
-
-  protected handleRippleMouseLeave() {
-    this._rippleHandlers.endHover();
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -289,6 +238,15 @@ export class HaIntegrationCard extends LitElement {
         .ripple-anchor {
           flex-grow: 1;
           position: relative;
+          outline: none;
+        }
+        .ripple-anchor:focus-visible:before {
+          position: absolute;
+          display: block;
+          content: "";
+          inset: 0;
+          background-color: var(--secondary-text-color);
+          opacity: 0.08;
         }
         ha-integration-header {
           height: 100%;

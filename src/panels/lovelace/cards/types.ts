@@ -131,7 +131,7 @@ export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
-  type: "energy-summary-graph";
+  type: "energy-usage-graph";
   title?: string;
   collection_key?: string;
 }
@@ -235,6 +235,9 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ConfigEntity extends EntityConfig {

@@ -10,6 +10,7 @@ import {
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
@@ -85,6 +86,11 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -118,10 +124,15 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _filter: string = history.state?.filter || "";
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "devices-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -180,14 +191,11 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     },
   ]);
 
-  firstUpdated() {
-    this._filters = {
-      "ha-filter-states": {
-        value: [],
-        items: undefined,
-      },
-    };
-    this._setFiltersFromUrl();
+  willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
   }
 
   private _setFiltersFromUrl() {
@@ -196,7 +204,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         ...this._filters,
         "ha-filter-states": {
           value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
+            ...((this._filters["ha-filter-states"]?.value as string[]) || []),
             "disabled",
           ],
           items: undefined,
@@ -212,7 +220,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         ...this._filters,
         "ha-filter-states": {
           value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
+            ...((this._filters["ha-filter-states"]?.value as string[]) || []),
             "disabled",
           ],
           items: undefined,
@@ -253,10 +261,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       entities: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
-      filters: Record<
-        string,
-        { value: string[] | undefined; items: Set<string> | undefined }
-      >,
+      filters: DataTableFilters,
       localize: LocalizeFunc,
       labelReg?: LabelRegistryEntry[]
     ) => {
@@ -295,15 +300,21 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       const filteredDomains = new Set<string>();
 
       Object.entries(filters).forEach(([key, filter]) => {
-        if (key === "config_entry" && filter.value?.length) {
+        if (
+          key === "config_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) =>
-              filter.value?.includes(entryId)
+              (filter.value as string[]).includes(entryId)
             )
           );
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
+            (entry) =>
+              entry.entry_id &&
+              (filter.value as string[]).includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -312,17 +323,31 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-integrations" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           const entryIds = entries
-            .filter((entry) => filter.value!.includes(entry.domain))
+            .filter((entry) =>
+              (filter.value as string[]).includes(entry.domain)
+            )
             .map((entry) => entry.entry_id);
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) => entryIds.includes(entryId))
           );
-          filter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (key === "ha-filter-labels" && filter.value?.length) {
+          (filter.value as string[]).forEach((domain) =>
+            filteredDomains.add(domain)
+          );
+        } else if (
+          key === "ha-filter-labels" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           outputDevices = outputDevices.filter((device) =>
-            device.labels.some((lbl) => filter.value!.includes(lbl))
+            device.labels.some((lbl) =>
+              (filter.value as string[]).includes(lbl)
+            )
           );
         } else if (filter.items) {
           outputDevices = outputDevices.filter((device) =>
@@ -331,7 +356,9 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         }
       });
 
-      const stateFilters = filters["ha-filter-states"]?.value;
+      const stateFilters = filters["ha-filter-states"]?.value as
+        | string[]
+        | undefined;
 
       const showDisabled =
         stateFilters?.length && stateFilters.includes("disabled");
@@ -698,7 +725,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-        ${this._filters.config_entry?.value?.length
+        ${Array.isArray(this._filters.config_entry?.value) &&
+        this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">
               Filtering by config entry
               ${this.entries?.find(
