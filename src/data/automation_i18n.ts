@@ -8,7 +8,6 @@ import {
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
-import "../resources/intl-polyfill";
 import type { HomeAssistant } from "../types";
 import { Condition, ForDict, Trigger } from "./automation";
 import {
