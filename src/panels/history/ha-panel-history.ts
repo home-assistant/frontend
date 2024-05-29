@@ -6,6 +6,7 @@ import {
 } from "@mdi/js";
 import { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -45,7 +46,11 @@ import {
   computeHistory,
   subscribeHistory,
 } from "../../data/history";
-import { Statistics, fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  Statistics,
+  getRecordedExcludedEntities,
+} from "../../data/recorder";
 import {
   expandAreaTarget,
   expandDeviceTarget,
@@ -94,6 +99,8 @@ class HaPanelHistory extends LitElement {
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _interval?: number;
+
+  private _excludedEntities?: string[];
 
   public constructor() {
     super();
@@ -185,6 +192,7 @@ class HaPanelHistory extends LitElement {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
+              .entityFilter=${this._entityFilter}
               addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
@@ -210,6 +218,10 @@ class HaPanelHistory extends LitElement {
       </ha-top-app-bar-fixed>
     `;
   }
+
+  private _entityFilter = (entity: HassEntity): boolean =>
+    !this._excludedEntities ||
+    !this._excludedEntities.includes(entity.entity_id);
 
   private mergeHistoryResults(
     ltsResult: HistoryResult,
@@ -362,8 +374,17 @@ class HaPanelHistory extends LitElement {
     }
   }
 
+  private async _getRecordedExcludedEntities() {
+    const { recorded_ids: _recordedIds, excluded_ids: excludedIds } =
+      await getRecordedExcludedEntities(this.hass);
+    this._excludedEntities = excludedIds;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    this._getRecordedExcludedEntities();
+
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
