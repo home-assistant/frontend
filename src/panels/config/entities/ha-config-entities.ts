@@ -98,6 +98,11 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -143,10 +148,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "entities-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _selected: string[] = [];
 
@@ -414,16 +424,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
-      filters: Record<
-        string,
-        { value: string[] | undefined; items: Set<string> | undefined }
-      >,
+      filters: DataTableFilters,
       entries?: ConfigEntry[],
       labelReg?: LabelRegistryEntry[]
     ) => {
       const result: EntityRow[] = [];
 
-      const stateFilters = filters["ha-filter-states"]?.value;
+      const stateFilters = filters["ha-filter-states"]?.value as string[];
 
       const showEnabled =
         !stateFilters?.length || stateFilters.includes("enabled");
@@ -448,11 +455,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const filteredDomains = new Set<string>();
 
       Object.entries(filters).forEach(([key, filter]) => {
-        if (key === "config_entry" && filter.value?.length) {
+        if (
+          key === "config_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
-              filter.value?.includes(entity.config_entry_id)
+              (filter.value as string[]).includes(entity.config_entry_id)
           );
 
           if (!entries) {
@@ -461,7 +472,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           }
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
+            (entry) =>
+              entry.entry_id &&
+              (filter.value as string[]).includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -470,29 +483,45 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-integrations" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
           const entryIds = entries
-            .filter((entry) => filter.value!.includes(entry.domain))
+            .filter((entry) =>
+              (filter.value as string[]).includes(entry.domain)
+            )
             .map((entry) => entry.entry_id);
 
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              filter.value?.includes(entity.platform) ||
+              (filter.value as string[]).includes(entity.platform) ||
               (entity.config_entry_id &&
                 entryIds.includes(entity.config_entry_id))
           );
           filter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (key === "ha-filter-domains" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-domains" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            filter.value?.includes(computeDomain(entity.entity_id))
+            (filter.value as string[]).includes(computeDomain(entity.entity_id))
           );
-        } else if (key === "ha-filter-labels" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-labels" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) => filter.value!.includes(lbl))
+            entity.labels.some((lbl) =>
+              (filter.value as string[]).includes(lbl)
+            )
           );
         } else if (filter.items) {
           filteredEntities = filteredEntities.filter((entity) =>
@@ -811,7 +840,8 @@ ${
 
 </ha-button-menu-new>
         ${
-          this._filters.config_entry?.value?.length
+          Array.isArray(this._filters.config_entry?.value) &&
+          this._filters.config_entry?.value.length
             ? html`<ha-alert slot="filter-pane">
                 Filtering by config entry
                 ${this._entries?.find(
@@ -913,6 +943,9 @@ ${
   }
 
   protected firstUpdated() {
+    if (Object.keys(this._filters).length) {
+      return;
+    }
     this._filters = {
       "ha-filter-states": {
         value: ["enabled"],
