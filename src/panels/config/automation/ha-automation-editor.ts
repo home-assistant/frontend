@@ -32,10 +32,11 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
-import "../../../components/ha-list-item";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -688,6 +689,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
         config: this._config!,
+        domain: "automation",
         updateConfig: (config) => {
           this._config = config;
           this._dirty = true;
