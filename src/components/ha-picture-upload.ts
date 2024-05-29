@@ -31,6 +31,8 @@ export class HaPictureUpload extends LitElement {
 
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
+  @property({ type: Boolean }) public original = false;
+
   @property({ type: Number }) public size = 512;
 
   @state() private _uploading = false;
@@ -122,7 +124,11 @@ export class HaPictureUpload extends LitElement {
     this._uploading = true;
     try {
       const media = await createImage(this.hass, file);
-      this.value = generateImageThumbnailUrl(media.id, this.size);
+      this.value = generateImageThumbnailUrl(
+        media.id,
+        this.size,
+        this.original
+      );
       fireEvent(this, "change");
     } catch (err: any) {
       showAlertDialog(this, {

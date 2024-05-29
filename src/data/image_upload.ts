@@ -12,8 +12,19 @@ export interface ImageMutableParams {
   name: string;
 }
 
-export const generateImageThumbnailUrl = (mediaId: string, size: number) =>
-  `/api/image/serve/${mediaId}/${size}x${size}`;
+export const generateImageThumbnailUrl = (
+  mediaId: string,
+  size?: number,
+  original: boolean = false
+) => {
+  if (!original && !size) {
+    throw new Error("Size must be provided if original is false");
+  }
+
+  return original
+    ? `/api/image/serve/${mediaId}/original`
+    : `/api/image/serve/${mediaId}/${size}x${size}`;
+};
 
 export const fetchImages = (hass: HomeAssistant) =>
   hass.callWS<Image[]>({ type: "image/list" });
