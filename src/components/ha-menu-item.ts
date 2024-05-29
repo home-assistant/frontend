@@ -1,5 +1,4 @@
 import { MdMenuItem } from "@material/web/menu/menu-item";
-import "element-internals-polyfill";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

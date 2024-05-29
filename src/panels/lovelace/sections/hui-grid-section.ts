@@ -11,10 +11,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { HuiErrorCard } from "../cards/hui-error-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { Lovelace } from "../types";
+import { HuiCard } from "../cards/hui-card";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -34,9 +34,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @state() _config?: LovelaceSectionConfig;
 
@@ -95,27 +93,16 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (cardConfig) => this._getKey(cardConfig),
             (_cardConfig, idx) => {
               const card = this.cards![idx];
-              (card as any).editMode = editMode;
-              (card as any).lovelace = this.lovelace;
-
-              const configOptions = _cardConfig.layout_options;
-              const cardOptions = (card as any)?.getLayoutOptions?.() as
-                | LovelaceLayoutOptions
-                | undefined;
-
-              const options = {
-                ...cardOptions,
-                ...configOptions,
-              } as LovelaceLayoutOptions;
+              const layoutOptions = card.getLayoutOptions();
 
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": options.grid_columns,
-                    "--row-size": options.grid_rows,
+                    "--column-size": layoutOptions.grid_columns,
+                    "--row-size": layoutOptions.grid_rows,
                   })}
                   class="card ${classMap({
-                    "fit-rows": typeof options?.grid_rows === "number",
+                    "fit-rows": typeof layoutOptions?.grid_rows === "number",
                   })}"
                 >
                   ${editMode

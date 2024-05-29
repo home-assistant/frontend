@@ -156,7 +156,7 @@ export interface QRProvisioningInformation {
 export interface PlannedProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
-  security_classes: SecurityClass[];
+  securityClasses: SecurityClass[];
 }
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
@@ -388,11 +388,9 @@ export const enum NodeStatus {
 export interface ZwaveJSProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
-  security_classes: SecurityClass[];
-  additional_properties: {
-    nodeId?: number;
-    [prop: string]: any;
-  };
+  securityClasses: SecurityClass[];
+  nodeId?: number;
+  [prop: string]: any;
 }
 
 export interface RequestedGrant {

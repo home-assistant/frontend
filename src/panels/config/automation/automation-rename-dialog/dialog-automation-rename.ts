@@ -4,12 +4,18 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-domain-icon";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
+
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type { AutomationRenameDialog } from "./show-dialog-automation-rename";
+import type {
+  AutomationRenameDialogParams,
+  ScriptRenameDialogParams,
+} from "./show-dialog-automation-rename";
 
 @customElement("ha-dialog-automation-rename")
 class DialogAutomationRename extends LitElement implements HassDialog {
@@ -19,15 +25,20 @@ class DialogAutomationRename extends LitElement implements HassDialog {
 
   @state() private _error?: string;
 
-  private _params!: AutomationRenameDialog;
+  private _params!: AutomationRenameDialogParams | ScriptRenameDialogParams;
 
   private _newName?: string;
 
+  private _newIcon?: string;
+
   private _newDescription?: string;
 
-  public showDialog(params: AutomationRenameDialog): void {
+  public showDialog(
+    params: AutomationRenameDialogParams | ScriptRenameDialogParams
+  ): void {
     this._opened = true;
     this._params = params;
+    this._newIcon = "icon" in params.config ? params.config.icon : undefined;
     this._newName =
       params.config.alias ||
       this.hass.localize("ui.panel.config.automation.editor.default_name");
@@ -82,6 +93,25 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           @input=${this._valueChanged}
         ></ha-textfield>
 
+        ${this._params.domain === "script"
+          ? html`
+              <ha-icon-picker
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.icon"
+                )}
+                .value=${this._newIcon}
+                @value-changed=${this._iconChanged}
+              >
+                <ha-domain-icon
+                  slot="fallback"
+                  domain=${this._params.domain}
+                  .hass=${this.hass}
+                >
+                </ha-domain-icon>
+              </ha-icon-picker>
+            `
+          : nothing}
         <ha-textarea
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.description.label"
@@ -109,6 +139,11 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     `;
   }
 
+  private _iconChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._newIcon = ev.detail.value || undefined;
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const target = ev.target as any;
@@ -124,11 +159,21 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       this._error = "Name is required";
       return;
     }
-    this._params.updateAutomation({
-      ...this._params.config,
-      alias: this._newName,
-      description: this._newDescription,
-    });
+    if (this._params.domain === "script") {
+      this._params.updateConfig({
+        ...this._params.config,
+        alias: this._newName,
+        description: this._newDescription,
+        icon: this._newIcon,
+      });
+    } else {
+      this._params.updateConfig({
+        ...this._params.config,
+        alias: this._newName,
+        description: this._newDescription,
+      });
+    }
+
     this.closeDialog();
   }
 
@@ -138,8 +183,12 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-textfield,
-        ha-textarea {
+        ha-textarea,
+        ha-icon-picker {
           display: block;
+        }
+        ha-icon-picker {
+          margin-top: 16px;
         }
         ha-alert {
           display: block;

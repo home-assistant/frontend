@@ -11,6 +11,7 @@ export interface RefreshToken {
   client_id: string;
   client_name?: string;
   created_at: string;
+  expire_at?: string;
   id: string;
   is_current: boolean;
   last_used_at?: string;

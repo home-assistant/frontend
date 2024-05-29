@@ -1,9 +1,8 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { HomeAssistant } from "../../../../types";
-import { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 import { LovelaceStrategyEditor } from "../types";
+import { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 
 export type OriginalStatesDashboardStrategyConfig =
   OriginalStatesViewStrategyConfig;
@@ -11,11 +10,9 @@ export type OriginalStatesDashboardStrategyConfig =
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
   static async generate(
-    config: OriginalStatesDashboardStrategyConfig,
-    hass: HomeAssistant
+    config: OriginalStatesDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
     return {
-      title: hass.config.location_name,
       views: [
         {
           strategy: config,

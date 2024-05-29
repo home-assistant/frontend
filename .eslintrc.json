@@ -115,6 +115,7 @@
       }
     ],
     "unused-imports/no-unused-imports": "error",
+    "lit/attribute-names": "warn",
     "lit/attribute-value-entities": "off",
     "lit/no-template-map": "off",
     "lit/no-native-attributes": "warn",

@@ -37,6 +37,7 @@ import {
   IfAction,
   ParallelAction,
   RepeatAction,
+  SequenceAction,
   getActionType,
 } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
@@ -310,6 +311,10 @@ class ActionRenderer {
       return this._handleIf(index);
     }
 
+    if (actionType === "sequence") {
+      return this._handleSequence(index);
+    }
+
     if (actionType === "parallel") {
       return this._handleParallel(index);
     }
@@ -574,6 +579,37 @@ class ActionRenderer {
       }
 
       i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
+    }
+
+    return i;
+  }
+
+  private _handleSequence(index: number): number {
+    const sequencePath = this.keys[index];
+    const sequenceConfig = this._getDataFromPath(
+      this.keys[index]
+    ) as SequenceAction;
+
+    this._renderEntry(
+      sequencePath,
+      sequenceConfig.alias ||
+        describeAction(
+          this.hass,
+          this.entityReg,
+          this.labelReg,
+          this.floorReg,
+          sequenceConfig,
+          "sequence"
+        ),
+      undefined,
+      sequenceConfig.enabled === false
+    );
+
+    let i: number;
+
+    for (i = index + 1; i < this.keys.length; i++) {
+      const path = this.keys[i];
+      this._renderItem(i, getActionType(this._getDataFromPath(path)));
     }
 
     return i;

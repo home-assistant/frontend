@@ -44,7 +44,6 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import { isHelperDomain } from "../panels/config/helpers/const";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -366,12 +365,8 @@ export class HaServiceControl extends LitElement {
   }
 
   private _targetSelector = memoizeOne(
-    (targetSelector: TargetSelector | null | undefined, domain?: string) => {
-      const create_domains = isHelperDomain(domain) ? [domain] : undefined;
-      return targetSelector
-        ? { target: { ...targetSelector, create_domains } }
-        : { target: { create_domains } };
-    }
+    (targetSelector: TargetSelector | null | undefined) =>
+      targetSelector ? { target: { ...targetSelector } } : { target: {} }
   );
 
   protected render() {
@@ -462,8 +457,7 @@ export class HaServiceControl extends LitElement {
           ><ha-selector
             .hass=${this.hass}
             .selector=${this._targetSelector(
-              serviceData.target as TargetSelector,
-              domain
+              serviceData.target as TargetSelector
             )}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}

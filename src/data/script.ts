@@ -93,6 +93,7 @@ export type ScriptConfig = ManualScriptConfig | BlueprintScriptConfig;
 
 export interface ManualScriptConfig {
   alias: string;
+  description?: string;
   sequence: Action | Action[];
   icon?: string;
   mode?: (typeof MODES)[number];
@@ -247,6 +248,10 @@ export interface StopAction extends BaseAction {
   error?: boolean;
 }
 
+export interface SequenceAction extends BaseAction {
+  sequence: (ManualScriptConfig | Action)[];
+}
+
 export interface ParallelAction extends BaseAction {
   parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
@@ -273,6 +278,7 @@ export type NonConditionAction =
   | VariablesAction
   | PlayMediaAction
   | StopAction
+  | SequenceAction
   | ParallelAction
   | UnknownAction;
 
@@ -298,6 +304,7 @@ export interface ActionTypes {
   service: ServiceAction;
   play_media: PlayMediaAction;
   stop: StopAction;
+  sequence: SequenceAction;
   parallel: ParallelAction;
   set_conversation_response: SetConversationResponseAction;
   unknown: UnknownAction;
@@ -387,6 +394,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("stop" in action) {
     return "stop";
+  }
+  if ("sequence" in action) {
+    return "sequence";
   }
   if ("parallel" in action) {
     return "parallel";

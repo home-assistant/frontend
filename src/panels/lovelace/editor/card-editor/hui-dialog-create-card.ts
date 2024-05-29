@@ -24,15 +24,15 @@ import {
   computeCards,
   computeSection,
 } from "../../common/generate-lovelace-config";
+import {
+  findLovelaceContainer,
+  parseLovelaceContainerPath,
+} from "../lovelace-path";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
 import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
-import {
-  findLovelaceContainer,
-  parseLovelaceContainerPath,
-} from "../lovelace-path";
 
 declare global {
   interface HASSDomEvents {
@@ -201,7 +201,7 @@ export class HuiCreateDialogCard
 
         @media (min-width: 1200px) {
           ha-dialog {
-            --mdc-dialog-max-width: calc(100% - 32px);
+            --mdc-dialog-max-width: calc(100vw - 32px);
             --mdc-dialog-min-width: 1000px;
           }
         }
@@ -274,15 +274,17 @@ export class HuiCreateDialogCard
 
     let sectionOptions: Partial<LovelaceSectionConfig> = {};
 
-    const { sectionIndex } = parseLovelaceContainerPath(this._params!.path);
+    const { viewIndex, sectionIndex } = parseLovelaceContainerPath(
+      this._params!.path
+    );
     const isSection = sectionIndex !== undefined;
 
     // If we are in a section, we want to keep the section options for the preview
     if (isSection) {
       const containerConfig = findLovelaceContainer(
         this._params!.lovelaceConfig!,
-        this._params!.path!
-      ) as LovelaceSectionConfig;
+        [viewIndex, sectionIndex]
+      );
       if (!isStrategySection(containerConfig)) {
         const { cards, title, ...rest } = containerConfig;
         sectionOptions = rest;

@@ -23,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
@@ -55,7 +55,7 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.0.4
+        uses: softprops/action-gh-release@v2.0.5
         with:
           files: |
             dist/*.whl

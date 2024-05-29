@@ -33,6 +33,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -52,33 +53,40 @@ import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import {
+  LovelaceConfig,
+  isStrategyDashboard,
+} from "../../data/lovelace/config/types";
+import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import {
+  deleteDashboard,
+  fetchDashboards,
+  updateDashboard,
+} from "../../data/lovelace/dashboard";
+import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
 import { swapView } from "./editor/config-util";
-import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
+import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import { getLovelaceStrategy } from "./strategies/get-strategy";
+import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
-import { LovelaceViewConfig } from "../../data/lovelace/config/view";
-import {
-  LovelaceConfig,
-  isStrategyDashboard,
-} from "../../data/lovelace/config/types";
-import { showSaveDialog } from "./editor/show-save-config-dialog";
-import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
-import { LocalizeKeys } from "../../common/translations/localize";
-import { getLovelaceStrategy } from "./strategies/get-strategy";
+import { getPanelTitle } from "../../data/panel";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
+  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
@@ -279,6 +287,10 @@ class HUIRoot extends LitElement {
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
+    const dashboardTitle = this.panel
+      ? getPanelTitle(this.hass, this.panel)
+      : undefined;
+
     return html`
       <div
         class=${classMap({
@@ -290,7 +302,7 @@ class HUIRoot extends LitElement {
             ${this._editMode
               ? html`
                   <div class="main-title">
-                    ${this.config.title ||
+                    ${dashboardTitle ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <ha-icon-button
                       slot="actionItems"
@@ -299,7 +311,7 @@ class HUIRoot extends LitElement {
                       )}
                       .path=${mdiPencil}
                       class="edit-icon"
-                      @click=${this._editLovelace}
+                      @click=${this._editDashboard}
                     ></ha-icon-button>
                   </div>
                   <div class="action-items">${this._renderActionItems()}</div>
@@ -360,9 +372,11 @@ class HUIRoot extends LitElement {
                             )}
                           </ha-tabs>
                         `
-                      : html`<div class="main-title">
-                          ${this.config.title}
-                        </div>`}
+                      : html`
+                          <div class="main-title">
+                            ${views[0]?.title ?? dashboardTitle}
+                          </div>
+                        `}
                   <div class="action-items">${this._renderActionItems()}</div>
                 `}
           </div>
@@ -758,8 +772,41 @@ class HUIRoot extends LitElement {
     this.lovelace!.setEditMode(false);
   }
 
-  private _editLovelace() {
-    showEditLovelaceDialog(this, this.lovelace!);
+  private async _editDashboard() {
+    const urlPath = this.route?.prefix.slice(1);
+    await this.hass.loadFragmentTranslation("config");
+    const dashboards = await fetchDashboards(this.hass);
+    const dashboard = dashboards.find((d) => d.url_path === urlPath);
+
+    showDashboardDetailDialog(this, {
+      dashboard,
+      urlPath,
+      updateDashboard: async (values) => {
+        await updateDashboard(this.hass!, dashboard!.id, values);
+      },
+      removeDashboard: async () => {
+        const confirm = await showConfirmationDialog(this, {
+          title: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+            { dashboard_title: dashboard!.title }
+          ),
+          text: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+          ),
+          confirmText: this.hass!.localize("ui.common.delete"),
+          destructive: true,
+        });
+        if (!confirm) {
+          return false;
+        }
+        try {
+          await deleteDashboard(this.hass!, dashboard!.id);
+          return true;
+        } catch (err: any) {
+          return false;
+        }
+      },
+    });
   }
 
   private _navigateToView(path: string | number, replace?: boolean) {
@@ -885,8 +932,15 @@ class HUIRoot extends LitElement {
 
     const configBackground = viewConfig.background || this.config.background;
 
-    if (configBackground) {
-      root.style.setProperty("--lovelace-background", configBackground);
+    const backgroundStyle =
+      typeof configBackground === "string"
+        ? configBackground
+        : configBackground?.image
+          ? `center / cover no-repeat url('${configBackground.image}')`
+          : undefined;
+
+    if (backgroundStyle) {
+      root.style.setProperty("--lovelace-background", backgroundStyle);
     } else {
       root.style.removeProperty("--lovelace-background");
     }

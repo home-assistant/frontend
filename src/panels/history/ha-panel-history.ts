@@ -1,5 +1,12 @@
-import { mdiDownload, mdiFilterRemove } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiFilterRemove,
+  mdiImagePlus,
+} from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -23,6 +30,8 @@ import type { StateHistoryCharts } from "../../components/chart/state-history-ch
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
+import "../../components/ha-button-menu";
+import "../../components/ha-list-item";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
@@ -37,7 +46,11 @@ import {
   computeHistory,
   subscribeHistory,
 } from "../../data/history";
-import { Statistics, fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  Statistics,
+  getRecordedExcludedEntities,
+} from "../../data/recorder";
 import {
   expandAreaTarget,
   expandDeviceTarget,
@@ -49,6 +62,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
+import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
 class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -85,6 +99,8 @@ class HaPanelHistory extends LitElement {
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _interval?: number;
+
+  private _excludedEntities?: string[];
 
   public constructor() {
     super();
@@ -144,13 +160,23 @@ class HaPanelHistory extends LitElement {
               ></ha-icon-button>
             `
           : ""}
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._downloadHistory}
-          .disabled=${this._isLoading}
-          .path=${mdiDownload}
-          .label=${this.hass.localize("ui.panel.history.download_data")}
-        ></ha-icon-button>
+        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+            ${this.hass.localize("ui.panel.history.download_data")}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+            ${this.hass.localize("ui.panel.history.add_card")}
+            <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
 
         <div class="flex content">
           <div class="filters">
@@ -166,6 +192,7 @@ class HaPanelHistory extends LitElement {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
+              .entityFilter=${this._entityFilter}
               addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
@@ -191,6 +218,10 @@ class HaPanelHistory extends LitElement {
       </ha-top-app-bar-fixed>
     `;
   }
+
+  private _entityFilter = (entity: HassEntity): boolean =>
+    !this._excludedEntities ||
+    !this._excludedEntities.includes(entity.entity_id);
 
   private mergeHistoryResults(
     ltsResult: HistoryResult,
@@ -343,8 +374,17 @@ class HaPanelHistory extends LitElement {
     }
   }
 
+  private async _getRecordedExcludedEntities() {
+    const { recorded_ids: _recordedIds, excluded_ids: excludedIds } =
+      await getRecordedExcludedEntities(this.hass);
+    this._excludedEntities = excludedIds;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    this._getRecordedExcludedEntities();
+
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
@@ -633,6 +673,17 @@ class HaPanelHistory extends LitElement {
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._downloadHistory();
+        break;
+      case 1:
+        this._suggestCard();
+        break;
+    }
+  }
+
   private _downloadHistory() {
     // Make a copy because getEntityIDs is memoized and sort works in-place
     const entities = [...this._getEntityIds()].sort();
@@ -724,6 +775,41 @@ class HaPanelHistory extends LitElement {
     });
     const url = window.URL.createObjectURL(blob);
     fileDownload(url, "history.csv");
+  }
+
+  private _suggestCard() {
+    const entities = this._getEntityIds();
+    if (entities.length === 0 || !this._mungedStateHistory) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.history.add_card_error"),
+        text: this.hass.localize("ui.panel.history.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
+    // If you pick things like "This week", the end date can be in the future
+    const endDateTime = Math.min(this._endDate.getTime(), Date.now());
+    const cards = [
+      {
+        title: this.hass.localize("panel.history"),
+        type: "history-graph",
+        hours_to_show: Math.round(
+          (endDateTime - this._startDate.getTime()) / 1000 / 60 / 60
+        ),
+        entities,
+      },
+    ];
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      cards,
+      {
+        title: this.hass.localize("panel.history"),
+        cards,
+      },
+      entities
+    );
   }
 
   static get styles() {

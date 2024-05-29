@@ -10,8 +10,10 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
+import { HomeAssistant } from "../types";
+import { getExtendedEntityRegistryEntry } from "./entity_registry";
 
 export const FORMAT_TEXT = "text";
 export const FORMAT_NUMBER = "number";
@@ -103,3 +105,50 @@ export const supportedAlarmModes = (stateObj: AlarmControlPanelEntity) =>
     const feature = ALARM_MODES[mode].feature;
     return !feature || supportsFeature(stateObj, feature);
   });
+
+export const setProtectedAlarmControlPanelMode = async (
+  element: HTMLElement,
+  hass: HomeAssistant,
+  stateObj: AlarmControlPanelEntity,
+  mode: AlarmMode
+) => {
+  const { service } = ALARM_MODES[mode];
+
+  let code: string | undefined;
+
+  if (
+    (mode !== "disarmed" &&
+      stateObj.attributes.code_arm_required &&
+      stateObj.attributes.code_format) ||
+    (mode === "disarmed" && stateObj.attributes.code_format)
+  ) {
+    const entry = await getExtendedEntityRegistryEntry(
+      hass,
+      stateObj.entity_id
+    ).catch(() => undefined);
+    const defaultCode = entry?.options?.alarm_control_panel?.default_code;
+
+    if (!defaultCode) {
+      const disarm = mode === "disarmed";
+
+      const response = await showEnterCodeDialog(element, {
+        codeFormat: stateObj.attributes.code_format,
+        title: hass.localize(
+          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
+        ),
+        submitText: hass.localize(
+          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
+        ),
+      });
+      if (response == null) {
+        throw new Error("Code dialog closed");
+      }
+      code = response;
+    }
+  }
+
+  await hass.callService("alarm_control_panel", service, {
+    entity_id: stateObj.entity_id,
+    code,
+  });
+};

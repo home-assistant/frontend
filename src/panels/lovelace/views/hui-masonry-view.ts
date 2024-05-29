@@ -15,7 +15,7 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
@@ -48,9 +48,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
