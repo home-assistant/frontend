@@ -10,6 +10,7 @@ const WebpackBar = require("webpackbar");
 const {
   TransformAsyncModulesPlugin,
 } = require("transform-async-modules-webpack-plugin");
+const { dependencies } = require("../package.json");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -147,16 +148,19 @@ const createWebpackConfig = ({
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
-        new StatsWriterPlugin({
-          filename: path.relative(
-            outputPath,
-            path.join(paths.build_dir, "stats", `${name}.json`)
-          ),
-          stats: { assets: true, chunks: true, modules: true },
-          transform: (stats) => JSON.stringify(filterStats(stats)),
-        }),
+      new StatsWriterPlugin({
+        filename: path.relative(
+          outputPath,
+          path.join(paths.build_dir, "stats", `${name}.json`)
+        ),
+        stats: { assets: true, chunks: true, modules: true },
+        transform: (stats) => JSON.stringify(filterStats(stats)),
+      }),
       !latestBuild &&
-        new TransformAsyncModulesPlugin({ browserslistEnv: "legacy" }),
+      new TransformAsyncModulesPlugin({
+        browserslistEnv: "legacy",
+        runtime: { version: dependencies["@babel/runtime"] },
+      }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
@@ -207,18 +211,18 @@ const createWebpackConfig = ({
           `devtool${v}ModuleFilenameTemplate`,
           !isTestBuild && isProdBuild
             ? (info) => {
-                if (
-                  !path.isAbsolute(info.absoluteResourcePath) ||
-                  !existsSync(info.resourcePath) ||
-                  info.resourcePath.startsWith("./node_modules")
-                ) {
-                  // Source URLs are unknown for dependencies, so we use a relative URL with a
-                  // non - existent top directory.  This results in a clean source tree in browser
-                  // dev tools, and they stay happy getting 404s with valid requests.
-                  return `/unknown${path.resolve("/", info.resourcePath)}`;
-                }
-                return new URL(info.resourcePath, bundle.sourceMapURL()).href;
+              if (
+                !path.isAbsolute(info.absoluteResourcePath) ||
+                !existsSync(info.resourcePath) ||
+                info.resourcePath.startsWith("./node_modules")
+              ) {
+                // Source URLs are unknown for dependencies, so we use a relative URL with a
+                // non - existent top directory.  This results in a clean source tree in browser
+                // dev tools, and they stay happy getting 404s with valid requests.
+                return `/unknown${path.resolve("/", info.resourcePath)}`;
               }
+              return new URL(info.resourcePath, bundle.sourceMapURL()).href;
+            }
             : undefined,
         ])
       ),
