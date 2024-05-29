@@ -517,6 +517,8 @@
         "sort_by": "Sort by {sortColumn}",
         "group_by": "Group by {groupColumn}",
         "dont_group_by": "Don't group",
+        "collapse_all_groups": "Collapse all",
+        "expand_all_groups": "Expand all",
         "select": "Select",
         "selected": "Selected {selected}",
         "close_select_mode": "Close selection mode",
