@@ -397,18 +397,18 @@ export class StatisticsChart extends LitElement {
           return;
         }
         statDataSets.forEach((d, i) => {
-          if (
-            this.chartType === "line" &&
-            prevEndTime &&
-            prevEndTime.getTime() !== start.getTime()
-          ) {
-            // if the end of the previous data doesn't match the start of the current data,
-            // we have to draw a gap so add an empty value.
-            // @ts-expect-error
-            d.data.push({ x: prevEndTime.getTime(), y: null });
+          if (this.chartType === "bar") {
             d.data.push({ x: start.getTime(), y: dataValues[i]! });
+          } else if (this.chartType === "line") {
+            if (prevEndTime && prevEndTime.getTime() !== start.getTime()) {
+              // if the end of the previous data doesn't match the start of the current data,
+              // we have to draw a gap so add an empty value.
+              // @ts-expect-error
+              d.data.push({ x: prevEndTime.getTime(), y: null });
+              d.data.push({ x: start.getTime(), y: dataValues[i]! });
+            }
+            d.data.push({ x: end.getTime(), y: dataValues[i]! });
           }
-          d.data.push({ x: end.getTime(), y: dataValues[i]! });
         });
         prevEndTime = end;
       };
