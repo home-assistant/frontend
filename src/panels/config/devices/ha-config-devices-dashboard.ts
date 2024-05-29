@@ -10,6 +10,7 @@ import {
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
@@ -85,7 +86,6 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { createSearchParam } from "../../../common/url/search-params";
 import {
   serializeFilters,
   deserializeFilters,
@@ -126,7 +126,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "devices-table-filters",
+    key: "devices-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,
@@ -191,52 +191,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     },
   ]);
 
-  willUpdate(changedProps) {
+  willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._setFiltersFromUrl();
     }
-    if (changedProps.has("_filters") || changedProps.has("_filter")) {
-      this._updateUrl();
-    }
-  }
-
-  private _updateUrl() {
-    const params: Record<string, string> = {};
-    // if (this._filter) {
-    //   params.search = this._filter;
-    // }
-    if (this._filters) {
-      const filters = { ...this._filters };
-      Object.keys(filters).forEach((key) => {
-        const filter = filters[key];
-        if (filter.items) {
-          filters[key] = { ...filter };
-          delete filters[key].items;
-        }
-      });
-      params.filters = JSON.stringify(filters);
-    }
-    const filterString = createSearchParam(params);
-    this._ignoreLocationChange = true;
-    navigate(`?${filterString}`, { replace: true, data: history.state });
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("filters") && this._filters === undefined) {
-      const filters = JSON.parse(this._searchParms.get("filters")!);
-      this._filters = filters;
-      return;
-    }
-
-    if (this._filters === undefined) {
-      this._filters = {
-        "ha-filter-states": {
-          value: [],
-          items: undefined,
-        },
-      };
-    }
-
     if (this._searchParms.has("domain")) {
       this._filters = {
         ...this._filters,

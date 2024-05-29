@@ -150,7 +150,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "entities-table-filters",
+    key: "entities-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,

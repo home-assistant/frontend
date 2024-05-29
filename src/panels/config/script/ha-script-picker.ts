@@ -143,7 +143,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "script-table-filters",
+    key: "script-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,

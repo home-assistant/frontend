@@ -139,7 +139,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "scene-table-filters",
+    key: "scene-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,

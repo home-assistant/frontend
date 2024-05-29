@@ -147,7 +147,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "automation-table-filters",
+    key: "automation-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,

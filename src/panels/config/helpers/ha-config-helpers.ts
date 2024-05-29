@@ -171,7 +171,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "helpers-table-filters",
+    key: "helpers-table-filters-full",
     state: true,
     subscribe: false,
     serializer: serializeFilters,
