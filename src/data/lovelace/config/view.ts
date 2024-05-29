@@ -7,6 +7,10 @@ export interface ShowViewConfig {
   user?: string;
 }
 
+interface LovelaceViewBackgroundConfig {
+  image?: string;
+}
+
 export interface LovelaceBaseViewConfig {
   index?: number;
   title?: string;
@@ -14,7 +18,7 @@ export interface LovelaceBaseViewConfig {
   icon?: string;
   theme?: string;
   panel?: boolean;
-  background?: string;
+  background?: string | LovelaceViewBackgroundConfig;
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;

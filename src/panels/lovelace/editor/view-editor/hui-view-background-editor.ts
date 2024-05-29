@@ -23,20 +23,24 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    const backgroundUrlRegex = /url\(['"]?([^'"]+)['"]?\)/;
-    const backgroundUrlMatch = backgroundUrlRegex.exec(
-      this._config?.background || ""
-    );
-    const backgroundUrl = backgroundUrlMatch ? backgroundUrlMatch[1] : null;
+    let backgroundUrl: string | null = null;
+
+    if (typeof this._config?.background === "string") {
+      const backgroundUrlRegex = /url\(['"]?([^'"]+)['"]?\)/;
+      const backgroundUrlMatch = backgroundUrlRegex.exec(
+        this._config?.background || ""
+      );
+      backgroundUrl = backgroundUrlMatch ? backgroundUrlMatch[1] : null;
+    } else if (this._config?.background?.image) {
+      backgroundUrl = this._config?.background?.image;
+    }
 
     return html`
-      <p>
-        ${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.title"
-        )}
-      </p>
       <ha-selector-image
         .hass=${this.hass}
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.title"
+        )}
         .value=${backgroundUrl}
         .selector=${SELECTOR}
         @value-changed=${this._backgroundChanged}
@@ -48,9 +52,12 @@ export class HuiViewBackgroundEditor extends LitElement {
     const backgroundUrl = ev.detail.value;
     const config = {
       ...this._config,
-      background: backgroundUrl
-        ? `center / cover no-repeat url('${backgroundUrl}')`
-        : undefined,
+      background: {
+        ...(typeof this._config.background === "string"
+          ? {}
+          : this._config.background),
+        image: backgroundUrl || undefined,
+      },
     };
     fireEvent(this, "view-config-changed", { config });
   }

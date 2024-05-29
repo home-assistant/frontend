@@ -933,7 +933,16 @@ class HUIRoot extends LitElement {
     const configBackground = viewConfig.background || this.config.background;
 
     if (configBackground) {
-      root.style.setProperty("--lovelace-background", configBackground);
+      if (typeof configBackground === "string") {
+        root.style.setProperty("--lovelace-background", configBackground);
+      } else if (configBackground.image) {
+        root.style.setProperty(
+          "--lovelace-background",
+          `center / cover no-repeat url('${configBackground.image}')`
+        );
+      } else {
+        root.style.removeProperty("--lovelace-background");
+      }
     } else {
       root.style.removeProperty("--lovelace-background");
     }
