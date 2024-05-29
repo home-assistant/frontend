@@ -730,6 +730,28 @@ export class HaDataTable extends LitElement {
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   };
 
+  public expandAllGroups() {
+    this._collapsedGroups = [];
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  }
+
+  public collapseAllGroups() {
+    if (
+      !this.groupColumn ||
+      !this.data.some((item) => item[this.groupColumn!])
+    ) {
+      return;
+    }
+    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
+    if (grouped.undefined) {
+      // undefined is a reserved group name
+      grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
+      delete grouped.undefined;
+    }
+    this._collapsedGroups = Object.keys(grouped);
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
