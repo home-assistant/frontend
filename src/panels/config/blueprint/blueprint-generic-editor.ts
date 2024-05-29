@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
@@ -11,7 +11,12 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import { BlueprintAutomationConfig } from "../../../data/automation";
-import { BlueprintOrError, Blueprints } from "../../../data/blueprint";
+import {
+  BlueprintInput,
+  BlueprintInputSection,
+  BlueprintOrError,
+  Blueprints,
+} from "../../../data/blueprint";
 import { BlueprintScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -46,6 +51,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   protected renderCard() {
     const blueprint = this._blueprint;
+    let border = true;
     return html`
       <ha-card
         outlined
@@ -91,44 +97,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
               Object.keys(blueprint.metadata.input).length
                 ? Object.entries(blueprint.metadata.input).map(
                     ([key, value]) => {
-                      const selector = value?.selector ?? { text: undefined };
-                      const type = Object.keys(selector)[0];
-                      const enhancedSelector = [
-                        "action",
-                        "condition",
-                        "trigger",
-                      ].includes(type)
-                        ? {
-                            [type]: {
-                              ...selector[type],
-                              path: [key],
-                            },
-                          }
-                        : selector;
-
-                      return html`<ha-settings-row .narrow=${this.narrow}>
-                        <span slot="heading">${value?.name || key}</span>
-                        <ha-markdown
-                          slot="description"
-                          class="card-content"
-                          breaks
-                          .content=${value?.description}
-                        ></ha-markdown>
-                        ${html`<ha-selector
-                          .hass=${this.hass}
-                          .selector=${enhancedSelector}
-                          .key=${key}
-                          .disabled=${this.disabled}
-                          .required=${value?.default === undefined}
-                          .placeholder=${value?.default}
-                          .value=${this._config.use_blueprint.input &&
-                          key in this._config.use_blueprint.input
-                            ? this._config.use_blueprint.input[key]
-                            : value?.default}
-                          @value-changed=${this._inputChanged}
-                          @item-moved=${this._itemMoved}
-                        ></ha-selector>`}
-                      </ha-settings-row>`;
+                      if (value && "input" in value) {
+                        const section = this.renderSection(key, value);
+                        border = false;
+                        return section;
+                      }
+                      const row = this.renderSettingRow(key, value, border);
+                      border = true;
+                      return row;
                     }
                   )
                 : html`<p class="padding">
@@ -139,6 +115,85 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           : ""}
       </ha-card>
     `;
+  }
+
+  private renderSection(sectionKey: string, section: BlueprintInputSection) {
+    const title = section?.name || sectionKey;
+    const anyRequired =
+      section.input &&
+      Object.values(section.input).some(
+        (item) => item === null || item.default === undefined
+      );
+    const expanded = !section.collapsed || anyRequired;
+
+    return html` <ha-expansion-panel
+      outlined
+      .expanded=${expanded}
+      .noCollapse=${anyRequired}
+    >
+      <div slot="header" role="heading" aria-level="3" class="section-header">
+        ${section?.icon
+          ? html` <ha-icon
+              class="section-header"
+              .icon=${section.icon}
+            ></ha-icon>`
+          : nothing}
+        <ha-markdown .content=${title}></ha-markdown>
+      </div>
+      <div class="content">
+        ${section?.description
+          ? html`<ha-markdown .content=${section.description}></ha-markdown>`
+          : nothing}
+        ${section.input
+          ? Object.entries(section.input).map(([key, value]) =>
+              this.renderSettingRow(key, value, true)
+            )
+          : nothing}
+      </div>
+    </ha-expansion-panel>`;
+  }
+
+  private renderSettingRow(
+    key: string,
+    value: BlueprintInput | null,
+    border: boolean
+  ) {
+    const selector = value?.selector ?? { text: undefined };
+    const type = Object.keys(selector)[0];
+    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
+      ? {
+          [type]: {
+            ...selector[type],
+            path: [key],
+          },
+        }
+      : selector;
+    return html`<ha-settings-row
+      .narrow=${this.narrow}
+      class=${border ? "border" : ""}
+    >
+      <span slot="heading">${value?.name || key}</span>
+      <ha-markdown
+        slot="description"
+        class="card-content"
+        breaks
+        .content=${value?.description}
+      ></ha-markdown>
+      ${html`<ha-selector
+        .hass=${this.hass}
+        .selector=${enhancedSelector}
+        .key=${key}
+        .disabled=${this.disabled}
+        .required=${value?.default === undefined}
+        .placeholder=${value?.default}
+        .value=${this._config.use_blueprint.input &&
+        key in this._config.use_blueprint.input
+          ? this._config.use_blueprint.input[key]
+          : value?.default}
+        @value-changed=${this._inputChanged}
+        @item-moved=${this._itemMoved}
+      ></ha-selector>`}
+    </ha-settings-row>`;
   }
 
   protected abstract _getBlueprints();
@@ -219,6 +274,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         }
         ha-card.blueprint {
           margin: 0 auto;
+          margin-bottom: 64px;
         }
         .padding {
           padding: 16px;
@@ -253,7 +309,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
+        }
+        ha-settings-row.border {
           border-top: 1px solid var(--divider-color);
+        }
+        ha-expansion-panel {
+          margin: 8px;
+          margin-left: 8px;
+          margin-right: 8px;
         }
         ha-alert {
           margin-bottom: 16px;
@@ -262,6 +325,13 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         ha-alert.re-order {
           border-radius: var(--ha-card-border-radius, 12px);
           overflow: hidden;
+        }
+        div.section-header {
+          display: flex;
+          vertical-align: middle;
+        }
+        ha-icon.section-header {
+          padding-right: 10px;
         }
       `,
     ];

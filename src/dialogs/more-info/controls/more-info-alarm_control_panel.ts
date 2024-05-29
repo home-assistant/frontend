@@ -4,10 +4,12 @@ import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-state-icon";
-import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
+import {
+  AlarmControlPanelEntity,
+  setProtectedAlarmControlPanelMode,
+} from "../../../data/alarm_control_panel";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
-import { showEnterCodeDialog } from "../../enter-code/show-enter-code-dialog";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -18,24 +20,12 @@ class MoreInfoAlarmControlPanel extends LitElement {
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
 
   private async _disarm() {
-    let code: string | undefined;
-
-    if (this.stateObj!.attributes.code_format) {
-      const response = await showEnterCodeDialog(this, {
-        codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass.localize("ui.card.alarm_control_panel.disarm"),
-        submitText: this.hass.localize("ui.card.alarm_control_panel.disarm"),
-      });
-      if (response == null) {
-        return;
-      }
-      code = response;
-    }
-
-    this.hass.callService("alarm_control_panel", "alarm_disarm", {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    setProtectedAlarmControlPanelMode(
+      this,
+      this.hass,
+      this.stateObj!,
+      "disarmed"
+    );
   }
 
   protected render() {

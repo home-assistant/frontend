@@ -14,6 +14,7 @@ import {
 } from "./entity_registry";
 import { EntitySources } from "./entity_sources";
 import { isHelperDomain } from "../panels/config/helpers/const";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 export type Selector =
   | ActionSelector
@@ -40,6 +41,7 @@ export type Selector =
   | FileSelector
   | IconSelector
   | LabelSelector
+  | ImageSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -254,6 +256,11 @@ export interface IconSelector {
     placeholder?: string;
     fallbackPath?: string;
   } | null;
+}
+
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface LabelSelector {

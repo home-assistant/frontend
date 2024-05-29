@@ -33,7 +33,6 @@ import {
   MediaPlayerEntityFeature,
   computeMediaDescription,
 } from "../../../data/media-player";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -291,7 +290,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

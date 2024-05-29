@@ -11,6 +11,7 @@ declare global {
 
 export interface NavigateOptions {
   replace?: boolean;
+  data?: any;
 }
 
 export const navigate = (path: string, options?: NavigateOptions) => {
@@ -24,7 +25,7 @@ export const navigate = (path: string, options?: NavigateOptions) => {
   if (__DEMO__) {
     if (replace) {
       mainWindow.history.replaceState(
-        mainWindow.history.state?.root ? { root: true } : null,
+        mainWindow.history.state?.root ? { root: true } : options?.data ?? null,
         "",
         `${mainWindow.location.pathname}#${path}`
       );
@@ -33,12 +34,12 @@ export const navigate = (path: string, options?: NavigateOptions) => {
     }
   } else if (replace) {
     mainWindow.history.replaceState(
-      mainWindow.history.state?.root ? { root: true } : null,
+      mainWindow.history.state?.root ? { root: true } : options?.data ?? null,
       "",
       path
     );
   } else {
-    mainWindow.history.pushState(null, "", path);
+    mainWindow.history.pushState(options?.data ?? null, "", path);
   }
   fireEvent(mainWindow, "location-changed", {
     replace,

@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list";
-import { mdiCast, mdiCastConnected } from "@mdi/js";
+import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import { Auth, Connection } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -97,7 +97,7 @@ class HcCast extends LitElement {
                         .selected=${this.castManager.status?.lovelacePath ===
                         (view.path ?? idx)}
                       >
-                        ${view.title || view.path}
+                        ${view.title || view.path || "Unnamed view"}
                         ${view.icon
                           ? html`
                               <ha-icon
@@ -105,7 +105,10 @@ class HcCast extends LitElement {
                                 slot="graphic"
                               ></ha-icon>
                             `
-                          : ""}</ha-list-item
+                          : html`<ha-svg-icon
+                              slot="item-icon"
+                              .path=${mdiViewDashboard}
+                            ></ha-svg-icon>`}</ha-list-item
                       > `
                   )}</mwc-list
                 >
@@ -246,7 +249,8 @@ class HcCast extends LitElement {
         height: 18px;
       }
 
-      ha-list-item ha-icon {
+      ha-list-item ha-icon,
+      ha-list-item ha-svg-icon {
         padding: 12px;
         color: var(--secondary-text-color);
       }

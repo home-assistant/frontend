@@ -35,59 +35,57 @@ export class DemoDateTimeDate extends LitElement {
           <div class="center">Month-Day-Year</div>
           <div class="center">Year-Month-Day</div>
         </div>
-        ${Object.entries(translationMetadata.translations)
-          .filter(([key, _]) => key !== "test")
-          .map(
-            ([key, value]) => html`
-              <div class="container">
-                <div>${value.nativeName}</div>
-                <div class="center">
-                  ${formatDateNumeric(
-                    date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      date_format: DateFormat.language,
-                    },
-                    demoConfig
-                  )}
-                </div>
-                <div class="center">
-                  ${formatDateNumeric(
-                    date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      date_format: DateFormat.DMY,
-                    },
-                    demoConfig
-                  )}
-                </div>
-                <div class="center">
-                  ${formatDateNumeric(
-                    date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      date_format: DateFormat.MDY,
-                    },
-                    demoConfig
-                  )}
-                </div>
-                <div class="center">
-                  ${formatDateNumeric(
-                    date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      date_format: DateFormat.YMD,
-                    },
-                    demoConfig
-                  )}
-                </div>
+        ${Object.entries(translationMetadata.translations).map(
+          ([key, value]) => html`
+            <div class="container">
+              <div>${value.nativeName}</div>
+              <div class="center">
+                ${formatDateNumeric(
+                  date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    date_format: DateFormat.language,
+                  },
+                  demoConfig
+                )}
               </div>
-            `
-          )}
+              <div class="center">
+                ${formatDateNumeric(
+                  date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    date_format: DateFormat.DMY,
+                  },
+                  demoConfig
+                )}
+              </div>
+              <div class="center">
+                ${formatDateNumeric(
+                  date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    date_format: DateFormat.MDY,
+                  },
+                  demoConfig
+                )}
+              </div>
+              <div class="center">
+                ${formatDateNumeric(
+                  date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    date_format: DateFormat.YMD,
+                  },
+                  demoConfig
+                )}
+              </div>
+            </div>
+          `
+        )}
       </mwc-list>
     `;
   }

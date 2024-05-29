@@ -49,7 +49,7 @@ class ZWaveJSProvisioned extends LitElement {
         type: "icon",
         width: "100px",
         template: (entry) =>
-          entry.additional_properties.nodeId
+          entry.nodeId
             ? html`
                 <ha-svg-icon
                   .label=${this.hass.localize(
@@ -82,7 +82,7 @@ class ZWaveJSProvisioned extends LitElement {
         filterable: true,
         sortable: true,
         template: (entry) => {
-          const securityClasses = entry.security_classes;
+          const securityClasses = entry.securityClasses;
           return securityClasses
             .map((secClass) =>
               this.hass.localize(

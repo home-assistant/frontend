@@ -35,6 +35,7 @@ import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/lo
 import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
 import "./hc-launch-screen";
+import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
 
 const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
   strategy: {
@@ -359,7 +360,11 @@ export class HcMain extends HassElement {
   }
 
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
-    castContext.setApplicationState(lovelaceConfig.title || "");
+    const title = getPanelTitleFromUrlPath(
+      this.hass!,
+      this._urlPath || "lovelace"
+    );
+    castContext.setApplicationState(title || "");
     this._lovelaceConfig = lovelaceConfig;
   }
 

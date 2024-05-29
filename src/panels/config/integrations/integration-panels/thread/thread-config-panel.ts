@@ -55,8 +55,9 @@ import { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 
-interface ThreadNetwork {
+export interface ThreadNetwork {
   name: string;
   dataset?: ThreadDataSet;
   routers?: ThreadRouter[];
@@ -164,7 +165,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ${network.name}${network.dataset
           ? html`<div>
               <ha-icon-button
-                .networkDataset=${network.dataset}
+                .network=${network}
                 .path=${mdiInformationOutline}
                 @click=${this._showDatasetInfo}
               ></ha-icon-button
@@ -306,33 +307,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private async _showDatasetInfo(ev: Event) {
-    const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
-    if (this._otbrInfo) {
-      if (
-        dataset.extended_pan_id &&
-        this._otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id)
-      ) {
-        showAlertDialog(this, {
-          title: dataset.network_name,
-          text: html`Network name: ${dataset.network_name}<br />
-            Channel: ${dataset.channel}<br />
-            Dataset id: ${dataset.dataset_id}<br />
-            Pan id: ${dataset.pan_id}<br />
-            Extended Pan id: ${dataset.extended_pan_id}<br />
-            OTBR URL: ${this._otbrInfo.url}<br />
-            Active dataset TLVs: ${this._otbrInfo.active_dataset_tlvs}`,
-        });
-        return;
-      }
-    }
-    showAlertDialog(this, {
-      title: dataset.network_name,
-      text: html`Network name: ${dataset.network_name}<br />
-        Channel: ${dataset.channel}<br />
-        Dataset id: ${dataset.dataset_id}<br />
-        Pan id: ${dataset.pan_id}<br />
-        Extended Pan id: ${dataset.extended_pan_id}`,
-    });
+    const network = (ev.currentTarget as any).network as ThreadNetwork;
+    showThreadDatasetDialog(this, { network, otbrInfo: this._otbrInfo });
   }
 
   private _importExternalThreadCredentials() {
