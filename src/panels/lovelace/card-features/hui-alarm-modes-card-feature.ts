@@ -16,10 +16,10 @@ import {
   ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
+  setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { filterModes } from "./common/filter-modes";
@@ -115,37 +115,7 @@ class HuiAlarmModeCardFeature
   }
 
   private async _setMode(mode: AlarmMode) {
-    const { service } = ALARM_MODES[mode];
-
-    let code: string | undefined;
-
-    if (
-      (mode !== "disarmed" &&
-        this.stateObj!.attributes.code_arm_required &&
-        this.stateObj!.attributes.code_format) ||
-      (mode === "disarmed" && this.stateObj!.attributes.code_format)
-    ) {
-      const disarm = mode === "disarmed";
-
-      const response = await showEnterCodeDialog(this, {
-        codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
-        ),
-        submitText: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
-        ),
-      });
-      if (response == null) {
-        throw new Error("cancel");
-      }
-      code = response;
-    }
-
-    await this.hass!.callService("alarm_control_panel", service, {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
   }
 
   protected render(): TemplateResult | null {
