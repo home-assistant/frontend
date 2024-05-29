@@ -120,6 +120,7 @@ export class LovelacePanel extends LitElement {
     if (panelState === "loaded") {
       return html`
         <hui-root
+          .panel=${this.panel}
           .hass=${this.hass}
           .lovelace=${this.lovelace}
           .route=${this.route}

@@ -423,22 +423,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
         );
       },
       removeDashboard: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
-              { dashboard_title: dashboard!.title }
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
-            ),
-            confirmText: this.hass!.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
+        const confirm = await showConfirmationDialog(this, {
+          title: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+            { dashboard_title: dashboard!.title }
+          ),
+          text: this.hass!.localize(
+            "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+          ),
+          confirmText: this.hass!.localize("ui.common.delete"),
+          destructive: true,
+        });
+        if (!confirm) {
           return false;
         }
-
         try {
           await deleteDashboard(this.hass!, dashboard!.id);
           this._dashboards = this._dashboards!.filter(
