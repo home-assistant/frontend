@@ -1,7 +1,14 @@
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -41,6 +48,16 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
   @state() private _shouldRender = false;
 
   @state() private _floors?: FloorRegistryEntry[];
+
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      if (this.value?.floors?.length || this.value?.areas?.length) {
+        this._findRelated();
+      }
+    }
+  }
 
   protected render() {
     const areas = this._areas(this.hass.areas, this._floors);
@@ -188,6 +205,10 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
           `${this.clientHeight - 49}px`;
       }, 300);
     }
+  }
+
+  protected firstUpdated() {
+    this._findRelated();
   }
 
   private _expandedWillChange(ev) {

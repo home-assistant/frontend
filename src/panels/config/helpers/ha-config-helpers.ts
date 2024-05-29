@@ -96,6 +96,11 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 type HelperItem = {
   id: string;
@@ -164,10 +169,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "helpers-table-filters",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -722,7 +732,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters[type] = ev.detail;
+    this._filters = { ...this._filters, [type]: ev.detail };
     this._applyFilters();
   }
 
