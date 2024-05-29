@@ -1,6 +1,6 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
-import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import "@material/web/divider/divider";
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -27,13 +27,13 @@ import {
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -41,15 +41,15 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu-new";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
-import "../../../components/ha-list-new";
 import "../../../components/ha-list-item-new";
-import "../../../components/ha-button-menu-new";
+import "../../../components/ha-list-new";
+import "../../../components/ha-menu-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -57,13 +57,13 @@ import {
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
+  DisableConfigEntryResult,
+  ERROR_STATES,
+  RECOVERABLE_STATES,
   deleteConfigEntry,
   disableConfigEntry,
-  DisableConfigEntryResult,
   enableConfigEntry,
-  ERROR_STATES,
   getConfigEntries,
-  RECOVERABLE_STATES,
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
@@ -80,13 +80,13 @@ import {
 } from "../../../data/entity_registry";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import {
+  IntegrationLogInfo,
+  IntegrationManifest,
+  LogSeverity,
   domainToName,
   fetchIntegrationManifest,
   integrationIssuesUrl,
-  IntegrationLogInfo,
-  IntegrationManifest,
   integrationsWithPanel,
-  LogSeverity,
   setIntegrationLogLevel,
   subscribeLogInfo,
 } from "../../../data/integration";
@@ -792,104 +792,98 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         RECOVERABLE_STATES.includes(item.state) &&
         item.supports_unload &&
         item.source !== "system"
-          ? html`<ha-list-item
-              @request-selected=${this._handleReload}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.reload"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiReload}></ha-svg-icon>
-            </ha-list-item>`
-          : ""}
+          ? html`
+              <ha-menu-item @click=${this._handleReload}>
+                <ha-svg-icon slot="start" .path=${mdiReload}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.reload"
+                )}
+              </ha-menu-item>
+            `
+          : nothing}
 
-        <ha-list-item @request-selected=${this._handleRename} graphic="icon">
+        <ha-menu-item @click=${this._handleRename} graphic="icon">
+          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.integrations.config_entry.rename"
           )}
-          <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-        </ha-list-item>
+        </ha-menu-item>
 
-        <li divider role="separator"></li>
+        <md-divider role="separator" tabindex="-1"></md-divider>
 
         ${this._diagnosticHandler && item.state === "loaded"
-          ? html`<a
-              href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
-              target="_blank"
-              @click=${this._signUrl}
-            >
-              <ha-list-item graphic="icon">
+          ? html`
+              <ha-menu-item
+                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
+                target="_blank"
+                @click=${this._signUrl}
+              >
+                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.download_diagnostics"
                 )}
-                <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-              </ha-list-item>
-            </a>`
+              </ha-menu-item>
+            `
           : ""}
         ${!item.disabled_by &&
         item.supports_reconfigure &&
         item.source !== "system"
-          ? html`<ha-list-item
-              @request-selected=${this._handleReconfigure}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.reconfigure"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiWrench}></ha-svg-icon>
-            </ha-list-item>`
-          : ""}
+          ? html`
+              <ha-menu-item @click=${this._handleReconfigure}>
+                <ha-svg-icon slot="start" .path=${mdiWrench}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.reconfigure"
+                )}
+              </ha-menu-item>
+            `
+          : nothing}
 
-        <ha-list-item
-          @request-selected=${this._handleSystemOptions}
-          graphic="icon"
-        >
+        <ha-menu-item @click=${this._handleSystemOptions} graphic="icon">
+          <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.integrations.config_entry.system_options"
           )}
-          <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-        </ha-list-item>
+        </ha-menu-item>
         ${item.disabled_by === "user"
-          ? html`<ha-list-item
-              @request-selected=${this._handleEnable}
-              graphic="icon"
-            >
-              ${this.hass.localize("ui.common.enable")}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlayCircleOutline}
-              ></ha-svg-icon>
-            </ha-list-item>`
-          : item.source !== "system"
-            ? html`<ha-list-item
-                class="warning"
-                @request-selected=${this._handleDisable}
-                graphic="icon"
-              >
-                ${this.hass.localize("ui.common.disable")}
+          ? html`
+              <ha-menu-item @click=${this._handleEnable}>
                 <ha-svg-icon
-                  slot="graphic"
-                  class="warning"
-                  .path=${mdiStopCircleOutline}
+                  slot="start"
+                  .path=${mdiPlayCircleOutline}
                 ></ha-svg-icon>
-              </ha-list-item>`
-            : ""}
+                ${this.hass.localize("ui.common.enable")}
+              </ha-menu-item>
+            `
+          : item.source !== "system"
+            ? html`
+                <ha-menu-item
+                  class="warning"
+                  @click=${this._handleDisable}
+                  graphic="icon"
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    class="warning"
+                    .path=${mdiStopCircleOutline}
+                  ></ha-svg-icon>
+                  ${this.hass.localize("ui.common.disable")}
+                </ha-menu-item>
+              `
+            : nothing}
         ${item.source !== "system"
-          ? html`<ha-list-item
-              class="warning"
-              @request-selected=${this._handleDelete}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.delete"
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                class="warning"
-                .path=${mdiDelete}
-              ></ha-svg-icon>
-            </ha-list-item>`
-          : ""}
+          ? html`
+              <ha-menu-item class="warning" @click=${this._handleDelete}>
+                <ha-svg-icon
+                  slot="start"
+                  class="warning"
+                  .path=${mdiDelete}
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.delete"
+                )}
+              </ha-menu-item>
+            `
+          : nothing}
       </ha-button-menu-new>
     </ha-list-item-new>`;
   }
@@ -1055,64 +1049,43 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _handleRename(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleRename(ev: Event): void {
     this._editEntryName(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleReload(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleReload(ev: Event): void {
     this._reloadIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleReconfigure(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleReconfigure(ev: Event): void {
     this._reconfigureIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleDelete(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleDelete(ev: Event): void {
     this._removeIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleDisable(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleDisable(ev: Event): void {
     this._disableIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleEnable(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source && !shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleEnable(ev: Event): void {
     this._enableIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
   }
 
-  private _handleSystemOptions(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleSystemOptions(ev: Event): void {
     this._showSystemOptions(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
     );
@@ -1327,7 +1300,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.target.closest("a");
+    const anchor = ev.currentTarget;
     ev.preventDefault();
     const signedUrl = await getSignedPath(
       this.hass,
@@ -1438,8 +1411,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           --mdc-list-item-meta-size: auto;
           --mdc-list-item-meta-display: flex;
         }
-        ha-button-menu-new ha-list-item {
-          --mdc-list-item-meta-size: 24px;
+        ha-button-menu-new ha-menu-item {
+          --mdc-icon-size: 24px;
         }
         ha-list-item-new.config_entry::after {
           position: absolute;
