@@ -112,14 +112,12 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._subscribeEntityEntry();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsubEntityRegistry) {
-      this._unsubEntityRegistry();
-      this._unsubEntityRegistry = undefined;
-    }
+    this._unsubscribeEntityRegistry();
   }
 
   public async getCardSize(): Promise<number> {
@@ -144,6 +142,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     this._config = { ...config };
+    this._subscribeEntityEntry();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -186,8 +185,15 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private async _loadEntityRegistryEntry() {
-    if (!this._config!.entity) {
+  private async _unsubscribeEntityRegistry() {
+    if (this._unsubEntityRegistry) {
+      this._unsubEntityRegistry();
+      this._unsubEntityRegistry = undefined;
+    }
+  }
+
+  private async _subscribeEntityEntry() {
+    if (!this._config?.entity) {
       return;
     }
     try {
@@ -207,11 +213,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     } catch (e) {
       this._entry = null;
     }
-  }
-
-  public async firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    await this._loadEntityRegistryEntry();
   }
 
   protected render() {
