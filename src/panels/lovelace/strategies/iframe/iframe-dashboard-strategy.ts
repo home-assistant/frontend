@@ -12,7 +12,6 @@ export class IframeDashboardStrategy extends ReactiveElement {
     config: IframeDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
     return {
-      title: config.title,
       views: [
         {
           strategy: config,
