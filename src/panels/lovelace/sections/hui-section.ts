@@ -126,7 +126,6 @@ export class HuiSection extends ReactiveElement {
         this._layoutElement.lovelace = this.lovelace;
         this._cards.forEach((element) => {
           try {
-            element.hass = this.hass;
             element.lovelace = this.lovelace;
           } catch (e: any) {
             this._rebuildCard(element, createErrorCardConfig(e.message, null));
