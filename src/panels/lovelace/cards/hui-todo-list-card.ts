@@ -104,6 +104,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubItems?.then((unsub) => unsub());
+    this._unsubItems = undefined;
   }
 
   public getCardSize(): number {
