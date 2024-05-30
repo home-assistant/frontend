@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiFileDocument,
@@ -18,7 +17,8 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-list-new";
+import "../../../components/ha-list-item-new";
 import "../../../components/ha-logo-svg";
 import {
   HassioHassOSInfo,
@@ -163,16 +163,15 @@ class HaConfigInfo extends LitElement {
             </ul>
           </ha-card>
           <ha-card outlined class="pages">
-            <mwc-list>
+            <ha-list-new>
               ${PAGES.map(
                 (page) => html`
-                  <ha-clickable-list-item
-                    graphic="avatar"
-                    openNewTab
+                  <ha-list-item-new
                     href=${documentationUrl(this.hass, page.path)}
+                    target="_blank"
                   >
                     <div
-                      slot="graphic"
+                      slot="start"
                       class="icon-background"
                       .style="background-color: ${page.iconColor}"
                     >
@@ -183,10 +182,10 @@ class HaConfigInfo extends LitElement {
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
-                  </ha-clickable-list-item>
+                  </ha-list-item-new>
                 `
               )}
-            </mwc-list>
+            </ha-list-new>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -308,15 +307,6 @@ class HaConfigInfo extends LitElement {
         .pages {
           margin-bottom: max(24px, env(safe-area-inset-bottom));
           padding: 4px 0;
-        }
-
-        mwc-list {
-          --mdc-list-side-padding: 16px;
-          --mdc-list-vertical-padding: 0;
-        }
-
-        ha-clickable-list-item {
-          height: 64px;
         }
 
         ha-svg-icon {

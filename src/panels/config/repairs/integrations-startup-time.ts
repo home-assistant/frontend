@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   css,
   CSSResultGroup,
@@ -9,7 +8,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
 import {
   domainToName,
   fetchIntegrationManifests,
@@ -20,6 +18,8 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
+import "../../../components/ha-list-item";
+import "../../../components/ha-list-item-new";
 
 @customElement("integrations-startup-time")
 class IntegrationsStartupTime extends LitElement {
@@ -45,7 +45,7 @@ class IntegrationsStartupTime extends LitElement {
     }
 
     return html`
-      <mwc-list>
+      <ha-list-new>
         ${this._setups?.map((setup) => {
           const manifest = this._manifests && this._manifests[setup.domain];
           const docLink = manifest
@@ -56,13 +56,7 @@ class IntegrationsStartupTime extends LitElement {
 
           const setupSeconds = setup.seconds?.toFixed(2);
           return html`
-            <ha-clickable-list-item
-              graphic="avatar"
-              twoline
-              hasMeta
-              openNewTab
-              href=${docLink}
-            >
+            <ha-list-item-new href=${docLink} target="_blank">
               <img
                 alt=""
                 loading="lazy"
@@ -74,19 +68,19 @@ class IntegrationsStartupTime extends LitElement {
                 })}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
-                slot="graphic"
+                slot="start"
               />
-              <span>
+              <span slot="headline">
                 ${domainToName(this.hass.localize, setup.domain, manifest)}
               </span>
-              <span slot="secondary">${setup.domain}</span>
-              <div slot="meta">
+              <span slot="supporting-text">${setup.domain}</span>
+              <div slot="end">
                 ${setupSeconds ? html`${setupSeconds} s` : ""}
               </div>
-            </ha-clickable-list-item>
+            </ha-list-item-new>
           `;
         })}
-      </mwc-list>
+      </ha-list-new>
     `;
   }
 
@@ -116,19 +110,10 @@ class IntegrationsStartupTime extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-clickable-list-item {
-        --mdc-list-item-meta-size: 64px;
-        --mdc-typography-caption-font-size: 12px;
-      }
       img {
         display: block;
         max-height: 40px;
         max-width: 40px;
-      }
-      div[slot="meta"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
       }
     `;
   }
