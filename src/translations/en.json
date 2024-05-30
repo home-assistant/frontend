@@ -6417,7 +6417,7 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
-          "confirm_delete_title": "Delete this long-lived access token?",
+          "confirm_delete_title": "Delete long-lived access token?",
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
