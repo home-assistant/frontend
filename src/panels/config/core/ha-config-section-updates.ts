@@ -82,10 +82,13 @@ class HaConfigSectionUpdates extends LitElement {
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-check-list-item>
-            ${this._supervisorInfo && this._supervisorInfo.channel !== "dev"
+            ${this._supervisorInfo
               ? html`
                   <li divider role="separator"></li>
-                  <mwc-list-item @request-selected=${this._toggleBeta}>
+                  <mwc-list-item
+                    @request-selected=${this._toggleBeta}
+                    .disabled=${this._supervisorInfo.channel === "dev"}
+                  >
                     ${this._supervisorInfo.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
