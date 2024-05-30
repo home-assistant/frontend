@@ -80,7 +80,9 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
         ${TABS.map(
           (tab, index) => html`
             <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
-              ${tab}
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_card.tab-${tab}`
+              )}
             </paper-tab>
           `
         )}
@@ -98,6 +100,7 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
           color: var(--primary-text-color);
           text-transform: uppercase;
           margin-bottom: 16px;
+          border-bottom: 1px solid var(--divider-color);
         }
       `,
     ];
