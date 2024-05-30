@@ -135,10 +135,15 @@ class HaLongLivedTokens extends LitElement {
     const token = (ev.currentTarget as any).token;
     if (
       !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.long_lived_access_tokens.confirm_delete_title"
+        ),
         text: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.confirm_delete",
+          "ui.panel.profile.long_lived_access_tokens.confirm_delete_text",
           { name: token.client_name }
         ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return;

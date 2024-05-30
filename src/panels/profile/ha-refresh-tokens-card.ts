@@ -295,9 +295,13 @@ class HaRefreshTokens extends LitElement {
   private async _deleteAllTokens(): Promise<void> {
     if (
       !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.profile.refresh_tokens.confirm_delete_all_title"
+        ),
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete_all"
         ),
+        confirmText: this.hass.localize("ui.common.delete"),
         destructive: true,
       }))
     ) {

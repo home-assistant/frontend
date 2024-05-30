@@ -1888,7 +1888,9 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
-          "multiselect": { "failed": "Failed to update {number} items." },
+          "multiselect": {
+            "failed": "Failed to update {number} items."
+          },
           "learn_more": "Learn more"
         },
         "updates": {
@@ -6405,6 +6407,7 @@
           "confirm_delete_title": "Delete refresh token?",
           "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This will end the login session on the associated device.",
           "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all_title": "Delete all refresh tokens?",
           "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
@@ -6414,7 +6417,8 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
-          "confirm_delete": "Are you sure you want to delete the access token for {name}?",
+          "confirm_delete_title": "Delete long-lived access token?",
+          "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
