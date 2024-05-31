@@ -18,7 +18,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../../../components/ha-list-item";
+import "../../../components/ha-list-new";
 import "../../../components/ha-list-item-new";
 
 @customElement("integrations-startup-time")
