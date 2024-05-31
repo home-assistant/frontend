@@ -4115,11 +4115,11 @@
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
             "remove_selected": {
-              "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
+              "button": "Delete selected",
+              "confirm_title": "Do you want to delete {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be deleted.",
               "confirm_text": "You should remove them from your dashboard config and automations if they contain these entities.",
-              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+              "confirm_partly_text": "You can only delete {removable} of the selected {selected} entities. The other entities can only be deleted when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can delete the entities of a deleted integration. Are you sure you want to delete the deletable entities?"
             },
             "hide_selected": {
               "button": "Hide selected",
