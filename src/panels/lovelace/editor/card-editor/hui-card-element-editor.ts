@@ -15,7 +15,7 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
   @state() private _curTab: (typeof TABS)[number] = TABS[0];
 
   @property({ type: Boolean, attribute: "show-visibility-tab" })
-  public showVisibilityTab: boolean = false;
+  public showVisibilityTab = false;
 
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
