@@ -61,7 +61,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
 
-const CHECKED_TOKEN = "_____CHECKED_____";
+const CHECKED_TOKEN = "✔";
 
 const rowRenderer: ComboBoxLitRenderer<TodoItem> = (item) =>
   html`<ha-list-item graphic="icon">
@@ -182,7 +182,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected async updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     if (
@@ -190,9 +190,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._enterPressed &&
       this._comboValue
     ) {
-      createItem(this.hass!, this._entityId!, {
-        summary: this._comboValue,
-      });
+      const checkedItem = this._getCheckedItems(this._items).find(
+        (item) => this._comboValue === item.uid
+      );
+      if (checkedItem) {
+        await updateItem(this.hass!, this._entityId!, {
+          uid: checkedItem.uid,
+          summary: checkedItem.summary,
+          status: TodoItemStatus.NeedsAction,
+        });
+      } else {
+        createItem(this.hass!, this._entityId!, {
+          summary: this._comboValue,
+        });
+      }
       this._comboValue = "";
       this._enterPressed = false;
     }
