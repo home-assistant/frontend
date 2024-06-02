@@ -1,6 +1,8 @@
 import "@material/mwc-list/mwc-list";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { List } from "@material/mwc-list/mwc-list";
 import {
+  mdiCheckboxMarked,
   mdiClock,
   mdiDelete,
   mdiDeleteSweep,
@@ -37,7 +39,9 @@ import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import "../../../components/ha-combo-box";
 import type { HaTextField } from "../../../components/ha-textfield";
+import type { HaComboBox } from "../../../components/ha-combo-box";
 import { isUnavailableState } from "../../../data/entity";
 import {
   TodoItem,
@@ -56,6 +60,14 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { TodoListCardConfig } from "./types";
+
+const CHECKED_TOKEN = "_____CHECKED_____";
+
+const rowRenderer: ComboBoxLitRenderer<TodoItem> = (item) =>
+  html`<ha-list-item graphic="icon">
+    <ha-svg-icon .path=${mdiCheckboxMarked} slot="graphic"></ha-svg-icon>
+    ${item.summary.replace(CHECKED_TOKEN, "")}
+  </ha-list-item>`;
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -92,7 +104,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _reordering = false;
 
+  @state() private _filter?: string;
+
+  @state() private _comboValue?: string;
+
+  private _enterPressed = false;
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
+
+  private _enterKeyListener;
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -103,6 +123,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    if (this._enterKeyListener) {
+      this._newItemTextfield.removeEventListener(
+        "keydown",
+        this._enterKeyListener
+      );
+      this._enterKeyListener = undefined;
+    }
     this._unsubItems?.then((unsub) => unsub());
     this._unsubItems = undefined;
   }
@@ -157,6 +184,19 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    if (
+      changedProps.has("_comboValue") &&
+      this._enterPressed &&
+      this._comboValue
+    ) {
+      createItem(this.hass!, this._entityId!, {
+        summary: this._comboValue,
+      });
+      this._comboValue = "";
+      this._enterPressed = false;
+    }
+
     if (!this._config || !this.hass) {
       return;
     }
@@ -171,6 +211,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       (changedProps.has("_config") && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  private _openedChanged(ev) {
+    if (ev.detail.value && !this._enterKeyListener) {
+      this._enterKeyListener = this._addKeyPress.bind(this);
+      this._newItemTextfield.addEventListener(
+        "keydown",
+        this._enterKeyListener
+      );
     }
   }
 
@@ -194,6 +244,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     const checkedItems = this._getCheckedItems(this._items);
     const uncheckedItems = this._getUncheckedItems(this._items);
 
+    const supportsUpdate = this.todoListSupportsFeature(
+      TodoListEntityFeature.UPDATE_TODO_ITEM
+    );
+
     return html`
       <ha-card
         .header=${this._config.title}
@@ -204,14 +258,27 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         <div class="addRow">
           ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
             ? html`
-                <ha-textfield
+                <ha-combo-box
+                  noButton
+                  value=${this._comboValue ?? ""}
                   class="addBox"
+                  .filteredItems=${this._filteredCheckedItems(
+                    supportsUpdate,
+                    checkedItems,
+                    this._filter
+                  )}
                   .placeholder=${this.hass!.localize(
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
-                  @keydown=${this._addKeyPress}
+                  @value-changed=${this._addValueChanged}
+                  @filter-changed=${this._filterChanged}
+                  @opened-changed=${this._openedChanged}
                   .disabled=${unavailable}
-                ></ha-textfield>
+                  .renderer=${rowRenderer}
+                  item-value-path="uid"
+                  item-label-path="summary"
+                  allow-custom-value
+                ></ha-combo-box>
                 <ha-icon-button
                   class="addButton"
                   .path=${mdiPlus}
@@ -447,6 +514,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     ev.stopPropagation();
   }
 
+  private _filteredCheckedItems = memoizeOne(
+    (supportsUpdate: boolean, items: TodoItem[], filter?: string) => {
+      if (!supportsUpdate || !items || !filter || filter.length < 2) {
+        return [];
+      }
+      const filtered = items.filter((item) =>
+        item.summary.toLowerCase().includes(filter)
+      );
+      return filtered.map((item) => ({
+        ...item,
+        summary: CHECKED_TOKEN + item.summary,
+      }));
+    }
+  );
+
+  private _filterChanged(ev: CustomEvent): void {
+    this._filter = ev.detail.value.toLowerCase();
+  }
+
   private _handleKeydown(ev) {
     if (ev.key === " ") {
       this._completeItem(ev);
@@ -524,21 +610,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private get _newItem(): HaTextField {
-    return this.shadowRoot!.querySelector(".addBox") as HaTextField;
+  private get _newItem(): HaComboBox {
+    return this.shadowRoot!.querySelector(".addBox") as HaComboBox;
+  }
+
+  private get _newItemTextfield(): HaTextField {
+    return this._newItem.shadowRoot!.querySelector(".input") as HaTextField;
   }
 
   private _addItem(ev): void {
-    const newItem = this._newItem;
-    if (newItem.value!.length > 0) {
+    const value = this._comboValue;
+    if (value) {
       createItem(this.hass!, this._entityId!, {
-        summary: newItem.value!,
+        summary: value,
       });
+      this._comboValue = "";
     }
 
-    newItem.value = "";
     if (ev) {
-      newItem.focus();
+      this._newItem.focus();
     }
   }
 
@@ -552,7 +642,43 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _addKeyPress(ev): void {
     if (ev.key === "Enter") {
-      this._addItem(null);
+      const textValue = this._newItemTextfield.value;
+      if (this._comboValue && this._comboValue === textValue) {
+        createItem(this.hass!, this._entityId!, {
+          summary: this._comboValue,
+        });
+        this._comboValue = "";
+      } else if (textValue) {
+        this._enterPressed = true;
+      }
+    }
+  }
+
+  private async _addValueChanged(ev) {
+    const value = ev.detail.value;
+    this._comboValue = value;
+
+    if (!this._enterPressed) {
+      const checkedItem = this._getCheckedItems(this._items).find(
+        (item) => value === item.uid
+      );
+      const newItem = this._newItem;
+      const textfield = this._newItemTextfield;
+      if (checkedItem) {
+        // Resetting this here prevents a visual glitch where the hidden checked token
+        // appears in the textbox for a split second before being erased.
+        await textfield.updateComplete;
+        textfield.value = "";
+
+        await updateItem(this.hass!, this._entityId!, {
+          uid: checkedItem.uid,
+          summary: checkedItem.summary,
+          status: TodoItemStatus.NeedsAction,
+        });
+        await this.updateComplete;
+        this._comboValue = "";
+        newItem.focus();
+      }
     }
   }
 
@@ -615,7 +741,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       }
 
       .addRow ha-icon-button {
-        position: absolute;
         right: 16px;
         inset-inline-start: initial;
         inset-inline-end: 16px;
