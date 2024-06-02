@@ -199,38 +199,28 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("domain")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...((this._filters["ha-filter-states"]?.value as string[]) || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        "ha-filter-integrations": {
-          value: [this._searchParms.get("domain")!],
-          items: undefined,
-        },
-      };
-    }
-    if (this._searchParms.has("config_entry")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...((this._filters["ha-filter-states"]?.value as string[]) || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        config_entry: {
-          value: [this._searchParms.get("config_entry")!],
-          items: undefined,
-        },
-      };
-    }
+    const domain = this._searchParms.get("domain");
+    const configEntry = this._searchParms.get("config_entry");
+
+    this._filters = {
+      ...this._filters,
+      "ha-filter-states": {
+        value: [
+          ...((this._filters["ha-filter-states"]?.value as string[]) || []),
+          "disabled",
+        ],
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: domain ? [domain] : [],
+        items: undefined,
+      },
+      config_entry: {
+        value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+    };
+
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }

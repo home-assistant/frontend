@@ -943,6 +943,7 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -952,39 +953,31 @@ ${
         items: undefined,
       },
     };
-    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("domain")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [],
-          items: undefined,
-        },
-        "ha-filter-integrations": {
-          value: [this._searchParms.get("domain")!],
-          items: undefined,
-        },
-      };
-    }
-    if (this._searchParms.has("config_entry")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [],
-          items: undefined,
-        },
-        config_entry: {
-          value: [this._searchParms.get("config_entry")!],
-          items: undefined,
-        },
-      };
-    }
+    const domain = this._searchParms.get("domain");
+    const configEntry = this._searchParms.get("config_entry");
+
+    this._filters = {
+      ...this._filters,
+      "ha-filter-states": {
+        value: [],
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: domain ? [domain] : [],
+        items: undefined,
+      },
+      config_entry: {
+        value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+    };
+
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
