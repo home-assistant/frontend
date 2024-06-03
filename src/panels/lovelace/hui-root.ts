@@ -515,7 +515,9 @@ class HUIRoot extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
   }
 
   public disconnectedCallback(): void {
