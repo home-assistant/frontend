@@ -16,7 +16,7 @@ import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace!: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ attribute: false }) public isPanel = false;
 
@@ -65,7 +65,7 @@ export class HuiCard extends ReactiveElement {
   public createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config) as LovelaceCard;
     element.hass = this.hass;
-    element.editMode = this.lovelace.editMode;
+    element.editMode = this.lovelace?.editMode;
     return element;
   }
 
@@ -90,7 +90,7 @@ export class HuiCard extends ReactiveElement {
         this._element.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
-        this._element.editMode = this.lovelace.editMode;
+        this._element.editMode = this.lovelace?.editMode;
       }
       if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
         this._updateElement();
@@ -131,7 +131,7 @@ export class HuiCard extends ReactiveElement {
     }
     const visible =
       forceVisible ||
-      this.lovelace.editMode ||
+      this.lovelace?.editMode ||
       !this._config?.visibility ||
       checkConditionsMet(this._config.visibility, this.hass);
 
