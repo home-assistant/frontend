@@ -38,9 +38,9 @@ declare global {
 export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace!: Lovelace;
-
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
+
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ type: Number }) public index!: number;
 
@@ -222,7 +222,7 @@ export class HuiSection extends ReactiveElement {
     }
     const visible =
       forceVisible ||
-      this.lovelace.editMode ||
+      this.lovelace?.editMode ||
       !this.config.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
 
@@ -246,6 +246,7 @@ export class HuiSection extends ReactiveElement {
     this._layoutElementType = config.type;
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       ev.stopPropagation();
+      if (!this.lovelace) return;
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
@@ -255,6 +256,7 @@ export class HuiSection extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
       ev.stopPropagation();
+      if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
@@ -265,6 +267,7 @@ export class HuiSection extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
+      if (!this.lovelace) return;
       if (ev.detail.confirm) {
         confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
       } else {
