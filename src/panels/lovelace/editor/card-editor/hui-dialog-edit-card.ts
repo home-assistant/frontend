@@ -417,6 +417,11 @@ export class HuiDialogEditCard
           --dialog-content-padding: 24px 12px;
         }
 
+        .content {
+          width: calc(90vw - 48px);
+          max-width: 1000px;
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
@@ -425,16 +430,15 @@ export class HuiDialogEditCard
             --dialog-surface-top: 0px;
             --mdc-dialog-max-width: 100vw;
           }
-        }
-
-        .content {
-          width: 1000px;
-          max-width: calc(90vw - 48px);
+          .content {
+            width: 100%;
+            max-width: 100%;
+          }
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
           :host([large]) .content {
-            width: calc(90vw - 48px);
+            max-width: none;
           }
         }
 
