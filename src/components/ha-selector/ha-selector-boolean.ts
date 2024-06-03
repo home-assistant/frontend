@@ -12,6 +12,8 @@ export class HaBooleanSelector extends LitElement {
 
   @property({ type: Boolean }) public value = false;
 
+  @property() public placeholder?: any;
+
   @property() public label?: string;
 
   @property() public helper?: string;
@@ -22,7 +24,7 @@ export class HaBooleanSelector extends LitElement {
     return html`
       <ha-formfield alignEnd spaceBetween .label=${this.label}>
         <ha-switch
-          .checked=${this.value}
+          .checked=${this.value ?? this.placeholder === true}
           @change=${this._handleChange}
           .disabled=${this.disabled}
         ></ha-switch>

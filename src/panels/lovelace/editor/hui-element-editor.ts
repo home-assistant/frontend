@@ -23,6 +23,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
@@ -38,7 +39,8 @@ export interface ConfigChangedEvent {
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
-    | LovelaceStrategyConfig;
+    | LovelaceStrategyConfig
+    | LovelaceElementConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }

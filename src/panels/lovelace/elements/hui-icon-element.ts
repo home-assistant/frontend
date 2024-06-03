@@ -8,10 +8,16 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { IconElementConfig, LovelaceElement } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import("../editor/config-elements/elements/hui-icon-element-editor");
+    return document.createElement("hui-icon-element-editor");
+  }
+
   public hass?: HomeAssistant;
 
   @state() private _config?: IconElementConfig;
