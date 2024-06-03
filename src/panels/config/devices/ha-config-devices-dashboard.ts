@@ -122,7 +122,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "devices-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = history.state?.filter || "";
 
   @storage({
     storage: "sessionStorage",
@@ -202,8 +208,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
 
+    if (!domain && !configEntry) {
+      return;
+    }
+
+    this._filter = history.state?.filter || "";
+
     this._filters = {
-      ...this._filters,
       "ha-filter-states": {
         value: [
           ...((this._filters["ha-filter-states"]?.value as string[]) || []),

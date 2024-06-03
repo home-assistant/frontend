@@ -47,6 +47,14 @@ export class HaConfigUsers extends LitElement {
   private _activeGrouping?: string;
 
   @storage({
+    storage: "sessionStorage",
+    key: "users-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
+  @storage({
     key: "users-table-collapsed",
     state: false,
     subscribe: false,
@@ -184,6 +192,8 @@ export class HaConfigUsers extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
         hasFab
         clickable
@@ -282,6 +292,10 @@ export class HaConfigUsers extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 }
 

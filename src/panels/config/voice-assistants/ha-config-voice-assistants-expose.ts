@@ -80,7 +80,13 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _extEntities?: Record<string, ExtEntityRegistryEntry>;
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "voice-expose-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -634,7 +640,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(

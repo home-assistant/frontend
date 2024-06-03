@@ -53,6 +53,14 @@ export class HaConfigLovelaceRescources extends LitElement {
   @state() private _resources: LovelaceResource[] = [];
 
   @storage({
+    storage: "sessionStorage",
+    key: "lovelace-resources-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
+  @storage({
     key: "lovelace-resources-table-sort",
     state: false,
     subscribe: false,
@@ -138,6 +146,8 @@ export class HaConfigLovelaceRescources extends LitElement {
         )}
         .initialSorting=${this._activeSorting}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editResource}
         hasFab
         clickable
@@ -250,6 +260,10 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {

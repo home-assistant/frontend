@@ -147,6 +147,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
+    key: "automation-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
+  @storage({
+    storage: "sessionStorage",
     key: "automation-table-filters-full",
     state: true,
     subscribe: false,
@@ -547,6 +555,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           "ui.panel.config.automation.picker.no_automations"
         )}
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
         clickable
         class=${this.narrow ? "narrow" : ""}
@@ -923,6 +933,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     };
     this._applyFilters();
   };
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
