@@ -234,6 +234,7 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
+              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
@@ -407,30 +408,31 @@ export class HuiDialogEditCard
           --code-mirror-max-height: calc(100vh - 176px);
         }
 
+        ha-dialog {
+          --mdc-dialog-max-width: 100px;
+          --dialog-z-index: 6;
+          --dialog-surface-position: fixed;
+          --dialog-surface-top: 40px;
+          --mdc-dialog-max-width: 90vw;
+          --dialog-content-padding: 24px 12px;
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
-            --mdc-dialog-max-height: 100%;
             height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --dialog-surface-top: 0px;
+            --mdc-dialog-max-width: 100vw;
           }
         }
 
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-        }
-
-        ha-dialog {
-          --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 6;
+        .content {
+          width: 1000px;
+          max-width: calc(90vw - 48px);
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
@@ -444,8 +446,8 @@ export class HuiDialogEditCard
         .content {
           display: flex;
           flex-direction: column;
-          margin: 0 -10px;
         }
+
         .content hui-card-preview {
           margin: 4px auto;
           max-width: 390px;
@@ -454,15 +456,7 @@ export class HuiDialogEditCard
           margin: 0 10px;
         }
 
-        @media (min-width: 1200px) {
-          ha-dialog {
-            --mdc-dialog-max-width: calc(100% - 32px);
-            --mdc-dialog-min-width: 1000px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
+        @media (min-width: 1000px) {
           .content {
             flex-direction: row;
           }

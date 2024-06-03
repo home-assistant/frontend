@@ -12,11 +12,19 @@ import {
 import { createCardElement } from "../create-element/create-card-element";
 import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
+declare global {
+  interface HASSDomEvents {
+    "card-visibility-changed": { value: boolean };
+  }
+}
+
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace!: Lovelace;
+  @property({ attribute: false }) public lovelace?: Lovelace;
+
+  @property({ attribute: false }) public isPanel = false;
 
   @state() public _config?: LovelaceCardConfig;
 
@@ -59,14 +67,25 @@ export class HuiCard extends ReactiveElement {
     return configOptions;
   }
 
+  // Public to make demo happy
+  public createElement(config: LovelaceCardConfig) {
+    const element = createCardElement(config) as LovelaceCard;
+    element.hass = this.hass;
+    element.editMode = this.lovelace?.editMode;
+    // Update element when the visibility of the card changes (e.g. conditional card or filter card)
+    element.addEventListener("card-visibility-changed", (ev) => {
+      ev.stopPropagation();
+      this._updateElement();
+    });
+    return element;
+  }
+
   public setConfig(config: LovelaceCardConfig): void {
     if (this._config === config) {
       return;
     }
     this._config = config;
-    this._element = createCardElement(config);
-    this._element.hass = this.hass;
-    this._element.editMode = this.lovelace.editMode;
+    this._element = this.createElement(config);
 
     while (this.lastChild) {
       this.removeChild(this.lastChild);
@@ -82,10 +101,13 @@ export class HuiCard extends ReactiveElement {
         this._element.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
-        this._element.editMode = this.lovelace.editMode;
+        this._element.editMode = this.lovelace?.editMode;
       }
       if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
         this._updateElement();
+      }
+      if (changedProperties.has("isPanel")) {
+        this._element.isPanel = this.isPanel;
       }
     }
   }
@@ -118,9 +140,16 @@ export class HuiCard extends ReactiveElement {
     if (!this._element) {
       return;
     }
+
+    if (this._element.hidden) {
+      this.style.setProperty("display", "none");
+      this.toggleAttribute("hidden", true);
+      return;
+    }
+
     const visible =
       forceVisible ||
-      this.lovelace.editMode ||
+      this.lovelace?.editMode ||
       !this._config?.visibility ||
       checkConditionsMet(this._config.visibility, this.hass);
 

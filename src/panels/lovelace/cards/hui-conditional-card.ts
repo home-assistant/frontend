@@ -1,4 +1,5 @@
 import { customElement } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
@@ -56,6 +57,15 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     this._element = this._createCardElement(config);
     if (this.lastChild) {
       this.replaceChild(this._element, this.lastChild);
+    }
+  }
+
+  protected setVisibility(conditionMet: boolean): void {
+    const visible = this.editMode || conditionMet;
+    const previouslyHidden = this.hidden;
+    super.setVisibility(conditionMet);
+    if (previouslyHidden !== this.hidden) {
+      fireEvent(this, "card-visibility-changed", { value: visible });
     }
   }
 }

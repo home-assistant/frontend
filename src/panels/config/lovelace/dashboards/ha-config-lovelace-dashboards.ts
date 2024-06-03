@@ -71,6 +71,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @state() private _dashboards: LovelaceDashboard[] = [];
 
   @storage({
+    storage: "sessionStorage",
+    key: "lovelace-dashboards-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
+  @storage({
     key: "lovelace-dashboards-table-sort",
     state: false,
     subscribe: false,
@@ -304,6 +312,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .data=${this._getItems(this._dashboards)}
         .initialSorting=${this._activeSorting}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editDashboard}
         id="url_path"
         hasFab
@@ -452,6 +462,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 }
 

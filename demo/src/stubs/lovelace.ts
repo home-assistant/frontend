@@ -19,15 +19,15 @@ export const mockLovelace = (
   hass.mockWS("lovelace/resources", () => Promise.resolve([]));
 };
 
-customElements.whenDefined("hui-view").then(() => {
+customElements.whenDefined("hui-card").then(() => {
   // eslint-disable-next-line
-  const HUIView = customElements.get("hui-view");
+  const HUIView = customElements.get("hui-card");
   // Patch HUI-VIEW to make the lovelace object available to the demo card
-  const oldCreateCard = HUIView!.prototype.createCardElement;
+  const oldCreateCard = HUIView!.prototype.createElement;
 
-  HUIView!.prototype.createCardElement = function (config) {
+  HUIView!.prototype.createElement = function (config) {
     const el = oldCreateCard.call(this, config);
-    if (el.tagName === "HA-DEMO-CARD") {
+    if (config.type === "custom:ha-demo-card") {
       (el as HADemoCard).lovelace = this.lovelace;
     }
     return el;

@@ -107,6 +107,14 @@ class HaBlueprintOverview extends LitElement {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    storage: "sessionStorage",
+    key: "blueprint-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
@@ -308,6 +316,8 @@ class HaBlueprintOverview extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -540,6 +550,10 @@ class HaBlueprintOverview extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
