@@ -26,6 +26,13 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
+import { fireEvent } from "../../../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "section-visibility-changed": { value: boolean };
+  }
+}
 
 @customElement("hui-section")
 export class HuiSection extends ReactiveElement {
@@ -219,8 +226,12 @@ export class HuiSection extends ReactiveElement {
       !this.config.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
 
-    this.style.setProperty("display", visible ? "" : "none");
-    this.toggleAttribute("hidden", !visible);
+    if (this.hidden !== !visible) {
+      this.style.setProperty("display", visible ? "" : "none");
+      this.toggleAttribute("hidden", !visible);
+      fireEvent(this, "section-visibility-changed", { value: visible });
+    }
+
     if (!visible && this._layoutElement.parentElement) {
       this.removeChild(this._layoutElement);
     } else if (visible && !this._layoutElement.parentElement) {
