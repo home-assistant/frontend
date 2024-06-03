@@ -686,6 +686,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     return html` <ha-list-item-new
       class=${classMap({
         config_entry: true,
+        "state-not-loaded": item!.state === "not_loaded",
+        "state-failed-unload": item!.state === "failed_unload",
+        "state-setup": item!.state === "setup_in_progress",
+        "state-error": ERROR_STATES.includes(item!.state),
         "state-disabled": item.disabled_by !== null,
       })}
       data-entry-id=${item.entry_id}
@@ -698,17 +702,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         <div>${devicesLine}</div>
         ${stateText
           ? html`
-              <ha-alert
-                alert-type=${item!.state === "failed_unload"
-                  ? "warning"
-                  : ERROR_STATES.includes(item!.state)
-                    ? "error"
-                    : "info"}
-                title=${this.hass.localize(...stateText)}
-              >
-                <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
-                ${stateTextExtra}
-              </ha-alert>
+              <div class="message">
+                <ha-svg-icon .path=${icon}></ha-svg-icon>
+                <div>
+                  ${this.hass.localize(...stateText)}${stateTextExtra
+                    ? html`: ${stateTextExtra}`
+                    : ""}
+                </div>
+              </div>
             `
           : ""}
       </div>
@@ -753,7 +754,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${item.disabled_by && devices.length
           ? html`
               <ha-menu-item
-                href=${devices.length === 1
+                .href=${devices.length === 1
                   ? `/config/devices/device/${devices[0].id}`
                   : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
               >
@@ -768,7 +769,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           : ""}
         ${item.disabled_by && services.length
           ? html`<ha-menu-item
-              href=${services.length === 1
+              .href=${services.length === 1
                 ? `/config/devices/device/${services[0].id}`
                 : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
             >
@@ -786,7 +787,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${item.disabled_by && entities.length
           ? html`
               <ha-menu-item
-                href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
+                .href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
               >
                 <ha-svg-icon
                   .path=${mdiShapeOutline}
@@ -826,7 +827,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${this._diagnosticHandler && item.state === "loaded"
           ? html`
               <ha-menu-item
-                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
+                .href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                 target="_blank"
                 @click=${this._signUrl}
               >
@@ -1416,6 +1417,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-list-item-new.discovered {
           height: 72px;
         }
+        ha-list-item-new.config_entry::after {
+          position: absolute;
+          top: 8px;
+          right: 0;
+          bottom: 8px;
+          left: 0;
+          opacity: 0.12;
+          pointer-events: none;
+          content: "";
+        }
         a {
           text-decoration: none;
         }
@@ -1427,6 +1438,50 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .warning {
           color: var(--error-color);
+        }
+        .state-error {
+          --state-message-color: var(--error-color);
+          --text-on-state-color: var(--text-primary-color);
+        }
+        .state-error::after {
+          background-color: var(--error-color);
+        }
+        .state-failed-unload {
+          --state-message-color: var(--warning-color);
+          --text-on-state-color: var(--primary-text-color);
+        }
+        .state-failed::after {
+          background-color: var(--warning-color);
+        }
+        .state-not-loaded {
+          --state-message-color: var(--primary-text-color);
+        }
+        .state-setup {
+          --state-message-color: var(--secondary-text-color);
+        }
+        .message {
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+        }
+        .message ha-svg-icon {
+          color: var(--state-message-color);
+        }
+        .message div {
+          flex: 1;
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          padding-top: 2px;
+          padding-right: 2px;
+          padding-inline-end: 2px;
+          padding-inline-start: initial;
+          overflow-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 7;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .state-disabled [slot="headline"],
         .state-disabled [slot="supporting-text"] {
