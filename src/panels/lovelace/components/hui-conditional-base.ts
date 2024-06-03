@@ -101,7 +101,7 @@ export class HuiConditionalBase extends ReactiveElement {
       supportedConditions,
       (matches) => {
         if (hasOnlyMediaQuery) {
-          this._setVisibility(matches);
+          this.setVisibility(matches);
           return;
         }
         this._updateVisibility();
@@ -135,10 +135,10 @@ export class HuiConditionalBase extends ReactiveElement {
       this.hass!
     );
 
-    this._setVisibility(conditionMet);
+    this.setVisibility(conditionMet);
   }
 
-  protected _setVisibility(conditionMet: boolean) {
+  protected setVisibility(conditionMet: boolean) {
     if (!this._element || !this.hass) {
       return;
     }

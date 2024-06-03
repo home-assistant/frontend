@@ -60,10 +60,10 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     }
   }
 
-  protected _setVisibility(conditionMet: boolean): void {
+  protected setVisibility(conditionMet: boolean): void {
     const visible = this.editMode || conditionMet;
     const previouslyHidden = this.hidden;
-    super._setVisibility(conditionMet);
+    super.setVisibility(conditionMet);
     if (previouslyHidden !== this.hidden) {
       fireEvent(this, "card-visibility-changed", { value: visible });
     }
