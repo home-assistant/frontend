@@ -159,6 +159,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    storage: "sessionStorage",
+    key: "helpers-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
   @state() private _stateItems: HassEntity[] = [];
 
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
@@ -559,6 +567,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
         clickable
         .noDataText=${this.hass.localize(
@@ -1068,6 +1078,10 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {

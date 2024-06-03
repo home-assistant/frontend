@@ -35,6 +35,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
+import { storage } from "../../../common/decorators/storage";
 
 export interface TagRowData extends Tag {
   display_name: string;
@@ -56,6 +57,14 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
   }
+
+  @storage({
+    storage: "sessionStorage",
+    key: "tags-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
 
   private _columns = memoizeOne(
     (narrow: boolean, _language, localize: LocalizeFunc) => {
@@ -189,6 +198,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         )}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
       >
         <ha-icon-button
@@ -322,6 +333,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     } catch (err: any) {
       return false;
     }
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 }
 
