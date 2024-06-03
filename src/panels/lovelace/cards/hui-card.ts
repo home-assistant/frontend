@@ -12,6 +12,12 @@ import {
 import { createCardElement } from "../create-element/create-card-element";
 import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
+declare global {
+  interface HASSDomEvents {
+    "card-visibility-changed": { value: boolean };
+  }
+}
+
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -66,6 +72,11 @@ export class HuiCard extends ReactiveElement {
     const element = createCardElement(config) as LovelaceCard;
     element.hass = this.hass;
     element.editMode = this.lovelace?.editMode;
+    // Update element when the visibility of the card changes (e.g. conditional card or filter card)
+    element.addEventListener("card-visibility-changed", (ev) => {
+      ev.stopPropagation();
+      this._updateElement();
+    });
     return element;
   }
 
@@ -129,6 +140,13 @@ export class HuiCard extends ReactiveElement {
     if (!this._element) {
       return;
     }
+
+    if (this._element.hidden) {
+      this.style.setProperty("display", "none");
+      this.toggleAttribute("hidden", true);
+      return;
+    }
+
     const visible =
       forceVisible ||
       this.lovelace?.editMode ||

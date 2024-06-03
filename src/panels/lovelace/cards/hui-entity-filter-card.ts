@@ -15,6 +15,7 @@ import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-entity-filter-card")
 export class HuiEntityFilterCard
@@ -162,9 +163,14 @@ export class HuiEntityFilterCard
       return false;
     });
 
-    if (entitiesList.length === 0 && this._config.show_empty === false) {
+    if (
+      entitiesList.length === 0 &&
+      this._config.show_empty === false &&
+      !this.hidden
+    ) {
       this.style.display = "none";
       this.toggleAttribute("hidden", true);
+      fireEvent(this, "card-visibility-changed", { value: false });
       return;
     }
 
@@ -194,8 +200,11 @@ export class HuiEntityFilterCard
       this.appendChild(this._element);
     }
 
-    this.style.display = "block";
-    this.toggleAttribute("hidden", false);
+    if (this.hidden) {
+      this.style.display = "block";
+      this.toggleAttribute("hidden", false);
+      fireEvent(this, "card-visibility-changed", { value: true });
+    }
   }
 
   private _haveEntitiesChanged(oldHass: HomeAssistant | null): boolean {
