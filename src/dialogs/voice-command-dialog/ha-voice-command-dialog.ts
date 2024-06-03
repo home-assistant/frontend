@@ -756,6 +756,7 @@ export class HaVoiceCommandDialog extends LitElement {
           max-height: 100%;
         }
         .message {
+          white-space: pre-line;
           font-size: 18px;
           clear: both;
           margin: 8px 0;
@@ -792,8 +793,12 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        .message a {
+        .message.user a {
           color: var(--text-primary-color);
+        }
+
+        .message.hass a {
+          color: var(--primary-text-color);
         }
 
         .message img {
