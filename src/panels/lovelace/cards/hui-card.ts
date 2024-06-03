@@ -18,6 +18,8 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
+  @property({ attribute: false }) public isPanel = false;
+
   @state() public _config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
@@ -86,6 +88,9 @@ export class HuiCard extends ReactiveElement {
       }
       if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
         this._updateElement();
+      }
+      if (changedProperties.has("isPanel")) {
+        this._element.isPanel = this.isPanel;
       }
     }
   }
