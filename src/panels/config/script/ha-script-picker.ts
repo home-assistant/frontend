@@ -143,6 +143,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
+    key: "script-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    storage: "sessionStorage",
     key: "script-table-filters-full",
     state: true,
     subscribe: false,
@@ -558,6 +566,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           "ui.panel.config.script.picker.no_scripts"
         )}
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
         clickable
         class=${this.narrow ? "narrow" : ""}
@@ -798,6 +808,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   private _filterExpanded(ev) {
