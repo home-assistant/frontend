@@ -86,7 +86,7 @@ export class VoiceAssistantsExpose extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 

@@ -57,7 +57,7 @@ export class HaConfigLabels extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "labels-table-sort",

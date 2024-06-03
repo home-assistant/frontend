@@ -64,7 +64,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   private _columns = memoizeOne(
     (narrow: boolean, _language, localize: LocalizeFunc) => {

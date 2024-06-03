@@ -58,7 +58,7 @@ export class HaConfigLovelaceRescources extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "lovelace-resources-table-sort",

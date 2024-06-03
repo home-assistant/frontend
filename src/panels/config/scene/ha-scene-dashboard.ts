@@ -143,7 +143,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     storage: "sessionStorage",

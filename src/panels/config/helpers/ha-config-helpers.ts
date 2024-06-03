@@ -165,7 +165,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @state() private _stateItems: HassEntity[] = [];
 

@@ -52,7 +52,7 @@ export class HaConfigUsers extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "users-table-collapsed",
