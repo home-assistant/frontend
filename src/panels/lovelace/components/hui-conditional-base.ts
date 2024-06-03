@@ -6,13 +6,19 @@ import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
   Condition,
-  checkConditionsMet,
   attachConditionMediaQueriesListeners,
+  checkConditionsMet,
   extractMediaQueries,
   validateConditionalConfig,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
+
+declare global {
+  interface HASSDomEvents {
+    "visibility-changed": { value: boolean };
+  }
+}
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends ReactiveElement {
@@ -95,7 +101,7 @@ export class HuiConditionalBase extends ReactiveElement {
       supportedConditions,
       (matches) => {
         if (hasOnlyMediaQuery) {
-          this._setVisibility(matches);
+          this.setVisibility(matches);
           return;
         }
         this._updateVisibility();
@@ -129,17 +135,18 @@ export class HuiConditionalBase extends ReactiveElement {
       this.hass!
     );
 
-    this._setVisibility(conditionMet);
+    this.setVisibility(conditionMet);
   }
 
-  private _setVisibility(conditionMet: boolean) {
+  protected setVisibility(conditionMet: boolean) {
     if (!this._element || !this.hass) {
       return;
     }
     const visible = this.editMode || conditionMet;
-    this.toggleAttribute("hidden", !visible);
-    this.style.setProperty("display", visible ? "" : "none");
-
+    if (this.hidden !== !visible) {
+      this.toggleAttribute("hidden", !visible);
+      this.style.setProperty("display", visible ? "" : "none");
+    }
     if (visible) {
       this._element.hass = this.hass;
       if (!this._element!.parentElement) {
