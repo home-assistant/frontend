@@ -74,8 +74,7 @@ export class HUIView extends ReactiveElement {
 
   private _viewConfigTheme?: string;
 
-  // Public to make demo happy
-  public createCardElement(cardConfig: LovelaceCardConfig) {
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.lovelace = this.lovelace;
@@ -371,7 +370,7 @@ export class HUIView extends ReactiveElement {
     }
 
     this._cards = config.cards.map((cardConfig) => {
-      const element = this.createCardElement(cardConfig);
+      const element = this._createCardElement(cardConfig);
       return element;
     });
   }
@@ -393,7 +392,7 @@ export class HUIView extends ReactiveElement {
     cardElToReplace: HuiCard,
     config: LovelaceCardConfig
   ): void {
-    const newCardEl = this.createCardElement(config);
+    const newCardEl = this._createCardElement(config);
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
