@@ -54,29 +54,22 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return this._sectionConfigKeys.get(sectionConfig)!;
   }
 
-  private _sectionObserver?: MutationObserver;
-
   private _computeSectionsCount() {
     this._sectionCount = this.sections.filter(
       (section) => !section.hidden
     ).length;
   }
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("section-visibility-changed", () => {
+      this._computeSectionsCount();
+    });
+  }
+
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
-    if (!this._sectionObserver) {
-      this._sectionObserver = new MutationObserver(() => {
-        this._computeSectionsCount();
-      });
-    }
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
-      this._sectionObserver.disconnect();
-      this.sections.forEach((section) => {
-        this._sectionObserver!.observe(section, {
-          attributes: true,
-          attributeFilter: ["hidden"],
-        });
-      });
     }
   }
 
