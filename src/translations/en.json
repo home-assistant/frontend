@@ -5518,7 +5518,12 @@
             "decrease_position": "Decrease card position",
             "increase_position": "Increase card position",
             "options": "More options",
-            "search_cards": "Search cards"
+            "search_cards": "Search cards",
+            "tab-config": "Config",
+            "tab-visibility": "Visibility",
+            "visibility": {
+              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
+            }
           },
           "move_card": {
             "header": "Choose a view to move the card to",
