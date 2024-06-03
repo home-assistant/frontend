@@ -744,7 +744,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         ${item.supports_options && stateText
-          ? html`<ha-menu-item @request-selected=${this._showOptions}>
+          ? html`<ha-menu-item @click=${this._showOptions}>
               <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.configure"
