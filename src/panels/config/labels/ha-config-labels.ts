@@ -52,6 +52,14 @@ export class HaConfigLabels extends LitElement {
   @state() private _labels: LabelRegistryEntry[] = [];
 
   @storage({
+    storage: "sessionStorage",
+    key: "labels-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
     key: "labels-table-sort",
     state: false,
     subscribe: false,
@@ -160,6 +168,8 @@ export class HaConfigLabels extends LitElement {
         hasFab
         .initialSorting=${this._activeSorting}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editLabel}
         clickable
         id="label_id"
@@ -282,6 +292,10 @@ export class HaConfigLabels extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 }
 

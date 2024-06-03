@@ -139,6 +139,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
+    key: "scene-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    storage: "sessionStorage",
     key: "scene-table-filters-full",
     state: true,
     subscribe: false,
@@ -543,6 +551,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           "ui.panel.config.scene.picker.no_scenes"
         )}
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
         clickable
         @row-click=${this._handleRowClicked}
@@ -1139,6 +1149,10 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
