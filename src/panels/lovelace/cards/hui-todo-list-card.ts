@@ -26,6 +26,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -243,7 +244,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     ${this.todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
-                      ? html`<ha-button-menu>
+                      ? html`<ha-button-menu @closed=${stopPropagation}>
                           <ha-icon-button
                             slot="trigger"
                             .path=${mdiDotsVertical}
@@ -287,7 +288,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                       ${this.todoListSupportsFeature(
                         TodoListEntityFeature.DELETE_TODO_ITEM
                       )
-                        ? html`<ha-button-menu>
+                        ? html`<ha-button-menu @closed=${stopPropagation}>
                             <ha-icon-button
                               slot="trigger"
                               .path=${mdiDotsVertical}
