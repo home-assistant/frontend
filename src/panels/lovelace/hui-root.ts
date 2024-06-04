@@ -513,6 +513,13 @@ class HUIRoot extends LitElement {
     });
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("scroll", this._handleWindowScroll);
