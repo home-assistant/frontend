@@ -7,6 +7,7 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
+  mdiImageMultiple,
   mdiInformation,
   mdiInformationOutline,
   mdiLabel,
@@ -334,6 +335,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       component: "hassio",
     },
     {
+      path: "/config/images",
+      translationKey: "images",
+      iconPath: mdiImageMultiple,
+      iconColor: "#6742b7",
+    },
+    {
       path: "/config/analytics",
       translationKey: "analytics",
       iconPath: mdiShape,
@@ -455,6 +462,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       logs: {
         tag: "ha-config-logs",
         load: () => import("./logs/ha-config-logs"),
+      },
+      images: {
+        tag: "ha-config-images",
+        load: () => import("./images/ha-config-images"),
       },
       info: {
         tag: "ha-config-info",

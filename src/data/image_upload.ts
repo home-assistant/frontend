@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-interface Image {
+export interface Image {
   filesize: number;
   name: string;
   uploaded_at: string; // isoformat date

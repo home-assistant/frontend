@@ -2060,6 +2060,13 @@
             "confirmation_text": "This area will be permanently deleted and all devices belonging to this area will become unassigned."
           }
         },
+        "images": {
+          "caption": "Images",
+          "description": "View and delete images uploaded to the server",
+          "no_images": "You don't have any uploaded images.",
+          "delete_confirm_title": "Delete image?",
+          "delete_confirm_text": "Are you sure you want to permanently delete {name}?"
+        },
         "backup": {
           "caption": "Backups",
           "description": "Last backup {relative_time}",
