@@ -163,14 +163,12 @@ export class HuiEntityFilterCard
       return false;
     });
 
-    if (
-      entitiesList.length === 0 &&
-      this._config.show_empty === false &&
-      !this.hidden
-    ) {
-      this.style.display = "none";
-      this.toggleAttribute("hidden", true);
-      fireEvent(this, "card-visibility-changed", { value: false });
+    if (entitiesList.length === 0 && this._config.show_empty === false) {
+      if (!this.hidden) {
+        this.style.display = "none";
+        this.toggleAttribute("hidden", true);
+        fireEvent(this, "card-visibility-changed", { value: false });
+      }
       return;
     }
 
