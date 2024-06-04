@@ -487,14 +487,14 @@ export const stopZwaveExclusion = (hass: HomeAssistant, entry_id: string) =>
 export const zwaveGrantSecurityClasses = (
   hass: HomeAssistant,
   entry_id: string,
-  security_classes: SecurityClass[],
-  client_side_auth?: boolean
+  securityClasses: SecurityClass[],
+  clientSideAuth?: boolean
 ) =>
   hass.callWS({
     type: "zwave_js/grant_security_classes",
     entry_id,
-    security_classes,
-    client_side_auth,
+    securityClasses,
+    clientSideAuth,
   });
 
 export const zwaveTryParseDskFromQrCode = (
