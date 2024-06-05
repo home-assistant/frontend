@@ -17,12 +17,13 @@ import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 declare global {
   interface HASSDomEvents {
     "card-visibility-changed": { value: boolean };
+    "card-updated": undefined;
   }
 }
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
@@ -74,19 +75,27 @@ export class HuiCard extends ReactiveElement {
   // Public to make demo happy
   public createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config) as LovelaceCard;
-    element.hass = this.hass;
-    element.editMode = this.lovelace?.editMode;
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    if (this.lovelace) {
+      element.editMode = this.lovelace.editMode;
+    }
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
     element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
       this._updateVisibility();
+    });
+    element.addEventListener("ll-upgraded", (ev: Event) => {
+      ev.stopPropagation();
+      fireEvent(this, "card-updated");
     });
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
         ev.stopPropagation();
         this._buildElement(config);
-        fireEvent(this, "ll-rebuild");
+        fireEvent(this, "card-updated");
       },
       { once: true }
     );
@@ -189,7 +198,7 @@ export class HuiCard extends ReactiveElement {
   }
 
   private _updateVisibility(forceVisible?: boolean) {
-    if (!this._element) {
+    if (!this._element || !this.hass) {
       return;
     }
 

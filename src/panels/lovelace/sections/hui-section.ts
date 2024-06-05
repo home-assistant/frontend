@@ -58,7 +58,7 @@ export class HuiSection extends ReactiveElement {
     element.hass = this.hass;
     element.lovelace = this.lovelace;
     element.setConfig(cardConfig);
-    element.addEventListener("ll-rebuild", (ev: Event) => {
+    element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
       this._cards = [...this._cards];
     });
