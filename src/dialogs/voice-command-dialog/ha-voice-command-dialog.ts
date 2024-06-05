@@ -215,10 +215,10 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
+              // New lines matter for messages
+              // prettier-ignore
               (message) => html`
-                <div class=${this._computeMessageClasses(message)}>
-                  ${message.text}
-                </div>
+                <div class=${this._computeMessageClasses(message)}>${message.text}</div>
               `
             )}
           </div>
@@ -355,7 +355,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleSendMessage() {
     if (this._messageInput.value) {
-      this._processText(this._messageInput.value);
+      this._processText(this._messageInput.value.trim());
       this._messageInput.value = "";
       this._showSendButton = false;
     }
@@ -427,34 +427,28 @@ export class HaVoiceCommandDialog extends LitElement {
   private async _showNotSupportedMessage() {
     this._addMessage({
       who: "hass",
-      text: html`
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_browser"
-          )}
-        </p>
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation",
-            {
-              documentation_link: html`
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/securing/#remote-access"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                  )}
-                </a>
-              `,
-            }
-          )}
-        </p>
-      `,
+      text:
+        // New lines matter for messages
+        // prettier-ignore
+        html`${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_browser"
+        )}
+
+        ${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_documentation",
+          {
+            documentation_link: html`<a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/securing/#remote-access"
+                )}
+              >${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                )}</a>`,
+          }
+        )}`,
     });
   }
 
