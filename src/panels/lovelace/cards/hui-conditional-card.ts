@@ -3,7 +3,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
-import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ConditionalCardConfig } from "./types";
 
@@ -38,26 +37,12 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
+    const element = document.createElement("hui-card");
     if (this.hass) {
       element.hass = this.hass;
     }
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        ev.stopPropagation();
-        this._rebuildCard(cardConfig);
-      },
-      { once: true }
-    );
+    element.setConfig(cardConfig);
     return element;
-  }
-
-  private _rebuildCard(config: LovelaceCardConfig): void {
-    this._element = this._createCardElement(config);
-    if (this.lastChild) {
-      this.replaceChild(this._element, this.lastChild);
-    }
   }
 
   protected setVisibility(conditionMet: boolean): void {
