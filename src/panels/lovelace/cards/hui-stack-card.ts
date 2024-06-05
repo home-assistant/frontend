@@ -100,6 +100,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     if (this.hass) {
       element.hass = this.hass;
     }
+    element.editMode = this.editMode;
     element.setConfig(cardConfig);
     return element;
   }

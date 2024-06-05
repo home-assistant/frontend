@@ -1,9 +1,12 @@
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import { selectedDemoConfig } from "../configs/demo-configs";
+import {
+  selectedDemoConfig,
+  selectedDemoConfigIndex,
+  setDemoConfig,
+} from "../configs/demo-configs";
 import "../custom-cards/cast-demo-row";
 import "../custom-cards/ha-demo-card";
-import type { HADemoCard } from "../custom-cards/ha-demo-card";
 
 export const mockLovelace = (
   hass: MockHomeAssistant,
@@ -19,17 +22,22 @@ export const mockLovelace = (
   hass.mockWS("lovelace/resources", () => Promise.resolve([]));
 };
 
-customElements.whenDefined("hui-card").then(() => {
+customElements.whenDefined("hui-root").then(() => {
   // eslint-disable-next-line
-  const HUIView = customElements.get("hui-card");
-  // Patch HUI-VIEW to make the lovelace object available to the demo card
-  const oldCreateCard = HUIView!.prototype.createElement;
+  const HUIRoot = customElements.get("hui-root")!;
 
-  HUIView!.prototype.createElement = function (config) {
-    const el = oldCreateCard.call(this, config);
-    if (config.type === "custom:ha-demo-card") {
-      (el as HADemoCard).lovelace = this.lovelace;
-    }
-    return el;
+  const oldFirstUpdated = HUIRoot.prototype.firstUpdated;
+
+  HUIRoot.prototype.firstUpdated = function (changedProperties) {
+    oldFirstUpdated.call(this, changedProperties);
+    this.addEventListener("set-demo-config", async (ev) => {
+      const index = (ev as CustomEvent).detail.index;
+      try {
+        await setDemoConfig(this.hass, this.lovelace!, index);
+      } catch (err: any) {
+        setDemoConfig(this.hass, this.lovelace!, selectedDemoConfigIndex);
+        alert("Failed to switch config :-(");
+      }
+    });
   };
 });

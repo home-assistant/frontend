@@ -12,7 +12,7 @@ import {
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import { createErrorCardConfig } from "../create-element/create-element-base";
-import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -25,7 +25,7 @@ declare global {
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: Lovelace;
+  @property({ attribute: false }) public editMode = false;
 
   @property({ attribute: false }) public isPanel = false;
 
@@ -76,9 +76,7 @@ export class HuiCard extends ReactiveElement {
     if (this.hass) {
       element.hass = this.hass;
     }
-    if (this.lovelace) {
-      element.editMode = this.lovelace.editMode;
-    }
+    element.editMode = this.editMode;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
     element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
@@ -132,9 +130,9 @@ export class HuiCard extends ReactiveElement {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
       }
-      if (changedProps.has("lovelace")) {
+      if (changedProps.has("editMode")) {
         try {
-          this._element.editMode = this.lovelace?.editMode;
+          this._element.editMode = this.editMode;
         } catch (e: any) {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
@@ -189,7 +187,7 @@ export class HuiCard extends ReactiveElement {
 
     const visible =
       forceVisible ||
-      this.lovelace?.editMode ||
+      this.editMode ||
       !this._config?.visibility ||
       checkConditionsMet(this._config.visibility, this.hass);
     this._setElementVisibility(visible);
