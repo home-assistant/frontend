@@ -1,5 +1,6 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import { PropertyValueMap, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -10,6 +11,7 @@ import {
   checkConditionsMet,
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
+import { createErrorCardConfig } from "../create-element/create-element-base";
 import type { Lovelace, LovelaceCard, LovelaceLayoutOptions } from "../types";
 
 declare global {
@@ -26,7 +28,9 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public isPanel = false;
 
-  @state() public _config?: LovelaceCardConfig;
+  @state() public _visible = true;
+
+  private _config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -44,7 +48,7 @@ export class HuiCard extends ReactiveElement {
   public connectedCallback() {
     super.connectedCallback();
     this._listenMediaQueries();
-    this._updateElement();
+    this._updateVisibility();
   }
 
   public getCardSize(): number | Promise<number> {
@@ -73,11 +77,30 @@ export class HuiCard extends ReactiveElement {
     element.hass = this.hass;
     element.editMode = this.lovelace?.editMode;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
-    element.addEventListener("card-visibility-changed", (ev) => {
+    element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
-      this._updateElement();
+      this._updateVisibility();
     });
+    element.addEventListener(
+      "ll-rebuild",
+      (ev: Event) => {
+        ev.stopPropagation();
+        this._buildElement(config);
+        fireEvent(this, "ll-rebuild");
+      },
+      { once: true }
+    );
     return element;
+  }
+
+  private _buildElement(config: LovelaceCardConfig) {
+    this._element = this.createElement(config);
+
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+    this.appendChild(this._element!);
+    this._updateVisibility();
   }
 
   public setConfig(config: LovelaceCardConfig): void {
@@ -93,21 +116,50 @@ export class HuiCard extends ReactiveElement {
     this.appendChild(this._element!);
   }
 
-  protected update(changedProperties: PropertyValues<typeof this>) {
-    super.update(changedProperties);
+  protected update(changedProps: PropertyValues<typeof this>) {
+    super.update(changedProps);
 
     if (this._element) {
-      if (changedProperties.has("hass")) {
-        this._element.hass = this.hass;
+      if (changedProps.has("hass")) {
+        try {
+          this._element.hass = this.hass;
+        } catch (e: any) {
+          this._buildElement(createErrorCardConfig(e.message, null));
+        }
       }
-      if (changedProperties.has("lovelace")) {
-        this._element.editMode = this.lovelace?.editMode;
+      if (changedProps.has("lovelace")) {
+        try {
+          this._element.editMode = this.lovelace?.editMode;
+        } catch (e: any) {
+          this._buildElement(createErrorCardConfig(e.message, null));
+        }
       }
-      if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
-        this._updateElement();
-      }
-      if (changedProperties.has("isPanel")) {
+      if (changedProps.has("isPanel")) {
         this._element.isPanel = this.isPanel;
+      }
+    }
+  }
+
+  protected willUpdate(
+    changedProps: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    if (changedProps.has("hass") || changedProps.has("lovelace")) {
+      this._updateVisibility();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues<typeof this>): void {
+    if (!this._element) return;
+
+    if (changedProps.has("_visible")) {
+      this.style.setProperty("display", this._visible ? "" : "none");
+      this.toggleAttribute("hidden", !this._visible);
+      fireEvent(this, "card-visibility-changed", { value: this._visible });
+
+      if (!this._visible && this._element.parentElement) {
+        this.removeChild(this._element);
+      } else if (this._visible && !this._element.parentElement) {
+        this.appendChild(this._element);
       }
     }
   }
@@ -131,35 +183,26 @@ export class HuiCard extends ReactiveElement {
     this._listeners = attachConditionMediaQueriesListeners(
       this._config.visibility,
       (matches) => {
-        this._updateElement(hasOnlyMediaQuery && matches);
+        this._updateVisibility(hasOnlyMediaQuery && matches);
       }
     );
   }
 
-  private _updateElement(forceVisible?: boolean) {
+  private _updateVisibility(forceVisible?: boolean) {
     if (!this._element) {
       return;
     }
 
     if (this._element.hidden) {
-      this.style.setProperty("display", "none");
-      this.toggleAttribute("hidden", true);
+      this._visible = false;
       return;
     }
 
-    const visible =
+    this._visible =
       forceVisible ||
       this.lovelace?.editMode ||
       !this._config?.visibility ||
       checkConditionsMet(this._config.visibility, this.hass);
-
-    this.style.setProperty("display", visible ? "" : "none");
-    this.toggleAttribute("hidden", !visible);
-    if (!visible && this._element.parentElement) {
-      this.removeChild(this._element);
-    } else if (visible && !this._element.parentElement) {
-      this.appendChild(this._element);
-    }
   }
 }
 

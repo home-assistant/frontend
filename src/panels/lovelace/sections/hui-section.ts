@@ -1,5 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
@@ -16,7 +17,6 @@ import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
 } from "../common/validate-condition";
-import { createErrorCardConfig } from "../create-element/create-element-base";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -26,7 +26,6 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
@@ -54,23 +53,15 @@ export class HuiSection extends ReactiveElement {
 
   private _listeners: MediaQueriesListener[] = [];
 
-  // Public to make demo happy
-  public createCardElement(cardConfig: LovelaceCardConfig) {
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.lovelace = this.lovelace;
     element.setConfig(cardConfig);
-    element.addEventListener(
-      "ll-rebuild",
-      (ev: Event) => {
-        // In edit mode let it go to hui-root and rebuild whole section.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildCard(element, cardConfig);
-        }
-      },
-      { once: true }
-    );
+    element.addEventListener("ll-rebuild", (ev: Event) => {
+      ev.stopPropagation();
+      this._cards = [...this._cards];
+    });
     return element;
   }
 
@@ -121,22 +112,14 @@ export class HuiSection extends ReactiveElement {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._cards.forEach((element) => {
-          try {
-            element.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildCard(element, createErrorCardConfig(e.message, null));
-          }
+          element.hass = this.hass;
         });
         this._layoutElement.hass = this.hass;
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
         this._cards.forEach((element) => {
-          try {
-            element.lovelace = this.lovelace;
-          } catch (e: any) {
-            this._rebuildCard(element, createErrorCardConfig(e.message, null));
-          }
+          element.lovelace = this.lovelace;
         });
       }
       if (changedProperties.has("_cards")) {
@@ -283,22 +266,8 @@ export class HuiSection extends ReactiveElement {
       return;
     }
 
-    this._cards = config.cards.map((cardConfig) => {
-      const element = this.createCardElement(cardConfig);
-      return element;
-    });
-  }
-
-  private _rebuildCard(
-    cardElToReplace: HuiCard,
-    config: LovelaceCardConfig
-  ): void {
-    const newCardEl = this.createCardElement(config);
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._cards = this._cards!.map((curCardEl) =>
-      curCardEl === cardElToReplace ? newCardEl : curCardEl
+    this._cards = config.cards.map((cardConfig) =>
+      this._createCardElement(cardConfig)
     );
   }
 }
