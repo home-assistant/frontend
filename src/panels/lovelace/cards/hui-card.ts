@@ -1,5 +1,5 @@
 import { PropertyValueMap, PropertyValues, ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
@@ -28,8 +28,6 @@ export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ attribute: false }) public isPanel = false;
-
-  @state() public _visible = true;
 
   private _config?: LovelaceCardConfig;
 
@@ -112,7 +110,6 @@ export class HuiCard extends ReactiveElement {
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
-    this.appendChild(this._element!);
     this._updateVisibility();
   }
 
@@ -121,12 +118,7 @@ export class HuiCard extends ReactiveElement {
       return;
     }
     this._config = config;
-    this._element = this.createElement(config);
-
-    while (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
-    this.appendChild(this._element!);
+    this._buildElement(config);
   }
 
   protected update(changedProps: PropertyValues<typeof this>) {
@@ -161,22 +153,6 @@ export class HuiCard extends ReactiveElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues<typeof this>): void {
-    if (!this._element) return;
-
-    if (changedProps.has("_visible")) {
-      this.style.setProperty("display", this._visible ? "" : "none");
-      this.toggleAttribute("hidden", !this._visible);
-      fireEvent(this, "card-visibility-changed", { value: this._visible });
-
-      if (!this._visible && this._element.parentElement) {
-        this.removeChild(this._element);
-      } else if (this._visible && !this._element.parentElement) {
-        this.appendChild(this._element);
-      }
-    }
-  }
-
   private _clearMediaQueries() {
     this._listeners.forEach((unsub) => unsub());
     this._listeners = [];
@@ -207,15 +183,32 @@ export class HuiCard extends ReactiveElement {
     }
 
     if (this._element.hidden) {
-      this._visible = false;
+      this._setElementVisibility(false);
       return;
     }
 
-    this._visible =
+    const visible =
       forceVisible ||
       this.lovelace?.editMode ||
       !this._config?.visibility ||
       checkConditionsMet(this._config.visibility, this.hass);
+    this._setElementVisibility(visible);
+  }
+
+  private _setElementVisibility(visible: boolean) {
+    if (!this._element) return;
+
+    if (this.hidden !== !visible) {
+      this.style.setProperty("display", visible ? "" : "none");
+      this.toggleAttribute("hidden", !visible);
+      fireEvent(this, "card-visibility-changed", { value: visible });
+    }
+
+    if (!visible && this._element.parentElement) {
+      this.removeChild(this._element);
+    } else if (visible && !this._element.parentElement) {
+      this.appendChild(this._element);
+    }
   }
 }
 
