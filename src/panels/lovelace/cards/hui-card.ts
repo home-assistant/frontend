@@ -86,10 +86,14 @@ export class HuiCard extends ReactiveElement {
       ev.stopPropagation();
       this._updateVisibility();
     });
-    element.addEventListener("ll-upgraded", (ev: Event) => {
-      ev.stopPropagation();
-      fireEvent(this, "card-updated");
-    });
+    element.addEventListener(
+      "ll-upgraded",
+      (ev: Event) => {
+        ev.stopPropagation();
+        fireEvent(this, "card-updated");
+      },
+      { once: true }
+    );
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
