@@ -68,7 +68,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.editMode = this.editMode;
-    element.setConfig(cardConfig);
+    element.config = cardConfig;
     return element;
   }
 

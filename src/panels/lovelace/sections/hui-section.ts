@@ -57,7 +57,7 @@ export class HuiSection extends ReactiveElement {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.editMode = this.lovelace?.editMode || false;
-    element.setConfig(cardConfig);
+    element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
       this._cards = [...this._cards];

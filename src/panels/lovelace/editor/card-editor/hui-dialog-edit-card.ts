@@ -36,7 +36,7 @@ import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import "./hui-card-preview";
+import "../../cards/hui-card";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
@@ -245,11 +245,11 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            <hui-card-preview
+            <hui-card
               .hass=${this.hass}
               .config=${this._cardConfig}
               class=${this._error ? "blur" : ""}
-            ></hui-card-preview>
+            ></hui-card>
             ${this._error
               ? html`
                   <ha-circular-progress
@@ -452,7 +452,7 @@ export class HuiDialogEditCard
           flex-direction: column;
         }
 
-        .content hui-card-preview {
+        .content hui-card {
           margin: 4px auto;
           max-width: 390px;
         }
@@ -470,7 +470,7 @@ export class HuiDialogEditCard
             flex-shrink: 1;
             min-width: 0;
           }
-          .content hui-card-preview {
+          .content hui-card {
             padding: 8px 10px;
             margin: auto 0px;
             max-width: 500px;
@@ -498,7 +498,7 @@ export class HuiDialogEditCard
           position: absolute;
           z-index: 10;
         }
-        hui-card-preview {
+        hui-card {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;

@@ -77,7 +77,7 @@ export class HUIView extends ReactiveElement {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.editMode = this.lovelace.editMode;
-    element.setConfig(cardConfig);
+    element.config = cardConfig;
     element.addEventListener("ll-rebuild", (ev: Event) => {
       ev.stopPropagation();
       this._cards = [...this._cards];

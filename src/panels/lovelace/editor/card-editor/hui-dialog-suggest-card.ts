@@ -18,7 +18,7 @@ import {
   LovelaceContainerPath,
   parseLovelaceContainerPath,
 } from "../lovelace-path";
-import "./hui-card-preview";
+import "../../cards/hui-card";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
@@ -84,10 +84,7 @@ export class HuiDialogSuggestCard extends LitElement {
         <div class="element-preview">
           ${this._cardConfig.map(
             (cardConfig) => html`
-              <hui-card-preview
-                .hass=${this.hass}
-                .config=${cardConfig}
-              ></hui-card-preview>
+              <hui-card .hass=${this.hass} .config=${cardConfig}></hui-card>
             `
           )}
         </div>
@@ -191,7 +188,7 @@ export class HuiDialogSuggestCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        hui-card-preview,
+        hui-card,
         hui-section {
           padding-top: 8px;
           margin: 4px auto;

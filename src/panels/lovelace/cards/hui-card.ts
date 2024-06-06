@@ -29,7 +29,7 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public isPanel = false;
 
-  private _config?: LovelaceCardConfig;
+  @property({ attribute: false }) public config!: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -59,7 +59,7 @@ export class HuiCard extends ReactiveElement {
   }
 
   public getLayoutOptions(): LovelaceLayoutOptions {
-    const configOptions = this._config?.layout_options ?? {};
+    const configOptions = this.config?.layout_options ?? {};
     if (this._element) {
       const cardOptions = this._element.getLayoutOptions?.() ?? {};
       return {
@@ -72,10 +72,8 @@ export class HuiCard extends ReactiveElement {
 
   // Public to make demo happy
   public createElement(config: LovelaceCardConfig) {
-    const element = createCardElement(config) as LovelaceCard;
-    if (this.hass) {
-      element.hass = this.hass;
-    }
+    const element = createCardElement(config);
+    element.hass = this.hass;
     element.editMode = this.editMode;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
     element.addEventListener("card-visibility-changed", (ev: Event) => {
@@ -111,17 +109,14 @@ export class HuiCard extends ReactiveElement {
     this._updateVisibility();
   }
 
-  public setConfig(config: LovelaceCardConfig): void {
-    if (this._config === config) {
-      return;
-    }
-    this._config = config;
-    this._buildElement(config);
-  }
-
   protected update(changedProps: PropertyValues<typeof this>) {
     super.update(changedProps);
 
+    if (changedProps.has("config")) {
+      this._buildElement(this.config);
+      this._element!.hass = this.hass;
+      this._element!.editMode = this.editMode;
+    }
     if (this._element) {
       if (changedProps.has("hass")) {
         try {
@@ -158,17 +153,17 @@ export class HuiCard extends ReactiveElement {
 
   private _listenMediaQueries() {
     this._clearMediaQueries();
-    if (!this._config?.visibility) {
+    if (!this.config?.visibility) {
       return;
     }
-    const conditions = this._config.visibility;
+    const conditions = this.config.visibility;
     const hasOnlyMediaQuery =
       conditions.length === 1 &&
       conditions[0].condition === "screen" &&
       !!conditions[0].media_query;
 
     this._listeners = attachConditionMediaQueriesListeners(
-      this._config.visibility,
+      this.config.visibility,
       (matches) => {
         this._updateVisibility(hasOnlyMediaQuery && matches);
       }
@@ -188,8 +183,8 @@ export class HuiCard extends ReactiveElement {
     const visible =
       forceVisible ||
       this.editMode ||
-      !this._config?.visibility ||
-      checkConditionsMet(this._config.visibility, this.hass);
+      !this.config?.visibility ||
+      checkConditionsMet(this.config.visibility, this.hass);
     this._setElementVisibility(visible);
   }
 
