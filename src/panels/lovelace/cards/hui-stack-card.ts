@@ -50,11 +50,26 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   protected update(changedProperties) {
     super.update(changedProperties);
 
-    if (changedProperties.has("hass") && this._cards && this.hass) {
-      this._cards.forEach((card) => {
-        card.hass = this.hass!;
-      });
+    if (this._cards) {
+      if (changedProperties.has("hass")) {
+        this._cards.forEach((card) => {
+          card.hass = this.hass;
+        });
+      }
+      if (changedProperties.has("editMode")) {
+        this._cards.forEach((card) => {
+          card.editMode = this.editMode;
+        });
+      }
     }
+  }
+
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.editMode = this.editMode;
+    element.setConfig(cardConfig);
+    return element;
   }
 
   protected render() {
@@ -93,15 +108,5 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
     `;
-  }
-
-  private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = document.createElement("hui-card");
-    if (this.hass) {
-      element.hass = this.hass;
-    }
-    element.editMode = this.editMode;
-    element.setConfig(cardConfig);
-    return element;
   }
 }

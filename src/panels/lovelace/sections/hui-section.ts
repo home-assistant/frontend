@@ -56,7 +56,7 @@ export class HuiSection extends ReactiveElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.lovelace = this.lovelace;
+    element.editMode = this.lovelace?.editMode || false;
     element.setConfig(cardConfig);
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -119,7 +119,7 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
         this._cards.forEach((element) => {
-          element.lovelace = this.lovelace;
+          element.editMode = this.lovelace?.editMode || false;
         });
       }
       if (changedProperties.has("_cards")) {
