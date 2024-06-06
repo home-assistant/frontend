@@ -48,6 +48,7 @@ export class HuiDialogDeleteCard extends LitElement {
                   <hui-card
                     .hass=${this.hass}
                     .config=${this._cardConfig}
+                    .editMode=${true}
                   ></hui-card>
                 </div>
               `

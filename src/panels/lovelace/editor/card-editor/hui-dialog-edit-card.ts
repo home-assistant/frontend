@@ -248,6 +248,7 @@ export class HuiDialogEditCard
             <hui-card
               .hass=${this.hass}
               .config=${this._cardConfig}
+              .editMode=${true}
               class=${this._error ? "blur" : ""}
             ></hui-card>
             ${this._error
