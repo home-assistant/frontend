@@ -25,9 +25,9 @@ declare global {
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public editMode = false;
+  @property({ type: Boolean }) public editMode = false;
 
-  @property({ attribute: false }) public isPanel = false;
+  @property({ type: Boolean }) public isPanel = false;
 
   set config(config: LovelaceCardConfig | undefined) {
     if (!config) return;
