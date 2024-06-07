@@ -113,7 +113,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             .value=${value}
             .action=${selected ? "remove" : "add"}
             .activated=${selected}
-            @click=${this._handleMenuClick}
+            @click=${this._toggleItem}
             @keydown=${this._keydown}
             keep-open
           >
@@ -134,10 +134,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       ev.preventDefault();
       this._toggleItem(ev);
     }
-  }
-
-  protected _handleMenuClick(ev) {
-    this._toggleItem(ev);
   }
 
   protected _toggleItem(ev) {
