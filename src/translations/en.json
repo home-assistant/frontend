@@ -401,6 +401,7 @@
             "device": "Device",
             "duration": "Duration",
             "entity": "Entity",
+            "floor": "[%key:ui::components::floor-picker::floor%]",
             "icon": "Icon",
             "location": "Location",
             "media": "Media",
