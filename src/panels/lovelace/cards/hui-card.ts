@@ -33,8 +33,9 @@ export class HuiCard extends ReactiveElement {
     if (!config) return;
     if (config && config.type !== this._config?.type) {
       this._buildElement(config);
-    } else {
+    } else if (config !== this.config) {
       this._element?.setConfig(config);
+      fireEvent(this, "card-updated");
     }
     this._config = config;
   }
