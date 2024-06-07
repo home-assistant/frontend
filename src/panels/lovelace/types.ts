@@ -17,7 +17,7 @@ declare global {
   // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
-    "ll-upgraded": Record<string, unknown>;
+    "ll-upgrade": Record<string, unknown>;
     "ll-badge-rebuild": Record<string, unknown>;
   }
 }

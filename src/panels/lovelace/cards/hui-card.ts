@@ -29,7 +29,22 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public isPanel = false;
 
-  @property({ attribute: false }) public config!: LovelaceCardConfig;
+  set config(config: LovelaceCardConfig | undefined) {
+    if (!config) return;
+    if (config && config.type !== this._config?.type) {
+      this._buildElement(config);
+    } else {
+      this._element?.setConfig(config);
+    }
+    this._config = config;
+  }
+
+  @property({ attribute: false })
+  public get config() {
+    return this._config;
+  }
+
+  private _config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -70,8 +85,7 @@ export class HuiCard extends ReactiveElement {
     return configOptions;
   }
 
-  // Public to make demo happy
-  public createElement(config: LovelaceCardConfig) {
+  private _createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config);
     element.hass = this.hass;
     element.editMode = this.editMode;
@@ -81,7 +95,7 @@ export class HuiCard extends ReactiveElement {
       this._updateVisibility();
     });
     element.addEventListener(
-      "ll-upgraded",
+      "ll-upgrade",
       (ev: Event) => {
         ev.stopPropagation();
         fireEvent(this, "card-updated");
@@ -101,7 +115,7 @@ export class HuiCard extends ReactiveElement {
   }
 
   private _buildElement(config: LovelaceCardConfig) {
-    this._element = this.createElement(config);
+    this._element = this._createElement(config);
 
     while (this.lastChild) {
       this.removeChild(this.lastChild);
@@ -112,11 +126,6 @@ export class HuiCard extends ReactiveElement {
   protected update(changedProps: PropertyValues<typeof this>) {
     super.update(changedProps);
 
-    if (changedProps.has("config")) {
-      this._buildElement(this.config);
-      this._element!.hass = this.hass;
-      this._element!.editMode = this.editMode;
-    }
     if (this._element) {
       if (changedProps.has("hass")) {
         try {
