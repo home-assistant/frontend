@@ -166,7 +166,7 @@
     "@rollup/plugin-commonjs": "25.0.8",
     "@rollup/plugin-json": "6.1.0",
     "@rollup/plugin-node-resolve": "15.2.3",
-    "@rollup/plugin-replace": "5.0.6",
+    "@rollup/plugin-replace": "5.0.7",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.14",
     "@types/chromecast-caf-sender": "1.0.10",
