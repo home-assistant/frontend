@@ -3870,9 +3870,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:5.0.6":
-  version: 5.0.6
-  resolution: "@rollup/plugin-replace@npm:5.0.6"
+"@rollup/plugin-replace@npm:5.0.7":
+  version: 5.0.7
+  resolution: "@rollup/plugin-replace@npm:5.0.7"
   dependencies:
     "@rollup/pluginutils": "npm:^5.0.1"
     magic-string: "npm:^0.30.3"
@@ -3881,7 +3881,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 10/cfffe63fede8f8c486b3f8e9dfb8f20220979b089646fdc711130fc2706774df0e3c18066db281a99d19d7e9a6c9db7dc361a7488e79d03a8b58fa8d2cb6b828
+  checksum: 10/1f0a26fe132c75ded66305ae845cb53c5ed0abd054f22b55a15e98b2955d52e677f8f96a1d0a3926020c2b457d41825e743850f44b67ed1bfbd3cb4089057335
   languageName: node
   linkType: hard
 
@@ -8994,7 +8994,7 @@ __metadata:
     "@rollup/plugin-commonjs": "npm:25.0.8"
     "@rollup/plugin-json": "npm:6.1.0"
     "@rollup/plugin-node-resolve": "npm:15.2.3"
-    "@rollup/plugin-replace": "npm:5.0.6"
+    "@rollup/plugin-replace": "npm:5.0.7"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.14"
