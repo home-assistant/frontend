@@ -596,6 +596,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _showTriggeredInfo() {
     showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.triggering_event_detail"
+      ),
       text: html`
         <ha-yaml-editor
           readOnly

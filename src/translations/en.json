@@ -2833,6 +2833,7 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "triggering_event_detail": "Triggering event detail",
               "groups": {
                 "entity": {
                   "label": "Entity",
