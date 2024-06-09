@@ -822,7 +822,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-fab>
       </hass-tabs-subpage-data-table>
       <ha-menu id="overflow-menu" positioning="fixed">
-        <ha-menu-item @click=${this._showInfo}>
+        <ha-menu-item .action=${this._showInfo}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon
             .path=${mdiInformationOutline}
             slot="start"
@@ -832,7 +833,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           </div>
         </ha-menu-item>
 
-        <ha-menu-item @click=${this._showSettings}>
+        <ha-menu-item .action=${this._showSettings}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiCog} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -840,7 +842,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )}
           </div>
         </ha-menu-item>
-        <ha-menu-item @click=${this._editCategory}>
+        <ha-menu-item .action=${this._editCategory}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiTag} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -848,13 +851,15 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )}
           </div>
         </ha-menu-item>
-        <ha-menu-item @click=${this._runActions}>
+        <ha-menu-item .action=${this._runActions}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiPlay} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
           </div>
         </ha-menu-item>
-        <ha-menu-item @click=${this._showTrace}>
+        <ha-menu-item .action=${this._showTrace}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiTransitConnection} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -863,13 +868,15 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           </div>
         </ha-menu-item>
         <md-divider role="separator" tabindex="-1"></md-divider>
-        <ha-menu-item @click=${this._duplicate}>
+        <ha-menu-item .action=${this._duplicate}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiContentDuplicate} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
           </div>
         </ha-menu-item>
-        <ha-menu-item @click=${this._toggle}>
+        <ha-menu-item .action=${this._toggle}
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon
             .path=${
               this._overflowAutomation?.state === "off"
@@ -888,7 +895,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             }
           </div>
         </ha-menu-item>
-        <ha-menu-item @click=${this._deleteConfirm} class="warning">
+        <ha-menu-item .action=${this._deleteConfirm} class="warning"
+          @close-menu=${this._handleMenuClose}>
           <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.picker.delete")}
@@ -896,6 +904,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-menu-item>
       </ha-menu>
     `;
+  }
+
+  private _handleMenuClose(ev) {
+    if (ev.detail.reason.key === "Escape") return;
+    const action = ev.currentTarget.action.bind(this);
+    action(ev);
   }
 
   protected updated(changedProps: PropertyValues) {
