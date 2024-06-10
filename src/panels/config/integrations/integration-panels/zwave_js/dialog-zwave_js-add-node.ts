@@ -88,6 +88,11 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _qrProcessing = false;
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("beforeunload", this._onBeforeUnload);
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribe();
@@ -109,11 +114,7 @@ class DialogZWaveJSAddNode extends LitElement {
     }
 
     // Prevent accidentally closing the dialog in certain stages
-    const preventClose =
-      this._status === "started_specific" ||
-      this._status === "validate_dsk_enter_pin" ||
-      this._status === "grant_security_classes" ||
-      this._status === "waiting_for_device";
+    const preventClose = this._shouldPreventClose();
 
     const heading = this.hass.localize(
       "ui.panel.config.zwave_js.add_node.title"
@@ -556,6 +557,15 @@ class DialogZWaveJSAddNode extends LitElement {
     `;
   }
 
+  private _shouldPreventClose(): boolean {
+    return (
+      this._status === "started_specific" ||
+      this._status === "validate_dsk_enter_pin" ||
+      this._status === "grant_security_classes" ||
+      this._status === "waiting_for_device"
+    );
+  }
+
   private _chooseInclusionStrategy(): void {
     this._unsubscribe();
     this._status = "choose_strategy";
@@ -808,6 +818,13 @@ class DialogZWaveJSAddNode extends LitElement {
     }, 90000);
   }
 
+  private _onBeforeUnload = (event: BeforeUnloadEvent) => {
+    if (this._shouldPreventClose()) {
+      event.preventDefault();
+    }
+    event.returnValue = true;
+  };
+
   private _unsubscribe(): void {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
@@ -824,6 +841,7 @@ class DialogZWaveJSAddNode extends LitElement {
       clearTimeout(this._addNodeTimeoutHandle);
     }
     this._addNodeTimeoutHandle = undefined;
+    window.removeEventListener("beforeunload", this._onBeforeUnload);
   }
 
   public closeDialog(): void {
