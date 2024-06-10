@@ -499,7 +499,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                           : ""}
                                         <a
                                           href=${`/config/devices/device/${
-                                            this._device!.id
+                                            this._device?.id
                                           }`}
                                         >
                                           <mwc-button>
