@@ -901,7 +901,7 @@ const tryDescribeCondition = (
         )
       : undefined;
 
-    if (condition.above && condition.below) {
+    if (condition.above !== undefined && condition.below !== undefined) {
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
         {
@@ -912,7 +912,7 @@ const tryDescribeCondition = (
         }
       );
     }
-    if (condition.above) {
+    if (condition.above !== undefined) {
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above`,
         {
@@ -922,7 +922,7 @@ const tryDescribeCondition = (
         }
       );
     }
-    if (condition.below) {
+    if (condition.below !== undefined) {
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.below`,
         {
