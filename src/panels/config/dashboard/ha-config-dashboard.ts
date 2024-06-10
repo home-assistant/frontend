@@ -6,7 +6,7 @@ import {
   mdiPower,
   mdiRefresh,
 } from "@mdi/js";
-import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -177,7 +177,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(this.hass.states);
+      this._filterUpdateEntitiesWithInstall(
+        this.hass.states,
+        this.hass.entities
+      );
 
     const { issues: repairsIssues, total: totalRepairIssues } =
       this._repairsIssues;
@@ -306,8 +309,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities);
+    (
+      entities: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"]
+    ): { updates: UpdateEntity[]; total: number } => {
+      const updates = filterUpdateEntitiesWithInstall(entities).filter(
+        (entity) => !entityRegistry[entity.entity_id]?.hidden
+      );
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
