@@ -178,7 +178,7 @@ export class HuiEntityFilterCard
         entities: entitiesList,
       };
       this._oldEntities = entitiesList;
-    } else if (this._element.tagName !== "HUI-ERROR-CARD") {
+    } else {
       const isSame =
         this._oldEntities &&
         entitiesList.length === this._oldEntities.length &&
