@@ -7,6 +7,7 @@ import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
+import "../card-features/hui-conditional-card-feature";
 import "../card-features/hui-fan-preset-modes-card-feature";
 import "../card-features/hui-fan-speed-card-feature";
 import "../card-features/hui-humidifier-modes-card-feature";
@@ -40,6 +41,7 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "conditional",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",

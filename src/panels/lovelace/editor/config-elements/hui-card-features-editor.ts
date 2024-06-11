@@ -80,7 +80,7 @@ const UI_FEATURE_TYPES = [
 
 type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
-const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
   "alarm-modes",
   "climate-fan-modes",
   "climate-hvac-modes",

@@ -51,6 +51,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public editMode = false;
+
   @state() private _config?: ThermostatCardConfig;
 
   public getCardSize(): number {
@@ -141,6 +143,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .stateObj=${stateObj}
           .features=${this._config.features}
+          .editMode=${this.editMode}
         ></hui-card-features>
       </ha-card>
     `;

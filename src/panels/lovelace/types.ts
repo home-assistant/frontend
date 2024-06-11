@@ -121,6 +121,7 @@ export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
 export interface LovelaceCardFeature extends HTMLElement {
   hass?: HomeAssistant;
   stateObj?: HassEntity;
+  editMode?: boolean;
   setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
 }

@@ -12,7 +12,8 @@ import {
   validateConditionalConfig,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardFeature } from "../types";
+import { ConditionalCardFeatureConfig } from "../card-features/types";
 
 declare global {
   interface HASSDomEvents {
@@ -26,9 +27,12 @@ export class HuiConditionalBase extends ReactiveElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
+  @state() protected _config?:
+    | ConditionalCardConfig
+    | ConditionalRowConfig
+    | ConditionalCardFeatureConfig;
 
-  protected _element?: LovelaceCard | LovelaceRow;
+  protected _element?: LovelaceCard | LovelaceRow | LovelaceCardFeature;
 
   private _listeners: MediaQueriesListener[] = [];
 
@@ -39,7 +43,10 @@ export class HuiConditionalBase extends ReactiveElement {
   }
 
   protected validateConfig(
-    config: ConditionalCardConfig | ConditionalRowConfig
+    config:
+      | ConditionalCardConfig
+      | ConditionalRowConfig
+      | ConditionalCardFeatureConfig
   ): void {
     if (!config.conditions) {
       throw new Error("No conditions configured");

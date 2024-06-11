@@ -1,6 +1,7 @@
 import { AlarmMode } from "../../../data/alarm_control_panel";
 import { HvacMode } from "../../../data/climate";
 import { OperationMode } from "../../../data/water_heater";
+import { Condition } from "../common/validate-condition";
 
 export interface CoverOpenCloseCardFeatureConfig {
   type: "cover-open-close";
@@ -16,6 +17,12 @@ export interface CoverTiltCardFeatureConfig {
 
 export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
+}
+
+export interface ConditionalCardFeatureConfig {
+  type: "conditional";
+  feature: LovelaceCardFeatureConfig;
+  conditions: Condition[];
 }
 
 export interface LightBrightnessCardFeatureConfig {
@@ -145,6 +152,7 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | ConditionalCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
