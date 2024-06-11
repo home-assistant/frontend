@@ -38,7 +38,7 @@ class DialogThreadDataset extends LitElement implements HassDialog {
 
     const canImportKeychain =
       hasOTBR &&
-      !this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
+      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
       network.routers?.length;
 
     return html`<ha-dialog
