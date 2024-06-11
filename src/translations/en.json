@@ -3002,7 +3002,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "mode": "Mode",

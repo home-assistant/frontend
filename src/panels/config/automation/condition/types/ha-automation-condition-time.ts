@@ -67,6 +67,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
                 entity: {
                   filter: [
                     { domain: "input_datetime" },
+                    { domain: "time" },
                     { domain: "sensor", device_class: "timestamp" },
                   ],
                 },
@@ -99,6 +100,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
                 entity: {
                   filter: [
                     { domain: "input_datetime" },
+                    { domain: "time" },
                     { domain: "sensor", device_class: "timestamp" },
                   ],
                 },
@@ -126,10 +128,12 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     const inputModeBefore =
       this._inputModeBefore ??
       (this.condition.before?.startsWith("input_datetime.") ||
+        this.condition.before?.startsWith("time.") ||
         this.condition.before?.startsWith("sensor."));
     const inputModeAfter =
       this._inputModeAfter ??
       (this.condition.after?.startsWith("input_datetime.") ||
+        this.condition.after?.startsWith("time.") ||
         this.condition.after?.startsWith("sensor."));
 
     const schema = this._schema(
