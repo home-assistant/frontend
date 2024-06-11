@@ -29,6 +29,8 @@ export class HuiCard extends ReactiveElement {
 
   @property({ type: Boolean }) public isPanel = false;
 
+  @property({ type: Boolean }) public preview = false;
+
   set config(config: LovelaceCardConfig | undefined) {
     if (!config) return;
     if (config.type !== this._config?.type) {
@@ -137,7 +139,7 @@ export class HuiCard extends ReactiveElement {
       }
       if (changedProps.has("editMode")) {
         try {
-          this._element.editMode = this.editMode;
+          this._element.editMode = this.editMode || this.preview;
         } catch (e: any) {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
@@ -193,6 +195,7 @@ export class HuiCard extends ReactiveElement {
     const visible =
       forceVisible ||
       this.editMode ||
+      this.preview ||
       !this.config?.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
     this._setElementVisibility(visible);

@@ -41,6 +41,8 @@ export class HuiSection extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
+  @property({ type: Boolean }) public preview = false;
+
   @property({ type: Number }) public index!: number;
 
   @property({ type: Number }) public viewIndex!: number;
@@ -55,6 +57,7 @@ export class HuiSection extends ReactiveElement {
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
+    element.preview = this.preview;
     element.hass = this.hass;
     element.editMode = this.lovelace?.editMode || false;
     element.config = cardConfig;
@@ -206,6 +209,7 @@ export class HuiSection extends ReactiveElement {
     const visible =
       forceVisible ||
       this.lovelace?.editMode ||
+      this.preview ||
       !this.config.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
 
