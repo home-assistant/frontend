@@ -31,7 +31,7 @@ export class HuiCard extends ReactiveElement {
 
   set config(config: LovelaceCardConfig | undefined) {
     if (!config) return;
-    if (config && config.type !== this._config?.type) {
+    if (config.type !== this._config?.type) {
       this._buildElement(config);
     } else if (config !== this.config) {
       this._element?.setConfig(config);
