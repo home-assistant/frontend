@@ -21,7 +21,6 @@ import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
-import { createErrorCardConfig } from "../create-element/create-element-base";
 import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -77,19 +76,12 @@ export class HUIView extends ReactiveElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.lovelace = this.lovelace;
-    element.setConfig(cardConfig);
-    element.addEventListener(
-      "ll-rebuild",
-      (ev: Event) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildCard(element, cardConfig);
-        }
-      },
-      { once: true }
-    );
+    element.editMode = this.lovelace.editMode;
+    element.config = cardConfig;
+    element.addEventListener("card-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this._cards = [...this._cards];
+    });
     return element;
   }
 
@@ -183,11 +175,7 @@ export class HUIView extends ReactiveElement {
         });
 
         this._cards.forEach((element) => {
-          try {
-            element.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildCard(element, createErrorCardConfig(e.message, null));
-          }
+          element.hass = this.hass;
         });
 
         this._sections.forEach((element) => {
@@ -226,12 +214,7 @@ export class HUIView extends ReactiveElement {
           }
         });
         this._cards.forEach((element) => {
-          try {
-            element.hass = this.hass;
-            element.lovelace = this.lovelace;
-          } catch (e: any) {
-            this._rebuildCard(element, createErrorCardConfig(e.message, null));
-          }
+          element.editMode = this.lovelace.editMode;
         });
       }
       if (changedProperties.has("_cards")) {
@@ -386,19 +369,6 @@ export class HUIView extends ReactiveElement {
       element.index = index;
       return element;
     });
-  }
-
-  private _rebuildCard(
-    cardElToReplace: HuiCard,
-    config: LovelaceCardConfig
-  ): void {
-    const newCardEl = this._createCardElement(config);
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._cards = this._cards!.map((curCardEl) =>
-      curCardEl === cardElToReplace ? newCardEl : curCardEl
-    );
   }
 
   private _rebuildBadge(

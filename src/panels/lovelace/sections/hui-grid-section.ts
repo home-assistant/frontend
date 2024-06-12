@@ -11,10 +11,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
-import { HuiCard } from "../cards/hui-card";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
