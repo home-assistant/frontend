@@ -822,8 +822,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-fab>
       </hass-tabs-subpage-data-table>
       <ha-menu id="overflow-menu" positioning="fixed">
-        <ha-menu-item .action=${this._showInfo}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._showInfo}>
           <ha-svg-icon
             .path=${mdiInformationOutline}
             slot="start"
@@ -833,8 +832,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           </div>
         </ha-menu-item>
 
-        <ha-menu-item .action=${this._showSettings}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._showSettings}>
           <ha-svg-icon .path=${mdiCog} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -842,8 +840,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )}
           </div>
         </ha-menu-item>
-        <ha-menu-item .action=${this._editCategory}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._editCategory}>
           <ha-svg-icon .path=${mdiTag} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -851,15 +848,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )}
           </div>
         </ha-menu-item>
-        <ha-menu-item .action=${this._runActions}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._runActions}>
           <ha-svg-icon .path=${mdiPlay} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
           </div>
         </ha-menu-item>
-        <ha-menu-item .action=${this._showTrace}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._showTrace}>
           <ha-svg-icon .path=${mdiTransitConnection} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize(
@@ -868,15 +863,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           </div>
         </ha-menu-item>
         <md-divider role="separator" tabindex="-1"></md-divider>
-        <ha-menu-item .action=${this._duplicate}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._duplicate}>
           <ha-svg-icon .path=${mdiContentDuplicate} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
           </div>
         </ha-menu-item>
-        <ha-menu-item .action=${this._toggle}
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._toggle}>
           <ha-svg-icon
             .path=${
               this._overflowAutomation?.state === "off"
@@ -895,8 +888,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             }
           </div>
         </ha-menu-item>
-        <ha-menu-item .action=${this._deleteConfirm} class="warning"
-          @close-menu=${this._handleMenuClose}>
+        <ha-menu-item .closeAction=${this._deleteConfirm} class="warning">
           <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
           <div slot="headline">
             ${this.hass.localize("ui.panel.config.automation.picker.delete")}
@@ -904,12 +896,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-menu-item>
       </ha-menu>
     `;
-  }
-
-  private _handleMenuClose(ev) {
-    if (ev.detail.reason.key === "Escape") return;
-    const action = ev.currentTarget.action.bind(this);
-    action(ev);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -1065,28 +1051,28 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._applyFilters();
   }
 
-  private _showInfo(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _showInfo = (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
-  }
+  };
 
-  private _showSettings(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _showSettings = (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     fireEvent(this, "hass-more-info", {
       entityId: automation.entity_id,
       view: "settings",
     });
-  }
+  };
 
-  private _runActions(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _runActions = (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     triggerAutomationActions(this.hass, automation.entity_id);
-  }
+  };
 
-  private _editCategory(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _editCategory = (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     const entityReg = this._entityReg.find(
       (reg) => reg.entity_id === automation.entity_id
@@ -1106,10 +1092,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       scope: "automation",
       entityReg,
     });
-  }
+  };
 
-  private _showTrace(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _showTrace = (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     if (!automation.attributes.id) {
       showAlertDialog(this, {
@@ -1122,19 +1108,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     navigate(
       `/config/automation/trace/${encodeURIComponent(automation.attributes.id)}`
     );
-  }
+  };
 
-  private async _toggle(ev): Promise<void> {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _toggle = async (ev): Promise<void> => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     const service = automation.state === "off" ? "turn_on" : "turn_off";
     await this.hass.callService("automation", service, {
       entity_id: automation.entity_id,
     });
-  }
+  };
 
-  private async _deleteConfirm(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _deleteConfirm = async (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -1149,7 +1135,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       confirm: () => this._delete(automation),
       destructive: true,
     });
-  }
+  };
 
   private async _delete(automation) {
     try {
@@ -1169,8 +1155,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _duplicate(ev) {
-    const automation = ev.currentTarget.parentElement.anchorElement.automation;
+  private _duplicate = async (ev) => {
+    const automation = ev.currentTarget.anchorElement.automation;
 
     try {
       const config = await fetchAutomationFileConfig(
@@ -1194,7 +1180,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         ),
       });
     }
-  }
+  };
 
   private _showHelp() {
     showAlertDialog(this, {
