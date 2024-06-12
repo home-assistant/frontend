@@ -144,14 +144,14 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       const cardConfig = this._config?.cards?.[idx];
       let element: HuiCard | HuiCardOptions;
       if (this.isStrategy || !this.lovelace?.editMode) {
-        card.editMode = false;
+        card.preview = false;
         element = card;
       } else {
         element = document.createElement("hui-card-options");
         element.hass = this.hass;
         element.lovelace = this.lovelace;
         element.path = [this.index!, idx];
-        card.editMode = true;
+        card.preview = true;
         const movePositionButton = document.createElement("ha-icon-button");
         movePositionButton.slot = "buttons";
         const moveIcon = document.createElement("ha-svg-icon");

@@ -261,7 +261,7 @@ export class HuiDialogEditCard
                     .hass=${this.hass}
                     .config=${this._cardConfig}
                     class=${this._error ? "blur" : ""}
-                    editMode
+                    preview
                   ></hui-card>
                 `}
             ${this._error

@@ -39,13 +39,13 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.editMode = this.editMode;
+    element.preview = this.preview;
     element.config = cardConfig;
     return element;
   }
 
   protected setVisibility(conditionMet: boolean): void {
-    const visible = this.editMode || conditionMet;
+    const visible = this.preview || conditionMet;
     const previouslyHidden = this.hidden;
     super.setVisibility(conditionMet);
     if (previouslyHidden !== this.hidden) {

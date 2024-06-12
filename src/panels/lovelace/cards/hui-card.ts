@@ -25,11 +25,9 @@ declare global {
 export class HuiCard extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @property({ type: Boolean }) public isPanel = false;
-
-  @property({ type: Boolean }) public preview = false;
 
   set config(config: LovelaceCardConfig | undefined) {
     if (!config) return;
@@ -91,7 +89,7 @@ export class HuiCard extends ReactiveElement {
   private _createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config);
     element.hass = this.hass;
-    element.editMode = this.editMode;
+    element.preview = this.preview;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
     element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
@@ -137,9 +135,9 @@ export class HuiCard extends ReactiveElement {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
       }
-      if (changedProps.has("editMode")) {
+      if (changedProps.has("preview")) {
         try {
-          this._element.editMode = this.editMode || this.preview;
+          this._element.preview = this.preview;
         } catch (e: any) {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
@@ -194,7 +192,6 @@ export class HuiCard extends ReactiveElement {
 
     const visible =
       forceVisible ||
-      this.editMode ||
       this.preview ||
       !this.config?.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);

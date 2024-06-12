@@ -248,17 +248,17 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     });
   }
 
-  private _addCardToColumn(columnEl, index, editMode) {
+  private _addCardToColumn(columnEl, index, preview) {
     const card: HuiCard = this.cards[index];
-    if (!editMode || this.isStrategy) {
-      card.editMode = false;
+    if (!preview || this.isStrategy) {
+      card.preview = false;
       columnEl.appendChild(card);
     } else {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
       wrapper.path = [this.index!, index];
-      card.editMode = true;
+      card.preview = true;
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
     }
