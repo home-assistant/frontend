@@ -157,7 +157,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
       exclude: [
         path.join(paths.polymer_dir, "src/resources/polyfills"),
         ...[
-          "@formatjs/intl-\\w+",
+          "@formatjs/(?:ecma402-abstract|intl-\\w+)",
           "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
