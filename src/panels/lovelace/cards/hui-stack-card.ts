@@ -1,19 +1,12 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
-import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
+import "./hui-card";
+import type { HuiCard } from "./hui-card";
 import { StackCardConfig } from "./types";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -32,7 +25,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property({ type: Boolean }) public editMode = false;
 
-  @state() protected _cards?: LovelaceCard[];
+  @state() protected _cards?: HuiCard[];
 
   @state() protected _config?: T;
 
@@ -49,28 +42,34 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     }
     this._config = config;
     this._cards = config.cards.map((card) => {
-      const element = this._createCardElement(card) as LovelaceCard;
+      const element = this._createCardElement(card);
       return element;
     });
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (
-      !this._cards ||
-      (!changedProps.has("hass") && !changedProps.has("editMode"))
-    ) {
-      return;
-    }
+  protected update(changedProperties) {
+    super.update(changedProperties);
 
-    for (const element of this._cards) {
-      if (this.hass) {
-        element.hass = this.hass;
+    if (this._cards) {
+      if (changedProperties.has("hass")) {
+        this._cards.forEach((card) => {
+          card.hass = this.hass;
+        });
       }
-      if (this.editMode !== undefined) {
-        element.editMode = this.editMode;
+      if (changedProperties.has("editMode")) {
+        this._cards.forEach((card) => {
+          card.editMode = this.editMode;
+        });
       }
     }
+  }
+
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.editMode = this.editMode;
+    element.config = cardConfig;
+    return element;
   }
 
   protected render() {
@@ -109,35 +108,5 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
     `;
-  }
-
-  private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this.hass) {
-      element.hass = this.hass;
-    }
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        ev.stopPropagation();
-        this._rebuildCard(element, cardConfig);
-        fireEvent(this, "ll-rebuild");
-      },
-      { once: true }
-    );
-    return element;
-  }
-
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
-  ): void {
-    const newCardEl = this._createCardElement(config);
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._cards = this._cards!.map((curCardEl) =>
-      curCardEl === cardElToReplace ? newCardEl : curCardEl
-    );
   }
 }

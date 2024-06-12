@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { HomeAssistant } from "../../../types";
+import { HuiCard } from "../cards/hui-card";
 import { ConditionalCardConfig } from "../cards/types";
 import {
   Condition,
@@ -12,7 +13,6 @@ import {
   validateConditionalConfig,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -28,7 +28,7 @@ export class HuiConditionalBase extends ReactiveElement {
 
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
-  protected _element?: LovelaceCard | LovelaceRow;
+  protected _element?: HuiCard | LovelaceRow;
 
   private _listeners: MediaQueriesListener[] = [];
 
