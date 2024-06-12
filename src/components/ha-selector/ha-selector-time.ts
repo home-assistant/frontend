@@ -29,7 +29,7 @@ export class HaTimeSelector extends LitElement {
         .required=${this.required}
         .helper=${this.helper}
         .label=${this.label}
-        enable-second
+        .enableSecond=${!this.selector.time?.no_second}
       ></ha-time-input>
     `;
   }
