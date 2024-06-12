@@ -90,6 +90,8 @@ export class HuiCard extends ReactiveElement {
     const element = createCardElement(config);
     element.hass = this.hass;
     element.preview = this.preview;
+    // For backwards compatibility
+    (element as any).editMode = this.preview;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
     element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
@@ -138,6 +140,8 @@ export class HuiCard extends ReactiveElement {
       if (changedProps.has("preview")) {
         try {
           this._element.preview = this.preview;
+          // For backwards compatibility
+          (this._element as any).editMode = this.preview;
         } catch (e: any) {
           this._buildElement(createErrorCardConfig(e.message, null));
         }
