@@ -754,7 +754,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${item.disabled_by && devices.length
           ? html`
               <ha-menu-item
-                .href=${devices.length === 1
+                href=${devices.length === 1
                   ? `/config/devices/device/${devices[0].id}`
                   : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
               >
@@ -769,7 +769,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           : ""}
         ${item.disabled_by && services.length
           ? html`<ha-menu-item
-              .href=${services.length === 1
+              href=${services.length === 1
                 ? `/config/devices/device/${services[0].id}`
                 : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
             >
@@ -787,7 +787,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${item.disabled_by && entities.length
           ? html`
               <ha-menu-item
-                .href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
+                href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
               >
                 <ha-svg-icon
                   .path=${mdiShapeOutline}
@@ -827,7 +827,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ${this._diagnosticHandler && item.state === "loaded"
           ? html`
               <ha-menu-item
-                .href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
+                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                 target="_blank"
                 @click=${this._signUrl}
               >
