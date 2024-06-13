@@ -37,15 +37,16 @@ const HIDE_DOMAIN = new Set([
   "configurator",
   "conversation",
   "device_tracker",
+  "event",
   "geo_location",
+  "notify",
   "persistent_notification",
   "script",
-  "sun",
-  "zone",
-  "event",
-  "tts",
   "stt",
+  "sun",
   "todo",
+  "tts",
+  "zone",
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);
