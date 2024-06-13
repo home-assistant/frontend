@@ -86,6 +86,10 @@ export class HuiCard extends ReactiveElement {
     return configOptions;
   }
 
+  public getElementLayoutOptions(): LovelaceLayoutOptions {
+    return this._element?.getLayoutOptions?.() ?? {};
+  }
+
   private _createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config);
     element.hass = this.hass;

@@ -6,9 +6,10 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
+import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
 
-const TABS = ["config", "visibility"] as const;
+const TABS = ["config", "visibility", "layout"] as const;
 
 @customElement("hui-card-element-editor")
 export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
@@ -69,6 +70,15 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
           ></hui-card-visibility-editor>
         `;
         break;
+      case "layout":
+        content = html`
+          <hui-card-layout-editor
+            .hass=${this.hass}
+            .config=${this.value}
+            @value-changed=${this._configChanged}
+          >
+          </hui-card-layout-editor>
+        `;
     }
     return html`
       <paper-tabs
@@ -81,7 +91,7 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
           (tab, index) => html`
             <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
               ${this.hass.localize(
-                `ui.panel.lovelace.editor.edit_card.tab-${tab}`
+                `ui.panel.lovelace.editor.edit_card.tab_${tab}`
               )}
             </paper-tab>
           `

@@ -5499,8 +5499,9 @@
             "increase_position": "Increase card position",
             "options": "More options",
             "search_cards": "Search cards",
-            "tab-config": "Config",
-            "tab-visibility": "Visibility",
+            "tab_config": "Config",
+            "tab_visibility": "Visibility",
+            "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
             }
