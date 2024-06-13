@@ -58,6 +58,10 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _description? = "";
 
+  @state() private _location? = "";
+
+  @state() private _attendees? = "";
+
   @state() private _rrule?: string;
 
   @state() private _allDay = false;
@@ -94,6 +98,8 @@ class DialogCalendarEventEditor extends LitElement {
       this._allDay = isDate(entry.dtstart);
       this._summary = entry.summary;
       this._description = entry.description;
+      this._location = entry.location;
+      this._attendees = entry.attendees;
       this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart + "T00:00:00");
@@ -125,6 +131,8 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtend = undefined;
     this._summary = "";
     this._description = "";
+    this._location = "";
+    this._attendees = "";
     this._rrule = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -184,6 +192,26 @@ class DialogCalendarEventEditor extends LitElement {
             )}
             .value=${this._description}
             @change=${this._handleDescriptionChanged}
+            autogrow
+          ></ha-textarea>
+          <ha-textarea
+            class="location"
+            name="location"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.location"
+            )}
+            .value=${this._location}
+            @change=${this._handleLocationChanged}
+            autogrow
+          ></ha-textarea>
+          <ha-textarea
+            class="attendees"
+            name="attendees"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.attendees"
+            )}
+            .value=${this._attendees}
+            @change=${this._handleAttendeesChanged}
             autogrow
           ></ha-textarea>
           <ha-entity-picker
@@ -333,6 +361,14 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _handleDescriptionChanged(ev) {
     this._description = ev.target.value;
+  }
+
+  private _handleLocationChanged(ev) {
+    this._location = ev.target.value;
+  }
+
+  private _handleAttendeesChanged(ev) {
+    this._attendees = ev.target.value;
   }
 
   private _handleRRuleChanged(ev) {

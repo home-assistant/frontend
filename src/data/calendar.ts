@@ -31,6 +31,8 @@ export interface CalendarEventData {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
+  attendees?: string;
 }
 
 export interface CalendarEventMutableParams {
