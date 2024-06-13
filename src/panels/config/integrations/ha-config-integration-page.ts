@@ -1414,14 +1414,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-alert:first-of-type {
           margin-top: 16px;
         }
+        ha-list-item-new {
+          position: relative;
+        }
         ha-list-item-new.discovered {
           height: 72px;
         }
         ha-list-item-new.config_entry::after {
           position: absolute;
-          top: 8px;
+          top: 0;
           right: 0;
-          bottom: 8px;
+          bottom: 0;
           left: 0;
           opacity: 0.12;
           pointer-events: none;
