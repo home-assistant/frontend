@@ -107,7 +107,6 @@ export class HUIView extends ReactiveElement {
     const element = document.createElement("hui-section");
     element.hass = this.hass;
     element.lovelace = this.lovelace;
-    element.preview = this.lovelace.editMode;
     element.config = sectionConfig;
     element.viewIndex = this.index;
     element.preview = this.lovelace.editMode;
