@@ -250,9 +250,9 @@ export class HuiDialogEditCard
             ${this._isInSection
               ? html`
                   <hui-section
-                    preview
                     .hass=${this.hass}
                     .config=${this._cardConfigInSection(this._cardConfig)}
+                    preview
                     class=${this._error ? "blur" : ""}
                   ></hui-section>
                 `
@@ -260,8 +260,8 @@ export class HuiDialogEditCard
                   <hui-card
                     .hass=${this.hass}
                     .config=${this._cardConfig}
-                    class=${this._error ? "blur" : ""}
                     preview
+                    class=${this._error ? "blur" : ""}
                   ></hui-card>
                 `}
             ${this._error

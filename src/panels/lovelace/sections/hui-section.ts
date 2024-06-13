@@ -57,8 +57,8 @@ export class HuiSection extends ReactiveElement {
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
-    element.preview = this.preview;
     element.hass = this.hass;
+    element.preview = this.preview;
     element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
