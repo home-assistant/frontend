@@ -24,7 +24,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { SENSOR_ENTITIES } from "../../../common/const";
+import { SENSOR_ENTITIES, SERVICE_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -190,18 +190,31 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(entities, (entry) =>
-        entry.entity_category
-          ? entry.entity_category
-          : computeDomain(entry.entity_id) === "event"
-            ? "event"
-            : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
-              ? "sensor"
-              : "control"
-      ) as Record<
+      const result = groupBy(entities, (entry) => {
+        const domain = computeDomain(entry.entity_id);
+
+        if (entry.entity_category) {
+          return entry.entity_category;
+        }
+
+        if (domain === "event") {
+          return "event";
+        }
+
+        if (SENSOR_ENTITIES.includes(domain)) {
+          return "sensor";
+        }
+
+        if (SERVICE_ENTITIES.includes(domain)) {
+          return "service";
+        }
+
+        return "control";
+      }) as Record<
         | "control"
         | "event"
         | "sensor"
+        | "service"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
@@ -854,7 +867,14 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="column">
             ${(
-              ["control", "sensor", "event", "config", "diagnostic"] as const
+              [
+                "control",
+                "sensor",
+                "service",
+                "event",
+                "config",
+                "diagnostic",
+              ] as const
             ).map((category) =>
               // Make sure we render controls if no other cards will be rendered
               entitiesByCategory[category].length > 0 ||

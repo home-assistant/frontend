@@ -235,6 +235,8 @@ export const SENSOR_ENTITIES = [
   "weather",
 ];
 
+export const SERVICE_ENTITIES = ["conversation", "notify", "stt", "tts"];
+
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally
  *  be the default) unless the element itself enforces it (e.g. a button). Also those elements

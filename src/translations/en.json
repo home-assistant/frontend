@@ -4012,6 +4012,7 @@
             "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
+            "service": "Services",
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
