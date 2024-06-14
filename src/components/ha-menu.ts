@@ -15,11 +15,6 @@ export class HaMenu extends MdMenu {
     this.addEventListener("close-menu", this._handleCloseMenu);
   }
 
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.removeEventListener("close-menu", this._handleCloseMenu);
-  }
-
   private _handleCloseMenu(ev: CloseMenuEvent) {
     if (
       ev.detail.reason.kind === CloseReason.KEYDOWN &&
