@@ -110,10 +110,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as
-      | CameraEntity
-      | ImageEntity
-      | PersonEntity;
+    const stateObj: CameraEntity | ImageEntity | PersonEntity | undefined =
+      this.hass.states[this._config.entity];
 
     if (!stateObj) {
       return html`
