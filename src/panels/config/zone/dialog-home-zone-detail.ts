@@ -14,7 +14,7 @@ const SCHEMA = [
   {
     name: "location",
     required: true,
-    selector: { location: { radius: true, radius_readonly: true } },
+    selector: { location: { radius: true } },
   },
 ];
 
@@ -35,6 +35,7 @@ class DialogHomeZoneDetail extends LitElement {
     this._data = {
       latitude: this.hass.config.latitude,
       longitude: this.hass.config.longitude,
+      radius: this.hass.config.radius,
     };
   }
 
@@ -73,11 +74,6 @@ class DialogHomeZoneDetail extends LitElement {
             .computeLabel=${this._computeLabel}
             @value-changed=${this._valueChanged}
           ></ha-form>
-          <p>
-            ${this.hass!.localize(
-              "ui.panel.config.zone.detail.no_edit_home_zone_radius"
-            )}
-          </p>
         </div>
         <mwc-button
           slot="primaryAction"
@@ -95,7 +91,7 @@ class DialogHomeZoneDetail extends LitElement {
     location: {
       latitude: data.latitude,
       longitude: data.longitude,
-      radius: this.hass.states["zone.home"]?.attributes?.radius || 100,
+      radius: data.radius || 100,
     },
   }));
 
@@ -104,6 +100,7 @@ class DialogHomeZoneDetail extends LitElement {
     const value = { ...ev.detail.value };
     value.latitude = value.location.latitude;
     value.longitude = value.location.longitude;
+    value.radius = value.location.radius;
     delete value.location;
     this._data = value;
   }

@@ -4168,8 +4168,7 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update",
-            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
+            "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
         },
