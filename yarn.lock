@@ -9080,7 +9080,7 @@ __metadata:
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
     leaflet-draw: "npm:1.0.4"
-    lint-staged: "npm:15.2.6"
+    lint-staged: "npm:15.2.7"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.3"
     lodash.merge: "npm:4.6.2"
@@ -10495,9 +10495,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:15.2.6":
-  version: 15.2.6
-  resolution: "lint-staged@npm:15.2.6"
+"lint-staged@npm:15.2.7":
+  version: 15.2.7
+  resolution: "lint-staged@npm:15.2.7"
   dependencies:
     chalk: "npm:~5.3.0"
     commander: "npm:~12.1.0"
@@ -10511,7 +10511,7 @@ __metadata:
     yaml: "npm:~2.4.2"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/d2e7b610603ace80521d80afa7d355864a0f5f574aa2a2edbf5d96486e99ceeebb4d988e733c0b6ad8bfa899092f1c20db5cb02a0cc3e260919aeb92ef6f2d79
+  checksum: 10/7557bcf4e8dc0555f2c7e6a8ab6f5dfd7faaaed632a5d9e598768c86f786267ca216f8005068796a8118884d322a1c7f8f93e57c01b3e556475b77297ddad34f
   languageName: node
   linkType: hard
 
