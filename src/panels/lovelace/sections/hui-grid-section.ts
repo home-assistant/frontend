@@ -202,6 +202,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           margin: 0px;
           letter-spacing: 0.1px;
           line-height: 32px;
+          text-align: var(--ha-view-sections-title-text-align, start);
           min-height: 32px;
           display: block;
           padding: 24px 10px 10px;
