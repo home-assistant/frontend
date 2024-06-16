@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-button";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import {
@@ -72,16 +72,16 @@ class DialogScheduleBlockInfo extends LitElement {
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
-        <mwc-button
+        <ha-button
           slot="secondaryAction"
           class="warning"
           @click=${this._deleteBlock}
         >
           ${this.hass!.localize("ui.common.delete")}
-        </mwc-button>
-        <mwc-button slot="primaryAction" @click=${this._updateBlock}>
+        </ha-button>
+        <ha-button slot="primaryAction" @click=${this._updateBlock}>
           ${this.hass!.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
