@@ -24,7 +24,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { SENSOR_ENTITIES, SERVICE_ENTITIES } from "../../../common/const";
+import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -197,16 +197,16 @@ export class HaConfigDevicePage extends LitElement {
           return entry.entity_category;
         }
 
-        if (domain === "event") {
-          return "event";
+        if (domain === "event" || domain === "notify") {
+          return domain;
         }
 
         if (SENSOR_ENTITIES.includes(domain)) {
           return "sensor";
         }
 
-        if (SERVICE_ENTITIES.includes(domain)) {
-          return "service";
+        if (ASSIST_ENTITIES.includes(domain)) {
+          return "assist";
         }
 
         return "control";
@@ -214,15 +214,18 @@ export class HaConfigDevicePage extends LitElement {
         | "control"
         | "event"
         | "sensor"
-        | "service"
+        | "assist"
+        | "notify"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
       for (const key of [
+        "assist",
         "config",
         "control",
         "diagnostic",
         "event",
+        "notify",
         "sensor",
       ]) {
         if (!(key in result)) {
@@ -870,8 +873,9 @@ export class HaConfigDevicePage extends LitElement {
               [
                 "control",
                 "sensor",
-                "service",
+                "notify",
                 "event",
+                "assist",
                 "config",
                 "diagnostic",
               ] as const

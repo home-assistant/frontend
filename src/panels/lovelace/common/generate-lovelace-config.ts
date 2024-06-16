@@ -1,5 +1,5 @@
 import { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import { SENSOR_ENTITIES, SERVICE_ENTITIES } from "../../../common/const";
+import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -38,12 +38,13 @@ const HIDE_DOMAIN = new Set([
   "device_tracker",
   "event",
   "geo_location",
+  "notify",
   "persistent_notification",
   "script",
   "sun",
   "todo",
   "zone",
-  ...SERVICE_ENTITIES,
+  ...ASSIST_ENTITIES,
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);

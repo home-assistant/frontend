@@ -31,6 +31,7 @@ import {
   mdiFormatListBulleted,
   mdiFormatListCheckbox,
   mdiFormTextbox,
+  mdiForumOutline,
   mdiGauge,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
@@ -98,7 +99,7 @@ export const FIXED_DOMAIN_ICONS = {
   calendar: mdiCalendar,
   climate: mdiThermostat,
   configurator: mdiCog,
-  conversation: mdiMicrophoneMessage,
+  conversation: mdiForumOutline,
   counter: mdiCounter,
   date: mdiCalendar,
   datetime: mdiCalendarClock,
@@ -235,7 +236,7 @@ export const SENSOR_ENTITIES = [
   "weather",
 ];
 
-export const SERVICE_ENTITIES = ["conversation", "notify", "stt", "tts"];
+export const ASSIST_ENTITIES = ["conversation", "stt", "tts"];
 
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally
