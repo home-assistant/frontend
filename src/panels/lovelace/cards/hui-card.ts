@@ -159,7 +159,7 @@ export class HuiCard extends ReactiveElement {
   protected willUpdate(
     changedProps: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
-    if (changedProps.has("hass") || changedProps.has("lovelace")) {
+    if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
   }
