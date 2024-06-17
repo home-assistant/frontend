@@ -118,6 +118,8 @@ export class HaGridSizeEditor extends LitElement {
   private _sliderMoved(ev) {
     ev.stopPropagation();
     const key = ev.currentTarget.id;
+    const value = ev.detail.value;
+    if (value === undefined) return;
     this._localValue = {
       ...this.value,
       [key]: ev.detail.value,

@@ -1,6 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical, mdiRestore } from "@mdi/js";
-import { LitElement, PropertyValues, css, html } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -76,7 +76,7 @@ export class HuiCardVisibilityEditor extends LitElement {
                     .path=${mdiCheck}
                   ></ha-svg-icon>
                 `
-              : ``}
+              : nothing}
           </ha-list-item>
 
           <ha-list-item graphic="icon">
@@ -91,7 +91,7 @@ export class HuiCardVisibilityEditor extends LitElement {
                     .path=${mdiCheck}
                   ></ha-svg-icon>
                 `
-              : ``}
+              : nothing}
           </ha-list-item>
 
           <li divider role="separator"></li>
