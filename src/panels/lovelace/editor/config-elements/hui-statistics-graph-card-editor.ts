@@ -73,6 +73,7 @@ const cardConfigStruct = assign(
     unit: optional(string()),
     hide_legend: optional(boolean()),
     logarithmic_scale: optional(boolean()),
+    energy_date_selection: optional(boolean()),
   })
 );
 
@@ -217,6 +218,11 @@ export class HuiStatisticsGraphCardEditor
               required: false,
               selector: { boolean: {} },
             },
+            {
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
         },
       ];
@@ -353,6 +359,7 @@ export class HuiStatisticsGraphCardEditor
       case "unit":
       case "hide_legend":
       case "logarithmic_scale":
+      case "energy_date_selection":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );
