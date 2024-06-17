@@ -1,6 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-control-slider";
+import "./ha-grid-layout-slider";
 
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -17,9 +17,9 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public value?: GridSizeValue;
 
-  @property({ attribute: false }) public rows = 4;
+  @property({ attribute: false }) public rows = 6;
 
-  @property({ attribute: false }) public columns = 6;
+  @property({ attribute: false }) public columns = 4;
 
   @property({ attribute: false }) public rowMin?: number;
 
@@ -40,31 +40,32 @@ export class HaGridSizeEditor extends LitElement {
   protected render() {
     return html`
       <div class="grid">
-        <ha-control-slider
+        <ha-grid-layout-slider
           id="columns"
-          min="0"
+          min="1"
           max="4"
-          mode="start"
+          start="0"
+          .end=${this.columns}
           .value=${this.value?.columns ?? 1}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
-        ></ha-control-slider>
-        <ha-control-slider
+        ></ha-grid-layout-slider>
+        <ha-grid-layout-slider
           id="rows"
-          min="0"
-          max="6"
-          mode="end"
+          min="1"
+          max="4"
+          start="0"
           vertical
-          inverted
+          .end=${this.rows}
           .value=${this.value?.rows ?? 1}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
-        ></ha-control-slider>
+        ></ha-grid-layout-slider>
         <div
           class="preview"
           style=${styleMap({
-            "--total-rows": this.columns,
-            "--total-columns": this.rows,
+            "--total-rows": this.rows,
+            "--total-columns": this.columns,
             "--rows": this._localValue?.rows ?? 1,
             "--columns": this._localValue?.columns ?? 1,
           })}
@@ -73,8 +74,8 @@ export class HaGridSizeEditor extends LitElement {
             ${Array(this.rows * this.columns)
               .fill(0)
               .map((_, index) => {
-                const row = Math.floor(index / this.rows) + 1;
-                const column = (index % this.rows) + 1;
+                const row = Math.floor(index / this.columns) + 1;
+                const column = (index % this.columns) + 1;
                 return html`
                   <div
                     class="cell"
@@ -128,11 +129,6 @@ export class HaGridSizeEditor extends LitElement {
 
   static styles = [
     css`
-      ha-control-slider {
-        --control-slider-thickness: 16px;
-      }
-      ha-control-slider[vertical] {
-      }
       .grid {
         display: grid;
         grid-template-areas:
@@ -140,7 +136,7 @@ export class HaGridSizeEditor extends LitElement {
           "row-slider preview";
         grid-template-rows: auto 1fr;
         grid-template-columns: auto 1fr;
-        gap: 16px;
+        gap: 8px;
       }
       #columns {
         grid-area: column-slider;
