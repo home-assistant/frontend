@@ -46,7 +46,7 @@ export class HaGridSizeEditor extends LitElement {
           max="4"
           start="0"
           .end=${this.columns}
-          .value=${this.value?.columns ?? 1}
+          .value=${this.value?.columns ?? 4}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
@@ -57,7 +57,7 @@ export class HaGridSizeEditor extends LitElement {
           start="0"
           vertical
           .end=${this.rows}
-          .value=${this.value?.rows ?? 1}
+          .value=${this.value?.rows}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
@@ -67,7 +67,7 @@ export class HaGridSizeEditor extends LitElement {
             "--total-rows": this.rows,
             "--total-columns": this.columns,
             "--rows": this._localValue?.rows ?? 1,
-            "--columns": this._localValue?.columns ?? 1,
+            "--columns": this._localValue?.columns ?? 4,
           })}
         >
           <div>

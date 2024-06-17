@@ -42,8 +42,8 @@ export class HuiCardVisibilityEditor extends LitElement {
       options?: LovelaceLayoutOptions,
       defaultOptions?: LovelaceLayoutOptions
     ) => ({
-      rows: options?.grid_rows ?? defaultOptions?.grid_rows ?? 1,
-      columns: options?.grid_columns ?? defaultOptions?.grid_columns ?? 1,
+      rows: options?.grid_rows ?? defaultOptions?.grid_rows,
+      columns: options?.grid_columns ?? defaultOptions?.grid_columns,
     })
   );
 

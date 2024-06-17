@@ -6,6 +6,7 @@ import {
   TemplateResult,
   css,
   html,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -274,7 +275,9 @@ export class HaGridLayoutSlider extends LitElement {
               ></div>
             </div>
           </div>
-          <div class="handle"></div>
+          ${this.value !== undefined
+            ? html`<div class="handle"></div>`
+            : nothing}
         </div>
       </div>
     `;
