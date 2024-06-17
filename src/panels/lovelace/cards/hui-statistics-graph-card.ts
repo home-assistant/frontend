@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { subHours } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -224,13 +225,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatistics(): Promise<void> {
-    const startDate = new Date();
-    startDate.setTime(
-      startDate.getTime() -
-        1000 *
-          60 *
-          60 *
-          (24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1)
+    let startDate: Date;
+    startDate = subHours(
+      new Date(),
+      24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1
     );
     try {
       let unitClass;
