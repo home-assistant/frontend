@@ -48,30 +48,30 @@ export class HaGridLayoutSlider extends LitElement {
   public step = 1;
 
   @property({ type: Number })
-  public min = 0;
+  public min = 1;
 
   @property({ type: Number })
   public max = 4;
 
   @property({ type: Number })
-  public start?: number;
-
-  @property({ type: Number })
-  public end?: number;
+  public range?: number;
 
   @state()
   public pressed = false;
 
   private _mc?: HammerManager;
 
+  private get _range() {
+    return this.range ?? this.max;
+  }
+
   private _valueToPercentage(value: number) {
-    const percentage =
-      (this._boundedValue(value) - this._start) / (this._end - this._start);
+    const percentage = this._boundedValue(value) / this._range;
     return percentage;
   }
 
   private _percentageToValue(percentage: number) {
-    return (this._end - this._start) * percentage + this._start;
+    return this._range * percentage;
   }
 
   private _steppedValue(value: number) {
@@ -80,14 +80,6 @@ export class HaGridLayoutSlider extends LitElement {
 
   private _boundedValue(value: number) {
     return Math.min(Math.max(value, this.min), this.max);
-  }
-
-  private get _start() {
-    return this.start ?? this.min;
-  }
-
-  private get _end() {
-    return this.end ?? this.max;
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -252,8 +244,6 @@ export class HaGridLayoutSlider extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const range = (this.end ?? this.max) - (this.start ?? this.min);
-
     return html`
       <div
         class="container${classMap({
@@ -269,8 +259,8 @@ export class HaGridLayoutSlider extends LitElement {
               <div
                 class="active"
                 style=${styleMap({
-                  "--min": `${this.min / range}`,
-                  "--max": `${1 - this.max / range}`,
+                  "--min": `${this.min / this._range}`,
+                  "--max": `${1 - this.max / this._range}`,
                 })}
               ></div>
             </div>

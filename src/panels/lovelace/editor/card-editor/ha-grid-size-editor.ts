@@ -42,21 +42,19 @@ export class HaGridSizeEditor extends LitElement {
       <div class="grid">
         <ha-grid-layout-slider
           id="columns"
-          min="1"
-          max="4"
-          start="0"
-          .end=${this.columns}
+          .min=${this.columnMin || 1}
+          .max=${this.columnMax || this.columns}
+          .range=${this.columns}
           .value=${this.value?.columns ?? 4}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
         <ha-grid-layout-slider
           id="rows"
-          min="1"
-          max="4"
-          start="0"
+          .min=${this.rowMin || 1}
+          .max=${this.rowMax || this.rows}
+          .range=${this.rows}
           vertical
-          .end=${this.rows}
           .value=${this.value?.rows}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
