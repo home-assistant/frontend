@@ -74,16 +74,17 @@ export class HaGridSizeEditor extends LitElement {
               .map((_, index) => {
                 const row = Math.floor(index / this.columns) + 1;
                 const column = (index % this.columns) + 1;
+                const disabled =
+                  (this.rowMin !== undefined && row < this.rowMin) ||
+                  (this.rowMax !== undefined && row > this.rowMax) ||
+                  (this.columnMin !== undefined && column < this.columnMin) ||
+                  (this.columnMax !== undefined && column > this.columnMax);
                 return html`
                   <div
                     class="cell"
                     data-row=${row}
                     data-column=${column}
-                    .disabled=${(this.rowMin !== undefined &&
-                      row < this.rowMin) ||
-                    (this.rowMax !== undefined && row > this.rowMax) ||
-                    (this.columnMin !== undefined && column < this.columnMin) ||
-                    (this.columnMax !== undefined && column > this.columnMax)}
+                    .disabled=${disabled}
                     @click=${this._cellClick}
                   ></div>
                 `;
