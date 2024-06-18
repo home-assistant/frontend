@@ -64,8 +64,8 @@ export class HaGridSizeEditor extends LitElement {
           style=${styleMap({
             "--total-rows": this.rows,
             "--total-columns": this.columns,
-            "--rows": this._localValue?.rows ?? 1,
-            "--columns": this._localValue?.columns ?? 4,
+            "--rows": this._localValue?.rows,
+            "--columns": this._localValue?.columns,
           })}
         >
           <div>
@@ -174,8 +174,8 @@ export class HaGridSizeEditor extends LitElement {
       }
       .selected .cell {
         background-color: var(--primary-color);
-        grid-column: 1 / span var(--columns);
-        grid-row: 1 / span var(--rows);
+        grid-column: 1 / span var(--columns, 0);
+        grid-row: 1 / span var(--rows, 0);
         opacity: 0.5;
       }
     `,
