@@ -4012,6 +4012,8 @@
             "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
+            "notify": "Notifiers",
+            "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
