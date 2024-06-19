@@ -60,8 +60,6 @@ export class HuiCardVisibilityEditor extends LitElement {
   );
 
   render() {
-    const isDefault = this._isDefault(this.config.layout_options);
-
     return html`
       <div class="header">
         <p class="intro">
@@ -129,7 +127,7 @@ export class HuiCardVisibilityEditor extends LitElement {
                 this.config.layout_options,
                 this._defaultLayoutOptions
               )}
-              .isDefault=${isDefault}
+              .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
             ></ha-grid-size-editor>
           `}

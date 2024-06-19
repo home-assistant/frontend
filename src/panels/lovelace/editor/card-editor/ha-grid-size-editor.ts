@@ -29,7 +29,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public columnMin?: number;
 
-  @property({ attribute: false }) public columnMax?: number = 3;
+  @property({ attribute: false }) public columnMax?: number;
 
   @property({ attribute: false }) public isDefault?: boolean;
 

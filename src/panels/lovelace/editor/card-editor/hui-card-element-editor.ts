@@ -9,14 +9,17 @@ import { HuiElementEditor } from "../hui-element-editor";
 import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
 
-const TABS = ["config", "visibility", "layout"] as const;
+type Tab = "config" | "visibility" | "layout";
 
 @customElement("hui-card-element-editor")
 export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
-  @state() private _curTab: (typeof TABS)[number] = TABS[0];
+  @state() private _curTab: Tab = "config";
 
   @property({ type: Boolean, attribute: "show-visibility-tab" })
   public showVisibilityTab = false;
+
+  @property({ type: Boolean, attribute: "show-layout-tab" })
+  public showLayoutTab = false;
 
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
@@ -53,7 +56,11 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
   }
 
   protected renderConfigElement(): TemplateResult {
-    if (!this.showVisibilityTab) return super.renderConfigElement();
+    const displayedTabs: Tab[] = ["config"];
+    if (this.showVisibilityTab) displayedTabs.push("visibility");
+    if (this.showLayoutTab) displayedTabs.push("layout");
+
+    if (displayedTabs.length === 1) return super.renderConfigElement();
 
     let content: TemplateResult<1> | typeof nothing = nothing;
 
@@ -84,10 +91,10 @@ export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
       <paper-tabs
         scrollable
         hide-scroll-buttons
-        .selected=${TABS.indexOf(this._curTab)}
+        .selected=${displayedTabs.indexOf(this._curTab)}
         @selected-item-changed=${this._handleTabSelected}
       >
-        ${TABS.map(
+        ${displayedTabs.map(
           (tab, index) => html`
             <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
               ${this.hass.localize(
