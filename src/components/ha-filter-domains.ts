@@ -89,13 +89,18 @@ export class HaFilterDomains extends LitElement {
     });
 
     return Array.from(domains.values())
+      .map((domain) => ({
+        domain,
+        name: domainToName(this.hass.localize, domain),
+      }))
       .filter(
         (entry) =>
           !filter ||
-          entry.toLowerCase().includes(filter) ||
-          domainToName(this.hass.localize, entry).toLowerCase().includes(filter)
+          entry.domain.toLowerCase().includes(filter) ||
+          entry.name.toLowerCase().includes(filter)
       )
-      .sort((a, b) => stringCompare(a, b, this.hass.locale.language));
+      .sort((a, b) => stringCompare(a.name, b.name, this.hass.locale.language))
+      .map((entry) => entry.domain);
   });
 
   protected updated(changed) {
