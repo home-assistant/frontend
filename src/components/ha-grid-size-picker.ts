@@ -1,19 +1,19 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-icon-button";
-import "./ha-grid-layout-slider";
+import "./ha-icon-button";
+import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
 
 import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../common/dom/fire_event";
+import { HomeAssistant } from "../types";
 
 type GridSizeValue = {
   rows?: number;
   columns?: number;
 };
 
-@customElement("ha-grid-size-editor")
+@customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -45,7 +45,9 @@ export class HaGridSizeEditor extends LitElement {
     return html`
       <div class="grid">
         <ha-grid-layout-slider
-          aria-label="Number of columns"
+          aria-label=${this.hass.localize(
+            "ui.components.grid-size-picker.columns"
+          )}
           id="columns"
           .min=${this.columnMin ?? 1}
           .max=${this.columnMax ?? this.columns}
@@ -55,7 +57,9 @@ export class HaGridSizeEditor extends LitElement {
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
         <ha-grid-layout-slider
-          aria-label="Number of rows"
+          aria-label=${this.hass.localize(
+            "ui.components.grid-size-picker.rows"
+          )}
           id="rows"
           .min=${this.rowMin ?? 1}
           .max=${this.rowMax ?? this.rows}
@@ -71,8 +75,12 @@ export class HaGridSizeEditor extends LitElement {
                 @click=${this._reset}
                 class="reset"
                 .path=${mdiRestore}
-                label="Reset to default"
-                title="Reset to default"
+                label=${this.hass.localize(
+                  "ui.components.grid-size-picker.reset_default"
+                )}
+                title=${this.hass.localize(
+                  "ui.components.grid-size-picker.reset_default"
+                )}
               >
               </ha-icon-button>
             `
@@ -220,6 +228,6 @@ export class HaGridSizeEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-grid-size-editor": HaGridSizeEditor;
+    "ha-grid-size-picker": HaGridSizeEditor;
   }
 }

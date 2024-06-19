@@ -8,6 +8,7 @@ import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-slider";
@@ -20,7 +21,6 @@ import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
 import { DEFAULT_GRID_OPTIONS } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
-import "./ha-grid-size-editor";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardVisibilityEditor extends LitElement {
@@ -121,7 +121,7 @@ export class HuiCardVisibilityEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <ha-grid-size-editor
+            <ha-grid-size-picker
               .hass=${this.hass}
               .value=${this._gridSizeValue(
                 this.config.layout_options,
@@ -129,7 +129,7 @@ export class HuiCardVisibilityEditor extends LitElement {
               )}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
-            ></ha-grid-size-editor>
+            ></ha-grid-size-picker>
           `}
     `;
   }

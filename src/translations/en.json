@@ -741,6 +741,11 @@
           "last_year": "Last year"
         }
       },
+      "grid-size-picker": {
+        "reset_default": "Reset to default size",
+        "columns": "Number of columns",
+        "rows": "Number of rows"
+      },
       "relative_time": {
         "never": "Never"
       },
