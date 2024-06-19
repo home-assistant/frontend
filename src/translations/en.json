@@ -5667,6 +5667,8 @@
               "name": "Area",
               "alert_classes": "Alert Classes",
               "sensor_classes": "Sensor Classes",
+              "observed_entities": "Observed entities",
+              "controlled_entities": "Controlled entities",
               "description": "The Area card automatically displays entities of a specific area.",
               "show_camera": "Show camera feed instead of area picture"
             },

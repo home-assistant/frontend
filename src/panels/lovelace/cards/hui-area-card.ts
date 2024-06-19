@@ -64,7 +64,7 @@ const SENSOR_DOMAINS = ["sensor"];
 
 const ALERT_DOMAINS = ["binary_sensor"];
 
-const TOGGLE_DOMAINS = ["light", "switch", "fan"];
+export const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const OTHER_DOMAINS = ["camera"];
 
@@ -82,6 +82,72 @@ const DOMAIN_ICONS = {
     moisture: mdiWaterAlert,
   },
 };
+
+export const getDevicesInArea = memoizeOne(
+  (areaId: string | undefined, devices: DeviceRegistryEntry[]) =>
+    new Set(
+      areaId
+        ? devices
+            .filter((device) => device.area_id === areaId)
+            .map((device) => device.id)
+        : []
+    )
+);
+
+export const getEntitiesByDomain = memoizeOne(
+  (
+    areaId: string,
+    devicesInArea: Set<string>,
+    registryEntities: EntityRegistryEntry[],
+    deviceClasses: { [key: string]: string[] } | undefined,
+    states: HomeAssistant["states"]
+  ) => {
+    const entitiesInArea = registryEntities
+      .filter(
+        (entry) =>
+          !entry.entity_category &&
+          !entry.hidden_by &&
+          (entry.area_id
+            ? entry.area_id === areaId
+            : entry.device_id && devicesInArea.has(entry.device_id))
+      )
+      .map((entry) => entry.entity_id);
+
+    const entitiesByDomain: { [domain: string]: HassEntity[] } = {};
+
+    for (const entity of entitiesInArea) {
+      const domain = computeDomain(entity);
+      if (
+        !TOGGLE_DOMAINS.includes(domain) &&
+        !SENSOR_DOMAINS.includes(domain) &&
+        !ALERT_DOMAINS.includes(domain) &&
+        !OTHER_DOMAINS.includes(domain)
+      ) {
+        continue;
+      }
+      const stateObj: HassEntity | undefined = states[entity];
+
+      if (!stateObj) {
+        continue;
+      }
+
+      if (
+        (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
+        deviceClasses &&
+        !deviceClasses[domain].includes(stateObj.attributes.device_class || "")
+      ) {
+        continue;
+      }
+
+      if (!(domain in entitiesByDomain)) {
+        entitiesByDomain[domain] = [];
+      }
+      entitiesByDomain[domain].push(stateObj);
+    }
+
+    return entitiesByDomain;
+  }
+);
 
 @customElement("hui-area-card")
 export class HuiAreaCard
@@ -117,66 +183,10 @@ export class HuiAreaCard
     h: number;
   } | null = null;
 
-  private _entitiesByDomain = memoizeOne(
-    (
-      areaId: string,
-      devicesInArea: Set<string>,
-      registryEntities: EntityRegistryEntry[],
-      deviceClasses: { [key: string]: string[] },
-      states: HomeAssistant["states"]
-    ) => {
-      const entitiesInArea = registryEntities
-        .filter(
-          (entry) =>
-            !entry.entity_category &&
-            !entry.hidden_by &&
-            (entry.area_id
-              ? entry.area_id === areaId
-              : entry.device_id && devicesInArea.has(entry.device_id))
-        )
-        .map((entry) => entry.entity_id);
-
-      const entitiesByDomain: { [domain: string]: HassEntity[] } = {};
-
-      for (const entity of entitiesInArea) {
-        const domain = computeDomain(entity);
-        if (
-          !TOGGLE_DOMAINS.includes(domain) &&
-          !SENSOR_DOMAINS.includes(domain) &&
-          !ALERT_DOMAINS.includes(domain) &&
-          !OTHER_DOMAINS.includes(domain)
-        ) {
-          continue;
-        }
-        const stateObj: HassEntity | undefined = states[entity];
-
-        if (!stateObj) {
-          continue;
-        }
-
-        if (
-          (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
-          !deviceClasses[domain].includes(
-            stateObj.attributes.device_class || ""
-          )
-        ) {
-          continue;
-        }
-
-        if (!(domain in entitiesByDomain)) {
-          entitiesByDomain[domain] = [];
-        }
-        entitiesByDomain[domain].push(stateObj);
-      }
-
-      return entitiesByDomain;
-    }
-  );
-
   private _isOn(domain: string, deviceClass?: string): HassEntity | undefined {
-    const entities = this._entitiesByDomain(
+    const entities = getEntitiesByDomain(
       this._config!.area,
-      this._devicesInArea(this._config!.area, this._devices!),
+      getDevicesInArea(this._config!.area, this._devices!),
       this._entities!,
       this._deviceClasses,
       this.hass.states
@@ -197,9 +207,9 @@ export class HuiAreaCard
   }
 
   private _average(domain: string, deviceClass?: string): string | undefined {
-    const entities = this._entitiesByDomain(
+    const entities = getEntitiesByDomain(
       this._config!.area,
-      this._devicesInArea(this._config!.area, this._devices!),
+      getDevicesInArea(this._config!.area, this._devices!),
       this._entities!,
       this._deviceClasses,
       this.hass.states
@@ -235,17 +245,6 @@ export class HuiAreaCard
   private _area = memoizeOne(
     (areaId: string | undefined, areas: AreaRegistryEntry[]) =>
       areas.find((area) => area.area_id === areaId) || null
-  );
-
-  private _devicesInArea = memoizeOne(
-    (areaId: string | undefined, devices: DeviceRegistryEntry[]) =>
-      new Set(
-        areaId
-          ? devices
-              .filter((device) => device.area_id === areaId)
-              .map((device) => device.id)
-          : []
-      )
   );
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -288,7 +287,7 @@ export class HuiAreaCard
     }
 
     if (
-      changedProps.has("_devicesInArea") ||
+      changedProps.has("_devices") ||
       changedProps.has("_areas") ||
       changedProps.has("_entities")
     ) {
@@ -311,15 +310,15 @@ export class HuiAreaCard
 
     if (
       !this._devices ||
-      !this._devicesInArea(this._config.area, this._devices) ||
+      !getDevicesInArea(this._config.area, this._devices) ||
       !this._entities
     ) {
       return false;
     }
 
-    const entities = this._entitiesByDomain(
+    const entities = getEntitiesByDomain(
       this._config.area,
-      this._devicesInArea(this._config.area, this._devices),
+      getDevicesInArea(this._config.area, this._devices),
       this._entities,
       this._deviceClasses,
       this.hass.states
@@ -359,9 +358,9 @@ export class HuiAreaCard
       return nothing;
     }
 
-    const entitiesByDomain = this._entitiesByDomain(
+    const entitiesByDomain = getEntitiesByDomain(
       this._config.area,
-      this._devicesInArea(this._config.area, this._devices),
+      getDevicesInArea(this._config.area, this._devices),
       this._entities,
       this._deviceClasses,
       this.hass.states
