@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiDotsVertical, mdiRestore } from "@mdi/js";
+import { mdiCheck, mdiDotsVertical } from "@mdi/js";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -18,6 +18,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
+import { DEFAULT_GRID_OPTIONS } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
 import "./ha-grid-size-editor";
 
@@ -42,14 +43,32 @@ export class HuiCardVisibilityEditor extends LitElement {
       options?: LovelaceLayoutOptions,
       defaultOptions?: LovelaceLayoutOptions
     ) => ({
-      rows: options?.grid_rows ?? defaultOptions?.grid_rows,
-      columns: options?.grid_columns ?? defaultOptions?.grid_columns,
+      rows:
+        options?.grid_rows ??
+        defaultOptions?.grid_rows ??
+        DEFAULT_GRID_OPTIONS.grid_rows,
+      columns:
+        options?.grid_columns ??
+        defaultOptions?.grid_columns ??
+        DEFAULT_GRID_OPTIONS.grid_columns,
     })
   );
 
+  private _isDefault = memoizeOne(
+    (options?: LovelaceLayoutOptions) =>
+      options?.grid_columns === undefined && options?.grid_rows === undefined
+  );
+
   render() {
+    const isDefault = this._isDefault(this.config.layout_options);
+
     return html`
       <div class="header">
+        <p class="intro">
+          ${this.hass.localize(
+            `ui.panel.lovelace.editor.edit_card.layout.explanation`
+          )}
+        </p>
         <ha-button-menu
           slot="icons"
           @action=${this._handleAction}
@@ -93,13 +112,6 @@ export class HuiCardVisibilityEditor extends LitElement {
                 `
               : nothing}
           </ha-list-item>
-
-          <li divider role="separator"></li>
-
-          <ha-list-item graphic="icon">
-            Reset to default
-            <ha-svg-icon slot="graphic" .path=${mdiRestore}></ha-svg-icon>
-          </ha-list-item>
         </ha-button-menu>
       </div>
       ${this._yamlMode
@@ -117,6 +129,7 @@ export class HuiCardVisibilityEditor extends LitElement {
                 this.config.layout_options,
                 this._defaultLayoutOptions
               )}
+              .isDefault=${isDefault}
               @value-changed=${this._gridSizeChanged}
             ></ha-grid-size-editor>
           `}
@@ -188,6 +201,16 @@ export class HuiCardVisibilityEditor extends LitElement {
       },
     };
 
+    if (newConfig.layout_options!.grid_columns === undefined) {
+      delete newConfig.layout_options!.grid_columns;
+    }
+    if (newConfig.layout_options!.grid_rows === undefined) {
+      delete newConfig.layout_options!.grid_rows;
+    }
+    if (Object.keys(newConfig.layout_options!).length === 0) {
+      delete newConfig.layout_options;
+    }
+
     fireEvent(this, "value-changed", { value: newConfig });
   }
 
@@ -204,14 +227,19 @@ export class HuiCardVisibilityEditor extends LitElement {
   static styles = [
     haStyle,
     css`
-      ha-button-menu {
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-      }
-
       .header {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
+        align-items: flex-start;
+      }
+      .header .intro {
+        flex: 1;
+        margin: 0;
+        color: var(--secondary-text-color);
+      }
+      .header ha-button-menu {
+        --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        margin-top: -8px;
       }
       .selected_menu_item {
         color: var(--primary-color);
@@ -223,7 +251,11 @@ export class HuiCardVisibilityEditor extends LitElement {
       ha-grid-size-editor {
         display: block;
         max-width: 250px;
-        margin: 0 auto;
+        margin: 16px auto;
+      }
+      ha-yaml-editor {
+        display: block;
+        margin: 16px 0;
       }
     `,
   ];

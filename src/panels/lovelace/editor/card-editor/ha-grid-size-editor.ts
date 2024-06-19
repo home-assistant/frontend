@@ -1,7 +1,9 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-icon-button";
 import "./ha-grid-layout-slider";
 
+import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
@@ -27,7 +29,9 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public columnMin?: number;
 
-  @property({ attribute: false }) public columnMax?: number;
+  @property({ attribute: false }) public columnMax?: number = 3;
+
+  @property({ attribute: false }) public isDefault?: boolean;
 
   @state() public _localValue?: GridSizeValue = undefined;
 
@@ -41,24 +45,38 @@ export class HaGridSizeEditor extends LitElement {
     return html`
       <div class="grid">
         <ha-grid-layout-slider
+          aria-label="Number of columns"
           id="columns"
-          .min=${this.columnMin || 1}
-          .max=${this.columnMax || this.columns}
+          .min=${this.columnMin ?? 1}
+          .max=${this.columnMax ?? this.columns}
           .range=${this.columns}
-          .value=${this.value?.columns ?? 4}
+          .value=${this.value?.columns}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
         <ha-grid-layout-slider
+          aria-label="Number of rows"
           id="rows"
-          .min=${this.rowMin || 1}
-          .max=${this.rowMax || this.rows}
+          .min=${this.rowMin ?? 1}
+          .max=${this.rowMax ?? this.rows}
           .range=${this.rows}
           vertical
           .value=${this.value?.rows}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
         ></ha-grid-layout-slider>
+        ${!this.isDefault
+          ? html`
+              <ha-icon-button
+                @click=${this._reset}
+                class="reset"
+                .path=${mdiRestore}
+                label="Reset to default"
+                title="Reset to default"
+              >
+              </ha-icon-button>
+            `
+          : nothing}
         <div
           class="preview"
           style=${styleMap({
@@ -84,7 +102,7 @@ export class HaGridSizeEditor extends LitElement {
                     class="cell"
                     data-row=${row}
                     data-column=${column}
-                    .disabled=${disabled}
+                    ?disabled=${disabled}
                     @click=${this._cellClick}
                   ></div>
                 `;
@@ -100,9 +118,12 @@ export class HaGridSizeEditor extends LitElement {
 
   _cellClick(ev) {
     const cell = ev.currentTarget as HTMLElement;
+    if (cell.getAttribute("disabled") !== null) return;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));
-    fireEvent(this, "value-changed", { value: { rows, columns } });
+    fireEvent(this, "value-changed", {
+      value: { rows, columns },
+    });
   }
 
   private _valueChanged(ev) {
@@ -113,6 +134,16 @@ export class HaGridSizeEditor extends LitElement {
       [key]: ev.detail.value,
     };
     fireEvent(this, "value-changed", { value: newValue });
+  }
+
+  private _reset(ev) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        rows: undefined,
+        columns: undefined,
+      },
+    });
   }
 
   private _sliderMoved(ev) {
@@ -131,7 +162,7 @@ export class HaGridSizeEditor extends LitElement {
       .grid {
         display: grid;
         grid-template-areas:
-          ". column-slider"
+          "reset column-slider"
           "row-slider preview";
         grid-template-rows: auto 1fr;
         grid-template-columns: auto 1fr;
@@ -142,6 +173,9 @@ export class HaGridSizeEditor extends LitElement {
       }
       #rows {
         grid-area: row-slider;
+      }
+      .reset {
+        grid-area: reset;
       }
       .preview {
         position: relative;
@@ -167,8 +201,9 @@ export class HaGridSizeEditor extends LitElement {
         opacity: 0.2;
         cursor: pointer;
       }
-      .preview .cell:hover {
-        opacity: 0.5;
+      .preview .cell[disabled] {
+        opacity: 0.05;
+        cursor: initial;
       }
       .selected {
         pointer-events: none;
