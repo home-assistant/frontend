@@ -23,7 +23,7 @@ import { DEFAULT_GRID_OPTIONS } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
-export class HuiCardVisibilityEditor extends LitElement {
+export class HuiCardLayoutEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
@@ -261,6 +261,6 @@ export class HuiCardVisibilityEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-card-layout-editor": HuiCardVisibilityEditor;
+    "hui-card-layout-editor": HuiCardLayoutEditor;
   }
 }

@@ -236,7 +236,7 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
-              .showLayoutTab=${this._showLayoutTab}
+              .showLayoutTab=${this._shouldShowLayoutTab()}
               .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
@@ -353,7 +353,7 @@ export class HuiDialogEditCard
     return this._params!.path.length === 2;
   }
 
-  private get _showLayoutTab() {
+  private _shouldShowLayoutTab(): boolean {
     /**
      * Only show layout tab for cards in a grid section
      * In the future, every section and view should be able to bring their own editor for layout.
