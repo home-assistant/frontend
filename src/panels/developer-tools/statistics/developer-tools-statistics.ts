@@ -282,6 +282,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               { statistic_id: issue.data.statistic_id }
             )}`,
           confirmText: this.hass.localize("ui.common.delete"),
+          destructive: true,
           confirm: async () => {
             await clearStatistics(this.hass, [issue.data.statistic_id]);
             this._deletedStatistics.add(issue.data.statistic_id);
@@ -314,7 +315,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         });
         break;
       case "entity_no_longer_recorded":
-        showAlertDialog(this, {
+        showConfirmationDialog(this, {
           title: this.hass.localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.title"
           ),
@@ -335,7 +336,17 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
               )}</a
-            >`,
+            ><br /><br />
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
+            )}`,
+          confirmText: this.hass.localize("ui.common.delete"),
+          destructive: true,
+          confirm: async () => {
+            await clearStatistics(this.hass, [issue.data.statistic_id]);
+            this._deletedStatistics.add(issue.data.statistic_id);
+            this._validateStatistics();
+          },
         });
         break;
       case "unsupported_state_class":
@@ -381,6 +392,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               { statistic_id: issue.data.statistic_id }
             )}`,
           confirmText: this.hass.localize("ui.common.delete"),
+          destructive: true,
           confirm: async () => {
             await clearStatistics(this.hass, [issue.data.statistic_id]);
             this._deletedStatistics.add(issue.data.statistic_id);
