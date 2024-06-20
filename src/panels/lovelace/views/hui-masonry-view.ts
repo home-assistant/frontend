@@ -15,9 +15,9 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceBadge } from "../types";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -48,9 +48,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
@@ -251,7 +249,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCardToColumn(columnEl, index, editMode) {
-    const card: LovelaceCard = this.cards[index];
+    const card: HuiCard = this.cards[index];
     if (!editMode || this.isStrategy) {
       card.editMode = false;
       columnEl.appendChild(card);

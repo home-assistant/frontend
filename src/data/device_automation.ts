@@ -249,6 +249,22 @@ export const localizeDeviceAutomationTrigger = (
   ) ||
   (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!);
 
+export const localizeExtraFieldsComputeLabelCallback =
+  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  // Returns a callback for ha-form to calculate labels per schema object
+  (schema): string =>
+    hass.localize(
+      `component.${deviceAutomation.domain}.device_automation.extra_fields.${schema.name}`
+    ) || schema.name;
+
+export const localizeExtraFieldsComputeHelperCallback =
+  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  // Returns a callback for ha-form to calculate helper texts per schema object
+  (schema): string | undefined =>
+    hass.localize(
+      `component.${deviceAutomation.domain}.device_automation.extra_fields_descriptions.${schema.name}`
+    );
+
 export const sortDeviceAutomations = (
   automationA: DeviceAutomation,
   automationB: DeviceAutomation

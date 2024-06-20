@@ -377,6 +377,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "image": {
+          "select_image": "Select image",
+          "upload": "Upload picture",
+          "url": "Local path or web URL"
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
@@ -396,6 +401,7 @@
             "device": "Device",
             "duration": "Duration",
             "entity": "Entity",
+            "floor": "[%key:ui::components::floor-picker::floor%]",
             "icon": "Icon",
             "location": "Location",
             "media": "Media",
@@ -411,6 +417,11 @@
             "time": "Time",
             "manual": "Manual Entry"
           }
+        },
+        "image": {
+          "select_image": "Select image",
+          "upload": "Upload picture",
+          "url": "Local path or web URL"
         },
         "text": {
           "show_password": "Show password",
@@ -1103,7 +1114,7 @@
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
-        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
@@ -1878,7 +1889,9 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
-          "multiselect": { "failed": "Failed to update {number} items." },
+          "multiselect": {
+            "failed": "Failed to update {number} items."
+          },
           "learn_more": "Learn more"
         },
         "updates": {
@@ -2768,6 +2781,7 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "icon": "Icon",
             "blueprint": {
               "header": "Blueprint",
               "blueprint_to_use": "Blueprint to use",
@@ -2819,6 +2833,7 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "triggering_event_detail": "Triggering event detail",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -2848,12 +2863,6 @@
                 "device": {
                   "label": "Device",
                   "trigger": "Trigger",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration (optional)",
-                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
-                  },
                   "description": {
                     "picker": "When something happens to a device. Great way to start."
                   }
@@ -3091,13 +3100,6 @@
                 "device": {
                   "label": "Device",
                   "condition": "Condition",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration",
-                    "hvac_mode": "HVAC mode",
-                    "preset_mode": "Preset mode"
-                  },
                   "description": {
                     "picker": "Set of conditions provided by your device. Great way to start."
                   }
@@ -3328,17 +3330,6 @@
                 "device_id": {
                   "label": "Device",
                   "action": "Action",
-                  "extra_fields": {
-                    "code": "Code",
-                    "message": "Message",
-                    "title": "Title",
-                    "position": "[%key:ui::card::cover::position%]",
-                    "mode": "Mode",
-                    "humidity": "Humidity",
-                    "value": "Value",
-                    "brightness_pct": "[%key:ui::card::light::brightness%]",
-                    "flash": "Flash"
-                  },
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
                     "no_device": "Device action"
@@ -4021,6 +4012,8 @@
             "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
+            "notify": "Notifiers",
+            "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
@@ -4177,8 +4170,7 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update",
-            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
+            "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
         },
@@ -4848,7 +4840,8 @@
             "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "waiting_for_device": "Communicating with the device. Please wait."
           },
           "provisioned": {
             "dsk": "DSK",
@@ -5505,7 +5498,12 @@
             "decrease_position": "Decrease card position",
             "increase_position": "Increase card position",
             "options": "More options",
-            "search_cards": "Search cards"
+            "search_cards": "Search cards",
+            "tab-config": "Config",
+            "tab-visibility": "Visibility",
+            "visibility": {
+              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
+            }
           },
           "move_card": {
             "header": "Choose a view to move the card to",
@@ -6394,6 +6392,7 @@
           "confirm_delete_title": "Delete refresh token?",
           "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This will end the login session on the associated device.",
           "delete_all_tokens": "Delete all tokens",
+          "confirm_delete_all_title": "Delete all refresh tokens?",
           "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
@@ -6403,7 +6402,8 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
-          "confirm_delete": "Are you sure you want to delete the access token for {name}?",
+          "confirm_delete_title": "Delete long-lived access token?",
+          "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",

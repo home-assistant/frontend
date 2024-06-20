@@ -2,6 +2,7 @@ import { mdiImagePlus } from "@mdi/js";
 import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { haStyle } from "../resources/styles";
 import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import {
@@ -62,13 +63,15 @@ export class HaPictureUpload extends LitElement {
           alt=${this.currentImageAltText ||
           this.hass.localize("ui.components.picture-upload.current_image_alt")}
         />
-        <ha-button
-          @click=${this._handleChangeClick}
-          .label=${this.hass.localize(
-            "ui.components.picture-upload.change_picture"
-          )}
-        >
-        </ha-button>
+        <div>
+          <ha-button
+            @click=${this._handleChangeClick}
+            .label=${this.hass.localize(
+              "ui.components.picture-upload.change_picture"
+            )}
+          >
+          </ha-button>
+        </div>
       </div>
     </div>`;
   }
@@ -140,32 +143,35 @@ export class HaPictureUpload extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        display: block;
-        height: 240px;
-      }
-      ha-file-upload {
-        height: 100%;
-      }
-      .center-vertical {
-        display: flex;
-        align-items: center;
-        height: 100%;
-      }
-      .value {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      img {
-        max-width: 100%;
-        max-height: 200px;
-        margin-bottom: 4px;
-        border-radius: var(--file-upload-image-border-radius);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          height: 240px;
+        }
+        ha-file-upload {
+          height: 100%;
+        }
+        .center-vertical {
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
+        .value {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        img {
+          max-width: 100%;
+          max-height: 200px;
+          margin-bottom: 4px;
+          border-radius: var(--file-upload-image-border-radius);
+        }
+      `,
+    ];
   }
 }
 

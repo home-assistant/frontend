@@ -147,7 +147,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                   type="number"
                   name="max"
                   .value=${this._newMax?.toString() ?? ""}
-                  @change=${this._valueChanged}
+                  @input=${this._valueChanged}
                   class="max"
                 >
                 </ha-textfield>

@@ -513,6 +513,13 @@ class HUIRoot extends LitElement {
     });
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("scroll", this._handleWindowScroll);
@@ -932,8 +939,15 @@ class HUIRoot extends LitElement {
 
     const configBackground = viewConfig.background || this.config.background;
 
-    if (configBackground) {
-      root.style.setProperty("--lovelace-background", configBackground);
+    const backgroundStyle =
+      typeof configBackground === "string"
+        ? configBackground
+        : configBackground?.image
+          ? `center / cover no-repeat url('${configBackground.image}')`
+          : undefined;
+
+    if (backgroundStyle) {
+      root.style.setProperty("--lovelace-background", backgroundStyle);
     } else {
       root.style.removeProperty("--lovelace-background");
     }

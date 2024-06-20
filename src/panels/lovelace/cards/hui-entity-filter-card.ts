@@ -1,5 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -11,9 +12,9 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
+import { HuiCard } from "./hui-card";
 import { EntityFilterCardConfig } from "./types";
 
 @customElement("hui-entity-filter-card")
@@ -58,7 +59,7 @@ export class HuiEntityFilterCard
 
   @state() private _config?: EntityFilterCardConfig;
 
-  private _element?: LovelaceCard;
+  private _element?: HuiCard;
 
   private _configEntities?: EntityFilterEntityConfig[];
 
@@ -163,18 +164,21 @@ export class HuiEntityFilterCard
     });
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {
-      this.style.display = "none";
-      this.toggleAttribute("hidden", true);
+      if (!this.hidden) {
+        this.style.display = "none";
+        this.toggleAttribute("hidden", true);
+        fireEvent(this, "card-visibility-changed", { value: false });
+      }
       return;
     }
 
     if (!this.lastChild) {
-      this._element.setConfig({
+      this._element.config = {
         ...this._baseCardConfig!,
         entities: entitiesList,
-      });
+      };
       this._oldEntities = entitiesList;
-    } else if (this._element.tagName !== "HUI-ERROR-CARD") {
+    } else {
       const isSame =
         this._oldEntities &&
         entitiesList.length === this._oldEntities.length &&
@@ -182,10 +186,10 @@ export class HuiEntityFilterCard
 
       if (!isSame) {
         this._oldEntities = entitiesList;
-        this._element.setConfig({
+        this._element.config = {
           ...this._baseCardConfig!,
           entities: entitiesList,
-        });
+        };
       }
     }
 
@@ -194,8 +198,11 @@ export class HuiEntityFilterCard
       this.appendChild(this._element);
     }
 
-    this.style.display = "block";
-    this.toggleAttribute("hidden", false);
+    if (this.hidden) {
+      this.style.display = "block";
+      this.toggleAttribute("hidden", false);
+      fireEvent(this, "card-visibility-changed", { value: true });
+    }
   }
 
   private _haveEntitiesChanged(oldHass: HomeAssistant | null): boolean {
@@ -238,32 +245,11 @@ export class HuiEntityFilterCard
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this.hass) {
-      element.hass = this.hass;
-    }
-    element.isPanel = this.isPanel;
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
     element.editMode = this.editMode;
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        ev.stopPropagation();
-        this._rebuildCard(element, cardConfig);
-      },
-      { once: true }
-    );
+    element.config = cardConfig;
     return element;
-  }
-
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
-  ): void {
-    const newCardEl = this._createCardElement(config);
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._element = newCardEl;
   }
 }
 

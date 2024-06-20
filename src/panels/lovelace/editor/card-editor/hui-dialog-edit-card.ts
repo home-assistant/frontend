@@ -36,7 +36,7 @@ import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import "./hui-card-preview";
+import "../../cards/hui-card";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
@@ -234,6 +234,7 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
+              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
@@ -244,11 +245,12 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            <hui-card-preview
+            <hui-card
               .hass=${this.hass}
               .config=${this._cardConfig}
+              editMode
               class=${this._error ? "blur" : ""}
-            ></hui-card-preview>
+            ></hui-card>
             ${this._error
               ? html`
                   <ha-circular-progress
@@ -407,32 +409,37 @@ export class HuiDialogEditCard
           --code-mirror-max-height: calc(100vh - 176px);
         }
 
+        ha-dialog {
+          --mdc-dialog-max-width: 100px;
+          --dialog-z-index: 6;
+          --dialog-surface-position: fixed;
+          --dialog-surface-top: 40px;
+          --mdc-dialog-max-width: 90vw;
+          --dialog-content-padding: 24px 12px;
+        }
+
+        .content {
+          width: calc(90vw - 48px);
+          max-width: 1000px;
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
-            --mdc-dialog-max-height: 100%;
             height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --dialog-surface-top: 0px;
+            --mdc-dialog-max-width: 100vw;
           }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+          .content {
+            width: 100%;
+            max-width: 100%;
           }
-        }
-
-        ha-dialog {
-          --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 6;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
           :host([large]) .content {
-            width: calc(90vw - 48px);
+            max-width: none;
           }
         }
 
@@ -444,9 +451,9 @@ export class HuiDialogEditCard
         .content {
           display: flex;
           flex-direction: column;
-          margin: 0 -10px;
         }
-        .content hui-card-preview {
+
+        .content hui-card {
           margin: 4px auto;
           max-width: 390px;
         }
@@ -454,15 +461,7 @@ export class HuiDialogEditCard
           margin: 0 10px;
         }
 
-        @media (min-width: 1200px) {
-          ha-dialog {
-            --mdc-dialog-max-width: calc(100% - 32px);
-            --mdc-dialog-min-width: 1000px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
+        @media (min-width: 1000px) {
           .content {
             flex-direction: row;
           }
@@ -472,7 +471,7 @@ export class HuiDialogEditCard
             flex-shrink: 1;
             min-width: 0;
           }
-          .content hui-card-preview {
+          .content hui-card {
             padding: 8px 10px;
             margin: auto 0px;
             max-width: 500px;
@@ -500,7 +499,7 @@ export class HuiDialogEditCard
           position: absolute;
           z-index: 10;
         }
-        hui-card-preview {
+        hui-card {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;

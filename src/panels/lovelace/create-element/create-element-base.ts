@@ -152,6 +152,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
   customElements.whenDefined(tag).then(() => {
     try {
       customElements.upgrade(element);
+      fireEvent(element, "ll-upgrade");
       // @ts-ignore
       element.setConfig(config);
     } catch (err: any) {

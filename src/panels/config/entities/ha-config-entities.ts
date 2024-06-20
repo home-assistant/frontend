@@ -144,7 +144,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "entities-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = history.state?.filter || "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -703,7 +709,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )
           ).length
         }
-        .filter=${this._filter}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
@@ -715,6 +720,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         clickable
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
@@ -943,6 +949,7 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -952,39 +959,36 @@ ${
         items: undefined,
       },
     };
-    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("domain")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [],
-          items: undefined,
-        },
-        "ha-filter-integrations": {
-          value: [this._searchParms.get("domain")!],
-          items: undefined,
-        },
-      };
+    const domain = this._searchParms.get("domain");
+    const configEntry = this._searchParms.get("config_entry");
+
+    if (!domain && !configEntry) {
+      return;
     }
-    if (this._searchParms.has("config_entry")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [],
-          items: undefined,
-        },
-        config_entry: {
-          value: [this._searchParms.get("config_entry")!],
-          items: undefined,
-        },
-      };
-    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-states": {
+        value: [],
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: domain ? [domain] : [],
+        items: undefined,
+      },
+      config_entry: {
+        value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+    };
+
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
