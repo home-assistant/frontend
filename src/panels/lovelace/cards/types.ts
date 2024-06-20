@@ -154,7 +154,8 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   max_devices?: number;
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig
+  extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
   max_devices?: number;
@@ -176,7 +177,8 @@ export interface EnergySelfSufficiencyGaugeCardConfig
   title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig
+  extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }
