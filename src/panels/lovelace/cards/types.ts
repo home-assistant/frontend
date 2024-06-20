@@ -176,7 +176,7 @@ export interface EnergySelfSufficiencyGaugeCardConfig
   title?: string;
 }
 
-export interface EnergyGridGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }
