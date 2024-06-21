@@ -61,32 +61,32 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
           href="https://community.home-assistant.io"
           target="_blank"
           rel="noreferrer"
-          >Forums</a
+          >${hass.localize("ui.panel.config.tips.join_forums")}</a
         >`,
         twitter: html`<a
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
-          >X (formerly Twitter)</a
+          >${hass.localize("ui.panel.config.tips.join_x")}</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
           rel="noreferrer"
-          >Chat</a
+          >${hass.localize("ui.panel.config.tips.join_chat")}</a
         >`,
         blog: html`<a
           href=${documentationUrl(hass, `/blog`)}
           target="_blank"
           rel="noreferrer"
-          >Blog</a
+          >${hass.localize("ui.panel.config.tips.join_blog")}</a
         >`,
         newsletter: html`<span class="keep-together"
           ><a
             href=${documentationUrl(hass, `/newsletter`)}
             target="_blank"
             rel="noreferrer"
-            >Newsletter</a
+            >${hass.localize("ui.panel.config.tips.join_newsletter")}</a
           >
         </span>`,
       }),
