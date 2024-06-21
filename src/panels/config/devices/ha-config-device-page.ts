@@ -1028,6 +1028,9 @@ export class HaConfigDevicePage extends LitElement {
                   : this.hass.localize(
                       `ui.panel.config.devices.confirm_delete`
                     ),
+              confirmText: this.hass.localize("ui.common.delete"),
+              dismissText: this.hass.localize("ui.common.cancel"),
+              destructive: true,
             });
 
             if (!confirmed) {

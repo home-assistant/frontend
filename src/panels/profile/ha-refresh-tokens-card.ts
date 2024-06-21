@@ -301,7 +301,7 @@ class HaRefreshTokens extends LitElement {
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete_all"
         ),
-        confirmText: this.hass.localize("ui.common.delete"),
+        confirmText: this.hass.localize("ui.common.delete_all"),
         destructive: true,
       }))
     ) {

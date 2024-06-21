@@ -839,7 +839,7 @@ ${
     ></ha-svg-icon>
     <div slot="headline">
       ${this.hass.localize(
-        "ui.panel.config.entities.picker.remove_selected.button"
+        "ui.panel.config.entities.picker.delete_selected.button"
       )}
     </div>
   </ha-menu-item>
@@ -1256,25 +1256,23 @@ ${rejected
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.entities.picker.remove_selected.confirm_${
-          removeableEntities.length !== this._selected.length ? "partly_" : ""
-        }title`,
-        { number: removeableEntities.length }
+        `ui.panel.config.entities.picker.delete_selected.confirm_title`
       ),
       text:
         removeableEntities.length === this._selected.length
           ? this.hass.localize(
-              "ui.panel.config.entities.picker.remove_selected.confirm_text"
+              "ui.panel.config.entities.picker.delete_selected.confirm_text"
             )
           : this.hass.localize(
-              "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
+              "ui.panel.config.entities.picker.delete_selected.confirm_partly_text",
               {
-                removable: removeableEntities.length,
+                deletable: removeableEntities.length,
                 selected: this._selected.length,
               }
             ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)
