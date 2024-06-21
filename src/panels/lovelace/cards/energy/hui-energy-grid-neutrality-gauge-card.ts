@@ -24,7 +24,7 @@ import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
-import type { EnergyGridGaugeCardConfig } from "../types";
+import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [
@@ -39,7 +39,7 @@ class HuiEnergyGridGaugeCard
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EnergyGridGaugeCardConfig;
+  @state() private _config?: EnergyGridNeutralityGaugeCardConfig;
 
   @state() private _data?: EnergyData;
 
@@ -59,7 +59,7 @@ class HuiEnergyGridGaugeCard
     return 4;
   }
 
-  public setConfig(config: EnergyGridGaugeCardConfig): void {
+  public setConfig(config: EnergyGridNeutralityGaugeCardConfig): void {
     this._config = config;
   }
 
