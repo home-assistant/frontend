@@ -41,6 +41,8 @@ export class HuiSection extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
+  @property({ type: Boolean, reflect: true }) public preview = false;
+
   @property({ type: Number }) public index!: number;
 
   @property({ type: Number }) public viewIndex!: number;
@@ -56,7 +58,7 @@ export class HuiSection extends ReactiveElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.editMode = this.lovelace?.editMode || false;
+    element.preview = this.preview;
     element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -118,8 +120,10 @@ export class HuiSection extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+      }
+      if (changedProperties.has("preview")) {
         this._cards.forEach((element) => {
-          element.editMode = this.lovelace?.editMode || false;
+          element.preview = this.preview;
         });
       }
       if (changedProperties.has("_cards")) {
@@ -205,7 +209,7 @@ export class HuiSection extends ReactiveElement {
     }
     const visible =
       forceVisible ||
-      this.lovelace?.editMode ||
+      this.preview ||
       !this.config.visibility ||
       checkConditionsMet(this.config.visibility, this.hass);
 

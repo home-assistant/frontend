@@ -10,7 +10,7 @@ import { ErrorCardConfig } from "./types";
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public editMode = false;
+  @property({ attribute: false }) public preview = false;
 
   @state() private _config?: ErrorCardConfig;
 

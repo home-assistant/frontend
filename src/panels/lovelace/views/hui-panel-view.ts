@@ -108,7 +108,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     card.isPanel = true;
 
     if (this.isStrategy || !this.lovelace?.editMode) {
-      card.editMode = false;
+      card.preview = false;
       this._card = card;
       return;
     }
@@ -118,7 +118,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
     wrapper.hidePosition = true;
-    card.editMode = true;
+    card.preview = true;
     wrapper.appendChild(card);
     this._card = wrapper;
   }
