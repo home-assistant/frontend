@@ -6722,7 +6722,8 @@
                 "title": "Entity no longer recorded",
                 "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information."
+                "info_text_3_link": "See the recorder documentation for more information.",
+                "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "unsupported_state_class": {
                 "title": "Unsupported state class",
