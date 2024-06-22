@@ -3,13 +3,22 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { addCards } from "../config-util";
-import "./hui-card-preview";
+import "../../sections/hui-section";
+import { addCards, addSection } from "../config-util";
+import {
+  LovelaceContainerPath,
+  parseLovelaceContainerPath,
+} from "../lovelace-path";
+import "../../cards/hui-card";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
@@ -21,6 +30,8 @@ export class HuiDialogSuggestCard extends LitElement {
 
   @state() private _cardConfig?: LovelaceCardConfig[];
 
+  @state() private _sectionConfig?: LovelaceSectionConfig;
+
   @state() private _saving = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
@@ -28,8 +39,12 @@ export class HuiDialogSuggestCard extends LitElement {
   public showDialog(params: SuggestCardDialogParams): void {
     this._params = params;
     this._cardConfig = params.cardConfig;
+    this._sectionConfig = params.sectionConfig;
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
+    }
+    if (!Object.isFrozen(this._sectionConfig)) {
+      this._sectionConfig = deepFreeze(this._sectionConfig);
     }
     if (this._yamlEditor) {
       this._yamlEditor.setValue(this._cardConfig);
@@ -40,6 +55,47 @@ export class HuiDialogSuggestCard extends LitElement {
     this._params = undefined;
     this._cardConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private get _viewSupportsSection(): boolean {
+    if (!this._params?.lovelaceConfig || !this._params?.path) {
+      return false;
+    }
+
+    const { viewIndex } = parseLovelaceContainerPath(this._params.path);
+    const viewConfig = this._params!.lovelaceConfig.views[viewIndex];
+
+    return !isStrategyView(viewConfig) && viewConfig.type === "sections";
+  }
+
+  private _renderPreview() {
+    if (this._sectionConfig && this._viewSupportsSection) {
+      return html`
+        <div class="element-preview">
+          <hui-section
+            .hass=${this.hass}
+            .config=${this._sectionConfig}
+            preview
+          ></hui-section>
+        </div>
+      `;
+    }
+    if (this._cardConfig) {
+      return html`
+        <div class="element-preview">
+          ${this._cardConfig.map(
+            (cardConfig) => html`
+              <hui-card
+                .hass=${this.hass}
+                .config=${cardConfig}
+                preview
+              ></hui-card>
+            `
+          )}
+        </div>
+      `;
+    }
+    return nothing;
   }
 
   protected render() {
@@ -56,20 +112,7 @@ export class HuiDialogSuggestCard extends LitElement {
         )}
       >
         <div>
-          ${this._cardConfig
-            ? html`
-                <div class="element-preview">
-                  ${this._cardConfig.map(
-                    (cardConfig) => html`
-                      <hui-card-preview
-                        .hass=${this.hass}
-                        .config=${cardConfig}
-                      ></hui-card-preview>
-                    `
-                  )}
-                </div>
-              `
-            : ""}
+          ${this._renderPreview()}
           ${this._params.yaml && this._cardConfig
             ? html`
                 <div class="editor">
@@ -79,7 +122,7 @@ export class HuiDialogSuggestCard extends LitElement {
                   ></ha-yaml-editor>
                 </div>
               `
-            : ""}
+            : nothing}
         </div>
         <mwc-button
           slot="secondaryAction"
@@ -92,11 +135,15 @@ export class HuiDialogSuggestCard extends LitElement {
         </mwc-button>
         ${!this._params.yaml
           ? html`
-              <mwc-button slot="primaryAction" @click=${this._pickCard}
-                >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.suggest_card.create_own"
-                )}</mwc-button
-              >
+              ${!(this._sectionConfig && this._viewSupportsSection)
+                ? html`
+                    <mwc-button slot="primaryAction" @click=${this._pickCard}>
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.suggest_card.create_own"
+                      )}
+                    </mwc-button>
+                  `
+                : nothing}
               <mwc-button
                 slot="primaryAction"
                 .disabled=${this._saving}
@@ -115,7 +162,7 @@ export class HuiDialogSuggestCard extends LitElement {
                     )}
               </mwc-button>
             `
-          : ""}
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -146,7 +193,8 @@ export class HuiDialogSuggestCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        hui-card-preview {
+        hui-card,
+        hui-section {
           padding-top: 8px;
           margin: 4px auto;
           max-width: 390px;
@@ -178,6 +226,32 @@ export class HuiDialogSuggestCard extends LitElement {
     this.closeDialog();
   }
 
+  private _computeNewConfig(
+    config: LovelaceConfig,
+    path: LovelaceContainerPath
+  ): LovelaceConfig {
+    if (!this._viewSupportsSection) {
+      return addCards(config, path, this._cardConfig!);
+    }
+
+    const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
+
+    // If container is a view, add a section
+    if (sectionIndex === undefined) {
+      const newSection = this._sectionConfig ?? {
+        type: "grid",
+        cards: this._cardConfig,
+      };
+      return addSection(config, viewIndex, newSection);
+    }
+
+    // Else add cards to section
+    const newCards = this._sectionConfig
+      ? this._sectionConfig.cards || []
+      : this._cardConfig!;
+    return addCards(config, [viewIndex, sectionIndex], newCards);
+  }
+
   private async _save(): Promise<void> {
     if (
       !this._params?.lovelaceConfig ||
@@ -188,13 +262,12 @@ export class HuiDialogSuggestCard extends LitElement {
       return;
     }
     this._saving = true;
-    await this._params!.saveConfig(
-      addCards(
-        this._params!.lovelaceConfig,
-        this._params!.path as [number],
-        this._cardConfig
-      )
+
+    const newConfig = this._computeNewConfig(
+      this._params.lovelaceConfig,
+      this._params.path
     );
+    await this._params!.saveConfig(newConfig);
     this._saving = false;
     showSaveSuccessToast(this, this.hass);
     this.closeDialog();

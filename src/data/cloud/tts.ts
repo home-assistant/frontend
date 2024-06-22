@@ -1,5 +1,4 @@
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { LocalizeFunc } from "../../common/translations/localize";
 import { HomeAssistant } from "../../types";
 
 export interface CloudTTSInfo {
@@ -27,27 +26,21 @@ export const getCloudTtsLanguages = (info?: CloudTTSInfo) => {
   return languages;
 };
 
-export const getCloudTtsSupportedGenders = (
+export const getCloudTtsSupportedVoices = (
   language: string,
-  info: CloudTTSInfo | undefined,
-  localize: LocalizeFunc
+  info: CloudTTSInfo | undefined
 ) => {
-  const genders: Array<[string, string]> = [];
+  const voices: Array<string> = [];
 
   if (!info) {
-    return genders;
+    return voices;
   }
 
-  for (const [curLang, gender] of info.languages) {
+  for (const [curLang, voice] of info.languages) {
     if (curLang === language) {
-      genders.push([
-        gender,
-        gender === "male" || gender === "female"
-          ? localize(`ui.components.media-browser.tts.gender_${gender}`)
-          : gender,
-      ]);
+      voices.push(voice);
     }
   }
 
-  return genders.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
+  return voices.sort((a, b) => caseInsensitiveStringCompare(a, b));
 };

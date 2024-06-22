@@ -25,7 +25,6 @@ import type {
 } from "../../../types";
 import "../../calendar/ha-full-calendar";
 import { findEntities } from "../common/find-entities";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
@@ -68,8 +67,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _eventDisplay = "list-item";
 
   @state() private _narrow = false;
-
-  @state() private _veryNarrow = false;
 
   @state() private _error?: string = undefined;
 
@@ -121,9 +118,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const views: FullCalendarView[] = this._veryNarrow
-      ? ["listWeek"]
-      : ["dayGridMonth", "dayGridDay", "listWeek"];
+    const views: FullCalendarView[] = [
+      "dayGridMonth",
+      "dayGridDay",
+      "listWeek",
+    ];
 
     return html`
       <ha-card>
@@ -206,12 +205,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._narrow = card.offsetWidth < 870;
-    this._veryNarrow = card.offsetWidth < 350;
   }
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

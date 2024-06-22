@@ -93,7 +93,7 @@ export class HaAutomationTrace extends LitElement {
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
-      devButtons = html`<div style="position: absolute; right: 0;">
+      devButtons = html`<div style="position: absolute; right: 0; z-index: 1;">
         <button @click=${this._importTrace}>Import trace</button>
         <button @click=${this._loadLocalStorageTrace}>Load stored trace</button>
       </div>`;
@@ -106,7 +106,9 @@ export class HaAutomationTrace extends LitElement {
           ? html`
               <a
                 class="trace-link"
-                href="/config/automation/edit/${stateObj.attributes.id}"
+                href="/config/automation/edit/${encodeURIComponent(
+                  stateObj.attributes.id
+                )}"
                 slot="toolbar-icon"
               >
                 <mwc-button>
@@ -140,7 +142,9 @@ export class HaAutomationTrace extends LitElement {
             ? html`
                 <a
                   class="trace-link"
-                  href="/config/automation/edit/${stateObj.attributes.id}"
+                  href="/config/automation/edit/${encodeURIComponent(
+                    stateObj.attributes.id
+                  )}"
                 >
                   <mwc-list-item graphic="icon">
                     ${this.hass.localize(

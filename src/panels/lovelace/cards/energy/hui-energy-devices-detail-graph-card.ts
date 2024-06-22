@@ -4,7 +4,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { differenceInDays, endOfToday, startOfToday } from "date-fns/esm";
+import { endOfToday, startOfToday } from "date-fns";
 import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,7 +17,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../../common/color/colors";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -27,11 +27,9 @@ import {
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
-  fetchStatistics,
   getStatisticLabel,
   Statistics,
   StatisticsMetaData,
-  StatisticsUnitConfiguration,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -40,6 +38,8 @@ import { LovelaceCard } from "../../types";
 import { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
+
+const UNIT = "kWh";
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
@@ -56,10 +56,6 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
-  @state() private _statistics?: Statistics;
-
-  @state() private _compareStatistics?: Statistics;
-
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -67,8 +63,6 @@ export class HuiEnergyDevicesDetailGraphCard
   @state() private _compareStart?: Date;
 
   @state() private _compareEnd?: Date;
-
-  @state() private _unit?: string;
 
   @state() private _hiddenStats = new Set<string>();
 
@@ -78,9 +72,8 @@ export class HuiEnergyDevicesDetailGraphCard
     return [
       getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
-      }).subscribe(async (data) => {
+      }).subscribe((data) => {
         this._data = data;
-        await this._getStatistics(this._data);
         this._processStatistics();
       }),
     ];
@@ -103,7 +96,10 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_hiddenStats") && this._statistics) {
+    if (
+      (changedProps.has("_hiddenStats") || changedProps.has("_config")) &&
+      this._data
+    ) {
       this._processStatistics();
     }
   }
@@ -133,7 +129,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._end,
               this.hass.locale,
               this.hass.config,
-              this._unit,
+              UNIT,
               this._compareStart,
               this._compareEnd
             )}
@@ -201,57 +197,12 @@ export class HuiEnergyDevicesDetailGraphCard
     }
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
-    const devices = energyData.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
-
-    const period =
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
-
-    const lengthUnit = this.hass.config.unit_system.length || "";
-    const units: StatisticsUnitConfiguration = {
-      energy: "kWh",
-      volume: lengthUnit === "km" ? "m³" : "ft³",
-    };
-    this._unit = "kWh";
-
-    const statistics = await fetchStatistics(
-      this.hass,
-      energyData.start,
-      energyData.end,
-      devices,
-      period,
-      units,
-      ["change"]
-    );
-
-    let compareStatistics: Statistics | undefined;
-
-    if (energyData.startCompare && energyData.endCompare) {
-      compareStatistics = await fetchStatistics(
-        this.hass,
-        energyData.startCompare,
-        energyData.endCompare,
-        devices,
-        period,
-        units,
-        ["change"]
-      );
-    }
-    this._statistics = statistics;
-    this._compareStatistics = compareStatistics;
-  }
-
-  private async _processStatistics() {
+  private _processStatistics() {
     const energyData = this._data!;
-    const data = this._statistics!;
-    const compareData = this._compareStatistics;
+    const data = energyData.stats;
+    const compareData = energyData.statsCompare;
+
+    const computedStyle = getComputedStyle(this);
 
     const growthValues = {};
     energyData.prefs.device_consumption.forEach((device) => {
@@ -271,17 +222,18 @@ export class HuiEnergyDevicesDetailGraphCard
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
     const datasetExtras: ChartDatasetExtra[] = [];
 
-    datasets.push(
-      ...this._processDataSet(
+    const { data: processedData, dataExtras: processedDataExtras } =
+      this._processDataSet(
+        computedStyle,
         data,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
         sorted_devices
-      )
-    );
+      );
 
-    const items = datasets.length;
-    datasetExtras.push(...Array<ChartDatasetExtra>(items).fill({}));
+    datasets.push(...processedData);
+
+    datasetExtras.push(...processedDataExtras);
 
     if (compareData) {
       // Add empty dataset to align the bars
@@ -301,18 +253,20 @@ export class HuiEnergyDevicesDetailGraphCard
         show_legend: false,
       });
 
-      datasets.push(
-        ...this._processDataSet(
-          compareData,
-          energyData.statsMetadata,
-          energyData.prefs.device_consumption,
-          sorted_devices,
-          true
-        )
+      const {
+        data: processedCompareData,
+        dataExtras: processedCompareDataExtras,
+      } = this._processDataSet(
+        computedStyle,
+        compareData,
+        energyData.statsMetadata,
+        energyData.prefs.device_consumption,
+        sorted_devices,
+        true
       );
-      datasetExtras.push(
-        ...Array<ChartDatasetExtra>(items).fill({ show_legend: false })
-      );
+
+      datasets.push(...processedCompareData);
+      datasetExtras.push(...processedCompareDataExtras);
     }
 
     this._start = energyData.start;
@@ -328,6 +282,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _processDataSet(
+    computedStyle: CSSStyleDeclaration,
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
     devices: DeviceConsumptionEnergyPreference[],
@@ -335,9 +290,10 @@ export class HuiEnergyDevicesDetailGraphCard
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
+    const dataExtras: ChartDatasetExtra[] = [];
 
     devices.forEach((source, idx) => {
-      const color = getColorByIndex(idx);
+      const color = getGraphColorByIndex(idx, computedStyle);
 
       let prevStart: number | null = null;
 
@@ -371,23 +327,32 @@ export class HuiEnergyDevicesDetailGraphCard
         }
       }
 
+      const order = sorted_devices.indexOf(source.stat_consumption);
+      const itemExceedsMax = !!(
+        this._config?.max_devices && order >= this._config.max_devices
+      );
+
       data.push({
-        label: getStatisticLabel(
-          this.hass,
-          source.stat_consumption,
-          statisticsMetaData[source.stat_consumption]
-        ),
-        hidden: this._hiddenStats.has(source.stat_consumption),
+        label:
+          source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_consumption,
+            statisticsMetaData[source.stat_consumption]
+          ),
+        hidden:
+          this._hiddenStats.has(source.stat_consumption) || itemExceedsMax,
         borderColor: compare ? color + "7F" : color,
         backgroundColor: compare ? color + "32" : color + "7F",
         data: consumptionData,
-        order: 1 + sorted_devices.indexOf(source.stat_consumption),
+        order: 1 + order,
         stack: "devices",
         pointStyle: compare ? false : "circle",
         xAxisID: compare ? "xAxisCompare" : undefined,
       });
+      dataExtras.push({ show_legend: !compare && !itemExceedsMax });
     });
-    return data;
+    return { data, dataExtras };
   }
 
   static get styles(): CSSResultGroup {

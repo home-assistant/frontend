@@ -1,4 +1,4 @@
-import { getPanelTitle } from "../data/panel";
+import { getPanelTitleFromUrlPath } from "../data/panel";
 import { Constructor, HomeAssistant } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -24,7 +24,7 @@ export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
         oldHass.panelUrl !== this.hass.panelUrl ||
         oldHass.localize !== this.hass.localize
       ) {
-        setTitle(getPanelTitle(this.hass));
+        setTitle(getPanelTitleFromUrlPath(this.hass, this.hass.panelUrl));
       }
     }
   };

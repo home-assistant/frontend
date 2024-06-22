@@ -184,7 +184,7 @@ export class DialogTryTts extends LitElement {
     this._loadingExample = true;
 
     const language = this._params!.defaultVoice[0];
-    const gender = this._params!.defaultVoice[1];
+    const voice = this._params!.defaultVoice[1];
 
     let url;
     try {
@@ -192,7 +192,7 @@ export class DialogTryTts extends LitElement {
         platform: "cloud",
         message,
         language,
-        options: { gender },
+        options: { voice },
       });
       url = result.path;
     } catch (err: any) {

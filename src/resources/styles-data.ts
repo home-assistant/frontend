@@ -15,6 +15,7 @@ export const darkStyles = {
   "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
   "outline-color": "rgba(225, 225, 225, .12)",
+  "outline-hover-color": "rgba(225, 225, 225, .24)",
   "mdc-ripple-color": "#AAAAAA",
   "mdc-linear-progress-buffer-color": "rgba(255, 255, 255, 0.1)",
 
@@ -101,6 +102,7 @@ export const derivedStyles = {
   "mdc-theme-error": "var(--error-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
+  "app-theme-color": "var(--app-header-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
@@ -142,7 +144,10 @@ export const derivedStyles = {
   "mdc-select-disabled-ink-color": "var(--input-disabled-ink-color)",
   "mdc-select-dropdown-icon-color": "var(--input-dropdown-icon-color)",
   "mdc-select-disabled-dropdown-icon-color": "var(--input-disabled-ink-color)",
-
+  "ha-assist-chip-filled-container-color":
+    "rgba(var(--rgb-primary-text-color),0.15)",
+  "ha-assist-chip-active-container-color":
+    "rgba(var(--rgb-primary-color),0.15)",
   "chip-background-color": "rgba(var(--rgb-primary-text-color), 0.15)",
   // Vaadin
   "material-body-text-color": "var(--primary-text-color)",

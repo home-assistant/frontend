@@ -75,8 +75,14 @@ export class HaDialog extends DialogBase {
           var(--divider-color)
         );
         z-index: var(--dialog-z-index, 8);
-        -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
-        backdrop-filter: var(--dialog-backdrop-filter, none);
+        -webkit-backdrop-filter: var(
+          --ha-dialog-scrim-backdrop-filter,
+          var(--dialog-backdrop-filter, none)
+        );
+        backdrop-filter: var(
+          --ha-dialog-scrim-backdrop-filter,
+          var(--dialog-backdrop-filter, none)
+        );
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
         --mdc-typography-headline6-font-weight: 400;
         --mdc-typography-headline6-font-size: 1.574rem;
@@ -119,6 +125,12 @@ export class HaDialog extends DialogBase {
         margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 28px);
+        -webkit-backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+        backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+        background: var(
+          --ha-dialog-surface-background,
+          var(--mdc-theme-surface, #fff)
+        );
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
@@ -139,12 +151,12 @@ export class HaDialog extends DialogBase {
       }
       .header_button {
         position: absolute;
-        right: -8px;
-        top: -8px;
+        right: -12px;
+        top: -12px;
         text-decoration: none;
         color: inherit;
         inset-inline-start: initial;
-        inset-inline-end: -8px;
+        inset-inline-end: -12px;
         direction: var(--direction);
       }
       .dialog-actions {

@@ -327,6 +327,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     for (const entityId of Object.keys(this.hass.states)) {
       if (
         entityId.startsWith("update.") &&
+        !this.hass.entities[entityId]?.hidden &&
         updateCanInstall(this.hass.states[entityId] as UpdateEntity)
       ) {
         updateCount++;
@@ -1010,8 +1011,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         .profile paper-icon-item {
           padding-left: 4px;
-          margin-inline-start: 4px;
-          margin-inline-end: auto;
+          padding-inline-start: 4px;
+          padding-inline-end: auto;
         }
         .profile .item-text {
           margin-left: 8px;
@@ -1040,6 +1041,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           position: absolute;
           bottom: 14px;
           left: 26px;
+          inset-inline-start: 26px;
+          inset-inline-end: initial;
           font-size: 0.65em;
         }
 

@@ -14,10 +14,10 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiCard } from "../cards/hui-card";
 import { HuiCardOptions } from "../components/hui-card-options";
 import { HuiWarning } from "../components/hui-warning";
-import type { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace } from "../types";
 
 let editCodeLoaded = false;
 
@@ -30,11 +30,9 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @state() private _card?: LovelaceCard | HuiWarning | HuiCardOptions;
+  @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
@@ -106,11 +104,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       return;
     }
 
-    const card: LovelaceCard = this.cards[0];
+    const card: HuiCard = this.cards[0];
     card.isPanel = true;
 
     if (this.isStrategy || !this.lovelace?.editMode) {
-      card.editMode = false;
+      card.preview = false;
       this._card = card;
       return;
     }
@@ -120,7 +118,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
     wrapper.hidePosition = true;
-    card.editMode = true;
+    card.preview = true;
     wrapper.appendChild(card);
     this._card = wrapper;
   }
@@ -130,6 +128,15 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         height: 100%;
+        --restore-card-border-radius: var(--ha-card-border-radius, 12px);
+        --restore-card-border-width: var(--ha-card-border-width, 1px);
+        --restore-card-box-shadow: var(--ha-card-box-shadow, none);
+      }
+
+      * {
+        --ha-card-border-radius: 0;
+        --ha-card-border-width: 0;
+        --ha-card-box-shadow: none;
       }
 
       ha-fab {

@@ -11,9 +11,9 @@ import {
   ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
+  setProtectedAlarmControlPanelMode,
 } from "../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../data/entity";
-import { showEnterCodeDialogDialog } from "../../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-alarm_control_panel-modes")
@@ -44,37 +44,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
   }
 
   private async _setMode(mode: AlarmMode) {
-    const { service } = ALARM_MODES[mode];
-
-    let code: string | undefined;
-
-    if (
-      (mode !== "disarmed" &&
-        this.stateObj!.attributes.code_arm_required &&
-        this.stateObj!.attributes.code_format) ||
-      (mode === "disarmed" && this.stateObj!.attributes.code_format)
-    ) {
-      const disarm = mode === "disarmed";
-
-      const response = await showEnterCodeDialogDialog(this, {
-        codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
-        ),
-        submitText: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarmn" : "arm"}`
-        ),
-      });
-      if (response == null) {
-        throw new Error("cancel");
-      }
-      code = response;
-    }
-
-    await this.hass!.callService("alarm_control_panel", service, {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
   }
 
   private async _valueChanged(ev: CustomEvent) {
@@ -128,8 +98,8 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
         height: 45vh;
         max-height: max(320px, var(--modes-count, 1) * 80px);
         min-height: max(200px, var(--modes-count, 1) * 80px);
-        --control-select-thickness: 100px;
-        --control-select-border-radius: 24px;
+        --control-select-thickness: 130px;
+        --control-select-border-radius: 36px;
         --control-select-color: var(--primary-color);
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;

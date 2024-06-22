@@ -1,7 +1,8 @@
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { HomeAssistant } from "../../../types";
-import { Condition } from "../common/validate-condition";
-import { TimestampRenderingFormat } from "../components/types";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { HomeAssistant } from "../../../types";
+import type { LegacyStateFilter } from "../common/evaluate-filter";
+import type { Condition } from "../common/validate-condition";
+import type { TimestampRenderingFormat } from "../components/types";
 
 export interface EntityConfig {
   entity: string;
@@ -14,7 +15,8 @@ export interface ActionRowConfig extends EntityConfig {
   action_name?: string;
 }
 export interface EntityFilterEntityConfig extends EntityConfig {
-  state_filter?: Array<{ key: string } | string>;
+  state_filter?: Array<LegacyStateFilter>;
+  conditions?: Array<Condition>;
 }
 export interface DividerConfig {
   type: "divider";
@@ -79,7 +81,7 @@ export type LovelaceRowConfig =
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
-  editMode?: boolean;
+  preview?: boolean;
   setConfig(config: LovelaceRowConfig);
 }
 

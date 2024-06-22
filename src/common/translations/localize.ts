@@ -1,7 +1,8 @@
-import IntlMessageFormat from "intl-messageformat";
+import type { IntlMessageFormat } from "intl-messageformat";
 import type { HTMLTemplateResult } from "lit";
-import { polyfillLocaleData } from "../../resources/locale-data-polyfill";
+import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
 import { Resources, TranslationDict } from "../../types";
+import { fireEvent } from "../dom/fire_event";
 
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
@@ -81,14 +82,15 @@ export interface FormatsType {
  */
 
 export const computeLocalize = async <Keys extends string = LocalizeKeys>(
-  cache: any,
+  cache: HTMLElement & {
+    _localizationCache?: Record<string, IntlMessageFormat>;
+  },
   language: string,
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
-  await import("../../resources/intl-polyfill").then(() =>
-    polyfillLocaleData(language)
-  );
+  const { IntlMessageFormat } = await import("intl-messageformat");
+  await polyfillLocaleData(language);
 
   // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -107,7 +109,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     }
 
     const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey] as
+    let translatedMessage = cache._localizationCache![messageKey] as
       | IntlMessageFormat
       | undefined;
 
@@ -121,7 +123,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
       } catch (err: any) {
         return "Translation error: " + err.message;
       }
-      cache._localizationCache[messageKey] = translatedMessage;
+      cache._localizationCache![messageKey] = translatedMessage;
     }
 
     let argObject = {};
@@ -137,6 +139,12 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
     try {
       return translatedMessage.format<string>(argObject) as string;
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("Translation error", key, language, err);
+      fireEvent(cache, "write_log", {
+        level: "error",
+        message: `Failed to format translation for key '${key}' in language '${language}'. ${err}`,
+      });
       return "Translation " + err;
     }
   };

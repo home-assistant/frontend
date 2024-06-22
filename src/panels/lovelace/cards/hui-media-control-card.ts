@@ -38,7 +38,6 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -482,7 +481,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );
@@ -726,6 +724,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         position: absolute;
         right: 4px;
         --mdc-icon-size: 24px;
+        inset-inline-end: 4px;
+        inset-inline-start: initial;
       }
 
       .top-info {

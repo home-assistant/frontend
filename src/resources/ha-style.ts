@@ -32,6 +32,7 @@ const mainStyles = css`
     --accent-color: ${unsafeCSS(DEFAULT_ACCENT_COLOR)};
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
+    --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
@@ -164,6 +165,8 @@ const mainStyles = css`
     --state-lock-locked-color: var(--green-color);
     --state-lock-pending-color: var(--orange-color);
     --state-lock-unlocked-color: var(--red-color);
+    --state-lock-opening-color: var(--orange-color);
+    --state-lock-open-color: var(--red-color);
     --state-media_player-active-color: var(--light-blue-color);
     --state-person-active-color: var(--blue-color);
     --state-person-home-color: var(--green-color);

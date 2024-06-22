@@ -1,13 +1,18 @@
-import "@material/mwc-button";
-import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { mdiContentCopy, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
+import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import {
   CloudStatusLoggedIn,
@@ -25,12 +30,16 @@ export class CloudRemotePref extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() private _unmaskedUrl = false;
+
   protected render() {
     if (!this.cloudStatus) {
       return nothing;
     }
 
-    const { remote_enabled, remote_allow_remote_enable } =
+    const { remote_enabled, remote_allow_remote_enable, strict_connection } =
       this.cloudStatus.prefs;
 
     const {
@@ -105,42 +114,115 @@ export class CloudRemotePref extends LitElement {
                   )}
                 ></ha-alert>
               `
-            : ""}
-          ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
-          ${this.hass.localize(
-            `ui.panel.config.cloud.account.remote.${
-              remote_connected
-                ? "instance_is_available"
-                : "instance_will_be_available"
-            }`
-          )}
-          <a
-            href="https://${remote_domain}"
-            target="_blank"
-            class="break-word"
-            rel="noreferrer"
-            >${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.nabu_casa_url"
-            )}</a
-          >.
-          <ha-svg-icon
-            .url=${`https://${remote_domain}`}
-            .path=${mdiContentCopy}
-            @click=${this._copyURL}
-          ></ha-svg-icon>
-          <ha-formfield .label=${"Allow external activation"}>
-            <ha-switch
-              .checked=${remote_allow_remote_enable}
-              @change=${this._toggleAllowRemoteEnabledChanged}
-            ></ha-switch>
-          </ha-formfield>
-        </div>
-        <div class="card-actions">
-          <mwc-button @click=${this._openCertInfo}>
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.certificate_info"
+            : strict_connection === "drop_connection"
+              ? html`<ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.drop_connection_warning_title`
+                  )}
+                  >${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.drop_connection_warning`
+                  )}</ha-alert
+                >`
+              : nothing}
+          <p>
+            ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
+          </p>
+          ${remote_connected
+            ? nothing
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.remote.info_instance_will_be_available"
+                  )}
+                </p>
+              `}
+          <div class="url-container">
+            <div class="textfield-container">
+              <ha-textfield
+                .value=${this._unmaskedUrl
+                  ? `https://${remote_domain}`
+                  : "https://•••••••••••••••••.ui.nabu.casa"}
+                readonly
+                .suffix=${
+                  // reserve some space for the icon.
+                  html`<div style="width: 24px"></div>`
+                }
+              ></ha-textfield>
+              <ha-icon-button
+                class="toggle-unmasked-url"
+                toggles
+                .label=${this.hass.localize(
+                  `ui.panel.config.cloud.account.remote.${this._unmaskedUrl ? "hide" : "show"}_url`
+                )}
+                @click=${this._toggleUnmaskedUrl}
+                .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
+              ></ha-icon-button>
+            </div>
+            <ha-button
+              .url=${`https://${remote_domain}`}
+              @click=${this._copyURL}
+              unelevated
+            >
+              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.copy_link"
+              )}
+            </ha-button>
+          </div>
+
+          <ha-expansion-panel
+            outlined
+            .header=${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.security_options"
             )}
-          </mwc-button>
+          >
+            <ha-settings-row wrap-heading>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.external_activation"
+                )}</span
+              >
+              <span slot="description"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.external_activation_secondary"
+                )}</span
+              >
+              <ha-switch
+                .checked=${remote_allow_remote_enable}
+                @change=${this._toggleAllowRemoteEnabledChanged}
+              ></ha-switch>
+            </ha-settings-row>
+            <hr />
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.certificate_info"
+                )}</span
+              >
+              <span slot="description"
+                >${this.cloudStatus!.remote_certificate
+                  ? this.hass.localize(
+                      "ui.panel.config.cloud.account.remote.certificate_expire",
+                      {
+                        date: formatDate(
+                          new Date(
+                            this.cloudStatus.remote_certificate.expire_date
+                          ),
+                          this.hass.locale,
+                          this.hass.config
+                        ),
+                      }
+                    )
+                  : nothing}</span
+              >
+              <ha-button @click=${this._openCertInfo}>
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.remote.more_info"
+                )}
+              </ha-button>
+            </ha-settings-row>
+          </ha-expansion-panel>
         </div>
       </ha-card>
     `;
@@ -150,6 +232,10 @@ export class CloudRemotePref extends LitElement {
     showCloudCertificateDialog(this, {
       certificateInfo: this.cloudStatus!.remote_certificate!,
     });
+  }
+
+  private _toggleUnmaskedUrl(): void {
+    this._unmaskedUrl = !this._unmaskedUrl;
   }
 
   private async _toggleChanged(ev) {
@@ -200,8 +286,8 @@ export class CloudRemotePref extends LitElement {
       }
       .header-actions {
         position: absolute;
-        right: 24px;
-        inset-inline-end: 24px;
+        right: 16px;
+        inset-inline-end: 16px;
         inset-inline-start: initial;
         top: 24px;
         display: flex;
@@ -226,6 +312,8 @@ export class CloudRemotePref extends LitElement {
         position: absolute;
         right: 24px;
         top: 24px;
+        inset-inline-end: 24px;
+        inset-inline-start: initial;
       }
       .card-actions {
         display: flex;
@@ -233,13 +321,50 @@ export class CloudRemotePref extends LitElement {
       .card-actions a {
         text-decoration: none;
       }
-      ha-svg-icon {
-        --mdc-icon-size: 18px;
-        color: var(--secondary-text-color);
-        cursor: pointer;
+      ha-expansion-panel {
+        margin-top: 16px;
       }
-      ha-formfield {
+      ha-settings-row {
+        padding: 0;
+        border-top: none !important;
+      }
+      ha-expansion-panel {
+        --expansion-panel-content-padding: 0 16px;
+        --expansion-panel-summary-padding: 0 16px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 16px;
+      }
+      .url-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         margin-top: 8px;
+      }
+      .textfield-container {
+        position: relative;
+        flex: 1;
+      }
+      .textfield-container ha-textfield {
+        display: block;
+      }
+      .toggle-unmasked-url {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        inset-inline-start: initial;
+        inset-inline-end: 8px;
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
+        color: var(--secondary-text-color);
+        direction: var(--direction);
+      }
+      hr {
+        border: none;
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 8px 0;
       }
     `;
   }

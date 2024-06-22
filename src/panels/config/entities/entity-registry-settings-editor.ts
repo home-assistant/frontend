@@ -37,6 +37,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
+import "../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
@@ -58,6 +59,7 @@ import {
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
+  AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -162,6 +164,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _areaId?: string | null;
 
+  @state() private _labels?: string[] | null;
+
   @state() private _disabledBy!: EntityRegistryEntry["disabled_by"];
 
   @state() private _hiddenBy!: EntityRegistryEntry["hidden_by"];
@@ -215,6 +219,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
+    this._labels = this.entry.labels;
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
     this._hiddenBy = this.entry.hidden_by;
@@ -251,6 +256,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     if (domain === "lock") {
       this._defaultCode = this.entry.options?.lock?.default_code;
+    }
+
+    if (domain === "alarm_control_panel") {
+      this._defaultCode = this.entry.options?.alarm_control_panel?.default_code;
     }
 
     if (domain === "weather") {
@@ -579,6 +588,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
             ></ha-textfield>
           `
         : ""}
+      ${domain === "alarm_control_panel"
+        ? html`
+            <ha-textfield
+              .value=${this._defaultCode == null ? "" : this._defaultCode}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.default_code"
+              )}
+              type="password"
+              .disabled=${this.disabled}
+              @input=${this._defaultcodeChanged}
+            ></ha-textfield>
+          `
+        : ""}
       ${domain === "sensor" &&
       this._deviceClass &&
       stateObj?.attributes.unit_of_measurement &&
@@ -759,6 +781,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
             @value-changed=${this._areaPicked}
           ></ha-area-picker>`
         : ""}
+      <ha-labels-picker
+        .hass=${this.hass}
+        .value=${this._labels}
+        .disabled=${this.disabled}
+        @value-changed=${this._labelsChanged}
+      ></ha-labels-picker>
       ${this._cameraPrefs
         ? html`
             <ha-settings-row>
@@ -939,9 +967,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <ha-switch
           .checked=${!this._disabledBy && !this._hiddenBy}
-          .disabled=${this.disabled ||
-          this._disabledBy ||
-          (this._hiddenBy && this._hiddenBy !== "user")}
+          .disabled=${this.disabled || this._disabledBy}
           @change=${this._hiddenChanged}
         ></ha-switch>
       </ha-settings-row>
@@ -1010,6 +1036,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
+      labels: this._labels || [],
       new_entity_id: this._entityId.trim(),
     };
 
@@ -1061,6 +1088,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
       params.options_domain = domain;
       params.options = this.entry.options?.[domain] || {};
       (params.options as LockEntityOptions).default_code = this._defaultCode;
+    }
+    if (
+      domain === "alarm_control_panel" &&
+      this.entry.options?.[domain]?.default_code !== this._defaultCode
+    ) {
+      params.options_domain = domain;
+      params.options = this.entry.options?.[domain] || {};
+      (params.options as AlarmControlPanelEntityOptions).default_code =
+        this._defaultCode;
     }
     if (
       domain === "weather" &&
@@ -1350,6 +1386,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _areaPicked(ev: CustomEvent) {
     fireEvent(this, "change");
     this._areaId = ev.detail.value;
+  }
+
+  private _labelsChanged(ev: CustomEvent) {
+    this._labels = ev.detail.value;
   }
 
   private async _fetchCameraPrefs() {

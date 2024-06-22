@@ -32,7 +32,7 @@ const cardConfigStruct = assign(
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
   { name: "name", selector: { text: {} } },
-  { name: "image", selector: { text: {} } },
+  { name: "image", selector: { image: {} } },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
   {
     name: "",

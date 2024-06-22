@@ -7,7 +7,6 @@ import type { LovelaceViewRawConfig } from "./view";
 export interface LovelaceDashboardBaseConfig {}
 
 export interface LovelaceConfig extends LovelaceDashboardBaseConfig {
-  title?: string;
   background?: string;
   views: LovelaceViewRawConfig[];
 }

@@ -215,10 +215,10 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
+              // New lines matter for messages
+              // prettier-ignore
               (message) => html`
-                <div class=${this._computeMessageClasses(message)}>
-                  ${message.text}
-                </div>
+                <div class=${this._computeMessageClasses(message)}>${message.text}</div>
               `
             )}
           </div>
@@ -355,7 +355,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleSendMessage() {
     if (this._messageInput.value) {
-      this._processText(this._messageInput.value);
+      this._processText(this._messageInput.value.trim());
       this._messageInput.value = "";
       this._showSendButton = false;
     }
@@ -427,34 +427,28 @@ export class HaVoiceCommandDialog extends LitElement {
   private async _showNotSupportedMessage() {
     this._addMessage({
       who: "hass",
-      text: html`
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_browser"
-          )}
-        </p>
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation",
-            {
-              documentation_link: html`
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/securing/#remote-access"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                  )}
-                </a>
-              `,
-            }
-          )}
-        </p>
-      `,
+      text:
+        // New lines matter for messages
+        // prettier-ignore
+        html`${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_browser"
+        )}
+
+        ${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_documentation",
+          {
+            documentation_link: html`<a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/securing/#remote-access"
+                )}
+              >${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                )}</a>`,
+          }
+        )}`,
     });
   }
 
@@ -647,6 +641,8 @@ export class HaVoiceCommandDialog extends LitElement {
           position: absolute;
           --mdc-icon-size: 16px;
           right: 5px;
+          inset-inline-end: 5px;
+          inset-inline-start: initial;
           top: 0px;
         }
 
@@ -754,6 +750,7 @@ export class HaVoiceCommandDialog extends LitElement {
           max-height: 100%;
         }
         .message {
+          white-space: pre-line;
           font-size: 18px;
           clear: both;
           margin: 8px 0;
@@ -774,8 +771,8 @@ export class HaVoiceCommandDialog extends LitElement {
           float: var(--float-end);
           text-align: right;
           border-bottom-right-radius: 0px;
-          background-color: var(--light-primary-color);
-          color: var(--text-light-primary-color, var(--primary-text-color));
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
           direction: var(--direction);
         }
 
@@ -785,13 +782,17 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: initial;
           float: var(--float-start);
           border-bottom-left-radius: 0px;
-          background-color: var(--primary-color);
-          color: var(--text-primary-color);
+          background-color: var(--secondary-background-color);
+          color: var(--primary-text-color);
           direction: var(--direction);
         }
 
-        .message a {
+        .message.user a {
           color: var(--text-primary-color);
+        }
+
+        .message.hass a {
+          color: var(--primary-text-color);
         }
 
         .message img {

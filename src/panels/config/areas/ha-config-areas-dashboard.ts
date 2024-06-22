@@ -1,4 +1,12 @@
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -7,19 +15,34 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
+import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-sortable";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
+  updateAreaRegistryEntry,
 } from "../../../data/area_registry";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  FloorRegistryEntry,
+  createFloorRegistryEntry,
+  deleteFloorRegistryEntry,
+  getFloorAreaLookup,
+  subscribeFloorRegistry,
+  updateFloorRegistryEntry,
+} from "../../../data/floor_registry";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -27,9 +50,14 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+
+const UNASSIGNED_PATH = ["__unassigned__"];
+
+const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
 @customElement("ha-config-areas-dashboard")
-export class HaConfigAreasDashboard extends LitElement {
+export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -38,11 +66,14 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state() private _floors?: FloorRegistryEntry[];
+
   private _processAreas = memoizeOne(
     (
       areas: HomeAssistant["areas"],
       devices: HomeAssistant["devices"],
-      entities: HomeAssistant["entities"]
+      entities: HomeAssistant["entities"],
+      floors: FloorRegistryEntry[]
     ) => {
       const processArea = (area: AreaRegistryEntry) => {
         let noDevicesInArea = 0;
@@ -73,18 +104,40 @@ export class HaConfigAreasDashboard extends LitElement {
         };
       };
 
-      return Object.values(areas).map(processArea);
+      const floorAreaLookup = getFloorAreaLookup(Object.values(areas));
+      const unassisgnedAreas = Object.values(areas).filter(
+        (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
+      );
+      return {
+        floors: floors.map((floor) => ({
+          ...floor,
+          areas: (floorAreaLookup[floor.floor_id] || []).map(processArea),
+        })),
+        unassisgnedAreas: unassisgnedAreas.map(processArea),
+      };
     }
   );
 
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeFloorRegistry(this.hass.connection, (floors) => {
+        this._floors = floors;
+      }),
+    ];
+  }
+
   protected render(): TemplateResult {
-    const areas =
-      !this.hass.areas || !this.hass.devices || !this.hass.entities
+    const areasAndFloors =
+      !this.hass.areas ||
+      !this.hass.devices ||
+      !this.hass.entities ||
+      !this._floors
         ? undefined
         : this._processAreas(
             this.hass.areas,
             this.hass.devices,
-            this.hass.entities
+            this.hass.entities,
+            this._floors
           );
 
     return html`
@@ -103,12 +156,94 @@ export class HaConfigAreasDashboard extends LitElement {
           @click=${this._showHelp}
         ></ha-icon-button>
         <div class="container">
-          ${areas?.length
-            ? html`<div class="areas">
-                ${areas.map((area) => this._renderArea(area))}
+          ${areasAndFloors?.floors.map(
+            (floor) =>
+              html`<div class="floor">
+                <div class="header">
+                  <h2>
+                    <ha-floor-icon .floor=${floor}></ha-floor-icon>
+                    ${floor.name}
+                  </h2>
+                  <ha-button-menu
+                    .floor=${floor}
+                    @action=${this._handleFloorAction}
+                  >
+                    <ha-icon-button
+                      slot="trigger"
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+                    <ha-list-item graphic="icon"
+                      ><ha-svg-icon
+                        .path=${mdiPencil}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.edit_floor"
+                      )}</ha-list-item
+                    >
+                    <ha-list-item class="warning" graphic="icon"
+                      ><ha-svg-icon
+                        class="warning"
+                        .path=${mdiDelete}
+                        slot="graphic"
+                      ></ha-svg-icon
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.picker.floor.delete_floor"
+                      )}</ha-list-item
+                    >
+                  </ha-button-menu>
+                </div>
+                <ha-sortable
+                  handle-selector="a"
+                  draggable-selector="a"
+                  @item-moved=${this._areaMoved}
+                  group="floor"
+                  .options=${SORT_OPTIONS}
+                  .path=${[floor.floor_id]}
+                >
+                  <div class="areas">
+                    ${floor.areas.map((area) => this._renderArea(area))}
+                  </div>
+                </ha-sortable>
+              </div>`
+          )}
+          ${areasAndFloors?.unassisgnedAreas.length
+            ? html`<div class="floor">
+                <div class="header">
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.picker.unassigned_areas"
+                    )}
+                  </h2>
+                </div>
+                <ha-sortable
+                  handle-selector="a"
+                  draggable-selector="a"
+                  @item-moved=${this._areaMoved}
+                  group="floor"
+                  .options=${SORT_OPTIONS}
+                  .path=${UNASSIGNED_PATH}
+                >
+                  <div class="areas">
+                    ${areasAndFloors?.unassisgnedAreas.map((area) =>
+                      this._renderArea(area)
+                    )}
+                  </div>
+                </ha-sortable>
               </div>`
             : nothing}
         </div>
+        <ha-fab
+          slot="fab"
+          class="floor"
+          .label=${this.hass.localize(
+            "ui.panel.config.areas.picker.create_floor"
+          )}
+          extended
+          @click=${this._createFloor}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -136,7 +271,14 @@ export class HaConfigAreasDashboard extends LitElement {
             ? html`<ha-icon .icon=${area.icon}></ha-icon>`
             : ""}
         </div>
-        <h1 class="card-header">${area.name}</h1>
+        <div class="card-header">
+          ${area.name}
+          <ha-icon-button
+            .area=${area}
+            .path=${mdiPencil}
+            @click=${this._openAreaDetails}
+          ></ha-icon-button>
+        </div>
         <div class="card-content">
           <div>
             ${formatListWithAnds(
@@ -170,6 +312,76 @@ export class HaConfigAreasDashboard extends LitElement {
     loadAreaRegistryDetailDialog();
   }
 
+  private _openAreaDetails(ev) {
+    ev.preventDefault();
+    const area = ev.currentTarget.area;
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: async (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
+  }
+
+  private async _areaMoved(ev) {
+    const areasAndFloors = this._processAreas(
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this._floors!
+    );
+    let area: AreaRegistryEntry;
+    if (ev.detail.oldPath === UNASSIGNED_PATH) {
+      area = areasAndFloors.unassisgnedAreas[ev.detail.oldIndex];
+    } else {
+      const oldFloor = areasAndFloors.floors!.find(
+        (floor) => floor.floor_id === ev.detail.oldPath[0]
+      );
+      area = oldFloor!.areas[ev.detail.oldIndex];
+    }
+
+    await updateAreaRegistryEntry(this.hass, area.area_id, {
+      floor_id:
+        ev.detail.newPath === UNASSIGNED_PATH ? null : ev.detail.newPath[0],
+    });
+  }
+
+  private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
+    const floor = (ev.currentTarget as any).floor;
+    switch (ev.detail.index) {
+      case 0:
+        this._editFloor(floor);
+        break;
+      case 1:
+        this._deleteFloor(floor);
+        break;
+    }
+  }
+
+  private _createFloor() {
+    this._openFloorDialog();
+  }
+
+  private _editFloor(floor) {
+    this._openFloorDialog(floor);
+  }
+
+  private async _deleteFloor(floor) {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.picker.floor.confirm_delete_text"
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    await deleteFloorRegistryEntry(this.hass, floor.floor_id);
+  }
+
   private _createArea() {
     this._openAreaDialog();
   }
@@ -199,11 +411,57 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
+  private _openFloorDialog(entry?: FloorRegistryEntry) {
+    showFloorRegistryDetailDialog(this, {
+      entry,
+      createEntry: async (values, addedAreas) => {
+        const floor = await createFloorRegistryEntry(this.hass!, values);
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+      },
+      updateEntry: async (values, addedAreas, removedAreas) => {
+        const floor = await updateFloorRegistryEntry(
+          this.hass!,
+          entry!.floor_id,
+          values
+        );
+        addedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: floor.floor_id,
+          });
+        });
+        removedAreas.forEach((areaId) => {
+          updateAreaRegistryEntry(this.hass, areaId, {
+            floor_id: null,
+          });
+        });
+      },
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       .container {
         padding: 8px 16px 16px;
         margin: 0 auto 64px auto;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--secondary-text-color);
+        padding-inline-start: 8px;
+      }
+      .header h2 {
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 28px;
+      }
+      .header ha-icon {
+        margin-inline-end: 8px;
       }
       .areas {
         display: grid;
@@ -248,6 +506,15 @@ export class HaConfigAreasDashboard extends LitElement {
       .card-content {
         min-height: 16px;
         color: var(--secondary-text-color);
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow-wrap: anywhere;
+      }
+      .warning {
+        color: var(--error-color);
       }
     `;
   }

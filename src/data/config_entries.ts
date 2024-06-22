@@ -18,10 +18,13 @@ export interface ConfigEntry {
   supports_options: boolean;
   supports_remove_device: boolean;
   supports_unload: boolean;
+  supports_reconfigure: boolean;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
   disabled_by: "user" | null;
   reason: string | null;
+  error_reason_translation_key: string | null;
+  error_reason_translation_placeholders: Record<string, string> | null;
 }
 
 export type ConfigEntryMutableParams = Partial<

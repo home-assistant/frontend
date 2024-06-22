@@ -83,7 +83,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           service,
           serviceData,
           target,
-          notifyOnError = true
+          notifyOnError = true,
+          returnResponse = false
         ) => {
           if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
@@ -101,7 +102,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               domain,
               service,
               serviceData ?? {},
-              target
+              target,
+              returnResponse
             )) as ServiceCallResponse;
           } catch (err: any) {
             if (
@@ -232,6 +234,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             entity_id: entity.ei,
             device_id: entity.di,
             area_id: entity.ai,
+            labels: entity.lb,
             translation_key: entity.tk,
             platform: entity.pl,
             entity_category:

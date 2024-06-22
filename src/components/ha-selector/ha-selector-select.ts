@@ -102,7 +102,10 @@ export class HaSelectSelector extends LitElement {
             ${this.label}
             ${options.map(
               (item: SelectOption) => html`
-                <ha-formfield .label=${item.label}>
+                <ha-formfield
+                  .label=${item.label}
+                  .disabled=${item.disabled || this.disabled}
+                >
                   <ha-radio
                     .checked=${item.value === this.value}
                     .value=${item.value}
@@ -275,6 +278,14 @@ export class HaSelectSelector extends LitElement {
 
   private _valueChanged(ev) {
     ev.stopPropagation();
+
+    if (ev.detail?.index === -1 && this.value !== undefined) {
+      fireEvent(this, "value-changed", {
+        value: undefined,
+      });
+      return;
+    }
+
     const value = ev.detail?.value || ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;

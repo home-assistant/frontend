@@ -9,9 +9,13 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-} from "date-fns/esm";
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { calcDate, calcDateProperty } from "../common/datetime/calc_date";
+import {
+  calcDate,
+  calcDateProperty,
+  calcDateDifferenceProperty,
+} from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import { HomeAssistant } from "../types";
@@ -91,6 +95,7 @@ export type EnergySolarForecasts = {
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  name?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -168,7 +173,7 @@ export interface WaterSourceTypeEnergyPreference {
   unit_of_measurement?: string | null;
 }
 
-type EnergySource =
+export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
@@ -331,6 +336,9 @@ export const getReferencedStatisticIds = (
       }
     }
   }
+  if (!(includeTypes && !includeTypes.includes("device"))) {
+    statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
+  }
 
   return statIDs;
 };
@@ -383,6 +391,7 @@ const getEnergyData = async (
     "solar",
     "battery",
     "gas",
+    "device",
   ]);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
@@ -439,12 +448,12 @@ const getEnergyData = async (
         addMonths,
         hass.locale,
         hass.config,
-        -(calcDateProperty(
+        -(calcDateDifferenceProperty(
           end || new Date(),
+          start,
           differenceInMonths,
           hass.locale,
-          hass.config,
-          start
+          hass.config
         ) as number) - 1
       );
     } else {
@@ -777,7 +786,7 @@ export const getEnergyGasUnit = (
       : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
+export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
   hass.config.unit_system.length === "km" ? "L" : "gal";
 
 export const energyStatisticHelpUrl =

@@ -21,6 +21,8 @@ export class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) leftChevron = false;
 
+  @property({ type: Boolean, reflect: true }) noCollapse = false;
+
   @property() header?: string;
 
   @property() secondary?: string;
@@ -34,16 +36,17 @@ export class HaExpansionPanel extends LitElement {
       <div class="top ${classMap({ expanded: this.expanded })}">
         <div
           id="summary"
+          class=${classMap({ noCollapse: this.noCollapse })}
           @click=${this._toggleContainer}
           @keydown=${this._toggleContainer}
           @focus=${this._focusChanged}
           @blur=${this._focusChanged}
           role="button"
-          tabindex="0"
+          tabindex=${this.noCollapse ? -1 : 0}
           aria-expanded=${this.expanded}
           aria-controls="sect1"
         >
-          ${this.leftChevron
+          ${this.leftChevron && !this.noCollapse
             ? html`
                 <ha-svg-icon
                   .path=${mdiChevronDown}
@@ -57,7 +60,7 @@ export class HaExpansionPanel extends LitElement {
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
-          ${!this.leftChevron
+          ${!this.leftChevron && !this.noCollapse
             ? html`
                 <ha-svg-icon
                   .path=${mdiChevronDown}
@@ -83,13 +86,11 @@ export class HaExpansionPanel extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.has("expanded") && this.expanded) {
+    if (changedProps.has("expanded")) {
       this._showContent = this.expanded;
       setTimeout(() => {
         // Verify we're still expanded
-        if (this.expanded) {
-          this._container.style.overflow = "initial";
-        }
+        this._container.style.overflow = this.expanded ? "initial" : "hidden";
       }, 300);
     }
   }
@@ -108,6 +109,9 @@ export class HaExpansionPanel extends LitElement {
       return;
     }
     ev.preventDefault();
+    if (this.noCollapse) {
+      return;
+    }
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
     this._container.style.overflow = "hidden";
@@ -132,6 +136,9 @@ export class HaExpansionPanel extends LitElement {
   }
 
   private _focusChanged(ev) {
+    if (this.noCollapse) {
+      return;
+    }
     this.shadowRoot!.querySelector(".top")!.classList.toggle(
       "focused",
       ev.type === "focus"
@@ -192,6 +199,9 @@ export class HaExpansionPanel extends LitElement {
         overflow: hidden;
         font-weight: 500;
         outline: none;
+      }
+      #summary.noCollapse {
+        cursor: default;
       }
 
       .summary-icon.expanded {

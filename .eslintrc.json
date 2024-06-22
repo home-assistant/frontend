@@ -115,6 +115,7 @@
       }
     ],
     "unused-imports/no-unused-imports": "error",
+    "lit/attribute-names": "warn",
     "lit/attribute-value-entities": "off",
     "lit/no-template-map": "off",
     "lit/no-native-attributes": "warn",
@@ -125,6 +126,5 @@
     "lit-a11y/anchor-is-valid": "warn",
     "lit-a11y/role-has-required-aria-attrs": "warn"
   },
-  "plugins": ["disable", "unused-imports"],
-  "processor": "disable/disable"
+  "plugins": ["unused-imports"]
 }

@@ -17,6 +17,7 @@ declare global {
   // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
+    "ll-upgrade": Record<string, unknown>;
     "ll-badge-rebuild": Record<string, unknown>;
   }
 }
@@ -39,11 +40,17 @@ export interface LovelaceBadge extends HTMLElement {
   setConfig(config: LovelaceBadgeConfig): void;
 }
 
+export type LovelaceLayoutOptions = {
+  grid_columns?: number;
+  grid_rows?: number;
+};
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
-  editMode?: boolean;
+  preview?: boolean;
   getCardSize(): number | Promise<number>;
+  getLayoutOptions?(): LovelaceLayoutOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 

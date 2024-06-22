@@ -142,7 +142,7 @@ class MoreInfoVacuum extends LitElement {
                   "ui.dialogs.more_info_control.vacuum.commands"
                 )}
               </div>
-              <div class="flex-horizontal">
+              <div class="flex-horizontal space-around">
                 ${VACUUM_COMMANDS.filter((item) =>
                   item.isVisible(stateObj)
                 ).map(
@@ -326,6 +326,9 @@ class MoreInfoVacuum extends LitElement {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+      }
+      .space-around {
+        justify-content: space-around;
       }
     `;
   }

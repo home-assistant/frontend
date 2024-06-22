@@ -12,8 +12,6 @@ import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../components/ha-tabs";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tabs/paper-tab";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -82,25 +80,24 @@ class HaPanelMailbox extends LitElement {
             : nothing}
           ${this._messages?.map(
             (message) =>
-              html` <paper-item
+              html` <ha-list-item
                 .message=${message}
                 @click=${this._openMP3Dialog}
+                twoline
               >
-                <paper-item-body style="width:100%" two-line>
-                  <div class="row">
-                    <div>${message.caller}</div>
-                    <div class="tip">
-                      ${formatDuration(this.hass.locale, {
-                        seconds: message.duration,
-                      })}
-                    </div>
-                  </div>
-                  <div secondary>
-                    <span class="date">${message.timestamp}</span> -
-                    ${message.message}
-                  </div>
-                </paper-item-body>
-              </paper-item>`
+                <span>
+                  <span>${message.caller}</span>
+                  <span class="tip">
+                    ${formatDuration(this.hass.locale, {
+                      seconds: message.duration,
+                    })}
+                  </span>
+                </span>
+                <span slot="secondary">
+                  <span class="date">${message.timestamp}</span> -
+                  ${message.message}
+                </span>
+              </ha-list-item>`
           )}
         </ha-card>
       </div>
@@ -217,10 +214,6 @@ class HaPanelMailbox extends LitElement {
 
         ha-card {
           overflow: hidden;
-        }
-
-        paper-item {
-          cursor: pointer;
         }
 
         ha-tabs {

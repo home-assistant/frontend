@@ -43,6 +43,8 @@ export interface IntegrationManifest {
     | "cloud_push"
     | "local_polling"
     | "local_push";
+  single_config_entry?: boolean;
+  version?: string;
 }
 export interface IntegrationSetup {
   domain: string;

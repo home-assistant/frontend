@@ -6,6 +6,7 @@ export interface ConfigUpdateValues {
   latitude: number;
   longitude: number;
   elevation: number;
+  radius: number;
   unit_system: "metric" | "us_customary";
   time_zone: string;
   external_url?: string | null;

@@ -12,7 +12,6 @@ import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
 import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -139,6 +138,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
       }
       ha-textfield {
         text-align: end;
+        direction: ltr !important;
       }
       ha-slider {
         width: 100%;
@@ -166,7 +166,6 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureCard(), 250, false)
       );

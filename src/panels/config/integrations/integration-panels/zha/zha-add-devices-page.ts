@@ -254,6 +254,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          text-align: center;
         }
         .card {
           margin: 8px;
@@ -269,6 +270,8 @@ class ZHAAddDevicesPage extends LitElement {
           margin-inline-start: initial;
           top: -6px;
           right: 0;
+          inset-inline-end: 0;
+          inset-inline-start: initial;
           color: var(--primary-color);
         }
         .search-button {
