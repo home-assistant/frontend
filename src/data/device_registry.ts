@@ -5,6 +5,7 @@ import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
+import { ConfigEntry } from "./config_entries";
 import type { EntitySources } from "./entity_sources";
 
 export {
@@ -142,7 +143,9 @@ export const getDeviceEntityDisplayLookup = (
 
 export const getDeviceIntegrationLookup = (
   entitySources: EntitySources,
-  entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[]
+  entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
+  devices?: DeviceRegistryEntry[],
+  configEntries?: ConfigEntry[]
 ): Record<string, string[]> => {
   const deviceIntegrations: Record<string, string[]> = {};
 
@@ -156,6 +159,24 @@ export const getDeviceIntegrationLookup = (
       deviceIntegrations[entity.device_id!] = [];
     }
     deviceIntegrations[entity.device_id!].push(source.domain);
+  }
+  // Lookup devices that have no entities
+  if (devices && configEntries) {
+    for (const device of devices) {
+      if (!deviceIntegrations[device.id]) {
+        for (const config_entry_id of device.config_entries) {
+          const entry = configEntries.find(
+            (e) => e.entry_id === config_entry_id
+          );
+          if (entry?.domain) {
+            (
+              deviceIntegrations[device.id] ||
+              (deviceIntegrations[device.id] = [])
+            ).push(entry.domain);
+          }
+        }
+      }
+    }
   }
   return deviceIntegrations;
 };
