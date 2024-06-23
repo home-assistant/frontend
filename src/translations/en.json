@@ -4441,6 +4441,10 @@
               "client_id": "OAuth client ID",
               "application": "Integration"
             },
+            "remove": {
+              "button": "Remove application credential",
+              "confirm_title": "Remove application credential?"
+            },
             "remove_selected": {
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
