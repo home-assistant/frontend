@@ -168,7 +168,7 @@
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/plugin-replace": "5.0.7",
     "@types/babel__plugin-transform-runtime": "7.9.5",
-    "@types/chromecast-caf-receiver": "6.0.14",
+    "@types/chromecast-caf-receiver": "6.0.15",
     "@types/chromecast-caf-sender": "1.0.10",
     "@types/color-name": "1.1.4",
     "@types/glob": "8.1.0",
