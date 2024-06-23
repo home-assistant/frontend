@@ -23,6 +23,7 @@ export interface LovelaceBaseViewConfig {
   subview?: boolean;
   back_path?: string;
   max_columns?: number; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
+  min_column_width?: number; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
