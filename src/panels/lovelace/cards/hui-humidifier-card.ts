@@ -27,15 +27,12 @@ import { HumidifierCardConfig } from "./types";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
-  // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: async (entries) => {
+    callback: (entries) => {
       const container = entries[0]?.target.shadowRoot?.querySelector(
         ".container"
       ) as HTMLElement | undefined;
-      if (!container) return;
-      const height = container.clientHeight;
-      container.style.setProperty("--height", `${height}px`);
+      return container?.clientHeight;
     },
   });
 
@@ -136,11 +133,18 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const color = stateColorCss(stateObj);
 
+    const controlMaxWidth = this._resizeController.value
+      ? `${this._resizeController.value}px`
+      : undefined;
+
     return html`
       <ha-card>
         <p class="title">${name}</p>
         <div class="container">
           <ha-state-control-humidifier-humidity
+            style=${styleMap({
+              maxWidth: controlMaxWidth,
+            })}
             prevent-interaction-on-scroll
             .showCurrentAsPrimary=${this._config.show_current_as_primary}
             show-secondary
@@ -220,7 +224,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
       .container > * {
         padding: 8px;
-        max-width: var(--height, 100%);
       }
 
       .more-info {
