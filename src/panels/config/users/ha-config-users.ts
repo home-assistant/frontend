@@ -237,6 +237,11 @@ export class HaConfigUsers extends LitElement {
 
     showUserDetailDialog(this, {
       entry,
+      replaceEntry: (newEntry: User) => {
+        this._users = this._users!.map((ent) =>
+          ent.id === newEntry.id ? newEntry : ent
+        );
+      },
       updateEntry: async (values) => {
         const updated = await updateUser(this.hass!, entry!.id, values);
         this._users = this._users!.map((ent) =>
