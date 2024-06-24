@@ -34,7 +34,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     callback: () => {
       const height = this._container?.clientHeight;
       if (!height) return;
-      this._container.style.setProperty("--height", `${height}px`);
+      this._container!.style.setProperty("--height", `${height}px`);
     },
   });
 
