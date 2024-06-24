@@ -122,6 +122,7 @@ export class HuiSection extends ReactiveElement {
         this._layoutElement.lovelace = this.lovelace;
       }
       if (changedProperties.has("preview")) {
+        this._layoutElement.preview = this.preview;
         this._cards.forEach((element) => {
           element.preview = this.preview;
         });
@@ -129,7 +130,7 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
-      if (changedProperties.has("hass") || changedProperties.has("lovelace")) {
+      if (changedProperties.has("hass") || changedProperties.has("preview")) {
         this._updateElement();
       }
     }

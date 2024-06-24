@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceLayoutOptions } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -22,6 +22,11 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   direction: "vertical",
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
+
+export const DEFAULT_GRID_OPTIONS: LovelaceLayoutOptions = {
+  grid_columns: 4,
+  grid_rows: 1,
+};
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -95,11 +100,15 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               const card = this.cards![idx];
               const layoutOptions = card.getLayoutOptions();
 
+              const columnSize =
+                layoutOptions.grid_columns ?? DEFAULT_GRID_OPTIONS.grid_columns;
+              const rowSize =
+                layoutOptions.grid_rows ?? DEFAULT_GRID_OPTIONS.grid_rows;
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": layoutOptions.grid_columns,
-                    "--row-size": layoutOptions.grid_rows,
+                    "--column-size": columnSize,
+                    "--row-size": rowSize,
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
@@ -216,8 +225,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .card {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
-          grid-row: span var(--row-size, 1);
-          grid-column: span var(--column-size, 4);
+          grid-row: span var(--row-size);
+          grid-column: span var(--column-size);
         }
 
         .card.fit-rows {
