@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -26,38 +27,16 @@ import { HumidifierCardConfig } from "./types";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
-  private _resizeObserver?: ResizeObserver;
+  @query(".container") private _container?: HTMLElement;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._attachObserver();
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._detachObserver();
-  }
-
-  @query(".container") private _container!: HTMLElement;
-
-  private _attachObserver(): void {
-    if (!this._resizeObserver && this._container) {
-      this._resizeObserver = new ResizeObserver(() => {
-        this._container.style.setProperty(
-          "--height",
-          `${this._container.clientHeight}px`
-        );
-      });
-      this._resizeObserver.observe(this._container);
-    }
-  }
-
-  private _detachObserver(): void {
-    if (this._resizeObserver) {
-      this._resizeObserver.disconnect();
-      this._resizeObserver = undefined;
-    }
-  }
+  // @ts-ignore
+  private _resizeController = new ResizeController(this, {
+    callback: () => {
+      const height = this._container?.clientHeight;
+      if (!height) return;
+      this._container.style.setProperty("--height", `${height}px`);
+    },
+  });
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-humidifier-card-editor");
@@ -114,8 +93,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-
-    this._attachObserver();
 
     if (
       !this._config ||
@@ -231,6 +208,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         max-width: 100%;
         box-sizing: border-box;
+        flex: 1;
       }
 
       .container:before {
@@ -242,7 +220,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       .container > * {
         padding: 8px;
         max-width: var(--height, 100%);
-        height: 100%;
       }
 
       .more-info {
