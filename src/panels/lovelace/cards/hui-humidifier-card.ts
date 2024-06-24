@@ -8,7 +8,7 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -27,14 +27,15 @@ import { HumidifierCardConfig } from "./types";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
-  @query(".container") private _container?: HTMLElement;
-
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => {
-      const height = this._container?.clientHeight;
-      if (!height) return;
-      this._container!.style.setProperty("--height", `${height}px`);
+    callback: async (entries) => {
+      const container = entries[0]?.target.shadowRoot?.querySelector(
+        ".container"
+      ) as HTMLElement | undefined;
+      if (!container) return;
+      const height = container.clientHeight;
+      container.style.setProperty("--height", `${height}px`);
     },
   });
 
