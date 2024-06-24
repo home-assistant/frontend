@@ -210,6 +210,7 @@ export class HUIView extends ReactiveElement {
           try {
             element.hass = this.hass;
             element.lovelace = this.lovelace;
+            element.preview = this.lovelace.editMode;
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
