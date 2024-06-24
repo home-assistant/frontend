@@ -266,16 +266,16 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
-        const filterWithAccents = stripDiacritics(filter);
+        const normalizedFilter = stripDiacritics(filter);
         return [
           ...new Fuse(integrations, options)
-            .search(filterWithAccents)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(filterWithAccents)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(filterWithAccents)
+            .search(normalizedFilter)
             .map((result) => result.item),
         ];
       }
