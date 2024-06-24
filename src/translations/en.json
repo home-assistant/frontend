@@ -4382,6 +4382,7 @@
             "name": "Display name",
             "username": "Username",
             "change_password": "Change password",
+            "change_username": "Change username",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -4415,6 +4416,13 @@
             "change": "Change",
             "password_no_match": "Passwords don't match",
             "password_changed": "The password has been changed successfully."
+          },
+          "change_username": {
+            "caption": "Change username",
+            "new_username": "New username",
+            "change": "Change",
+            "username_changed": "The username has been changed successfully.",
+            "failed": "Failed to change username"
           }
         },
         "application_credentials": {
