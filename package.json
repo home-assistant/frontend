@@ -160,7 +160,7 @@
     "@lokalise/node-api": "12.5.0",
     "@octokit/auth-oauth-device": "7.1.1",
     "@octokit/plugin-retry": "7.1.1",
-    "@octokit/rest": "20.1.1",
+    "@octokit/rest": "21.0.0",
     "@open-wc/dev-server-hmr": "0.1.4",
     "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-commonjs": "26.0.1",
