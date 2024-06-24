@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../types";
+import { ManualAutomationConfig } from "./automation";
 import { Selector } from "./selector";
 
 export type BlueprintDomain = "automation" | "script";
@@ -40,6 +41,10 @@ export interface BlueprintImportResult {
   exists?: boolean;
   blueprint: Blueprint;
   validation_errors: string[] | null;
+}
+
+export interface BlueprintSubstituteResult {
+  substituted_config: ManualAutomationConfig;
 }
 
 export const fetchBlueprints = (hass: HomeAssistant, domain: BlueprintDomain) =>
@@ -98,7 +103,7 @@ export const substituteBlueprint = (
   path: string,
   input: Record<string, any>
 ) =>
-  hass.callWS({
+  hass.callWS<BlueprintSubstituteResult>({
     type: "blueprint/substitute",
     domain,
     path,

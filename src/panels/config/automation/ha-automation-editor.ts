@@ -6,6 +6,7 @@ import {
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
+  mdiFileEdit,
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -218,7 +219,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-list-item>
               `
-            : nothing}
+            : html`<ha-list-item
+                graphic="icon"
+                @click=${this._substituteBlueprint}
+                .disabled=${this._readOnly}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.subtitute_blueprint"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiFileEdit}></ha-svg-icon>
+              </ha-list-item>`}
 
           <ha-list-item
             .disabled=${!this._readOnly && !this.automationId}
@@ -332,6 +342,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                           @duplicate=${this._duplicate}
                         ></blueprint-automation-editor>
@@ -344,6 +355,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
+                          .readOnly=${Boolean(this._readOnly)}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                           @duplicate=${this._duplicate}
                         ></manual-automation-editor>
@@ -433,7 +446,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
       this._config = {
         ...baseConfig,
-        ...initData,
+        ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
@@ -626,6 +639,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       afterNextRender(() => history.back());
     }
   };
+
+  private _substituteBlueprint() {
+    this.renderRoot
+      .querySelector("blueprint-automation-editor")
+      ?.substituteBlueprint();
+  }
 
   private async _duplicate() {
     const result = this._readOnly

@@ -29,6 +29,8 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public dirty = false;
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() protected _blueprints?: Blueprints;

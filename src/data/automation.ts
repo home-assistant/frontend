@@ -352,9 +352,11 @@ export const saveAutomationConfig = (
   config: AutomationConfig
 ) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
 
-export const normalizeAutomationConfig = (
-  config: AutomationConfig
-): AutomationConfig => {
+export const normalizeAutomationConfig = <
+  T extends Partial<AutomationConfig> | AutomationConfig,
+>(
+  config: T
+): T => {
   // Normalize data: ensure trigger, action and condition are lists
   // Happens when people copy paste their automations into the config
   for (const key of ["trigger", "condition", "action"]) {
@@ -367,7 +369,7 @@ export const normalizeAutomationConfig = (
 };
 
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
-  initialAutomationEditorData = normalizeAutomationConfig(data);
+  initialAutomationEditorData = data;
   navigate("/config/automation/edit/new");
 };
 
