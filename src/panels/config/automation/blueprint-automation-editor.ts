@@ -3,8 +3,11 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
-import { BlueprintAutomationConfig } from "../../../data/automation";
-import { fetchBlueprints } from "../../../data/blueprint";
+import {
+  BlueprintAutomationConfig,
+  showAutomationEditor,
+} from "../../../data/automation";
+import { fetchBlueprints, substituteBlueprint } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import "../../../components/ha-markdown";
 
@@ -63,6 +66,20 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     }
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
+    });
+  }
+
+  private async _substituteBlueprint(): Promise<void> {
+    const substitute = await substituteBlueprint(
+      this.hass,
+      "automation",
+      this.config.use_blueprint.path,
+      this.config.use_blueprint.input || {}
+    );
+    showAutomationEditor({
+      alias: this.config.alias,
+      description: `${this.config.description ? this.config.description : this._blueprint?.metadata.description} (Originated from blueprint ${this._blueprint?.metadata.name})`,
+      ...substitute.substituted_config,
     });
   }
 }

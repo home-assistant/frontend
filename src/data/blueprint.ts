@@ -91,3 +91,16 @@ export const getBlueprintSourceType = (
   }
   return "community";
 };
+
+export const substituteBlueprint = (
+  hass: HomeAssistant,
+  domain: BlueprintDomain,
+  path: string,
+  input: Record<string, any>
+) =>
+  hass.callWS({
+    type: "blueprint/substitute",
+    domain,
+    path,
+    input,
+  });

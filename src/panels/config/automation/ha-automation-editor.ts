@@ -44,6 +44,7 @@ import {
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
+  normalizeAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
@@ -441,7 +442,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeAutomationConfig(c.config);
         this._checkValidation();
       });
       this._entityId = this.entityId;
@@ -497,18 +498,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _normalizeConfig(config: AutomationConfig): AutomationConfig {
-    // Normalize data: ensure trigger, action and condition are lists
-    // Happens when people copy paste their automations into the config
-    for (const key of ["trigger", "condition", "action"]) {
-      const value = config[key];
-      if (value && !Array.isArray(value)) {
-        config[key] = [value];
-      }
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     try {
       const config = await fetchAutomationFileConfig(
@@ -517,7 +506,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       );
       this._dirty = false;
       this._readOnly = false;
-      this._config = this._normalizeConfig(config);
+      this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
       const entityRegistry = await fetchEntityRegistry(this.hass.connection);
