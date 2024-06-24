@@ -423,9 +423,11 @@ export class HaDataTable extends LitElement {
     return html`
       <div
         aria-rowindex=${index + 2}
+        tabindex="0"
         role="row"
         .rowId=${row[this.id]}
         @click=${this._handleRowClick}
+        @keydown=${this._handleRowKeyDown}
         class="mdc-data-table__row ${classMap({
           "mdc-data-table__row--selected": this._checkedRows.includes(
             String(row[this.id])
@@ -659,6 +661,13 @@ export class HaDataTable extends LitElement {
       this._checkedRows = this._checkedRows.filter((row) => row !== rowId);
     }
     this._checkedRowsChanged();
+  };
+
+  private _handleRowKeyDown = (ev: KeyboardEvent) => {
+    // Handle pressing enter.
+    if (ev.key === "Enter") {
+      this._handleRowClick(ev);
+    }
   };
 
   private _handleRowClick = (ev: Event) => {
