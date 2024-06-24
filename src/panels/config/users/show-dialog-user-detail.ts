@@ -4,6 +4,7 @@ import { UpdateUserParams, User } from "../../../data/user";
 export interface UserDetailDialogParams {
   entry: User;
   updateEntry: (updates: Partial<UpdateUserParams>) => Promise<unknown>;
+  replaceEntry: (entry: User) => void;
   removeEntry: () => Promise<boolean>;
 }
 

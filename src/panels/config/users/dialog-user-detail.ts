@@ -10,12 +10,16 @@ import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showAdminChangePasswordDialog } from "./show-dialog-admin-change-password";
@@ -172,11 +176,15 @@ class DialogUserDetail extends LitElement {
               `
             : ""}
           ${!user.system_generated && this.hass.user?.is_owner
-            ? html`<mwc-button @click=${this._changePassword}>
-                ${this.hass.localize(
-                  "ui.panel.config.users.editor.change_password"
-                )}
-              </mwc-button>`
+            ? html`<mwc-button @click=${this._changeUsername}>
+                  ${this.hass.localize(
+                    "ui.panel.config.users.editor.change_username"
+                  )} </mwc-button
+                ><mwc-button @click=${this._changePassword}>
+                  ${this.hass.localize(
+                    "ui.panel.config.users.editor.change_password"
+                  )}
+                </mwc-button>`
             : ""}
         </div>
 
@@ -247,6 +255,56 @@ class DialogUserDetail extends LitElement {
       }
     } finally {
       this._submitting = false;
+    }
+  }
+
+  private async _changeUsername() {
+    const credential = this._params?.entry.credentials.find(
+      (cred) => cred.type === "homeassistant"
+    );
+    if (!credential) {
+      showAlertDialog(this, {
+        title: "No Home Assistant credentials found.",
+      });
+      return;
+    }
+    const newUsername = await showPromptDialog(this, {
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.change_username.new_username"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.users.change_username.change"
+      ),
+      title: this.hass.localize(
+        "ui.panel.config.users.change_username.caption"
+      ),
+      defaultValue: this._params!.entry.username!,
+    });
+    if (newUsername) {
+      try {
+        await adminChangeUsername(
+          this.hass,
+          this._params!.entry.id,
+          newUsername
+        );
+        this._params = {
+          ...this._params!,
+          entry: { ...this._params!.entry, username: newUsername },
+        };
+        this._params.replaceEntry(this._params.entry);
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.users.change_username.username_changed"
+          ),
+        });
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.users.change_username.failed"
+          ),
+          text: err.message,
+        });
+      }
     }
   }
 
