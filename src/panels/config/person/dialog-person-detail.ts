@@ -302,7 +302,9 @@ class DialogPersonDetail extends LitElement {
         userAddedCallback: async (user?: User) => {
           if (user) {
             target.checked = true;
-            await this._params!.updateEntry({ user_id: user.id });
+            if (this._params!.entry) {
+              await this._params!.updateEntry({ user_id: user.id });
+            }
             this._params?.refreshUsers();
             this._user = user;
             this._userId = user.id;
