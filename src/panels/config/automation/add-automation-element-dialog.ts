@@ -54,6 +54,7 @@ import {
   AddAutomationElementDialogParams,
   PASTE_VALUE,
 } from "./show-add-automation-element-dialog";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -208,9 +209,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
+        getFn: (obj, path) => stripDiacritics(Fuse.config.getFn(obj, path)),
       };
       const fuse = new Fuse(items, options);
-      return fuse.search(filter).map((result) => result.item);
+      return fuse.search(stripDiacritics(filter)).map((result) => result.item);
     }
   );
 
