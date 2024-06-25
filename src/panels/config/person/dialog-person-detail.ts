@@ -368,14 +368,16 @@ class DialogPersonDetail extends LitElement {
     } else if (this._userId) {
       if (
         !(await showConfirmationDialog(this, {
+          title: this.hass!.localize(
+            "ui.panel.config.person.detail.confirm_delete_user_title"
+          ),
           text: this.hass!.localize(
-            "ui.panel.config.person.detail.confirm_delete_user",
+            "ui.panel.config.person.detail.confirm_delete_user_text",
             { name: this._name }
           ),
-          confirmText: this.hass!.localize(
-            "ui.panel.config.person.detail.delete"
-          ),
+          confirmText: this.hass!.localize("ui.common.delete"),
           dismissText: this.hass!.localize("ui.common.cancel"),
+          destructive: true,
         }))
       ) {
         target.checked = true;
