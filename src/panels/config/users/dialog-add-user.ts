@@ -158,7 +158,7 @@ export class DialogAddUser extends LitElement {
           <div class="row">
             <ha-formfield
               .label=${this.hass.localize(
-                "ui.panel.config.users.editor.local_only"
+                "ui.panel.config.users.editor.local_access_only"
               )}
             >
               <ha-switch
