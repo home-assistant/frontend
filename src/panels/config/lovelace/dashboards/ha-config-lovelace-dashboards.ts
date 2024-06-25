@@ -2,17 +2,21 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCheck,
   mdiCheckCircleOutline,
+  mdiDelete,
   mdiDotsVertical,
-  mdiOpenInNew,
+  mdiPencil,
   mdiPlus,
+  mdiStar,
 } from "@mdi/js";
 import { LitElement, PropertyValues, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -22,6 +26,9 @@ import "../../../../components/ha-clickable-list-item";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-menu";
+import type { HaMenu } from "../../../../components/ha-menu";
+import "../../../../components/ha-menu-item";
 import "../../../../components/ha-svg-icon";
 import { LovelacePanelConfig } from "../../../../data/lovelace";
 import {
@@ -41,13 +48,11 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import { storage } from "../../../../common/decorators/storage";
 
 type DataTableItem = Pick<
   LovelaceDashboard,
@@ -84,6 +89,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
     subscribe: false,
   })
   private _activeSorting?: SortingChangedEvent;
+
+  @state() private _overflowDashboard?: LovelaceDashboard;
+
+  @query("#overflow-menu") private _overflowMenu!: HaMenu;
 
   public willUpdate() {
     if (!this.hasUpdated) {
@@ -210,39 +219,35 @@ export class HaConfigLovelaceDashboards extends LitElement {
         };
       }
 
-      columns.url_path = {
+      columns.actions = {
         title: "",
-        label: localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.url"
-        ),
-        filterable: true,
-        width: "100px",
-        template: (dashboard) =>
-          narrow
-            ? html`
-                <ha-icon-button
-                  .path=${mdiOpenInNew}
-                  .urlPath=${dashboard.url_path}
-                  @click=${this._navigate}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.lovelace.dashboards.picker.open"
-                  )}
-                ></ha-icon-button>
-              `
-            : html`
-                <mwc-button
-                  .urlPath=${dashboard.url_path}
-                  @click=${this._navigate}
-                  >${this.hass.localize(
-                    "ui.panel.config.lovelace.dashboards.picker.open"
-                  )}</mwc-button
-                >
-              `,
+        width: "64px",
+        type: "icon-button",
+        template: (dashboard) => html`
+          <ha-icon-button
+            .dashboard=${dashboard}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+            @click=${this._showOverflowMenu}
+          ></ha-icon-button>
+        `,
       };
-
       return columns;
     }
   );
+
+  private _showOverflowMenu = (ev) => {
+    if (
+      this._overflowMenu.open &&
+      ev.target === this._overflowMenu.anchorElement
+    ) {
+      this._overflowMenu.close();
+      return;
+    }
+    this._overflowDashboard = ev.target.dashboard;
+    this._overflowMenu.anchorElement = ev.target;
+    this._overflowMenu.show();
+  };
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     const defaultMode = (
@@ -314,7 +319,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        @row-click=${this._editDashboard}
+        @row-click=${this._navigate}
         id="url_path"
         hasFab
         clickable
@@ -346,6 +351,22 @@ export class HaConfigLovelaceDashboards extends LitElement {
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
+      <ha-menu id="overflow-menu" positioning="fixed">
+        <ha-menu-item @click=${this._editDashboard}>
+          <ha-svg-icon .path=${mdiPencil} slot="start"></ha-svg-icon>
+          <div slot="headline">Edit</div>
+        </ha-menu-item>
+
+        <ha-menu-item>
+          <ha-svg-icon .path=${mdiStar} slot="start"></ha-svg-icon>
+          <div slot="headline">Set to default</div>
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item class="warning">
+          <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+          <div slot="headline">Delete</div>
+        </ha-menu-item>
+      </ha-menu>
     `;
   }
 
@@ -358,21 +379,23 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._dashboards = await fetchDashboards(this.hass);
   }
 
-  private _navigate(ev: Event) {
-    ev.stopPropagation();
-    navigate(`/${(ev.target as any).urlPath}`);
+  private _navigate(ev: CustomEvent) {
+    const urlPath = (ev.detail as RowClickedEvent).id;
+    navigate(`/${urlPath}`);
   }
 
-  private _editDashboard(ev: CustomEvent) {
-    const urlPath = (ev.detail as RowClickedEvent).id;
+  private _editDashboard = (ev) => {
+    ev.stopPropagation();
+    const dashboard = ev.currentTarget.parentElement.anchorElement.automation;
+
+    const urlPath = (ev.currentTarget as any).urlPath;
 
     if (urlPath === "energy") {
       navigate("/config/energy");
       return;
     }
-    const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDetailDialog(dashboard, urlPath);
-  }
+  };
 
   private async _addDashboard() {
     showNewDashboardDialog(this, {
