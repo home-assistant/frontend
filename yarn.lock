@@ -4356,10 +4356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:10.0.6":
-  version: 10.0.6
-  resolution: "@types/mocha@npm:10.0.6"
-  checksum: 10/fc73626e81e89c32d06b7ff9b72c4177b46d579cdd932f796614adc026852d84cb849d743473ba572cb4d9ea6d8c04e3749552d326c26495ec1c4b46e6e0a0c0
+"@types/mocha@npm:10.0.7":
+  version: 10.0.7
+  resolution: "@types/mocha@npm:10.0.7"
+  checksum: 10/4494871e8a867633d818b00d6f29d47379f9e23655b89ca728166ff2f0a406b97d376fcc3e7a570a3840f72abb03c886c5e66f50ae0f018376e4dc10ed179564
   languageName: node
   linkType: hard
 
@@ -8996,7 +8996,7 @@ __metadata:
     "@types/leaflet-draw": "npm:1.0.11"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.4.2"
-    "@types/mocha": "npm:10.0.6"
+    "@types/mocha": "npm:10.0.7"
     "@types/qrcode": "npm:1.5.5"
     "@types/serve-handler": "npm:6.1.4"
     "@types/sortablejs": "npm:1.15.8"
