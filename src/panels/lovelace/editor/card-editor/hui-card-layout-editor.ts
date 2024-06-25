@@ -246,7 +246,7 @@ export class HuiCardLayoutEditor extends LitElement {
         opacity: 0.5;
         pointer-events: none;
       }
-      ha-grid-size-editor {
+      ha-grid-size-picker {
         display: block;
         max-width: 250px;
         margin: 16px auto;
