@@ -1,12 +1,15 @@
-import "@material/mwc-button";
+import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { adminChangeUsername } from "../../../data/auth";
 import { PersonMutableParams } from "../../../data/person";
@@ -137,11 +140,17 @@ class DialogPersonDetail extends LitElement {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-formfield
-              .label=${`${this.hass!.localize(
-                "ui.panel.config.person.detail.allow_login"
-              )}${this._user ? ` (${this._user.username})` : ""}`}
-            >
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass!.localize(
+                  "ui.panel.config.person.detail.allow_login"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass!.localize(
+                  "ui.panel.config.person.detail.allow_login_description"
+                )}
+              </span>
               <ha-switch
                 @change=${this._allowLoginChanged}
                 .disabled=${this._user &&
@@ -150,34 +159,9 @@ class DialogPersonDetail extends LitElement {
                   this._user.is_owner)}
                 .checked=${this._userId}
               ></ha-switch>
-            </ha-formfield>
+            </ha-settings-row>
 
-            ${this._user
-              ? html`<ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.person.detail.local_only"
-                    )}
-                  >
-                    <ha-switch
-                      .checked=${this._localOnly}
-                      @change=${this._localOnlyChanged}
-                    >
-                    </ha-switch>
-                  </ha-formfield>
-                  <ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.person.detail.admin"
-                    )}
-                  >
-                    <ha-switch
-                      .disabled=${this._user.system_generated ||
-                      this._user.is_owner}
-                      .checked=${this._isAdmin}
-                      @change=${this._adminChanged}
-                    >
-                    </ha-switch>
-                  </ha-formfield>`
-              : ""}
+            ${this._renderUserFields()}
             ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
@@ -235,7 +219,7 @@ class DialogPersonDetail extends LitElement {
         </div>
         ${this._params.entry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
                 class="warning"
                 @click=${this._deleteEntry}
@@ -243,28 +227,10 @@ class DialogPersonDetail extends LitElement {
                 this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-              </mwc-button>
-              ${this._user && this.hass.user?.is_owner
-                ? html`<mwc-button
-                      slot="secondaryAction"
-                      @click=${this._changeUsername}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.users.editor.change_username"
-                      )}
-                    </mwc-button>
-                    <mwc-button
-                      slot="secondaryAction"
-                      @click=${this._changePassword}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.users.editor.change_password"
-                      )}
-                    </mwc-button>`
-                : ""}
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
@@ -272,8 +238,93 @@ class DialogPersonDetail extends LitElement {
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.person.detail.update")
             : this.hass!.localize("ui.panel.config.person.detail.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
+    `;
+  }
+
+  private _renderUserFields() {
+    const user = this._user;
+    if (!user) return nothing;
+    return html`
+      ${!user.system_generated
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.config.person.detail.username")}
+              </span>
+              <span slot="description">${user.username}</span>
+              ${this.hass.user?.is_owner
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      @click=${this._changeUsername}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.person.detail.change_username"
+                      )}
+                    >
+                    </ha-icon-button>
+                  `
+                : nothing}
+            </ha-settings-row>
+          `
+        : nothing}
+      ${!user.system_generated && this.hass.user?.is_owner
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.config.person.detail.password")}
+              </span>
+              <span slot="description">************</span>
+              ${this.hass.user?.is_owner
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      @click=${this._changePassword}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.person.detail.change_password"
+                      )}
+                    >
+                    </ha-icon-button>
+                  `
+                : nothing}
+            </ha-settings-row>
+          `
+        : nothing}
+      <ha-settings-row>
+        <span slot="heading">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.local_access_only"
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.local_access_only_description"
+          )}
+        </span>
+        <ha-switch
+          .disabled=${user.system_generated}
+          .checked=${this._localOnly}
+          @change=${this._localOnlyChanged}
+        >
+        </ha-switch>
+      </ha-settings-row>
+      <ha-settings-row>
+        <span slot="heading">
+          ${this.hass.localize("ui.panel.config.person.detail.admin")}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.admin_description"
+          )}
+        </span>
+        <ha-switch
+          .disabled=${user.system_generated || user.is_owner}
+          .checked=${this._isAdmin}
+          @change=${this._adminChanged}
+        >
+        </ha-switch>
+      </ha-settings-row>
     `;
   }
 
@@ -488,9 +539,8 @@ class DialogPersonDetail extends LitElement {
           margin-bottom: 16px;
           --file-upload-image-border-radius: 50%;
         }
-        ha-formfield {
-          display: block;
-          padding: 16px 0;
+        ha-settings-row {
+          padding: 0;
         }
         a {
           color: var(--primary-color);

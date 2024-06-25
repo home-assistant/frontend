@@ -4139,9 +4139,16 @@
             "create": "Create",
             "update": "Update",
             "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "allow_login": "Allow login",
+            "allow_login_description": "Allow access using username and password.",
+            "username": "[%key:ui::panel::config::users::editor::username%]",
+            "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
-            "local_only": "[%key:ui::panel::config::users::editor::local_access_only_description%]",
-            "allow_login": "Allow person to login"
+            "admin_description": "[%key:ui::panel::config::users::editor::admin_description%]",
+            "local_access_only": "[%key:ui::panel::config::users::editor::local_access_only%]",
+            "local_access_only_description": "[%key:ui::panel::config::users::editor::local_access_only_description%]",
+            "change_username": "[%key:ui::panel::config::users::editor::change_username%]",
+            "change_password": "[%key:ui::panel::config::users::editor::change_password%]"
           }
         },
         "zone": {
