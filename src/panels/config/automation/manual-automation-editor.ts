@@ -32,15 +32,13 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public readOnly = false;
-
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render() {
     return html`
-      ${this.readOnly
+      ${this.disabled
         ? html`<ha-alert alert-type="warning">
             ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
             <mwc-button slot="action" @click=${this._duplicate}>

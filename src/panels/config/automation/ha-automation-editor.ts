@@ -41,6 +41,7 @@ import "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
+  BlueprintAutomationConfig,
   deleteAutomation,
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
@@ -67,6 +68,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -219,16 +221,21 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-list-item>
               `
-            : html`<ha-list-item
-                graphic="icon"
-                @click=${this._substituteBlueprint}
-                .disabled=${this._readOnly}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.subtitute_blueprint"
-                )}
-                <ha-svg-icon slot="graphic" .path=${mdiFileEdit}></ha-svg-icon>
-              </ha-list-item>`}
+            : html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._takeControl}
+                  .disabled=${this._readOnly || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.take_control"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFileEdit}
+                  ></ha-svg-icon>
+                </ha-list-item>
+              `}
 
           <ha-list-item
             .disabled=${!this._readOnly && !this.automationId}
@@ -342,7 +349,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
-                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                           @duplicate=${this._duplicate}
                         ></blueprint-automation-editor>
@@ -355,8 +361,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
-                          .readOnly=${Boolean(this._readOnly)}
-                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                           @duplicate=${this._duplicate}
                         ></manual-automation-editor>
@@ -640,10 +644,32 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
   };
 
-  private _substituteBlueprint() {
-    this.renderRoot
-      .querySelector("blueprint-automation-editor")
-      ?.substituteBlueprint();
+  private async _takeControl() {
+    const config = this._config as BlueprintAutomationConfig;
+
+    const confirmation = await showConfirmationDialog(this, {
+      title: "Take control of automation?",
+      text: "This automation is using a blueprint. By taking control, you will be able to edit it directly. Are you sure you want to take control?",
+    });
+
+    if (!confirmation) return;
+
+    const result = await substituteBlueprint(
+      this.hass,
+      "automation",
+      config.use_blueprint.path,
+      config.use_blueprint.input || {}
+    );
+
+    const newConfig = {
+      alias: config.alias,
+      description: config.description,
+      ...normalizeAutomationConfig(result.substituted_config),
+    };
+
+    this._config = newConfig;
+    this._dirty = true;
+    this._errors = undefined;
   }
 
   private async _duplicate() {
