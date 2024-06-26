@@ -695,12 +695,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        @columns-changed=${this._handleColumnsChanged}
         @row-click=${this._handleRowClicked}
         clickable
         hasFab

@@ -66,6 +66,20 @@ export class HaConfigLabels extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
+  @storage({
+    key: "labels-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "labels-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _columns = memoizeOne((localize: LocalizeFunc) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
@@ -173,6 +187,9 @@ export class HaConfigLabels extends LitElement {
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         hasFab
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
@@ -302,6 +319,11 @@ export class HaConfigLabels extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

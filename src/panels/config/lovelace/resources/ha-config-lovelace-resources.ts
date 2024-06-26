@@ -67,6 +67,20 @@ export class HaConfigLovelaceRescources extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
+  @storage({
+    key: "lovelace-resources-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "lovelace-resources-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _columns = memoize(
     (
       _language,
@@ -146,6 +160,9 @@ export class HaConfigLovelaceRescources extends LitElement {
           "ui.panel.config.lovelace.resources.picker.no_resources"
         )}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
@@ -265,6 +282,11 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

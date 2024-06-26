@@ -47,6 +47,20 @@ export class HaConfigUsers extends LitElement {
   private _activeGrouping?: string;
 
   @storage({
+    key: "users-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "users-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
     storage: "sessionStorage",
     key: "users-table-search",
     state: true,
@@ -174,6 +188,9 @@ export class HaConfigUsers extends LitElement {
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._userData(this._users, this.hass.localize)}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -290,6 +307,11 @@ export class HaConfigUsers extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 
