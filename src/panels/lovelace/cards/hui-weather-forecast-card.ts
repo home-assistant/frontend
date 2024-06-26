@@ -90,10 +90,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     },
   });
 
-  protected firstUpdated(): void {
-    this._sizeController.observe(this.shadowRoot!.querySelector("ha-card")!);
-  }
-
   private _needForecastSubscription() {
     return (
       this._config!.forecast_type && this._config!.forecast_type !== "legacy"
@@ -429,6 +425,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return [
       weatherSVGStyles,
       css`
+        :host {
+          position: relative;
+          display: block;
+          height: 100%;
+        }
         ha-card {
           cursor: pointer;
           outline: none;
