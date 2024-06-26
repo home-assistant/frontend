@@ -2,6 +2,7 @@ import { HomeAssistant } from "../types";
 
 export interface OTBRInfo {
   active_dataset_tlvs: string;
+  border_agent_id: string;
   channel: number;
   extended_address: string;
   url: string;

@@ -5,6 +5,7 @@ export const demoConfig: HassConfig = {
   elevation: 300,
   latitude: 52.3731339,
   longitude: 4.8903147,
+  radius: 100,
   unit_system: {
     length: "km",
     mass: "kg",

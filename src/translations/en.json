@@ -326,6 +326,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "delete_all": "Delete all",
       "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
@@ -417,11 +418,6 @@
             "time": "Time",
             "manual": "Manual Entry"
           }
-        },
-        "image": {
-          "select_image": "Select image",
-          "upload": "Upload picture",
-          "url": "Local path or web URL"
         },
         "text": {
           "show_password": "Show password",
@@ -534,7 +530,8 @@
         "selected": "Selected {selected}",
         "close_select_mode": "Close selection mode",
         "select_all": "Select all",
-        "select_none": "Select none"
+        "select_none": "Select none",
+        "settings": "Customize table"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -740,6 +737,11 @@
           "last_year": "Last year"
         }
       },
+      "grid-size-picker": {
+        "reset_default": "Reset to default size",
+        "columns": "Number of columns",
+        "rows": "Number of rows"
+      },
       "relative_time": {
         "never": "Never"
       },
@@ -798,7 +800,14 @@
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
         "clear": "Clear",
-        "ungrouped": "Ungrouped"
+        "ungrouped": "Ungrouped",
+        "settings": {
+          "header": "Customize",
+          "hide": "Hide column {title}",
+          "show": "Show column {title}",
+          "done": "Done",
+          "restore": "Restore defaults"
+        }
       },
       "media-browser": {
         "tts": {
@@ -2070,6 +2079,7 @@
           "download_backup": "[%key:supervisor::backup::download_backup%]",
           "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
           "name": "[%key:supervisor::backup::name%]",
+          "path": "Path",
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
@@ -2664,6 +2674,7 @@
             "caption": "Expose",
             "headers": {
               "name": "Name",
+              "entity_id": "Entity ID",
               "area": "Area",
               "domain": "Domain",
               "assistants": "Assistants",
@@ -2758,6 +2769,12 @@
             "unavailable": "Automation is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "take_control": "Take control",
+            "take_control_confirmation": {
+              "title": "Take control of automation?",
+              "text": "This automation is using a blueprint. By taking control, your automation will be converted into a regular automation using triggers, conditions and actions. You will be able to edit it directly and you won't be able to convert it back to a blueprint.",
+              "action": "Take control"
+            },
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -2863,12 +2880,6 @@
                 "device": {
                   "label": "Device",
                   "trigger": "Trigger",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration (optional)",
-                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
-                  },
                   "description": {
                     "picker": "When something happens to a device. Great way to start."
                   }
@@ -3106,13 +3117,6 @@
                 "device": {
                   "label": "Device",
                   "condition": "Condition",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration",
-                    "hvac_mode": "HVAC mode",
-                    "preset_mode": "Preset mode"
-                  },
                   "description": {
                     "picker": "Set of conditions provided by your device. Great way to start."
                   }
@@ -3343,17 +3347,6 @@
                 "device_id": {
                   "label": "Device",
                   "action": "Action",
-                  "extra_fields": {
-                    "code": "Code",
-                    "message": "Message",
-                    "title": "Title",
-                    "position": "[%key:ui::card::cover::position%]",
-                    "mode": "Mode",
-                    "humidity": "Humidity",
-                    "value": "Value",
-                    "brightness_pct": "[%key:ui::card::light::brightness%]",
-                    "flash": "Flash"
-                  },
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
                     "no_device": "Device action"
@@ -3652,6 +3645,12 @@
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
+            "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
+            "take_control_confirmation": {
+              "title": "Take control of script?",
+              "text": "This script is using a blueprint. By taking control, your script will be converted into a regular automation using actions. You will be able to edit it directly and you won't be able to convert it back to a blueprint.",
+              "action": "[%key:ui::panel::config::automation::editor::take_control_confirmation::action%]"
+            },
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
@@ -4036,6 +4035,8 @@
             "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
+            "notify": "Notifiers",
+            "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
@@ -4049,6 +4050,7 @@
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
+            "icon": "Icon",
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
@@ -4116,12 +4118,11 @@
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
-            "remove_selected": {
-              "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
-              "confirm_text": "You should remove them from your dashboard config and automations if they contain these entities.",
-              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+            "delete_selected": {
+              "button": "Delete selected",
+              "confirm_title": "Delete selected entities?",
+              "confirm_text": "Are you sure you want to delete the entities?\n\nRemove them from your dashboard and automations if they include these entities.",
+              "confirm_partly_text": "You can only delete {deletable} of the {selected} entities. The others require the integration to stop providing them, and sometimes a Home Assistant restart is needed. Are you sure you want to delete the deletable entities?\n\nRemove them from your dashboard and automations if they include these entities."
             },
             "hide_selected": {
               "button": "Hide selected",
@@ -4160,10 +4161,18 @@
             "delete": "Delete",
             "create": "Create",
             "update": "Update",
-            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "confirm_delete_user_title": "Delete user account",
+            "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to login.",
+            "allow_login": "Allow login",
+            "allow_login_description": "Allow access using username and password.",
+            "username": "[%key:ui::panel::config::users::editor::username%]",
+            "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
-            "local_only": "[%key:ui::panel::config::users::editor::local_only%]",
-            "allow_login": "Allow person to login"
+            "admin_description": "[%key:ui::panel::config::users::editor::admin_description%]",
+            "local_access_only": "[%key:ui::panel::config::users::editor::local_access_only%]",
+            "local_access_only_description": "[%key:ui::panel::config::users::editor::local_access_only_description%]",
+            "change_username": "[%key:ui::panel::config::users::editor::change_username%]",
+            "change_password": "[%key:ui::panel::config::users::editor::change_password%]"
           }
         },
         "zone": {
@@ -4192,8 +4201,7 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update",
-            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
+            "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
         },
@@ -4271,9 +4279,9 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application credentials",
-              "delete_prompt": "Would you like to also remove Application Credentials for this integration?",
-              "delete_detail": "If you remove them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
-              "delete_error_title": "Removing application credentials failed",
+              "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
             },
@@ -4404,7 +4412,9 @@
             "caption": "View user",
             "name": "Display name",
             "username": "Username",
+            "password": "Password",
             "change_password": "Change password",
+            "change_username": "Change username",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -4412,16 +4422,17 @@
             "id": "ID",
             "owner": "Owner",
             "admin": "Administrator",
+            "admin_description": "Administrators can manage users, devices, automations and dashboards.",
             "group": "Group",
             "active": "Active",
-            "local_only": "Can only log in from the local network",
+            "active_description": "Controls if user can login",
+            "local_access_only": "Local access only",
+            "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
-            "system_generated_users_not_removable": "Unable to remove system users.",
-            "system_generated_users_not_editable": "Unable to update system users.",
+            "system_generated_read_only_users": "System users can not be updated.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion_title": "Delete {name}?",
-            "confirm_user_deletion_text": "This user will be permanently deleted.",
-            "active_tooltip": "Controls if user can login"
+            "confirm_user_deletion_text": "This user will be permanently deleted."
           },
           "add_user": {
             "caption": "Add user",
@@ -4438,6 +4449,13 @@
             "change": "Change",
             "password_no_match": "Passwords don't match",
             "password_changed": "The password has been changed successfully."
+          },
+          "change_username": {
+            "caption": "Change username",
+            "new_username": "New username",
+            "change": "Change",
+            "username_changed": "The username has been changed successfully.",
+            "failed": "Failed to change username"
           }
         },
         "application_credentials": {
@@ -4464,11 +4482,15 @@
               "client_id": "OAuth client ID",
               "application": "Integration"
             },
+            "remove": {
+              "button": "Delete application credential",
+              "confirm_title": "Delete application credential?"
+            },
             "remove_selected": {
-              "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
-              "confirm_text": "Application credentials in use by an integration may not be removed.",
-              "error_title": "Removing application credentials failed"
+              "button": "Delete selected",
+              "confirm_title": "Do you want to delete {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
+              "confirm_text": "Application credentials in use by an integration may not be deleted.",
+              "error_title": "Deleting application credentials failed"
             },
             "selected": "{number} selected"
           }
@@ -4863,7 +4885,8 @@
             "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "waiting_for_device": "Communicating with the device. Please wait."
           },
           "provisioned": {
             "dsk": "DSK",
@@ -5070,6 +5093,11 @@
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join_x": "X (formerly Twitter)",
+          "join_forums": "Forums",
+          "join_chat": "Chat",
+          "join_blog": "Blog",
+          "join_newsletter": "Newsletter",
           "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
@@ -5521,10 +5549,14 @@
             "increase_position": "Increase card position",
             "options": "More options",
             "search_cards": "Search cards",
-            "tab-config": "Config",
-            "tab-visibility": "Visibility",
+            "tab_config": "Config",
+            "tab_visibility": "Visibility",
+            "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
+            },
+            "layout": {
+              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
             }
           },
           "move_card": {
@@ -6412,10 +6444,10 @@
           "disable_expiration_failed": "Failed to disable refresh token expiration",
           "enable_expiration_failed": "Failed to enable refresh token expiration",
           "confirm_delete_title": "Delete refresh token?",
-          "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This will end the login session on the associated device.",
+          "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This associated device will not have access anymore.",
           "delete_all_tokens": "Delete all tokens",
           "confirm_delete_all_title": "Delete all refresh tokens?",
-          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? These associated devices will not have access anymore. Your current session and long-lived access tokens will not be deleted.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -6744,7 +6776,8 @@
                 "title": "Entity no longer recorded",
                 "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information."
+                "info_text_3_link": "See the recorder documentation for more information.",
+                "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "unsupported_state_class": {
                 "title": "Unsupported state class",
@@ -6868,7 +6901,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter",
+          "x": "[%key:ui::panel::config::tips::join_x%]",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },

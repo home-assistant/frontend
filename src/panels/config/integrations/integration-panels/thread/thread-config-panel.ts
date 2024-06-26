@@ -151,7 +151,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               slot="fab"
               @click=${this._importExternalThreadCredentials}
               extended
-              label="Import credentials"
+              label="Send credentials to Home Assistant"
               ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
             ></ha-fab>`
           : nothing}
@@ -160,6 +160,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _renderNetwork(network: ThreadNetwork) {
+    const canImportKeychain =
+      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
+      network.dataset?.extended_pan_id &&
+      this._otbrInfo &&
+      this._otbrInfo?.active_dataset_tlvs?.includes(
+        network.dataset.extended_pan_id
+      );
+
     return html`<ha-card>
       <div class="card-header">
         ${network.name}${network.dataset
@@ -303,7 +311,28 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             >
           </div>`
         : ""}
+      ${canImportKeychain
+        ? html`<div class="card-actions">
+            <mwc-button @click=${this._sendCredentials}
+              >Send credentials to phone</mwc-button
+            >
+          </div>`
+        : ""}
     </ha-card>`;
+  }
+
+  private _sendCredentials() {
+    if (!this._otbrInfo) {
+      return;
+    }
+    this.hass.auth.external!.fireMessage({
+      type: "thread/store_in_platform_keychain",
+      payload: {
+        mac_extended_address: this._otbrInfo.extended_address,
+        border_agent_id: this._otbrInfo.border_agent_id ?? "",
+        active_operational_dataset: this._otbrInfo.active_dataset_tlvs ?? "",
+      },
+    });
   }
 
   private async _showDatasetInfo(ev: Event) {

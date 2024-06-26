@@ -11,10 +11,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace } from "../types";
-import { HuiCard } from "../cards/hui-card";
+import type { Lovelace, LovelaceLayoutOptions } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -22,6 +22,11 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   direction: "vertical",
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
+
+export const DEFAULT_GRID_OPTIONS: LovelaceLayoutOptions = {
+  grid_columns: 4,
+  grid_rows: 1,
+};
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -95,11 +100,15 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               const card = this.cards![idx];
               const layoutOptions = card.getLayoutOptions();
 
+              const columnSize =
+                layoutOptions.grid_columns ?? DEFAULT_GRID_OPTIONS.grid_columns;
+              const rowSize =
+                layoutOptions.grid_rows ?? DEFAULT_GRID_OPTIONS.grid_rows;
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": layoutOptions.grid_columns,
-                    "--row-size": layoutOptions.grid_rows,
+                    "--column-size": columnSize,
+                    "--row-size": rowSize,
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
@@ -202,6 +211,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           margin: 0px;
           letter-spacing: 0.1px;
           line-height: 32px;
+          text-align: var(--ha-view-sections-title-text-align, start);
           min-height: 32px;
           display: block;
           padding: 24px 10px 10px;
@@ -215,8 +225,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .card {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
-          grid-row: span var(--row-size, 1);
-          grid-column: span var(--column-size, 4);
+          grid-row: span var(--row-size);
+          grid-column: span var(--column-size);
         }
 
         .card.fit-rows {

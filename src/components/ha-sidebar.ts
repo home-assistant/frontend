@@ -327,6 +327,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     for (const entityId of Object.keys(this.hass.states)) {
       if (
         entityId.startsWith("update.") &&
+        !this.hass.entities[entityId]?.hidden &&
         updateCanInstall(this.hass.states[entityId] as UpdateEntity)
       ) {
         updateCount++;
