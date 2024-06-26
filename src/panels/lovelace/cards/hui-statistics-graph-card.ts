@@ -80,7 +80,7 @@ export class HuiStatisticsGraphCard
   private _statTypes?: Array<StatisticType>;
 
   public hassSubscribe() {
-    if (!this._config?.collection_key) {
+    if (!this._config?.energy_date_selection) {
       return [];
     }
 

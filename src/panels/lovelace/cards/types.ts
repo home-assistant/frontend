@@ -345,6 +345,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
+  energy_date_selection?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
