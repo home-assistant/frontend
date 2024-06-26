@@ -530,7 +530,8 @@
         "selected": "Selected {selected}",
         "close_select_mode": "Close selection mode",
         "select_all": "Select all",
-        "select_none": "Select none"
+        "select_none": "Select none",
+        "settings": "Customize table"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -799,7 +800,14 @@
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
         "clear": "Clear",
-        "ungrouped": "Ungrouped"
+        "ungrouped": "Ungrouped",
+        "settings": {
+          "header": "Customize",
+          "hide": "Hide column {title}",
+          "show": "Show column {title}",
+          "done": "Done",
+          "restore": "Restore defaults"
+        }
       },
       "media-browser": {
         "tts": {
@@ -2071,6 +2079,7 @@
           "download_backup": "[%key:supervisor::backup::download_backup%]",
           "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
           "name": "[%key:supervisor::backup::name%]",
+          "path": "Path",
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
@@ -2665,6 +2674,7 @@
             "caption": "Expose",
             "headers": {
               "name": "Name",
+              "entity_id": "Entity ID",
               "area": "Area",
               "domain": "Domain",
               "assistants": "Assistants",
@@ -4040,6 +4050,7 @@
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
+            "icon": "Icon",
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",

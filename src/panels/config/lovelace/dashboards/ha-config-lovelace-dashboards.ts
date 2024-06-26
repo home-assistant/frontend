@@ -85,6 +85,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
+  @storage({
+    key: "lovelace-dashboards-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "lovelace-dashboards-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   public willUpdate() {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -101,6 +115,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
       const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
+          moveable: false,
+          showNarrow: true,
           label: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
@@ -128,87 +144,75 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (dashboard) => {
-            const titleTemplate = html`
-              ${dashboard.title}
-              ${dashboard.default
-                ? html`
-                    <ha-svg-icon
-                      style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
-                      .path=${mdiCheckCircleOutline}
-                    ></ha-svg-icon>
-                    <simple-tooltip animation-delay="0">
-                      ${this.hass.localize(
-                        `ui.panel.config.lovelace.dashboards.default_dashboard`
-                      )}
-                    </simple-tooltip>
-                  `
-                : ""}
-            `;
-            return narrow
-              ? html`
-                  ${titleTemplate}
-                  <div class="secondary">
-                    ${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-                    )}${dashboard.filename
-                      ? html` – ${dashboard.filename} `
-                      : ""}
-                  </div>
-                `
-              : titleTemplate;
-          },
+          template: narrow
+            ? undefined
+            : (dashboard) => html`
+                ${dashboard.title}
+                ${dashboard.default
+                  ? html`
+                      <ha-svg-icon
+                        style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
+                        .path=${mdiCheckCircleOutline}
+                      ></ha-svg-icon>
+                      <simple-tooltip animation-delay="0">
+                        ${this.hass.localize(
+                          `ui.panel.config.lovelace.dashboards.default_dashboard`
+                        )}
+                      </simple-tooltip>
+                    `
+                  : ""}
+              `,
         },
       };
 
-      if (!narrow) {
-        columns.mode = {
+      columns.mode = {
+        title: localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "20%",
+        template: (dashboard) => html`
+          ${this.hass.localize(
+            `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+          ) || dashboard.mode}
+        `,
+      };
+      if (dashboards.some((dashboard) => dashboard.filename)) {
+        columns.filename = {
           title: localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
+            "ui.panel.config.lovelace.dashboards.picker.headers.filename"
           ),
+          width: "15%",
           sortable: true,
           filterable: true,
-          width: "20%",
-          template: (dashboard) => html`
-            ${this.hass.localize(
-              `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-            ) || dashboard.mode}
-          `,
-        };
-        if (dashboards.some((dashboard) => dashboard.filename)) {
-          columns.filename = {
-            title: localize(
-              "ui.panel.config.lovelace.dashboards.picker.headers.filename"
-            ),
-            width: "15%",
-            sortable: true,
-            filterable: true,
-          };
-        }
-        columns.require_admin = {
-          title: localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
-          ),
-          sortable: true,
-          type: "icon",
-          width: "100px",
-          template: (dashboard) =>
-            dashboard.require_admin
-              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-              : html`—`,
-        };
-        columns.show_in_sidebar = {
-          title: localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
-          ),
-          type: "icon",
-          width: "121px",
-          template: (dashboard) =>
-            dashboard.show_in_sidebar
-              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-              : html`—`,
         };
       }
+      columns.require_admin = {
+        title: localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
+        ),
+        sortable: true,
+        type: "icon",
+        hidden: narrow,
+        width: "100px",
+        template: (dashboard) =>
+          dashboard.require_admin
+            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+            : html`—`,
+      };
+      columns.show_in_sidebar = {
+        title: localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
+        ),
+        type: "icon",
+        hidden: narrow,
+        width: "121px",
+        template: (dashboard) =>
+          dashboard.show_in_sidebar
+            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+            : html`—`,
+      };
 
       columns.url_path = {
         title: "",
@@ -216,6 +220,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           "ui.panel.config.lovelace.dashboards.picker.headers.url"
         ),
         filterable: true,
+        showNarrow: true,
         width: "100px",
         template: (dashboard) =>
           narrow
@@ -311,6 +316,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
         )}
         .data=${this._getItems(this._dashboards)}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
@@ -466,6 +474,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

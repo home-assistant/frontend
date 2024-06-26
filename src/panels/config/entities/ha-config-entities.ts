@@ -186,6 +186,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "entities-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "entities-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -251,15 +265,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   ]);
 
   private _columns = memoize(
-    (
-      localize: LocalizeFunc,
-      narrow,
-      _language
-    ): DataTableColumnContainer<EntityRow> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.entities.picker.headers.state_icon"),
         type: "icon",
+        showNarrow: true,
+        moveable: false,
         template: (entry) =>
           entry.icon
             ? html`<ha-icon .icon=${entry.icon}></ha-icon>`
@@ -283,32 +295,23 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (entry) => html`
-          <div style="font-size: 14px;">${entry.name}</div>
-          ${narrow
-            ? html`<div class="secondary">
-                ${entry.entity_id} | ${entry.localized_platform}
-              </div>`
-            : nothing}
-          ${entry.label_entries.length
+        extraTemplate: (entry) =>
+          entry.label_entries.length
             ? html`
                 <ha-data-table-labels
                   .labels=${entry.label_entries}
                 ></ha-data-table-labels>
               `
-            : nothing}
-        `,
+            : nothing,
       },
       entity_id: {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
-        hidden: narrow,
         sortable: true,
         filterable: true,
         width: "25%",
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
-        hidden: narrow,
         sortable: true,
         groupable: true,
         filterable: true,
@@ -324,7 +327,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
         sortable: true,
-        hidden: narrow,
         filterable: true,
         groupable: true,
         width: "15%",
@@ -343,6 +345,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       status: {
         title: localize("ui.panel.config.entities.picker.headers.status"),
         type: "icon",
+        showNarrow: true,
         sortable: true,
         filterable: true,
         width: "68px",
@@ -688,11 +691,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .route=${this.route}
         .tabs=${configSections.devices}
-        .columns=${this._columns(
-          this.hass.localize,
-          this.narrow,
-          this.hass.language
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
@@ -714,6 +713,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -1333,6 +1335,11 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {
