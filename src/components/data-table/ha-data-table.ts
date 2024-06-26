@@ -65,6 +65,10 @@ export interface DataTableSortColumnData {
   valueColumn?: string;
   direction?: SortingDirection;
   groupable?: boolean;
+  moveable?: boolean;
+  hideable?: boolean;
+  defaultHidden?: boolean;
+  showNarrow?: boolean;
 }
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
@@ -79,6 +83,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
     | "overflow-menu"
     | "flex";
   template?: (row: T) => TemplateResult | string | typeof nothing;
+  extraTemplate?: (row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -104,6 +109,8 @@ const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
@@ -144,6 +151,10 @@ export class HaDataTable extends LitElement {
   @property() public sortDirection: SortingDirection = null;
 
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
+  @property({ attribute: false }) public columnOrder?: string[];
 
   @state() private _filterable = false;
 
@@ -235,6 +246,7 @@ export class HaDataTable extends LitElement {
         (column: ClonedDataTableColumnData) => {
           delete column.title;
           delete column.template;
+          delete column.extraTemplate;
         }
       );
 
@@ -272,12 +284,44 @@ export class HaDataTable extends LitElement {
       this._sortFilterData();
     }
 
-    if (properties.has("selectable")) {
+    if (properties.has("selectable") || properties.has("hiddenColumns")) {
       this._items = [...this._items];
     }
   }
 
+  private _sortedColumns = memoizeOne(
+    (columns: DataTableColumnContainer, columnOrder?: string[]) => {
+      if (!columnOrder || !columnOrder.length) {
+        return columns;
+      }
+
+      return Object.keys(columns)
+        .sort((a, b) => {
+          const orderA = columnOrder!.indexOf(a);
+          const orderB = columnOrder!.indexOf(b);
+          if (orderA !== orderB) {
+            if (orderA === -1) {
+              return 1;
+            }
+            if (orderB === -1) {
+              return -1;
+            }
+          }
+          return orderA - orderB;
+        })
+        .reduce((obj, key) => {
+          obj[key] = columns[key];
+          return obj;
+        }, {}) as DataTableColumnContainer;
+    }
+  );
+
   protected render() {
+    const columns = this._sortedColumns(this.columns, this.columnOrder);
+
+    const renderRow = (row: DataTableRowData, index: number) =>
+      this._renderRow(columns, this.narrow, row, index);
+
     return html`
       <div class="mdc-data-table">
         <slot name="header" @slotchange=${this._calcTableHeight}>
@@ -326,9 +370,14 @@ export class HaDataTable extends LitElement {
                     </div>
                   `
                 : ""}
-              ${Object.entries(this.columns).map(([key, column]) => {
-                if (column.hidden) {
-                  return "";
+              ${Object.entries(columns).map(([key, column]) => {
+                if (
+                  column.hidden ||
+                  (this.columnOrder && this.columnOrder.includes(key)
+                    ? this.hiddenColumns?.includes(key) ?? column.defaultHidden
+                    : column.defaultHidden)
+                ) {
+                  return nothing;
                 }
                 const sorted = key === this.sortColumn;
                 const classes = {
@@ -399,7 +448,7 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                   .items=${this._items}
                   .keyFunction=${this._keyFunction}
-                  .renderItem=${this._renderRow}
+                  .renderItem=${renderRow}
                 ></lit-virtualizer>
               `}
         </div>
@@ -409,7 +458,12 @@ export class HaDataTable extends LitElement {
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
 
-  private _renderRow = (row: DataTableRowData, index: number) => {
+  private _renderRow = (
+    columns: DataTableColumnContainer,
+    narrow: boolean,
+    row: DataTableRowData,
+    index: number
+  ) => {
     // not sure how this happens...
     if (!row) {
       return nothing;
@@ -454,8 +508,14 @@ export class HaDataTable extends LitElement {
               </div>
             `
           : ""}
-        ${Object.entries(this.columns).map(([key, column]) => {
-          if (column.hidden) {
+        ${Object.entries(columns).map(([key, column]) => {
+          if (
+            (narrow && !column.main && !column.showNarrow) ||
+            column.hidden ||
+            (this.columnOrder && this.columnOrder.includes(key)
+              ? this.hiddenColumns?.includes(key) ?? column.defaultHidden
+              : column.defaultHidden)
+          ) {
             return nothing;
           }
           return html`
@@ -482,7 +542,38 @@ export class HaDataTable extends LitElement {
                   })
                 : ""}
             >
-              ${column.template ? column.template(row) : row[key]}
+              ${column.template
+                ? column.template(row)
+                : narrow && column.main
+                  ? html`<div class="primary">${row[key]}</div>
+                      <div class="secondary">
+                        ${Object.entries(columns)
+                          .filter(
+                            ([key2, column2]) =>
+                              !column2.hidden &&
+                              !column2.main &&
+                              !column2.showNarrow &&
+                              !(this.columnOrder &&
+                              this.columnOrder.includes(key2)
+                                ? this.hiddenColumns?.includes(key2) ??
+                                  column2.defaultHidden
+                                : column2.defaultHidden)
+                          )
+                          .map(
+                            ([key2, column2], i) =>
+                              html`${i !== 0
+                                ? " ⸱ "
+                                : nothing}${column2.template
+                                ? column2.template(row)
+                                : row[key2]}`
+                          )}
+                      </div>
+                      ${column.extraTemplate
+                        ? column.extraTemplate(row)
+                        : nothing}`
+                  : html`${row[key]}${column.extraTemplate
+                      ? column.extraTemplate(row)
+                      : nothing}`}
             </div>
           `;
         })}
@@ -861,6 +952,7 @@ export class HaDataTable extends LitElement {
           width: 100%;
           border: 0;
           white-space: nowrap;
+          position: relative;
         }
 
         .mdc-data-table__cell {

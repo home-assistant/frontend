@@ -184,6 +184,20 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "script-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "script-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
@@ -232,14 +246,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (
-      narrow,
-      localize: LocalizeFunc,
-      locale: HomeAssistant["locale"]
-    ): DataTableColumnContainer<ScriptItem> => {
+    (localize: LocalizeFunc): DataTableColumnContainer<ScriptItem> => {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
+          showNarrow: true,
+          moveable: false,
           label: localize("ui.panel.config.script.picker.headers.state"),
           type: "icon",
           template: (script) =>
@@ -259,30 +271,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (script) => {
-            const date = new Date(script.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            return html`
-              <div style="font-size: 14px;">${script.name}</div>
-              ${narrow
-                ? html`<div class="secondary">
-                    ${this.hass.localize("ui.card.automation.last_triggered")}:
-                    ${script.attributes.last_triggered
-                      ? dayDifference > 3
-                        ? formatShortDateTime(date, locale, this.hass.config)
-                        : relativeTime(date, locale)
-                      : localize("ui.components.relative_time.never")}
-                  </div>`
-                : nothing}
-              ${script.labels.length
-                ? html`<ha-data-table-labels
-                    @label-clicked=${this._labelClicked}
-                    .labels=${script.labels}
-                  ></ha-data-table-labels>`
-                : nothing}
-            `;
-          },
+          extraTemplate: (script) =>
+            script.labels.length
+              ? html`<ha-data-table-labels
+                  @label-clicked=${this._labelClicked}
+                  .labels=${script.labels}
+                ></ha-data-table-labels>`
+              : nothing,
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
@@ -305,7 +300,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           template: (script) => script.labels.map((lbl) => lbl.name).join(" "),
         },
         last_triggered: {
-          hidden: narrow,
           sortable: true,
           width: "40%",
           title: localize("ui.card.automation.last_triggered"),
@@ -330,6 +324,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (script) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -539,6 +536,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -553,11 +553,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.localize,
-          this.hass.locale
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${scripts}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}
@@ -1268,6 +1264,11 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {
