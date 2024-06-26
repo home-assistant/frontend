@@ -5070,6 +5070,11 @@
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join_x": "X (formerly Twitter)",
+          "join_forums": "Forums",
+          "join_chat": "Chat",
+          "join_blog": "Blog",
+          "join_newsletter": "Newsletter",
           "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
@@ -6873,7 +6878,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter",
+          "x": "[%key:ui::panel::config::tips::join_x%]",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
