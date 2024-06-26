@@ -3630,6 +3630,7 @@
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
+            "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",

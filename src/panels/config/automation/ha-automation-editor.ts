@@ -221,7 +221,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-list-item>
               `
-            : html`
+            : nothing}
+          ${useBlueprint
+            ? html`
                 <ha-list-item
                   graphic="icon"
                   @click=${this._takeControl}
@@ -235,7 +237,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                     .path=${mdiFileEdit}
                   ></ha-svg-icon>
                 </ha-list-item>
-              `}
+              `
+            : nothing}
 
           <ha-list-item
             .disabled=${!this._readOnly && !this.automationId}
@@ -662,9 +665,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     );
 
     const newConfig = {
+      ...normalizeAutomationConfig(result.substituted_config),
       alias: config.alias,
       description: config.description,
-      ...normalizeAutomationConfig(result.substituted_config),
     };
 
     this._config = newConfig;
