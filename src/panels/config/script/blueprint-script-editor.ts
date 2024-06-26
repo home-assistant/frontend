@@ -2,10 +2,10 @@ import "@material/mwc-button/mwc-button";
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
-import { BlueprintScriptConfig } from "../../../data/script";
-import { fetchBlueprints } from "../../../data/blueprint";
-import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import "../../../components/ha-markdown";
+import { fetchBlueprints } from "../../../data/blueprint";
+import { BlueprintScriptConfig } from "../../../data/script";
+import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")
 export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {

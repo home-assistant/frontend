@@ -6,6 +6,7 @@ import {
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
+  mdiFileEdit,
   mdiFormTextbox,
   mdiInformationOutline,
   mdiPlay,
@@ -40,6 +41,7 @@ import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  BlueprintScriptConfig,
   ScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
@@ -61,6 +63,7 @@ import { showAutomationRenameDialog } from "../automation/automation-rename-dial
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -227,6 +230,24 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
           </ha-list-item>
+
+          ${useBlueprint
+            ? html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._takeControl}
+                  .disabled=${this._readOnly || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.script.editor.take_control"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFileEdit}
+                  ></ha-svg-icon>
+                </ha-list-item>
+              `
+            : nothing}
 
           <li divider role="separator"></li>
 
@@ -600,6 +621,45 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       afterNextRender(() => history.back());
     }
   };
+
+  private async _takeControl() {
+    const config = this._config as BlueprintScriptConfig;
+
+    const confirmation = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.text"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.action"
+      ),
+    });
+
+    if (!confirmation) return;
+
+    try {
+      const result = await substituteBlueprint(
+        this.hass,
+        "script",
+        config.use_blueprint.path,
+        config.use_blueprint.input || {}
+      );
+
+      const newConfig = {
+        ...this._normalizeConfig(result.substituted_config),
+        alias: config.alias,
+        description: config.description,
+      };
+
+      this._config = newConfig;
+      this._dirty = true;
+      this._errors = undefined;
+    } catch (err: any) {
+      this._errors = err.message;
+    }
+  }
 
   private async _duplicate() {
     const result = this._readOnly
