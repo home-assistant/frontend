@@ -329,7 +329,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   private _sendCredentials(ev) {
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    if (!this._otbrInfo) {
+    if (!otbr) {
       return;
     }
     this.hass.auth.external!.fireMessage({
