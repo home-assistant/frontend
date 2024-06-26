@@ -11,6 +11,7 @@ import {
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-overflow-menu";
 import {
   ApplicationCredential,
   deleteApplicationCredential,
@@ -69,6 +70,26 @@ export class HaConfigApplicationCredentials extends LitElement {
           sortable: true,
           width: "30%",
           direction: "asc",
+        },
+        actions: {
+          title: "",
+          width: "64px",
+          type: "overflow-menu",
+          template: (credential) => html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiDelete,
+                  warning: true,
+                  label: this.hass.localize("ui.common.delete"),
+                  action: () => this._removeCredential(credential),
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
         },
       };
 
@@ -153,6 +174,24 @@ export class HaConfigApplicationCredentials extends LitElement {
     this._selected = ev.detail.value;
   }
 
+  private _removeCredential = async (credential) => {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.application_credentials.picker.remove.confirm_title`
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+    if (!confirm) {
+      return;
+    }
+    await deleteApplicationCredential(this.hass, credential.id);
+  };
+
   private _removeSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -162,8 +201,9 @@ export class HaConfigApplicationCredentials extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
       confirm: async () => {
         try {
           await Promise.all(
