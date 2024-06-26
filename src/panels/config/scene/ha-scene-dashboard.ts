@@ -180,6 +180,20 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "scene-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "scene-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
@@ -225,11 +239,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (narrow, localize: LocalizeFunc): DataTableColumnContainer => {
+    (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
           label: localize("ui.panel.config.scene.picker.headers.state"),
+          moveable: false,
+          showNarrow: true,
           type: "icon",
           template: (scene) => html`
             <ha-state-icon
@@ -245,15 +261,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (scene) => html`
-            <div style="font-size: 14px;">${scene.name}</div>
-            ${scene.labels.length
+          extraTemplate: (scene) =>
+            scene.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.labels}
                 ></ha-data-table-labels>`
-              : nothing}
-          `,
+              : nothing,
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
@@ -281,7 +295,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           ),
           sortable: true,
           width: "30%",
-          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {
@@ -300,6 +313,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         only_editable: {
           title: "",
           width: "56px",
+          showNarrow: true,
           template: (scene) =>
             !scene.attributes.id
               ? html`
@@ -319,6 +333,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -536,11 +553,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.narrow, this.hass.localize)}
+        .columns=${this._columns(this.hass.localize)}
         id="entity_id"
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -1153,6 +1173,11 @@ ${rejected
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

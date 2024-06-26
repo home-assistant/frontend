@@ -1,5 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -11,11 +12,10 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
+import { HuiCard } from "./hui-card";
 import { EntityFilterCardConfig } from "./types";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-entity-filter-card")
 export class HuiEntityFilterCard
@@ -55,11 +55,11 @@ export class HuiEntityFilterCard
 
   @property({ type: Boolean }) public isPanel = false;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _config?: EntityFilterCardConfig;
 
-  private _element?: LovelaceCard;
+  private _element?: HuiCard;
 
   private _configEntities?: EntityFilterEntityConfig[];
 
@@ -117,7 +117,7 @@ export class HuiEntityFilterCard
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (this._element) {
       this._element.hass = this.hass;
-      this._element.editMode = this.editMode;
+      this._element.preview = this.preview;
       this._element.isPanel = this.isPanel;
     }
 
@@ -173,12 +173,12 @@ export class HuiEntityFilterCard
     }
 
     if (!this.lastChild) {
-      this._element.setConfig({
+      this._element.config = {
         ...this._baseCardConfig!,
         entities: entitiesList,
-      });
+      };
       this._oldEntities = entitiesList;
-    } else if (this._element.tagName !== "HUI-ERROR-CARD") {
+    } else {
       const isSame =
         this._oldEntities &&
         entitiesList.length === this._oldEntities.length &&
@@ -186,10 +186,10 @@ export class HuiEntityFilterCard
 
       if (!isSame) {
         this._oldEntities = entitiesList;
-        this._element.setConfig({
+        this._element.config = {
           ...this._baseCardConfig!,
           entities: entitiesList,
-        });
+        };
       }
     }
 
@@ -245,32 +245,11 @@ export class HuiEntityFilterCard
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this.hass) {
-      element.hass = this.hass;
-    }
-    element.isPanel = this.isPanel;
-    element.editMode = this.editMode;
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        ev.stopPropagation();
-        this._rebuildCard(element, cardConfig);
-      },
-      { once: true }
-    );
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.preview = this.preview;
+    element.config = cardConfig;
     return element;
-  }
-
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
-  ): void {
-    const newCardEl = this._createCardElement(config);
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._element = newCardEl;
   }
 }
 

@@ -126,7 +126,6 @@ class MoreInfoUpdate extends LitElement {
               ></ha-checkbox>
             </ha-formfield> `
         : ""}
-      <hr />
       <div class="actions">
         ${this.stateObj.attributes.auto_update
           ? ""
@@ -240,10 +239,20 @@ class MoreInfoUpdate extends LitElement {
         justify-content: space-between;
       }
       .actions {
+        border-top: 1px solid var(--divider-color);
+        background: var(
+          --ha-dialog-surface-background,
+          var(--mdc-theme-surface, #fff)
+        );
         margin: 8px 0 0;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        position: sticky;
+        bottom: 0;
+        padding: 12px 0;
+        margin-bottom: -24px;
+        z-index: 1;
       }
 
       .actions mwc-button {

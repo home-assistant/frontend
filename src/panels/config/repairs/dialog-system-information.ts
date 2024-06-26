@@ -143,8 +143,6 @@ class DialogSystemInformation extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.repairs.system_information")

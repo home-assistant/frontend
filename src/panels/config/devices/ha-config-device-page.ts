@@ -24,7 +24,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { SENSOR_ENTITIES } from "../../../common/const";
+import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -190,26 +190,42 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(entities, (entry) =>
-        entry.entity_category
-          ? entry.entity_category
-          : computeDomain(entry.entity_id) === "event"
-            ? "event"
-            : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
-              ? "sensor"
-              : "control"
-      ) as Record<
+      const result = groupBy(entities, (entry) => {
+        const domain = computeDomain(entry.entity_id);
+
+        if (entry.entity_category) {
+          return entry.entity_category;
+        }
+
+        if (domain === "event" || domain === "notify") {
+          return domain;
+        }
+
+        if (SENSOR_ENTITIES.includes(domain)) {
+          return "sensor";
+        }
+
+        if (ASSIST_ENTITIES.includes(domain)) {
+          return "assist";
+        }
+
+        return "control";
+      }) as Record<
         | "control"
         | "event"
         | "sensor"
+        | "assist"
+        | "notify"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
       for (const key of [
+        "assist",
         "config",
         "control",
         "diagnostic",
         "event",
+        "notify",
         "sensor",
       ]) {
         if (!(key in result)) {
@@ -854,7 +870,15 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="column">
             ${(
-              ["control", "sensor", "event", "config", "diagnostic"] as const
+              [
+                "control",
+                "sensor",
+                "notify",
+                "event",
+                "assist",
+                "config",
+                "diagnostic",
+              ] as const
             ).map((category) =>
               // Make sure we render controls if no other cards will be rendered
               entitiesByCategory[category].length > 0 ||
@@ -1004,6 +1028,9 @@ export class HaConfigDevicePage extends LitElement {
                   : this.hass.localize(
                       `ui.panel.config.devices.confirm_delete`
                     ),
+              confirmText: this.hass.localize("ui.common.delete"),
+              dismissText: this.hass.localize("ui.common.cancel"),
+              destructive: true,
             });
 
             if (!confirmed) {

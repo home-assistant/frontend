@@ -353,7 +353,7 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        const view = this.lovelace!.config.views[viewIndex];
+        const view = selectedDashConfig.views[viewIndex];
 
         if (!isStrategyView(view) && view.type === SECTION_VIEW_LAYOUT) {
           showAlertDialog(this, {

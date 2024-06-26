@@ -118,6 +118,20 @@ export class VoiceAssistantsExpose extends LitElement {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "voice-expose-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "voice-expose-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -137,6 +151,7 @@ export class VoiceAssistantsExpose extends LitElement {
       icon: {
         title: "",
         type: "icon",
+        moveable: false,
         hidden: narrow,
         template: (entry) => html`
           <ha-state-icon
@@ -153,10 +168,20 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (entry) => html`
-          ${entry.name}<br />
-          <div class="secondary">${entry.entity_id}</div>
-        `,
+        template: narrow
+          ? undefined
+          : (entry) => html`
+              ${entry.name}<br />
+              <div class="secondary">${entry.entity_id}</div>
+            `,
+      },
+      // For search & narrow
+      entity_id: {
+        title: localize(
+          "ui.panel.config.voice_assistants.expose.headers.entity_id"
+        ),
+        hidden: !narrow,
+        filterable: true,
       },
       domain: {
         title: localize(
@@ -171,7 +196,6 @@ export class VoiceAssistantsExpose extends LitElement {
         title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
         sortable: true,
         groupable: true,
-        hidden: narrow,
         filterable: true,
         width: "15%",
       },
@@ -179,6 +203,7 @@ export class VoiceAssistantsExpose extends LitElement {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.assistants"
         ),
+        showNarrow: true,
         sortable: true,
         filterable: true,
         width: "160px",
@@ -208,7 +233,6 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        hidden: narrow,
         width: "15%",
         template: (entry) =>
           entry.aliases.length === 0
@@ -229,12 +253,6 @@ export class VoiceAssistantsExpose extends LitElement {
             @click=${this._removeEntity}
             .path=${mdiCloseCircleOutline}
           ></ha-icon-button>`,
-      },
-      // For search
-      entity_id: {
-        title: "",
-        hidden: true,
-        filterable: true,
       },
     })
   );
@@ -552,6 +570,9 @@ export class VoiceAssistantsExpose extends LitElement {
         .initialSorting=${this._activeSorting}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
         @grouping-changed=${this._handleGroupingChanged}
@@ -755,6 +776,11 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

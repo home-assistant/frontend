@@ -47,6 +47,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public readOnly = false;
 
+  @property({ type: Boolean }) public linewrap = false;
+
   @property({ type: Boolean, attribute: "autocomplete-entities" })
   public autocompleteEntities = false;
 
@@ -134,6 +136,13 @@ export class HaCodeEditor extends ReactiveElement {
         ),
       });
     }
+    if (changedProps.has("linewrap")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.linewrapCompartment!.reconfigure(
+          this.linewrap ? this._loadedCodeMirror!.EditorView.lineWrapping : []
+        ),
+      });
+    }
     if (changedProps.has("_value") && this._value !== this.value) {
       transactions.push({
         changes: {
@@ -180,6 +189,9 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.haSyntaxHighlighting,
       this._loadedCodeMirror.readonlyCompartment.of(
         this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
+      ),
+      this._loadedCodeMirror.linewrapCompartment.of(
+        this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
     ];

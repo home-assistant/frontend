@@ -92,8 +92,8 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     [
       "@babel/preset-env",
       {
-        useBuiltIns: latestBuild ? false : "usage",
-        corejs: latestBuild ? false : dependencies["core-js"],
+        useBuiltIns: "usage",
+        corejs: dependencies["core-js"],
         bugfixes: true,
         shippedProposals: true,
       },

@@ -71,6 +71,7 @@ import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import "./ha-disabled-config-entry-card";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/search-input-outlined";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
@@ -208,9 +209,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          getFn: (obj, path) => stripDiacritics(Fuse.config.getFn(obj, path)),
         };
         const fuse = new Fuse(configEntriesInProgress, options);
-        filteredEntries = fuse.search(filter).map((result) => result.item);
+        filteredEntries = fuse
+          .search(stripDiacritics(filter))
+          .map((result) => result.item);
       } else {
         filteredEntries = configEntriesInProgress;
       }
