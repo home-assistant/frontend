@@ -132,7 +132,7 @@ class DialogAdminChangePassword extends LitElement {
                 @value-changed=${this._valueChanged}
                 .disabled=${this._submitting}
               ></ha-form>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.cancel")}
               </mwc-button>
               <mwc-button
