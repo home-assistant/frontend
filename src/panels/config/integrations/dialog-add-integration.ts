@@ -56,7 +56,6 @@ import {
 } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
 import { stripDiacritics } from "../../../common/string/strip-diacritics";
-import { getStripDiacriticsFn } from "../../../util/fuse";
 
 export interface IntegrationListItem {
   name: string;
@@ -257,7 +256,7 @@ class AddIntegrationDialog extends LitElement {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
-          getFn: getStripDiacriticsFn,
+          getFn: (obj, path) => stripDiacritics(Fuse.config.getFn(obj, path)),
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,

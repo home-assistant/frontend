@@ -105,8 +105,6 @@ export class HuiCard extends ReactiveElement {
       "ll-upgrade",
       (ev: Event) => {
         ev.stopPropagation();
-        element.hass = this.hass;
-        element.preview = this.preview;
         fireEvent(this, "card-updated");
       },
       { once: true }
