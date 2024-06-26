@@ -154,8 +154,6 @@ class HaBlueprintOverview extends LitElement {
 
   private _columns = memoizeOne(
     (
-      narrow,
-      _language,
       localize: LocalizeFunc
     ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
@@ -275,11 +273,7 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.language,
-          this.hass.localize
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._processedBlueprints(this.blueprints, this.hass.localize)}
         id="fullpath"
         .noDataText=${this.hass.localize(
