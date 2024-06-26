@@ -2760,6 +2760,11 @@
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
+            "take_control_confirmation": {
+              "title": "Take control of automation?",
+              "text": "This automation is using a blueprint. By taking control, your automation will be converted into a regular automation using triggers, conditions and actions. You will be able to edit it directly and you won't be able to convert it back to a blueprint.",
+              "action": "Take control"
+            },
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -3631,6 +3636,11 @@
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
+            "take_control_confirmation": {
+              "title": "Take control of script?",
+              "text": "This script is using a blueprint. By taking control, your script will be converted into a regular automation using actions. You will be able to edit it directly and you won't be able to convert it back to a blueprint.",
+              "action": "[%key:ui::panel::config::automation::editor::take_control_confirmation::action%]"
+            },
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",

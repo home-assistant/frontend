@@ -214,6 +214,23 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 </ha-list-item>
               `
             : nothing}
+
+          <ha-list-item
+            .disabled=${!this._readOnly && !this.scriptId}
+            graphic="icon"
+            @click=${this._duplicate}
+          >
+            ${this.hass.localize(
+              this._readOnly
+                ? "ui.panel.config.script.editor.migrate"
+                : "ui.panel.config.script.editor.duplicate"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </ha-list-item>
+
           ${useBlueprint
             ? html`
                 <ha-list-item
@@ -231,22 +248,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 </ha-list-item>
               `
             : nothing}
-
-          <ha-list-item
-            .disabled=${!this._readOnly && !this.scriptId}
-            graphic="icon"
-            @click=${this._duplicate}
-          >
-            ${this.hass.localize(
-              this._readOnly
-                ? "ui.panel.config.script.editor.migrate"
-                : "ui.panel.config.script.editor.duplicate"
-            )}
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mdiContentDuplicate}
-            ></ha-svg-icon>
-          </ha-list-item>
 
           <li divider role="separator"></li>
 
@@ -625,28 +626,39 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     const config = this._config as BlueprintScriptConfig;
 
     const confirmation = await showConfirmationDialog(this, {
-      title: "Take control of automation?",
-      text: "This automation is using a blueprint. By taking control, you will be able to edit it directly. Are you sure you want to take control?",
+      title: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.text"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.config.script.editor.take_control_confirmation.action"
+      ),
     });
 
     if (!confirmation) return;
 
-    const result = await substituteBlueprint(
-      this.hass,
-      "script",
-      config.use_blueprint.path,
-      config.use_blueprint.input || {}
-    );
+    try {
+      const result = await substituteBlueprint(
+        this.hass,
+        "script",
+        config.use_blueprint.path,
+        config.use_blueprint.input || {}
+      );
 
-    const newConfig = {
-      ...this._normalizeConfig(result.substituted_config),
-      alias: config.alias,
-      description: config.description,
-    };
+      const newConfig = {
+        ...this._normalizeConfig(result.substituted_config),
+        alias: config.alias,
+        description: config.description,
+      };
 
-    this._config = newConfig;
-    this._dirty = true;
-    this._errors = undefined;
+      this._config = newConfig;
+      this._dirty = true;
+      this._errors = undefined;
+    } catch (err: any) {
+      this._errors = err.message;
+    }
   }
 
   private async _duplicate() {
