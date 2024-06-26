@@ -29,6 +29,7 @@ import {
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
+import { getStripDiacriticsFn } from "../../../../util/fuse";
 import {
   calcUnusedEntities,
   computeUsedEntities,
@@ -87,7 +88,7 @@ export class HuiCardPicker extends LitElement {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: (obj, path) => stripDiacritics(Fuse.config.getFn(obj, path)),
+        getFn: getStripDiacriticsFn,
       };
       const fuse = new Fuse(cards, options);
       cards = fuse.search(stripDiacritics(filter)).map((result) => result.item);
