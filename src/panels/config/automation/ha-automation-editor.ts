@@ -6,6 +6,7 @@ import {
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
+  mdiFileEdit,
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -40,10 +41,12 @@ import "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
+  BlueprintAutomationConfig,
   deleteAutomation,
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
+  normalizeAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
@@ -65,6 +68,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -234,6 +238,24 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
           </ha-list-item>
+
+          ${useBlueprint
+            ? html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._takeControl}
+                  .disabled=${this._readOnly || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.take_control"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFileEdit}
+                  ></ha-svg-icon>
+                </ha-list-item>
+              `
+            : nothing}
 
           <li divider role="separator"></li>
 
@@ -432,7 +454,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
       this._config = {
         ...baseConfig,
-        ...initData,
+        ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
@@ -441,7 +463,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeAutomationConfig(c.config);
         this._checkValidation();
       });
       this._entityId = this.entityId;
@@ -497,18 +519,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _normalizeConfig(config: AutomationConfig): AutomationConfig {
-    // Normalize data: ensure trigger, action and condition are lists
-    // Happens when people copy paste their automations into the config
-    for (const key of ["trigger", "condition", "action"]) {
-      const value = config[key];
-      if (value && !Array.isArray(value)) {
-        config[key] = [value];
-      }
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     try {
       const config = await fetchAutomationFileConfig(
@@ -517,7 +527,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       );
       this._dirty = false;
       this._readOnly = false;
-      this._config = this._normalizeConfig(config);
+      this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
       const entityRegistry = await fetchEntityRegistry(this.hass.connection);
@@ -637,6 +647,45 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       afterNextRender(() => history.back());
     }
   };
+
+  private async _takeControl() {
+    const config = this._config as BlueprintAutomationConfig;
+
+    const confirmation = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.automation.editor.take_control_confirmation.title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.automation.editor.take_control_confirmation.text"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.config.automation.editor.take_control_confirmation.action"
+      ),
+    });
+
+    if (!confirmation) return;
+
+    try {
+      const result = await substituteBlueprint(
+        this.hass,
+        "automation",
+        config.use_blueprint.path,
+        config.use_blueprint.input || {}
+      );
+
+      const newConfig = {
+        ...normalizeAutomationConfig(result.substituted_config),
+        alias: config.alias,
+        description: config.description,
+      };
+
+      this._config = newConfig;
+      this._dirty = true;
+      this._errors = undefined;
+    } catch (err: any) {
+      this._errors = err.message;
+    }
+  }
 
   private async _duplicate() {
     const result = this._readOnly
