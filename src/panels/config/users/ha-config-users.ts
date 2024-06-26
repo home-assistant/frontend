@@ -72,17 +72,6 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (user) =>
-            narrow
-              ? html` ${user.name}<br />
-                  <div class="secondary">
-                    ${user.username ? `${user.username} |` : ""}
-                    ${localize(`groups.${user.group_ids[0]}`)}
-                  </div>`
-              : html` ${user.name ||
-                this.hass!.localize(
-                  "ui.panel.config.users.editor.unnamed_user"
-                )}`,
         },
         username: {
           title: localize("ui.panel.config.users.picker.headers.username"),
@@ -90,7 +79,6 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
           template: (user) => html`${user.username || "—"}`,
         },
         group: {
@@ -100,7 +88,6 @@ export class HaConfigUsers extends LitElement {
           groupable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
         },
         is_active: {
           title: this.hass.localize(
@@ -154,6 +141,7 @@ export class HaConfigUsers extends LitElement {
           filterable: false,
           width: "104px",
           hidden: !narrow,
+          showNarrow: true,
           template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
@@ -213,6 +201,7 @@ export class HaConfigUsers extends LitElement {
   private _userData = memoizeOne((users: User[], localize: LocalizeFunc) =>
     users.map((user) => ({
       ...user,
+      name: user.name || localize("ui.panel.config.users.editor.unnamed_user"),
       group: localize(`groups.${user.group_ids[0]}`),
     }))
   );

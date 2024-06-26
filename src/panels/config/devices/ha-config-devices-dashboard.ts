@@ -154,6 +154,20 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "devices-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "devices-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
@@ -434,10 +448,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       typeof this._devicesAndFilterDomains
     >["devicesOutput"][number];
 
-    const columns: DataTableColumnContainer<DeviceItem> = {
+    return {
       icon: {
         title: "",
+        label: localize("ui.panel.config.devices.data_table.icon"),
         type: "icon",
+        moveable: false,
+        showNarrow: true,
         template: (device) =>
           device.domains.length
             ? html`<img
@@ -452,19 +469,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               />`
             : "",
       },
-    };
-
-    if (narrow) {
-      columns.name = {
+      name: {
         title: localize("ui.panel.config.devices.data_table.device"),
         main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (device) => html`
-          <div style="font-size: 14px;">${device.name}</div>
-          <div class="secondary">${device.area} | ${device.integration}</div>
+        extraTemplate: (device) => html`
           ${device.label_entries.length
             ? html`
                 <ha-data-table-labels
@@ -473,112 +485,89 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               `
             : nothing}
         `,
-      };
-    } else {
-      columns.name = {
-        title: localize("ui.panel.config.devices.data_table.device"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        grows: true,
-        template: (device) => html`
-          <div style="font-size: 14px;">${device.name}</div>
-          ${device.label_entries.length
-            ? html`
-                <ha-data-table-labels
-                  .labels=${device.label_entries}
-                ></ha-data-table-labels>
-              `
-            : nothing}
-        `,
-      };
-    }
-
-    columns.manufacturer = {
-      title: localize("ui.panel.config.devices.data_table.manufacturer"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.model = {
-      title: localize("ui.panel.config.devices.data_table.model"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.area = {
-      title: localize("ui.panel.config.devices.data_table.area"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.integration = {
-      title: localize("ui.panel.config.devices.data_table.integration"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.battery_entity = {
-      title: localize("ui.panel.config.devices.data_table.battery"),
-      sortable: true,
-      filterable: true,
-      type: "numeric",
-      width: narrow ? "105px" : "15%",
-      maxWidth: "105px",
-      valueColumn: "battery_level",
-      template: (device) => {
-        const batteryEntityPair = device.battery_entity;
-        const battery =
-          batteryEntityPair && batteryEntityPair[0]
-            ? this.hass.states[batteryEntityPair[0]]
-            : undefined;
-        const batteryDomain = battery ? computeStateDomain(battery) : undefined;
-        const batteryCharging =
-          batteryEntityPair && batteryEntityPair[1]
-            ? this.hass.states[batteryEntityPair[1]]
-            : undefined;
-
-        return battery &&
-          (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
-          ? html`
-              ${batteryDomain === "sensor"
-                ? this.hass.formatEntityState(battery)
-                : nothing}
-              <ha-battery-icon
-                .hass=${this.hass}
-                .batteryStateObj=${battery}
-                .batteryChargingStateObj=${batteryCharging}
-              ></ha-battery-icon>
-            `
-          : html`—`;
       },
-    };
-    columns.disabled_by = {
-      title: "",
-      label: localize("ui.panel.config.devices.data_table.disabled_by"),
-      hidden: true,
-      template: (device) =>
-        device.disabled_by
-          ? this.hass.localize("ui.panel.config.devices.disabled")
-          : "",
-    };
-    columns.labels = {
-      title: "",
-      hidden: true,
-      filterable: true,
-      template: (device) =>
-        device.label_entries.map((lbl) => lbl.name).join(" "),
-    };
+      manufacturer: {
+        title: localize("ui.panel.config.devices.data_table.manufacturer"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      model: {
+        title: localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        filterable: true,
+        width: "15%",
+      },
+      area: {
+        title: localize("ui.panel.config.devices.data_table.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      integration: {
+        title: localize("ui.panel.config.devices.data_table.integration"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      battery_entity: {
+        title: localize("ui.panel.config.devices.data_table.battery"),
+        showNarrow: true,
+        sortable: true,
+        filterable: true,
+        type: "numeric",
+        width: narrow ? "105px" : "15%",
+        maxWidth: "105px",
+        valueColumn: "battery_level",
+        template: (device) => {
+          const batteryEntityPair = device.battery_entity;
+          const battery =
+            batteryEntityPair && batteryEntityPair[0]
+              ? this.hass.states[batteryEntityPair[0]]
+              : undefined;
+          const batteryDomain = battery
+            ? computeStateDomain(battery)
+            : undefined;
+          const batteryCharging =
+            batteryEntityPair && batteryEntityPair[1]
+              ? this.hass.states[batteryEntityPair[1]]
+              : undefined;
 
-    return columns;
+          return battery &&
+            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+            ? html`
+                ${batteryDomain === "sensor"
+                  ? this.hass.formatEntityState(battery)
+                  : nothing}
+                <ha-battery-icon
+                  .hass=${this.hass}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
+              `
+            : html`—`;
+        },
+      },
+      disabled_by: {
+        title: "",
+        label: localize("ui.panel.config.devices.data_table.disabled_by"),
+        hidden: true,
+        template: (device) =>
+          device.disabled_by
+            ? this.hass.localize("ui.panel.config.devices.disabled")
+            : "",
+      },
+      labels: {
+        title: "",
+        hidden: true,
+        filterable: true,
+        template: (device) =>
+          device.label_entries.map((lbl) => lbl.name).join(" "),
+      },
+    } as DataTableColumnContainer<DeviceItem>;
   });
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
@@ -704,11 +693,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        @columns-changed=${this._handleColumnsChanged}
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
@@ -1041,6 +1033,11 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

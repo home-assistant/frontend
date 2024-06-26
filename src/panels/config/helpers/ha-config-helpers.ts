@@ -167,6 +167,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _filter = "";
 
+  @storage({
+    key: "helpers-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "helpers-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   @state() private _stateItems: HassEntity[] = [];
 
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
@@ -243,14 +257,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _columns = memoizeOne(
-    (
-      narrow: boolean,
-      localize: LocalizeFunc
-    ): DataTableColumnContainer<HelperItem> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<HelperItem> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.helpers.picker.headers.icon"),
         type: "icon",
+        showNarrow: true,
+        moveable: false,
         template: (helper) =>
           helper.entity
             ? html`<ha-state-icon
@@ -269,23 +282,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         filterable: true,
         grows: true,
         direction: "asc",
-        template: (helper) => html`
-          <div style="font-size: 14px;">${helper.name}</div>
-          ${narrow
-            ? html`<div class="secondary">${helper.entity_id}</div> `
-            : nothing}
-          ${helper.label_entries.length
+        extraTemplate: (helper) =>
+          helper.label_entries.length
             ? html`
                 <ha-data-table-labels
                   .labels=${helper.label_entries}
                 ></ha-data-table-labels>
               `
-            : nothing}
-        `,
+            : nothing,
       },
       entity_id: {
         title: localize("ui.panel.config.helpers.picker.headers.entity_id"),
-        hidden: this.narrow,
         sortable: true,
         filterable: true,
         width: "25%",
@@ -313,10 +320,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       },
       editable: {
         title: "",
-        label: this.hass.localize(
-          "ui.panel.config.helpers.picker.headers.editable"
-        ),
+        label: localize("ui.panel.config.helpers.picker.headers.editable"),
         type: "icon",
+        showNarrow: true,
         template: (helper) => html`
           ${!helper.editable
             ? html`
@@ -337,8 +343,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       },
       actions: {
         title: "",
+        label: "Actions",
         width: "64px",
         type: "overflow-menu",
+        hideable: false,
+        moveable: false,
+        showNarrow: true,
         template: (helper) => html`
           <ha-icon-overflow-menu
             .hass=${this.hass}
@@ -556,11 +566,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.narrow, this.hass.localize)}
+        .columns=${this._columns(this.hass.localize)}
         .data=${helpers}
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -1082,6 +1095,11 @@ ${rejected
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

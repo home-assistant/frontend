@@ -73,6 +73,7 @@ export class HaConfigLovelaceRescources extends LitElement {
       localize: LocalizeFunc
     ): DataTableColumnContainer<LovelaceResource> => ({
       url: {
+        main: true,
         title: localize(
           "ui.panel.config.lovelace.resources.picker.headers.url"
         ),

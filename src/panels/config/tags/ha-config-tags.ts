@@ -71,6 +71,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       const columns: DataTableColumnContainer<TagRowData> = {
         icon: {
           title: "",
+          moveable: false,
+          showNarrow: true,
           label: localize("ui.panel.config.tag.headers.icon"),
           type: "icon",
           template: (tag) => html`<tag-image .tag=${tag}></tag-image>`,
@@ -81,24 +83,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           grows: true,
-          template: (tag) =>
-            html`${tag.display_name}
-            ${narrow
-              ? html`<div class="secondary">
-                  ${tag.last_scanned_datetime
-                    ? html`<ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${tag.last_scanned_datetime}
-                        capitalize
-                      ></ha-relative-time>`
-                    : this.hass.localize("ui.panel.config.tag.never_scanned")}
-                </div>`
-              : ""}`,
         },
         last_scanned_datetime: {
           title: localize("ui.panel.config.tag.headers.last_scanned"),
           sortable: true,
-          hidden: narrow,
           direction: "desc",
           width: "20%",
           template: (tag) => html`
@@ -117,8 +105,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           title: "",
           label: localize("ui.panel.config.tag.headers.write"),
           type: "icon-button",
+          showNarrow: true,
           template: (tag) =>
-            html` <ha-icon-button
+            html`<ha-icon-button
               .tag=${tag}
               @click=${this._handleWriteClick}
               .label=${this.hass.localize("ui.panel.config.tag.write")}
@@ -129,8 +118,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       columns.automation = {
         title: "",
         type: "icon-button",
+        showNarrow: true,
         template: (tag) =>
-          html` <ha-icon-button
+          html`<ha-icon-button
             .tag=${tag}
             @click=${this._handleAutomationClick}
             .label=${this.hass.localize(
@@ -142,8 +132,11 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       columns.edit = {
         title: "",
         type: "icon-button",
+        showNarrow: true,
+        hideable: false,
+        moveable: false,
         template: (tag) =>
-          html` <ha-icon-button
+          html`<ha-icon-button
             .tag=${tag}
             @click=${this._handleEditClick}
             .label=${this.hass.localize("ui.panel.config.tag.edit")}

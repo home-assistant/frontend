@@ -70,6 +70,8 @@ export class HaConfigLabels extends LitElement {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
         title: "",
+        moveable: false,
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.icon"),
         type: "icon",
         template: (label) =>
@@ -77,6 +79,7 @@ export class HaConfigLabels extends LitElement {
       },
       color: {
         title: "",
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
         template: (label) =>
@@ -105,6 +108,9 @@ export class HaConfigLabels extends LitElement {
       },
       actions: {
         title: "",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         width: "64px",
         type: "overflow-menu",
         template: (label) => html`

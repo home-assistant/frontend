@@ -230,6 +230,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         icon: {
           title: "",
           label: localize("ui.panel.config.scene.picker.headers.state"),
+          moveable: false,
+          showNarrow: true,
           type: "icon",
           template: (scene) => html`
             <ha-state-icon
@@ -245,15 +247,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (scene) => html`
-            <div style="font-size: 14px;">${scene.name}</div>
-            ${scene.labels.length
+          extraTemplate: (scene) =>
+            scene.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.labels}
                 ></ha-data-table-labels>`
-              : nothing}
-          `,
+              : nothing,
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
@@ -281,7 +281,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           ),
           sortable: true,
           width: "30%",
-          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {
@@ -300,6 +299,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         only_editable: {
           title: "",
           width: "56px",
+          showNarrow: true,
           template: (scene) =>
             !scene.attributes.id
               ? html`
@@ -319,6 +319,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}

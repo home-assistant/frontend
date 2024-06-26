@@ -253,6 +253,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           title: "",
           label: localize("ui.panel.config.automation.picker.headers.state"),
           type: "icon",
+          moveable: false,
+          showNarrow: true,
           template: (automation) =>
             html`<ha-state-icon
               .hass=${this.hass}
@@ -272,30 +274,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (automation) => {
-            const date = new Date(automation.attributes.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            return html`
-              <div style="font-size: 14px;">${automation.name}</div>
-              ${narrow
-                ? html`<div class="secondary">
-                    ${this.hass.localize("ui.card.automation.last_triggered")}:
-                    ${automation.attributes.last_triggered
-                      ? dayDifference > 3
-                        ? formatShortDateTime(date, locale, this.hass.config)
-                        : relativeTime(date, locale)
-                      : localize("ui.components.relative_time.never")}
-                  </div>`
-                : nothing}
-              ${automation.labels.length
-                ? html`<ha-data-table-labels
-                    @label-clicked=${this._labelClicked}
-                    .labels=${automation.labels}
-                  ></ha-data-table-labels>`
-                : nothing}
-            `;
-          },
+          extraTemplate: (automation) =>
+            automation.labels.length
+              ? html`<ha-data-table-labels
+                  @label-clicked=${this._labelClicked}
+                  .labels=${automation.labels}
+                ></ha-data-table-labels>`
+              : nothing,
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
@@ -322,7 +307,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           width: "130px",
           title: localize("ui.card.automation.last_triggered"),
-          hidden: narrow,
           template: (automation) => {
             if (!automation.last_triggered) {
               return this.hass.localize("ui.components.relative_time.never");
@@ -341,9 +325,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           width: "82px",
           sortable: true,
           groupable: true,
+          hidden: narrow,
           title: "",
           type: "overflow",
-          hidden: narrow,
           label: this.hass.localize("ui.panel.config.automation.picker.state"),
           template: (automation) => html`
             <ha-entity-toggle
@@ -356,6 +340,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           title: "",
           width: "64px",
           type: "icon-button",
+          showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (automation) => html`
             <ha-icon-button
               .automation=${automation}

@@ -165,19 +165,12 @@ class HaBlueprintOverview extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: narrow
-          ? (blueprint) => html`
-              ${blueprint.name}<br />
-              <div class="secondary">${blueprint.path}</div>
-            `
-          : undefined,
       },
       translated_type: {
         title: localize("ui.panel.config.blueprint.overview.headers.type"),
         sortable: true,
         filterable: true,
         groupable: true,
-        hidden: narrow,
         direction: "asc",
         width: "10%",
       },
@@ -185,7 +178,6 @@ class HaBlueprintOverview extends LitElement {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
-        hidden: narrow,
         direction: "asc",
         width: "25%",
       },
@@ -197,6 +189,9 @@ class HaBlueprintOverview extends LitElement {
         title: "",
         width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
