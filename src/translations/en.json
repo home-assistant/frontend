@@ -419,11 +419,6 @@
             "manual": "Manual Entry"
           }
         },
-        "image": {
-          "select_image": "Select image",
-          "upload": "Upload picture",
-          "url": "Local path or web URL"
-        },
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"
@@ -4143,10 +4138,18 @@
             "delete": "Delete",
             "create": "Create",
             "update": "Update",
-            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "confirm_delete_user_title": "Delete user account",
+            "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to login.",
+            "allow_login": "Allow login",
+            "allow_login_description": "Allow access using username and password.",
+            "username": "[%key:ui::panel::config::users::editor::username%]",
+            "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
-            "local_only": "[%key:ui::panel::config::users::editor::local_only%]",
-            "allow_login": "Allow person to login"
+            "admin_description": "[%key:ui::panel::config::users::editor::admin_description%]",
+            "local_access_only": "[%key:ui::panel::config::users::editor::local_access_only%]",
+            "local_access_only_description": "[%key:ui::panel::config::users::editor::local_access_only_description%]",
+            "change_username": "[%key:ui::panel::config::users::editor::change_username%]",
+            "change_password": "[%key:ui::panel::config::users::editor::change_password%]"
           }
         },
         "zone": {
@@ -4386,6 +4389,7 @@
             "caption": "View user",
             "name": "Display name",
             "username": "Username",
+            "password": "Password",
             "change_password": "Change password",
             "change_username": "Change username",
             "activate_user": "Activate user",
@@ -4395,16 +4399,17 @@
             "id": "ID",
             "owner": "Owner",
             "admin": "Administrator",
+            "admin_description": "Administrators can manage users, devices, automations and dashboards.",
             "group": "Group",
             "active": "Active",
-            "local_only": "Can only log in from the local network",
+            "active_description": "Controls if user can login",
+            "local_access_only": "Local access only",
+            "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
-            "system_generated_users_not_removable": "Unable to remove system users.",
-            "system_generated_users_not_editable": "Unable to update system users.",
+            "system_generated_read_only_users": "System users can not be updated.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion_title": "Delete {name}?",
-            "confirm_user_deletion_text": "This user will be permanently deleted.",
-            "active_tooltip": "Controls if user can login"
+            "confirm_user_deletion_text": "This user will be permanently deleted."
           },
           "add_user": {
             "caption": "Add user",
