@@ -167,7 +167,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ((network.dataset.preferred_extended_address &&
         this._otbrInfo[network.dataset.preferred_extended_address]) ||
         Object.values(this._otbrInfo).find(
-          (otbr) => otbr.extended_pan_id === network.dataset.extended_pan_id
+          (otbr) => otbr.extended_pan_id === network.dataset?.extended_pan_id
         ));
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
