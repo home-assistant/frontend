@@ -83,9 +83,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 {
                   path: mdiDelete,
                   warning: true,
-                  label: this.hass.localize(
-                    "ui.panel.config.application_credentials.picker.remove.button"
-                  ),
+                  label: this.hass.localize("ui.common.delete"),
                   action: () => this._removeCredential(credential),
                 },
               ]}
@@ -184,7 +182,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });
@@ -203,7 +201,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
       ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       confirm: async () => {
