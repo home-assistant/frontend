@@ -178,6 +178,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ${network.name}${network.dataset
           ? html`<div>
               <ha-icon-button
+                label=${this.hass.localize(
+                  "ui.panel.config.thread.thread_network_info"
+                )}
                 .otbr=${otbrForNetwork}
                 .network=${network}
                 .path=${mdiInformationOutline}
@@ -185,6 +188,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               ></ha-icon-button
               >${!network.dataset.preferred && !network.routers?.length
                 ? html`<ha-icon-button
+                    label=${this.hass.localize(
+                      "ui.panel.config.thread.thread_network_delete_credentials"
+                    )}
                     .networkDataset=${network.dataset}
                     .path=${mdiDeleteOutline}
                     @click=${this._removeDataset}
