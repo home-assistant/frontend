@@ -134,7 +134,8 @@ export class HuiCard extends ReactiveElement {
     if (changedProps.has("config")) {
       const oldConfig = changedProps.get("config");
       if (this.config && oldConfig && this.config !== oldConfig) {
-        if (this.config.type !== oldConfig.type) {
+        const typeChanged = this.config.type !== oldConfig.type;
+        if (typeChanged) {
           this._buildElement(this.config);
         } else {
           this._element?.setConfig(this.config);
