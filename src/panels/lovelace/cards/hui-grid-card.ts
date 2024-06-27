@@ -103,6 +103,9 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
           grid-row: unset;
           grid-column: unset;
         }
+        #root > hui-card {
+          display: block;
+        }
       `,
     ];
   }
