@@ -41,6 +41,7 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     element.hass = this.hass;
     element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 
