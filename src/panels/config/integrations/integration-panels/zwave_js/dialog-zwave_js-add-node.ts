@@ -205,14 +205,13 @@ class DialogZWaveJSAddNode extends LitElement {
                     Search device
                   </mwc-button>`
               : this._status === "qr_scan"
-                ? html`${this._error
-                      ? html`<ha-alert alert-type="error"
-                          >${this._error}</ha-alert
-                        >`
-                      : ""}
-                    <ha-qr-scanner
+                ? html` <ha-qr-scanner
+                      .hass=${this.hass}
                       .localize=${this.hass.localize}
+                      .error=${this._error}
                       @qr-code-scanned=${this._qrCodeScanned}
+                      @qr-code-error=${this._qrCodeError}
+                      @qr-code-closed=${this._startOver}
                     ></ha-qr-scanner>
                     <mwc-button
                       slot="secondaryAction"
@@ -361,7 +360,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                   </p>
                                 </div>
                                 ${this._supportsSmartStart
-                                  ? html` <div class="outline">
+                                  ? html`<div class="outline">
                                       <h2>
                                         ${this.hass.localize(
                                           "ui.panel.config.zwave_js.add_node.qr_code"
@@ -498,9 +497,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                             </ha-alert>`
                                           : ""}
                                         <a
-                                          href=${`/config/devices/device/${
-                                            this._device?.id
-                                          }`}
+                                          href=${`/config/devices/device/${this._device?.id}`}
                                         >
                                           <mwc-button>
                                             ${this.hass.localize(
@@ -597,6 +594,10 @@ class DialogZWaveJSAddNode extends LitElement {
       return;
     }
     this._handleQrCodeScanned(ev.detail.value);
+  }
+
+  private _qrCodeError(ev: CustomEvent): void {
+    this._error = ev.detail.message;
   }
 
   private async _handleQrCodeScanned(qrCodeString: string): Promise<void> {
