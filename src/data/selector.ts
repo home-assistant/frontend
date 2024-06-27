@@ -696,7 +696,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -713,7 +713,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
       return false;
     }
   }
