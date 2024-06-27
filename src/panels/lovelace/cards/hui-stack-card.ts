@@ -108,6 +108,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         --ha-card-border-width: var(--restore-card-border-width);
         --ha-card-box-shadow: var(--restore-card-border-shadow);
       }
+      hui-card {
+        display: contents;
+      }
     `;
   }
 }
