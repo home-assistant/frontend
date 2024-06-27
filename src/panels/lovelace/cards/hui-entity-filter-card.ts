@@ -249,7 +249,7 @@ export class HuiEntityFilterCard
     element.hass = this.hass;
     element.preview = this.preview;
     element.config = cardConfig;
-    element.build();
+    element.load();
     return element;
   }
 }

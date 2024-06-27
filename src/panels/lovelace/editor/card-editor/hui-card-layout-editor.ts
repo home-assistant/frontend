@@ -146,7 +146,7 @@ export class HuiCardLayoutEditor extends LitElement {
         this._defaultLayoutOptions =
           this._cardElement?.getElementLayoutOptions();
       });
-      this._cardElement.build();
+      this._cardElement.load();
       this._defaultLayoutOptions = this._cardElement.getElementLayoutOptions();
     } catch (err) {
       // eslint-disable-next-line no-console

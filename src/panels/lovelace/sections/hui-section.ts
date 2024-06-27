@@ -64,7 +64,7 @@ export class HuiSection extends ReactiveElement {
       ev.stopPropagation();
       this._cards = [...this._cards];
     });
-    element.build();
+    element.load();
     return element;
   }
 

@@ -31,11 +31,11 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  public build() {
+  public load() {
     if (!this.config) {
       throw new Error("Cannot build card without config");
     }
-    this._buildElement(this.config);
+    this._loadElement(this.config);
   }
 
   private _element?: LovelaceCard;
@@ -81,43 +81,39 @@ export class HuiCard extends ReactiveElement {
     return this._element?.getLayoutOptions?.() ?? {};
   }
 
-  private _createElement(config: LovelaceCardConfig) {
-    const element = createCardElement(config);
+  private _loadElement(config: LovelaceCardConfig) {
+    this._element = createCardElement(config);
     if (this.hass) {
-      element.hass = this.hass;
+      this._element.hass = this.hass;
     }
-    element.preview = this.preview;
+    this._element.preview = this.preview;
     // For backwards compatibility
-    (element as any).editMode = this.preview;
+    (this._element as any).editMode = this.preview;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
-    element.addEventListener("card-visibility-changed", (ev: Event) => {
+    this._element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
       this._updateVisibility();
     });
-    element.addEventListener(
+    this._element.addEventListener(
       "ll-upgrade",
       (ev: Event) => {
         ev.stopPropagation();
-        element.hass = this.hass;
+        if (this.hass) {
+          this._element!.hass = this.hass;
+        }
         fireEvent(this, "card-updated");
       },
       { once: true }
     );
-    element.addEventListener(
+    this._element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
         ev.stopPropagation();
-        this._buildElement(config);
+        this._loadElement(config);
         fireEvent(this, "card-updated");
       },
       { once: true }
     );
-    return element;
-  }
-
-  private _buildElement(config: LovelaceCardConfig) {
-    this._element = this._createElement(config);
-
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
@@ -128,7 +124,7 @@ export class HuiCard extends ReactiveElement {
     super.willUpdate(changedProps);
 
     if (!this._element) {
-      this.build();
+      this.load();
     }
   }
 
@@ -141,7 +137,7 @@ export class HuiCard extends ReactiveElement {
         if (this.config !== oldConfig && this.config) {
           const typeChanged = this.config?.type !== oldConfig?.type;
           if (typeChanged) {
-            this._buildElement(this.config);
+            this._loadElement(this.config);
           } else {
             this._element?.setConfig(this.config);
             fireEvent(this, "card-updated");
@@ -154,7 +150,7 @@ export class HuiCard extends ReactiveElement {
             this._element.hass = this.hass;
           }
         } catch (e: any) {
-          this._buildElement(createErrorCardConfig(e.message, null));
+          this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
       if (changedProps.has("preview")) {
@@ -163,7 +159,7 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
         } catch (e: any) {
-          this._buildElement(createErrorCardConfig(e.message, null));
+          this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
       if (changedProps.has("isPanel")) {
