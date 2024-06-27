@@ -124,27 +124,30 @@ export class HuiCard extends ReactiveElement {
     this._updateVisibility();
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
-    super.update(changedProps);
+  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+    super.willUpdate(changedProps);
 
     if (!this._element) {
       this.build();
     }
+  }
 
-    if (changedProps.has("config")) {
-      const oldConfig = changedProps.get("config");
-      if (this.config && oldConfig && this.config !== oldConfig) {
-        const typeChanged = this.config.type !== oldConfig.type;
-        if (typeChanged) {
-          this._buildElement(this.config);
-        } else {
-          this._element?.setConfig(this.config);
-          fireEvent(this, "card-updated");
-        }
-      }
-    }
+  protected update(changedProps: PropertyValues<typeof this>) {
+    super.update(changedProps);
 
     if (this._element) {
+      if (changedProps.has("config") && this.hasUpdated) {
+        const oldConfig = changedProps.get("config");
+        if (this.config !== oldConfig && this.config) {
+          const typeChanged = this.config?.type !== oldConfig?.type;
+          if (typeChanged) {
+            this._buildElement(this.config);
+          } else {
+            this._element?.setConfig(this.config);
+            fireEvent(this, "card-updated");
+          }
+        }
+      }
       if (changedProps.has("hass")) {
         try {
           if (this.hass) {
