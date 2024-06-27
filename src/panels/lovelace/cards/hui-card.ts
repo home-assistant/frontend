@@ -1,4 +1,4 @@
-import { PropertyValueMap, PropertyValues, ReactiveElement } from "lit";
+import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
@@ -23,21 +23,17 @@ declare global {
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean }) public preview = false;
 
   @property({ type: Boolean }) public isPanel = false;
 
+  private _config?: LovelaceCardConfig;
+
+  private _hass?: HomeAssistant;
+
   set config(config: LovelaceCardConfig | undefined) {
-    if (!config) return;
-    if (config.type !== this._config?.type) {
-      this._buildElement(config);
-    } else if (config !== this.config) {
-      this._element?.setConfig(config);
-      fireEvent(this, "card-updated");
-    }
     this._config = config;
+    this._init();
   }
 
   @property({ attribute: false })
@@ -45,7 +41,22 @@ export class HuiCard extends ReactiveElement {
     return this._config;
   }
 
-  private _config?: LovelaceCardConfig;
+  set hass(hass: HomeAssistant | undefined) {
+    this._hass = hass;
+    this._init();
+  }
+
+  @property({ attribute: false })
+  public get hass() {
+    return this._hass;
+  }
+
+  private _init() {
+    if (!this.config || !this.hass) {
+      return;
+    }
+    this._buildElement(this.config);
+  }
 
   private _element?: LovelaceCard;
 
@@ -135,6 +146,18 @@ export class HuiCard extends ReactiveElement {
   protected update(changedProps: PropertyValues<typeof this>) {
     super.update(changedProps);
 
+    if (changedProps.has("config") && this.config) {
+      const oldConfig = changedProps.get("config");
+      if (oldConfig?.type !== this.config.type) {
+        this._buildElement(this.config);
+      } else if (oldConfig !== this.config) {
+        if (this._element) {
+          this._element.setConfig(this.config);
+          fireEvent(this, "card-updated");
+        }
+      }
+    }
+
     if (this._element) {
       if (changedProps.has("hass")) {
         try {
@@ -156,11 +179,7 @@ export class HuiCard extends ReactiveElement {
         this._element.isPanel = this.isPanel;
       }
     }
-  }
 
-  protected willUpdate(
-    changedProps: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
     if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
