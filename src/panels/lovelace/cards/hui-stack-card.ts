@@ -56,7 +56,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           card.hass = this.hass;
         });
       }
-      if (changedProperties.has("editMode")) {
+      if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
           card.preview = this.preview;
         });
@@ -69,6 +69,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     element.hass = this.hass;
     element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 
