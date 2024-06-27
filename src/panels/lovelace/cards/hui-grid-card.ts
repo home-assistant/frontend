@@ -92,6 +92,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
         }
 
         :host([square]) #root > *:not([hidden]) {
+          display: block;
           grid-row: 1 / 1;
           grid-column: 1 / 1;
         }
@@ -102,9 +103,6 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
 	       */
           grid-row: unset;
           grid-column: unset;
-        }
-        #root > hui-card {
-          display: block;
         }
       `,
     ];
