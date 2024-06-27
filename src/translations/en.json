@@ -5987,7 +5987,8 @@
               "state_content": "State content",
               "state_content_options": {
                 "state": "State",
-                "last-changed": "Last changed"
+                "last-changed": "Last changed",
+                "last-updated": "Last updated"
               }
             },
             "vertical-stack": {
