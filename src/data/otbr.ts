@@ -9,9 +9,7 @@ export interface OTBRInfo {
   url: string;
 }
 
-export type OTBRInfoDict = {
-  [key: string]: OTBRInfo;
-};
+export type OTBRInfoDict = Record<string, OTBRInfo>;
 
 export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfoDict> =>
   hass.callWS({
