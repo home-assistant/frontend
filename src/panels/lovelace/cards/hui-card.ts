@@ -27,33 +27,13 @@ export class HuiCard extends ReactiveElement {
 
   @property({ type: Boolean }) public isPanel = false;
 
-  private _config?: LovelaceCardConfig;
+  @property({ attribute: false }) public config?: LovelaceCardConfig;
 
-  private _hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  set config(config: LovelaceCardConfig | undefined) {
-    this._config = config;
-    this._init();
-  }
-
-  @property({ attribute: false })
-  public get config() {
-    return this._config;
-  }
-
-  set hass(hass: HomeAssistant | undefined) {
-    this._hass = hass;
-    this._init();
-  }
-
-  @property({ attribute: false })
-  public get hass() {
-    return this._hass;
-  }
-
-  private _init() {
-    if (!this.config || !this.hass) {
-      return;
+  public build() {
+    if (!this.config) {
+      throw new Error("Cannot build card without config");
     }
     this._buildElement(this.config);
   }
@@ -103,7 +83,9 @@ export class HuiCard extends ReactiveElement {
 
   private _createElement(config: LovelaceCardConfig) {
     const element = createCardElement(config);
-    element.hass = this.hass;
+    if (this.hass) {
+      element.hass = this.hass;
+    }
     element.preview = this.preview;
     // For backwards compatibility
     (element as any).editMode = this.preview;
@@ -117,7 +99,6 @@ export class HuiCard extends ReactiveElement {
       (ev: Event) => {
         ev.stopPropagation();
         element.hass = this.hass;
-        element.preview = this.preview;
         fireEvent(this, "card-updated");
       },
       { once: true }
@@ -146,13 +127,17 @@ export class HuiCard extends ReactiveElement {
   protected update(changedProps: PropertyValues<typeof this>) {
     super.update(changedProps);
 
-    if (changedProps.has("config") && this.config) {
+    if (!this._element) {
+      this.build();
+    }
+
+    if (changedProps.has("config")) {
       const oldConfig = changedProps.get("config");
-      if (oldConfig?.type !== this.config.type) {
-        this._buildElement(this.config);
-      } else if (oldConfig !== this.config) {
-        if (this._element) {
-          this._element.setConfig(this.config);
+      if (this.config && oldConfig && this.config !== oldConfig) {
+        if (this.config.type !== oldConfig.type) {
+          this._buildElement(this.config);
+        } else {
+          this._element?.setConfig(this.config);
           fireEvent(this, "card-updated");
         }
       }
@@ -161,7 +146,9 @@ export class HuiCard extends ReactiveElement {
     if (this._element) {
       if (changedProps.has("hass")) {
         try {
-          this._element.hass = this.hass;
+          if (this.hass) {
+            this._element.hass = this.hass;
+          }
         } catch (e: any) {
           this._buildElement(createErrorCardConfig(e.message, null));
         }

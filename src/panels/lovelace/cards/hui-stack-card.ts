@@ -56,9 +56,11 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           card.hass = this.hass;
         });
       }
-      if (changedProperties.has("editMode")) {
+      if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
-          card.preview = this.preview;
+          if (this.preview !== undefined) {
+            card.preview = this.preview;
+          }
         });
       }
     }
@@ -67,8 +69,8 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.preview;
     element.config = cardConfig;
+    element.build();
     return element;
   }
 

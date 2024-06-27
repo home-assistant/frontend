@@ -82,6 +82,7 @@ export class HUIView extends ReactiveElement {
       ev.stopPropagation();
       this._cards = [...this._cards];
     });
+    element.build();
     return element;
   }
 
