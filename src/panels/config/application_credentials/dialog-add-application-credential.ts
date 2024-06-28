@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiOpenInNew } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
@@ -11,6 +10,7 @@ import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
 import "../../../components/ha-textfield";
+import "../../../components/ha-button";
 import {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -231,10 +231,10 @@ export class DialogAddApplicationCredential extends LitElement {
               </div>
             `
           : html`
-              <mwc-button slot="primaryAction" @click=${this._abortDialog}>
+              <ha-button slot="secondaryAction" @click=${this._abortDialog}>
                 ${this.hass.localize("ui.common.cancel")}
-              </mwc-button>
-              <mwc-button
+              </ha-button>
+              <ha-button
                 slot="primaryAction"
                 .disabled=${!this._domain ||
                 !this._clientId ||
@@ -244,7 +244,7 @@ export class DialogAddApplicationCredential extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.application_credentials.editor.add"
                 )}
-              </mwc-button>
+              </ha-button>
             `}
       </ha-dialog>
     `;
