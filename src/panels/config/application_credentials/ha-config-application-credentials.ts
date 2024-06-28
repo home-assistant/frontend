@@ -107,7 +107,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                   path: mdiDelete,
                   warning: true,
                   label: this.hass.localize("ui.common.delete"),
-                  action: () => this._removeCredential(credential),
+                  action: () => this._deleteCredential(credential),
                 },
               ]}
             >
@@ -160,7 +160,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         <div class="header-btns" slot="selection-bar">
           ${!this.narrow
             ? html`
-                <mwc-button @click=${this._removeSelected} class="warning"
+                <mwc-button @click=${this._deleteSelected} class="warning"
                   >${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.remove_selected.button"
                   )}</mwc-button
@@ -170,7 +170,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 <ha-icon-button
                   class="warning"
                   id="remove-btn"
-                  @click=${this._removeSelected}
+                  @click=${this._deleteSelected}
                   .path=${mdiDelete}
                   .label=${this.hass.localize("ui.common.remove")}
                 ></ha-icon-button>
@@ -202,7 +202,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     this._selected = ev.detail.value;
   }
 
-  private _removeCredential = async (credential) => {
+  private _deleteCredential = async (credential) => {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.application_credentials.picker.remove.confirm_title`
@@ -218,9 +218,10 @@ export class HaConfigApplicationCredentials extends LitElement {
       return;
     }
     await deleteApplicationCredential(this.hass, credential.id);
+    await this._fetchApplicationCredentials();
   };
 
-  private _removeSelected() {
+  private _deleteSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.application_credentials.picker.remove_selected.confirm_title`,
@@ -252,7 +253,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           return;
         }
         this._dataTable.clearSelection();
-        this._fetchApplicationCredentials();
+        await this._fetchApplicationCredentials();
       },
     });
   }
