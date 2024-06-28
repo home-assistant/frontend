@@ -45,9 +45,6 @@ export class HuiCard extends ReactiveElement {
   private _listeners: MediaQueriesListener[] = [];
 
   protected createRenderRoot() {
-    const style = document.createElement("style");
-    style.textContent = `hui-card { display: contents }`;
-    this.append(style);
     return this;
   }
 
