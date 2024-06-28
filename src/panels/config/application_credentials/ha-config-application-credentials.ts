@@ -68,6 +68,14 @@ export class HaConfigApplicationCredentials extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @storage({
+    storage: "sessionStorage",
+    key: "application-credentials-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<ApplicationCredential> = {
@@ -76,6 +84,7 @@ export class HaConfigApplicationCredentials extends LitElement {
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
           sortable: true,
+          filterable: true,
           direction: "asc",
           grows: true,
         },
@@ -83,6 +92,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.client_id"
           ),
+          filterable: true,
           width: "30%",
           hidden: narrow,
         },
@@ -91,6 +101,7 @@ export class HaConfigApplicationCredentials extends LitElement {
             "ui.panel.config.application_credentials.picker.headers.application"
           ),
           sortable: true,
+          filterable: true,
           width: "30%",
           direction: "asc",
         },
@@ -156,6 +167,8 @@ export class HaConfigApplicationCredentials extends LitElement {
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
       >
         <div class="header-btns" slot="selection-bar">
           ${!this.narrow
@@ -288,6 +301,10 @@ export class HaConfigApplicationCredentials extends LitElement {
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {
