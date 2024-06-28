@@ -31,6 +31,8 @@ export class HuiCard extends ReactiveElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  private _elementConfig?: LovelaceCardConfig;
+
   public load() {
     if (!this.config) {
       throw new Error("Cannot build card without config");
@@ -43,9 +45,6 @@ export class HuiCard extends ReactiveElement {
   private _listeners: MediaQueriesListener[] = [];
 
   protected createRenderRoot() {
-    const style = document.createElement("style");
-    style.textContent = `hui-card { display: contents }`;
-    this.append(style);
     return this;
   }
 
@@ -84,8 +83,18 @@ export class HuiCard extends ReactiveElement {
     return this._element?.getLayoutOptions?.() ?? {};
   }
 
+  private _updateElement(config: LovelaceCardConfig) {
+    if (!this._element) {
+      return;
+    }
+    this._element.setConfig(config);
+    this._elementConfig = config;
+    fireEvent(this, "card-updated");
+  }
+
   private _loadElement(config: LovelaceCardConfig) {
     this._element = createCardElement(config);
+    this._elementConfig = config;
     if (this.hass) {
       this._element.hass = this.hass;
     }
@@ -135,15 +144,14 @@ export class HuiCard extends ReactiveElement {
     super.update(changedProps);
 
     if (this._element) {
-      if (changedProps.has("config") && this.hasUpdated) {
-        const oldConfig = changedProps.get("config");
-        if (this.config !== oldConfig && this.config) {
-          const typeChanged = this.config?.type !== oldConfig?.type;
+      if (changedProps.has("config")) {
+        const elementConfig = this._elementConfig;
+        if (this.config !== elementConfig && this.config) {
+          const typeChanged = this.config?.type !== elementConfig?.type;
           if (typeChanged) {
             this._loadElement(this.config);
           } else {
-            this._element?.setConfig(this.config);
-            fireEvent(this, "card-updated");
+            this._updateElement(this.config);
           }
         }
       }

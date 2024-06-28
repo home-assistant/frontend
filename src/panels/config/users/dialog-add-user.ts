@@ -290,6 +290,11 @@ export class DialogAddUser extends LitElement {
     }
 
     user.username = this._username;
+    user.credentials = [
+      {
+        type: "homeassistant",
+      },
+    ];
     this._params!.userAddedCallback(user);
     this._close();
   }
