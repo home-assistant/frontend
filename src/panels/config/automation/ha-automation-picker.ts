@@ -265,7 +265,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
-          label: localize("ui.panel.config.automation.picker.headers.state"),
+          label: localize("ui.panel.config.automation.picker.headers.icon"),
           type: "icon",
           moveable: false,
           showNarrow: true,

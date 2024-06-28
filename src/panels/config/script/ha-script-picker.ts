@@ -252,7 +252,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           title: "",
           showNarrow: true,
           moveable: false,
-          label: localize("ui.panel.config.script.picker.headers.state"),
+          label: localize("ui.panel.config.script.picker.headers.icon"),
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
