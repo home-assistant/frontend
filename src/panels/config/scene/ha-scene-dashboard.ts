@@ -243,7 +243,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
-          label: localize("ui.panel.config.scene.picker.headers.state"),
+          label: localize("ui.panel.config.scene.picker.headers.icon"),
           moveable: false,
           showNarrow: true,
           type: "icon",
