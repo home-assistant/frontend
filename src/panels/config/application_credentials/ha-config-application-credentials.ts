@@ -75,6 +75,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
+          showNarrow: true,
           sortable: true,
           direction: "asc",
           grows: true,
@@ -90,6 +91,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.application"
           ),
+          showNarrow: true,
           sortable: true,
           width: "30%",
           direction: "asc",
@@ -338,6 +340,9 @@ export class HaConfigApplicationCredentials extends LitElement {
         margin-left: 8px;
         margin-inline-start: 8px;
         margin-inline-end: initial;
+      }
+      .warning {
+        --mdc-theme-primary: var(--error-color);
       }
     `;
   }
