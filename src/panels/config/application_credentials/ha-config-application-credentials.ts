@@ -75,7 +75,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
-          showNarrow: true,
+          main: true,
           sortable: true,
           direction: "asc",
           grows: true,
@@ -91,7 +91,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.application"
           ),
-          showNarrow: true,
           sortable: true,
           width: "30%",
           direction: "asc",
@@ -100,6 +99,9 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          hideable: false,
+          moveable: false,
           template: (credential) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
