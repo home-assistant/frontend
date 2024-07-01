@@ -30,6 +30,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
             entity: {
               filter: [
                 { domain: "input_datetime" },
+                { domain: "time" },
                 { domain: "sensor", device_class: "timestamp" },
               ],
             },
@@ -84,7 +85,9 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
     const inputMode =
       this._inputMode ??
-      (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
+      (at?.startsWith("input_datetime.") ||
+        at?.startsWith("time.") ||
+        at?.startsWith("sensor."));
 
     const schema = this._schema(this.hass.localize, inputMode);
 
