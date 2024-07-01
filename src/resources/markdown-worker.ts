@@ -42,6 +42,13 @@ const renderMarkdown = async (
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
       "ha-alert": ["alert-type", "title"],
+      "ha-hls-player": [
+        "controls",
+        "url",
+        "autoplay",
+        "playsinline",
+        "posterUrl",
+      ],
       "ha-qr-code": [
         "data",
         "scale",

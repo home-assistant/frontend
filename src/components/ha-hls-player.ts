@@ -150,7 +150,15 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      playlist_url = new URL(match[2], this.url).href;
+      // In case we arrive here with a relative URL, we need to provide a valid
+      // base/absolute URL to avoid the URL() constructor throwing an error.
+      let base_url: string;
+      try {
+        base_url = new URL(this.url).href;
+      } catch (TypeError) {
+        base_url = new URL(this.url, window.location.href).href;
+      }
+      playlist_url = new URL(match[2], base_url).href;
     } else {
       playlist_url = this.url;
     }

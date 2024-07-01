@@ -108,12 +108,16 @@ class HaMarkdownElement extends ReactiveElement {
         }
       } else if (
         node instanceof HTMLElement &&
-        ["ha-alert", "ha-qr-code", "ha-icon", "ha-svg-icon"].includes(
-          node.localName
-        )
+        [
+          "ha-alert",
+          "ha-qr-code",
+          "ha-icon",
+          "ha-svg-icon",
+          "ha-hls-player",
+        ].includes(node.localName)
       ) {
         import(
-          /* webpackInclude: /(ha-alert)|(ha-qr-code)|(ha-icon)|(ha-svg-icon)/ */ `./${node.localName}`
+          /* webpackInclude: /(ha-alert)|(ha-qr-code)|(ha-icon)|(ha-svg-icon)|(ha-hls-player)/ */ `./${node.localName}`
         );
       }
     }
