@@ -9053,7 +9053,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:12.0.2"
     memoize-one: "npm:6.0.0"
-    mocha: "npm:10.5.0"
+    mocha: "npm:10.5.2"
     node-vibrant: "npm:3.2.1-alpha.1"
     object-hash: "npm:3.0.0"
     open: "npm:10.1.0"
@@ -11152,9 +11152,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.5.0":
-  version: 10.5.0
-  resolution: "mocha@npm:10.5.0"
+"mocha@npm:10.5.2":
+  version: 10.5.2
+  resolution: "mocha@npm:10.5.2"
   dependencies:
     ansi-colors: "npm:4.1.1"
     browser-stdout: "npm:1.3.1"
@@ -11179,7 +11179,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: 10/64f5aace4a5b7eed23d8bcfaf1eacdaafbffdc5e3ee977ecb32ace8f91733b1520b8342ce02d7101e8d7b8bd4008e055e4f4f63a0e4a3da81baf0e41566a07ab
+  checksum: 10/5d14c91597d2eaa86b2b900b53babcfa351b9efdeb8d84fd6f953a7d270bf7f387718f25cbd31dd7b72c626001c56ef3caf8aeb87f04fa0ea8e499db5f7905bf
   languageName: node
   linkType: hard
 
