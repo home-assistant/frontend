@@ -43,13 +43,9 @@ export class HaGridSizeEditor extends LitElement {
 
   protected render() {
     const disabledColumns =
-      this.columnMin !== undefined &&
-      this.columnMin !== undefined &&
-      this.columnMin === this.columnMax;
+      this.columnMin !== undefined && this.columnMin === this.columnMax;
     const disabledRows =
-      this.rowMin !== undefined &&
-      this.rowMin !== undefined &&
-      this.rowMin === this.rowMax;
+      this.rowMin !== undefined && this.rowMin === this.rowMax;
     return html`
       <div class="grid">
         <ha-grid-layout-slider
