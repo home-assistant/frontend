@@ -1,5 +1,6 @@
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
   assert,
@@ -15,16 +16,27 @@ import "../../../../components/ha-form/ha-form";
 import {
   DEFAULT_ASPECT_RATIO,
   DEVICE_CLASSES,
+  TOGGLE_DOMAINS,
+  getDevicesInArea,
+  getEntitiesByDomain,
 } from "../../cards/hui-area-card";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { AreaCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import { SelectOption } from "../../../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -42,7 +54,7 @@ const cardConfigStruct = assign(
 
 @customElement("hui-area-card-editor")
 export class HuiAreaCardEditor
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -50,6 +62,10 @@ export class HuiAreaCardEditor
   @state() private _config?: AreaCardConfig;
 
   @state() private _numericDeviceClasses?: string[];
+
+  @state() private _entities?: EntityRegistryEntry[];
+
+  @state() private _devices?: DeviceRegistryEntry[];
 
   private _schema = memoizeOne(
     (
@@ -110,41 +126,31 @@ export class HuiAreaCardEditor
       ] as const
   );
 
-  private _binaryClassesForArea = memoizeOne((area: string): string[] =>
-    this._classesForArea(area, "binary_sensor")
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass!.connection, (devices) => {
+        this._devices = devices;
+      }),
+      subscribeEntityRegistry(this.hass!.connection, (entries) => {
+        this._entities = entries;
+      }),
+    ];
+  }
+
+  private _binaryClassesForArea = memoizeOne(
+    (entities): string[] =>
+      entities.binary_sensor
+        ?.map((e) => e.attributes.device_class)
+        .filter((deviceClass) => deviceClass !== undefined) || []
   );
 
   private _sensorClassesForArea = memoizeOne(
-    (area: string, numericDeviceClasses?: string[]): string[] =>
-      this._classesForArea(area, "sensor", numericDeviceClasses)
+    (numericDeviceClasses: string[], entities): string[] =>
+      entities.sensor
+        ?.map((e) => e.attributes.device_class)
+        .filter((deviceClass) => numericDeviceClasses.includes(deviceClass)) ||
+      []
   );
-
-  private _classesForArea(
-    area: string,
-    domain: "sensor" | "binary_sensor",
-    numericDeviceClasses?: string[] | undefined
-  ): string[] {
-    const entities = Object.values(this.hass!.entities).filter(
-      (e) =>
-        computeDomain(e.entity_id) === domain &&
-        !e.entity_category &&
-        !e.hidden &&
-        (e.area_id === area ||
-          (e.device_id && this.hass!.devices[e.device_id]?.area_id === area))
-    );
-
-    const classes = entities
-      .map((e) => this.hass!.states[e.entity_id]?.attributes.device_class || "")
-      .filter(
-        (c) =>
-          c &&
-          (domain !== "sensor" ||
-            !numericDeviceClasses ||
-            numericDeviceClasses.includes(c))
-      );
-
-    return [...new Set(classes)];
-  }
 
   private _buildBinaryOptions = memoizeOne(
     (possibleClasses: string[], currentClasses: string[]): SelectOption[] =>
@@ -191,16 +197,23 @@ export class HuiAreaCardEditor
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this._entities) {
       return nothing;
     }
 
-    const possibleBinaryClasses = this._binaryClassesForArea(
-      this._config.area || ""
+    const _entities = getEntitiesByDomain(
+      this._config!.area,
+      getDevicesInArea(this._config!.area, this._devices!),
+      this._entities!,
+      undefined,
+      this.hass.states
     );
+
+    const possibleBinaryClasses = this._binaryClassesForArea(_entities);
+
     const possibleSensorClasses = this._sensorClassesForArea(
-      this._config.area || "",
-      this._numericDeviceClasses
+      this._numericDeviceClasses || [],
+      _entities
     );
     const binarySelectOptions = this._buildBinaryOptions(
       possibleBinaryClasses,
@@ -224,6 +237,63 @@ export class HuiAreaCardEditor
       ...this._config,
     };
 
+    const observeList: TemplateResult[] = [];
+    data.alert_classes.forEach((alertClass) => {
+      const list = (_entities.binary_sensor || [])
+        .filter((e) => alertClass === e.attributes.device_class)
+        .map((e) => html`<li>${e.entity_id}</li>`);
+      if (!list.length) {
+        return;
+      }
+      observeList.push(
+        html`<h4>
+            ${this.hass!.localize(
+              `component.binary_sensor.entity_component.${alertClass}.name`
+            ) || alertClass}:
+          </h4>
+          <ul>
+            ${list}
+          </ul>`
+      );
+    });
+    data.sensor_classes.forEach((sensorClass) => {
+      const list = (_entities.sensor || [])
+        .filter((e) => sensorClass === e.attributes.device_class)
+        .map((e) => html`<li>${e.entity_id}</li>`);
+      if (!list.length) {
+        return;
+      }
+      observeList.push(
+        html`<h4>
+            ${this.hass!.localize(
+              `component.sensor.entity_component.${sensorClass}.name`
+            ) || sensorClass}:
+          </h4>
+          <ul>
+            ${list}
+          </ul>`
+      );
+    });
+
+    const controlList: TemplateResult[] = [];
+    Object.keys(_entities)
+      .filter((domain) => TOGGLE_DOMAINS.includes(domain))
+      .forEach((domain) => {
+        const list = _entities[domain].map(
+          (e) => html`<li>${e.entity_id}</li>`
+        );
+        controlList.push(
+          html`<h4>
+              ${this.hass!.localize(
+                `component.${domain}.entity_component._.name`
+              ) || domain}:
+            </h4>
+            <ul>
+              ${list}
+            </ul>`
+        );
+      });
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -232,6 +302,18 @@ export class HuiAreaCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.area.observed_entities"
+        )}:
+      </h3>
+      ${observeList}
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.area.controlled_entities"
+        )}:
+      </h3>
+      ${controlList}
     `;
   }
 
