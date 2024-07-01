@@ -155,7 +155,7 @@ class HaHLSPlayer extends LitElement {
       let base_url: string;
       try {
         base_url = new URL(this.url).href;
-      } catch (TypeError) {
+      } catch (error) {
         base_url = new URL(this.url, window.location.href).href;
       }
       playlist_url = new URL(match[2], base_url).href;
