@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { ChartOptions } from "chart.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -13,10 +11,11 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-list-new";
+import "../../../components/ha-list-item-new";
 import {
   ConfigEntry,
   subscribeConfigEntries,
@@ -304,26 +303,24 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   ${documentationURL
                     ? html`
-                        <mwc-list>
-                          <ha-clickable-list-item
-                            .href=${documentationURL}
-                            openNewTab
-                            twoline
-                            hasMeta
+                        <ha-list-new>
+                          <ha-list-item-new
+                            href=${documentationURL}
+                            target="_blank"
                           >
-                            <span
+                            <span slot="headline"
                               >${this.hass.localize(
                                 "ui.panel.config.hardware.documentation"
                               )}</span
                             >
-                            <span slot="secondary"
+                            <span slot="supporting-text"
                               >${this.hass.localize(
                                 "ui.panel.config.hardware.documentation_description"
                               )}</span
                             >
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-clickable-list-item>
-                        </mwc-list>
+                            <ha-icon-next slot="end"></ha-icon-next>
+                          </ha-list-item-new>
+                        </ha-list-new>
                       `
                     : ""}
                   ${boardConfigEntries.length ||
