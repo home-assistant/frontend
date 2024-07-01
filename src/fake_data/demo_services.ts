@@ -726,32 +726,35 @@ export const demoServices: HassServices = {
   },
   device_tracker: {
     see: {
-      description: "Control tracked device.",
+      description: "Records a seen tracked device.",
       fields: {
         mac: {
-          description: "MAC address of device",
+          description: "MAC address of device.",
           example: "FF:FF:FF:FF:FF:FF",
         },
         dev_id: {
-          description: "Id of device (find id in known_devices.yaml).",
+          description: "ID of device.",
           example: "phonedave",
         },
-        host_name: { description: "Hostname of device", example: "Dave" },
+        host_name: { description: "Hostname of the device.", example: "Dave" },
         location_name: {
           description:
-            "Name of location where device is located (not_home is away).",
+            "Name of the location where the device is located. The options are: `home`, `not_home`, or the name of the zone.",
           example: "home",
         },
         gps: {
           description:
-            "GPS coordinates where device is located (latitude, longitude).",
+            "GPS coordinates where the device is located, specified by latitude and longitude.",
           example: "[51.509802, -0.086692]",
         },
         gps_accuracy: {
-          description: "Accuracy of GPS coordinates.",
+          description: "Accuracy of the GPS coordinates.",
           example: "80",
         },
-        battery: { description: "Battery level of device.", example: "100" },
+        battery: {
+          description: "Battery level of the device.",
+          example: "100",
+        },
       },
     },
   },
