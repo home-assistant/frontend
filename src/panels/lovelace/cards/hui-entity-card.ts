@@ -36,7 +36,11 @@ import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { LovelaceCard, LovelaceHeaderFooter } from "../types";
+import {
+  LovelaceCard,
+  LovelaceHeaderFooter,
+  LovelaceLayoutOptions,
+} from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 
@@ -239,6 +243,20 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    if (this._config?.footer) {
+      return {
+        grid_columns: 2,
+      };
+    }
+    return {
+      grid_columns: 2,
+      grid_rows: 2,
+      grid_min_rows: 2,
+      grid_max_rows: 2,
+    };
   }
 
   static get styles(): CSSResultGroup {

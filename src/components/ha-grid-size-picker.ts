@@ -42,6 +42,14 @@ export class HaGridSizeEditor extends LitElement {
   }
 
   protected render() {
+    const disabledColumns =
+      this.columnMin !== undefined &&
+      this.columnMin !== undefined &&
+      this.columnMin === this.columnMax;
+    const disabledRows =
+      this.rowMin !== undefined &&
+      this.rowMin !== undefined &&
+      this.rowMin === this.rowMax;
     return html`
       <div class="grid">
         <ha-grid-layout-slider
@@ -55,6 +63,7 @@ export class HaGridSizeEditor extends LitElement {
           .value=${this.value?.columns}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
+          .disabled=${disabledColumns}
         ></ha-grid-layout-slider>
         <ha-grid-layout-slider
           aria-label=${this.hass.localize(
@@ -68,6 +77,7 @@ export class HaGridSizeEditor extends LitElement {
           .value=${this.value?.rows}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
+          .disabled=${disabledRows}
         ></ha-grid-layout-slider>
         ${!this.isDefault
           ? html`
