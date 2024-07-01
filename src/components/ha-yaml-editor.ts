@@ -107,6 +107,7 @@ export class HaYamlEditor extends LitElement {
                 "ui.components.yaml-editor.copy_to_clipboard"
               )}
             </mwc-button>
+            <slot name="extra-actions"></slot>
           </div>`
         : nothing}
     `;
