@@ -81,6 +81,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
 
     const maxColumnsCount = this._config?.max_columns;
+    const minColumnWidth = this._config?.min_column_width;
 
     return html`
       ${this.badges.length > 0
@@ -97,6 +98,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
+            "--column-min-width": `${minColumnWidth}px`,
             "--max-columns-count": maxColumnsCount,
             "--total-count": totalCount,
           })}
