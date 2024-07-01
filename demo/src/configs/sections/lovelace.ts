@@ -10,11 +10,12 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
       icon: "mdi:home-assistant",
       sections: [
         {
-          title: "Welcome 👋",
-          cards: [{ type: "custom:ha-demo-card" }],
-        },
-        {
+          // @ts-expect-error
           cards: [
+            document.location.search !== "?frontpage" && {
+              title: "Welcome 👋",
+              cards: [{ type: "custom:ha-demo-card" }],
+            },
             {
               type: "tile",
               entity: "cover.living_room_garden_shutter",
@@ -65,7 +66,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               entity: "media_player.living_room_nest_mini",
               name: "Nest Mini",
             },
-          ],
+          ].filter(Boolean),
           title: "🛋️ Living room ",
         },
         {
