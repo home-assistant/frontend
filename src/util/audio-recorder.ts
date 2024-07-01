@@ -73,7 +73,7 @@ export class AudioRecorder {
     // @ts-expect-error webkitAudioContext is not recognized
     const context = new (AudioContext || webkitAudioContext)();
     this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // Syntax here must match an item of `parser.worker` in Webpack config nin
+    // Syntax here must match an item of `parser.worker` in Webpack config in
     // order for module to be parsed and a chunk to be properly created.
     await context.audioWorklet.addModule(
       /* webpackChunkName: "recorder-worklet" */
