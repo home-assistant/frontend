@@ -125,7 +125,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const grid_columns = 2;
     let grid_rows = 1;
     if (this._config?.features?.length) {
-      grid_rows += Math.ceil((this._config.features.length * 2) / 3);
+      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
+      grid_rows += featureHeight;
     }
     if (this._config?.vertical) {
       grid_rows!++;
