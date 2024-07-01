@@ -93,16 +93,5 @@
       }
     </script>
     <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
-    <script>
-      var _gaq = [["_setAccount", "UA-57927901-5"], ["_trackPageview"]];
-      (function (d, t) {
-        var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-        g.src =
-          ("https:" == location.protocol ? "//ssl" : "//www") +
-          ".google-analytics.com/ga.js";
-        s.parentNode.insertBefore(g, s);
-      })(document, "script");
-    </script>
   </body>
 </html>
