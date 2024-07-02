@@ -71,7 +71,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               entity: "media_player.living_room_nest_mini",
               name: "Nest Mini",
             },
-          ].filter(Boolean),
+          ],
           title: "🛋️ Living room ",
         },
         {
