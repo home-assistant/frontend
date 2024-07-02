@@ -27,6 +27,7 @@ export class HaTimeSelector extends LitElement {
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .required=${this.required}
+        clearable
         .helper=${this.helper}
         .label=${this.label}
         enable-second
