@@ -6,7 +6,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   views: [
     {
       type: "sections",
-      title: "Demo",
+      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
