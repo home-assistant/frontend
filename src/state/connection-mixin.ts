@@ -33,6 +33,7 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { HassBaseEl } from "./hass-base-mixin";
+import { promiseTimeout } from "../common/util/promise-timeout";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -269,6 +270,23 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeFrontendUserData(conn, "core", (userData) =>
         this._updateHass({ userData })
       );
+
+      const pingBackend = async () => {
+        if (this.hass?.connected) {
+          promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
+            if (!this.hass?.connected) {
+              return;
+            }
+
+            // eslint-disable-next-line no-console
+            console.log("Websocket died, forcing reconnect...");
+            this.hass?.connection.reconnect(true);
+          });
+        }
+        setTimeout(pingBackend, 5000);
+      };
+
+      pingBackend();
     }
 
     protected hassReconnected() {
