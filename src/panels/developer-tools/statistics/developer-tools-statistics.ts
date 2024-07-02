@@ -132,7 +132,11 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
-        title: "",
+        title: html`<mwc-button @click=${this._fixAllAutofixableIssues}>
+          ${localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.fix_all"
+          )}
+        </mwc-button>`,
         label: this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
         ),
@@ -261,6 +265,52 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       }
     });
   }
+
+  private _fixAllAutofixableIssues = async () => {
+    const validationResults = await validateStatistics(this.hass);
+    const autoFixable = new Set(["no_state", "unsupported_state_class"]);
+    const autoFixableIds = Object.entries(validationResults)
+      .filter(([, issues]) =>
+        issues.some((issue) => autoFixable.has(issue.type))
+      )
+      .map(([statistic_id]) => statistic_id);
+
+    if (autoFixableIds.length <= 0) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_not_available"
+        ),
+      });
+      return;
+    }
+
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.title"
+      ),
+      text: html`${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_1"
+        )}<br /><br />${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_2",
+          { statistic_count: autoFixableIds.length }
+        )}<br /><br />${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_3"
+        )}<br /><br />
+        ${autoFixableIds.map((i) => i).join(", ")}`,
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+      confirm: async () => {
+        await clearStatistics(this.hass, autoFixableIds);
+        autoFixableIds.forEach((statistic_id) =>
+          this._deletedStatistics.add(statistic_id)
+        );
+        this._validateStatistics();
+      },
+    });
+  };
 
   private _fixIssue = (ev) => {
     const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
