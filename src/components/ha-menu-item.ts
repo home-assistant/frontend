@@ -1,9 +1,12 @@
 import { MdMenuItem } from "@material/web/menu/menu-item";
+import type { CloseMenuEvent } from "@material/web/menu/menu";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-menu-item")
 export class HaMenuItem extends MdMenuItem {
+  @property() closeAction?: (ev: CloseMenuEvent) => void;
+
   static override styles = [
     ...super.styles,
     css`
