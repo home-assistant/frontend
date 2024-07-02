@@ -60,8 +60,7 @@
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
     <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
-      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
-      if (!isS11_12) {
+      if (isModern) {
         <% for (const entry of latestEntryJS) { %>
           import("<%= entry %>");
         <% } %>

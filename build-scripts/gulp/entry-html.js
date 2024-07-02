@@ -1,5 +1,6 @@
 // Tasks to generate entry HTML
 
+import { getUserAgentRegex } from "browserslist-useragent-regexp";
 import fs from "fs-extra";
 import gulp from "gulp";
 import { minify } from "html-minifier-terser";
@@ -17,6 +18,12 @@ const renderTemplate = (templateFile, data = {}) => {
     ...data,
     useRollup: env.useRollup(),
     useWDS: env.useWDS(),
+    modernRegex: getUserAgentRegex({
+      env: "modern",
+      allowHigherVersions: true,
+      mobileToDesktop: true,
+      throwOnMissing: true,
+    }).toString(),
     // Resolve any child/nested templates relative to the parent and pass the same data
     renderTemplate: (childTemplate) =>
       renderTemplate(

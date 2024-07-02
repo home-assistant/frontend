@@ -13,15 +13,9 @@
     <%= renderTemplate("_social_meta.html.template") %>
   </head>
   <body>
-    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
     <hc-connect></hc-connect>
-    <script>
-      <% for (const entry of latestEntryJS) { %>
-        import("<%= entry %>");
-      <% } %>
-      window.latestJS = true;
-    </script>
-    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

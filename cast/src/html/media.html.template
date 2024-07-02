@@ -16,14 +16,8 @@
     </style>
   </head>
   <body>
-    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
     <cast-media-player></cast-media-player>
-    <script>
-      <% for (const entry of latestEntryJS) { %>
-        import("<%= entry %>");
-      <% } %>
-      window.latestJS = true;
-    </script>
-    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
   </body>
 </html>
