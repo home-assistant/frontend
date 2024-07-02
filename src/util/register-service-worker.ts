@@ -17,7 +17,7 @@ export const registerServiceWorker = async (
     location.reload();
   });
 
-  const reg = await navigator.serviceWorker.register("/service_worker.js");
+  const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
     return;
