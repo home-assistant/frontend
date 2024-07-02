@@ -7,6 +7,7 @@ import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
+import { conditionalClamp } from "../common/number/clamp";
 
 type GridSizeValue = {
   rows?: number;
@@ -106,17 +107,11 @@ export class HaGridSizeEditor extends LitElement {
               .map((_, index) => {
                 const row = Math.floor(index / this.columns) + 1;
                 const column = (index % this.columns) + 1;
-                const disabled =
-                  (this.rowMin !== undefined && row < this.rowMin) ||
-                  (this.rowMax !== undefined && row > this.rowMax) ||
-                  (this.columnMin !== undefined && column < this.columnMin) ||
-                  (this.columnMax !== undefined && column > this.columnMax);
                 return html`
                   <div
                     class="cell"
                     data-row=${row}
                     data-column=${column}
-                    ?disabled=${disabled}
                     @click=${this._cellClick}
                   ></div>
                 `;
@@ -132,11 +127,16 @@ export class HaGridSizeEditor extends LitElement {
 
   _cellClick(ev) {
     const cell = ev.currentTarget as HTMLElement;
-    if (cell.getAttribute("disabled") !== null) return;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));
+    const clampedRow = conditionalClamp(rows, this.rowMin, this.rowMax);
+    const clampedColumn = conditionalClamp(
+      columns,
+      this.columnMin,
+      this.columnMax
+    );
     fireEvent(this, "value-changed", {
-      value: { rows, columns },
+      value: { rows: clampedRow, columns: clampedColumn },
     });
   }
 
