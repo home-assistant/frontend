@@ -20,14 +20,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
-      ${this.disabled
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
-            <mwc-button slot="action" @click=${this._duplicate}>
-              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
-            </mwc-button>
-          </ha-alert>`
-        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">

@@ -60,14 +60,6 @@ export class HaManualScriptEditor extends LitElement {
 
   protected render() {
     return html`
-      ${this.disabled
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.panel.config.script.editor.read_only")}
-            <mwc-button slot="action" @click=${this._duplicate}>
-              ${this.hass.localize("ui.panel.config.script.editor.migrate")}
-            </mwc-button>
-          </ha-alert>`
-        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
@@ -170,10 +162,6 @@ export class HaManualScriptEditor extends LitElement {
     });
   }
 
-  private _duplicate() {
-    fireEvent(this, "duplicate");
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -204,12 +192,6 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-alert.re-order {
-          display: block;
-          margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
         }
       `,
     ];

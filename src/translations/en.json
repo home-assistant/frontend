@@ -2771,11 +2771,7 @@
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
-            "take_control_confirmation": {
-              "title": "Take control of automation?",
-              "text": "This automation is based on a blueprint. You are about to take control, which will separate it from the blueprint and give you the ability to fully edit the automation. Would you like to proceed?",
-              "action": "Take control"
-            },
+            "confirm_take_control": "Your are viewing a preview of the automation config, do you want to take control?",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -3648,11 +3644,7 @@
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
-            "take_control_confirmation": {
-              "title": "Take control of script?",
-              "text": "This script is based on a blueprint. You are about to take control, which will separate it from the blueprint and give you the ability to fully edit the script. Would you like to proceed?",
-              "action": "[%key:ui::panel::config::automation::editor::take_control_confirmation::action%]"
-            },
+            "confirm_take_control": "Your are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
