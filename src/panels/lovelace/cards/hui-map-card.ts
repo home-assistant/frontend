@@ -39,7 +39,7 @@ import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceLayoutOptions } from "../types";
 import { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
@@ -56,6 +56,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+
+  @property({ attribute: false })
+  public layout?: string;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -297,7 +300,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _computePadding(): void {
     const root = this.shadowRoot!.getElementById("root");
-    if (!this._config || this.isPanel || !root) {
+
+    const ignoreAspectRatio = this.isPanel || this.layout === "grid";
+    if (!this._config || ignoreAspectRatio || !root) {
       return;
     }
 
@@ -422,6 +427,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return paths;
     }
   );
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 4,
+      grid_rows: 4,
+    };
+  }
 
   static get styles(): CSSResultGroup {
     return css`

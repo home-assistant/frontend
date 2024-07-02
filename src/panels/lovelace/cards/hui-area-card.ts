@@ -55,7 +55,11 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import "../components/hui-image";
 import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
@@ -101,6 +105,9 @@ export class HuiAreaCard
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  public layout?: string;
 
   @state() private _config?: AreaCardConfig;
 
@@ -405,15 +412,20 @@ export class HuiAreaCard
     if (this._config.show_camera && "camera" in entitiesByDomain) {
       cameraEntityId = entitiesByDomain.camera[0].entity_id;
     }
+    cameraEntityId = "camera.demo_camera";
 
     const imageClass = area.picture || cameraEntityId;
+
+    const ignoreAspectRatio = this.layout === "grid";
+
     return html`
       <ha-card
         class=${imageClass ? "image" : ""}
         style=${styleMap({
-          paddingBottom: imageClass
-            ? "0"
-            : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
+          paddingBottom:
+            ignoreAspectRatio || imageClass
+              ? "0"
+              : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
         })}
       >
         ${area.picture || cameraEntityId
@@ -534,12 +546,20 @@ export class HuiAreaCard
     forwardHaptic("light");
   }
 
+  getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 4,
+      grid_rows: 3,
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;
         position: relative;
         background-size: cover;
+        height: 100%;
       }
 
       .container {
