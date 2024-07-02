@@ -247,7 +247,7 @@ export class HuiStatisticsGraphCard
     let startDate: Date;
 
     if (energyData) {
-      startDate = subHours(energyData.start, 1);
+      startDate = energyData.start;
     } else {
       startDate = subHours(
         new Date(),
