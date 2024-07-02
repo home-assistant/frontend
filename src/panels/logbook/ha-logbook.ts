@@ -139,7 +139,7 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
-    await this._unsubscribeSetLoading();
+    this._unsubscribeSetLoading();
 
     if (force) {
       this._getLogBookData();
@@ -206,18 +206,9 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private async _unsubscribe(): Promise<void> {
+  private _unsubscribe() {
     if (this._subscribed) {
-      const unsub = await this._subscribed;
-      if (unsub) {
-        try {
-          await unsub();
-        } catch (e) {
-          // The backend will cancel the subscription if
-          // we subscribe to entities that will all be
-          // filtered away
-        }
-      }
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
     }
   }
@@ -239,8 +230,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to undefined
    * will put the page in a loading state.
    */
-  private async _unsubscribeSetLoading() {
-    await this._unsubscribe();
+  private _unsubscribeSetLoading() {
+    this._unsubscribe();
     this._logbookEntries = undefined;
     this._pendingStreamMessages = [];
   }
@@ -249,8 +240,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to an empty
    * list will show a no results message.
    */
-  private async _unsubscribeNoResults() {
-    await this._unsubscribe();
+  private _unsubscribeNoResults() {
+    this._unsubscribe();
     this._logbookEntries = [];
     this._pendingStreamMessages = [];
   }
