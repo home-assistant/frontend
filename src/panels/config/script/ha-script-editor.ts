@@ -99,6 +99,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _validationErrors?: (string | TemplateResult)[];
 
+  @state() private _blueprintConfig?: BlueprintScriptConfig;
+
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -216,7 +218,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             : nothing}
 
           <ha-list-item
-            .disabled=${!this._readOnly && !this.scriptId}
+            .disabled=${this._blueprintConfig ||
+            (!this._readOnly && !this.scriptId)}
             graphic="icon"
             @click=${this._duplicate}
           >
@@ -236,7 +239,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 <ha-list-item
                   graphic="icon"
                   @click=${this._takeControl}
-                  .disabled=${this._readOnly || this._mode === "yaml"}
+                  .disabled=${this._readOnly}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.take_control"
@@ -312,6 +315,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                   : nothing}
               </ha-alert>`
             : ""}
+          ${this._blueprintConfig
+            ? html`<ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.panel.config.script.editor.confirm_take_control"
+                )}
+                <div slot="action" style="display: flex;">
+                  <mwc-button @click=${this._takeControlSave}
+                    >${this.hass.localize("ui.common.yes")}</mwc-button
+                  >
+                  <mwc-button @click=${this._revertBlueprint}
+                    >${this.hass.localize("ui.common.no")}</mwc-button
+                  >
+                </div>
+              </ha-alert>`
+            : this._readOnly
+              ? html`<ha-alert alert-type="warning" dismissable
+                  >${this.hass.localize(
+                    "ui.panel.config.script.editor.read_only"
+                  )}
+                  <mwc-button slot="action" @click=${this._duplicate}>
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.migrate"
+                    )}
+                  </mwc-button>
+                </ha-alert>`
+              : nothing}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -328,7 +357,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           .config=${this._config}
                           .disabled=${this._readOnly}
                           @value-changed=${this._valueChanged}
-                          @duplicate=${this._duplicate}
                         ></blueprint-script-editor>
                       `
                     : html`
@@ -339,31 +367,18 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           .config=${this._config}
                           .disabled=${this._readOnly}
                           @value-changed=${this._valueChanged}
-                          @duplicate=${this._duplicate}
                         ></manual-script-editor>
                       `}
                 </div>
               `
             : this._mode === "yaml"
-              ? html` ${this._readOnly
-                    ? html`<ha-alert alert-type="warning">
-                        ${this.hass.localize(
-                          "ui.panel.config.script.editor.read_only"
-                        )}
-                        <mwc-button slot="action" @click=${this._duplicate}>
-                          ${this.hass.localize(
-                            "ui.panel.config.script.editor.migrate"
-                          )}
-                        </mwc-button>
-                      </ha-alert>`
-                    : nothing}
-                  <ha-yaml-editor
-                    copyClipboard
-                    .hass=${this.hass}
-                    .defaultValue=${this._preprocessYaml()}
-                    .readOnly=${this._readOnly}
-                    @value-changed=${this._yamlChanged}
-                  ></ha-yaml-editor>`
+              ? html`<ha-yaml-editor
+                  copyClipboard
+                  .hass=${this.hass}
+                  .defaultValue=${this._preprocessYaml()}
+                  .readOnly=${this._readOnly}
+                  @value-changed=${this._yamlChanged}
+                ></ha-yaml-editor>`
               : nothing}
         </div>
         <ha-fab
@@ -625,20 +640,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _takeControl() {
     const config = this._config as BlueprintScriptConfig;
 
-    const confirmation = await showConfirmationDialog(this, {
-      title: this.hass!.localize(
-        "ui.panel.config.script.editor.take_control_confirmation.title"
-      ),
-      text: this.hass!.localize(
-        "ui.panel.config.script.editor.take_control_confirmation.text"
-      ),
-      confirmText: this.hass!.localize(
-        "ui.panel.config.script.editor.take_control_confirmation.action"
-      ),
-    });
-
-    if (!confirmation) return;
-
     try {
       const result = await substituteBlueprint(
         this.hass,
@@ -653,12 +654,31 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         description: config.description,
       };
 
+      this._blueprintConfig = config;
       this._config = newConfig;
-      this._dirty = true;
+      if (this._mode === "yaml") {
+        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
+      }
+      this._readOnly = true;
       this._errors = undefined;
     } catch (err: any) {
       this._errors = err.message;
     }
+  }
+
+  private _revertBlueprint() {
+    this._config = this._blueprintConfig;
+    if (this._mode === "yaml") {
+      this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
+    }
+    this._blueprintConfig = undefined;
+    this._readOnly = false;
+  }
+
+  private _takeControlSave() {
+    this._readOnly = false;
+    this._dirty = true;
+    this._blueprintConfig = undefined;
   }
 
   private async _duplicate() {
@@ -812,10 +832,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .config-container,
         manual-script-editor,
-        blueprint-script-editor {
+        blueprint-script-editor,
+        :not(.yaml-mode) > ha-alert {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+          display: block;
         }
         .config-container ha-alert {
           margin-bottom: 16px;
