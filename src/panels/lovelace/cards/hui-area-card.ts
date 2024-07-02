@@ -416,16 +416,15 @@ export class HuiAreaCard
 
     const imageClass = area.picture || cameraEntityId;
 
-    const ignoreAspectRatio = this.layout === "grid";
+    const ignoreAspectRatio = imageClass || this.layout === "grid";
 
     return html`
       <ha-card
         class=${imageClass ? "image" : ""}
         style=${styleMap({
-          paddingBottom:
-            ignoreAspectRatio || imageClass
-              ? "0"
-              : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
+          paddingBottom: ignoreAspectRatio
+            ? "0"
+            : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
         })}
       >
         ${area.picture || cameraEntityId
