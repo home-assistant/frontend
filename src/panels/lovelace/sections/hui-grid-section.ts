@@ -98,6 +98,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (cardConfig) => this._getKey(cardConfig),
             (_cardConfig, idx) => {
               const card = this.cards![idx];
+              card.layout = "grid";
               const layoutOptions = card.getLayoutOptions();
 
               const columnSize =

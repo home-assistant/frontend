@@ -49,6 +49,7 @@ export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
   preview?: boolean;
+  layout?: string;
   getCardSize(): number | Promise<number>;
   getLayoutOptions?(): LovelaceLayoutOptions;
   setConfig(config: LovelaceCardConfig): void;
