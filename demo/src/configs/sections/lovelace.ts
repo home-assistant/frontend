@@ -1,6 +1,5 @@
+import { isFrontpageEmbed } from "../../util/is_frontpage";
 import { DemoConfig } from "../types";
-
-const frontpageEmbed = document.location.search === "?frontpage";
 
 export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   title: "Home Assistant Demo",
@@ -11,7 +10,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
-        ...(frontpageEmbed
+        ...(isFrontpageEmbed
           ? []
           : [
               {
