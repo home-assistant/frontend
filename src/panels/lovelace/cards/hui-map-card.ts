@@ -432,6 +432,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return {
       grid_columns: 4,
       grid_rows: 4,
+      grid_min_columns: 2,
+      grid_min_rows: 2,
     };
   }
 

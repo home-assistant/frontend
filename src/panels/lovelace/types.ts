@@ -43,6 +43,10 @@ export interface LovelaceBadge extends HTMLElement {
 export type LovelaceLayoutOptions = {
   grid_columns?: number;
   grid_rows?: number;
+  grid_max_columns?: number;
+  grid_min_columns?: number;
+  grid_min_rows?: number;
+  grid_max_rows?: number;
 };
 
 export interface LovelaceCard extends HTMLElement {

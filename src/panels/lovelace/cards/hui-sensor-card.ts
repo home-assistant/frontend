@@ -76,6 +76,8 @@ class HuiSensorCard extends HuiEntityCard {
     return {
       grid_columns: 2,
       grid_rows: 2,
+      grid_min_columns: 2,
+      grid_min_rows: 2,
     };
   }
 
