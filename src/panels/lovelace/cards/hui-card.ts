@@ -23,13 +23,15 @@ declare global {
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
-  @property({ type: Boolean }) public preview = false;
+  @property({ attribute: false }) public preview = false;
 
-  @property({ type: Boolean }) public isPanel = false;
+  @property({ attribute: false }) public isPanel = false;
 
   @property({ attribute: false }) public config?: LovelaceCardConfig;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
 
   private _elementConfig?: LovelaceCardConfig;
 
@@ -98,6 +100,7 @@ export class HuiCard extends ReactiveElement {
     if (this.hass) {
       this._element.hass = this.hass;
     }
+    this._element.layout = this.layout;
     this._element.preview = this.preview;
     // For backwards compatibility
     (this._element as any).editMode = this.preview;
@@ -175,6 +178,9 @@ export class HuiCard extends ReactiveElement {
       }
       if (changedProps.has("isPanel")) {
         this._element.isPanel = this.isPanel;
+      }
+      if (changedProps.has("layout")) {
+        this._element.layout = this.layout;
       }
     }
 
