@@ -77,12 +77,13 @@ export class HaConfigApplicationCredentials extends LitElement {
   private _filter = "";
 
   private _columns = memoizeOne(
-    (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
+    (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<ApplicationCredential> = {
         name: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           direction: "asc",
@@ -94,7 +95,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           filterable: true,
           width: "30%",
-          hidden: narrow,
         },
         localizedDomain: {
           title: localize(
@@ -109,6 +109,9 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          hideable: false,
+          moveable: false,
           template: (credential) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -153,7 +156,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.devices}
-        .columns=${this._columns(this.narrow, this.hass.localize)}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._getApplicationCredentials(
           this._applicationCredentials,
           this.hass.localize
@@ -355,6 +358,9 @@ export class HaConfigApplicationCredentials extends LitElement {
         margin-left: 8px;
         margin-inline-start: 8px;
         margin-inline-end: initial;
+      }
+      .warning {
+        --mdc-theme-primary: var(--error-color);
       }
     `;
   }

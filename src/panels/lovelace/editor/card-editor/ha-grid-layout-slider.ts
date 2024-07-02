@@ -255,15 +255,14 @@ export class HaGridLayoutSlider extends LitElement {
       >
         <div id="slider" class="slider">
           <div class="track">
-            <div class="background">
-              <div
-                class="active"
-                style=${styleMap({
-                  "--min": `${this.min / this._range}`,
-                  "--max": `${1 - this.max / this._range}`,
-                })}
-              ></div>
-            </div>
+            <div class="background"></div>
+            <div
+              class="active"
+              style=${styleMap({
+                "--min": `${this.min / this._range}`,
+                "--max": `${1 - this.max / this._range}`,
+              })}
+            ></div>
           </div>
           ${this.value !== undefined
             ? html`<div class="handle"></div>`
@@ -323,11 +322,12 @@ export class HaGridLayoutSlider extends LitElement {
         position: absolute;
         inset: 0;
         background: var(--disabled-color);
-        opacity: 0.5;
+        opacity: 0.2;
       }
       .active {
         position: absolute;
         background: grey;
+        opacity: 0.7;
         top: 0;
         right: calc(var(--max) * 100%);
         bottom: 0;
@@ -374,6 +374,9 @@ export class HaGridLayoutSlider extends LitElement {
       }
       :host(:disabled) .slider {
         cursor: not-allowed;
+      }
+      :host(:disabled) .handle:after {
+        background: var(--disabled-color);
       }
       .pressed .handle {
         transition: none;

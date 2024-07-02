@@ -394,6 +394,7 @@ class GroupEntity extends Entity {
 }
 
 const TYPES = {
+  automation: ToggleEntity,
   alarm_control_panel: AlarmControlPanelEntity,
   climate: ClimateEntity,
   cover: CoverEntity,

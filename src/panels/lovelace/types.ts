@@ -43,12 +43,17 @@ export interface LovelaceBadge extends HTMLElement {
 export type LovelaceLayoutOptions = {
   grid_columns?: number;
   grid_rows?: number;
+  grid_max_columns?: number;
+  grid_min_columns?: number;
+  grid_min_rows?: number;
+  grid_max_rows?: number;
 };
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
   preview?: boolean;
+  layout?: string;
   getCardSize(): number | Promise<number>;
   getLayoutOptions?(): LovelaceLayoutOptions;
   setConfig(config: LovelaceCardConfig): void;

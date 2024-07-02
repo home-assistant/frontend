@@ -22,7 +22,11 @@ import { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { ThermostatCardConfig } from "./types";
 
 @customElement("hui-thermostat-card")
@@ -163,6 +167,24 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ></hui-card-features>
       </ha-card>
     `;
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    const grid_columns = 4;
+    let grid_rows = 5;
+    let grid_min_rows = 2;
+    const grid_min_columns = 2;
+    if (this._config?.features?.length) {
+      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
+      grid_rows += featureHeight;
+      grid_min_rows += featureHeight;
+    }
+    return {
+      grid_columns,
+      grid_rows,
+      grid_min_rows,
+      grid_min_columns,
+    };
   }
 
   static get styles(): CSSResultGroup {

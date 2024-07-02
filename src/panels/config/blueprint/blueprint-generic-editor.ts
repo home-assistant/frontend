@@ -3,7 +3,6 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nestedArrayMove } from "../../../common/util/array-move";
-import "../../../components/ha-alert";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -126,14 +125,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       );
     const expanded = !section.collapsed || anyRequired;
 
-    return html` <ha-expansion-panel
+    return html`<ha-expansion-panel
       outlined
       .expanded=${expanded}
       .noCollapse=${anyRequired}
     >
       <div slot="header" role="heading" aria-level="3" class="section-header">
         ${section?.icon
-          ? html` <ha-icon
+          ? html`<ha-icon
               class="section-header"
               .icon=${section.icon}
             ></ha-icon>`
@@ -261,10 +260,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     });
   }
 
-  protected _duplicate() {
-    fireEvent(this, "duplicate");
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -318,20 +313,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           margin-left: 8px;
           margin-right: 8px;
         }
-        ha-alert {
-          margin-bottom: 16px;
-          display: block;
-        }
-        ha-alert.re-order {
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
-        }
         div.section-header {
           display: flex;
           vertical-align: middle;
         }
         ha-icon.section-header {
           padding-right: 10px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];
