@@ -1,3 +1,4 @@
+import { isFrontpageEmbed } from "../../util/is_frontpage";
 import { DemoConfig } from "../types";
 
 export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
@@ -5,14 +6,18 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   views: [
     {
       type: "sections",
-      title: "Demo",
+      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
-        {
-          title: "Welcome 👋",
-          cards: [{ type: "custom:ha-demo-card" }],
-        },
+        ...(isFrontpageEmbed
+          ? []
+          : [
+              {
+                title: "Welcome 👋",
+                cards: [{ type: "custom:ha-demo-card" }],
+              },
+            ]),
         {
           cards: [
             {
