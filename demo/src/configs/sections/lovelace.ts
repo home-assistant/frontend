@@ -22,26 +22,6 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
           cards: [
             {
               type: "tile",
-              entity: "cover.living_room_garden_shutter",
-              name: "Garden",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_graveyard_shutter",
-              name: "Rear",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_left_shutter",
-              name: "Left",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_right_shutter",
-              name: "Right",
-            },
-            {
-              type: "tile",
               entity: "light.floor_lamp",
             },
             {
@@ -64,6 +44,11 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               entity: "sensor.living_room_temperature",
               detail: 1,
               name: "Temperature",
+            },
+            {
+              type: "tile",
+              entity: "cover.living_room_garden_shutter",
+              name: "Blinds",
             },
             {
               type: "tile",
