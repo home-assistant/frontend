@@ -320,6 +320,10 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         ha-icon.section-header {
           padding-right: 10px;
         }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+        }
       `,
     ];
   }
