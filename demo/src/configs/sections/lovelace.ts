@@ -1,5 +1,7 @@
 import { DemoConfig } from "../types";
 
+const frontpageEmbed = document.location.search === "?frontpage";
+
 export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   title: "Home Assistant Demo",
   views: [
@@ -9,13 +11,16 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
+        ...(frontpageEmbed
+          ? [
+              {
+                title: "Welcome 👋",
+                cards: [{ type: "custom:ha-demo-card" }],
+              },
+            ]
+          : []),
         {
-          // @ts-expect-error
           cards: [
-            document.location.search !== "?frontpage" && {
-              title: "Welcome 👋",
-              cards: [{ type: "custom:ha-demo-card" }],
-            },
             {
               type: "tile",
               entity: "cover.living_room_garden_shutter",
