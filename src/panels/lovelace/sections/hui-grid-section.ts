@@ -15,6 +15,7 @@ import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { Lovelace, LovelaceLayoutOptions } from "../types";
+import { conditionalClamp } from "../../../common/number/clamp";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -23,9 +24,41 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
 
-export const DEFAULT_GRID_OPTIONS: LovelaceLayoutOptions = {
+export const DEFAULT_GRID_OPTIONS = {
   grid_columns: 4,
   grid_rows: 1,
+} as const satisfies LovelaceLayoutOptions;
+
+type GridSizeValue = {
+  rows?: number;
+  columns?: number;
+};
+
+export const computeSizeOnGrid = (
+  options: LovelaceLayoutOptions
+): GridSizeValue => {
+  const rows =
+    typeof options.grid_rows === "number"
+      ? conditionalClamp(
+          options.grid_rows,
+          options.grid_min_rows,
+          options.grid_max_rows
+        )
+      : DEFAULT_GRID_OPTIONS.grid_rows;
+
+  const columns =
+    typeof options.grid_columns === "number"
+      ? conditionalClamp(
+          options.grid_columns,
+          options.grid_min_columns,
+          options.grid_max_columns
+        )
+      : DEFAULT_GRID_OPTIONS.grid_columns;
+
+  return {
+    rows,
+    columns,
+  };
 };
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
@@ -101,15 +134,13 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               card.layout = "grid";
               const layoutOptions = card.getLayoutOptions();
 
-              const columnSize =
-                layoutOptions.grid_columns ?? DEFAULT_GRID_OPTIONS.grid_columns;
-              const rowSize =
-                layoutOptions.grid_rows ?? DEFAULT_GRID_OPTIONS.grid_rows;
+              const { rows, columns } = computeSizeOnGrid(layoutOptions);
+
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": columnSize,
-                    "--row-size": rowSize,
+                    "--column-size": columns,
+                    "--row-size": rows,
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
