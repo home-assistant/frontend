@@ -255,7 +255,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       grid_columns: 2,
       grid_rows: 2,
       grid_min_rows: 2,
-      grid_max_rows: 2,
     };
   }
 

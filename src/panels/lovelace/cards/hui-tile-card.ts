@@ -135,7 +135,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       grid_columns,
       grid_rows,
       grid_min_rows: grid_rows,
-      grid_max_rows: grid_rows,
       grid_min_columns: grid_columns,
     };
   }
