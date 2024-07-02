@@ -12,13 +12,13 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
       icon: "mdi:home-assistant",
       sections: [
         ...(frontpageEmbed
-          ? [
+          ? []
+          : [
               {
                 title: "Welcome 👋",
                 cards: [{ type: "custom:ha-demo-card" }],
               },
-            ]
-          : []),
+            ]),
         {
           cards: [
             {
