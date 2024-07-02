@@ -335,7 +335,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   split_device_classes?: boolean;
 }
 
-export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
+export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
   entities: Array<EntityConfig | string>;
   unit?: string;
@@ -345,6 +345,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   chart_type?: "line" | "bar";
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
+  energy_date_selection?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
