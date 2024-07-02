@@ -40,7 +40,11 @@ import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import { MediaControlCardConfig } from "./types";
 
 @customElement("hui-media-control-card")
@@ -580,6 +584,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (this._marqueeActive) {
       this._marqueeActive = false;
     }
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 4,
+      grid_min_columns: 2,
+      grid_rows: 3,
+      grid_min_rows: 3,
+    };
   }
 
   static get styles(): CSSResultGroup {

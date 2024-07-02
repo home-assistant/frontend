@@ -19,7 +19,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
-import { DEFAULT_GRID_OPTIONS } from "../../sections/hui-grid-section";
+import { computeSizeOnGrid } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
@@ -38,21 +38,17 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _cardElement?: HuiCard;
 
-  private _gridSizeValue = memoizeOne(
+  private _mergedOptions = memoizeOne(
     (
       options?: LovelaceLayoutOptions,
       defaultOptions?: LovelaceLayoutOptions
     ) => ({
-      rows:
-        options?.grid_rows ??
-        defaultOptions?.grid_rows ??
-        DEFAULT_GRID_OPTIONS.grid_rows,
-      columns:
-        options?.grid_columns ??
-        defaultOptions?.grid_columns ??
-        DEFAULT_GRID_OPTIONS.grid_columns,
+      ...defaultOptions,
+      ...options,
     })
   );
+
+  private _gridSizeValue = memoizeOne(computeSizeOnGrid);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -60,6 +56,11 @@ export class HuiCardLayoutEditor extends LitElement {
   );
 
   render() {
+    const options = this._mergedOptions(
+      this.config.layout_options,
+      this._defaultLayoutOptions
+    );
+
     return html`
       <div class="header">
         <p class="intro">
@@ -123,12 +124,13 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               .hass=${this.hass}
-              .value=${this._gridSizeValue(
-                this.config.layout_options,
-                this._defaultLayoutOptions
-              )}
+              .value=${this._gridSizeValue(options)}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
+              .rowMin=${options.grid_min_rows}
+              .rowMax=${options.grid_max_rows}
+              .columnMin=${options.grid_min_columns}
+              .columnMax=${options.grid_max_columns}
             ></ha-grid-size-picker>
           `}
     `;

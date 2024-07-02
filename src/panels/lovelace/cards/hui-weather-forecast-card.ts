@@ -38,7 +38,11 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceLayoutOptions,
+} from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 
 @customElement("hui-weather-forecast-card")
@@ -419,6 +423,26 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private _showValue(item?: any): boolean {
     return typeof item !== "undefined" && item !== null;
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    if (
+      this._config?.show_current !== false &&
+      this._config?.show_forecast !== false
+    ) {
+      return {
+        grid_columns: 4,
+        grid_min_columns: 2,
+        grid_rows: 3,
+        grid_min_rows: 3,
+      };
+    }
+    return {
+      grid_columns: 4,
+      grid_min_columns: 2,
+      grid_rows: 2,
+      grid_min_rows: 1,
+    };
   }
 
   static get styles(): CSSResultGroup {

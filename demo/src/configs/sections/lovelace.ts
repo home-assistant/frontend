@@ -1,3 +1,4 @@
+import { isFrontpageEmbed } from "../../util/is_frontpage";
 import { DemoConfig } from "../types";
 
 export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
@@ -5,36 +6,20 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   views: [
     {
       type: "sections",
-      title: "Demo",
+      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
-        {
-          title: "Welcome 👋",
-          cards: [{ type: "custom:ha-demo-card" }],
-        },
+        ...(isFrontpageEmbed
+          ? []
+          : [
+              {
+                title: "Welcome 👋",
+                cards: [{ type: "custom:ha-demo-card" }],
+              },
+            ]),
         {
           cards: [
-            {
-              type: "tile",
-              entity: "cover.living_room_garden_shutter",
-              name: "Garden",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_graveyard_shutter",
-              name: "Rear",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_left_shutter",
-              name: "Left",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_right_shutter",
-              name: "Right",
-            },
             {
               type: "tile",
               entity: "light.floor_lamp",
@@ -59,6 +44,11 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               entity: "sensor.living_room_temperature",
               detail: 1,
               name: "Temperature",
+            },
+            {
+              type: "tile",
+              entity: "cover.living_room_garden_shutter",
+              name: "Blinds",
             },
             {
               type: "tile",
