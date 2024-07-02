@@ -246,11 +246,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   public getLayoutOptions(): LovelaceLayoutOptions {
-    if (this._config?.footer) {
-      return {
-        grid_columns: 2,
-      };
-    }
     return {
       grid_columns: 2,
       grid_rows: 2,
