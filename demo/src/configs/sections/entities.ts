@@ -1,7 +1,7 @@
 import { convertEntities } from "../../../../src/fake_data/entity";
 import { DemoConfig } from "../types";
 
-export const demoEntitiesSections: DemoConfig["entities"] = () =>
+export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
   convertEntities({
     "cover.living_room_garden_shutter": {
       entity_id: "cover.living_room_garden_shutter",
@@ -113,11 +113,30 @@ export const demoEntitiesSections: DemoConfig["entities"] = () =>
     },
     "media_player.living_room_nest_mini": {
       entity_id: "media_player.living_room_nest_mini",
-      state: "off",
+      state: "on",
       attributes: {
         device_class: "speaker",
-        friendly_name: "Living room Nest Mini",
-        supported_features: 152461,
+        volume_level: 0.18,
+        is_volume_muted: false,
+        media_content_type: "music",
+        media_duration: 300,
+        media_position: 0,
+        media_position_updated_at: new Date(
+          // 23 seconds in
+          new Date().getTime() - 23000
+        ).toISOString(),
+        media_title: "I Wasn't Born To Follow",
+        media_artist: "The Byrds",
+        media_album_name: "The Notorious Byrd Brothers",
+        source_list: ["It's A Party", "Radio HSL", "Retro 70s and 80s"],
+        shuffle: false,
+        night_sound: false,
+        speech_enhance: false,
+        friendly_name: localize(
+          "ui.panel.page-demo.config.sections.entities.media_player.living_room_nest_mini"
+        ),
+        entity_picture: "/assets/sections/images/media_player_family_room.jpg",
+        supported_features: 64063,
       },
     },
     "cover.kitchen_shutter": {
@@ -168,8 +187,27 @@ export const demoEntitiesSections: DemoConfig["entities"] = () =>
       state: "on",
       attributes: {
         device_class: "speaker",
-        friendly_name: "Kitchen Nest Audio",
-        supported_features: 152461,
+        volume_level: 0.18,
+        is_volume_muted: false,
+        media_content_type: "music",
+        media_duration: 300,
+        media_position: 0,
+        media_position_updated_at: new Date(
+          // 23 seconds in
+          new Date().getTime() - 23000
+        ).toISOString(),
+        media_title: "I Wasn't Born To Follow",
+        media_artist: "The Byrds",
+        media_album_name: "The Notorious Byrd Brothers",
+        source_list: ["It's A Party", "Radio HSL", "Retro 70s and 80s"],
+        shuffle: false,
+        night_sound: false,
+        speech_enhance: false,
+        friendly_name: localize(
+          "ui.panel.page-demo.config.sections.entities.media_player.kitchen_nest_audio"
+        ),
+        entity_picture: "/assets/sections/images/media_player_family_room.jpg",
+        supported_features: 64063,
       },
     },
     "binary_sensor.tesla_wall_connector_vehicle_connected": {
@@ -333,8 +371,28 @@ export const demoEntitiesSections: DemoConfig["entities"] = () =>
       entity_id: "media_player.study_nest_hub",
       state: "off",
       attributes: {
-        friendly_name: "Study Nest Hub",
-        supported_features: 152461,
+        device_class: "speaker",
+        volume_level: 0.18,
+        is_volume_muted: false,
+        media_content_type: "music",
+        media_duration: 300,
+        media_position: 0,
+        media_position_updated_at: new Date(
+          // 23 seconds in
+          new Date().getTime() - 23000
+        ).toISOString(),
+        media_title: "I Wasn't Born To Follow",
+        media_artist: "The Byrds",
+        media_album_name: "The Notorious Byrd Brothers",
+        source_list: ["It's A Party", "Radio HSL", "Retro 70s and 80s"],
+        shuffle: false,
+        night_sound: false,
+        speech_enhance: false,
+        friendly_name: localize(
+          "ui.panel.page-demo.config.sections.entities.media_player.study_nest_hub"
+        ),
+        entity_picture: "/assets/sections/images/media_player_family_room.jpg",
+        supported_features: 64063,
       },
     },
     "sensor.standing_desk_height": {

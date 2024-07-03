@@ -6630,7 +6630,24 @@
           },
           "sections": {
             "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
-            "description_blog_post": "blog post"
+            "description_blog_post": "blog post",
+            "titles": {
+              "welcome": "Welcome",
+              "living_room": "Living room",
+              "study": "Study",
+              "kitchen": "Kitchen",
+              "outdoor": "Outdoor",
+              "energy": "Energy",
+              "climate": "Energy",
+              "updates": "Updates"
+            },
+            "entities": {
+              "media_player": {
+                "living_room_nest_mini": "Nest mini",
+                "kitchen_nest_audio": "Nest Audio",
+                "study_nest_hub": "Nest Hub"
+              }
+            }
           }
         }
       },
