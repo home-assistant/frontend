@@ -54,7 +54,7 @@ export class HaGridSizeEditor extends LitElement {
     const rowMax = this.rowMax ?? this.rows;
     const columnMin = this.columnMin ?? 1;
     const columnMax = this.columnMax ?? this.columns;
-    const rowValue = autoHeight ? this.rowMin ?? 1 : this._localValue?.rows;
+    const rowValue = autoHeight ? rowMin : this._localValue?.rows;
     const columnValue = this._localValue?.columns;
 
     return html`
@@ -128,7 +128,7 @@ export class HaGridSizeEditor extends LitElement {
                 `;
               })}
           </div>
-          <div class="selected ${autoHeight ? "auto-height" : ""}">
+          <div class="selected">
             <div class="cell"></div>
           </div>
         </div>
@@ -234,9 +234,6 @@ export class HaGridSizeEditor extends LitElement {
         grid-column: 1 / span var(--columns, 0);
         grid-row: 1 / span var(--rows, 0);
         opacity: 0.5;
-      }
-      .selected.auto-height .cell {
-        opacity: 0.2;
       }
     `,
   ];

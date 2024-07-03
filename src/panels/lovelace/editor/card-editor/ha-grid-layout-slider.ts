@@ -378,6 +378,9 @@ export class HaGridLayoutSlider extends LitElement {
       :host(:disabled) .handle:after {
         background: var(--disabled-color);
       }
+      :host(:disabled) .active {
+        background: var(--disabled-color);
+      }
       .pressed .handle {
         transition: none;
       }

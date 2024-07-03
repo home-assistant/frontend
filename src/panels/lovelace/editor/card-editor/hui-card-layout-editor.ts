@@ -136,42 +136,8 @@ export class HuiCardLayoutEditor extends LitElement {
               .columnMin=${options.grid_min_columns}
               .columnMax=${options.grid_max_columns}
             ></ha-grid-size-picker>
-            <ha-settings-row two-line>
-              <span slot="heading"
-                >${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.layout.auto_height"
-                )}</span
-              >
-              <span slot="description">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.layout.auto_height_description"
-                )}
-              </span>
-              <ha-switch
-                @change=${this._autoChanged}
-                .checked=${sizeValue.rows === "auto"}
-              >
-              </ha-switch>
-            </ha-settings-row>
           `}
     `;
-  }
-
-  private _autoChanged(ev: Event) {
-    const checked = (ev.target as any).checked;
-
-    const defaultRows =
-      typeof this._defaultLayoutOptions?.grid_rows === "number"
-        ? this._defaultLayoutOptions.grid_rows
-        : 1;
-    const newConfig: LovelaceCardConfig = {
-      ...this.config,
-      layout_options: {
-        ...this.config.layout_options,
-        grid_rows: checked ? "auto" : defaultRows,
-      },
-    };
-    fireEvent(this, "value-changed", { value: newConfig });
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>): void {

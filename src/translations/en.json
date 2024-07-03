@@ -5551,9 +5551,7 @@
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
             },
             "layout": {
-              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card.",
-              "auto_height": "Auto height",
-              "auto_height_description": "The card will ignore the grid and will adjust its height to fit its content."
+              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
             }
           },
           "move_card": {
