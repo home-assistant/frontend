@@ -412,19 +412,19 @@ export class HuiAreaCard
     if (this._config.show_camera && "camera" in entitiesByDomain) {
       cameraEntityId = entitiesByDomain.camera[0].entity_id;
     }
-    cameraEntityId = "camera.demo_camera";
 
     const imageClass = area.picture || cameraEntityId;
 
-    const ignoreAspectRatio = imageClass || this.layout === "grid";
+    const ignoreAspectRatio = this.layout === "grid";
 
     return html`
       <ha-card
         class=${imageClass ? "image" : ""}
         style=${styleMap({
-          paddingBottom: ignoreAspectRatio
-            ? "0"
-            : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
+          paddingBottom:
+            ignoreAspectRatio || imageClass
+              ? "0"
+              : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
         })}
       >
         ${area.picture || cameraEntityId
@@ -435,8 +435,10 @@ export class HuiAreaCard
                 .image=${area.picture ? area.picture : undefined}
                 .cameraImage=${cameraEntityId}
                 .cameraView=${this._config.camera_view}
-                .aspectRatio=${this._config.aspect_ratio ||
-                DEFAULT_ASPECT_RATIO}
+                .aspectRatio=${ignoreAspectRatio
+                  ? undefined
+                  : this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
+                fitMode="cover"
               ></hui-image>
             `
           : area.icon
@@ -584,6 +586,10 @@ export class HuiAreaCard
         height: 100%;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
+      }
+
+      .image hui-image {
+        height: 100%;
       }
 
       .icon-container {
