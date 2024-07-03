@@ -10,7 +10,7 @@ import { HomeAssistant } from "../types";
 import { conditionalClamp } from "../common/number/clamp";
 
 type GridSizeValue = {
-  rows?: number;
+  rows?: number | "auto";
   columns?: number;
 };
 
@@ -47,6 +47,18 @@ export class HaGridSizeEditor extends LitElement {
       this.columnMin !== undefined && this.columnMin === this.columnMax;
     const disabledRows =
       this.rowMin !== undefined && this.rowMin === this.rowMax;
+
+    const autoHeight = this._localValue?.rows === "auto";
+
+    const rowMin = this.rowMin ?? 1;
+    const rowMax = this.rowMax ?? this.rows;
+    const columnMin = this.columnMin ?? 1;
+    const columnMax = this.columnMax ?? this.columns;
+    const rowValue = autoHeight
+      ? this.rowMax ?? this.rows
+      : this._localValue?.rows;
+    const columnValue = this._localValue?.columns;
+
     return html`
       <div class="grid">
         <ha-grid-layout-slider
@@ -54,24 +66,25 @@ export class HaGridSizeEditor extends LitElement {
             "ui.components.grid-size-picker.columns"
           )}
           id="columns"
-          .min=${this.columnMin ?? 1}
-          .max=${this.columnMax ?? this.columns}
+          .min=${columnMin}
+          .max=${columnMax}
           .range=${this.columns}
-          .value=${this.value?.columns}
+          .value=${columnValue}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
         ></ha-grid-layout-slider>
+
         <ha-grid-layout-slider
           aria-label=${this.hass.localize(
             "ui.components.grid-size-picker.rows"
           )}
           id="rows"
-          .min=${this.rowMin ?? 1}
-          .max=${this.rowMax ?? this.rows}
+          .min=${rowMin}
+          .max=${rowMax}
           .range=${this.rows}
           vertical
-          .value=${this.value?.rows}
+          .value=${rowValue}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
@@ -97,8 +110,8 @@ export class HaGridSizeEditor extends LitElement {
           style=${styleMap({
             "--total-rows": this.rows,
             "--total-columns": this.columns,
-            "--rows": this._localValue?.rows,
-            "--columns": this._localValue?.columns,
+            "--rows": rowValue,
+            "--columns": columnValue,
           })}
         >
           <div>
@@ -117,7 +130,7 @@ export class HaGridSizeEditor extends LitElement {
                 `;
               })}
           </div>
-          <div class="selected">
+          <div class="selected ${autoHeight ? "auto-height" : ""}">
             <div class="cell"></div>
           </div>
         </div>
@@ -215,10 +228,6 @@ export class HaGridSizeEditor extends LitElement {
         opacity: 0.2;
         cursor: pointer;
       }
-      .preview .cell[disabled] {
-        opacity: 0.05;
-        cursor: initial;
-      }
       .selected {
         pointer-events: none;
       }
@@ -227,6 +236,9 @@ export class HaGridSizeEditor extends LitElement {
         grid-column: 1 / span var(--columns, 0);
         grid-row: 1 / span var(--rows, 0);
         opacity: 0.5;
+      }
+      .selected.auto-height .cell {
+        opacity: 0.2;
       }
     `,
   ];

@@ -11,8 +11,10 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -61,11 +63,13 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
+    const sizeValue = this._gridSizeValue(options);
+
     return html`
       <div class="header">
         <p class="intro">
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.edit_card.layout.explanation`
+            "ui.panel.lovelace.editor.edit_card.layout.explanation"
           )}
         </p>
         <ha-button-menu
@@ -124,7 +128,7 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               .hass=${this.hass}
-              .value=${this._gridSizeValue(options)}
+              .value=${sizeValue}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
               .rowMin=${options.grid_min_rows}
@@ -132,8 +136,42 @@ export class HuiCardLayoutEditor extends LitElement {
               .columnMin=${options.grid_min_columns}
               .columnMax=${options.grid_max_columns}
             ></ha-grid-size-picker>
+            <ha-settings-row two-line>
+              <span slot="heading"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.auto_height"
+                )}</span
+              >
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.auto_height_description"
+                )}
+              </span>
+              <ha-switch
+                @change=${this._autoChanged}
+                .checked=${sizeValue.rows === "auto"}
+              >
+              </ha-switch>
+            </ha-settings-row>
           `}
     `;
+  }
+
+  private _autoChanged(ev: Event) {
+    const checked = (ev.target as any).checked;
+
+    const defaultRows =
+      typeof this._defaultLayoutOptions?.grid_rows === "number"
+        ? this._defaultLayoutOptions.grid_rows
+        : 2;
+    const newConfig: LovelaceCardConfig = {
+      ...this.config,
+      layout_options: {
+        ...this.config.layout_options,
+        grid_rows: checked ? "auto" : defaultRows,
+      },
+    };
+    fireEvent(this, "value-changed", { value: newConfig });
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>): void {
