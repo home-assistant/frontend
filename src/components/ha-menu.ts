@@ -19,9 +19,10 @@ export class HaMenu extends MdMenu {
     if (
       ev.detail.reason.kind === CloseReason.KEYDOWN &&
       ev.detail.reason.key === KeydownCloseKey.ESCAPE
-    )
+    ) {
       return;
-    (ev.detail.initiator as HaMenuItem).closeAction?.(ev);
+    }
+    (ev.detail.initiator as HaMenuItem).clickAction?.(ev.detail.initiator);
   }
 
   static override styles = [
