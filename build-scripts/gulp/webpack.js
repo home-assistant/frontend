@@ -40,8 +40,12 @@ const runDevServer = async ({
   compiler,
   contentBase,
   port,
-  listenHost = "localhost",
+  listenHost = undefined,
 }) => {
+  if (listenHost === undefined) {
+    // For dev container, we need to listen on all hosts
+    listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
+  }
   const server = new WebpackDevServer(
     {
       hot: false,

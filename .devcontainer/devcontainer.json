@@ -8,6 +8,7 @@
   "postCreateCommand": "sudo apt update && sudo apt upgrade -y && sudo apt install -y libpcap-dev",
   "postStartCommand": "script/bootstrap",
   "containerEnv": {
+    "DEV_CONTAINER": "1",
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
   },
   "customizations": {
