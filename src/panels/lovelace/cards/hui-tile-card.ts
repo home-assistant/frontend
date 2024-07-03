@@ -123,6 +123,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   public getLayoutOptions(): LovelaceLayoutOptions {
     const grid_columns = 2;
+    let grid_min_columns = 2;
     let grid_rows = 1;
     if (this._config?.features?.length) {
       const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
@@ -130,12 +131,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     if (this._config?.vertical) {
       grid_rows!++;
+      grid_min_columns = 1;
     }
     return {
       grid_columns,
       grid_rows,
       grid_min_rows: grid_rows,
-      grid_min_columns: grid_columns,
+      grid_min_columns,
     };
   }
 
