@@ -1,9 +1,11 @@
 import { MdMenuItem } from "@material/web/menu/menu-item";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-menu-item")
 export class HaMenuItem extends MdMenuItem {
+  @property({ attribute: false }) clickAction?: (item?: HTMLElement) => void;
+
   static override styles = [
     ...super.styles,
     css`
