@@ -32,4 +32,7 @@ module.exports = {
     }
     return version[1];
   },
+  isDevContainer() {
+    return process.env.DEV_CONTAINER === "1";
+  },
 };
