@@ -163,7 +163,7 @@ export class HuiCardLayoutEditor extends LitElement {
     const defaultRows =
       typeof this._defaultLayoutOptions?.grid_rows === "number"
         ? this._defaultLayoutOptions.grid_rows
-        : 2;
+        : 1;
     const newConfig: LovelaceCardConfig = {
       ...this.config,
       layout_options: {
