@@ -6638,7 +6638,7 @@
               "kitchen": "Kitchen",
               "outdoor": "Outdoor",
               "energy": "Energy",
-              "climate": "Energy",
+              "climate": "Climate",
               "updates": "Updates"
             },
             "entities": {
