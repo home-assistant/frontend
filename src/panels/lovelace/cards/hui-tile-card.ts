@@ -130,7 +130,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       grid_rows += featureHeight;
     }
     if (this._config?.vertical) {
-      grid_rows!++;
+      grid_rows++;
       grid_min_columns = 1;
     }
     return {
