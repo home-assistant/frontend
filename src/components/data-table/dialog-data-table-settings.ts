@@ -202,20 +202,53 @@ export class DialogDataTableSettings extends LitElement {
     const columns = this._sortedColumns(
       this._params.columns,
       this._columnOrder,
-      this._hiddenColumns
+      hidden
     );
 
     if (!this._columnOrder) {
       this._columnOrder = columns.map((col) => col.key);
     } else {
+      const newOrder = this._columnOrder.filter((col) => col !== column);
+
+      // Array.findLastIndex when supported or core-js polyfill
+      const findLastIndex = (
+        arr: Array<any>,
+        fn: (item: any, index: number, arr: Array<any>) => boolean
+      ) => {
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (fn(arr[i], i, arr)) return i;
+        }
+        return -1;
+      };
+
+      let lastMoveable = findLastIndex(
+        newOrder,
+        (col) =>
+          col !== column &&
+          !hidden.includes(col) &&
+          !this._params!.columns[col].main &&
+          this._params!.columns[col].moveable !== false
+      );
+
+      if (lastMoveable === -1) {
+        lastMoveable = newOrder.length - 1;
+      }
+
       columns.forEach((col) => {
-        if (!this._columnOrder!.includes(col.key)) {
-          this._columnOrder!.push(col.key);
+        if (!newOrder.includes(col.key)) {
+          if (col.moveable === false) {
+            newOrder.unshift(col.key);
+          } else {
+            newOrder.splice(lastMoveable + 1, 0, col.key);
+          }
+
           if (col.defaultHidden) {
             hidden.push(col.key);
           }
         }
       });
+
+      this._columnOrder = newOrder;
     }
 
     this._hiddenColumns = hidden;
