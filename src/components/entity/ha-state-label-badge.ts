@@ -26,6 +26,7 @@ import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import "../ha-state-icon";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../data/sensor";
 
 // Define the domains whose states have special truncated strings
 const TRUNCATED_DOMAINS = [
@@ -180,6 +181,11 @@ export class HaStateLabelBadge extends LitElement {
         if (entry?.platform === "moon") {
           return null;
         }
+        if (
+          entityState.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP
+        ) {
+          return null;
+        }
       // eslint-disable-next-line: disable=no-fallthrough
       default:
         return entityState.state === UNKNOWN ||
@@ -214,7 +220,10 @@ export class HaStateLabelBadge extends LitElement {
       case "timer":
         return true;
       case "sensor":
-        return entry?.platform === "moon";
+        return (
+          entry?.platform === "moon" ||
+          entityState.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP
+        );
       default:
         return false;
     }
@@ -240,6 +249,12 @@ export class HaStateLabelBadge extends LitElement {
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);
     }
+    if (
+      domain === "sensor" &&
+      entityState.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP
+    ) {
+      return secondsToDuration(_timerTimeRemaining);
+    }
     return entityState.attributes.unit_of_measurement || null;
   }
 
@@ -252,12 +267,25 @@ export class HaStateLabelBadge extends LitElement {
 
   private startInterval(stateObj) {
     this.clearInterval();
-    if (stateObj && computeStateDomain(stateObj) === "timer") {
-      this.calculateTimerRemaining(stateObj);
+    if (stateObj) {
+      const domain = computeStateDomain(stateObj);
+      if (domain === "timer") {
+        this.calculateTimerRemaining(stateObj);
 
-      if (stateObj.state === "active") {
+        if (stateObj.state === "active") {
+          this._updateRemaining = window.setInterval(
+            () => this.calculateTimerRemaining(this.state),
+            1000
+          );
+        }
+      } else if (
+        domain === "sensor" &&
+        stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP
+      ) {
+        this.calculateTimestampRemaining(stateObj);
+
         this._updateRemaining = window.setInterval(
-          () => this.calculateTimerRemaining(this.state),
+          () => this.calculateTimestampRemaining(this.state),
           1000
         );
       }
@@ -266,6 +294,12 @@ export class HaStateLabelBadge extends LitElement {
 
   private calculateTimerRemaining(stateObj) {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
+  }
+
+  private calculateTimestampRemaining(stateObj) {
+    const now = new Date().getTime();
+    const value = new Date(stateObj.state).getTime();
+    this._timerTimeRemaining = Math.max((value - now) / 1000, 0);
   }
 
   static get styles(): CSSResultGroup {
