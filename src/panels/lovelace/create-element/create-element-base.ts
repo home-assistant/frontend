@@ -93,6 +93,12 @@ export const createErrorCardConfig = (error, origConfig) => ({
   origConfig,
 });
 
+export const createErrorBadgeConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
 const _createElement = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
