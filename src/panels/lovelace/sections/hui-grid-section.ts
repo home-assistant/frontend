@@ -26,11 +26,11 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
 
 export const DEFAULT_GRID_OPTIONS = {
   grid_columns: 4,
-  grid_rows: 1,
+  grid_rows: "auto",
 } as const satisfies LovelaceLayoutOptions;
 
 type GridSizeValue = {
-  rows?: number;
+  rows?: number | "auto";
   columns?: number;
 };
 
