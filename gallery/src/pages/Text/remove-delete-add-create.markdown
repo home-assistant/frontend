@@ -5,13 +5,13 @@ subtitle: The difference between remove/delete and add/create.
 
 # Removing or deleting content
 
-Remove and Delete are quite similar, but can be frustrating if used inconsistently.
+_Remove_ and _Delete_ are quite similar, but can be frustrating if used inconsistently.
 - Remove refers to an action that can be restored or reapplied.
 - Delete refers to a permanent, non-recoverable action.
 
 ## Remove
 
-The term Remove should always be used when an item/setting or content is to be removed or disassociated, but the action can be reversed or reapplied.
+The term _Remove_ should always be used when an item/setting or content is to be removed or disassociated, but the action can be reversed or reapplied.
 
 For example:
 
@@ -24,7 +24,7 @@ For example:
 
 ## Delete
 
-The term Delete should always be used to refer to any action that will cause the permanent deletion of an item/setting or content.
+The term _Delete_ should always be used to refer to any action that will cause the permanent deletion of an item/setting or content.
 
 For example:
 
