@@ -11,7 +11,7 @@ Remove and Delete are quite similar, but can be frustrating if used inconsistent
 
 ## Remove
 
-The term Remove should always be used when an item/setting or content is to be removed or disassociated, but the action can be reversed or reapplied. 
+The term Remove should always be used when an item/setting or content is to be removed or disassociated, but the action can be reversed or reapplied.
 
 For example:
 
