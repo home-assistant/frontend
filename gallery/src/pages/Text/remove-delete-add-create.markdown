@@ -6,6 +6,7 @@ subtitle: The difference between remove/delete and add/create.
 # Removing or deleting content
 
 _Remove_ and _Delete_ are quite similar, but can be frustrating if used inconsistently.
+
 - Remove refers to an action that can be restored or reapplied.
 - Delete refers to a permanent, non-recoverable action.
 
