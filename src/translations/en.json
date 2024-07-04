@@ -2107,8 +2107,8 @@
           "edit": "Edit",
           "never_scanned": "Never scanned",
           "create_automation": "Create automation with tag",
-          "confirm_remove_title": "Remove tag?",
-          "confirm_remove": "Are you sure you want to remove tag {tag}?",
+          "confirm_delete_title": "Delete tag?",
+          "confirm_delete": "Are you sure you want to delete tag {tag}?",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
