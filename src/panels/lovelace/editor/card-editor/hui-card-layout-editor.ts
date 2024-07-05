@@ -11,8 +11,10 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -61,11 +63,13 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
+    const sizeValue = this._gridSizeValue(options);
+
     return html`
       <div class="header">
         <p class="intro">
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.edit_card.layout.explanation`
+            "ui.panel.lovelace.editor.edit_card.layout.explanation"
           )}
         </p>
         <ha-button-menu
@@ -124,7 +128,7 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               .hass=${this.hass}
-              .value=${this._gridSizeValue(options)}
+              .value=${sizeValue}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
               .rowMin=${options.grid_min_rows}

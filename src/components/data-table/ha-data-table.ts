@@ -34,6 +34,7 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 export interface RowClickedEvent {
   id: string;
@@ -109,6 +110,8 @@ const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -317,6 +320,8 @@ export class HaDataTable extends LitElement {
   );
 
   protected render() {
+    const localize = this.localizeFunc || this.hass.localize;
+
     const columns = this._sortedColumns(this.columns, this.columnOrder);
 
     const renderRow = (row: DataTableRowData, index: number) =>
@@ -436,7 +441,7 @@ export class HaDataTable extends LitElement {
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText ||
-                      this.hass.localize("ui.components.data-table.no-data")}
+                      localize("ui.components.data-table.no-data")}
                     </div>
                   </div>
                 </div>
@@ -619,6 +624,8 @@ export class HaDataTable extends LitElement {
       return;
     }
 
+    const localize = this.localizeFunc || this.hass.localize;
+
     if (this.appendRow || this.hasFab || this.groupColumn) {
       let items = [...data];
 
@@ -672,7 +679,7 @@ export class HaDataTable extends LitElement {
               >
               </ha-icon-button>
               ${groupName === UNDEFINED_GROUP_KEY
-                ? this.hass.localize("ui.components.data-table.ungrouped")
+                ? localize("ui.components.data-table.ungrouped")
                 : groupName || ""}
             </div>`,
           });
