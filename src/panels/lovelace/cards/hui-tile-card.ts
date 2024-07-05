@@ -399,54 +399,56 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
         </div>
-        <div class="content ${classMap(contentClasses)}">
-          <div
-            class="icon-container"
-            role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-            tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
-            @action=${this._handleIconAction}
-            .actionHandler=${actionHandler()}
-          >
-            ${imageUrl
-              ? html`
-                  <ha-tile-image
-                    .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
-                    .imageUrl=${imageUrl}
-                  ></ha-tile-image>
-                `
-              : html`
-                  <ha-tile-icon
-                    data-domain=${ifDefined(domain)}
-                    data-state=${ifDefined(stateObj?.state)}
-                  >
-                    <ha-state-icon
-                      .icon=${this._config.icon}
-                      .stateObj=${stateObj}
-                      .hass=${this.hass}
-                    ></ha-state-icon>
-                  </ha-tile-icon>
-                `}
-            ${renderTileBadge(stateObj, this.hass)}
+        <div class="container">
+          <div class="content ${classMap(contentClasses)}">
+            <div
+              class="icon-container"
+              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
+              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
+              @action=${this._handleIconAction}
+              .actionHandler=${actionHandler()}
+            >
+              ${imageUrl
+                ? html`
+                    <ha-tile-image
+                      .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
+                      .imageUrl=${imageUrl}
+                    ></ha-tile-image>
+                  `
+                : html`
+                    <ha-tile-icon
+                      data-domain=${ifDefined(domain)}
+                      data-state=${ifDefined(stateObj?.state)}
+                    >
+                      <ha-state-icon
+                        .icon=${this._config.icon}
+                        .stateObj=${stateObj}
+                        .hass=${this.hass}
+                      ></ha-state-icon>
+                    </ha-tile-icon>
+                  `}
+              ${renderTileBadge(stateObj, this.hass)}
+            </div>
+            <ha-tile-info
+              id="info"
+              .primary=${name}
+              .secondary=${localizedState}
+            ></ha-tile-info>
           </div>
-          <ha-tile-info
-            id="info"
-            .primary=${name}
-            .secondary=${localizedState}
-          ></ha-tile-info>
+          ${this._config.features
+            ? html`
+                <hui-card-features
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .color=${this._config.color}
+                  .features=${this._config.features}
+                  style=${styleMap({
+                    "--feature-count": this._config.features.length.toString(),
+                  })}
+                ></hui-card-features>
+              `
+            : nothing}
         </div>
-        ${this._config.features
-          ? html`
-              <hui-card-features
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .color=${this._config.color}
-                .features=${this._config.features}
-                style=${styleMap({
-                  "--feature-count": this._config.features.length.toString(),
-                })}
-              ></hui-card-features>
-            `
-          : nothing}
       </ha-card>
     `;
   }
@@ -494,12 +496,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         margin: calc(-1 * var(--ha-card-border-width, 1px));
         overflow: hidden;
       }
+      .container {
+        margin: calc(-1 * var(--ha-card-border-width, 1px));
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .content {
+        position: relative;
         display: flex;
         flex-direction: row;
         align-items: center;
         padding: 10px;
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
         flex: 1;
       }
       .vertical {
