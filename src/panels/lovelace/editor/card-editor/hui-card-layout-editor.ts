@@ -11,15 +11,17 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
-import { DEFAULT_GRID_OPTIONS } from "../../sections/hui-grid-section";
+import { computeSizeOnGrid } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
@@ -38,21 +40,17 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _cardElement?: HuiCard;
 
-  private _gridSizeValue = memoizeOne(
+  private _mergedOptions = memoizeOne(
     (
       options?: LovelaceLayoutOptions,
       defaultOptions?: LovelaceLayoutOptions
     ) => ({
-      rows:
-        options?.grid_rows ??
-        defaultOptions?.grid_rows ??
-        DEFAULT_GRID_OPTIONS.grid_rows,
-      columns:
-        options?.grid_columns ??
-        defaultOptions?.grid_columns ??
-        DEFAULT_GRID_OPTIONS.grid_columns,
+      ...defaultOptions,
+      ...options,
     })
   );
+
+  private _gridSizeValue = memoizeOne(computeSizeOnGrid);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -60,11 +58,18 @@ export class HuiCardLayoutEditor extends LitElement {
   );
 
   render() {
+    const options = this._mergedOptions(
+      this.config.layout_options,
+      this._defaultLayoutOptions
+    );
+
+    const sizeValue = this._gridSizeValue(options);
+
     return html`
       <div class="header">
         <p class="intro">
           ${this.hass.localize(
-            `ui.panel.lovelace.editor.edit_card.layout.explanation`
+            "ui.panel.lovelace.editor.edit_card.layout.explanation"
           )}
         </p>
         <ha-button-menu
@@ -123,12 +128,13 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               .hass=${this.hass}
-              .value=${this._gridSizeValue(
-                this.config.layout_options,
-                this._defaultLayoutOptions
-              )}
+              .value=${sizeValue}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
+              .rowMin=${options.grid_min_rows}
+              .rowMax=${options.grid_max_rows}
+              .columnMin=${options.grid_min_columns}
+              .columnMax=${options.grid_max_columns}
             ></ha-grid-size-picker>
           `}
     `;
@@ -146,6 +152,7 @@ export class HuiCardLayoutEditor extends LitElement {
         this._defaultLayoutOptions =
           this._cardElement?.getElementLayoutOptions();
       });
+      this._cardElement.load();
       this._defaultLayoutOptions = this._cardElement.getElementLayoutOptions();
     } catch (err) {
       // eslint-disable-next-line no-console

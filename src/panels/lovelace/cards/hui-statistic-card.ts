@@ -1,10 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,12 +16,12 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import {
+  StatisticsMetaData,
   fetchStatistic,
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
-  StatisticsMetaData,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -32,6 +32,7 @@ import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
+  LovelaceLayoutOptions,
 } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig, StatisticCardConfig } from "./types";
@@ -252,6 +253,15 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 2,
+      grid_rows: 2,
+      grid_min_columns: 2,
+      grid_min_rows: 2,
+    };
   }
 
   static get styles(): CSSResultGroup {

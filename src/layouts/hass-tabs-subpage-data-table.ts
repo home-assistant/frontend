@@ -430,6 +430,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 : ""}
               <ha-data-table
                 .hass=${this.hass}
+                .localize=${localize}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
@@ -575,10 +576,9 @@ export class HaTabsSubpageDataTable extends LitElement {
             </div>
             <div slot="primaryAction">
               <ha-button @click=${this._toggleFilters}>
-                ${this.hass.localize(
-                  "ui.components.subpage-data-table.show_results",
-                  { number: this.data.length }
-                )}
+                ${localize("ui.components.subpage-data-table.show_results", {
+                  number: this.data.length,
+                })}
               </ha-button>
             </div>
           </ha-dialog>`
