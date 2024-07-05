@@ -126,8 +126,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     let grid_min_columns = 2;
     let grid_rows = 1;
     if (this._config?.features?.length) {
-      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
-      grid_rows += featureHeight;
+      grid_rows += this._config.features.length;
     }
     if (this._config?.vertical) {
       grid_rows++;
@@ -442,6 +441,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .color=${this._config.color}
                 .features=${this._config.features}
+                style=${styleMap({
+                  "--feature-count": this._config.features.length.toString(),
+                })}
               ></hui-card-features>
             `
           : nothing}
@@ -471,7 +473,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           border-color 180ms ease-in-out;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: space-evenly;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);
@@ -496,11 +498,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 12px;
+        padding: 10px;
+        margin: calc(-1 * var(--ha-card-border-width, 1px));
+        flex: 1;
       }
       .vertical {
         flex-direction: column;
         text-align: center;
+        justify-content: center;
       }
       .vertical .icon-container {
         margin-bottom: 12px;
@@ -510,6 +515,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .vertical ha-tile-info {
         width: 100%;
+        flex: none;
       }
       .icon-container {
         position: relative;
@@ -544,7 +550,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-tile-info {
         position: relative;
-        flex: 1;
         min-width: 0;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;

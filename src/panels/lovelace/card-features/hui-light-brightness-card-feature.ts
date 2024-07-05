@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
@@ -8,6 +8,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { lightSupportsBrightness } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { LightBrightnessCardFeatureConfig } from "./types";
 
 export const supportsLightBrightnessCardFeature = (stateObj: HassEntity) => {
@@ -58,19 +59,17 @@ class HuiLightBrightnessCardFeature
         : undefined;
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${position}
-          min="1"
-          max="100"
-          .showHandle=${stateActive(this.stateObj)}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.card.light.brightness")}
-          unit="%"
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${position}
+        min="1"
+        max="100"
+        .showHandle=${stateActive(this.stateObj)}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.localize("ui.card.light.brightness")}
+        unit="%"
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -85,19 +84,7 @@ class HuiLightBrightnessCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        --control-slider-color: var(--feature-color);
-        --control-slider-background: var(--feature-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

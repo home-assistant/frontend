@@ -16,6 +16,7 @@ import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
 import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { LightColorTempCardFeatureConfig } from "./types";
 
 export const supportsLightColorTempCardFeature = (stateObj: HassEntity) => {
@@ -73,23 +74,21 @@ class HuiLightColorTempCardFeature
     const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${position}
-          mode="cursor"
-          .showHandle=${stateActive(this.stateObj)}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.localize("ui.card.light.color_temperature")}
-          .min=${minKelvin}
-          .max=${maxKelvin}
-          style=${styleMap({
-            "--gradient": gradient,
-          })}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${position}
+        mode="cursor"
+        .showHandle=${stateActive(this.stateObj)}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.localize("ui.card.light.color_temperature")}
+        .min=${minKelvin}
+        .max=${maxKelvin}
+        style=${styleMap({
+          "--gradient": gradient,
+        })}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -108,22 +107,18 @@ class HuiLightColorTempCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        --control-slider-color: var(--feature-color);
-        --control-slider-background: -webkit-linear-gradient(
-          left,
-          var(--gradient)
-        );
-        --control-slider-background-opacity: 1;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return [
+      cardFeatureStyles,
+      css`
+        ha-control-slider {
+          --control-slider-background: -webkit-linear-gradient(
+            left,
+            var(--gradient)
+          );
+          --control-slider-background-opacity: 1;
+        }
+      `,
+    ];
   }
 }
 
