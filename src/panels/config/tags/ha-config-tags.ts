@@ -301,12 +301,13 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private async _removeTag(selectedTag: Tag) {
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass!.localize("ui.panel.config.tag.confirm_remove_title"),
-        text: this.hass.localize("ui.panel.config.tag.confirm_remove", {
+        title: this.hass!.localize("ui.panel.config.tag.confirm_delete_title"),
+        text: this.hass.localize("ui.panel.config.tag.confirm_delete", {
           tag: selectedTag.name || selectedTag.id,
         }),
         dismissText: this.hass!.localize("ui.common.cancel"),
-        confirmText: this.hass!.localize("ui.common.remove"),
+        confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return false;
