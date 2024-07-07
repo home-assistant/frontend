@@ -5857,6 +5857,7 @@
             },
             "horizontal-stack": {
               "name": "Horizontal stack",
+              "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "humidifier": {
@@ -5992,6 +5993,7 @@
             },
             "vertical-stack": {
               "name": "Vertical stack",
+              "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Vertical stack card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
