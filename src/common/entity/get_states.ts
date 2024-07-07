@@ -122,14 +122,14 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   },
   climate: {
     hvac_action: [
-      "cooling",
+      "off",
+      "idle",
+      "preheating",
       "defrosting",
+      "heating",
+      "cooling",
       "drying",
       "fan",
-      "heating",
-      "idle",
-      "off",
-      "preheating",
     ],
   },
   cover: {
