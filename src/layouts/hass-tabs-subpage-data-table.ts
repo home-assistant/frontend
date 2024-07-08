@@ -638,6 +638,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         this.hiddenColumns = hiddenColumns;
         fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
       },
+      localizeFunc: this.localizeFunc,
     });
   }
 

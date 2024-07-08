@@ -78,6 +78,8 @@ export class DialogDataTableSettings extends LitElement {
       return nothing;
     }
 
+    const localize = this._params.localizeFunc || this.hass.localize;
+
     const columns = this._sortedColumns(
       this._params.columns,
       this._columnOrder,
@@ -90,7 +92,7 @@ export class DialogDataTableSettings extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.components.data-table.settings.header")
+          localize("ui.components.data-table.settings.header")
         )}
       >
         <ha-sortable
@@ -146,12 +148,10 @@ export class DialogDataTableSettings extends LitElement {
           </mwc-list>
         </ha-sortable>
         <ha-button slot="secondaryAction" @click=${this._reset}
-          >${this.hass.localize(
-            "ui.components.data-table.settings.restore"
-          )}</ha-button
+          >${localize("ui.components.data-table.settings.restore")}</ha-button
         >
         <ha-button slot="primaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.components.data-table.settings.done")}
+          ${localize("ui.components.data-table.settings.done")}
         </ha-button>
       </ha-dialog>
     `;
