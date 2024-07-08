@@ -47,11 +47,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _sectionConfigKeys = new WeakMap<HuiSection, string>();
 
-  private _getKey(sectionConfig: HuiSection) {
-    if (!this._sectionConfigKeys.has(sectionConfig)) {
-      this._sectionConfigKeys.set(sectionConfig, Math.random().toString());
+  private _badgeConfigKeys = new WeakMap<LovelaceBadge, string>();
+
+  private _getBadgeKey(badge: LovelaceBadge) {
+    if (!this._badgeConfigKeys.has(badge)) {
+      this._badgeConfigKeys.set(badge, Math.random().toString());
     }
-    return this._sectionConfigKeys.get(sectionConfig)!;
+    return this._badgeConfigKeys.get(badge)!;
+  }
+
+  private _getSectionKey(section: HuiSection) {
+    if (!this._sectionConfigKeys.has(section)) {
+      this._sectionConfigKeys.set(section, Math.random().toString());
+    }
+    return this._sectionConfigKeys.get(section)!;
   }
 
   private _computeSectionsCount() {
@@ -82,10 +91,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnsCount = this._config?.max_columns;
 
+    const badges = this.badges;
+
     return html`
-      ${this.badges.length > 0
-        ? html`<div class="badges">${this.badges}</div>`
-        : ""}
+      ${badges?.length > 0
+        ? html`
+            <div class="badges">
+              ${repeat(
+                badges,
+                (badge) => this._getBadgeKey(badge),
+                (badge) => html`<div class="badge">${badge}</div>`
+              )}
+            </div>
+          `
+        : nothing}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -103,7 +122,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         >
           ${repeat(
             sections,
-            (section) => this._getKey(section),
+            (section) => this._getSectionKey(section),
             (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
@@ -236,11 +255,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .badges {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 8px;
         margin: 4px 0;
         padding: var(--row-gap) var(--column-gap);
         padding-bottom: 0;
         font-size: 85%;
         text-align: center;
+      }
+
+      .badge {
+        display: block;
       }
 
       .container > * {
