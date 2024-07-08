@@ -25,8 +25,8 @@ export class HaTileImage extends LitElement {
     return css`
       .image {
         position: relative;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 16px;
         display: flex;
         flex: none;

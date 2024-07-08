@@ -507,7 +507,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 10px;
+        padding: 0 10px;
+        min-height: var(--row-height, 56px);
         flex: 1;
       }
       .vertical {
@@ -516,7 +517,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         justify-content: center;
       }
       .vertical .icon-container {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         margin-right: 0;
         margin-inline-start: initial;
         margin-inline-end: initial;
@@ -528,9 +529,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       .icon-container {
         position: relative;
         flex: none;
-        margin-right: 12px;
+        margin-right: 10px;
         margin-inline-start: initial;
-        margin-inline-end: 12px;
+        margin-inline-end: 10px;
         direction: var(--direction);
         transition: transform 180ms ease-in-out;
       }
