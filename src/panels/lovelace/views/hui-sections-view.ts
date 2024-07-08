@@ -17,6 +17,7 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import "../components/hui-badge-edit-mode";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
@@ -100,7 +101,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               ${repeat(
                 badges,
                 (badge) => this._getBadgeKey(badge),
-                (badge) => html`<div class="badge">${badge}</div>`
+                (badge, idx) => html`
+                  <div class="badge">
+                    ${editMode
+                      ? html`
+                          <hui-badge-edit-mode
+                            .hass=${this.hass}
+                            .lovelace=${this.lovelace}
+                            .path=${[this.index, idx]}
+                          >
+                            ${badge}
+                          </hui-badge-edit-mode>
+                        `
+                      : badge}
+                  </div>
+                `
               )}
             </div>
           `
@@ -268,6 +283,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .badge {
         display: block;
+        position: relative;
       }
 
       .container > * {
