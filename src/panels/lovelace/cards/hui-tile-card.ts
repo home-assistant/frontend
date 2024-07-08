@@ -510,6 +510,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         padding: 0 10px;
         min-height: var(--row-height, 56px);
         flex: 1;
+        pointer-events: none;
       }
       .vertical {
         flex-direction: column;
@@ -550,8 +551,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         inset-inline-end: -3px;
         inset-inline-start: initial;
       }
-      .icon-container:not([role="button"]) {
-        pointer-events: none;
+      .icon-container[role="button"] {
+        pointer-events: auto;
       }
       .icon-container[role="button"]:focus-visible,
       .icon-container[role="button"]:active {
@@ -562,7 +563,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         min-width: 0;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;
-        pointer-events: none;
       }
       hui-card-features {
         --feature-color: var(--tile-color);
