@@ -19,6 +19,7 @@ import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
+import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -26,11 +27,23 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { HomeAssistant } from "../../../types";
 import { HuiBadge } from "../cards/hui-badge";
 import "../components/hui-badge-edit-mode";
-import { addSection, deleteSection, moveSection } from "../editor/config-util";
+import {
+  addSection,
+  deleteSection,
+  moveBadge,
+  moveSection,
+} from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+
+const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
+  delay: 100,
+  delayOnTouchOnly: true,
+  direction: "horizontal",
+  invertedSwapThreshold: 0.7,
+} as HaSortableOptions;
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -49,6 +62,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _config?: LovelaceViewConfig;
 
   @state() private _sectionCount = 0;
+
+  @state() _dragging = false;
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
@@ -105,43 +120,58 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return html`
       ${badges?.length > 0
         ? html`
-            <div class="badges">
-              ${repeat(
-                badges,
-                (badge) => this._getBadgeKey(badge),
-                (badge, idx) => html`
-                  <div class="badge">
-                    ${editMode
-                      ? html`
-                          <hui-badge-edit-mode
-                            .hass=${this.hass}
-                            .lovelace=${this.lovelace}
-                            .path=${[this.index, idx]}
-                          >
-                            ${badge}
-                          </hui-badge-edit-mode>
-                        `
-                      : badge}
-                  </div>
-                `
-              )}
-              ${editMode
-                ? html`
-                    <button
-                      class="add-badge"
-                      @click=${this._addBadge}
-                      aria-label=${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.add_card"
-                      )}
-                      .title=${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.add_card"
-                      )}
-                    >
-                      <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                    </button>
+            <ha-sortable
+              .disabled=${!editMode}
+              @item-moved=${this._badgeMoved}
+              @drag-start=${this._dragStart}
+              @drag-end=${this._dragEnd}
+              group="badge"
+              draggable-selector=".badge"
+              .path=${[this.index]}
+              .rollback=${false}
+              .options=${BADGE_SORTABLE_OPTIONS}
+              invert-swap
+              no-style
+            >
+              <div class="badges">
+                ${repeat(
+                  badges,
+                  (badge) => this._getBadgeKey(badge),
+                  (badge, idx) => html`
+                    <div class="badge">
+                      ${editMode
+                        ? html`
+                            <hui-badge-edit-mode
+                              .hass=${this.hass}
+                              .lovelace=${this.lovelace}
+                              .path=${[this.index, idx]}
+                              .hiddenOverlay=${this._dragging}
+                            >
+                              ${badge}
+                            </hui-badge-edit-mode>
+                          `
+                        : badge}
+                    </div>
                   `
-                : nothing}
-            </div>
+                )}
+                ${editMode
+                  ? html`
+                      <button
+                        class="add-badge"
+                        @click=${this._addBadge}
+                        aria-label=${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.add_card"
+                        )}
+                        .title=${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.add_card"
+                        )}
+                      >
+                        <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                      </button>
+                    `
+                  : nothing}
+              </div>
+            </ha-sortable>
           `
         : nothing}
       <ha-sortable
@@ -215,6 +245,25 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _badgeMoved(ev) {
+    ev.stopPropagation();
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const newConfig = moveBadge(
+      this.lovelace!.config,
+      [...oldPath, oldIndex] as [number, number, number],
+      [...newPath, newIndex] as [number, number, number]
+    );
+    this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _dragStart() {
+    this._dragging = true;
+  }
+
+  private _dragEnd() {
+    this._dragging = false;
   }
 
   private _addBadge() {
@@ -300,6 +349,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       .badges {
         display: flex;
         align-items: flex-start;
+        flex-wrap: wrap;
         justify-content: center;
         gap: 8px;
         margin: 4px 0;
@@ -423,6 +473,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --mdc-icon-size: 18px;
         cursor: pointer;
         color: var(--primary-text-color);
+      }
+      .add-badge:focus {
+        border-style: solid;
       }
     `;
   }
