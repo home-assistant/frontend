@@ -21,10 +21,10 @@ import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import {
   LovelaceCardPath,
-  findLovelaceCards,
+  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
@@ -57,9 +57,9 @@ export class HuiCardEditMode extends LitElement {
   })
   protected _clipboard?: LovelaceCardConfig;
 
-  private get _cards() {
+  private get _badges() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceCards(this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("badges", this.lovelace!.config, containerPath)!;
   }
 
   private _touchStarted = false;
@@ -111,8 +111,8 @@ export class HuiCardEditMode extends LitElement {
       <div class="badge-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
-          @click=${this._editCard}
-          @keydown=${this._editCard}
+          @click=${this._editBadge}
+          @keydown=${this._editBadge}
           tabindex="0"
         >
           <div class="edit-overlay"></div>
@@ -188,16 +188,16 @@ export class HuiCardEditMode extends LitElement {
   private _duplicateCard(): void {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
-    const cardConfig = this._cards![cardIndex];
-    showEditCardDialog(this, {
+    const badgeConfig = this._badges![cardIndex];
+    showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: containerPath,
-      cardConfig,
+      badgeConfig,
     });
   }
 
-  private _editCard(ev): void {
+  private _editBadge(ev): void {
     if (ev.defaultPrevented) {
       return;
     }
@@ -206,7 +206,7 @@ export class HuiCardEditMode extends LitElement {
     }
     ev.preventDefault();
     ev.stopPropagation();
-    fireEvent(this, "ll-edit-card", { path: this.path! });
+    fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
   private _cutCard(): void {
@@ -216,7 +216,7 @@ export class HuiCardEditMode extends LitElement {
 
   private _copyCard(): void {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._cards[cardIndex];
+    const cardConfig = this._badges[cardIndex];
     this._clipboard = deepClone(cardConfig);
   }
 

@@ -1,4 +1,5 @@
 import type { Condition } from "../../../panels/lovelace/common/validate-condition";
+import { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
@@ -10,6 +11,7 @@ export interface LovelaceBaseSectionConfig {
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   type?: string;
   cards?: LovelaceCardConfig[];
+  badges?: LovelaceBadgeConfig[]; // Not supported yet
 }
 
 export interface LovelaceStrategySectionConfig

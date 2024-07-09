@@ -22,6 +22,7 @@ import type { HuiCard } from "../cards/hui-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createViewElement } from "../create-element/create-view-element";
+import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteCard } from "../editor/config-util";
@@ -43,11 +44,13 @@ declare global {
     "ll-create-card": { suggested?: string[] } | undefined;
     "ll-edit-card": { path: LovelaceCardPath };
     "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
+    "ll-edit-badge": { path: LovelaceCardPath };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
     "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
+    "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
   }
 }
 
@@ -328,6 +331,15 @@ export class HUIView extends ReactiveElement {
         const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
         this.lovelace.saveConfig(newLovelace);
       }
+    });
+    this._layoutElement.addEventListener("ll-edit-badge", (ev) => {
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      showEditBadgeDialog(this, {
+        lovelaceConfig: this.lovelace.config,
+        saveConfig: this.lovelace.saveConfig,
+        path: [this.index],
+        badgeIndex: cardIndex,
+      });
     });
   }
 

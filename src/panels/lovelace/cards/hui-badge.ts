@@ -4,7 +4,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import {
   attachConditionMediaQueriesListeners,
@@ -12,7 +11,7 @@ import {
 } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
-import type { LovelaceCard } from "../types";
+import type { LovelaceBadge } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -24,7 +23,7 @@ declare global {
 export class HuiBadge extends ReactiveElement {
   @property({ attribute: false }) public preview = false;
 
-  @property({ attribute: false }) public config?: LovelaceCardConfig;
+  @property({ attribute: false }) public config?: LovelaceBadgeConfig;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -37,7 +36,7 @@ export class HuiBadge extends ReactiveElement {
     this._loadElement(this.config);
   }
 
-  private _element?: LovelaceCard;
+  private _element?: LovelaceBadge;
 
   private _listeners: MediaQueriesListener[] = [];
 
@@ -56,7 +55,7 @@ export class HuiBadge extends ReactiveElement {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceCardConfig) {
+  private _updateElement(config: LovelaceBadgeConfig) {
     if (!this._element) {
       return;
     }
@@ -65,13 +64,12 @@ export class HuiBadge extends ReactiveElement {
     fireEvent(this, "badge-updated");
   }
 
-  private _loadElement(config: LovelaceCardConfig) {
+  private _loadElement(config: LovelaceBadgeConfig) {
     this._element = createBadgeElement(config);
     this._elementConfig = config;
     if (this.hass) {
       this._element.hass = this.hass;
     }
-    this._element.preview = this.preview;
     this._element.addEventListener(
       "ll-upgrade",
       (ev: Event) => {
@@ -128,13 +126,6 @@ export class HuiBadge extends ReactiveElement {
           }
         } catch (e: any) {
           this._loadElement(createErrorBadgeConfig(e.message, null));
-        }
-      }
-      if (changedProps.has("preview")) {
-        try {
-          this._element.preview = this.preview;
-        } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
     }

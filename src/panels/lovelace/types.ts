@@ -107,6 +107,10 @@ export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
 }
 
+export interface LovelaceBadgeEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceBadgeConfig): void;
+}
+
 export interface LovelaceHeaderFooterEditor
   extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceHeaderFooterConfig): void;
