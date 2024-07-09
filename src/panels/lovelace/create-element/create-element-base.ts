@@ -19,6 +19,7 @@ import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import {
   LovelaceBadge,
+  LovelaceBadgeConstructor,
   LovelaceCard,
   LovelaceCardConstructor,
   LovelaceCardFeature,
@@ -39,7 +40,7 @@ interface CreateElementConfigTypes {
   badge: {
     config: LovelaceBadgeConfig;
     element: LovelaceBadge;
-    constructor: unknown;
+    constructor: LovelaceBadgeConstructor;
   };
   element: {
     config: LovelaceElementConfig;

@@ -21,6 +21,11 @@ import { EntityBadgeConfig } from "./types";
 
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
+  public static async getConfigForm() {
+    return (await import("../editor/config-elements/hui-entity-badge-editor"))
+      .default;
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() protected _config?: EntityBadgeConfig;
@@ -74,7 +79,12 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity!];
+    const entityId = this._config.entity;
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
+
+    if (!stateObj) {
+      return nothing;
+    }
 
     const color = this._computeStateColor(stateObj, this._config.color);
 
@@ -112,13 +122,12 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         --ha-ripple-color: var(--badge-color);
         --ha-ripple-hover-opacity: 0.04;
         --ha-ripple-pressed-opacity: 0.12;
-        display: inline-flex;
+        display: flex;
         flex-direction: row;
         align-items: center;
         gap: 8px;
         height: 36px;
         padding: 6px 16px 6px 12px;
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
         box-sizing: border-box;
         width: auto;
         border-radius: 18px;

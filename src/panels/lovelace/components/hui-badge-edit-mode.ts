@@ -1,14 +1,10 @@
-import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
-  mdiContentCopy,
-  mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -138,14 +134,6 @@ export class HuiCardEditMode extends LitElement {
               "ui.panel.lovelace.editor.edit_card.duplicate"
             )}
           </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
-          </ha-list-item>
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" class="warning">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
@@ -174,13 +162,7 @@ export class HuiCardEditMode extends LitElement {
         this._duplicateCard();
         break;
       case 1:
-        this._copyCard();
-        break;
-      case 2:
-        this._cutCard();
-        break;
-      case 3:
-        this._deleteCard(true);
+        this._deleteCard();
         break;
     }
   }
@@ -209,19 +191,8 @@ export class HuiCardEditMode extends LitElement {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
-  private _cutCard(): void {
-    this._copyCard();
-    this._deleteCard(false);
-  }
-
-  private _copyCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._badges[cardIndex];
-    this._clipboard = deepClone(cardConfig);
-  }
-
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-badge", { path: this.path! });
   }
 
   static get styles(): CSSResultGroup {

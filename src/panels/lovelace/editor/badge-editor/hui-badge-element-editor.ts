@@ -1,13 +1,13 @@
 import { customElement } from "lit/decorators";
 import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { getCardElementClass } from "../../create-element/create-card-element";
+import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-badge-element-editor")
 export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig> {
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
-    const elClass = await getCardElementClass(this.configElementType!);
+    const elClass = await getBadgeElementClass(this.configElementType!);
 
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
@@ -18,7 +18,7 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
   }
 
   protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
-    const elClass = await getCardElementClass(this.configElementType!);
+    const elClass = await getBadgeElementClass(this.configElementType!);
 
     // Check if a schema exists
     if (elClass && elClass.getConfigForm) {
