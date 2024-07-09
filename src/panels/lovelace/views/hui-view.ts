@@ -13,14 +13,11 @@ import {
   isStrategyView,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import {
-  createErrorBadgeConfig,
-  createErrorBadgeElement,
-} from "../badges/hui-error-badge";
+import "../cards/hui-badge";
+import type { HuiBadge } from "../cards/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { processConfigEntities } from "../common/process-config-entities";
-import { createBadgeElement } from "../create-element/create-badge-element";
 import { createViewElement } from "../create-element/create-view-element";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
@@ -35,7 +32,7 @@ import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
-import type { Lovelace, LovelaceBadge } from "../types";
+import type { Lovelace } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
 
 declare global {
@@ -66,7 +63,7 @@ export class HUIView extends ReactiveElement {
 
   @state() private _cards: HuiCard[] = [];
 
-  @state() private _badges: LovelaceBadge[] = [];
+  @state() private _badges: HuiBadge[] = [];
 
   @state() private _sections: HuiSection[] = [];
 
@@ -89,20 +86,16 @@ export class HUIView extends ReactiveElement {
     return element;
   }
 
-  public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
-    const element = createBadgeElement(badgeConfig) as LovelaceBadge;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorBadgeElement(createErrorBadgeConfig(e.message));
-    }
-    element.addEventListener(
-      "ll-badge-rebuild",
-      () => {
-        this._rebuildBadge(element, badgeConfig);
-      },
-      { once: true }
-    );
+  public _createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
+    const element = document.createElement("hui-badge");
+    element.hass = this.hass;
+    element.preview = this.lovelace.editMode;
+    element.config = badgeConfig;
+    element.addEventListener("badge-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this._badges = [...this._badges];
+    });
+    element.load();
     return element;
   }
 
@@ -172,11 +165,7 @@ export class HUIView extends ReactiveElement {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._badges.forEach((badge) => {
-          try {
-            badge.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildBadge(badge, createErrorBadgeConfig(e.message));
-          }
+          badge.hass = this.hass;
         });
 
         this._cards.forEach((element) => {
@@ -349,14 +338,11 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    const badges = processConfigEntities(config.badges as any);
-    this._badges = badges.map((badge) => {
-      const element = createBadgeElement(badge);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorBadgeElement(createErrorBadgeConfig(e.message));
-      }
+    const badges = processConfigEntities(
+      config.badges as any
+    ) as LovelaceBadgeConfig[];
+    this._badges = badges.map((badgeConfig) => {
+      const element = this._createBadgeElement(badgeConfig);
       return element;
     });
   }
@@ -384,27 +370,6 @@ export class HUIView extends ReactiveElement {
       element.index = index;
       return element;
     });
-  }
-
-  private _rebuildBadge(
-    badgeElToReplace: LovelaceBadge,
-    config: LovelaceBadgeConfig
-  ): void {
-    let newBadgeEl = this.createBadgeElement(config);
-    try {
-      newBadgeEl.hass = this.hass;
-    } catch (e: any) {
-      newBadgeEl = createErrorBadgeElement(createErrorBadgeConfig(e.message));
-    }
-    if (badgeElToReplace.parentElement) {
-      badgeElToReplace.parentElement!.replaceChild(
-        newBadgeEl,
-        badgeElToReplace
-      );
-    }
-    this._badges = this._badges!.map((curBadgeEl) =>
-      curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
-    );
   }
 
   private _rebuildSection(
