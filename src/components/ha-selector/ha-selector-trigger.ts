@@ -35,10 +35,6 @@ export class HaTriggerSelector extends LitElement {
         display: block;
         margin-bottom: 16px;
       }
-      :host([disabled]) ha-automation-trigger {
-        opacity: var(--light-disabled-opacity);
-        pointer-events: none;
-      }
       label {
         display: block;
         margin-bottom: 4px;
