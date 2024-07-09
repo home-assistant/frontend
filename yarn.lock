@@ -9074,7 +9074,7 @@ __metadata:
     sortablejs: "npm:1.15.2"
     source-map-url: "npm:0.4.1"
     stacktrace-js: "npm:2.0.2"
-    superstruct: "npm:1.0.4"
+    superstruct: "npm:2.0.2"
     systemjs: "npm:6.15.1"
     tar: "npm:7.4.0"
     terser-webpack-plugin: "npm:5.3.10"
@@ -13601,10 +13601,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superstruct@npm:1.0.4":
-  version: 1.0.4
-  resolution: "superstruct@npm:1.0.4"
-  checksum: 10/9b3fd70a08c5ad3ea78b5c6b7ab90d31dde71af10448208d296c3d29ba2e55dfd817dfef75957163ee032163d04c4b2e0cb2fddff30313516aa60f748c1a48da
+"superstruct@npm:2.0.2":
+  version: 2.0.2
+  resolution: "superstruct@npm:2.0.2"
+  checksum: 10/10e1944a9da4baee187fbaa6c5d97d7af266b55786dfe50bce67f0f1e7d93f1a5a42dd51e245a2e16404f8336d07c21c67f1c1fbc4ad0a252d3d2601d6c926da
   languageName: node
   linkType: hard
 
