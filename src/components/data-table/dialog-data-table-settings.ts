@@ -236,14 +236,18 @@ export class DialogDataTableSettings extends LitElement {
       }
 
       columns.forEach((col) => {
-        if (col.key !== column && !newOrder.includes(col.key)) {
+        if (!newOrder.includes(col.key)) {
           if (col.moveable === false) {
             newOrder.unshift(col.key);
           } else {
             newOrder.splice(lastMoveable + 1, 0, col.key);
           }
 
-          if (col.defaultHidden && !hidden.includes(col.key)) {
+          if (
+            col.key !== column &&
+            col.defaultHidden &&
+            !hidden.includes(col.key)
+          ) {
             hidden.push(col.key);
           }
         }
