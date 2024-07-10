@@ -451,7 +451,7 @@ export class HaServiceControl extends LitElement {
           >
           <span slot="description"
             >${this.hass.localize(
-              "ui.components.service-control.target_description"
+              "ui.components.service-control.target_secondary"
             )}</span
           ><ha-selector
             .hass=${this.hass}
@@ -478,7 +478,9 @@ export class HaServiceControl extends LitElement {
     ${shouldRenderServiceDataYaml
       ? html`<ha-yaml-editor
           .hass=${this.hass}
-          .label=${this.hass.localize("ui.components.service-control.data")}
+          .label=${this.hass.localize(
+            "ui.components.service-control.action_data"
+          )}
           .name=${"data"}
           .readOnly=${this.disabled}
           .defaultValue=${this._value?.data}
