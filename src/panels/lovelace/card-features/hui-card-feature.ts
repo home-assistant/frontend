@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
@@ -17,15 +17,15 @@ export class HuiCardFeature extends LitElement {
 
   @property({ attribute: false }) public color?: string;
 
-  private _featuresElement?: LovelaceCardFeature | HuiErrorCard;
+  private _element?: LovelaceCardFeature | HuiErrorCard;
 
   private _getFeatureElement(feature: LovelaceCardFeatureConfig) {
-    if (!this._featuresElement) {
-      this._featuresElement = createCardFeatureElement(feature);
-      return this._featuresElement;
+    if (!this._element) {
+      this._element = createCardFeatureElement(feature);
+      return this._element;
     }
 
-    return this._featuresElement;
+    return this._element;
   }
 
   protected render() {
@@ -41,10 +41,6 @@ export class HuiCardFeature extends LitElement {
       (element as LovelaceCardFeature).color = this.color;
     }
     return html`${element}`;
-  }
-
-  static get styles(): CSSResultGroup {
-    return css``;
   }
 }
 

@@ -442,9 +442,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                   .stateObj=${stateObj}
                   .color=${this._config.color}
                   .features=${this._config.features}
-                  style=${styleMap({
-                    "--feature-count": this._config.features.length.toString(),
-                  })}
                 ></hui-card-features>
               `
             : nothing}
@@ -475,7 +472,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           border-color 180ms ease-in-out;
         display: flex;
         flex-direction: column;
-        justify-content: space-evenly;
+        justify-content: space-between;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);

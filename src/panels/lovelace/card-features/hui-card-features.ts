@@ -52,7 +52,7 @@ export class HuiCardFeatures extends LitElement {
         flex-direction: column;
         padding: var(--feature-padding);
         padding-top: 0px;
-        gap: 12px;
+        gap: var(--feature-padding);
         width: 100%;
         height: 100%;
         box-sizing: border-box;
