@@ -150,8 +150,10 @@ export class HuiCard extends ReactiveElement {
       if (changedProps.has("config")) {
         const elementConfig = this._elementConfig;
         if (this.config !== elementConfig && this.config) {
-          const typeChanged = this.config?.type !== elementConfig?.type;
-          if (typeChanged) {
+          const typeChanged =
+            this.config?.type !== elementConfig?.type || this.preview;
+          // Rebuild the card if the type of the card has changed or if we are in preview mode
+          if (typeChanged || this.preview) {
             this._loadElement(this.config);
           } else {
             this._updateElement(this.config);
