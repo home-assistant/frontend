@@ -11,11 +11,17 @@ export interface PersitentNotificationEntity extends HassEntity {
   message?: string;
 }
 
+export interface PersistentNotificationAction {
+  action: string;
+  title: string;
+}
+
 export interface PersistentNotification {
   created_at: string;
   message: string;
   notification_id: string;
   title: string;
+  actions?: PersistentNotificationAction[];
   status: "read" | "unread";
 }
 

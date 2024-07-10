@@ -39,6 +39,16 @@ export class HuiPersistentNotificationItem extends LitElement {
           </span>
         </div>
 
+        ${this.notification.actions?.map(
+          (a) =>
+            html` <mwc-button
+              slot="actions"
+              @click=${this._handleAction}
+              .action=${a}
+              >${a.title}</mwc-button
+            >`
+        )}
+
         <mwc-button slot="actions" @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
@@ -65,6 +75,17 @@ export class HuiPersistentNotificationItem extends LitElement {
         overflow-wrap: break-word;
       }
     `;
+  }
+
+  private _handleAction(ev): void {
+    this.hass?.callApi(
+      "POST",
+      `events/persistent_notification_action`,
+      ev.currentTarget.action
+    );
+    this.hass!.callService("persistent_notification", "dismiss", {
+      notification_id: this.notification!.notification_id,
+    });
   }
 
   private _handleDismiss(): void {
