@@ -193,6 +193,7 @@ export class DialogDataTableSettings extends LitElement {
           .filter(([_key, col]) => col.defaultHidden)
           .map(([key]) => key)),
     ];
+
     if (wasHidden && hidden.includes(column)) {
       hidden.splice(hidden.indexOf(column), 1);
     } else if (!wasHidden) {
@@ -242,7 +243,11 @@ export class DialogDataTableSettings extends LitElement {
             newOrder.splice(lastMoveable + 1, 0, col.key);
           }
 
-          if (col.defaultHidden) {
+          if (
+            col.defaultHidden &&
+            !hidden.includes(col.key) &&
+            col.key !== column
+          ) {
             hidden.push(col.key);
           }
         }
