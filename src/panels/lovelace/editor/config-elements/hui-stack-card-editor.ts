@@ -20,6 +20,10 @@ import {
   optional,
   string,
 } from "superstruct";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import { storage } from "../../../../common/decorators/storage";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
@@ -46,6 +50,13 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA = [
+  {
+    name: "title",
+    selector: { text: {} },
+  },
+] as const;
+
 @customElement("hui-stack-card-editor")
 export class HuiStackCardEditor
   extends LitElement
@@ -71,6 +82,8 @@ export class HuiStackCardEditor
 
   @state() protected _guiModeAvailable? = true;
 
+  protected _schema: readonly HaFormSchema[] = SCHEMA;
+
   @query("hui-card-element-editor")
   protected _cardEditorEl?: HuiCardElementEditor;
 
@@ -83,6 +96,10 @@ export class HuiStackCardEditor
     this._cardEditorEl?.focusYamlEditor();
   }
 
+  protected formData(): object {
+    return this._config!;
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -93,6 +110,13 @@ export class HuiStackCardEditor
     const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this.formData()}
+        .schema=${this._schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <div class="card-config">
         <div class="toolbar">
           <paper-tabs
@@ -284,6 +308,15 @@ export class HuiStackCardEditor
       this._cardEditorEl!.GUImode = value;
     }
   }
+
+  protected _valueChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  protected _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.${this._config!.type}.${schema.name}`
+    );
 
   static get styles(): CSSResultGroup {
     return [

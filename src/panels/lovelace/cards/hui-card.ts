@@ -23,7 +23,7 @@ declare global {
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
-  @property({ attribute: false }) public preview = false;
+  @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public isPanel = false;
 
