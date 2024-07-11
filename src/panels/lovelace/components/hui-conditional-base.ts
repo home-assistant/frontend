@@ -24,7 +24,7 @@ declare global {
 export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
@@ -116,7 +116,7 @@ export class HuiConditionalBase extends ReactiveElement {
       changed.has("_element") ||
       changed.has("_config") ||
       changed.has("hass") ||
-      changed.has("editMode")
+      changed.has("preview")
     ) {
       this._listenMediaQueries();
       this._updateVisibility();
@@ -128,7 +128,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    this._element.editMode = this.editMode;
+    this._element.preview = this.preview;
 
     const conditionMet = checkConditionsMet(
       this._config!.conditions,
@@ -142,7 +142,7 @@ export class HuiConditionalBase extends ReactiveElement {
     if (!this._element || !this.hass) {
       return;
     }
-    const visible = this.editMode || conditionMet;
+    const visible = this.preview || conditionMet;
     if (this.hidden !== !visible) {
       this.toggleAttribute("hidden", !visible);
       this.style.setProperty("display", visible ? "" : "none");

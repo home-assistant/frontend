@@ -1,6 +1,9 @@
 import {
   mdiAlertCircleOutline,
   mdiGauge,
+  mdiThermometer,
+  mdiThermometerWater,
+  mdiSunWireless,
   mdiWaterPercent,
   mdiWeatherCloudy,
   mdiWeatherFog,
@@ -114,10 +117,15 @@ export const weatherIcons = {
 };
 
 export const weatherAttrIcons = {
+  apparent_temperature: mdiThermometer,
+  cloud_coverage: mdiWeatherCloudy,
+  dew_point: mdiThermometerWater,
   humidity: mdiWaterPercent,
   wind_bearing: mdiWeatherWindy,
   wind_speed: mdiWeatherWindy,
   pressure: mdiGauge,
+  temperature: mdiThermometer,
+  uv_index: mdiSunWireless,
   visibility: mdiWeatherFog,
   precipitation: mdiWeatherRainy,
 };
@@ -221,6 +229,8 @@ export const getWeatherUnit = (
         stateObj.attributes.pressure_unit ||
         (lengthUnit === "km" ? "hPa" : "inHg")
       );
+    case "apparent_temperature":
+    case "dew_point":
     case "temperature":
     case "templow":
       return (
@@ -228,6 +238,7 @@ export const getWeatherUnit = (
       );
     case "wind_speed":
       return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
+    case "cloud_coverage":
     case "humidity":
     case "precipitation_probability":
       return "%";

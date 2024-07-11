@@ -6,6 +6,7 @@ import {
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
+  mdiFileEdit,
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -40,10 +41,12 @@ import "../../../components/ha-yaml-editor";
 import {
   AutomationConfig,
   AutomationEntity,
+  BlueprintAutomationConfig,
   deleteAutomation,
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
+  normalizeAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
@@ -65,6 +68,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -77,9 +81,9 @@ declare global {
       unsub?: UnsubscribeFunc;
     };
     "ui-mode-not-available": Error;
-    duplicate: undefined;
     "move-down": undefined;
     "move-up": undefined;
+    duplicate: undefined;
   }
 }
 
@@ -111,6 +115,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @state() private _validationErrors?: (string | TemplateResult)[];
+
+  @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
   private _configSubscriptions: Record<
     string,
@@ -196,7 +202,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           <ha-list-item
             graphic="icon"
             @click=${this._promptAutomationAlias}
-            .disabled=${!this.automationId || this._mode === "yaml"}
+            .disabled=${this._readOnly ||
+            !this.automationId ||
+            this._mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
@@ -220,7 +228,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             : nothing}
 
           <ha-list-item
-            .disabled=${!this._readOnly && !this.automationId}
+            .disabled=${this._blueprintConfig ||
+            (!this._readOnly && !this.automationId)}
             graphic="icon"
             @click=${this._duplicate}
           >
@@ -234,6 +243,24 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               .path=${mdiContentDuplicate}
             ></ha-svg-icon>
           </ha-list-item>
+
+          ${useBlueprint
+            ? html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._takeControl}
+                  .disabled=${this._readOnly}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.take_control"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFileEdit}
+                  ></ha-svg-icon>
+                </ha-list-item>
+              `
+            : nothing}
 
           <li divider role="separator"></li>
 
@@ -315,6 +342,32 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   : nothing}
               </ha-alert>`
             : ""}
+          ${this._blueprintConfig
+            ? html`<ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.confirm_take_control"
+                )}
+                <div slot="action" style="display: flex;">
+                  <mwc-button @click=${this._takeControlSave}
+                    >${this.hass.localize("ui.common.yes")}</mwc-button
+                  >
+                  <mwc-button @click=${this._revertBlueprint}
+                    >${this.hass.localize("ui.common.no")}</mwc-button
+                  >
+                </div>
+              </ha-alert>`
+            : this._readOnly
+              ? html`<ha-alert alert-type="warning" dismissable
+                  >${this.hass.localize(
+                    "ui.panel.config.automation.editor.read_only"
+                  )}
+                  <mwc-button slot="action" @click=${this._duplicate}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.migrate"
+                    )}
+                  </mwc-button>
+                </ha-alert>`
+              : nothing}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -332,7 +385,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
                           @value-changed=${this._valueChanged}
-                          @duplicate=${this._duplicate}
                         ></blueprint-automation-editor>
                       `
                     : html`
@@ -344,25 +396,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
                           @value-changed=${this._valueChanged}
-                          @duplicate=${this._duplicate}
                         ></manual-automation-editor>
                       `}
                 </div>
               `
             : this._mode === "yaml"
-              ? html` ${this._readOnly
-                    ? html`<ha-alert alert-type="warning">
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.read_only"
-                        )}
-                        <mwc-button slot="action" @click=${this._duplicate}>
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.migrate"
-                          )}
-                        </mwc-button>
-                      </ha-alert>`
-                    : nothing}
-                  ${stateObj?.state === "off"
+              ? html`${stateObj?.state === "off"
                     ? html`
                         <ha-alert alert-type="info">
                           ${this.hass.localize(
@@ -387,7 +426,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <ha-fab
           slot="fab"
-          class=${classMap({ dirty: this._dirty })}
+          class=${classMap({ dirty: !this._readOnly && this._dirty })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           extended
           @click=${this._saveAutomation}
@@ -432,7 +471,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
       this._config = {
         ...baseConfig,
-        ...initData,
+        ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
@@ -441,7 +480,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeAutomationConfig(c.config);
         this._checkValidation();
       });
       this._entityId = this.entityId;
@@ -497,18 +536,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _normalizeConfig(config: AutomationConfig): AutomationConfig {
-    // Normalize data: ensure trigger, action and condition are lists
-    // Happens when people copy paste their automations into the config
-    for (const key of ["trigger", "condition", "action"]) {
-      const value = config[key];
-      if (value && !Array.isArray(value)) {
-        config[key] = [value];
-      }
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     try {
       const config = await fetchAutomationFileConfig(
@@ -517,7 +544,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       );
       this._dirty = false;
       this._readOnly = false;
-      this._config = this._normalizeConfig(config);
+      this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
       const entityRegistry = await fetchEntityRegistry(this.hass.connection);
@@ -637,6 +664,51 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       afterNextRender(() => history.back());
     }
   };
+
+  private async _takeControl() {
+    const config = this._config as BlueprintAutomationConfig;
+
+    try {
+      const result = await substituteBlueprint(
+        this.hass,
+        "automation",
+        config.use_blueprint.path,
+        config.use_blueprint.input || {}
+      );
+
+      const newConfig = {
+        ...normalizeAutomationConfig(result.substituted_config),
+        id: config.id,
+        alias: config.alias,
+        description: config.description,
+      };
+
+      this._blueprintConfig = config;
+      this._config = newConfig;
+      if (this._mode === "yaml") {
+        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
+      }
+      this._readOnly = true;
+      this._errors = undefined;
+    } catch (err: any) {
+      this._errors = err.message;
+    }
+  }
+
+  private _revertBlueprint() {
+    this._config = this._blueprintConfig;
+    if (this._mode === "yaml") {
+      this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
+    }
+    this._blueprintConfig = undefined;
+    this._readOnly = false;
+  }
+
+  private _takeControlSave() {
+    this._readOnly = false;
+    this._dirty = true;
+    this._blueprintConfig = undefined;
+  }
 
   private async _duplicate() {
     const result = this._readOnly
@@ -770,10 +842,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           padding-bottom: 0;
         }
         manual-automation-editor,
-        blueprint-automation-editor {
+        blueprint-automation-editor,
+        :not(.yaml-mode) > ha-alert {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+          display: block;
         }
         ha-yaml-editor {
           flex-grow: 1;

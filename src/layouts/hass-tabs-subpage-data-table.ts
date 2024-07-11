@@ -6,6 +6,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
+  mdiCog,
   mdiFilterVariant,
   mdiFilterVariantRemove,
   mdiFormatListChecks,
@@ -42,6 +43,7 @@ import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
@@ -171,6 +173,10 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ attribute: false }) public groupOrder?: string[];
 
+  @property({ attribute: false }) public columnOrder?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -289,6 +295,14 @@ export class HaTabsSubpageDataTable extends LitElement {
           ></ha-assist-chip>
         `
       : nothing;
+
+    const settingsButton = html`<ha-assist-chip
+      class="has-dropdown select-mode-chip"
+      @click=${this._openSettings}
+      .title=${localize("ui.components.subpage-data-table.settings")}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+    </ha-assist-chip>`;
 
     return html`
       <hass-tabs-subpage
@@ -416,6 +430,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 : ""}
               <ha-data-table
                 .hass=${this.hass}
+                .localize=${localize}
+                .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
                 .noDataText=${this.noDataText}
@@ -430,6 +446,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .groupColumn=${this._groupColumn}
                 .groupOrder=${this.groupOrder}
                 .initialCollapsedGroups=${this.initialCollapsedGroups}
+                .columnOrder=${this.columnOrder}
+                .hiddenColumns=${this.hiddenColumns}
               >
                 ${!this.narrow
                   ? html`
@@ -438,7 +456,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters
                               ? html`${filterButton}`
-                              : nothing}${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}
+                              : nothing}${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
                           </div>
                         </slot>
                       </div>
@@ -448,7 +466,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                         ${this.hasFilters && !this.showFilters
                           ? html`${filterButton}`
                           : nothing}
-                        ${selectModeBtn}${groupByMenu}${sortByMenu}
+                        ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
                       </div>`}
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
@@ -558,10 +576,9 @@ export class HaTabsSubpageDataTable extends LitElement {
             </div>
             <div slot="primaryAction">
               <ha-button @click=${this._toggleFilters}>
-                ${this.hass.localize(
-                  "ui.components.subpage-data-table.show_results",
-                  { number: this.data.length }
-                )}
+                ${localize("ui.components.subpage-data-table.show_results", {
+                  number: this.data.length,
+                })}
               </ha-button>
             </div>
           </ha-dialog>`
@@ -606,6 +623,23 @@ export class HaTabsSubpageDataTable extends LitElement {
   private _setGroupColumn(columnId: string) {
     this._groupColumn = columnId;
     fireEvent(this, "grouping-changed", { value: columnId });
+  }
+
+  private _openSettings() {
+    showDataTableSettingsDialog(this, {
+      columns: this.columns,
+      hiddenColumns: this.hiddenColumns,
+      columnOrder: this.columnOrder,
+      onUpdate: (
+        columnOrder: string[] | undefined,
+        hiddenColumns: string[] | undefined
+      ) => {
+        this.columnOrder = columnOrder;
+        this.hiddenColumns = hiddenColumns;
+        fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
+      },
+      localizeFunc: this.localizeFunc,
+    });
   }
 
   private _collapseAllGroups() {
@@ -874,6 +908,10 @@ declare global {
   interface HASSDomEvents {
     "search-changed": { value: string };
     "grouping-changed": { value: string };
+    "columns-changed": {
+      columnOrder: string[] | undefined;
+      hiddenColumns: string[] | undefined;
+    };
     "clear-filter": undefined;
   }
 }

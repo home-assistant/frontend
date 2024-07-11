@@ -46,7 +46,7 @@ class HaServicePicker extends LitElement {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .label=${this.hass.localize("ui.components.service-picker.service")}
+        .label=${this.hass.localize("ui.components.service-picker.action")}
         .filteredItems=${this._filteredServices(
           this.hass.localize,
           this.hass.services,

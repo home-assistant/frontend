@@ -75,6 +75,7 @@ export class HuiDialogSuggestCard extends LitElement {
           <hui-section
             .hass=${this.hass}
             .config=${this._sectionConfig}
+            preview
           ></hui-section>
         </div>
       `;
@@ -84,7 +85,11 @@ export class HuiDialogSuggestCard extends LitElement {
         <div class="element-preview">
           ${this._cardConfig.map(
             (cardConfig) => html`
-              <hui-card .hass=${this.hass} .config=${cardConfig}></hui-card>
+              <hui-card
+                .hass=${this.hass}
+                .config=${cardConfig}
+                preview
+              ></hui-card>
             `
           )}
         </div>

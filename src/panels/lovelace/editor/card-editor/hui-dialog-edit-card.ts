@@ -9,6 +9,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -29,6 +30,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import "../../sections/hui-section";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
@@ -234,6 +236,7 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
+              .showLayoutTab=${this._shouldShowLayoutTab()}
               .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
@@ -245,12 +248,23 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            <hui-card
-              .hass=${this.hass}
-              .config=${this._cardConfig}
-              editMode
-              class=${this._error ? "blur" : ""}
-            ></hui-card>
+            ${this._isInSection
+              ? html`
+                  <hui-section
+                    .hass=${this.hass}
+                    .config=${this._cardConfigInSection(this._cardConfig)}
+                    preview
+                    class=${this._error ? "blur" : ""}
+                  ></hui-section>
+                `
+              : html`
+                  <hui-card
+                    .hass=${this.hass}
+                    .config=${this._cardConfig}
+                    preview
+                    class=${this._error ? "blur" : ""}
+                  ></hui-card>
+                `}
             ${this._error
               ? html`
                   <ha-circular-progress
@@ -334,6 +348,34 @@ export class HuiDialogEditCard
     window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._cardEditorEl?.focusYamlEditor();
   }
+
+  private get _isInSection() {
+    return this._params!.path.length === 2;
+  }
+
+  private _shouldShowLayoutTab(): boolean {
+    /**
+     * Only show layout tab for cards in a grid section
+     * In the future, every section and view should be able to bring their own editor for layout.
+     * For now, we limit it to grid sections as it's the only section type
+     * */
+    return (
+      this._isInSection &&
+      (!this._containerConfig.type || this._containerConfig.type === "grid")
+    );
+  }
+
+  private _cardConfigInSection = memoizeOne(
+    (cardConfig?: LovelaceCardConfig) => {
+      const { cards, title, ...containerConfig } = this
+        ._containerConfig as LovelaceSectionConfig;
+
+      return {
+        ...containerConfig,
+        cards: cardConfig ? [cardConfig] : [],
+      };
+    }
+  );
 
   private get _canSave(): boolean {
     if (this._saving) {
@@ -454,8 +496,16 @@ export class HuiDialogEditCard
         }
 
         .content hui-card {
-          margin: 4px auto;
+          display: block;
+          padding: 4px;
+          margin: 0 auto;
           max-width: 390px;
+        }
+        .content hui-section {
+          display: block;
+          padding: 4px;
+          margin: 0 auto;
+          max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
           margin: 0 10px;
@@ -475,6 +525,11 @@ export class HuiDialogEditCard
             padding: 8px 10px;
             margin: auto 0px;
             max-width: 500px;
+          }
+          .content hui-section {
+            padding: 8px 10px;
+            margin: auto 0px;
+            max-width: var(--ha-view-sections-column-max-width, 500px);
           }
         }
         .hidden {

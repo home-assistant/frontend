@@ -32,6 +32,7 @@ export class HaTemplateSelector extends LitElement {
         autocomplete-icons
         @value-changed=${this._handleChange}
         dir="ltr"
+        linewrap
       ></ha-code-editor>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`

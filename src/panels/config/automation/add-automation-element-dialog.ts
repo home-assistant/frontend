@@ -18,6 +18,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
@@ -50,6 +51,7 @@ import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { getStripDiacriticsFn } from "../../../util/fuse";
 import {
   AddAutomationElementDialogParams,
   PASTE_VALUE,
@@ -208,9 +210,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
+        getFn: getStripDiacriticsFn,
       };
       const fuse = new Fuse(items, options);
-      return fuse.search(filter).map((result) => result.item);
+      return fuse.search(stripDiacritics(filter)).map((result) => result.item);
     }
   );
 

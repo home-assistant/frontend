@@ -92,7 +92,7 @@ export const computeDisplayTimer = (
     return hass.formatEntityState(stateObj);
   }
 
-  let display = secondsToDuration(timeRemaining || 0);
+  let display = secondsToDuration(timeRemaining || 0) || "0";
 
   if (stateObj.state === "paused") {
     display = `${display} (${hass.formatEntityState(stateObj)})`;

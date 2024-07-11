@@ -55,6 +55,8 @@ import {
   showYamlIntegrationDialog,
 } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
+import { getStripDiacriticsFn } from "../../../util/fuse";
 
 export interface IntegrationListItem {
   name: string;
@@ -255,6 +257,7 @@ class AddIntegrationDialog extends LitElement {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          getFn: getStripDiacriticsFn,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
@@ -264,15 +267,16 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
+        const normalizedFilter = stripDiacritics(filter);
         return [
           ...new Fuse(integrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
         ];
       }

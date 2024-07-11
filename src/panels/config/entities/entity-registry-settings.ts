@@ -215,6 +215,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         text: this.hass.localize(
           "ui.dialogs.entity_registry.editor.confirm_delete"
         ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        destructive: true,
       }))
     ) {
       return;

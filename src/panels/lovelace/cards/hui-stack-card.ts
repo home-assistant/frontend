@@ -23,7 +23,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @state() protected _cards?: HuiCard[];
 
@@ -56,9 +56,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           card.hass = this.hass;
         });
       }
-      if (changedProperties.has("editMode")) {
+      if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
-          card.editMode = this.editMode;
+          card.preview = this.preview;
         });
       }
     }
@@ -67,8 +67,9 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.editMode = this.editMode;
+    element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 

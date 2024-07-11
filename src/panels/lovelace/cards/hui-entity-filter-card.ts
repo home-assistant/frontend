@@ -55,7 +55,7 @@ export class HuiEntityFilterCard
 
   @property({ type: Boolean }) public isPanel = false;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _config?: EntityFilterCardConfig;
 
@@ -117,7 +117,7 @@ export class HuiEntityFilterCard
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (this._element) {
       this._element.hass = this.hass;
-      this._element.editMode = this.editMode;
+      this._element.preview = this.preview;
       this._element.isPanel = this.isPanel;
     }
 
@@ -247,8 +247,9 @@ export class HuiEntityFilterCard
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.editMode = this.editMode;
+    element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 }

@@ -201,6 +201,12 @@ export class HuiTileCardEditor
                             ),
                             value: "last-changed",
                           },
+                          {
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-updated`
+                            ),
+                            value: "last-updated",
+                          },
                           ...Object.keys(stateObj?.attributes ?? {})
                             .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
                             .map((attribute) => ({
@@ -401,7 +407,6 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
-
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

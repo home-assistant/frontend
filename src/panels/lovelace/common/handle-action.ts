@@ -148,7 +148,7 @@ export const handleAction = async (
     case "call-service": {
       if (!actionConfig.service) {
         showToast(node, {
-          message: hass.localize("ui.panel.lovelace.cards.actions.no_service"),
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_action"),
         });
         forwardHaptic("failure");
         return;
