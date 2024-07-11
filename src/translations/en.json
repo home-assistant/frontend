@@ -429,7 +429,7 @@
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
-        "triggered_by_service": "triggered by service",
+        "triggered_by_action": "triggered by action",
         "triggered_by_numeric_state_of": "triggered by numeric state of",
         "triggered_by_state_of": "triggered by state of",
         "triggered_by_event": "triggered by event",
@@ -773,13 +773,13 @@
         }
       },
       "service-picker": {
-        "service": "Service"
+        "action": "Action"
       },
       "service-control": {
         "required": "This field is required",
         "target": "Targets",
-        "target_description": "What should this service use as targeted areas, devices or entities.",
-        "data": "Service data",
+        "target_secondary": "What should this action use as targeted areas, devices or entities.",
+        "action_data": "Action data",
         "integration_doc": "Integration documentation"
       },
       "related-items": {
@@ -1352,7 +1352,7 @@
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_description": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with services.",
+          "hidden_explanation": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with actions.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -1603,7 +1603,7 @@
           "view_network": "View network"
         },
         "services": {
-          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
+          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this action.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the Zigbee network.",
           "zigbee_information": "View the Zigbee information for the device."
@@ -1732,7 +1732,7 @@
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
           "link_apps_services": "Link apps & services",
-          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "no_home_assistant": "I can''t find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
         "google_home_fallback": {
@@ -1807,7 +1807,7 @@
       "dismiss_all": "Dismiss all"
     },
     "notification_toast": {
-      "service_call_failed": "Failed to call service {service}.",
+      "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
@@ -2660,7 +2660,7 @@
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
-              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "response": "[%key:ui::panel::developer-tools::tabs::actions::response%]",
               "send": "Send",
               "continue_listening": "Continue listening for wake word",
               "continue_talking": "Continue talking",
@@ -3267,18 +3267,19 @@
               },
               "type": {
                 "service": {
-                  "label": "Call service",
+                  "label": "Perform action",
                   "response_variable": "Response variable",
-                  "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
-                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in",
+                  "has_optional_response": "This action can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
+                  "has_response": "This action returns a response, enter the name of a variable the response will be saved in",
                   "description": {
-                    "service_based_on_template": "Call a service based on a template on {targets}",
-                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "picker": "Previously known as call service.",
+                    "service_based_on_template": "Perform an action based on a template on {targets}",
+                    "service_based_on_name": "Perform action ''{name}'' on {targets}",
                     "service_name": "{domain} ''{name}'' on {targets}",
-                    "service_based_on_template_no_targets": "Call a service based on a template",
-                    "service_based_on_name_no_targets": "Call a service ''{name}''",
+                    "service_based_on_template_no_targets": "Perform an action based on a template",
+                    "service_based_on_name_no_targets": "Perform action ''{name}''",
                     "service_name_no_targets": "{domain} ''{name}''",
-                    "service": "Call a service",
+                    "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
@@ -3837,7 +3838,7 @@
             "fetching_subscription": "Fetching subscription…",
             "tts": {
               "title": "Text-to-speech",
-              "info": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} service.",
+              "description": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} action.",
               "default_language": "Default language to use",
               "default_voice": "Default voice to use",
               "try": "Try",
@@ -4122,7 +4123,7 @@
             "hide_selected": {
               "button": "Hide selected",
               "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
+              "confirm": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with actions."
             },
             "unhide_selected": {
               "button": "Unhide selected"
@@ -5280,7 +5281,7 @@
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
-            "no_service": "No service to run specified"
+            "no_action": "No action to run specified"
           },
           "empty_state": {
             "title": "Welcome Home",
@@ -5310,7 +5311,7 @@
             "navigate_to": "Navigate to {location}",
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
-            "call_service": "Call service {name}",
+            "perform_action": "Perform action {name}",
             "more_info": "Show more info: {name}"
           },
           "iframe": {
@@ -5625,14 +5626,14 @@
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",
             "actions": {
-              "default_action": "Default action",
-              "call-service": "Call service",
+              "default_action": "Default",
+              "call-service": "Perform action",
               "more-info": "More info",
               "toggle": "Toggle",
               "navigate": "Navigate",
               "assist": "Assist",
               "url": "URL",
-              "none": "No action"
+              "none": "Nothing"
             }
           },
           "condition-editor": {
@@ -5740,7 +5741,7 @@
               },
               "entity_row": {
                 "divider": "Divider",
-                "call-service": "Call service",
+                "call-service": "Perform action",
                 "section": "Section",
                 "weblink": "Web link",
                 "attribute": "Attribute",
@@ -5757,7 +5758,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
+              "default_action_help": "The default depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity filter",
@@ -5875,10 +5876,10 @@
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
               "camera_view": "Camera view",
-              "double_tap_action": "Double tap action",
+              "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
-              "hold_action": "Hold action",
+              "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
               "icon": "Icon",
@@ -5895,7 +5896,7 @@
               "show_icon": "Show icon?",
               "show_name": "Show name?",
               "show_state": "Show state?",
-              "tap_action": "Tap action",
+              "tap_action": "Tap behavior",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5934,7 +5935,7 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action."
             },
             "picture-elements": {
               "name": "Picture elements",
@@ -5946,7 +5947,7 @@
             },
             "picture-glance": {
               "name": "Picture glance",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service.",
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "state_entity": "State entity"
             },
             "plant-status": {
@@ -5973,7 +5974,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
-              "icon_tap_action": "Icon tap action",
+              "icon_tap_action": "Icon tap behavior",
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
@@ -6690,10 +6691,10 @@
             "alert_event_type": "Event type is a mandatory field",
             "notification_event_fired": "Event {type} successfully fired!"
           },
-          "services": {
-            "title": "Services",
-            "description": "The service dev tool allows you to call any available service in Home Assistant.",
-            "call_service": "Call service",
+          "actions": {
+            "title": "Actions",
+            "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
+            "call_service": "Perform action",
             "response": "Response",
             "column_parameter": "Parameter",
             "column_description": "Description",
@@ -6703,21 +6704,21 @@
             "ui_mode": "Go to UI mode",
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
-            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
+            "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
             "errors": {
               "ui": {
-                "no_service": "No service selected, please select a service",
-                "invalid_service": "Selected service is invalid, please select a valid service",
-                "no_target": "This service requires a target, please select a target from the picker",
-                "missing_required_field": "This service requires field {key}, please enter a valid value for {key}"
+                "no_service": "No action selected, please select an action",
+                "invalid_service": "Selected action is invalid, please select a valid action",
+                "no_target": "This action requires a target, please select a target from the picker",
+                "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
               },
               "yaml": {
-                "invalid_yaml": "Service YAML contains syntax errors, please fix the syntax",
-                "no_service": "No service defined, please define a service: key",
-                "invalid_service": "Defined service is invalid, please provide a service in the format domain.service",
-                "no_target": "This service requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
-                "missing_required_field": "This service requires field {key}, which must be provided under data:"
+                "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
+                "no_service": "No action defined, please define an action: key",
+                "invalid_service": "Defined action is invalid, please provide an action in the format domain.action",
+                "no_target": "This action requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
+                "missing_required_field": "This action requires field {key}, which must be provided under data:"
               }
             }
           },

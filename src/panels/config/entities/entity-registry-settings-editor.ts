@@ -962,7 +962,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <span slot="description"
           >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.hidden_description"
+            "ui.dialogs.entity_registry.editor.hidden_explanation"
           )}</span
         >
         <ha-switch

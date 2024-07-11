@@ -135,7 +135,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               const message =
                 localizedErrorMessage ||
                 (this as any).hass.localize(
-                  "ui.notification_toast.service_call_failed",
+                  "ui.notification_toast.action_failed",
                   "service",
                   `${domain}/${service}`
                 ) +
