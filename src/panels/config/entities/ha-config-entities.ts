@@ -1177,7 +1177,7 @@ ${
         { number: this._selected.length }
       ),
       text: this.hass.localize(
-        "ui.panel.config.entities.picker.hide_selected.confirm_text"
+        "ui.panel.config.entities.picker.hide_selected.confirm"
       ),
       confirmText: this.hass.localize("ui.common.hide"),
       dismissText: this.hass.localize("ui.common.cancel"),
