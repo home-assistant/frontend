@@ -199,7 +199,7 @@ class HaEntityStatePicker extends LitElement {
         .required=${this.required && !value.length}
         .value=${""}
         .items=${optionItems}
-        .allowCustomValue
+        allow-custom-value
         @filter-changed=${this._filterChanged}
         @value-changed=${this._comboBoxValueChanged}
         @opened-changed=${this._openedChanged}
