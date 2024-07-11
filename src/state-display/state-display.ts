@@ -12,7 +12,15 @@ import type { HomeAssistant } from "../types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
-export const STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS: Record<string, string[]> = {
+export const STATE_DISPLAY_SPECIAL_CONTENT = [
+  "timer_status",
+  "install_status",
+] as const;
+
+export const STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS: Record<
+  (typeof STATE_DISPLAY_SPECIAL_CONTENT)[number],
+  string[]
+> = {
   timer_status: ["timer"],
   install_status: ["update"],
 };
