@@ -311,10 +311,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     if (domain === "update") {
-      return html`${computeUpdateStateDisplay(
-        stateObj as UpdateEntity,
-        this.hass!
-      )}`;
+      return html`
+        ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
+      `;
+    }
+
+    if (domain === "timer") {
+      import("../../../state-display/state-display-timer");
+      return html`
+        <state-display-timer
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></state-display-timer>
+      `;
     }
 
     return this._renderStateContent(stateObj, "state");
