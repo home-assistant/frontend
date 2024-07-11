@@ -41,6 +41,8 @@ export interface CalendarEventMutableParams {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
+  attendees?: string;
 }
 
 // The scope of a delete/update for a recurring event
@@ -98,6 +100,8 @@ export const fetchCalendarEvents = async (
         uid: ev.uid,
         summary: ev.summary,
         description: ev.description,
+        location: ev.location,
+        attendees: ev.attendees,
         dtstart: eventStart,
         dtend: eventEnd,
         recurrence_id: ev.recurrence_id,

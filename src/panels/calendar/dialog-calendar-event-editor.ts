@@ -11,6 +11,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { stringCompare } from "../../common/string/compare";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -25,6 +26,7 @@ import "../../components/ha-switch";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "../../components/user/ha-person-badge";
 import {
   CalendarEntityFeature,
   CalendarEventMutableParams,
@@ -33,12 +35,14 @@ import {
   deleteCalendarEvent,
   updateCalendarEvent,
 } from "../../data/calendar";
+import { fetchPersons, Person } from "../../data/person";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
+import "../../layouts/hass-loading-screen";
 
 const CALENDAR_DOMAINS = ["calendar"];
 
@@ -72,13 +76,29 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _storageItems?: Person[];
+
+  @state() private _configItems?: Person[];
+
   // Dates are displayed in the timezone according to the user's profile
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
   private _timeZone?: string;
 
+  private async _fetchData() {
+    const personData = await fetchPersons(this.hass!);
+
+    this._storageItems = personData.storage.sort((ent1, ent2) =>
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
+    );
+    this._configItems = personData.config.sort((ent1, ent2) =>
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
+    );
+  }
+
   public showDialog(params: CalendarEventEditDialogParams): void {
+    this._fetchData();
     this._error = undefined;
     this._info = undefined;
     this._params = params;
@@ -138,6 +158,13 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   protected render() {
+    if (
+      !this.hass ||
+      this._storageItems === undefined ||
+      this._configItems === undefined
+    ) {
+      return html` <hass-loading-screen></hass-loading-screen> `;
+    }
     if (!this._params) {
       return nothing;
     }
@@ -204,16 +231,49 @@ class DialogCalendarEventEditor extends LitElement {
             @change=${this._handleLocationChanged}
             autogrow
           ></ha-textarea>
-          <ha-textarea
-            class="attendees"
-            name="attendees"
+          <ha-form-multi_select
+            class="select"
+            name="select"
             .label=${this.hass.localize(
-              "ui.components.calendar.event.attendees"
+              "ui.components.calendar.event.location"
             )}
-            .value=${this._attendees}
-            @change=${this._handleAttendeesChanged}
+            .value=${this._location}
+            @change=${this._handleLocationChanged}
+            .options
             autogrow
-          ></ha-textarea>
+          ></ha-form-multi_select>
+          <mwc-list>
+            ${this._storageItems.map(
+              (entry) => html`
+                <ha-list-item
+                  graphic="avatar"
+                  @click=${this._openEditEntry}
+                  .entry=${entry}
+                >
+                  <ha-person-badge
+                    .hass=${this.hass}
+                    .person=${entry}
+                    slot="graphic"
+                  ></ha-person-badge>
+                  <span>${entry.name}</span>
+                </ha-list-item>
+              `
+            )}
+          </mwc-list>
+          ${this._storageItems.length === 0
+            ? html`
+                <div class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.config.person.no_persons_created_yet"
+                  )}
+                  <mwc-button @click=${this._createPerson}>
+                    ${this.hass.localize(
+                      "ui.panel.config.person.create_person"
+                    )}</mwc-button
+                  >
+                </div>
+              `
+            : nothing}
           <ha-entity-picker
             name="calendar"
             .hass=${this.hass}
@@ -431,6 +491,8 @@ class DialogCalendarEventEditor extends LitElement {
     const data: CalendarEventMutableParams = {
       summary: this._summary,
       description: this._description,
+      location: this._location,
+      attendees: this._attendees,
       rrule: this._rrule || undefined,
       dtstart: "",
       dtend: "",
