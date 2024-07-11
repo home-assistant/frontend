@@ -5984,8 +5984,10 @@
               "state_content": "State content",
               "state_content_options": {
                 "state": "State",
-                "last-changed": "Last changed",
-                "last-updated": "Last updated"
+                "last_changed": "Last changed",
+                "last_updated": "Last updated",
+                "timer_status": "Timer status",
+                "install_status": "Install status"
               }
             },
             "vertical-stack": {

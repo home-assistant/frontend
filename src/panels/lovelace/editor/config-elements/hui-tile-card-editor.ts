@@ -37,6 +37,8 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
+import { STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS } from "../../../../state-display/state-display";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -131,8 +133,9 @@ export class HuiTileCardEditor
       entityId: string | undefined,
       stateObj: HassEntity | undefined,
       hideState: boolean
-    ) =>
-      [
+    ) => {
+      const domain = entityId ? computeDomain(entityId) : undefined;
+      return [
         { name: "entity", selector: { entity: {} } },
         {
           name: "",
@@ -197,16 +200,31 @@ export class HuiTileCardEditor
                           },
                           {
                             label: localize(
-                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-changed`
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.last_changed`
                             ),
-                            value: "last-changed",
+                            value: "last_changed",
                           },
                           {
                             label: localize(
-                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-updated`
+                              `ui.panel.lovelace.editor.card.tile.state_content_options.last_updated`
                             ),
-                            value: "last-updated",
+                            value: "last_updated",
                           },
+                          ...(domain
+                            ? Object.keys(STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS)
+                                .filter((content) =>
+                                  STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[
+                                    content
+                                  ]?.includes(domain)
+                                )
+                                .map((content) => ({
+                                  label:
+                                    localize(
+                                      `ui.panel.lovelace.editor.card.tile.state_content_options.${content}`
+                                    ) || content,
+                                  value: content,
+                                }))
+                            : []),
                           ...Object.keys(stateObj?.attributes ?? {})
                             .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
                             .map((attribute) => ({
@@ -250,7 +268,8 @@ export class HuiTileCardEditor
             },
           ],
         },
-      ] as const satisfies readonly HaFormSchema[]
+      ] as const satisfies readonly HaFormSchema[];
+    }
   );
 
   private _context = memoizeOne(
