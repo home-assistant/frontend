@@ -1732,7 +1732,7 @@
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
           "link_apps_services": "Link apps & services",
-          "no_home_assistant": "I can''t find Home Assistant on the list",
+          "no_home_assistant": "I can't find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
         "google_home_fallback": {
