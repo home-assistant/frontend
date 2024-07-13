@@ -8,8 +8,8 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
