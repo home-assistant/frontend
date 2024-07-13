@@ -278,6 +278,8 @@ export const provideHass = (
     // @ts-ignore
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
+        // eslint-disable-next-line
+        console.log("Entity service call", domain, service, data);
         await Promise.all(
           ensureArray(data.entity_id).map((ent) =>
             entities[ent].handleService(domain, service, data)

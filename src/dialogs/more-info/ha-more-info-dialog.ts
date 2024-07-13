@@ -325,7 +325,7 @@ export class MoreInfoDialog extends LitElement {
                       ></ha-icon-button>
                     `
                   : nothing}
-                ${isAdmin
+                ${!__DEMO__ && isAdmin
                   ? html`
                       <ha-icon-button
                         slot="actionItems"

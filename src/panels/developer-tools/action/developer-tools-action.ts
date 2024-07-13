@@ -2,7 +2,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -34,7 +34,8 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
-class HaPanelDevService extends LitElement {
+@customElement("developer-tools-action")
+class HaPanelDevAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -115,7 +116,7 @@ class HaPanelDevService extends LitElement {
       <div class="content">
         <p>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.services.description"
+            "ui.panel.developer-tools.tabs.actions.description"
           )}
         </p>
         <ha-card>
@@ -157,23 +158,23 @@ class HaPanelDevService extends LitElement {
             >
               ${this._yamlMode
                 ? this.hass.localize(
-                    "ui.panel.developer-tools.tabs.services.ui_mode"
+                    "ui.panel.developer-tools.tabs.actions.ui_mode"
                   )
                 : this.hass.localize(
-                    "ui.panel.developer-tools.tabs.services.yaml_mode"
+                    "ui.panel.developer-tools.tabs.actions.yaml_mode"
                   )}
             </mwc-button>
             ${!this._uiAvailable
               ? html`<span class="error"
                   >${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.services.no_template_ui_support"
+                    "ui.panel.developer-tools.tabs.actions.no_template_ui_support"
                   )}</span
                 >`
               : ""}
           </div>
           <ha-progress-button raised @click=${this._callService}>
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.services.call_service"
+              "ui.panel.developer-tools.tabs.actions.call_service"
             )}
           </ha-progress-button>
         </div>
@@ -182,7 +183,7 @@ class HaPanelDevService extends LitElement {
         ? html`<div class="content">
             <ha-card
               .header=${this.hass.localize(
-                "ui.panel.developer-tools.tabs.services.response"
+                "ui.panel.developer-tools.tabs.actions.response"
               )}
             >
               <div class="card-content">
@@ -208,10 +209,10 @@ class HaPanelDevService extends LitElement {
             <ha-expansion-panel
               .header=${this._yamlMode
                 ? this.hass.localize(
-                    "ui.panel.developer-tools.tabs.services.all_parameters"
+                    "ui.panel.developer-tools.tabs.actions.all_parameters"
                   )
                 : this.hass.localize(
-                    "ui.panel.developer-tools.tabs.services.yaml_parameters"
+                    "ui.panel.developer-tools.tabs.actions.yaml_parameters"
                   )}
               outlined
               .expanded=${this._yamlMode}
@@ -222,7 +223,7 @@ class HaPanelDevService extends LitElement {
                       ${target
                         ? html`
                             ${this.hass.localize(
-                              "ui.panel.developer-tools.tabs.services.accepts_target"
+                              "ui.panel.developer-tools.tabs.actions.accepts_target"
                             )}
                           `
                         : ""}
@@ -253,17 +254,17 @@ class HaPanelDevService extends LitElement {
                 <tr>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.column_parameter"
+                      "ui.panel.developer-tools.tabs.actions.column_parameter"
                     )}
                   </th>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.column_description"
+                      "ui.panel.developer-tools.tabs.actions.column_description"
                     )}
                   </th>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.column_example"
+                      "ui.panel.developer-tools.tabs.actions.column_example"
                     )}
                   </th>
                 </tr>
@@ -290,7 +291,7 @@ class HaPanelDevService extends LitElement {
               ${this._yamlMode
                 ? html`<mwc-button @click=${this._fillExampleData}
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.fill_example_data"
+                      "ui.panel.developer-tools.tabs.actions.fill_example_data"
                     )}</mwc-button
                   >`
                 : ""}
@@ -323,14 +324,14 @@ class HaPanelDevService extends LitElement {
     const errorCategory = yamlMode ? "yaml" : "ui";
     if (!serviceData?.service) {
       return localize(
-        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_service`
+        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_service`
       );
     }
     const domain = computeDomain(serviceData.service);
     const service = computeObjectId(serviceData.service);
     if (!domain || !service) {
       return localize(
-        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.invalid_service`
+        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_service`
       );
     }
     if (
@@ -341,7 +342,7 @@ class HaPanelDevService extends LitElement {
       !serviceData.data?.area_id
     ) {
       return localize(
-        `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.no_target`
+        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_target`
       );
     }
     for (const field of fields) {
@@ -350,7 +351,7 @@ class HaPanelDevService extends LitElement {
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
-          `ui.panel.developer-tools.tabs.services.errors.${errorCategory}.missing_required_field`,
+          `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.missing_required_field`,
           { key: field.key }
         );
       }
@@ -395,7 +396,7 @@ class HaPanelDevService extends LitElement {
       forwardHaptic("failure");
       button.actionError();
       this._error = this.hass.localize(
-        "ui.panel.developer-tools.tabs.services.errors.yaml.invalid_yaml"
+        "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
       );
       return;
     }
@@ -457,7 +458,7 @@ class HaPanelDevService extends LitElement {
       }
       this._error =
         localizedErrorMessage ||
-        this.hass.localize("ui.notification_toast.service_call_failed", {
+        this.hass.localize("ui.notification_toast.action_failed", {
           service: this._serviceData!.service!,
         }) + ` ${err.message}`;
       return;
@@ -648,10 +649,8 @@ class HaPanelDevService extends LitElement {
   }
 }
 
-customElements.define("developer-tools-service", HaPanelDevService);
-
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-service": HaPanelDevService;
+    "developer-tools-action": HaPanelDevAction;
   }
 }

@@ -7,9 +7,10 @@ import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
+import { conditionalClamp } from "../common/number/clamp";
 
 type GridSizeValue = {
-  rows?: number;
+  rows?: number | "auto";
   columns?: number;
 };
 
@@ -42,6 +43,20 @@ export class HaGridSizeEditor extends LitElement {
   }
 
   protected render() {
+    const disabledColumns =
+      this.columnMin !== undefined && this.columnMin === this.columnMax;
+    const disabledRows =
+      this.rowMin !== undefined && this.rowMin === this.rowMax;
+
+    const autoHeight = this._localValue?.rows === "auto";
+
+    const rowMin = this.rowMin ?? 1;
+    const rowMax = this.rowMax ?? this.rows;
+    const columnMin = this.columnMin ?? 1;
+    const columnMax = this.columnMax ?? this.columns;
+    const rowValue = autoHeight ? rowMin : this._localValue?.rows;
+    const columnValue = this._localValue?.columns;
+
     return html`
       <div class="grid">
         <ha-grid-layout-slider
@@ -49,25 +64,28 @@ export class HaGridSizeEditor extends LitElement {
             "ui.components.grid-size-picker.columns"
           )}
           id="columns"
-          .min=${this.columnMin ?? 1}
-          .max=${this.columnMax ?? this.columns}
+          .min=${columnMin}
+          .max=${columnMax}
           .range=${this.columns}
-          .value=${this.value?.columns}
+          .value=${columnValue}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
+          .disabled=${disabledColumns}
         ></ha-grid-layout-slider>
+
         <ha-grid-layout-slider
           aria-label=${this.hass.localize(
             "ui.components.grid-size-picker.rows"
           )}
           id="rows"
-          .min=${this.rowMin ?? 1}
-          .max=${this.rowMax ?? this.rows}
+          .min=${rowMin}
+          .max=${rowMax}
           .range=${this.rows}
           vertical
-          .value=${this.value?.rows}
+          .value=${rowValue}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
+          .disabled=${disabledRows}
         ></ha-grid-layout-slider>
         ${!this.isDefault
           ? html`
@@ -90,8 +108,8 @@ export class HaGridSizeEditor extends LitElement {
           style=${styleMap({
             "--total-rows": this.rows,
             "--total-columns": this.columns,
-            "--rows": this._localValue?.rows,
-            "--columns": this._localValue?.columns,
+            "--rows": rowValue,
+            "--columns": columnValue,
           })}
         >
           <div>
@@ -100,17 +118,11 @@ export class HaGridSizeEditor extends LitElement {
               .map((_, index) => {
                 const row = Math.floor(index / this.columns) + 1;
                 const column = (index % this.columns) + 1;
-                const disabled =
-                  (this.rowMin !== undefined && row < this.rowMin) ||
-                  (this.rowMax !== undefined && row > this.rowMax) ||
-                  (this.columnMin !== undefined && column < this.columnMin) ||
-                  (this.columnMax !== undefined && column > this.columnMax);
                 return html`
                   <div
                     class="cell"
                     data-row=${row}
                     data-column=${column}
-                    ?disabled=${disabled}
                     @click=${this._cellClick}
                   ></div>
                 `;
@@ -126,11 +138,16 @@ export class HaGridSizeEditor extends LitElement {
 
   _cellClick(ev) {
     const cell = ev.currentTarget as HTMLElement;
-    if (cell.getAttribute("disabled") !== null) return;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));
+    const clampedRow = conditionalClamp(rows, this.rowMin, this.rowMax);
+    const clampedColumn = conditionalClamp(
+      columns,
+      this.columnMin,
+      this.columnMax
+    );
     fireEvent(this, "value-changed", {
-      value: { rows, columns },
+      value: { rows: clampedRow, columns: clampedColumn },
     });
   }
 
@@ -208,10 +225,6 @@ export class HaGridSizeEditor extends LitElement {
         border-radius: 4px;
         opacity: 0.2;
         cursor: pointer;
-      }
-      .preview .cell[disabled] {
-        opacity: 0.05;
-        cursor: initial;
       }
       .selected {
         pointer-events: none;

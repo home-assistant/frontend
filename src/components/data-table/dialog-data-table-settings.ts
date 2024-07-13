@@ -78,6 +78,8 @@ export class DialogDataTableSettings extends LitElement {
       return nothing;
     }
 
+    const localize = this._params.localizeFunc || this.hass.localize;
+
     const columns = this._sortedColumns(
       this._params.columns,
       this._columnOrder,
@@ -90,7 +92,7 @@ export class DialogDataTableSettings extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.components.data-table.settings.header")
+          localize("ui.components.data-table.settings.header")
         )}
       >
         <ha-sortable
@@ -146,12 +148,10 @@ export class DialogDataTableSettings extends LitElement {
           </mwc-list>
         </ha-sortable>
         <ha-button slot="secondaryAction" @click=${this._reset}
-          >${this.hass.localize(
-            "ui.components.data-table.settings.restore"
-          )}</ha-button
+          >${localize("ui.components.data-table.settings.restore")}</ha-button
         >
         <ha-button slot="primaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.components.data-table.settings.done")}
+          ${localize("ui.components.data-table.settings.done")}
         </ha-button>
       </ha-dialog>
     `;
@@ -193,6 +193,7 @@ export class DialogDataTableSettings extends LitElement {
           .filter(([_key, col]) => col.defaultHidden)
           .map(([key]) => key)),
     ];
+
     if (wasHidden && hidden.includes(column)) {
       hidden.splice(hidden.indexOf(column), 1);
     } else if (!wasHidden) {
@@ -202,20 +203,57 @@ export class DialogDataTableSettings extends LitElement {
     const columns = this._sortedColumns(
       this._params.columns,
       this._columnOrder,
-      this._hiddenColumns
+      hidden
     );
 
     if (!this._columnOrder) {
       this._columnOrder = columns.map((col) => col.key);
     } else {
+      const newOrder = this._columnOrder.filter((col) => col !== column);
+
+      // Array.findLastIndex when supported or core-js polyfill
+      const findLastIndex = (
+        arr: Array<any>,
+        fn: (item: any, index: number, arr: Array<any>) => boolean
+      ) => {
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (fn(arr[i], i, arr)) return i;
+        }
+        return -1;
+      };
+
+      let lastMoveable = findLastIndex(
+        newOrder,
+        (col) =>
+          col !== column &&
+          !hidden.includes(col) &&
+          !this._params!.columns[col].main &&
+          this._params!.columns[col].moveable !== false
+      );
+
+      if (lastMoveable === -1) {
+        lastMoveable = newOrder.length - 1;
+      }
+
       columns.forEach((col) => {
-        if (!this._columnOrder!.includes(col.key)) {
-          this._columnOrder!.push(col.key);
-          if (col.defaultHidden) {
+        if (!newOrder.includes(col.key)) {
+          if (col.moveable === false) {
+            newOrder.unshift(col.key);
+          } else {
+            newOrder.splice(lastMoveable + 1, 0, col.key);
+          }
+
+          if (
+            col.key !== column &&
+            col.defaultHidden &&
+            !hidden.includes(col.key)
+          ) {
             hidden.push(col.key);
           }
         }
       });
+
+      this._columnOrder = newOrder;
     }
 
     this._hiddenColumns = hidden;
