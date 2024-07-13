@@ -79,27 +79,27 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property() dayLabel = "";
+  @property() dayLabel = "Day";
 
   /**
    * Label for the hour input
    */
-  @property() hourLabel = "";
+  @property() hourLabel = "Hour";
 
   /**
    * Label for the min input
    */
-  @property() minLabel = "";
+  @property() minLabel = "Minute";
 
   /**
    * Label for the sec input
    */
-  @property() secLabel = "";
+  @property() secLabel = "Second";
 
   /**
    * Label for the milli sec input
    */
-  @property() millisecLabel = "";
+  @property() millisecLabel = "Milisecond";
 
   /**
    * show the sec field
@@ -238,21 +238,6 @@ export class HaBaseTimeInput extends LitElement {
             >
             </ha-textfield>`
           : ""}
-        ${this.format === 24
-          ? ""
-          : html`<ha-select
-              .required=${this.required}
-              .value=${this.amPm}
-              .disabled=${this.disabled}
-              name="amPm"
-              naturalMenuWidth
-              fixedMenuPosition
-              @selected=${this._valueChanged}
-              @closed=${stopPropagation}
-            >
-              <mwc-list-item value="AM">AM</mwc-list-item>
-              <mwc-list-item value="PM">PM</mwc-list-item>
-            </ha-select>`}
         ${this.clearable && !this.required && !this.disabled
           ? html`<ha-icon-button
               label="clear"
@@ -261,6 +246,22 @@ export class HaBaseTimeInput extends LitElement {
             ></ha-icon-button>`
           : nothing}
       </div>
+
+      ${this.format === 24
+        ? ""
+        : html`<ha-select
+            .required=${this.required}
+            .value=${this.amPm}
+            .disabled=${this.disabled}
+            name="amPm"
+            naturalMenuWidth
+            fixedMenuPosition
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+          >
+            <mwc-list-item value="AM">AM</mwc-list-item>
+            <mwc-list-item value="PM">PM</mwc-list-item>
+          </ha-select>`}
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
         : ""}
@@ -321,7 +322,7 @@ export class HaBaseTimeInput extends LitElement {
       position: relative;
     }
     :host {
-      display: block;
+      display: flex;
     }
     .time-input-wrap {
       display: flex;
@@ -329,9 +330,10 @@ export class HaBaseTimeInput extends LitElement {
       overflow: hidden;
       position: relative;
       direction: ltr;
+      padding-right: 3px;
     }
     ha-textfield {
-      width: 40px;
+      width: 55px;
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;
@@ -364,6 +366,7 @@ export class HaBaseTimeInput extends LitElement {
       direction: var(--direction);
       display: flex;
       align-items: center;
+      background-color:var(--mdc-text-field-fill-color, whitesmoke)
     }
     label {
       -moz-osx-font-smoothing: grayscale;
