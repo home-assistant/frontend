@@ -196,7 +196,7 @@ class HaPanelDevAction extends LitElement {
                 >
                   <ha-button slot="extra-actions" @click=${this._copyTemplate}
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.copy_clipboard_template"
+                      "ui.panel.developer-tools.tabs.actions.copy_clipboard_template"
                     )}</ha-button
                   >
                 </ha-yaml-editor>
@@ -303,7 +303,7 @@ class HaPanelDevAction extends LitElement {
 
   private async _copyTemplate(): Promise<void> {
     await copyToClipboard(
-      `{% set service_response = ${JSON.stringify(this._response)} %}`
+      `{% set action_response = ${JSON.stringify(this._response)} %}`
     );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
