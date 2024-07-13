@@ -44,7 +44,6 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import { isHelperDomain } from "../panels/config/helpers/const";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -66,6 +65,8 @@ interface ExtHassService extends Omit<HassService, "fields"> {
     Omit<HassService["fields"][string], "selector"> & {
       key: string;
       selector?: Selector;
+      fields?: Record<string, Omit<HassService["fields"][string], "selector">>;
+      collapsed?: boolean;
     }
   >;
   hasSelector: string[];
@@ -248,20 +249,7 @@ export class HaServiceControl extends LitElement {
     }
   );
 
-  private _filterFields = memoizeOne(
-    (serviceData: ExtHassService | undefined, value: this["value"]) =>
-      serviceData?.fields?.filter(
-        (field) =>
-          !field.filter ||
-          this._filterField(serviceData.target, field.filter, value)
-      )
-  );
-
-  private _filterField(
-    target: ExtHassService["target"],
-    filter: ExtHassService["fields"][number]["filter"],
-    value: this["value"]
-  ) {
+  private _getTargetedEntities = memoizeOne((target, value) => {
     const targetSelector = target ? { target } : { target: {} };
     const targetEntities =
       ensureArray(
@@ -331,6 +319,13 @@ export class HaServiceControl extends LitElement {
         );
       });
     }
+    return targetEntities;
+  });
+
+  private _filterField(
+    filter: ExtHassService["fields"][number]["filter"],
+    targetEntities: string[]
+  ) {
     if (!targetEntities.length) {
       return false;
     }
@@ -366,12 +361,8 @@ export class HaServiceControl extends LitElement {
   }
 
   private _targetSelector = memoizeOne(
-    (targetSelector: TargetSelector | null | undefined, domain?: string) => {
-      const create_domains = isHelperDomain(domain) ? [domain] : undefined;
-      return targetSelector
-        ? { target: { ...targetSelector, create_domains } }
-        : { target: { create_domains } };
-    }
+    (targetSelector: TargetSelector | null | undefined) =>
+      targetSelector ? { target: { ...targetSelector } } : { target: {} }
   );
 
   protected render() {
@@ -396,7 +387,10 @@ export class HaServiceControl extends LitElement {
         serviceData?.fields.some((field) => showOptionalToggle(field))
     );
 
-    const filteredFields = this._filterFields(serviceData, this._value);
+    const targetEntities = this._getTargetedEntities(
+      serviceData?.target,
+      this._value
+    );
 
     const domain = this._value?.service
       ? computeDomain(this._value.service)
@@ -457,13 +451,12 @@ export class HaServiceControl extends LitElement {
           >
           <span slot="description"
             >${this.hass.localize(
-              "ui.components.service-control.target_description"
+              "ui.components.service-control.target_secondary"
             )}</span
           ><ha-selector
             .hass=${this.hass}
             .selector=${this._targetSelector(
-              serviceData.target as TargetSelector,
-              domain
+              serviceData.target as TargetSelector
             )}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
@@ -485,80 +478,122 @@ export class HaServiceControl extends LitElement {
     ${shouldRenderServiceDataYaml
       ? html`<ha-yaml-editor
           .hass=${this.hass}
-          .label=${this.hass.localize("ui.components.service-control.data")}
+          .label=${this.hass.localize(
+            "ui.components.service-control.action_data"
+          )}
           .name=${"data"}
           .readOnly=${this.disabled}
           .defaultValue=${this._value?.data}
           @value-changed=${this._dataChanged}
         ></ha-yaml-editor>`
-      : filteredFields?.map((dataField) => {
-          const selector = dataField?.selector ?? { text: undefined };
-          const type = Object.keys(selector)[0];
-          const enhancedSelector = ["action", "condition", "trigger"].includes(
-            type
-          )
-            ? {
-                [type]: {
-                  ...selector[type],
-                  path: [dataField.key],
-                },
-              }
-            : selector;
-
-          const showOptional = showOptionalToggle(dataField);
-
-          return dataField.selector &&
-            (!dataField.advanced ||
-              this.showAdvanced ||
-              (this._value?.data &&
-                this._value.data[dataField.key] !== undefined))
-            ? html`<ha-settings-row .narrow=${this.narrow}>
-                ${!showOptional
-                  ? hasOptional
-                    ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-                    : ""
-                  : html`<ha-checkbox
-                      .key=${dataField.key}
-                      .checked=${this._checkedKeys.has(dataField.key) ||
-                      (this._value?.data &&
-                        this._value.data[dataField.key] !== undefined)}
-                      .disabled=${this.disabled}
-                      @change=${this._checkboxChanged}
-                      slot="prefix"
-                    ></ha-checkbox>`}
-                <span slot="heading"
-                  >${this.hass.localize(
-                    `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
-                  ) ||
-                  dataField.name ||
-                  dataField.key}</span
-                >
-                <span slot="description"
-                  >${this.hass.localize(
-                    `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
-                  ) || dataField?.description}</span
-                >
-                <ha-selector
-                  .disabled=${this.disabled ||
-                  (showOptional &&
-                    !this._checkedKeys.has(dataField.key) &&
-                    (!this._value?.data ||
-                      this._value.data[dataField.key] === undefined))}
-                  .hass=${this.hass}
-                  .selector=${enhancedSelector}
-                  .key=${dataField.key}
-                  @value-changed=${this._serviceDataChanged}
-                  .value=${this._value?.data
-                    ? this._value.data[dataField.key]
-                    : undefined}
-                  .placeholder=${dataField.default}
-                  .localizeValue=${this._localizeValueCallback}
-                  @item-moved=${this._itemMoved}
-                ></ha-selector>
-              </ha-settings-row>`
-            : "";
-        })} `;
+      : serviceData?.fields.map((dataField) =>
+          dataField.fields
+            ? html`<ha-expansion-panel
+                leftChevron
+                .expanded=${!dataField.collapsed}
+                .header=${this.hass.localize(
+                  `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
+                ) ||
+                dataField.name ||
+                dataField.key}
+              >
+                ${Object.entries(dataField.fields).map(([key, field]) =>
+                  this._renderField(
+                    { key, ...field },
+                    hasOptional,
+                    domain,
+                    serviceName,
+                    targetEntities
+                  )
+                )}
+              </ha-expansion-panel>`
+            : this._renderField(
+                dataField,
+                hasOptional,
+                domain,
+                serviceName,
+                targetEntities
+              )
+        )} `;
   }
+
+  private _renderField = (
+    dataField: ExtHassService["fields"][number],
+    hasOptional: boolean,
+    domain: string | undefined,
+    serviceName: string | undefined,
+    targetEntities: string[]
+  ) => {
+    if (
+      dataField.filter &&
+      !this._filterField(dataField.filter, targetEntities)
+    ) {
+      return nothing;
+    }
+
+    const selector = dataField?.selector ?? { text: undefined };
+    const type = Object.keys(selector)[0];
+    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
+      ? {
+          [type]: {
+            ...selector[type],
+            path: [dataField.key],
+          },
+        }
+      : selector;
+
+    const showOptional = showOptionalToggle(dataField);
+
+    return dataField.selector &&
+      (!dataField.advanced ||
+        this.showAdvanced ||
+        (this._value?.data && this._value.data[dataField.key] !== undefined))
+      ? html`<ha-settings-row .narrow=${this.narrow}>
+          ${!showOptional
+            ? hasOptional
+              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+              : ""
+            : html`<ha-checkbox
+                .key=${dataField.key}
+                .checked=${this._checkedKeys.has(dataField.key) ||
+                (this._value?.data &&
+                  this._value.data[dataField.key] !== undefined)}
+                .disabled=${this.disabled}
+                @change=${this._checkboxChanged}
+                slot="prefix"
+              ></ha-checkbox>`}
+          <span slot="heading"
+            >${this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
+            ) ||
+            dataField.name ||
+            dataField.key}</span
+          >
+          <span slot="description"
+            >${this.hass.localize(
+              `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
+            ) || dataField?.description}</span
+          >
+          <ha-selector
+            .disabled=${this.disabled ||
+            (showOptional &&
+              !this._checkedKeys.has(dataField.key) &&
+              (!this._value?.data ||
+                this._value.data[dataField.key] === undefined))}
+            .hass=${this.hass}
+            .selector=${enhancedSelector}
+            .key=${dataField.key}
+            @value-changed=${this._serviceDataChanged}
+            .value=${this._value?.data
+              ? this._value.data[dataField.key]
+              : undefined}
+            .placeholder=${dataField.default}
+            .localizeValue=${this._localizeValueCallback}
+            @item-moved=${this._itemMoved}
+          ></ha-selector>
+        </ha-settings-row>`
+      : "";
+  };
 
   private _localizeValueCallback = (key: string) => {
     if (!this._value?.service) {
@@ -844,6 +879,11 @@ export class HaServiceControl extends LitElement {
       }
       .description p {
         direction: ltr;
+      }
+      ha-expansion-panel {
+        --ha-card-border-radius: 0;
+        --expansion-panel-summary-padding: 0 16px;
+        --expansion-panel-content-padding: 0;
       }
     `;
   }

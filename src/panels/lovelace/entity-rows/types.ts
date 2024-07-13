@@ -81,7 +81,7 @@ export type LovelaceRowConfig =
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
-  editMode?: boolean;
+  preview?: boolean;
   setConfig(config: LovelaceRowConfig);
 }
 

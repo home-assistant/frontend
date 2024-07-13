@@ -1,4 +1,3 @@
-import "@material/mwc-ripple";
 import {
   css,
   CSSResultGroup,

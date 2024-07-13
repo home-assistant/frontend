@@ -34,7 +34,7 @@ export interface FlowConfig {
   renderAbortDescription(
     hass: HomeAssistant,
     step: DataEntryFlowStepAbort
-  ): TemplateResult | "";
+  ): TemplateResult | string;
 
   renderShowFormStepHeader(
     hass: HomeAssistant,

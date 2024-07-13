@@ -30,7 +30,10 @@ export class HuiHorizontalStackCard extends HuiStackCard {
           height: 100%;
           gap: var(--horizontal-stack-card-gap, var(--stack-card-gap, 8px));
         }
-        #root > * {
+        #root > hui-card {
+          display: contents;
+        }
+        #root > hui-card > * {
           flex: 1 1 0;
           min-width: 0;
         }

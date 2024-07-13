@@ -39,7 +39,7 @@ import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceLayoutOptions } from "../types";
 import { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
@@ -56,6 +56,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+
+  @property({ attribute: false })
+  public layout?: string;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -138,7 +141,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { type: "map", entities: foundEntities };
+    return { type: "map", entities: foundEntities, theme_mode: "auto" };
   }
 
   protected render() {
@@ -151,6 +154,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         (${this._error.code})
       </ha-alert>`;
     }
+
+    const isDarkMode =
+      this._config.dark_mode || this._config.theme_mode === "dark"
+        ? true
+        : this._config.theme_mode === "light"
+          ? false
+          : this.hass.themes.darkMode;
+
+    const themeMode =
+      this._config.theme_mode || (this._config.dark_mode ? "dark" : "auto");
+
     return html`
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
@@ -161,7 +175,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
-            ?darkMode=${this._config.dark_mode}
+            .themeMode=${themeMode}
             interactiveZones
             renderPassive
           ></ha-map>
@@ -170,6 +184,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               "ui.panel.lovelace.cards.map.reset_focus"
             )}
             .path=${mdiImageFilterCenterFocus}
+            style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
             @click=${this._fitMap}
             tabindex="0"
           ></ha-icon-button>
@@ -285,7 +300,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _computePadding(): void {
     const root = this.shadowRoot!.getElementById("root");
-    if (!this._config || this.isPanel || !root) {
+
+    const ignoreAspectRatio = this.isPanel || this.layout === "grid";
+    if (!this._config || ignoreAspectRatio || !root) {
       return;
     }
 
@@ -410,6 +427,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return paths;
     }
   );
+
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 4,
+      grid_rows: 4,
+      grid_min_columns: 2,
+      grid_min_rows: 2,
+    };
+  }
 
   static get styles(): CSSResultGroup {
     return css`

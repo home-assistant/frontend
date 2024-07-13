@@ -1,7 +1,14 @@
 import { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { Blueprints, fetchBlueprints } from "../data/blueprint";
@@ -24,6 +31,16 @@ export class HaFilterBlueprints extends LitElement {
   @state() private _shouldRender = false;
 
   @state() private _blueprints?: Blueprints;
+
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      if (this.value?.length) {
+        this._findRelated();
+      }
+    }
+  }
 
   protected render() {
     return html`
@@ -96,7 +113,6 @@ export class HaFilterBlueprints extends LitElement {
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
     const blueprints = this._blueprints!;
-    const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!ev.detail.index.size) {
       fireEvent(this, "data-table-filter-changed", {
@@ -112,13 +128,33 @@ export class HaFilterBlueprints extends LitElement {
     for (const index of ev.detail.index) {
       const blueprintId = Object.keys(blueprints)[index];
       value.push(blueprintId);
+    }
+
+    this.value = value;
+
+    this._findRelated();
+  }
+
+  private async _findRelated() {
+    if (!this.value?.length) {
+      fireEvent(this, "data-table-filter-changed", {
+        value: [],
+        items: undefined,
+      });
+      this.value = [];
+      return;
+    }
+
+    const relatedPromises: Promise<RelatedResult>[] = [];
+
+    for (const blueprintId of this.value) {
       if (this.type) {
         relatedPromises.push(
           findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
         );
       }
     }
-    this.value = value;
+
     const results = await Promise.all(relatedPromises);
     const items: Set<string> = new Set();
     for (const result of results) {
@@ -128,7 +164,7 @@ export class HaFilterBlueprints extends LitElement {
     }
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: this.value,
       items: this.type ? items : undefined,
     });
   }

@@ -38,14 +38,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected render() {
     return html`
-      ${this.disabled
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
-            <mwc-button slot="action" @click=${this._duplicate}>
-              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
-            </mwc-button>
-          </ha-alert>`
-        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -59,14 +51,14 @@ export class HaManualAutomationEditor extends LitElement {
               </mwc-button>
             </ha-alert>
           `
-        : ""}
+        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
             breaks
             .content=${this.config.description}
           ></ha-markdown>`
-        : ""}
+        : nothing}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -97,7 +89,7 @@ export class HaManualAutomationEditor extends LitElement {
       <ha-automation-trigger
         role="region"
         aria-labelledby="triggers-heading"
-        .triggers=${this.config.trigger}
+        .triggers=${this.config.trigger || []}
         .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
@@ -238,10 +230,6 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private _duplicate() {
-    fireEvent(this, "duplicate");
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -279,12 +267,6 @@ export class HaManualAutomationEditor extends LitElement {
           font-size: small;
           font-weight: normal;
           line-height: 0;
-        }
-        ha-alert.re-order {
-          display: block;
-          margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
         }
       `,
     ];

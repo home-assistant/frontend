@@ -101,7 +101,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 : zoneRadiusColor,
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
-          radius_editable: false,
+          radius_editable:
+            entityState.entity_id === "zone.home" && this._canEditCore,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
@@ -381,8 +382,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _radiusUpdated(ev: CustomEvent) {
+  private async _radiusUpdated(ev: CustomEvent) {
     this._activeEntry = ev.detail.id;
+    if (ev.detail.id === "zone.home" && this._canEditCore) {
+      await saveCoreConfig(this.hass, {
+        radius: Math.round(ev.detail.radius),
+      });
+      return;
+    }
     const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
     if (!entry) {
       return;
@@ -478,6 +485,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     await saveCoreConfig(this.hass, {
       latitude: values.latitude,
       longitude: values.longitude,
+      radius: values.radius,
     });
     this._zoomZone("zone.home");
   }
@@ -572,6 +580,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ha-locations-editor {
         flex-grow: 1;
         height: 100%;
+      }
+      .flex mwc-list {
+        padding-bottom: 64px;
       }
       .flex mwc-list,
       .flex .empty {

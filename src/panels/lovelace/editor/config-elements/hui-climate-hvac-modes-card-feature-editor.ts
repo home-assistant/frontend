@@ -6,14 +6,21 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { HVAC_MODES } from "../../../../data/climate";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import { compareClimateHvacModes } from "../../../../data/climate";
 import type { HomeAssistant } from "../../../../types";
 import {
   ClimateHvacModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+
+type ClimateHvacModesCardFeatureData = ClimateHvacModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
 
 @customElement("hui-climate-hvac-modes-card-feature-editor")
 export class HuiClimateHvacModesCardFeatureEditor
@@ -34,7 +41,8 @@ export class HuiClimateHvacModesCardFeatureEditor
     (
       localize: LocalizeFunc,
       formatEntityState: FormatEntityStateFunc,
-      stateObj?: HassEntity
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
     ) =>
       [
         {
@@ -53,21 +61,34 @@ export class HuiClimateHvacModesCardFeatureEditor
           },
         },
         {
-          name: "hvac_modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options: HVAC_MODES.filter((mode) =>
-                stateObj?.attributes.hvac_modes?.includes(mode)
-              ).map((mode) => ({
-                value: mode,
-                label: stateObj ? formatEntityState(stateObj, mode) : mode,
-              })),
-            },
+            boolean: {},
           },
         },
-      ] as const
+        ...(customizeModes
+          ? ([
+              {
+                name: "hvac_modes",
+                selector: {
+                  select: {
+                    reorder: true,
+                    multiple: true,
+                    options: (stateObj?.attributes.hvac_modes || [])
+                      .concat()
+                      .sort(compareClimateHvacModes)
+                      .map((mode) => ({
+                        value: mode,
+                        label: stateObj
+                          ? formatEntityState(stateObj, mode)
+                          : mode,
+                      })),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {
@@ -79,16 +100,17 @@ export class HuiClimateHvacModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: ClimateHvacModesCardFeatureConfig = {
+    const data: ClimateHvacModesCardFeatureData = {
       style: "icons",
-      hvac_modes: [],
       ...this._config,
+      customize_modes: this._config.hvac_modes !== undefined,
     };
 
     const schema = this._schema(
       this.hass.localize,
       this.hass.formatEntityState,
-      stateObj
+      stateObj,
+      data.customize_modes
     );
 
     return html`
@@ -103,7 +125,24 @@ export class HuiClimateHvacModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as ClimateHvacModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.hvac_modes) {
+      const ordererHvacModes = (stateObj?.attributes.hvac_modes || [])
+        .concat()
+        .sort(compareClimateHvacModes);
+      config.hvac_modes = ordererHvacModes;
+    }
+    if (!customize_modes && config.hvac_modes) {
+      delete config.hvac_modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -112,6 +151,7 @@ export class HuiClimateHvacModesCardFeatureEditor
     switch (schema.name) {
       case "hvac_modes":
       case "style":
+      case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.climate-hvac-modes.${schema.name}`
         );

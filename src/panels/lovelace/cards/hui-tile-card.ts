@@ -1,5 +1,3 @@
-import { Ripple } from "@material/mwc-ripple";
-import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -10,13 +8,7 @@ import {
   html,
   nothing,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  queryAsync,
-  state,
-} from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -29,6 +21,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
+import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
@@ -129,17 +122,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getLayoutOptions(): LovelaceLayoutOptions {
-    const options = {
-      grid_columns: 2,
-      grid_rows: 1,
-    };
+    const grid_columns = 2;
+    let grid_min_columns = 2;
+    let grid_rows = 1;
     if (this._config?.features?.length) {
-      options.grid_rows += Math.ceil((this._config.features.length * 2) / 3);
+      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
+      grid_rows += featureHeight;
     }
     if (this._config?.vertical) {
-      options.grid_rows++;
+      grid_rows++;
+      grid_min_columns = 1;
     }
-    return options;
+    return {
+      grid_columns,
+      grid_rows,
+      grid_min_rows: grid_rows,
+      grid_min_columns,
+    };
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -245,6 +244,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-relative-time>
           `;
         }
+        if (content === "last-updated") {
+          return html`
+            <ha-relative-time
+              .hass=${this.hass}
+              .datetime=${stateObj.last_updated}
+            ></ha-relative-time>
+          `;
+        }
         if (content === "last_triggered") {
           return html`
             <ha-relative-time
@@ -304,43 +311,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     if (domain === "update") {
-      return html`${computeUpdateStateDisplay(
-        stateObj as UpdateEntity,
-        this.hass!
-      )}`;
+      return html`
+        ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
+      `;
+    }
+
+    if (domain === "timer") {
+      import("../../../state-display/state-display-timer");
+      return html`
+        <state-display-timer
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></state-display-timer>
+      `;
     }
 
     return this._renderStateContent(stateObj, "state");
-  }
-
-  @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
-
-  @state() private _shouldRenderRipple = false;
-
-  private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
-    this._shouldRenderRipple = true;
-    return this._ripple;
-  });
-
-  @eventOptions({ passive: true })
-  private handleRippleActivate(evt?: Event) {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.startPress(evt);
-  }
-
-  private handleRippleDeactivate() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.endPress();
-  }
-
-  private handleRippleMouseEnter() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.startHover();
-  }
-
-  private handleRippleMouseLeave() {
-    if (!this.hasCardAction) return;
-    this._rippleHandlers.endHover();
   }
 
   get hasCardAction() {
@@ -420,17 +406,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           role=${ifDefined(this.hasCardAction ? "button" : undefined)}
           tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
-          @mousedown=${this.handleRippleActivate}
-          @mouseup=${this.handleRippleDeactivate}
-          @mouseenter=${this.handleRippleMouseEnter}
-          @mouseleave=${this.handleRippleMouseLeave}
-          @touchstart=${this.handleRippleActivate}
-          @touchend=${this.handleRippleDeactivate}
-          @touchcancel=${this.handleRippleDeactivate}
         >
-          ${this._shouldRenderRipple
-            ? html`<mwc-ripple></mwc-ripple>`
-            : nothing}
+          <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
         </div>
         <div class="content ${classMap(contentClasses)}">
           <div
@@ -494,7 +471,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         box-shadow: var(--shadow-default), var(--shadow-focus);
       }
       ha-card {
-        --mdc-ripple-color: var(--tile-color);
+        --ha-ripple-color: var(--tile-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
         height: 100%;
         transition:
           box-shadow 180ms ease-in-out,
@@ -526,13 +505,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
+        padding: 12px;
       }
       .vertical {
         flex-direction: column;
         text-align: center;
       }
       .vertical .icon-container {
-        margin-top: 12px;
+        margin-bottom: 12px;
         margin-right: 0;
         margin-inline-start: initial;
         margin-inline-end: initial;
@@ -544,8 +524,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         position: relative;
         flex: none;
         margin-right: 12px;
-        margin-inline-start: 12px;
-        margin-inline-end: initial;
+        margin-inline-start: initial;
+        margin-inline-end: 12px;
         direction: var(--direction);
         transition: transform 180ms ease-in-out;
       }
@@ -573,7 +553,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-tile-info {
         position: relative;
-        padding: 12px;
         flex: 1;
         min-width: 0;
         transition: background-color 180ms ease-in-out;

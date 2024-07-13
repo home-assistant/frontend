@@ -72,6 +72,7 @@ import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";

@@ -83,7 +83,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           service,
           serviceData,
           target,
-          notifyOnError = true
+          notifyOnError = true,
+          returnResponse = false
         ) => {
           if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
@@ -101,7 +102,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               domain,
               service,
               serviceData ?? {},
-              target
+              target,
+              returnResponse
             )) as ServiceCallResponse;
           } catch (err: any) {
             if (
@@ -133,7 +135,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               const message =
                 localizedErrorMessage ||
                 (this as any).hass.localize(
-                  "ui.notification_toast.service_call_failed",
+                  "ui.notification_toast.action_failed",
                   "service",
                   `${domain}/${service}`
                 ) +

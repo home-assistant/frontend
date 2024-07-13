@@ -4,9 +4,9 @@ import {
   mdiDotsVertical,
   mdiMagnify,
   mdiPower,
-  mdiUpdate,
+  mdiRefresh,
 } from "@mdi/js";
-import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -61,32 +61,32 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
           href="https://community.home-assistant.io"
           target="_blank"
           rel="noreferrer"
-          >Forums</a
+          >${hass.localize("ui.panel.config.tips.join_forums")}</a
         >`,
         twitter: html`<a
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
-          >Twitter</a
+          >${hass.localize("ui.panel.config.tips.join_x")}</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
           rel="noreferrer"
-          >Chat</a
+          >${hass.localize("ui.panel.config.tips.join_chat")}</a
         >`,
         blog: html`<a
           href=${documentationUrl(hass, `/blog`)}
           target="_blank"
           rel="noreferrer"
-          >Blog</a
+          >${hass.localize("ui.panel.config.tips.join_blog")}</a
         >`,
         newsletter: html`<span class="keep-together"
           ><a
-            href=${documentationUrl(hass, `/newsletter`)}
+            href="https://newsletter.openhomefoundation.org/"
             target="_blank"
             rel="noreferrer"
-            >Newsletter</a
+            >${hass.localize("ui.panel.config.tips.join_newsletter")}</a
           >
         </span>`,
       }),
@@ -177,7 +177,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(this.hass.states);
+      this._filterUpdateEntitiesWithInstall(
+        this.hass.states,
+        this.hass.entities
+      );
 
     const { issues: repairsIssues, total: totalRepairIssues } =
       this._repairsIssues;
@@ -206,7 +209,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
           <ha-list-item graphic="icon">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item graphic="icon">
@@ -306,8 +309,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities);
+    (
+      entities: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"]
+    ): { updates: UpdateEntity[]; total: number } => {
+      const updates = filterUpdateEntitiesWithInstall(entities).filter(
+        (entity) => !entityRegistry[entity.entity_id]?.hidden
+      );
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),

@@ -10,6 +10,18 @@ const now = () => new Date().toISOString();
 const randomTime = () =>
   new Date(new Date().getTime() - Math.random() * 80 * 60 * 1000).toISOString();
 
+const CAPABILITY_ATTRIBUTES = [
+  "friendly_name",
+  "unit_of_measurement",
+  "icon",
+  "entity_picture",
+  "supported_features",
+  "hidden",
+  "assumed_state",
+  "device_class",
+  "state_class",
+  "restored",
+];
 export class Entity {
   public domain: string;
 
@@ -29,16 +41,28 @@ export class Entity {
 
   public hass?: any;
 
-  constructor(domain, objectId, state, baseAttributes) {
+  static CAPABILITY_ATTRIBUTES = new Set(CAPABILITY_ATTRIBUTES);
+
+  constructor(domain, objectId, state, attributes) {
     this.domain = domain;
     this.objectId = objectId;
     this.entityId = `${domain}.${objectId}`;
     this.lastChanged = randomTime();
     this.lastUpdated = randomTime();
     this.state = String(state);
+
     // These are the attributes that we always write to the state machine
+    const baseAttributes = {};
+    const capabilityAttributes =
+      TYPES[domain]?.CAPABILITY_ATTRIBUTES || Entity.CAPABILITY_ATTRIBUTES;
+    for (const key of Object.keys(attributes)) {
+      if (capabilityAttributes.has(key)) {
+        baseAttributes[key] = attributes[key];
+      }
+    }
+
     this.baseAttributes = baseAttributes;
-    this.attributes = baseAttributes;
+    this.attributes = attributes;
   }
 
   public async handleService(domain, service, data: Record<string, any>) {
@@ -54,7 +78,7 @@ export class Entity {
     this.lastUpdated = now();
     this.lastChanged =
       state === this.state ? this.lastChanged : this.lastUpdated;
-    this.attributes = { ...this.baseAttributes, ...attributes };
+    this.attributes = { ...this.attributes, ...attributes };
 
     // eslint-disable-next-line
     console.log("update", this.entityId, this);
@@ -68,7 +92,7 @@ export class Entity {
     return {
       entity_id: this.entityId,
       state: this.state,
-      attributes: this.attributes,
+      attributes: this.state === "off" ? this.baseAttributes : this.attributes,
       last_changed: this.lastChanged,
       last_updated: this.lastUpdated,
     };
@@ -76,6 +100,16 @@ export class Entity {
 }
 
 class LightEntity extends Entity {
+  static CAPABILITY_ATTRIBUTES = new Set([
+    ...CAPABILITY_ATTRIBUTES,
+    "min_color_temp_kelvin",
+    "max_color_temp_kelvin",
+    "min_mireds",
+    "max_mireds",
+    "effect_list",
+    "supported_color_modes",
+  ]);
+
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
       return;
@@ -188,6 +222,12 @@ class AlarmControlPanelEntity extends Entity {
 }
 
 class MediaPlayerEntity extends Entity {
+  static CAPABILITY_ATTRIBUTES = new Set([
+    ...CAPABILITY_ATTRIBUTES,
+    "source_list",
+    "sound_mode_list",
+  ]);
+
   public async handleService(
     domain,
     service,
@@ -223,7 +263,11 @@ class CoverEntity extends Entity {
     if (service === "open_cover") {
       this.update("open");
     } else if (service === "close_cover") {
-      this.update("closing");
+      this.update("closed");
+    } else if (service === "set_cover_position") {
+      this.update(data.position > 0 ? "open" : "closed", {
+        current_position: data.position,
+      });
     } else {
       super.handleService(domain, service, data);
     }
@@ -288,6 +332,19 @@ class InputSelectEntity extends Entity {
 }
 
 class ClimateEntity extends Entity {
+  static CAPABILITY_ATTRIBUTES = new Set([
+    ...CAPABILITY_ATTRIBUTES,
+    "hvac_modes",
+    "min_temp",
+    "max_temp",
+    "target_temp_step",
+    "fan_modes",
+    "preset_modes",
+    "swing_modes",
+    "min_humidity",
+    "max_humidity",
+  ]);
+
   public async handleService(domain, service, data) {
     if (domain !== this.domain) {
       return;
@@ -357,6 +414,14 @@ class ClimateEntity extends Entity {
 }
 
 class WaterHeaterEntity extends Entity {
+  static CAPABILITY_ATTRIBUTES = new Set([
+    ...CAPABILITY_ATTRIBUTES,
+    "current_temperature",
+    "min_temp",
+    "max_temp",
+    "operation_list",
+  ]);
+
   public async handleService(domain, service, data) {
     if (domain !== this.domain) {
       return;
@@ -394,6 +459,7 @@ class GroupEntity extends Entity {
 }
 
 const TYPES = {
+  automation: ToggleEntity,
   alarm_control_panel: AlarmControlPanelEntity,
   climate: ClimateEntity,
   cover: CoverEntity,

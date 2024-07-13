@@ -1,19 +1,28 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiChevronRight, mdiMenuDown, mdiPlus } from "@mdi/js";
+import {
+  mdiChevronRight,
+  mdiDotsVertical,
+  mdiMenuDown,
+  mdiPlus,
+  mdiTextureBox,
+} from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
   nothing,
 } from "lit";
 
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { storage } from "../../../common/decorators/storage";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
@@ -23,9 +32,14 @@ import {
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
+import {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
@@ -41,6 +55,7 @@ import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-item";
 import "../../../components/ha-sub-menu";
+import { createAreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
@@ -65,15 +80,17 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import {
-  hasRejectedItems,
-  rejectedItems,
-} from "../../../common/util/promise-all-settled-results";
-import { showAlertDialog } from "../../lovelace/custom-card-helpers";
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -105,17 +122,55 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "devices-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = history.state?.filter || "";
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "devices-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
   @state()
   _labels!: LabelRegistryEntry[];
+
+  @storage({ key: "devices-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "devices-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
+  private _activeCollapsed?: string;
+
+  @storage({
+    key: "devices-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "devices-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   private _ignoreLocationChange = false;
 
@@ -156,49 +211,41 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     },
   ]);
 
-  firstUpdated() {
-    this._filters = {
-      "ha-filter-states": {
-        value: [],
-        items: undefined,
-      },
-    };
-    this._setFiltersFromUrl();
+  willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("domain")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        "ha-filter-integrations": {
-          value: [this._searchParms.get("domain")!],
-          items: undefined,
-        },
-      };
+    const domain = this._searchParms.get("domain");
+    const configEntry = this._searchParms.get("config_entry");
+
+    if (!domain && !configEntry) {
+      return;
     }
-    if (this._searchParms.has("config_entry")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        config_entry: {
-          value: [this._searchParms.get("config_entry")!],
-          items: undefined,
-        },
-      };
-    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-states": {
+        value: [
+          ...((this._filters["ha-filter-states"]?.value as string[]) || []),
+          "disabled",
+        ],
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: domain ? [domain] : [],
+        items: undefined,
+      },
+      config_entry: {
+        value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+    };
+
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
@@ -229,10 +276,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       entities: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       manifests: IntegrationManifest[],
-      filters: Record<
-        string,
-        { value: string[] | undefined; items: Set<string> | undefined }
-      >,
+      filters: DataTableFilters,
       localize: LocalizeFunc,
       labelReg?: LabelRegistryEntry[]
     ) => {
@@ -271,15 +315,21 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       const filteredDomains = new Set<string>();
 
       Object.entries(filters).forEach(([key, filter]) => {
-        if (key === "config_entry" && filter.value?.length) {
+        if (
+          key === "config_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) =>
-              filter.value?.includes(entryId)
+              (filter.value as string[]).includes(entryId)
             )
           );
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
+            (entry) =>
+              entry.entry_id &&
+              (filter.value as string[]).includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -288,17 +338,31 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-integrations" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           const entryIds = entries
-            .filter((entry) => filter.value!.includes(entry.domain))
+            .filter((entry) =>
+              (filter.value as string[]).includes(entry.domain)
+            )
             .map((entry) => entry.entry_id);
           outputDevices = outputDevices.filter((device) =>
             device.config_entries.some((entryId) => entryIds.includes(entryId))
           );
-          filter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (key === "ha-filter-labels" && filter.value?.length) {
+          (filter.value as string[]).forEach((domain) =>
+            filteredDomains.add(domain)
+          );
+        } else if (
+          key === "ha-filter-labels" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           outputDevices = outputDevices.filter((device) =>
-            device.labels.some((lbl) => filter.value!.includes(lbl))
+            device.labels.some((lbl) =>
+              (filter.value as string[]).includes(lbl)
+            )
           );
         } else if (filter.items) {
           outputDevices = outputDevices.filter((device) =>
@@ -307,7 +371,9 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         }
       });
 
-      const stateFilters = filters["ha-filter-states"]?.value;
+      const stateFilters = filters["ha-filter-states"]?.value as
+        | string[]
+        | undefined;
 
       const showDisabled =
         stateFilters?.length && stateFilters.includes("disabled");
@@ -382,10 +448,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       typeof this._devicesAndFilterDomains
     >["devicesOutput"][number];
 
-    const columns: DataTableColumnContainer<DeviceItem> = {
+    return {
       icon: {
         title: "",
+        label: localize("ui.panel.config.devices.data_table.icon"),
         type: "icon",
+        moveable: false,
+        showNarrow: true,
         template: (device) =>
           device.domains.length
             ? html`<img
@@ -400,19 +469,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               />`
             : "",
       },
-    };
-
-    if (narrow) {
-      columns.name = {
+      name: {
         title: localize("ui.panel.config.devices.data_table.device"),
         main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (device) => html`
-          <div style="font-size: 14px;">${device.name}</div>
-          <div class="secondary">${device.area} | ${device.integration}</div>
+        extraTemplate: (device) => html`
           ${device.label_entries.length
             ? html`
                 <ha-data-table-labels
@@ -421,112 +485,89 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               `
             : nothing}
         `,
-      };
-    } else {
-      columns.name = {
-        title: localize("ui.panel.config.devices.data_table.device"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        grows: true,
-        template: (device) => html`
-          <div style="font-size: 14px;">${device.name}</div>
-          ${device.label_entries.length
-            ? html`
-                <ha-data-table-labels
-                  .labels=${device.label_entries}
-                ></ha-data-table-labels>
-              `
-            : nothing}
-        `,
-      };
-    }
-
-    columns.manufacturer = {
-      title: localize("ui.panel.config.devices.data_table.manufacturer"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.model = {
-      title: localize("ui.panel.config.devices.data_table.model"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      width: "15%",
-    };
-    columns.area = {
-      title: localize("ui.panel.config.devices.data_table.area"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.integration = {
-      title: localize("ui.panel.config.devices.data_table.integration"),
-      sortable: true,
-      hidden: narrow,
-      filterable: true,
-      groupable: true,
-      width: "15%",
-    };
-    columns.battery_entity = {
-      title: localize("ui.panel.config.devices.data_table.battery"),
-      sortable: true,
-      filterable: true,
-      type: "numeric",
-      width: narrow ? "105px" : "15%",
-      maxWidth: "105px",
-      valueColumn: "battery_level",
-      template: (device) => {
-        const batteryEntityPair = device.battery_entity;
-        const battery =
-          batteryEntityPair && batteryEntityPair[0]
-            ? this.hass.states[batteryEntityPair[0]]
-            : undefined;
-        const batteryDomain = battery ? computeStateDomain(battery) : undefined;
-        const batteryCharging =
-          batteryEntityPair && batteryEntityPair[1]
-            ? this.hass.states[batteryEntityPair[1]]
-            : undefined;
-
-        return battery &&
-          (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
-          ? html`
-              ${batteryDomain === "sensor"
-                ? this.hass.formatEntityState(battery)
-                : nothing}
-              <ha-battery-icon
-                .hass=${this.hass}
-                .batteryStateObj=${battery}
-                .batteryChargingStateObj=${batteryCharging}
-              ></ha-battery-icon>
-            `
-          : html`—`;
       },
-    };
-    columns.disabled_by = {
-      title: "",
-      label: localize("ui.panel.config.devices.data_table.disabled_by"),
-      hidden: true,
-      template: (device) =>
-        device.disabled_by
-          ? this.hass.localize("ui.panel.config.devices.disabled")
-          : "",
-    };
-    columns.labels = {
-      title: "",
-      hidden: true,
-      filterable: true,
-      template: (device) =>
-        device.label_entries.map((lbl) => lbl.name).join(" "),
-    };
+      manufacturer: {
+        title: localize("ui.panel.config.devices.data_table.manufacturer"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      model: {
+        title: localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        filterable: true,
+        width: "15%",
+      },
+      area: {
+        title: localize("ui.panel.config.devices.data_table.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      integration: {
+        title: localize("ui.panel.config.devices.data_table.integration"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        width: "15%",
+      },
+      battery_entity: {
+        title: localize("ui.panel.config.devices.data_table.battery"),
+        showNarrow: true,
+        sortable: true,
+        filterable: true,
+        type: "numeric",
+        width: narrow ? "105px" : "15%",
+        maxWidth: "105px",
+        valueColumn: "battery_level",
+        template: (device) => {
+          const batteryEntityPair = device.battery_entity;
+          const battery =
+            batteryEntityPair && batteryEntityPair[0]
+              ? this.hass.states[batteryEntityPair[0]]
+              : undefined;
+          const batteryDomain = battery
+            ? computeStateDomain(battery)
+            : undefined;
+          const batteryCharging =
+            batteryEntityPair && batteryEntityPair[1]
+              ? this.hass.states[batteryEntityPair[1]]
+              : undefined;
 
-    return columns;
+          return battery &&
+            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+            ? html`
+                ${batteryDomain === "sensor"
+                  ? this.hass.formatEntityState(battery)
+                  : nothing}
+                <ha-battery-icon
+                  .hass=${this.hass}
+                  .batteryStateObj=${battery}
+                  .batteryChargingStateObj=${batteryCharging}
+                ></ha-battery-icon>
+              `
+            : html`—`;
+        },
+      },
+      disabled_by: {
+        title: "",
+        label: localize("ui.panel.config.devices.data_table.disabled_by"),
+        hidden: true,
+        template: (device) =>
+          device.disabled_by
+            ? this.hass.localize("ui.panel.config.devices.disabled")
+            : "",
+      },
+      labels: {
+        title: "",
+        hidden: true,
+        filterable: true,
+        template: (device) =>
+          device.label_entries.map((lbl) => lbl.name).join(" "),
+      },
+    } as DataTableColumnContainer<DeviceItem>;
   });
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
@@ -548,6 +589,41 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       this.hass.localize,
       this._labels
     );
+
+    const areasInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+
+    const areaItems = html`${Object.values(this.hass.areas).map(
+        (area) =>
+          html`<ha-menu-item
+            .value=${area.area_id}
+            @click=${this._handleBulkArea}
+          >
+            ${area.icon
+              ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiTextureBox}
+                ></ha-svg-icon>`}
+            <div slot="headline">${area.name}</div>
+          </ha-menu-item>`
+      )}
+      <ha-menu-item .value=${null} @click=${this._handleBulkArea}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.devices.picker.bulk_actions.no_area"
+          )}
+        </div>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateArea}>
+        <div slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.devices.picker.bulk_actions.add_area"
+          )}
+        </div>
+      </ha-menu-item>`;
 
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
@@ -614,8 +690,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
@@ -633,7 +718,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-        ${this._filters.config_entry?.value?.length
+        ${Array.isArray(this._filters.config_entry?.value) &&
+        this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">
               Filtering by config entry
               ${this.entries?.find(
@@ -684,36 +770,77 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
         ${!this.narrow
           ? html`<ha-button-menu-new slot="selection-bar">
-              <ha-assist-chip
-                slot="trigger"
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.picker.bulk_actions.add_label"
-                )}
-              >
-                <ha-svg-icon
-                  slot="trailing-icon"
-                  .path=${mdiMenuDown}
-                ></ha-svg-icon>
-              </ha-assist-chip>
-              ${labelItems}
-            </ha-button-menu-new>`
-          : html` <ha-button-menu-new has-overflow slot="selection-bar"
-              ><ha-assist-chip
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.picker.bulk_action"
-                )}
-                slot="trigger"
-              >
-                <ha-svg-icon
-                  slot="trailing-icon"
-                  .path=${mdiMenuDown}
-                ></ha-svg-icon>
-              </ha-assist-chip>
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_actions.add_label"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                ${labelItems}
+              </ha-button-menu-new>
+
+              ${areasInOverflow
+                ? nothing
+                : html`<ha-button-menu-new slot="selection-bar">
+                    <ha-assist-chip
+                      slot="trigger"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.devices.picker.bulk_actions.move_area"
+                      )}
+                    >
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon>
+                    </ha-assist-chip>
+                    ${areaItems}
+                  </ha-button-menu-new>`}`
+          : nothing}
+        ${this.narrow || areasInOverflow
+          ? html`<ha-button-menu-new has-overflow slot="selection-bar">
+              ${this.narrow
+                ? html`<ha-assist-chip
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>`
+                : html`<ha-icon-button
+                    .path=${mdiDotsVertical}
+                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    slot="trigger"
+                  ></ha-icon-button>`}
+              ${this.narrow
+                ? html` <ha-sub-menu>
+                    <ha-menu-item slot="item">
+                      <div slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                      </div>
+                      <ha-svg-icon
+                        slot="end"
+                        .path=${mdiChevronRight}
+                      ></ha-svg-icon>
+                    </ha-menu-item>
+                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                  </ha-sub-menu>`
+                : nothing}
               <ha-sub-menu>
                 <ha-menu-item slot="item">
                   <div slot="headline">
                     ${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_actions.add_label"
+                      "ui.panel.config.devices.picker.bulk_actions.move_area"
                     )}
                   </div>
                   <ha-svg-icon
@@ -721,9 +848,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-menu-item>
-                <ha-menu slot="menu">${labelItems}</ha-menu>
+                <ha-menu slot="menu">${areaItems}</ha-menu>
               </ha-sub-menu>
-            </ha-button-menu-new>`}
+            </ha-button-menu-new>`
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -809,6 +937,46 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
+  private async _handleBulkArea(ev) {
+    const area = ev.currentTarget.value;
+    this._bulkAddArea(area);
+  }
+
+  private async _bulkAddArea(area: string) {
+    const promises: Promise<DeviceRegistryEntry>[] = [];
+    this._selected.forEach((deviceId) => {
+      promises.push(
+        updateDeviceRegistryEntry(this.hass, deviceId, {
+          area_id: area,
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
+  }
+
+  private async _bulkCreateArea() {
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        this._bulkAddArea(area.area_id);
+        return area;
+      },
+    });
+  }
+
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
     const action = ev.currentTarget.action;
@@ -855,9 +1023,29 @@ ${rejected
     });
   }
 
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }

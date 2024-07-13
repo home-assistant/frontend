@@ -7,6 +7,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
@@ -25,6 +26,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
+import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
@@ -38,6 +40,41 @@ export class HaConfigUsers extends LitElement {
 
   @state() private _users: User[] = [];
 
+  @storage({ key: "users-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "users-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "users-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "users-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "users-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    key: "users-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<User> = {
@@ -49,17 +86,6 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (user) =>
-            narrow
-              ? html` ${user.name}<br />
-                  <div class="secondary">
-                    ${user.username ? `${user.username} |` : ""}
-                    ${localize(`groups.${user.group_ids[0]}`)}
-                  </div>`
-              : html` ${user.name ||
-                this.hass!.localize(
-                  "ui.panel.config.users.editor.unnamed_user"
-                )}`,
         },
         username: {
           title: localize("ui.panel.config.users.picker.headers.username"),
@@ -67,19 +93,15 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
           template: (user) => html`${user.username || "—"}`,
         },
-        group_ids: {
+        group: {
           title: localize("ui.panel.config.users.picker.headers.group"),
           sortable: true,
           filterable: true,
+          groupable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
-          template: (user) => html`
-            ${localize(`groups.${user.group_ids[0]}`)}
-          `,
         },
         is_active: {
           title: this.hass.localize(
@@ -133,6 +155,7 @@ export class HaConfigUsers extends LitElement {
           filterable: false,
           width: "104px",
           hidden: !narrow,
+          showNarrow: true,
           template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
@@ -161,10 +184,21 @@ export class HaConfigUsers extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        backPath="/config"
+        back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
-        .data=${this._users}
+        .data=${this._userData(this._users, this.hass.localize)}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
         hasFab
         clickable
@@ -180,6 +214,14 @@ export class HaConfigUsers extends LitElement {
       </hass-tabs-subpage-data-table>
     `;
   }
+
+  private _userData = memoizeOne((users: User[], localize: LocalizeFunc) =>
+    users.map((user) => ({
+      ...user,
+      name: user.name || localize("ui.panel.config.users.editor.unnamed_user"),
+      group: localize(`groups.${user.group_ids[0]}`),
+    }))
+  );
 
   private async _fetchUsers() {
     this._users = await fetchUsers(this.hass);
@@ -201,6 +243,11 @@ export class HaConfigUsers extends LitElement {
 
     showUserDetailDialog(this, {
       entry,
+      replaceEntry: (newEntry: User) => {
+        this._users = this._users!.map((ent) =>
+          ent.id === newEntry.id ? newEntry : ent
+        );
+      },
       updateEntry: async (values) => {
         const updated = await updateUser(this.hass!, entry!.id, values);
         this._users = this._users!.map((ent) =>
@@ -244,6 +291,27 @@ export class HaConfigUsers extends LitElement {
         }
       },
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

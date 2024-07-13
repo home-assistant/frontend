@@ -2,7 +2,7 @@ import type { Selector } from "../../data/selector";
 import type { HaFormSchema } from "./types";
 
 export const computeInitialHaFormData = (
-  schema: HaFormSchema[]
+  schema: HaFormSchema[] | readonly HaFormSchema[]
 ): Record<string, any> => {
   const data = {};
   schema.forEach((field) => {
@@ -36,6 +36,8 @@ export const computeInitialHaFormData = (
         minutes: 0,
         seconds: 0,
       };
+    } else if (field.type === "expandable") {
+      data[field.name] = computeInitialHaFormData(field.schema);
     } else if ("selector" in field) {
       const selector: Selector = field.selector;
 
@@ -71,6 +73,10 @@ export const computeInitialHaFormData = (
         if (selector.country?.countries?.length) {
           data[field.name] = selector.country.countries[0];
         }
+      } else if ("language" in selector) {
+        if (selector.language?.languages?.length) {
+          data[field.name] = selector.language.languages[0];
+        }
       } else if ("duration" in selector) {
         data[field.name] = {
           hours: 0,
@@ -93,7 +99,9 @@ export const computeInitialHaFormData = (
       ) {
         data[field.name] = {};
       } else {
-        throw new Error("Selector not supported in initial form data");
+        throw new Error(
+          `Selector ${Object.keys(selector)[0]} not supported in initial form data`
+        );
       }
     }
   });

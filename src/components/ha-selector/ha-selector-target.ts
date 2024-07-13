@@ -22,6 +22,7 @@ import {
   filterSelectorDevices,
   filterSelectorEntities,
   TargetSelector,
+  computeCreateDomains,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
@@ -41,6 +42,8 @@ export class HaTargetSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _entitySources?: EntitySources;
+
+  @state() private _createDomains: string[] | undefined;
 
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
 
@@ -68,6 +71,9 @@ export class HaTargetSelector extends LitElement {
         this._entitySources = sources;
       });
     }
+    if (changedProperties.has("selector")) {
+      this._createDomains = computeCreateDomains(this.selector);
+    }
   }
 
   protected render() {
@@ -82,7 +88,7 @@ export class HaTargetSelector extends LitElement {
       .deviceFilter=${this._filterDevices}
       .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
-      .createDomains=${this.selector.target?.create_domains}
+      .createDomains=${this._createDomains}
     ></ha-target-picker>`;
   }
 

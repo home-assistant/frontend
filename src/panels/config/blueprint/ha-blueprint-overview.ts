@@ -24,6 +24,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
@@ -54,6 +55,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+import { storage } from "../../../common/decorators/storage";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
@@ -92,8 +94,46 @@ class HaBlueprintOverview extends LitElement {
     Blueprints
   >;
 
+  @storage({ key: "blueprint-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "blueprint-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "blueprint-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
+  @storage({
+    key: "blueprint-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "blueprint-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "blueprint-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
   private _processedBlueprints = memoizeOne(
-    (blueprints: Record<string, Blueprints>): BlueprintMetaDataPath[] => {
+    (
+      blueprints: Record<string, Blueprints>,
+      localize: LocalizeFunc
+    ): BlueprintMetaDataPath[] => {
       const result: any[] = [];
       Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
         Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
@@ -101,6 +141,9 @@ class HaBlueprintOverview extends LitElement {
             result.push({
               name: blueprint.error,
               type,
+              translated_type: localize(
+                `ui.panel.config.blueprint.overview.types.${type as "automation" | "script"}`
+              ),
               error: true,
               path,
               fullpath: `${type}/${path}`,
@@ -109,6 +152,9 @@ class HaBlueprintOverview extends LitElement {
             result.push({
               ...blueprint.metadata,
               type,
+              translated_type: localize(
+                `ui.panel.config.blueprint.overview.types.${type as "automation" | "script"}`
+              ),
               error: false,
               path,
               fullpath: `${type}/${path}`,
@@ -122,8 +168,6 @@ class HaBlueprintOverview extends LitElement {
 
   private _columns = memoizeOne(
     (
-      narrow,
-      _language,
       localize: LocalizeFunc
     ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
@@ -133,22 +177,12 @@ class HaBlueprintOverview extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: narrow
-          ? (blueprint) => html`
-              ${blueprint.name}<br />
-              <div class="secondary">${blueprint.path}</div>
-            `
-          : undefined,
       },
-      type: {
+      translated_type: {
         title: localize("ui.panel.config.blueprint.overview.headers.type"),
-        template: (blueprint) =>
-          html`${this.hass.localize(
-            `ui.panel.config.blueprint.overview.types.${blueprint.type}`
-          )}`,
         sortable: true,
         filterable: true,
-        hidden: narrow,
+        groupable: true,
         direction: "asc",
         width: "10%",
       },
@@ -156,7 +190,6 @@ class HaBlueprintOverview extends LitElement {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
-        hidden: narrow,
         direction: "asc",
         width: "25%",
       },
@@ -168,6 +201,9 @@ class HaBlueprintOverview extends LitElement {
         title: "",
         width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
@@ -251,12 +287,8 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.language,
-          this.hass.localize
-        )}
-        .data=${this._processedBlueprints(this.blueprints)}
+        .columns=${this._columns(this.hass.localize)}
+        .data=${this._processedBlueprints(this.blueprints, this.hass.localize)}
         id="fullpath"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
@@ -281,6 +313,17 @@ class HaBlueprintOverview extends LitElement {
             >
           </a>
         </div>`}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -341,9 +384,10 @@ class HaBlueprintOverview extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const blueprint = this._processedBlueprints(this.blueprints).find(
-      (b) => b.fullpath === ev.detail.id
-    )!;
+    const blueprint = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize
+    ).find((b) => b.fullpath === ev.detail.id)!;
     if (blueprint.error) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.blueprint.overview.error", {
@@ -501,6 +545,27 @@ class HaBlueprintOverview extends LitElement {
     await deleteBlueprint(this.hass, blueprint.domain, blueprint.path);
     fireEvent(this, "reload-blueprints");
   };
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
 
   static get styles(): CSSResultGroup {
     return haStyle;

@@ -10,6 +10,7 @@ const WebpackBar = require("webpackbar");
 const {
   TransformAsyncModulesPlugin,
 } = require("transform-async-modules-webpack-plugin");
+const { dependencies } = require("../package.json");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -73,6 +74,9 @@ const createWebpackConfig = ({
           resolve: {
             fullySpecified: false,
           },
+          parser: {
+            worker: ["*context.audioWorklet.addModule()", "..."],
+          },
         },
         {
           test: /\.css$/,
@@ -91,11 +95,15 @@ const createWebpackConfig = ({
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       splitChunks: {
-        // Disable splitting for web workers with ESM output
-        // Imports of external chunks are broken
-        chunks: latestBuild
-          ? (chunk) => !chunk.canBeInitial() && !/^.+-worker$/.test(chunk.name)
-          : undefined,
+        // Disable splitting for web workers and worklets because imports of
+        // external chunks are broken for:
+        // - ESM output: https://github.com/webpack/webpack/issues/17014
+        // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
+        chunks: (chunk) =>
+          !chunk.canBeInitial() &&
+          !new RegExp(`^.+-work${latestBuild ? "(?:let|er)" : "let"}$`).test(
+            chunk.name
+          ),
       },
     },
     plugins: [
@@ -156,7 +164,10 @@ const createWebpackConfig = ({
           transform: (stats) => JSON.stringify(filterStats(stats)),
         }),
       !latestBuild &&
-        new TransformAsyncModulesPlugin({ browserslistEnv: "legacy" }),
+        new TransformAsyncModulesPlugin({
+          browserslistEnv: "legacy",
+          runtime: { version: dependencies["@babel/runtime"] },
+        }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],

@@ -29,6 +29,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -37,16 +38,22 @@ import {
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
@@ -66,6 +73,11 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../../data/entity_sources";
+import { domainToName } from "../../../data/integration";
 import {
   LabelRegistryEntry,
   createLabelRegistryEntry,
@@ -87,13 +99,10 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../../data/entity_sources";
-import {
-  hasRejectedItems,
-  rejectedItems,
-} from "../../../common/util/promise-all-settled-results";
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -110,7 +119,11 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   localized_platform: string;
+  domain: string;
   label_entries: LabelRegistryEntry[];
+  enabled: string;
+  visible: string;
+  available: string;
 }
 
 @customElement("ha-config-entities")
@@ -131,14 +144,25 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "entities-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = history.state?.filter || "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "entities-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _selected: string[] = [];
 
@@ -148,6 +172,33 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   _labels!: LabelRegistryEntry[];
 
   @state() private _entitySources?: EntitySources;
+
+  @storage({ key: "entities-table-sort", state: false, subscribe: false })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({ key: "entities-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "entities-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
+  @storage({
+    key: "entities-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "entities-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -180,33 +231,47 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _states = memoize((localize: LocalizeFunc) => [
     {
-      value: "disabled",
-      label: localize("ui.panel.config.entities.picker.status.disabled"),
-    },
-    {
-      value: "hidden",
-      label: localize("ui.panel.config.entities.picker.status.hidden"),
+      value: "available",
+      label: localize("ui.panel.config.entities.picker.status.available"),
     },
     {
       value: "unavailable",
       label: localize("ui.panel.config.entities.picker.status.unavailable"),
     },
     {
+      value: "enabled",
+      label: localize("ui.panel.config.entities.picker.status.enabled"),
+    },
+    {
+      value: "disabled",
+      label: localize("ui.panel.config.entities.picker.status.disabled"),
+    },
+    {
+      value: "visible",
+      label: localize("ui.panel.config.entities.picker.status.visible"),
+    },
+    {
+      value: "hidden",
+      label: localize("ui.panel.config.entities.picker.status.hidden"),
+    },
+    {
       value: "readonly",
-      label: localize("ui.panel.config.entities.picker.status.readonly"),
+      label: localize("ui.panel.config.entities.picker.status.unmanageable"),
+    },
+    {
+      value: "restored",
+      label: localize("ui.panel.config.entities.picker.status.not_provided"),
     },
   ]);
 
   private _columns = memoize(
-    (
-      localize: LocalizeFunc,
-      narrow,
-      _language
-    ): DataTableColumnContainer<EntityRow> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.entities.picker.headers.state_icon"),
         type: "icon",
+        showNarrow: true,
+        moveable: false,
         template: (entry) =>
           entry.icon
             ? html`<ha-icon .icon=${entry.icon}></ha-icon>`
@@ -230,41 +295,38 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (entry) => html`
-          <div style="font-size: 14px;">${entry.name}</div>
-          ${narrow
-            ? html`<div class="secondary">
-                ${entry.entity_id} | ${entry.localized_platform}
-              </div>`
-            : nothing}
-          ${entry.label_entries.length
+        extraTemplate: (entry) =>
+          entry.label_entries.length
             ? html`
                 <ha-data-table-labels
                   .labels=${entry.label_entries}
                 ></ha-data-table-labels>
               `
-            : nothing}
-        `,
+            : nothing,
       },
       entity_id: {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
-        hidden: narrow,
         sortable: true,
         filterable: true,
         width: "25%",
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
-        hidden: narrow,
         sortable: true,
         groupable: true,
         filterable: true,
         width: "20%",
       },
+      domain: {
+        title: localize("ui.panel.config.entities.picker.headers.domain"),
+        sortable: false,
+        hidden: true,
+        filterable: true,
+        groupable: true,
+      },
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
         sortable: true,
-        hidden: narrow,
         filterable: true,
         groupable: true,
         width: "15%",
@@ -283,9 +345,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       status: {
         title: localize("ui.panel.config.entities.picker.headers.status"),
         type: "icon",
+        showNarrow: true,
         sortable: true,
         filterable: true,
-        groupable: true,
         width: "68px",
         template: (entry) =>
           entry.unavailable ||
@@ -314,7 +376,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   <simple-tooltip animation-delay="0" position="left">
                     ${entry.restored
                       ? this.hass.localize(
-                          "ui.panel.config.entities.picker.status.restored"
+                          "ui.panel.config.entities.picker.status.not_provided"
                         )
                       : entry.unavailable
                         ? this.hass.localize(
@@ -329,12 +391,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                                 "ui.panel.config.entities.picker.status.hidden"
                               )
                             : this.hass.localize(
-                                "ui.panel.config.entities.picker.status.readonly"
+                                "ui.panel.config.entities.picker.status.unmanageable"
                               )}
                   </simple-tooltip>
                 </div>
               `
             : "—",
+      },
+      available: {
+        title: localize("ui.panel.config.entities.picker.headers.availability"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      visible: {
+        title: localize("ui.panel.config.entities.picker.headers.visibility"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
+      },
+      enabled: {
+        title: localize("ui.panel.config.entities.picker.headers.enabled"),
+        sortable: true,
+        groupable: true,
+        hidden: true,
       },
       labels: {
         title: "",
@@ -353,39 +433,46 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
-      filters: Record<
-        string,
-        { value: string[] | undefined; items: Set<string> | undefined }
-      >,
+      filters: DataTableFilters,
       entries?: ConfigEntry[],
       labelReg?: LabelRegistryEntry[]
     ) => {
       const result: EntityRow[] = [];
 
-      const stateFilters = filters["ha-filter-states"]?.value;
+      const stateFilters = filters["ha-filter-states"]?.value as string[];
 
-      const showReadOnly =
-        !stateFilters?.length || stateFilters.includes("readonly");
+      const showEnabled =
+        !stateFilters?.length || stateFilters.includes("enabled");
       const showDisabled =
         !stateFilters?.length || stateFilters.includes("disabled");
+      const showVisible =
+        !stateFilters?.length || stateFilters.includes("visible");
       const showHidden =
         !stateFilters?.length || stateFilters.includes("hidden");
+      const showAvailable =
+        !stateFilters?.length || stateFilters.includes("available");
       const showUnavailable =
         !stateFilters?.length || stateFilters.includes("unavailable");
+      const showRestored =
+        !stateFilters?.length || stateFilters.includes("restored");
+      const showReadOnly =
+        !stateFilters?.length || stateFilters.includes("readonly");
 
-      let filteredEntities = showReadOnly
-        ? entities.concat(stateEntities)
-        : entities;
+      let filteredEntities = entities.concat(stateEntities);
 
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
 
       Object.entries(filters).forEach(([key, filter]) => {
-        if (key === "config_entry" && filter.value?.length) {
+        if (
+          key === "config_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
-              filter.value?.includes(entity.config_entry_id)
+              (filter.value as string[]).includes(entity.config_entry_id)
           );
 
           if (!entries) {
@@ -394,7 +481,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           }
 
           const configEntries = entries.filter(
-            (entry) => entry.entry_id && filter.value?.includes(entry.entry_id)
+            (entry) =>
+              entry.entry_id &&
+              (filter.value as string[]).includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -403,25 +492,45 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
           }
-        } else if (key === "ha-filter-integrations" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-integrations" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
           const entryIds = entries
-            .filter((entry) => filter.value!.includes(entry.domain))
+            .filter((entry) =>
+              (filter.value as string[]).includes(entry.domain)
+            )
             .map((entry) => entry.entry_id);
 
           filteredEntities = filteredEntities.filter(
             (entity) =>
-              filter.value?.includes(entity.platform) ||
+              (filter.value as string[]).includes(entity.platform) ||
               (entity.config_entry_id &&
                 entryIds.includes(entity.config_entry_id))
           );
           filter.value!.forEach((domain) => filteredDomains.add(domain));
-        } else if (key === "ha-filter-labels" && filter.value?.length) {
+        } else if (
+          key === "ha-filter-domains" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) => filter.value!.includes(lbl))
+            (filter.value as string[]).includes(computeDomain(entity.entity_id))
+          );
+        } else if (
+          key === "ha-filter-labels" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            entity.labels.some((lbl) =>
+              (filter.value as string[]).includes(lbl)
+            )
           );
         } else if (filter.items) {
           filteredEntities = filteredEntities.filter((entity) =>
@@ -430,26 +539,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
 
-      if (!showDisabled) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.disabled_by
-        );
-      }
-
-      if (!showHidden) {
-        filteredEntities = filteredEntities.filter(
-          (entity) => !entity.hidden_by
-        );
-      }
-
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
+        const hidden = !!entry.hidden_by;
+        const disabled = !!entry.disabled_by;
+        const readonly = entry.readonly;
+        const available = entity?.state && entity.state !== UNAVAILABLE;
 
-        if (!showUnavailable && unavailable) {
+        if (
+          !(
+            (showAvailable && available) ||
+            (showUnavailable && unavailable) ||
+            (showRestored && restored) ||
+            (showVisible && !hidden) ||
+            (showHidden && hidden) ||
+            (showDisabled && disabled) ||
+            (showEnabled && !disabled) ||
+            (showReadOnly && readonly)
+          )
+        ) {
           continue;
         }
 
@@ -467,25 +579,34 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ),
           unavailable,
           restored,
-          localized_platform:
-            localize(`component.${entry.platform}.title`) || entry.platform,
+          localized_platform: domainToName(localize, entry.platform),
           area: area ? area.name : "—",
+          domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
-            ? localize("ui.panel.config.entities.picker.status.restored")
+            ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
               ? localize("ui.panel.config.entities.picker.status.unavailable")
-              : entry.disabled_by
+              : disabled
                 ? localize("ui.panel.config.entities.picker.status.disabled")
-                : entry.hidden_by
+                : hidden
                   ? localize("ui.panel.config.entities.picker.status.hidden")
-                  : entry.readonly
+                  : readonly
                     ? localize(
-                        "ui.panel.config.entities.picker.status.readonly"
+                        "ui.panel.config.entities.picker.status.unmanageable"
                       )
                     : localize(
                         "ui.panel.config.entities.picker.status.available"
                       ),
           label_entries: labelsEntries,
+          available: unavailable
+            ? localize("ui.panel.config.entities.picker.status.unavailable")
+            : localize("ui.panel.config.entities.picker.status.available"),
+          enabled: disabled
+            ? localize("ui.panel.config.entities.picker.status.disabled")
+            : localize("ui.panel.config.entities.picker.status.enabled"),
+          visible: hidden
+            ? localize("ui.panel.config.entities.picker.status.hidden")
+            : localize("ui.panel.config.entities.picker.status.visible"),
         });
       }
 
@@ -570,11 +691,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .route=${this.route}
         .tabs=${configSections.devices}
-        .columns=${this._columns(
-          this.hass.localize,
-          this.narrow,
-          this.hass.language
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
@@ -591,12 +708,21 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )
           ).length
         }
-        .filter=${this._filter}
         selectable
         .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        @sorting-changed=${this._handleSortingChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         clickable
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
@@ -715,14 +841,15 @@ ${
     ></ha-svg-icon>
     <div slot="headline">
       ${this.hass.localize(
-        "ui.panel.config.entities.picker.remove_selected.button"
+        "ui.panel.config.entities.picker.delete_selected.button"
       )}
     </div>
   </ha-menu-item>
 
 </ha-button-menu-new>
         ${
-          this._filters.config_entry?.value?.length
+          Array.isArray(this._filters.config_entry?.value) &&
+          this._filters.config_entry?.value.length
             ? html`<ha-alert slot="filter-pane">
                 Filtering by config entry
                 ${this._entries?.find(
@@ -752,6 +879,15 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
+        <ha-filter-domains
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-domains"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-domains"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-domains>
         <ha-filter-integrations
           .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]?.value}
@@ -815,51 +951,46 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
+    if (Object.keys(this._filters).length) {
+      return;
+    }
     this._filters = {
       "ha-filter-states": {
-        value: ["unavailable", "readonly"],
+        value: ["enabled"],
         items: undefined,
       },
     };
-    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
   }
 
   private _setFiltersFromUrl() {
-    if (this._searchParms.has("domain")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        "ha-filter-integrations": {
-          value: [this._searchParms.get("domain")!],
-          items: undefined,
-        },
-      };
+    const domain = this._searchParms.get("domain");
+    const configEntry = this._searchParms.get("config_entry");
+
+    if (!domain && !configEntry) {
+      return;
     }
-    if (this._searchParms.has("config_entry")) {
-      this._filters = {
-        ...this._filters,
-        "ha-filter-states": {
-          value: [
-            ...(this._filters["ha-filter-states"]?.value || []),
-            "disabled",
-          ],
-          items: undefined,
-        },
-        config_entry: {
-          value: [this._searchParms.get("config_entry")!],
-          items: undefined,
-        },
-      };
-    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-states": {
+        value: [],
+        items: undefined,
+      },
+      "ha-filter-integrations": {
+        value: domain ? [domain] : [],
+        items: undefined,
+      },
+      config_entry: {
+        value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+    };
+
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
@@ -1046,7 +1177,7 @@ ${
         { number: this._selected.length }
       ),
       text: this.hass.localize(
-        "ui.panel.config.entities.picker.hide_selected.confirm_text"
+        "ui.panel.config.entities.picker.hide_selected.confirm"
       ),
       confirmText: this.hass.localize("ui.common.hide"),
       dismissText: this.hass.localize("ui.common.cancel"),
@@ -1127,25 +1258,23 @@ ${rejected
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.entities.picker.remove_selected.confirm_${
-          removeableEntities.length !== this._selected.length ? "partly_" : ""
-        }title`,
-        { number: removeableEntities.length }
+        `ui.panel.config.entities.picker.delete_selected.confirm_title`
       ),
       text:
         removeableEntities.length === this._selected.length
           ? this.hass.localize(
-              "ui.panel.config.entities.picker.remove_selected.confirm_text"
+              "ui.panel.config.entities.picker.delete_selected.confirm_text"
             )
           : this.hass.localize(
-              "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
+              "ui.panel.config.entities.picker.delete_selected.confirm_partly_text",
               {
-                removable: removeableEntities.length,
+                deletable: removeableEntities.length,
                 selected: this._selected.length,
               }
             ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)
@@ -1194,6 +1323,23 @@ ${rejected
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
     });
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

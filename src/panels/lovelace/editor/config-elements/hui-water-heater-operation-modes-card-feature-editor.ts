@@ -5,14 +5,22 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import {
   WaterHeaterOperationModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-import { OPERATION_MODES } from "../../../../data/water_heater";
+import { compareWaterHeaterOperationMode } from "../../../../data/water_heater";
+
+type WaterHeaterOperationModesCardFeatureData =
+  WaterHeaterOperationModesCardFeatureConfig & {
+    customize_modes: boolean;
+  };
 
 @customElement("hui-water-heater-operation-modes-card-feature-editor")
 export class HuiWaterHeaterOperationModesCardFeatureEditor
@@ -30,24 +38,41 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (formatEntityState: FormatEntityStateFunc, stateObj?: HassEntity) =>
+    (
+      formatEntityState: FormatEntityStateFunc,
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
+    ) =>
       [
         {
-          name: "operation_modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options: OPERATION_MODES.filter((mode) =>
-                stateObj?.attributes.operation_list?.includes(mode)
-              ).map((mode) => ({
-                value: mode,
-                label: stateObj ? formatEntityState(stateObj, mode) : mode,
-              })),
-            },
+            boolean: {},
           },
         },
-      ] as const
+        ...(customizeModes
+          ? ([
+              {
+                name: "operation_modes",
+                selector: {
+                  select: {
+                    reorder: true,
+                    multiple: true,
+                    options: (stateObj?.attributes.operation_list || [])
+                      .concat()
+                      .sort(compareWaterHeaterOperationMode)
+                      .map((mode) => ({
+                        value: mode,
+                        label: stateObj
+                          ? formatEntityState(stateObj, mode)
+                          : mode,
+                      })),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {
@@ -59,12 +84,21 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.formatEntityState, stateObj);
+    const data: WaterHeaterOperationModesCardFeatureData = {
+      ...this._config,
+      customize_modes: this._config.operation_modes !== undefined,
+    };
+
+    const schema = this._schema(
+      this.hass.formatEntityState,
+      stateObj,
+      data.customize_modes
+    );
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -73,7 +107,23 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as WaterHeaterOperationModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.operation_modes) {
+      config.operation_modes = (stateObj?.attributes.operation_list || [])
+        .concat()
+        .sort(compareWaterHeaterOperationMode);
+    }
+    if (!customize_modes && config.operation_modes) {
+      delete config.operation_modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -81,13 +131,12 @@ export class HuiWaterHeaterOperationModesCardFeatureEditor
   ) => {
     switch (schema.name) {
       case "operation_modes":
+      case "customize_modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.water-heater-modes.${schema.name}`
+          `ui.panel.lovelace.editor.features.types.water-heater-operation-modes.${schema.name}`
         );
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return "";
     }
   };
 }

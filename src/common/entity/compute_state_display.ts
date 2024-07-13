@@ -19,28 +19,11 @@ import { blankBeforeUnit } from "../translations/blank_before_unit";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 
-export const computeStateDisplaySingleEntity = (
-  localize: LocalizeFunc,
-  stateObj: HassEntity,
-  locale: FrontendLocaleData,
-  config: HassConfig,
-  entity: EntityRegistryDisplayEntry | undefined,
-  state?: string
-): string =>
-  computeStateDisplayFromEntityAttributes(
-    localize,
-    locale,
-    config,
-    entity,
-    stateObj.entity_id,
-    stateObj.attributes,
-    state !== undefined ? state : stateObj.state
-  );
-
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
@@ -52,6 +35,7 @@ export const computeStateDisplay = (
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
+    sensorNumericDeviceClasses,
     config,
     entity,
     stateObj.entity_id,
@@ -63,6 +47,7 @@ export const computeStateDisplay = (
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
+  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entity: EntityRegistryDisplayEntry | undefined,
   entityId: string,
@@ -73,8 +58,15 @@ export const computeStateDisplayFromEntityAttributes = (
     return localize(`state.default.${state}`);
   }
 
+  const domain = computeDomain(entityId);
+
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
-  if (isNumericFromAttributes(attributes)) {
+  if (
+    isNumericFromAttributes(
+      attributes,
+      domain === "sensor" ? sensorNumericDeviceClasses : []
+    )
+  ) {
     // state is duration
     if (
       attributes.device_class === "duration" &&
@@ -119,8 +111,6 @@ export const computeStateDisplayFromEntityAttributes = (
 
     return value;
   }
-
-  const domain = computeDomain(entityId);
 
   if (domain === "datetime") {
     const time = new Date(state);
@@ -187,11 +177,14 @@ export const computeStateDisplayFromEntityAttributes = (
   if (
     [
       "button",
+      "conversation",
       "event",
       "image",
       "input_button",
+      "notify",
       "scene",
       "stt",
+      "tag",
       "tts",
       "wake_word",
     ].includes(domain) ||

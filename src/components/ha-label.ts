@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "@material/web/ripple/ripple";
 
 @customElement("ha-label")
 class HaLabel extends LitElement {
@@ -11,7 +10,6 @@ class HaLabel extends LitElement {
       <span class="content">
         <slot name="icon"></slot>
         <slot></slot>
-        <md-ripple></md-ripple>
       </span>
     `;
   }
@@ -27,7 +25,6 @@ class HaLabel extends LitElement {
             0.15
           );
           --ha-label-background-opacity: 1;
-
           position: relative;
           box-sizing: border-box;
           display: inline-flex;

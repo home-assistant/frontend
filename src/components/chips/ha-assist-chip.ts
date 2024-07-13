@@ -1,4 +1,3 @@
-import "element-internals-polyfill";
 import { MdAssistChip } from "@material/web/chips/assist-chip";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";

@@ -1,7 +1,6 @@
 import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import "../../resources/intl-polyfill";
 import { formatDateNumeric } from "./format_date";
 import { formatTime } from "./format_time";
 import { resolveTimeZone } from "./resolve-time-zone";

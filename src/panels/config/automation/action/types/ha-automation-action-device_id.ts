@@ -12,6 +12,8 @@ import {
   deviceAutomationsEqual,
   DeviceCapabilities,
   fetchDeviceActionCapabilities,
+  localizeExtraFieldsComputeLabelCallback,
+  localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
 import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import { HomeAssistant } from "../../../../../types";
@@ -84,8 +86,13 @@ export class HaDeviceAction extends LitElement {
               .data=${this._extraFieldsData(this.action, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
-              .computeLabel=${this._extraFieldsComputeLabelCallback(
-                this.hass.localize
+              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                this.hass,
+                this.action
+              )}
+              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                this.hass,
+                this.action
               )}
               @value-changed=${this._extraFieldsChanged}
             ></ha-form>
@@ -150,14 +157,6 @@ export class HaDeviceAction extends LitElement {
         ...ev.detail.value,
       },
     });
-  }
-
-  private _extraFieldsComputeLabelCallback(localize) {
-    // Returns a callback for ha-form to calculate labels per schema object
-    return (schema) =>
-      localize(
-        `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
-      ) || schema.name;
   }
 
   static styles = css`

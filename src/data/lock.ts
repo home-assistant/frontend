@@ -5,9 +5,7 @@ import {
 import { getExtendedEntityRegistryEntry } from "./entity_registry";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../types";
-
-export const FORMAT_TEXT = "text";
-export const FORMAT_NUMBER = "number";
+import { UNAVAILABLE } from "./entity";
 
 export const enum LockEntityFeature {
   OPEN = 1,
@@ -23,6 +21,62 @@ export interface LockEntity extends HassEntityBase {
 }
 
 type ProtectedLockService = "lock" | "unlock" | "open";
+
+export function isLocked(stateObj: LockEntity) {
+  return stateObj.state === "locked";
+}
+
+export function isUnlocked(stateObj: LockEntity) {
+  return stateObj.state === "unlocked";
+}
+
+export function isUnlocking(stateObj: LockEntity) {
+  return stateObj.state === "unlocking";
+}
+
+export function isLocking(stateObj: LockEntity) {
+  return stateObj.state === "locking";
+}
+
+export function isJammed(stateObj: LockEntity) {
+  return stateObj.state === "jammed";
+}
+
+export function isOpen(stateObj: LockEntity) {
+  return stateObj.state === "open";
+}
+
+export function isOpening(stateObj: LockEntity) {
+  return stateObj.state === "opening";
+}
+
+export function isWaiting(stateObj: LockEntity) {
+  return ["opening", "unlocking", "locking"].includes(stateObj.state);
+}
+
+export function canOpen(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return assumedState || (!isOpen(stateObj) && !isWaiting(stateObj));
+}
+
+export function canLock(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return assumedState || (!isLocked(stateObj) && !isWaiting(stateObj));
+}
+
+export function canUnlock(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return assumedState || (!isUnlocked(stateObj) && !isWaiting(stateObj));
+}
 
 export const callProtectedLockService = async (
   element: HTMLElement,

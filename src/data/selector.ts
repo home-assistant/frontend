@@ -13,6 +13,8 @@ import {
   EntityRegistryEntry,
 } from "./entity_registry";
 import { EntitySources } from "./entity_sources";
+import { isHelperDomain } from "../panels/config/helpers/const";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 export type Selector =
   | ActionSelector
@@ -39,6 +41,7 @@ export type Selector =
   | FileSelector
   | IconSelector
   | LabelSelector
+  | ImageSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -255,6 +258,11 @@ export interface IconSelector {
   } | null;
 }
 
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: { original?: boolean; crop?: CropOptions } | null;
+}
+
 export interface LabelSelector {
   label: {
     multiple?: boolean;
@@ -405,7 +413,6 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
-    create_domains?: string[];
   } | null;
 }
 
@@ -689,7 +696,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -706,7 +713,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
       return false;
     }
   }
@@ -821,4 +828,35 @@ export const handleLegacyDeviceSelector = (
   return {
     device: rest,
   };
+};
+
+export const computeCreateDomains = (
+  selector: EntitySelector | TargetSelector
+): undefined | string[] => {
+  let entityFilters: EntitySelectorFilter[] | undefined;
+
+  if ("target" in selector) {
+    entityFilters = ensureArray(selector.target?.entity);
+  } else if ("entity" in selector) {
+    if (selector.entity?.include_entities) {
+      return undefined;
+    }
+    entityFilters = ensureArray(selector.entity?.filter);
+  }
+  if (!entityFilters) {
+    return undefined;
+  }
+
+  const createDomains = entityFilters.flatMap((entityFilter) =>
+    !entityFilter.integration &&
+    !entityFilter.device_class &&
+    !entityFilter.supported_features &&
+    entityFilter.domain
+      ? ensureArray(entityFilter.domain).filter((domain) =>
+          isHelperDomain(domain)
+        )
+      : []
+  );
+
+  return [...new Set(createDomains)];
 };
