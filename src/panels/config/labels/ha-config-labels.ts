@@ -52,16 +52,40 @@ export class HaConfigLabels extends LitElement {
   @state() private _labels: LabelRegistryEntry[] = [];
 
   @storage({
+    storage: "sessionStorage",
+    key: "labels-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
     key: "labels-table-sort",
     state: false,
     subscribe: false,
   })
   private _activeSorting?: SortingChangedEvent;
 
+  @storage({
+    key: "labels-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "labels-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   private _columns = memoizeOne((localize: LocalizeFunc) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
         title: "",
+        moveable: false,
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.icon"),
         type: "icon",
         template: (label) =>
@@ -69,6 +93,7 @@ export class HaConfigLabels extends LitElement {
       },
       color: {
         title: "",
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
         template: (label) =>
@@ -97,6 +122,9 @@ export class HaConfigLabels extends LitElement {
       },
       actions: {
         title: "",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         width: "64px",
         type: "overflow-menu",
         template: (label) => html`
@@ -159,7 +187,12 @@ export class HaConfigLabels extends LitElement {
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         hasFab
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editLabel}
         clickable
         id="label_id"
@@ -282,6 +315,15 @@ export class HaConfigLabels extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

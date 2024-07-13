@@ -12,11 +12,10 @@ export const formatLanguageCode = (
   }
 };
 
-const formatLanguageCodeMem = memoizeOne((locale: FrontendLocaleData) =>
-  Intl && "DisplayNames" in Intl
-    ? new Intl.DisplayNames(locale.language, {
-        type: "language",
-        fallback: "code",
-      })
-    : undefined
+const formatLanguageCodeMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DisplayNames(locale.language, {
+      type: "language",
+      fallback: "code",
+    })
 );

@@ -14,6 +14,7 @@ import {
 } from "./entity_registry";
 import { EntitySources } from "./entity_sources";
 import { isHelperDomain } from "../panels/config/helpers/const";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 export type Selector =
   | ActionSelector
@@ -40,6 +41,7 @@ export type Selector =
   | FileSelector
   | IconSelector
   | LabelSelector
+  | ImageSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -254,6 +256,11 @@ export interface IconSelector {
     placeholder?: string;
     fallbackPath?: string;
   } | null;
+}
+
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface LabelSelector {
@@ -689,7 +696,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -706,7 +713,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
       return false;
     }
   }

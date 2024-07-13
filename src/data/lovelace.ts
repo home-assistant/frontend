@@ -3,17 +3,13 @@ import {
   getCollection,
   HassEventBase,
 } from "home-assistant-js-websocket";
-import { HuiErrorCard } from "../panels/lovelace/cards/hui-error-card";
-import {
-  Lovelace,
-  LovelaceBadge,
-  LovelaceCard,
-} from "../panels/lovelace/types";
+import type { HuiCard } from "../panels/lovelace/cards/hui-card";
+import type { HuiSection } from "../panels/lovelace/sections/hui-section";
+import { Lovelace, LovelaceBadge } from "../panels/lovelace/types";
 import { HomeAssistant } from "../types";
 import { LovelaceSectionConfig } from "./lovelace/config/section";
 import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/types";
 import { LovelaceViewConfig } from "./lovelace/config/view";
-import { HuiSection } from "../panels/lovelace/sections/hui-section";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -24,7 +20,7 @@ export interface LovelaceViewElement extends HTMLElement {
   lovelace?: Lovelace;
   narrow?: boolean;
   index?: number;
-  cards?: Array<LovelaceCard | HuiErrorCard>;
+  cards?: HuiCard[];
   badges?: LovelaceBadge[];
   sections?: HuiSection[];
   isStrategy: boolean;
@@ -34,9 +30,10 @@ export interface LovelaceViewElement extends HTMLElement {
 export interface LovelaceSectionElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
+  preview?: boolean;
   viewIndex?: number;
   index?: number;
-  cards?: Array<LovelaceCard | HuiErrorCard>;
+  cards?: HuiCard[];
   isStrategy: boolean;
   setConfig(config: LovelaceSectionConfig): void;
 }

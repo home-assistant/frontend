@@ -1,7 +1,6 @@
-import { customElement } from "lit/decorators";
-import "element-internals-polyfill";
 import { MdList } from "@material/web/list/list";
 import { css } from "lit";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-list-new")
 export class HaListNew extends MdList {

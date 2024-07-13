@@ -26,6 +26,10 @@ export function isLocked(stateObj: LockEntity) {
   return stateObj.state === "locked";
 }
 
+export function isUnlocked(stateObj: LockEntity) {
+  return stateObj.state === "unlocked";
+}
+
 export function isUnlocking(stateObj: LockEntity) {
   return stateObj.state === "unlocking";
 }
@@ -38,15 +42,40 @@ export function isJammed(stateObj: LockEntity) {
   return stateObj.state === "jammed";
 }
 
-export function isAvailable(stateObj: LockEntity) {
+export function isOpen(stateObj: LockEntity) {
+  return stateObj.state === "open";
+}
+
+export function isOpening(stateObj: LockEntity) {
+  return stateObj.state === "opening";
+}
+
+export function isWaiting(stateObj: LockEntity) {
+  return ["opening", "unlocking", "locking"].includes(stateObj.state);
+}
+
+export function canOpen(stateObj: LockEntity) {
   if (stateObj.state === UNAVAILABLE) {
     return false;
   }
   const assumedState = stateObj.attributes.assumed_state === true;
-  return (
-    assumedState ||
-    (!isLocking(stateObj) && !isUnlocking(stateObj) && !isJammed(stateObj))
-  );
+  return assumedState || (!isOpen(stateObj) && !isWaiting(stateObj));
+}
+
+export function canLock(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return assumedState || (!isLocked(stateObj) && !isWaiting(stateObj));
+}
+
+export function canUnlock(stateObj: LockEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return assumedState || (!isUnlocked(stateObj) && !isWaiting(stateObj));
 }
 
 export const callProtectedLockService = async (

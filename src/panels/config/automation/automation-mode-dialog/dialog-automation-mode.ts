@@ -1,17 +1,21 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-select";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item-new";
+import "../../../../components/ha-list-new";
+import "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
+
 import {
   AUTOMATION_DEFAULT_MAX,
   AUTOMATION_DEFAULT_MODE,
 } from "../../../../data/automation";
-import { isMaxMode, MODES } from "../../../../data/script";
+import { MODES, isMaxMode } from "../../../../data/script";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -53,59 +57,101 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       return nothing;
     }
 
+    const title = this.hass.localize(
+      "ui.panel.config.automation.editor.change_mode"
+    );
+
     return html`
       <ha-dialog
         open
         scrimClickAction
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.automation.editor.change_mode")
-        )}
+        .heading=${title}
       >
-        <ha-select
-          .label=${this.hass.localize(
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <div slot="title">${title}</div>
+          <a
+            href=${documentationUrl(this.hass, "/docs/automation/modes/")}
+            slot="actionItems"
+            target="_blank"
+            rel="noopener noreferer"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.modes.learn_more"
+              )}
+              .path=${mdiHelpCircle}
+            ></ha-icon-button>
+          </a>
+        </ha-dialog-header>
+        <ha-list-new
+          role="listbox"
+          tabindex="0"
+          aria-activedescendant="option-${this._newMode}"
+          aria-label=${this.hass.localize(
             "ui.panel.config.automation.editor.modes.label"
           )}
-          .value=${this._newMode}
-          @selected=${this._modeChanged}
-          @closed=${stopPropagation}
-          fixedMenuPosition
-          .helper=${html`
-            <a
-              style="color: var(--secondary-text-color)"
-              href=${documentationUrl(this.hass, "/docs/automation/modes/")}
-              target="_blank"
-              rel="noreferrer"
-              >${this.hass.localize(
-                "ui.panel.config.automation.editor.modes.learn_more"
-              )}</a
-            >
-          `}
         >
-          ${MODES.map(
-            (mode) => html`
-              <mwc-list-item .value=${mode}>
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.modes.${mode}`
-                ) || mode}
-              </mwc-list-item>
-            `
-          )}
-        </ha-select>
+          ${MODES.map((mode) => {
+            const label = this.hass.localize(
+              `ui.panel.config.automation.editor.modes.${mode}`
+            );
+            return html`
+              <ha-list-item-new
+                class="option"
+                type="button"
+                @click=${this._modeChanged}
+                .value=${mode}
+                id="option-${mode}"
+                role="option"
+                aria-label=${label}
+                aria-selected=${this._newMode === mode}
+              >
+                <div slot="start">
+                  <ha-radio
+                    inert
+                    .checked=${this._newMode === mode}
+                    value=${mode}
+                    @change=${this._modeChanged}
+                    name="mode"
+                  ></ha-radio>
+                </div>
+                <div slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.modes.${mode}`
+                  )}
+                </div>
+                <div slot="supporting-text">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.modes.${mode}_description`
+                  )}
+                </div>
+              </ha-list-item-new>
+            `;
+          })}
+        </ha-list-new>
+
         ${isMaxMode(this._newMode)
           ? html`
-              <br /><ha-textfield
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.max.${this._newMode}`
-                )}
-                type="number"
-                name="max"
-                .value=${this._newMax?.toString() ?? ""}
-                @change=${this._valueChanged}
-                class="max"
-              >
-              </ha-textfield>
+              <div class="options">
+                <ha-textfield
+                  .label=${this.hass.localize(
+                    `ui.panel.config.automation.editor.max.${this._newMode}`
+                  )}
+                  type="number"
+                  name="max"
+                  .value=${this._newMax?.toString() ?? ""}
+                  @input=${this._valueChanged}
+                  class="max"
+                >
+                </ha-textfield>
+              </div>
             `
           : nothing}
 
@@ -120,7 +166,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
   }
 
   private _modeChanged(ev) {
-    const mode = ev.target.value;
+    const mode = ev.currentTarget.value;
     this._newMode = mode;
     if (!isMaxMode(mode)) {
       this._newMax = undefined;
@@ -138,7 +184,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
   }
 
   private _save(): void {
-    this._params.updateAutomation({
+    this._params.updateConfig({
       ...this._params.config,
       mode: this._newMode,
       max: this._newMax,
@@ -151,9 +197,17 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-select,
         ha-textfield {
           display: block;
+        }
+        ha-dialog {
+          --dialog-content-padding: 0;
+        }
+        .options {
+          padding: 0 24px 24px 24px;
+        }
+        ha-dialog-header a {
+          color: inherit;
         }
       `,
     ];

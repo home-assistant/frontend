@@ -2,7 +2,7 @@ import type { Selector } from "../../data/selector";
 import type { HaFormSchema } from "./types";
 
 export const computeInitialHaFormData = (
-  schema: HaFormSchema[]
+  schema: HaFormSchema[] | readonly HaFormSchema[]
 ): Record<string, any> => {
   const data = {};
   schema.forEach((field) => {
@@ -36,6 +36,8 @@ export const computeInitialHaFormData = (
         minutes: 0,
         seconds: 0,
       };
+    } else if (field.type === "expandable") {
+      data[field.name] = computeInitialHaFormData(field.schema);
     } else if ("selector" in field) {
       const selector: Selector = field.selector;
 

@@ -13,7 +13,7 @@ import {
   LockEntity,
   LockEntityFeature,
   callProtectedLockService,
-  isAvailable,
+  canOpen,
   isJammed,
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
@@ -22,9 +22,9 @@ import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 const CONFIRM_TIMEOUT_SECOND = 5;
-const OPENED_TIMEOUT_SECOND = 3;
+const DONE_TIMEOUT_SECOND = 2;
 
-type ButtonState = "normal" | "confirm" | "success";
+type ButtonState = "normal" | "confirm" | "done";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -54,7 +54,7 @@ class MoreInfoLock extends LitElement {
 
     callProtectedLockService(this, this.hass, this.stateObj!, "open");
 
-    this._setButtonState("success", OPENED_TIMEOUT_SECOND);
+    this._setButtonState("done", DONE_TIMEOUT_SECOND);
   }
 
   private _resetButtonState() {
@@ -115,16 +115,16 @@ class MoreInfoLock extends LitElement {
         ${supportsOpen
           ? html`
               <div class="buttons">
-                ${this._buttonState === "success"
+                ${this._buttonState === "done"
                   ? html`
-                      <p class="open-success">
+                      <p class="open-done">
                         <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-                        ${this.hass.localize("ui.card.lock.open_door_success")}
+                        ${this.hass.localize("ui.card.lock.open_door_done")}
                       </p>
                     `
                   : html`
                       <ha-control-button
-                        .disabled=${!isAvailable(this.stateObj)}
+                        .disabled=${!canOpen(this.stateObj)}
                         class="open-button ${this._buttonState}"
                         @click=${this._open}
                       >
@@ -175,7 +175,7 @@ class MoreInfoLock extends LitElement {
         .open-button.confirm {
           --control-button-background-color: var(--warning-color);
         }
-        .open-success {
+        .open-done {
           line-height: 60px;
           display: flex;
           align-items: center;

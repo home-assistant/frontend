@@ -29,6 +29,7 @@ import {
   PlayMediaAction,
   RepeatAction,
   SceneAction,
+  SequenceAction,
   SetConversationResponseAction,
   StopAction,
   VariablesAction,
@@ -476,6 +477,15 @@ const tryDescribeAction = <T extends ActionType>(
     return `${config.type || "Perform action with"} ${
       stateObj ? computeStateName(stateObj) : config.entity_id
     }`;
+  }
+
+  if (actionType === "sequence") {
+    const config = action as SequenceAction;
+    const numActions = ensureArray(config.sequence).length;
+    return hass.localize(
+      `${actionTranslationBaseKey}.sequence.description.full`,
+      { number: numActions }
+    );
   }
 
   if (actionType === "parallel") {

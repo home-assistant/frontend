@@ -47,6 +47,28 @@ export class HaConfigUsers extends LitElement {
   private _activeGrouping?: string;
 
   @storage({
+    key: "users-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "users-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "users-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
     key: "users-table-collapsed",
     state: false,
     subscribe: false,
@@ -64,17 +86,6 @@ export class HaConfigUsers extends LitElement {
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (user) =>
-            narrow
-              ? html` ${user.name}<br />
-                  <div class="secondary">
-                    ${user.username ? `${user.username} |` : ""}
-                    ${localize(`groups.${user.group_ids[0]}`)}
-                  </div>`
-              : html` ${user.name ||
-                this.hass!.localize(
-                  "ui.panel.config.users.editor.unnamed_user"
-                )}`,
         },
         username: {
           title: localize("ui.panel.config.users.picker.headers.username"),
@@ -82,7 +93,6 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
           template: (user) => html`${user.username || "—"}`,
         },
         group: {
@@ -92,7 +102,6 @@ export class HaConfigUsers extends LitElement {
           groupable: true,
           width: "20%",
           direction: "asc",
-          hidden: narrow,
         },
         is_active: {
           title: this.hass.localize(
@@ -146,6 +155,7 @@ export class HaConfigUsers extends LitElement {
           filterable: false,
           width: "104px",
           hidden: !narrow,
+          showNarrow: true,
           template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
@@ -174,16 +184,21 @@ export class HaConfigUsers extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        backPath="/config"
+        back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._userData(this._users, this.hass.localize)}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
         hasFab
         clickable
@@ -203,6 +218,7 @@ export class HaConfigUsers extends LitElement {
   private _userData = memoizeOne((users: User[], localize: LocalizeFunc) =>
     users.map((user) => ({
       ...user,
+      name: user.name || localize("ui.panel.config.users.editor.unnamed_user"),
       group: localize(`groups.${user.group_ids[0]}`),
     }))
   );
@@ -227,6 +243,11 @@ export class HaConfigUsers extends LitElement {
 
     showUserDetailDialog(this, {
       entry,
+      replaceEntry: (newEntry: User) => {
+        this._users = this._users!.map((ent) =>
+          ent.id === newEntry.id ? newEntry : ent
+        );
+      },
       updateEntry: async (values) => {
         const updated = await updateUser(this.hass!, entry!.id, values);
         this._users = this._users!.map((ent) =>
@@ -282,6 +303,15 @@ export class HaConfigUsers extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

@@ -64,6 +64,12 @@ const SELECTOR_SCHEMAS = {
       selector: { boolean: {} },
     },
   ] as const,
+  floor: [
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
+  ] as const,
   icon: [] as const,
   location: [] as const,
   media: [] as const,

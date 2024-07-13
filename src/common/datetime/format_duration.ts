@@ -1,6 +1,5 @@
 import { HaDurationData } from "../../components/ha-duration-input";
 import { FrontendLocaleData } from "../../data/translation";
-import "../../resources/intl-polyfill";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);
 

@@ -190,7 +190,7 @@
         "open": "Open",
         "open_door": "Open door",
         "open_door_confirm": "Really open?",
-        "open_door_success": "Door open"
+        "open_door_done": "Done"
       },
       "media_player": {
         "source": "Source",
@@ -326,6 +326,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "delete_all": "Delete all",
       "download": "[%key:supervisor::backup::download%]",
       "duplicate": "Duplicate",
       "remove": "Remove",
@@ -377,6 +378,11 @@
           "upload_failed": "Upload failed",
           "unknown_file": "Unknown file"
         },
+        "image": {
+          "select_image": "Select image",
+          "upload": "Upload picture",
+          "url": "Local path or web URL"
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
@@ -396,6 +402,7 @@
             "device": "Device",
             "duration": "Duration",
             "entity": "Entity",
+            "floor": "[%key:ui::components::floor-picker::floor%]",
             "icon": "Icon",
             "location": "Location",
             "media": "Media",
@@ -422,7 +429,7 @@
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
-        "triggered_by_service": "triggered by service",
+        "triggered_by_action": "triggered by action",
         "triggered_by_numeric_state_of": "triggered by numeric state of",
         "triggered_by_state_of": "triggered by state of",
         "triggered_by_event": "triggered by event",
@@ -445,6 +452,7 @@
           "was_opened": "was opened",
           "was_closed": "was closed",
           "is_opening": "is opening",
+          "is_opened": "is opened",
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
@@ -516,11 +524,14 @@
         "sort_by": "Sort by {sortColumn}",
         "group_by": "Group by {groupColumn}",
         "dont_group_by": "Don't group",
+        "collapse_all_groups": "Collapse all",
+        "expand_all_groups": "Expand all",
         "select": "Select",
         "selected": "Selected {selected}",
         "close_select_mode": "Close selection mode",
         "select_all": "Select all",
-        "select_none": "Select none"
+        "select_none": "Select none",
+        "settings": "Customize table"
       },
       "config-entry-picker": {
         "config_entry": "Integration"
@@ -726,6 +737,11 @@
           "last_year": "Last year"
         }
       },
+      "grid-size-picker": {
+        "reset_default": "Reset to default size",
+        "columns": "Number of columns",
+        "rows": "Number of rows"
+      },
       "relative_time": {
         "never": "Never"
       },
@@ -757,13 +773,13 @@
         }
       },
       "service-picker": {
-        "service": "Service"
+        "action": "Action"
       },
       "service-control": {
         "required": "This field is required",
         "target": "Targets",
-        "target_description": "What should this service use as targeted areas, devices or entities.",
-        "data": "Service data",
+        "target_secondary": "What should this action use as targeted areas, devices or entities.",
+        "action_data": "Action data",
         "integration_doc": "Integration documentation"
       },
       "related-items": {
@@ -784,7 +800,14 @@
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
         "clear": "Clear",
-        "ungrouped": "Ungrouped"
+        "ungrouped": "Ungrouped",
+        "settings": {
+          "header": "Customize",
+          "hide": "Hide column {title}",
+          "show": "Show column {title}",
+          "done": "Done",
+          "restore": "Restore defaults"
+        }
       },
       "media-browser": {
         "tts": {
@@ -1100,7 +1123,7 @@
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
-        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
@@ -1329,7 +1352,7 @@
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_description": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with services.",
+          "hidden_explanation": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with actions.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -1580,7 +1603,7 @@
           "view_network": "View network"
         },
         "services": {
-          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
+          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this action.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the Zigbee network.",
           "zigbee_information": "View the Zigbee information for the device."
@@ -1709,7 +1732,7 @@
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
           "link_apps_services": "Link apps & services",
-          "no_home_assistant": "I can’t find Home Assistant on the list",
+          "no_home_assistant": "I can't find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
         "google_home_fallback": {
@@ -1784,7 +1807,7 @@
       "dismiss_all": "Dismiss all"
     },
     "notification_toast": {
-      "service_call_failed": "Failed to call service {service}.",
+      "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
@@ -1875,7 +1898,9 @@
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
-          "multiselect": { "failed": "Failed to update {number} items." },
+          "multiselect": {
+            "failed": "Failed to update {number} items."
+          },
           "learn_more": "Learn more"
         },
         "updates": {
@@ -2054,6 +2079,7 @@
           "download_backup": "[%key:supervisor::backup::download_backup%]",
           "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
           "name": "[%key:supervisor::backup::name%]",
+          "path": "Path",
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
@@ -2081,8 +2107,8 @@
           "edit": "Edit",
           "never_scanned": "Never scanned",
           "create_automation": "Create automation with tag",
-          "confirm_remove_title": "Remove tag?",
-          "confirm_remove": "Are you sure you want to remove tag {tag}?",
+          "confirm_delete_title": "Delete tag?",
+          "confirm_delete": "Are you sure you want to delete tag {tag}?",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -2348,7 +2374,7 @@
           "description": "Configure your hub and connected hardware",
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
-            "title": "All Hardware",
+            "title": "All hardware",
             "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
@@ -2634,7 +2660,7 @@
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
-              "response": "[%key:ui::panel::developer-tools::tabs::services::response%]",
+              "response": "[%key:ui::panel::developer-tools::tabs::actions::response%]",
               "send": "Send",
               "continue_listening": "Continue listening for wake word",
               "continue_talking": "Continue talking",
@@ -2648,7 +2674,9 @@
             "caption": "Expose",
             "headers": {
               "name": "Name",
+              "entity_id": "Entity ID",
               "area": "Area",
+              "domain": "Domain",
               "assistants": "Assistants",
               "aliases": "Aliases"
             },
@@ -2705,7 +2733,8 @@
               "actions": "Actions",
               "state": "State",
               "category": "Category",
-              "area": "Area"
+              "area": "Area",
+              "icon": "Icon"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -2741,6 +2770,8 @@
             "unavailable": "Automation is unavailable",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
+            "take_control": "Take control",
+            "confirm_take_control": "Your are viewing a preview of the automation config, do you want to take control?",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -2764,6 +2795,7 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "icon": "Icon",
             "blueprint": {
               "header": "Blueprint",
               "blueprint_to_use": "Blueprint to use",
@@ -2775,9 +2807,13 @@
               "label": "Mode",
               "learn_more": "Learn about modes",
               "single": "Single",
+              "single_description": "Do not start a new run. Issue a warning.",
               "restart": "Restart",
+              "restart_description": "Start a new run after first stopping the previous run.",
               "queued": "Queued",
-              "parallel": "Parallel"
+              "queued_description": "Start a new run after all previous runs complete.",
+              "parallel": "Parallel",
+              "parallel_description": "Start a new, independent run in parallel with previous runs."
             },
             "max": {
               "queued": "Queue length",
@@ -2811,6 +2847,7 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "triggering_event_detail": "Triggering event detail",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -2840,12 +2877,6 @@
                 "device": {
                   "label": "Device",
                   "trigger": "Trigger",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration (optional)",
-                    "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
-                  },
                   "description": {
                     "picker": "When something happens to a device. Great way to start."
                   }
@@ -3083,13 +3114,6 @@
                 "device": {
                   "label": "Device",
                   "condition": "Condition",
-                  "extra_fields": {
-                    "above": "Above",
-                    "below": "Below",
-                    "for": "Duration",
-                    "hvac_mode": "HVAC mode",
-                    "preset_mode": "Preset mode"
-                  },
                   "description": {
                     "picker": "Set of conditions provided by your device. Great way to start."
                   }
@@ -3243,18 +3267,19 @@
               },
               "type": {
                 "service": {
-                  "label": "Call service",
+                  "label": "Perform action",
                   "response_variable": "Response variable",
-                  "has_optional_response": "This service can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
-                  "has_response": "This service returns a response, enter the name of a variable the response will be saved in",
+                  "has_optional_response": "This action can return a response, if you want to use the response, enter the name of a variable the response will be saved in",
+                  "has_response": "This action returns a response, enter the name of a variable the response will be saved in",
                   "description": {
-                    "service_based_on_template": "Call a service based on a template on {targets}",
-                    "service_based_on_name": "Call a service ''{name}'' on {targets}",
+                    "picker": "Previously known as call service.",
+                    "service_based_on_template": "Perform an action based on a template on {targets}",
+                    "service_based_on_name": "Perform action ''{name}'' on {targets}",
                     "service_name": "{domain} ''{name}'' on {targets}",
-                    "service_based_on_template_no_targets": "Call a service based on a template",
-                    "service_based_on_name_no_targets": "Call a service ''{name}''",
+                    "service_based_on_template_no_targets": "Perform an action based on a template",
+                    "service_based_on_name_no_targets": "Perform action ''{name}''",
                     "service_name_no_targets": "{domain} ''{name}''",
-                    "service": "Call a service",
+                    "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
@@ -3320,17 +3345,6 @@
                 "device_id": {
                   "label": "Device",
                   "action": "Action",
-                  "extra_fields": {
-                    "code": "Code",
-                    "message": "Message",
-                    "title": "Title",
-                    "position": "[%key:ui::card::cover::position%]",
-                    "mode": "Mode",
-                    "humidity": "Humidity",
-                    "value": "Value",
-                    "brightness_pct": "[%key:ui::card::light::brightness%]",
-                    "flash": "Flash"
-                  },
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
                     "no_device": "Device action"
@@ -3416,10 +3430,17 @@
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
+                "sequence": {
+                  "label": "Run in sequence",
+                  "description": {
+                    "picker": "Run a group of actions in sequence.",
+                    "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in sequence"
+                  }
+                },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "Perform a sequence of actions in parallel.",
+                    "picker": "Perform actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
@@ -3585,7 +3606,8 @@
               "name": "Name",
               "state": "State",
               "category": "Category",
-              "area": "Area"
+              "area": "Area",
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -3620,6 +3642,10 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+            "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
+            "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
+            "confirm_take_control": "Your are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
@@ -3696,7 +3722,8 @@
               "name": "Name",
               "last_activated": "Last activated",
               "category": "Category",
-              "area": "Area"
+              "area": "Area",
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -3811,7 +3838,7 @@
             "fetching_subscription": "Fetching subscription…",
             "tts": {
               "title": "Text-to-speech",
-              "info": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} service.",
+              "description": "Bring personality to your home by having it speak to you by using our text-to-speech services. You can use this in automations and scripts by using the {service} action.",
               "default_language": "Default language to use",
               "default_voice": "Default voice to use",
               "try": "Try",
@@ -3840,24 +3867,10 @@
               "hide_url": "Hide URL",
               "copy_link": "Copy link",
               "security_options": "Security options",
-              "strict_connection": "Remote login access",
-              "strict_connection_secondary": "Choose what happens when new devices visit your remote access link.",
-              "strict_connection_option_disabled": "Show login page",
-              "strict_connection_option_disabled_secondary": "Any new device visiting your remote access link are presented with a login page.",
-              "strict_connection_option_guard_page": "Block remote logins",
-              "strict_connection_option_guard_page_secondary": "New devices must log in with a temporary access link. Devices accessing the link that are not logged in will be presented with a page explaining the restrictions.",
-              "strict_connection_option_guard_page_warning": "This prevents outsiders from trying to log in to your system but also your own devices if they have not logged in previously.",
-              "strict_connection_option_drop_connection": "Block remote logins and show nothing",
-              "strict_connection_option_drop_connection_secondary": "This is the same as the above setting but instead provides a blank page for additional security.",
-              "strict_connection_option_drop_connection_warning": "This prevents outsiders from snooping the remote web address and trying to log in, but it may appear as if there is no system running when users try to access it.",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
               "drop_connection_warning_title": "Remote log in has been deactivated",
               "drop_connection_warning": "The below security options may make it appear the system is not running.",
-              "strict_connection_link": "Provide temporary login access",
-              "strict_connection_link_secondary": "This provides a link for new devices to login for the next hour.",
-              "strict_connection_create_link": "Create link",
-              "strict_connection_link_created_message": "Give this link to the person you want to give remote access to the login page of your Home Assistant instance.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details"
@@ -4018,6 +4031,8 @@
             "event": "Events",
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
+            "notify": "Notifiers",
+            "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
@@ -4031,6 +4046,7 @@
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
+            "icon": "Icon",
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
@@ -4098,17 +4114,16 @@
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
-            "remove_selected": {
-              "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
-              "confirm_text": "You should remove them from your dashboard config and automations if they contain these entities.",
-              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+            "delete_selected": {
+              "button": "Delete selected",
+              "confirm_title": "Delete selected entities?",
+              "confirm_text": "Are you sure you want to delete the entities?\n\nRemove them from your dashboard and automations if they include these entities.",
+              "confirm_partly_text": "You can only delete {deletable} of the {selected} entities. The others require the integration to stop providing them, and sometimes a Home Assistant restart is needed. Are you sure you want to delete the deletable entities?\n\nRemove them from your dashboard and automations if they include these entities."
             },
             "hide_selected": {
               "button": "Hide selected",
               "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
-              "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
+              "confirm": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with actions."
             },
             "unhide_selected": {
               "button": "Unhide selected"
@@ -4142,10 +4157,18 @@
             "delete": "Delete",
             "create": "Create",
             "update": "Update",
-            "confirm_delete_user": "Are you sure you want to delete the user account for {name}? You can still track the user, but the person will no longer be able to login.",
+            "confirm_delete_user_title": "Delete user account",
+            "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to login.",
+            "allow_login": "Allow login",
+            "allow_login_description": "Allow access using username and password.",
+            "username": "[%key:ui::panel::config::users::editor::username%]",
+            "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
-            "local_only": "[%key:ui::panel::config::users::editor::local_only%]",
-            "allow_login": "Allow person to login"
+            "admin_description": "[%key:ui::panel::config::users::editor::admin_description%]",
+            "local_access_only": "[%key:ui::panel::config::users::editor::local_access_only%]",
+            "local_access_only_description": "[%key:ui::panel::config::users::editor::local_access_only_description%]",
+            "change_username": "[%key:ui::panel::config::users::editor::change_username%]",
+            "change_password": "[%key:ui::panel::config::users::editor::change_password%]"
           }
         },
         "zone": {
@@ -4174,8 +4197,7 @@
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Add",
-            "update": "Update",
-            "no_edit_home_zone_radius": "The radius of the home zone is not editable in the UI."
+            "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
         },
@@ -4253,9 +4275,9 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Application credentials",
-              "delete_prompt": "Would you like to also remove Application Credentials for this integration?",
-              "delete_detail": "If you remove them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
-              "delete_error_title": "Removing application credentials failed",
+              "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
             },
@@ -4386,7 +4408,9 @@
             "caption": "View user",
             "name": "Display name",
             "username": "Username",
+            "password": "Password",
             "change_password": "Change password",
+            "change_username": "Change username",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -4394,16 +4418,17 @@
             "id": "ID",
             "owner": "Owner",
             "admin": "Administrator",
+            "admin_description": "Administrators can manage users, devices, automations and dashboards.",
             "group": "Group",
             "active": "Active",
-            "local_only": "Can only log in from the local network",
+            "active_description": "Controls if user can login",
+            "local_access_only": "Local access only",
+            "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
-            "system_generated_users_not_removable": "Unable to remove system users.",
-            "system_generated_users_not_editable": "Unable to update system users.",
+            "system_generated_read_only_users": "System users can not be updated.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion_title": "Delete {name}?",
-            "confirm_user_deletion_text": "This user will be permanently deleted.",
-            "active_tooltip": "Controls if user can login"
+            "confirm_user_deletion_text": "This user will be permanently deleted."
           },
           "add_user": {
             "caption": "Add user",
@@ -4420,6 +4445,13 @@
             "change": "Change",
             "password_no_match": "Passwords don't match",
             "password_changed": "The password has been changed successfully."
+          },
+          "change_username": {
+            "caption": "Change username",
+            "new_username": "New username",
+            "change": "Change",
+            "username_changed": "The username has been changed successfully.",
+            "failed": "Failed to change username"
           }
         },
         "application_credentials": {
@@ -4446,11 +4478,15 @@
               "client_id": "OAuth client ID",
               "application": "Integration"
             },
+            "remove": {
+              "button": "Delete application credential",
+              "confirm_title": "Delete application credential?"
+            },
             "remove_selected": {
-              "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
-              "confirm_text": "Application credentials in use by an integration may not be removed.",
-              "error_title": "Removing application credentials failed"
+              "button": "Delete selected",
+              "confirm_title": "Do you want to delete {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
+              "confirm_text": "Application credentials in use by an integration may not be deleted.",
+              "error_title": "Deleting application credentials failed"
             },
             "selected": "{number} selected"
           }
@@ -4719,15 +4755,15 @@
           },
           "hard_reset_controller": {
             "NotStarted": {
-              "title": "Reset Controller to Factory Settings",
+              "title": "Reset controller to factory settings",
               "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
             },
             "InProgress": {
-              "title": "Resetting Controller",
+              "title": "Resetting controller",
               "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
             },
             "Done": {
-              "title": "Controller Reset Complete",
+              "title": "Controller reset complete",
               "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
             },
             "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
@@ -4845,7 +4881,8 @@
             "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "waiting_for_device": "Communicating with the device. Please wait."
           },
           "provisioned": {
             "dsk": "DSK",
@@ -4866,10 +4903,10 @@
             },
             "S2_Authenticated": {
               "title": "S2 Authenticated",
-              "description": "Example: Lighting, Sensors and Security Systems"
+              "description": "Example: Lighting, sensors and security systems"
             },
             "S2_AccessControl": {
-              "title": "S2 access control",
+              "title": "S2 Access Control",
               "description": "Example: Door locks and garage doors"
             },
             "S0_Legacy": {
@@ -4888,7 +4925,7 @@
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
-            "title": "Remove a Failed Z-Wave device",
+            "title": "Remove a failed Z-Wave device",
             "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
             "remove_device": "Remove device",
             "in_progress": "The device removal is in progress.",
@@ -5052,6 +5089,11 @@
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join_x": "X (formerly Twitter)",
+          "join_forums": "Forums",
+          "join_chat": "Chat",
+          "join_blog": "Blog",
+          "join_newsletter": "Newsletter",
           "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
@@ -5104,7 +5146,7 @@
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
             "hostname": {
-              "title": "Host Name",
+              "title": "Host name",
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
@@ -5239,7 +5281,7 @@
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
-            "no_service": "No service to run specified"
+            "no_action": "No action to run specified"
           },
           "empty_state": {
             "title": "Welcome Home",
@@ -5269,7 +5311,7 @@
             "navigate_to": "Navigate to {location}",
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
-            "call_service": "Call service {name}",
+            "perform_action": "Perform action {name}",
             "more_info": "Show more info: {name}"
           },
           "iframe": {
@@ -5442,11 +5484,15 @@
             "header": "View configuration",
             "header_name": "{name} View Configuration",
             "add": "Add view",
+            "background": {
+              "title": "Add a background to the view"
+            },
             "edit": "Edit view",
             "delete": "Delete view",
             "move_left": "Move view left",
             "move_right": "Move view right",
             "tab_settings": "Settings",
+            "tab_background": "Background",
             "tab_badges": "Badges",
             "tab_visibility": "Visibility",
             "visibility": {
@@ -5498,7 +5544,16 @@
             "decrease_position": "Decrease card position",
             "increase_position": "Increase card position",
             "options": "More options",
-            "search_cards": "Search cards"
+            "search_cards": "Search cards",
+            "tab_config": "Config",
+            "tab_visibility": "Visibility",
+            "tab_layout": "Layout",
+            "visibility": {
+              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
+            },
+            "layout": {
+              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
+            }
           },
           "move_card": {
             "header": "Choose a view to move the card to",
@@ -5529,10 +5584,19 @@
             "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
             "text_unnamed_section_cards": "This section and all its cards will be deleted."
           },
-          "edit_section_title": {
-            "title": "Edit name",
-            "title_new": "Add name",
-            "input_label": "Name"
+          "edit_section": {
+            "header": "Edit section",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
+            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "settings": {
+              "title": "Title",
+              "title_helper": "The title will appear at the top of section. Leave empty to hide the title."
+            },
+            "visibility": {
+              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
+            }
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -5562,14 +5626,14 @@
             "start_listening": "Start listening",
             "pipeline_id": "Assistant",
             "actions": {
-              "default_action": "Default action",
-              "call-service": "Call service",
+              "default_action": "Default",
+              "call-service": "Perform action",
               "more-info": "More info",
               "toggle": "Toggle",
               "navigate": "Navigate",
               "assist": "Assist",
               "url": "URL",
-              "none": "No action"
+              "none": "Nothing"
             }
           },
           "condition-editor": {
@@ -5677,7 +5741,7 @@
               },
               "entity_row": {
                 "divider": "Divider",
-                "call-service": "Call service",
+                "call-service": "Perform action",
                 "section": "Section",
                 "weblink": "Web link",
                 "attribute": "Attribute",
@@ -5694,7 +5758,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default action depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
+              "default_action_help": "The default depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity filter",
@@ -5789,6 +5853,7 @@
             },
             "horizontal-stack": {
               "name": "Horizontal stack",
+              "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "humidifier": {
@@ -5811,10 +5876,10 @@
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
               "camera_view": "Camera view",
-              "double_tap_action": "Double tap action",
+              "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
-              "hold_action": "Hold action",
+              "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
               "icon": "Icon",
@@ -5831,7 +5896,7 @@
               "show_icon": "Show icon?",
               "show_name": "Show name?",
               "show_state": "Show state?",
-              "tap_action": "Tap action",
+              "tap_action": "Tap behavior",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5870,7 +5935,7 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action."
             },
             "picture-elements": {
               "name": "Picture elements",
@@ -5897,7 +5962,7 @@
             },
             "picture-glance": {
               "name": "Picture glance",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service.",
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "state_entity": "State entity"
             },
             "plant-status": {
@@ -5924,7 +5989,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
-              "icon_tap_action": "Icon tap action",
+              "icon_tap_action": "Icon tap behavior",
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
@@ -5934,11 +5999,13 @@
               "state_content": "State content",
               "state_content_options": {
                 "state": "State",
-                "last-changed": "Last changed"
+                "last-changed": "Last changed",
+                "last-updated": "Last updated"
               }
             },
             "vertical-stack": {
               "name": "Vertical stack",
+              "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Vertical stack card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
@@ -6194,7 +6261,7 @@
             "invalid_format": "Invalid display format"
           },
           "energy_period_selector": {
-            "today": "Today",
+            "now": "Now",
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data"
@@ -6385,13 +6452,25 @@
         "refresh_tokens": {
           "header": "Refresh tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Unused refresh tokens will be automatically removed after 90 days. The following refresh tokens are currently active for your account.",
-          "token_title": "Refresh token for {clientId}",
+          "ios_app": "iOS app",
+          "android_app": "Android app",
+          "current_session": "Your current session",
           "created_at": "Created {date}",
           "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
-          "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "expires_in": "Expires {date}",
+          "never_expires": "Never expires",
+          "disable_token_expiration": "Disable token expiration",
+          "enable_token_expiration": "Enable token expiration",
+          "confirm_disable_token_expiration_title": "Disable token expiration?",
+          "confirm_disable_token_expiration_text": "The refresh token for ''{name}'' will never expire. Disabling token expiration can reduce security. Only disable token expiration on devices that are infrequently used (+90 days between use).",
+          "disable_expiration_failed": "Failed to disable refresh token expiration",
+          "enable_expiration_failed": "Failed to enable refresh token expiration",
+          "confirm_delete_title": "Delete refresh token?",
+          "confirm_delete_text": "The refresh token for ''{name}'' will be permanently deleted. This associated device will not have access anymore.",
           "delete_all_tokens": "Delete all tokens",
-          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? Your current session token will not be removed. Your long-lived access tokens will not be removed.",
+          "confirm_delete_all_title": "Delete all refresh tokens?",
+          "confirm_delete_all": "Are you sure you want to delete all refresh tokens? These associated devices will not have access anymore. Your current session and long-lived access tokens will not be deleted.",
           "delete_failed": "Failed to delete the refresh token.",
           "current_token_tooltip": "Unable to delete current refresh token"
         },
@@ -6400,7 +6479,8 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
-          "confirm_delete": "Are you sure you want to delete the access token for {name}?",
+          "confirm_delete_title": "Delete long-lived access token?",
+          "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
@@ -6577,7 +6657,24 @@
           },
           "sections": {
             "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
-            "description_blog_post": "blog post"
+            "description_blog_post": "blog post",
+            "titles": {
+              "welcome": "Welcome",
+              "living_room": "Living room",
+              "study": "Study",
+              "kitchen": "Kitchen",
+              "outdoor": "Outdoor",
+              "energy": "Energy",
+              "climate": "Climate",
+              "updates": "Updates"
+            },
+            "entities": {
+              "media_player": {
+                "living_room_nest_mini": "Nest mini",
+                "kitchen_nest_audio": "Nest Audio",
+                "study_nest_hub": "Nest Hub"
+              }
+            }
           }
         }
       },
@@ -6614,13 +6711,14 @@
             "subscribe_to": "Event to subscribe to",
             "start_listening": "Start listening",
             "stop_listening": "Stop listening",
+            "clear_events": "Clear events",
             "alert_event_type": "Event type is a mandatory field",
             "notification_event_fired": "Event {type} successfully fired!"
           },
-          "services": {
-            "title": "Services",
-            "description": "The service dev tool allows you to call any available service in Home Assistant.",
-            "call_service": "Call service",
+          "actions": {
+            "title": "Actions",
+            "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
+            "call_service": "Perform action",
             "response": "Response",
             "column_parameter": "Parameter",
             "column_description": "Description",
@@ -6630,21 +6728,21 @@
             "ui_mode": "Go to UI mode",
             "yaml_parameters": "Parameters only available in YAML mode",
             "all_parameters": "All available parameters",
-            "accepts_target": "This service accepts a target, for example: `entity_id: light.bed_light`",
+            "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
             "errors": {
               "ui": {
-                "no_service": "No service selected, please select a service",
-                "invalid_service": "Selected service is invalid, please select a valid service",
-                "no_target": "This service requires a target, please select a target from the picker",
-                "missing_required_field": "This service requires field {key}, please enter a valid value for {key}"
+                "no_service": "No action selected, please select an action",
+                "invalid_service": "Selected action is invalid, please select a valid action",
+                "no_target": "This action requires a target, please select a target from the picker",
+                "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
               },
               "yaml": {
-                "invalid_yaml": "Service YAML contains syntax errors, please fix the syntax",
-                "no_service": "No service defined, please define a service: key",
-                "invalid_service": "Defined service is invalid, please provide a service in the format domain.service",
-                "no_target": "This service requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
-                "missing_required_field": "This service requires field {key}, which must be provided under data:"
+                "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
+                "no_service": "No action defined, please define an action: key",
+                "invalid_service": "Defined action is invalid, please provide an action in the format domain.action",
+                "no_target": "This action requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
+                "missing_required_field": "This action requires field {key}, which must be provided under data:"
               }
             }
           },
@@ -6719,7 +6817,8 @@
                 "title": "Entity no longer recorded",
                 "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the recorder documentation for more information."
+                "info_text_3_link": "See the recorder documentation for more information.",
+                "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "unsupported_state_class": {
                 "title": "Unsupported state class",
@@ -6843,7 +6942,7 @@
           "forums": "Home Assistant forums",
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
-          "twitter": "Twitter",
+          "x": "[%key:ui::panel::config::tips::join_x%]",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -6952,7 +7051,9 @@
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!",
-          "step": "Step {step} of {steps}"
+          "step": "Step {step} of {steps}",
+          "no_statistics_selected_title": "No statistics selected",
+          "no_statistics_selected_description": "You must select at least one statistic to finish setting up your Energy dashboard."
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
@@ -7064,7 +7165,7 @@
             "description": "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens."
           },
           "full_access": {
-            "title": "Full Hardware access",
+            "title": "Full hardware access",
             "description": "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
           },
           "hassio_api": {

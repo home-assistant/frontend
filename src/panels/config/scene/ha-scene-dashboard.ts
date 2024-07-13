@@ -104,6 +104,11 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -132,10 +137,23 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _filteredScenes?: string[] | null;
 
-  @state() private _filters: Record<
-    string,
-    { value: string[] | undefined; items: Set<string> | undefined }
-  > = {};
+  @storage({
+    storage: "sessionStorage",
+    key: "scene-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    storage: "sessionStorage",
+    key: "scene-table-filters-full",
+    state: true,
+    subscribe: false,
+    serializer: serializeFilters,
+    deserializer: deserializeFilters,
+  })
+  private _filters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -161,6 +179,20 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     subscribe: false,
   })
   private _activeCollapsed?: string;
+
+  @storage({
+    key: "scene-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "scene-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
@@ -207,11 +239,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (narrow, localize: LocalizeFunc): DataTableColumnContainer => {
+    (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
-          label: localize("ui.panel.config.scene.picker.headers.state"),
+          label: localize("ui.panel.config.scene.picker.headers.icon"),
+          moveable: false,
+          showNarrow: true,
           type: "icon",
           template: (scene) => html`
             <ha-state-icon
@@ -227,15 +261,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           grows: true,
-          template: (scene) => html`
-            <div style="font-size: 14px;">${scene.name}</div>
-            ${scene.labels.length
+          extraTemplate: (scene) =>
+            scene.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.labels}
                 ></ha-data-table-labels>`
-              : nothing}
-          `,
+              : nothing,
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
@@ -263,7 +295,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           ),
           sortable: true,
           width: "30%",
-          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {
@@ -282,6 +313,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         only_editable: {
           title: "",
           width: "56px",
+          showNarrow: true,
           template: (scene) =>
             !scene.attributes.id
               ? html`
@@ -301,6 +333,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           title: "",
           width: "64px",
           type: "overflow-menu",
+          showNarrow: true,
+          moveable: false,
+          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -518,11 +553,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.narrow, this.hass.localize)}
+        .columns=${this._columns(this.hass.localize)}
         id="entity_id"
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -533,6 +571,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           "ui.panel.config.scene.picker.no_scenes"
         )}
         @clear-filter=${this._clearFilter}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         hasFab
         clickable
         @row-click=${this._handleRowClicked}
@@ -783,7 +823,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters[type] = ev.detail;
+    this._filters = { ...this._filters, [type]: ev.detail };
     this._applyFilters();
   }
 
@@ -802,7 +842,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               items.intersection(filter.items)
             : new Set([...items].filter((x) => filter.items!.has(x)));
       }
-      if (key === "ha-filter-categories" && filter.value?.length) {
+      if (
+        key === "ha-filter-categories" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const categoryItems: Set<string> = new Set();
         this.scenes
           .filter(
@@ -822,13 +866,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
       }
-      if (key === "ha-filter-labels" && filter.value?.length) {
+      if (
+        key === "ha-filter-labels" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
         const labelItems: Set<string> = new Set();
         this.scenes
           .filter((scene) =>
             this._entityReg
               .find((reg) => reg.entity_id === scene.entity_id)
-              ?.labels.some((lbl) => filter.value!.includes(lbl))
+              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
           )
           .forEach((scene) => labelItems.add(scene.entity_id));
         if (!items) {
@@ -1121,6 +1169,15 @@ ${rejected
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

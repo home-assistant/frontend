@@ -19,6 +19,7 @@ const inBackendDir = "translations/backend";
 const workDir = "build/translations";
 const outDir = join(workDir, "output");
 const EN_SRC = join(paths.translations_src, "en.json");
+const TEST_LOCALE = "en-x-test";
 
 let mergeBackend = false;
 
@@ -150,7 +151,7 @@ const createTestTranslation = () =>
     : gulp
         .src(EN_SRC)
         .pipe(new CustomJSON(null, testReviver))
-        .pipe(rename("test.json"))
+        .pipe(rename(`${TEST_LOCALE}.json`))
         .pipe(gulp.dest(workDir));
 
 /**
@@ -192,7 +193,7 @@ const createTranslations = async () => {
   // each locale, then fragmentizes and flattens the data for final output.
   const translationFiles = await glob([
     `${inFrontendDir}/!(en).json`,
-    ...(env.isProdBuild() ? [] : [`${workDir}/test.json`]),
+    ...(env.isProdBuild() ? [] : [`${workDir}/${TEST_LOCALE}.json`]),
   ]);
   const hashStream = new Transform({
     objectMode: true,
@@ -243,19 +244,19 @@ const createTranslations = async () => {
   // TODO: This is a naive interpretation of BCP47 that should be improved.
   //       Will be OK for now as long as we don't have anything more complicated
   // than a base translation + region.
-  gulp
+  const masterStream = gulp
     .src(`${workDir}/en.json`)
-    .pipe(new PassThrough({ objectMode: true }))
-    .pipe(hashStream, { end: false });
-  const mergesFinished = [];
+    .pipe(new PassThrough({ objectMode: true }));
+  masterStream.pipe(hashStream, { end: false });
+  const mergesFinished = [finished(masterStream)];
   for (const translationFile of translationFiles) {
     const locale = basename(translationFile, ".json");
     const subtags = locale.split("-");
     const mergeFiles = [];
     for (let i = 1; i <= subtags.length; i++) {
       const lang = subtags.slice(0, i).join("-");
-      if (lang === "test") {
-        mergeFiles.push(`${workDir}/test.json`);
+      if (lang === TEST_LOCALE) {
+        mergeFiles.push(`${workDir}/${TEST_LOCALE}.json`);
       } else if (lang !== "en") {
         mergeFiles.push(`${inFrontendDir}/${lang}.json`);
         if (mergeBackend) {
@@ -284,7 +285,7 @@ const writeTranslationMetaData = () =>
       new CustomJSON((meta) => {
         // Add the test translation in development.
         if (!env.isProdBuild()) {
-          meta.test = { nativeName: "Test" };
+          meta[TEST_LOCALE] = { nativeName: "Translation Test" };
         }
         // Filter out locales without a native name, and add the hashes.
         for (const locale of Object.keys(meta)) {

@@ -66,10 +66,10 @@ export const demoPanels: Panels = {
   //   url_path: "history",
   // },
   map: {
-    component_name: "map",
+    component_name: "lovelace",
     icon: "hass:tooltip-account",
     title: "map",
-    config: null,
+    config: { mode: "storage" },
     url_path: "map",
   },
   energy: {

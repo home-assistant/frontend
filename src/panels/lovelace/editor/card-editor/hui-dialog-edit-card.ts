@@ -9,6 +9,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -29,6 +30,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import "../../sections/hui-section";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-card-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
@@ -36,7 +38,7 @@ import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import "./hui-card-preview";
+import "../../cards/hui-card";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
@@ -234,6 +236,8 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
+              .showLayoutTab=${this._shouldShowLayoutTab()}
+              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
@@ -244,11 +248,23 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            <hui-card-preview
-              .hass=${this.hass}
-              .config=${this._cardConfig}
-              class=${this._error ? "blur" : ""}
-            ></hui-card-preview>
+            ${this._isInSection
+              ? html`
+                  <hui-section
+                    .hass=${this.hass}
+                    .config=${this._cardConfigInSection(this._cardConfig)}
+                    preview
+                    class=${this._error ? "blur" : ""}
+                  ></hui-section>
+                `
+              : html`
+                  <hui-card
+                    .hass=${this.hass}
+                    .config=${this._cardConfig}
+                    preview
+                    class=${this._error ? "blur" : ""}
+                  ></hui-card>
+                `}
             ${this._error
               ? html`
                   <ha-circular-progress
@@ -333,6 +349,34 @@ export class HuiDialogEditCard
     this._cardEditorEl?.focusYamlEditor();
   }
 
+  private get _isInSection() {
+    return this._params!.path.length === 2;
+  }
+
+  private _shouldShowLayoutTab(): boolean {
+    /**
+     * Only show layout tab for cards in a grid section
+     * In the future, every section and view should be able to bring their own editor for layout.
+     * For now, we limit it to grid sections as it's the only section type
+     * */
+    return (
+      this._isInSection &&
+      (!this._containerConfig.type || this._containerConfig.type === "grid")
+    );
+  }
+
+  private _cardConfigInSection = memoizeOne(
+    (cardConfig?: LovelaceCardConfig) => {
+      const { cards, title, ...containerConfig } = this
+        ._containerConfig as LovelaceSectionConfig;
+
+      return {
+        ...containerConfig,
+        cards: cardConfig ? [cardConfig] : [],
+      };
+    }
+  );
+
   private get _canSave(): boolean {
     if (this._saving) {
       return false;
@@ -407,32 +451,37 @@ export class HuiDialogEditCard
           --code-mirror-max-height: calc(100vh - 176px);
         }
 
+        ha-dialog {
+          --mdc-dialog-max-width: 100px;
+          --dialog-z-index: 6;
+          --dialog-surface-position: fixed;
+          --dialog-surface-top: 40px;
+          --mdc-dialog-max-width: 90vw;
+          --dialog-content-padding: 24px 12px;
+        }
+
+        .content {
+          width: calc(90vw - 48px);
+          max-width: 1000px;
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
-            --mdc-dialog-max-height: 100%;
             height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --dialog-surface-top: 0px;
+            --mdc-dialog-max-width: 100vw;
           }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+          .content {
+            width: 100%;
+            max-width: 100%;
           }
-        }
-
-        ha-dialog {
-          --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 6;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
           :host([large]) .content {
-            width: calc(90vw - 48px);
+            max-width: none;
           }
         }
 
@@ -444,25 +493,25 @@ export class HuiDialogEditCard
         .content {
           display: flex;
           flex-direction: column;
-          margin: 0 -10px;
         }
-        .content hui-card-preview {
-          margin: 4px auto;
+
+        .content hui-card {
+          display: block;
+          padding: 4px;
+          margin: 0 auto;
           max-width: 390px;
+        }
+        .content hui-section {
+          display: block;
+          padding: 4px;
+          margin: 0 auto;
+          max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
           margin: 0 10px;
         }
 
-        @media (min-width: 1200px) {
-          ha-dialog {
-            --mdc-dialog-max-width: calc(100% - 32px);
-            --mdc-dialog-min-width: 1000px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
+        @media (min-width: 1000px) {
           .content {
             flex-direction: row;
           }
@@ -472,10 +521,15 @@ export class HuiDialogEditCard
             flex-shrink: 1;
             min-width: 0;
           }
-          .content hui-card-preview {
+          .content hui-card {
             padding: 8px 10px;
             margin: auto 0px;
             max-width: 500px;
+          }
+          .content hui-section {
+            padding: 8px 10px;
+            margin: auto 0px;
+            max-width: var(--ha-view-sections-column-max-width, 500px);
           }
         }
         .hidden {
@@ -500,7 +554,7 @@ export class HuiDialogEditCard
           position: absolute;
           z-index: 10;
         }
-        hui-card-preview {
+        hui-card {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;

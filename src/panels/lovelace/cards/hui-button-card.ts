@@ -20,7 +20,6 @@ import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplaySingleEntity } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
@@ -146,9 +145,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       this._config?.show_icon &&
       (this._config?.show_name || this._config?.show_state)
     ) {
-      return { grid_rows: 2, grid_columns: 2 };
+      return {
+        grid_rows: 2,
+        grid_columns: 2,
+        grid_min_rows: 2,
+      };
     }
-    return { grid_rows: 1, grid_columns: 1 };
+    return {
+      grid_rows: 1,
+      grid_columns: 1,
+    };
   }
 
   public setConfig(config: ButtonCardConfig): void {
@@ -231,13 +237,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
-              ${computeStateDisplaySingleEntity(
-                this._localize,
-                stateObj,
-                this._locale,
-                this._hassConfig,
-                this._entity
-              )}
+              ${this.hass.formatEntityState(stateObj)}
             </span>`
           : ""}
       </ha-card>

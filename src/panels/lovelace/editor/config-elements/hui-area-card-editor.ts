@@ -130,7 +130,7 @@ export class HuiAreaCardEditor
         !e.entity_category &&
         !e.hidden &&
         (e.area_id === area ||
-          (e.device_id && this.hass!.devices[e.device_id].area_id === area))
+          (e.device_id && this.hass!.devices[e.device_id]?.area_id === area))
     );
 
     const classes = entities

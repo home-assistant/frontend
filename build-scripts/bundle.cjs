@@ -92,8 +92,8 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     [
       "@babel/preset-env",
       {
-        useBuiltIns: latestBuild ? false : "usage",
-        corejs: latestBuild ? false : dependencies["core-js"],
+        useBuiltIns: "usage",
+        corejs: dependencies["core-js"],
         bugfixes: true,
         shippedProposals: true,
       },
@@ -147,14 +147,24 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   overrides: [
     {
       // Add plugin to inject various polyfills, excluding the polyfills
-      // themselves to prevent self- injection.
+      // themselves to prevent self-injection.
       plugins: [
         [
           path.join(BABEL_PLUGINS, "custom-polyfill-plugin.js"),
           { method: "usage-global" },
         ],
       ],
-      exclude: /\/node_modules\/(?:unfetch|proxy-polyfill)\//,
+      exclude: [
+        path.join(paths.polymer_dir, "src/resources/polyfills"),
+        ...[
+          "@formatjs/(?:ecma402-abstract|intl-\\w+)",
+          "@lit-labs/virtualizer/polyfills",
+          "@webcomponents/scoped-custom-element-registry",
+          "element-internals-polyfill",
+          "proxy-polyfill",
+          "unfetch",
+        ].map((p) => new RegExp(`/node_modules/${p}/`)),
+      ],
     },
     {
       // Use unambiguous for dependencies so that require() is correctly injected into CommonJS files

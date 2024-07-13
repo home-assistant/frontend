@@ -144,7 +144,7 @@ export const checkForEntityUpdates = async (
 
   // there is no reliable way to know if all the updates are done updating, so we just wait a bit for now...
   await new Promise((r) => {
-    setTimeout(r, 10000);
+    setTimeout(r, 15000);
   });
 
   unsubscribeEvents();
@@ -158,7 +158,7 @@ export const checkForEntityUpdates = async (
 
 // When updating, and entity does not support % show "Installing"
 // When updating, and entity does support % show "Installing (xx%)"
-// When update available, show the version
+// When update available, show "Update available"
 // When the latest version is skipped, show the latest version
 // When update is not available, show "Up-to-date"
 // When update is not available and there is no latest_version show "Unavailable"
@@ -190,10 +190,6 @@ export const computeUpdateStateDisplay = (
         });
       }
       return hass.localize("ui.card.update.installing");
-    }
-
-    if (attributes.latest_version) {
-      return attributes.latest_version;
     }
   }
 

@@ -1,25 +1,27 @@
 import { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
-import Fuse from "fuse.js";
 import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
-  protocolIntegrationPicked,
   PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
@@ -29,6 +31,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
+import "../../../components/search-input-outlined";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
@@ -37,11 +40,11 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
+  IntegrationLogInfo,
+  IntegrationManifest,
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
-  IntegrationLogInfo,
-  IntegrationManifest,
   subscribeLogInfo,
 } from "../../../data/integration";
 import {
@@ -59,18 +62,17 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { getStripDiacriticsFn } from "../../../util/fuse";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
 import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import "./ha-disabled-config-entry-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import "./ha-disabled-config-entry-card";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import "../../../components/search-input-outlined";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
@@ -208,9 +210,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          getFn: getStripDiacriticsFn,
         };
         const fuse = new Fuse(configEntriesInProgress, options);
-        filteredEntries = fuse.search(filter).map((result) => result.item);
+        filteredEntries = fuse
+          .search(stripDiacritics(filter))
+          .map((result) => result.item);
       } else {
         filteredEntries = configEntriesInProgress;
       }

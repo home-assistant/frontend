@@ -122,17 +122,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getLayoutOptions(): LovelaceLayoutOptions {
-    const options = {
-      grid_columns: 2,
-      grid_rows: 1,
-    };
+    const grid_columns = 2;
+    let grid_min_columns = 2;
+    let grid_rows = 1;
     if (this._config?.features?.length) {
-      options.grid_rows += Math.ceil((this._config.features.length * 2) / 3);
+      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
+      grid_rows += featureHeight;
     }
     if (this._config?.vertical) {
-      options.grid_rows++;
+      grid_rows++;
+      grid_min_columns = 1;
     }
-    return options;
+    return {
+      grid_columns,
+      grid_rows,
+      grid_min_rows: grid_rows,
+      grid_min_columns,
+    };
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -238,6 +244,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-relative-time>
           `;
         }
+        if (content === "last-updated") {
+          return html`
+            <ha-relative-time
+              .hass=${this.hass}
+              .datetime=${stateObj.last_updated}
+            ></ha-relative-time>
+          `;
+        }
         if (content === "last_triggered") {
           return html`
             <ha-relative-time
@@ -297,10 +311,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     if (domain === "update") {
-      return html`${computeUpdateStateDisplay(
-        stateObj as UpdateEntity,
-        this.hass!
-      )}`;
+      return html`
+        ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
+      `;
+    }
+
+    if (domain === "timer") {
+      import("../../../state-display/state-display-timer");
+      return html`
+        <state-display-timer
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></state-display-timer>
+      `;
     }
 
     return this._renderStateContent(stateObj, "state");

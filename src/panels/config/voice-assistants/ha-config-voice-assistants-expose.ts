@@ -54,6 +54,8 @@ import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 import { storage } from "../../../common/decorators/storage";
+import { domainToName } from "../../../data/integration";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -78,7 +80,13 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _extEntities?: Record<string, ExtEntityRegistryEntry>;
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "voice-expose-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -95,6 +103,34 @@ export class VoiceAssistantsExpose extends LitElement {
     subscribe: false,
   })
   private _activeSorting?: SortingChangedEvent;
+
+  @storage({
+    key: "voice-expose-table-grouping",
+    state: false,
+    subscribe: false,
+  })
+  private _activeGrouping?: string;
+
+  @storage({
+    key: "voice-expose-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
+  @storage({
+    key: "voice-expose-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "voice-expose-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -115,6 +151,7 @@ export class VoiceAssistantsExpose extends LitElement {
       icon: {
         title: "",
         type: "icon",
+        moveable: false,
         hidden: narrow,
         template: (entry) => html`
           <ha-state-icon
@@ -131,15 +168,34 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: (entry) => html`
-          ${entry.name}<br />
-          <div class="secondary">${entry.entity_id}</div>
-        `,
+        template: narrow
+          ? undefined
+          : (entry) => html`
+              ${entry.name}<br />
+              <div class="secondary">${entry.entity_id}</div>
+            `,
+      },
+      // For search & narrow
+      entity_id: {
+        title: localize(
+          "ui.panel.config.voice_assistants.expose.headers.entity_id"
+        ),
+        hidden: !narrow,
+        filterable: true,
+      },
+      domain: {
+        title: localize(
+          "ui.panel.config.voice_assistants.expose.headers.domain"
+        ),
+        sortable: false,
+        hidden: true,
+        filterable: true,
+        groupable: true,
       },
       area: {
         title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
         sortable: true,
-        hidden: narrow,
+        groupable: true,
         filterable: true,
         width: "15%",
       },
@@ -147,6 +203,7 @@ export class VoiceAssistantsExpose extends LitElement {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.assistants"
         ),
+        showNarrow: true,
         sortable: true,
         filterable: true,
         width: "160px",
@@ -176,7 +233,6 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        hidden: narrow,
         width: "15%",
         template: (entry) =>
           entry.aliases.length === 0
@@ -197,12 +253,6 @@ export class VoiceAssistantsExpose extends LitElement {
             @click=${this._removeEntity}
             .path=${mdiCloseCircleOutline}
           ></ha-icon-button>`,
-      },
-      // For search
-      entity_id: {
-        title: "",
-        hidden: true,
-        filterable: true,
       },
     })
   );
@@ -252,6 +302,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _filteredEntities = memoize(
     (
+      localize: LocalizeFunc,
       entities: Record<string, ExtEntityRegistryEntry>,
       exposedEntities: Record<string, ExposeEntitySettings>,
       devices: HomeAssistant["devices"],
@@ -332,6 +383,7 @@ export class VoiceAssistantsExpose extends LitElement {
             this.hass.localize(
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
+          domain: domainToName(localize, computeDomain(entityState.entity_id)),
           area: area ? area.name : "—",
           assistants: Object.keys(
             exposedEntities?.[entityState.entity_id]
@@ -479,6 +531,7 @@ export class VoiceAssistantsExpose extends LitElement {
     }
 
     const filteredEntities = this._filteredEntities(
+      this.hass.localize,
       this._extEntities,
       this.exposedEntities,
       this.hass.devices,
@@ -515,8 +568,15 @@ export class VoiceAssistantsExpose extends LitElement {
         .selected=${this._selectedEntities.length}
         clickable
         .initialSorting=${this._activeSorting}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @clear-filter=${this._clearFilter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
@@ -601,7 +661,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(
@@ -709,6 +768,19 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

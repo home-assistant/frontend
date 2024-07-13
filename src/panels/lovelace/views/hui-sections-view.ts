@@ -1,5 +1,12 @@
 import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
@@ -7,18 +14,12 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
-import { LovelaceSectionConfig as LovelaceRawSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import {
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
-import {
-  findLovelaceContainer,
-  updateLovelaceContainer,
-} from "../editor/lovelace-path";
+import { findLovelaceContainer } from "../editor/lovelace-path";
+import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace, LovelaceBadge } from "../types";
 
@@ -38,27 +39,47 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
+  @state() private _sectionCount = 0;
+
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
   }
 
-  private _sectionConfigKeys = new WeakMap<LovelaceRawSectionConfig, string>();
+  private _sectionConfigKeys = new WeakMap<HuiSection, string>();
 
-  private _getKey(sectionConfig: LovelaceRawSectionConfig) {
+  private _getKey(sectionConfig: HuiSection) {
     if (!this._sectionConfigKeys.has(sectionConfig)) {
       this._sectionConfigKeys.set(sectionConfig, Math.random().toString());
     }
     return this._sectionConfigKeys.get(sectionConfig)!;
   }
 
+  private _computeSectionsCount() {
+    this._sectionCount = this.sections.filter(
+      (section) => !section.hidden
+    ).length;
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("section-visibility-changed", () => {
+      this._computeSectionsCount();
+    });
+  }
+
+  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+    if (changedProperties.has("sections")) {
+      this._computeSectionsCount();
+    }
+  }
+
   protected render() {
     if (!this.lovelace) return nothing;
 
-    const sectionsConfig = this._config?.sections ?? [];
-
+    const sections = this.sections;
+    const totalCount = this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const sectionCount = sectionsConfig.length + (editMode ? 1 : 0);
     const maxColumnsCount = this._config?.max_columns;
 
     return html`
@@ -77,14 +98,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           class="container"
           style=${styleMap({
             "--max-columns-count": maxColumnsCount,
-            "--total-count": sectionCount,
+            "--total-count": totalCount,
           })}
         >
           ${repeat(
-            sectionsConfig,
-            (sectionConfig) => this._getKey(sectionConfig),
-            (_sectionConfig, idx) => {
-              const section = this.sections[idx];
+            sections,
+            (section) => this._getKey(section),
+            (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
                 <div class="section">
@@ -113,7 +133,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                         </div>
                       `
                     : nothing}
-                  <div class="section-wrapper">${section}</div>
+                  ${section}
                 </div>
               `;
             }
@@ -150,39 +170,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private async _editSection(ev) {
     const index = ev.currentTarget.index;
 
-    const path = [this.index!, index] as [number, number];
-
-    const section = findLovelaceContainer(
-      this.lovelace!.config,
-      path
-    ) as LovelaceRawSectionConfig;
-
-    const newTitle = !section.title;
-
-    const title = await showPromptDialog(this, {
-      title: this.hass.localize(
-        `ui.panel.lovelace.editor.edit_section_title.${newTitle ? "title_new" : "title"}`
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.lovelace.editor.edit_section_title.input_label"
-      ),
-      inputType: "string",
-      defaultValue: section.title,
-      confirmText: newTitle
-        ? this.hass.localize("ui.common.add")
-        : this.hass.localize("ui.common.save"),
+    showEditSectionDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: (newConfig) => {
+        this.lovelace!.saveConfig(newConfig);
+      },
+      viewIndex: this.index!,
+      sectionIndex: index,
     });
-
-    if (title === null) {
-      return;
-    }
-
-    const newConfig = updateLovelaceContainer(this.lovelace!.config, path, {
-      ...section,
-      title: title || undefined,
-    });
-
-    this.lovelace!.saveConfig(newConfig);
   }
 
   private async _deleteSection(ev) {
@@ -190,13 +185,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const path = [this.index!, index] as [number, number];
 
-    const section = findLovelaceContainer(
-      this.lovelace!.config,
-      path
-    ) as LovelaceRawSectionConfig;
+    const section = findLovelaceContainer(this.lovelace!.config, path);
 
     const title = section.title?.trim();
-    const cardCount = section.cards?.length;
+    const cardCount = "cards" in section && section.cards?.length;
 
     if (title || cardCount) {
       const named = title ? "named" : "unnamed";
@@ -259,6 +251,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .section {
         border-radius: var(--ha-card-border-radius, 12px);
+      }
+
+      .section:not(:has(> *:not([hidden]))) {
+        display: none;
       }
 
       .container {

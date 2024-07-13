@@ -6,7 +6,6 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
@@ -16,10 +15,10 @@ import {
   ALARM_MODES,
   AlarmControlPanelEntity,
   AlarmMode,
+  setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import { showEnterCodeDialog } from "../../../dialogs/enter-code/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { filterModes } from "./common/filter-modes";
@@ -70,37 +69,18 @@ class HuiAlarmModeCardFeature
     }
   }
 
-  private _modes = memoizeOne(
-    (
-      stateObj: AlarmControlPanelEntity,
-      selectedModes: AlarmMode[] | undefined
-    ) => {
-      if (!selectedModes) {
-        return [];
-      }
-
-      return (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
-        const feature = ALARM_MODES[mode].feature;
-        return (
-          (!feature || supportsFeature(stateObj, feature)) &&
-          selectedModes.includes(mode)
-        );
-      });
-    }
-  );
-
-  private _getCurrentMode(stateObj: AlarmControlPanelEntity) {
-    return this._modes(stateObj, this._config?.modes).find(
-      (mode) => mode === stateObj.state
-    );
-  }
+  private _getCurrentMode = memoizeOne((stateObj: AlarmControlPanelEntity) => {
+    const supportedModes = supportedAlarmModes(stateObj);
+    return supportedModes.find((mode) => mode === stateObj.state);
+  });
 
   private async _valueChanged(ev: CustomEvent) {
+    if (!this.stateObj) return;
     const mode = (ev.detail as any).value as AlarmMode;
 
-    if (mode === this.stateObj!.state) return;
+    if (mode === this.stateObj.state) return;
 
-    const oldMode = this._getCurrentMode(this.stateObj!);
+    const oldMode = this._getCurrentMode(this.stateObj);
     this._currentMode = mode;
 
     try {
@@ -115,37 +95,7 @@ class HuiAlarmModeCardFeature
   }
 
   private async _setMode(mode: AlarmMode) {
-    const { service } = ALARM_MODES[mode];
-
-    let code: string | undefined;
-
-    if (
-      (mode !== "disarmed" &&
-        this.stateObj!.attributes.code_arm_required &&
-        this.stateObj!.attributes.code_format) ||
-      (mode === "disarmed" && this.stateObj!.attributes.code_format)
-    ) {
-      const disarm = mode === "disarmed";
-
-      const response = await showEnterCodeDialog(this, {
-        codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
-        ),
-        submitText: this.hass!.localize(
-          `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
-        ),
-      });
-      if (response == null) {
-        throw new Error("cancel");
-      }
-      code = response;
-    }
-
-    await this.hass!.callService("alarm_control_panel", service, {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
   }
 
   protected render(): TemplateResult | null {
@@ -183,6 +133,7 @@ class HuiAlarmModeCardFeature
         </ha-control-button-group>
       `;
     }
+
     return html`
       <div class="container">
         <ha-control-select
