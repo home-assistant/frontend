@@ -8769,18 +8769,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-zopfli-green@npm:6.0.1":
-  version: 6.0.1
-  resolution: "gulp-zopfli-green@npm:6.0.1"
+"gulp-zopfli-green@npm:6.0.2":
+  version: 6.0.2
+  resolution: "gulp-zopfli-green@npm:6.0.2"
   dependencies:
     "@gfx/zopfli": "npm:^1.0.15"
     bytes: "npm:^3.1.2"
     defaults: "npm:^1.0.4"
     fancy-log: "npm:^2.0.0"
-    plugin-error: "npm:^1.0.1"
-    stream-to-array: "npm:^2.0.2"
+    plugin-error: "npm:^2.0.1"
+    stream-to-array: "npm:^2.3.0"
     through2: "npm:^4.0.2"
-  checksum: 10/89591fbdd919d4a343ec2a721df913f2daf6330c8699ea8cb491a91324b8e93fbedb2c7b68e2dfeb2126f412410042dc03f3bc29747a5415e5e1adbb6b9cc10c
+  checksum: 10/52e899dfb86777ff8f97a23af99c59e203ea485fbf04d0a8f4f1cfbd4d4c496808a3593ae8dac16584fc4b4d81cf127b2eda5355a61bcc213875c95cc86d41da
   languageName: node
   linkType: hard
 
@@ -9047,7 +9047,7 @@ __metadata:
     gulp: "npm:5.0.0"
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.0.0"
-    gulp-zopfli-green: "npm:6.0.1"
+    gulp-zopfli-green: "npm:6.0.2"
     hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
     home-assistant-js-websocket: "npm:9.4.0"
     html-minifier-terser: "npm:7.2.0"
@@ -12087,6 +12087,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"plugin-error@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "plugin-error@npm:2.0.1"
+  dependencies:
+    ansi-colors: "npm:^1.0.1"
+  checksum: 10/9a4f91461cd24cce401112098969991d7aa6b4c94f78e0381234280c07da779570a8b21ab143292b534ec0117c09705a67e5d756c1c303d4706fdd7f861bf5bc
+  languageName: node
+  linkType: hard
+
 "pngjs@npm:^3.0.0, pngjs@npm:^3.3.3":
   version: 3.4.0
   resolution: "pngjs@npm:3.4.0"
@@ -13439,7 +13448,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stream-to-array@npm:^2.0.2":
+"stream-to-array@npm:^2.3.0":
   version: 2.3.0
   resolution: "stream-to-array@npm:2.3.0"
   dependencies:
