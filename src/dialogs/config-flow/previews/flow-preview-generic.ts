@@ -2,26 +2,31 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { FlowType } from "../../../data/data_entry_flow";
-import { GroupPreview, subscribePreviewGroup } from "../../../data/group";
+import { GenericPreview, subscribePreviewGeneric } from "../../../data/preview";
 import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 import { debounce } from "../../../common/util/debounce";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-@customElement("flow-preview-group")
-class FlowPreviewGroup extends LitElement {
+@customElement("flow-preview-generic")
+class FlowPreviewGeneric extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public flowType!: FlowType;
 
   public handler!: string;
 
+  @property() public domain!: string;
+
   @property() public stepId!: string;
 
   @property() public flowId!: string;
 
-  @property({ attribute: false }) public stepData!: Record<string, any>;
+  @property() public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
+
+  @state() private _error?: string;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -40,13 +45,16 @@ class FlowPreviewGroup extends LitElement {
   }
 
   protected render() {
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
     return html`<entity-preview-row
       .hass=${this.hass}
       .stateObj=${this._preview}
     ></entity-preview-row>`;
   }
 
-  private _setPreview = (preview: GroupPreview) => {
+  private _setPreview = (preview: GenericPreview) => {
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.___flow_preview___`,
@@ -70,14 +78,23 @@ class FlowPreviewGroup extends LitElement {
       return;
     }
     try {
-      this._unsub = subscribePreviewGroup(
+      this._unsub = subscribePreviewGeneric(
         this.hass,
+        this.domain,
         this.flowId,
         this.flowType,
         this.stepData,
         this._setPreview
       );
-    } catch (err) {
+      fireEvent(this, "set-flow-errors", { errors: {} });
+    } catch (err: any) {
+      if (typeof err.message === "string") {
+        this._error = err.message;
+      } else {
+        this._error = undefined;
+        fireEvent(this, "set-flow-errors", err.message);
+      }
+      this._unsub = undefined;
       this._preview = undefined;
     }
   }
@@ -85,6 +102,6 @@ class FlowPreviewGroup extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "flow-preview-group": FlowPreviewGroup;
+    "flow-preview-generic": FlowPreviewGeneric;
   }
 }
