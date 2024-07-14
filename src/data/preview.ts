@@ -1,6 +1,8 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
+const HAS_CUSTOM_PREVIEW = ["template"];
+
 export interface GenericPreview {
   state: string;
   attributes: Record<string, any>;
@@ -22,4 +24,4 @@ export const subscribePreviewGeneric = (
   });
 
 export const previewModule = (domain: string): string =>
-  ["template"].includes(domain) ? domain : "generic";
+  HAS_CUSTOM_PREVIEW.includes(domain) ? domain : "generic";
