@@ -122,6 +122,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
   static get styles(): CSSResultGroup {
     return css`
       .badge {
+        --badge-color: var(--state-inactive-color);
         position: relative;
         --ha-ripple-color: var(--badge-color);
         --ha-ripple-hover-opacity: 0.04;
