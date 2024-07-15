@@ -114,7 +114,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._tryConnect();
     }
-    if (this._templateResult && this._templateResult.result.length === 0 && this._config.show_empty === false) {
+    if (
+      this._templateResult &&
+      this._templateResult.result.length === 0 &&
+      this._config.show_empty === false
+    ) {
       if (!this.hidden) {
         this.style.display = "none";
         this.toggleAttribute("hidden", true);
