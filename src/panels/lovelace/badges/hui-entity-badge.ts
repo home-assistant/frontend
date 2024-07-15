@@ -18,12 +18,34 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import { EntityBadgeConfig } from "./types";
+import { findEntities } from "../common/find-entities";
 
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
   public static async getConfigElement(): Promise<LovelaceBadgeEditor> {
     await import("../editor/config-elements/hui-entity-badge-editor");
     return document.createElement("hui-entity-badge-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): EntityBadgeConfig {
+    const includeDomains = ["sensor", "light", "switch"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains
+    );
+
+    return {
+      type: "entity",
+      entity: foundEntities[0] || "",
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
