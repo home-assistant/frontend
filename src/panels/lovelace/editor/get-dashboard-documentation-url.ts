@@ -1,4 +1,5 @@
 import {
+  getCustomBadgeEntry,
   getCustomCardEntry,
   isCustomType,
   stripCustomPrefix,
@@ -22,7 +23,7 @@ export const getBadgeDocumentationURL = (
   type: string
 ): string | undefined => {
   if (isCustomType(type)) {
-    return getCustomCardEntry(stripCustomPrefix(type))?.documentationURL;
+    return getCustomBadgeEntry(stripCustomPrefix(type))?.documentationURL;
   }
 
   return `${documentationUrl(hass, "/dashboards/badges")}`;

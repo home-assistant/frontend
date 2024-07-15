@@ -20,7 +20,7 @@ import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
-  getCustomCardEntry,
+  getCustomBadgeEntry,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
@@ -169,7 +169,7 @@ export class HuiDialogEditBadge
       let badgeName: string | undefined;
       if (isCustomType(this._badgeConfig.type)) {
         // prettier-ignore
-        badgeName = getCustomCardEntry(
+        badgeName = getCustomBadgeEntry(
           stripCustomPrefix(this._badgeConfig.type)
         )?.name;
         // Trim names that end in " Card" so as not to redundantly duplicate it
