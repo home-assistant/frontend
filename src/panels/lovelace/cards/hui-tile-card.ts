@@ -195,36 +195,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _defaultStateContent = memoizeOne(
-    (domain: string, active: boolean): string | string[] => {
-      if (domain === "light" && active) {
-        return "brightness";
-      }
-      if (domain === "fan" && active) {
-        return "percentage";
-      }
-      if (domain === "cover" && active) {
-        return ["state", "current_position"];
-      }
-      if (domain === "valve" && active) {
-        return ["state", "current_position"];
-      }
-      if (domain === "humidifier") {
-        return ["state", "current_humidity"];
-      }
-      if (domain === "climate") {
-        return ["state", "current_temperature"];
-      }
-      if (domain === "update") {
-        return "install_status";
-      }
-      if (domain === "timer") {
-        return "reamining_time";
-      }
-      return "state";
-    }
-  );
-
   get hasCardAction() {
     return (
       !this._config?.tap_action ||
@@ -281,8 +251,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           <state-display
             .stateObj=${stateObj}
             .hass=${this.hass}
-            .content=${this._config.state_content ||
-            this._defaultStateContent(domain, active)}
+            .content=${this._config.state_content}
           >
           </state-display>
         `;

@@ -17,12 +17,34 @@ export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "install_status",
 ] as const;
 
+// Special handling of state attributes per domain
 export const STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS: Record<
-  (typeof STATE_DISPLAY_SPECIAL_CONTENT)[number],
-  string[]
+  string,
+  (typeof STATE_DISPLAY_SPECIAL_CONTENT)[number][]
 > = {
-  remaining_time: ["timer"],
-  install_status: ["update"],
+  timer: ["remaining_time"],
+  update: ["install_status"],
+};
+
+// Attributes that should not be shown if their value is 0 */
+export const HIDDEN_ZERO_ATTRIBUTES_DOMAINS: Record<string, string[]> = {
+  valve: ["current_position"],
+  cover: ["current_position"],
+  fan: ["percentage"],
+  light: ["brightness"],
+};
+
+type StateContent = string | string[];
+
+export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
+  climate: ["state", "current_temperature"],
+  cover: ["state", "current_position"],
+  fan: "percentage",
+  humidifier: ["state", "current_humidity"],
+  light: "brightness",
+  timer: "remaining_time",
+  update: "install_status",
+  valve: ["state", "current_position"],
 };
 
 @customElement("state-display")
@@ -31,10 +53,15 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: false }) public content: string | string[] = "state";
+  @property({ attribute: false }) public content?: StateContent;
 
   protected createRenderRoot() {
     return this;
+  }
+
+  private get _content(): StateContent {
+    const domain = computeStateDomain(this.stateObj);
+    return this.content ?? DEFAULT_STATE_CONTENT_DOMAINS[domain] ?? "state";
   }
 
   private _computeContent(
@@ -88,7 +115,10 @@ class StateDisplay extends LitElement {
       `;
     }
 
-    if (STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[content]?.includes(domain)) {
+    const specialContent = (STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain] ??
+      []) as string[];
+
+    if (specialContent.includes(content)) {
       if (content === "install_status") {
         return html`
           ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
@@ -105,7 +135,12 @@ class StateDisplay extends LitElement {
       }
     }
 
-    if (stateObj.attributes[content] == null) {
+    const attribute = stateObj.attributes[content];
+
+    if (
+      attribute == null ||
+      (HIDDEN_ZERO_ATTRIBUTES_DOMAINS[domain]?.includes(content) && !attribute)
+    ) {
       return undefined;
     }
     return this.hass!.formatEntityAttributeValue(stateObj, content);
@@ -113,7 +148,7 @@ class StateDisplay extends LitElement {
 
   protected render() {
     const stateObj = this.stateObj;
-    const contents = ensureArray(this.content);
+    const contents = ensureArray(this._content);
 
     const values = contents
       .map((content) => this._computeContent(content))
