@@ -113,8 +113,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     let grid_min_columns = 2;
     let grid_rows = 1;
     if (this._config?.features?.length) {
-      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
-      grid_rows += featureHeight;
+      grid_rows += this._config.features.length;
     }
     if (this._config?.vertical) {
       grid_rows++;
@@ -279,51 +278,53 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
         </div>
-        <div class="content ${classMap(contentClasses)}">
-          <div
-            class="icon-container"
-            role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-            tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
-            @action=${this._handleIconAction}
-            .actionHandler=${actionHandler()}
-          >
-            ${imageUrl
-              ? html`
-                  <ha-tile-image
-                    .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
-                    .imageUrl=${imageUrl}
-                  ></ha-tile-image>
-                `
-              : html`
-                  <ha-tile-icon
-                    data-domain=${ifDefined(domain)}
-                    data-state=${ifDefined(stateObj?.state)}
-                  >
-                    <ha-state-icon
-                      .icon=${this._config.icon}
-                      .stateObj=${stateObj}
-                      .hass=${this.hass}
-                    ></ha-state-icon>
-                  </ha-tile-icon>
-                `}
-            ${renderTileBadge(stateObj, this.hass)}
+        <div class="container">
+          <div class="content ${classMap(contentClasses)}">
+            <div
+              class="icon-container"
+              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
+              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
+              @action=${this._handleIconAction}
+              .actionHandler=${actionHandler()}
+            >
+              ${imageUrl
+                ? html`
+                    <ha-tile-image
+                      .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
+                      .imageUrl=${imageUrl}
+                    ></ha-tile-image>
+                  `
+                : html`
+                    <ha-tile-icon
+                      data-domain=${ifDefined(domain)}
+                      data-state=${ifDefined(stateObj?.state)}
+                    >
+                      <ha-state-icon
+                        .icon=${this._config.icon}
+                        .stateObj=${stateObj}
+                        .hass=${this.hass}
+                      ></ha-state-icon>
+                    </ha-tile-icon>
+                  `}
+              ${renderTileBadge(stateObj, this.hass)}
+            </div>
+            <ha-tile-info
+              id="info"
+              .primary=${name}
+              .secondary=${localizedState}
+            ></ha-tile-info>
           </div>
-          <ha-tile-info
-            id="info"
-            .primary=${name}
-            .secondary=${localizedState}
-          ></ha-tile-info>
+          ${this._config.features
+            ? html`
+                <hui-card-features
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .color=${this._config.color}
+                  .features=${this._config.features}
+                ></hui-card-features>
+              `
+            : nothing}
         </div>
-        ${this._config.features
-          ? html`
-              <hui-card-features
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .color=${this._config.color}
-                .features=${this._config.features}
-              ></hui-card-features>
-            `
-          : nothing}
       </ha-card>
     `;
   }
@@ -371,31 +372,43 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         margin: calc(-1 * var(--ha-card-border-width, 1px));
         overflow: hidden;
       }
+      .container {
+        margin: calc(-1 * var(--ha-card-border-width, 1px));
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .content {
+        position: relative;
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 12px;
+        padding: 0 10px;
+        min-height: var(--row-height, 56px);
+        flex: 1;
+        pointer-events: none;
       }
       .vertical {
         flex-direction: column;
         text-align: center;
+        justify-content: center;
       }
       .vertical .icon-container {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         margin-right: 0;
         margin-inline-start: initial;
         margin-inline-end: initial;
       }
       .vertical ha-tile-info {
         width: 100%;
+        flex: none;
       }
       .icon-container {
         position: relative;
         flex: none;
-        margin-right: 12px;
+        margin-right: 10px;
         margin-inline-start: initial;
-        margin-inline-end: 12px;
+        margin-inline-end: 10px;
         direction: var(--direction);
         transition: transform 180ms ease-in-out;
       }
@@ -414,8 +427,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         inset-inline-end: -3px;
         inset-inline-start: initial;
       }
-      .icon-container:not([role="button"]) {
-        pointer-events: none;
+      .icon-container[role="button"] {
+        pointer-events: auto;
       }
       .icon-container[role="button"]:focus-visible,
       .icon-container[role="button"]:active {
@@ -423,11 +436,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-tile-info {
         position: relative;
-        flex: 1;
         min-width: 0;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;
-        pointer-events: none;
       }
       hui-card-features {
         --feature-color: var(--tile-color);
