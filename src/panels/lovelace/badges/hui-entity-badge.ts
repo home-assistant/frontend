@@ -105,7 +105,11 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         tabindex=${ifDefined(this.hasAction ? "0" : undefined)}
       >
         <ha-ripple .disabled=${!this.hasAction}></ha-ripple>
-        <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
+        <ha-state-icon
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+          .icon=${this._config.icon}
+        ></ha-state-icon>
         <span>${this.hass.formatEntityState(stateObj)}</span>
       </div>
     `;
