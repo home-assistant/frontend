@@ -15,9 +15,10 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import { HuiBadge } from "../badges/hui-badge";
 import { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { Lovelace, LovelaceBadge } from "../types";
+import type { Lovelace } from "../types";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -50,7 +51,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _columns?: number;
 
