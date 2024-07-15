@@ -36,6 +36,7 @@ class PanelDeveloperTools extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+    this._currTab = this._page;
   }
 
   protected render(): TemplateResult {
@@ -103,7 +104,8 @@ class PanelDeveloperTools extends LitElement {
   }
 
   private get _page() {
-    return this.route.path.substr(1);
+    const path = this.route.path.substring(1);
+    return tabs.find((tab) => tab.page === path) || tabs[0];
   }
 
   static get styles(): CSSResultGroup {
@@ -156,15 +158,11 @@ class PanelDeveloperTools extends LitElement {
           flex: 1 1 100%;
           max-width: 100%;
         }
-        mwc-tabs {
+        mwc-tab-bar {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
           margin-inline-start: max(env(safe-area-inset-left), 24px);
           margin-inline-end: max(env(safe-area-inset-right), 24px);
-          --mwc-tabs-selection-bar-color: var(
-            --app-header-selection-bar-color,
-            var(--app-header-text-color, #fff)
-          );
           text-transform: uppercase;
         }
       `,
