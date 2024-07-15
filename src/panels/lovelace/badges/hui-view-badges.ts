@@ -20,7 +20,7 @@ const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
 } as HaSortableOptions;
 
 @customElement("hui-view-badges")
-export class HuiStateLabelBadge extends LitElement {
+export class HuiViewBadges extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -169,5 +169,11 @@ export class HuiStateLabelBadge extends LitElement {
         border-style: solid;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-view-badges": HuiViewBadges;
   }
 }
