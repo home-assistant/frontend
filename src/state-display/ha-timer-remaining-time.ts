@@ -4,8 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import { computeDisplayTimer, timerTimeRemaining } from "../data/timer";
 import type { HomeAssistant } from "../types";
 
-@customElement("state-display-timer")
-class StateDisplayTimer extends ReactiveElement {
+@customElement("ha-timer-remaining-time")
+class HaTimerRemainingTime extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
@@ -69,6 +69,6 @@ class StateDisplayTimer extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "state-display-timer": StateDisplayTimer;
+    "ha-timer-remaining-time": HaTimerRemainingTime;
   }
 }

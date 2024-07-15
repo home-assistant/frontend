@@ -1,19 +1,11 @@
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../../common/array/ensure-array";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -30,17 +22,14 @@ import "../../../components/tile/ha-tile-image";
 import type { TileImageStyle } from "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import { isUnavailableState } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
-import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
+import "../../../state-display/state-display";
 import { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../components/hui-timestamp-display";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -48,8 +37,6 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
-
-const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -208,127 +195,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _renderStateContent(
-    stateObj: HassEntity,
-    stateContent: string | string[]
-  ) {
-    const contents = ensureArray(stateContent);
-
-    const values = contents
-      .map((content) => {
-        if (content === "state") {
-          const domain = computeDomain(stateObj.entity_id);
-          if (
-            (stateObj.attributes.device_class ===
-              SENSOR_DEVICE_CLASS_TIMESTAMP ||
-              TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-            !isUnavailableState(stateObj.state)
-          ) {
-            return html`
-              <hui-timestamp-display
-                .hass=${this.hass}
-                .ts=${new Date(stateObj.state)}
-                format="relative"
-                capitalize
-              ></hui-timestamp-display>
-            `;
-          }
-
-          return this.hass!.formatEntityState(stateObj);
-        }
-        if (content === "last-changed") {
-          return html`
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${stateObj.last_changed}
-            ></ha-relative-time>
-          `;
-        }
-        if (content === "last-updated") {
-          return html`
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${stateObj.last_updated}
-            ></ha-relative-time>
-          `;
-        }
-        if (content === "last_triggered") {
-          return html`
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${stateObj.attributes.last_triggered}
-            ></ha-relative-time>
-          `;
-        }
-        if (stateObj.attributes[content] == null) {
-          return undefined;
-        }
-        return this.hass!.formatEntityAttributeValue(stateObj, content);
-      })
-      .filter(Boolean);
-
-    if (!values.length) {
-      return html`${this.hass!.formatEntityState(stateObj)}`;
-    }
-
-    return html`
-      ${values.map(
-        (value, index, array) =>
-          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
-      )}
-    `;
-  }
-
-  private _renderState(stateObj: HassEntity): TemplateResult | typeof nothing {
-    const domain = computeDomain(stateObj.entity_id);
-    const active = stateActive(stateObj);
-
-    if (domain === "light" && active) {
-      return this._renderStateContent(stateObj, ["brightness"]);
-    }
-
-    if (domain === "fan" && active) {
-      return this._renderStateContent(stateObj, ["percentage"]);
-    }
-
-    if (domain === "cover" && active) {
-      return this._renderStateContent(stateObj, ["state", "current_position"]);
-    }
-
-    if (domain === "valve" && active) {
-      return this._renderStateContent(stateObj, ["state", "current_position"]);
-    }
-
-    if (domain === "humidifier") {
-      return this._renderStateContent(stateObj, ["state", "current_humidity"]);
-    }
-
-    if (domain === "climate") {
-      return this._renderStateContent(stateObj, [
-        "state",
-        "current_temperature",
-      ]);
-    }
-
-    if (domain === "update") {
-      return html`
-        ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
-      `;
-    }
-
-    if (domain === "timer") {
-      import("../../../state-display/state-display-timer");
-      return html`
-        <state-display-timer
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-        ></state-display-timer>
-      `;
-    }
-
-    return this._renderStateContent(stateObj, "state");
-  }
-
   get hasCardAction() {
     return (
       !this._config?.tap_action ||
@@ -375,16 +241,20 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || stateObj.attributes.friendly_name;
-
-    const localizedState = this._config.hide_state
-      ? nothing
-      : this._config.state_content
-        ? this._renderStateContent(stateObj, this._config.state_content)
-        : this._renderState(stateObj);
-
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
+
+    const localizedState = this._config.hide_state
+      ? nothing
+      : html`
+          <state-display
+            .stateObj=${stateObj}
+            .hass=${this.hass}
+            .content=${this._config.state_content}
+          >
+          </state-display>
+        `;
 
     const style = {
       "--tile-color": color,
