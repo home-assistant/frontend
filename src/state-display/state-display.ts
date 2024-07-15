@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../types";
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
-  "live_timer",
+  "remaining_time",
   "install_status",
 ] as const;
 
@@ -21,7 +21,7 @@ export const STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS: Record<
   (typeof STATE_DISPLAY_SPECIAL_CONTENT)[number],
   string[]
 > = {
-  live_timer: ["timer"],
+  remaining_time: ["timer"],
   install_status: ["update"],
 };
 
@@ -94,13 +94,13 @@ class StateDisplay extends LitElement {
           ${computeUpdateStateDisplay(stateObj as UpdateEntity, this.hass!)}
         `;
       }
-      if (content === "live_timer") {
-        import("./state-display-timer");
+      if (content === "remaining_time") {
+        import("./ha-timer-remaining-time");
         return html`
-          <state-display-timer
+          <ha-timer-remaining-time
             .hass=${this.hass}
             .stateObj=${stateObj}
-          ></state-display-timer>
+          ></ha-timer-remaining-time>
         `;
       }
     }

@@ -18,6 +18,8 @@ import type { HaComboBox } from "../ha-combo-box";
 const HIDDEN_ATTRIBUTES = [
   "access_token",
   "available_modes",
+  "battery_icon",
+  "battery_level",
   "code_arm_required",
   "code_format",
   "color_modes",
@@ -51,6 +53,7 @@ const HIDDEN_ATTRIBUTES = [
   "precipitation_unit",
   "preset_modes",
   "pressure_unit",
+  "remaining",
   "sound_mode_list",
   "source_list",
   "state_class",
@@ -64,8 +67,6 @@ const HIDDEN_ATTRIBUTES = [
   "unit_of_measurement",
   "visibility_unit",
   "wind_speed_unit",
-  "battery_icon",
-  "battery_level",
 ];
 
 @customElement("ha-entity-state-content-picker")

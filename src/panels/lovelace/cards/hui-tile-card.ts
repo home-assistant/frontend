@@ -216,10 +216,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         return ["state", "current_temperature"];
       }
       if (domain === "update") {
-        return "update_state";
+        return "install_status";
       }
       if (domain === "timer") {
-        return "timer_state";
+        return "reamining_time";
       }
       return "state";
     }

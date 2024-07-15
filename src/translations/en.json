@@ -1023,7 +1023,7 @@
         "state": "State",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
-        "live_timer": "Live timer",
+        "remaining_time": "Remaining time",
         "install_status": "Install status"
       }
     },
