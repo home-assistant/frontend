@@ -1018,6 +1018,13 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+      },
+      "state-content-picker": {
+        "state": "State",
+        "last_changed": "Last changed",
+        "last_updated": "Last updated",
+        "remaining_time": "Remaining time",
+        "install_status": "Install status"
       }
     },
     "dialogs": {
@@ -5981,12 +5988,7 @@
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content",
-              "state_content_options": {
-                "state": "State",
-                "last-changed": "Last changed",
-                "last-updated": "Last updated"
-              }
+              "state_content": "State content"
             },
             "vertical-stack": {
               "name": "Vertical stack",
