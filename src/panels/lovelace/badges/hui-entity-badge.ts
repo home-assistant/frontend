@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -14,11 +15,11 @@ import "../../../components/ha-state-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import { EntityBadgeConfig } from "./types";
-import { findEntities } from "../common/find-entities";
 
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
@@ -108,6 +109,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       return nothing;
     }
 
+    const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
 
     const style = {
@@ -126,7 +128,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     return html`
       <div
         style=${styleMap(style)}
-        class="badge"
+        class="badge ${classMap({ active })}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -152,8 +154,11 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
 
   static get styles(): CSSResultGroup {
     return css`
-      .badge {
+      :host() {
         --badge-color: var(--state-inactive-color);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .badge {
         position: relative;
         --ha-ripple-color: var(--badge-color);
         --ha-ripple-hover-opacity: 0.04;
@@ -184,6 +189,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         font-weight: 500;
         line-height: 20px;
         letter-spacing: 0.1px;
+      }
+      .badge.active {
+        --badge-color: var(--primary-color);
       }
       ha-state-icon {
         color: var(--badge-color);

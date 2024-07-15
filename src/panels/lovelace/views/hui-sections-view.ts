@@ -118,7 +118,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const badges = this.badges;
 
     return html`
-      ${badges?.length > 0
+      ${badges?.length > 0 || editMode
         ? html`
             <ha-sortable
               .disabled=${!editMode}

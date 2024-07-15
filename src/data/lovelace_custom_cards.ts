@@ -44,10 +44,10 @@ if (!("customCardFeatures" in customCardsWindow)) {
   customCardsWindow.customCardFeatures = [];
 }
 if (!("customBadges" in customCardsWindow)) {
-  customCardsWindow.customCardFeatures = [];
+  customCardsWindow.customBadges = [];
 }
 if (!("customTileFeatures" in customCardsWindow)) {
-  customCardsWindow.customBadges = [];
+  customCardsWindow.customTileFeatures = [];
 }
 
 export const customCards = customCardsWindow.customCards!;
