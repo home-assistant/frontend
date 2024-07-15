@@ -3,7 +3,7 @@ import {
   getCollection,
   HassEventBase,
 } from "home-assistant-js-websocket";
-import { HuiBadge } from "../panels/lovelace/cards/hui-badge";
+import { HuiBadge } from "../panels/lovelace/badges/hui-badge";
 import type { HuiCard } from "../panels/lovelace/cards/hui-card";
 import type { HuiSection } from "../panels/lovelace/sections/hui-section";
 import { Lovelace } from "../panels/lovelace/types";

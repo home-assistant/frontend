@@ -32,7 +32,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../sections/hui-section";
 import { addCard, replaceBadge } from "../config-util";
-import { getCardDocumentationURL } from "../get-card-documentation-url";
+import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";

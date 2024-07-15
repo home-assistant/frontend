@@ -13,8 +13,8 @@ import {
   isStrategyView,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import "../cards/hui-badge";
-import type { HuiBadge } from "../cards/hui-badge";
+import "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { processConfigEntities } from "../common/process-config-entities";

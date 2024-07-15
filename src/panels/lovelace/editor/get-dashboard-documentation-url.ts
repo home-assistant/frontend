@@ -14,5 +14,16 @@ export const getCardDocumentationURL = (
     return getCustomCardEntry(stripCustomPrefix(type))?.documentationURL;
   }
 
-  return `${documentationUrl(hass, "/lovelace/")}${type}`;
+  return `${documentationUrl(hass, "/dashboards/")}${type}`;
+};
+
+export const getBadgeDocumentationURL = (
+  hass: HomeAssistant,
+  type: string
+): string | undefined => {
+  if (isCustomType(type)) {
+    return getCustomCardEntry(stripCustomPrefix(type))?.documentationURL;
+  }
+
+  return `${documentationUrl(hass, "/dashboards/badges")}`;
 };

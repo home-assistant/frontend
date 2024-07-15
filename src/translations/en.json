@@ -5559,10 +5559,27 @@
             "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
-            "layout": {
-              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
             }
+          },
+          "edit_badge": {
+            "header": "Badge configuration",
+            "typed_header": "{type} Badge configuration",
+            "pick_badge": "Which badge would you like to add?",
+            "pick_badge_title": "Which badge would you like to add to {name}",
+            "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
+            "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
+            "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
+            "add": "Add badge",
+            "edit": "[%key:ui::panel::lovelace::editor::edit_card::edit%]",
+            "clear": "[%key:ui::panel::lovelace::editor::edit_card::clear%]",
+            "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
+            "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]"
           },
           "move_card": {
             "header": "Choose a view to move the card to",
@@ -6009,6 +6026,12 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            }
+          },
+          "badge": {
+            "entity": {
+              "name": "Entity",
+              "description": "The Entity badge gives you a quick overview of your entity's state."
             }
           },
           "features": {

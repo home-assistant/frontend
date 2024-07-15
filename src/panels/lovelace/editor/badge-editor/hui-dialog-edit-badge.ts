@@ -17,7 +17,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
@@ -30,10 +29,10 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import "../../cards/hui-badge";
+import "../../badges/hui-badge";
 import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
-import { getCardDocumentationURL } from "../get-card-documentation-url";
+import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
@@ -141,11 +140,11 @@ export class HuiDialogEditBadge
       return;
     }
 
-    const oldConfig = changedProps.get("_badgeConfig") as LovelaceCardConfig;
+    const oldConfig = changedProps.get("_badgeConfig") as LovelaceBadgeConfig;
 
     if (oldConfig?.type !== this._badgeConfig!.type) {
       this._documentationURL = this._badgeConfig!.type
-        ? getCardDocumentationURL(this.hass, this._badgeConfig!.type)
+        ? getBadgeDocumentationURL(this.hass, this._badgeConfig!.type)
         : undefined;
     }
   }
@@ -174,28 +173,28 @@ export class HuiDialogEditBadge
           stripCustomPrefix(this._badgeConfig.type)
         )?.name;
         // Trim names that end in " Card" so as not to redundantly duplicate it
-        if (badgeName?.toLowerCase().endsWith(" card")) {
-          badgeName = badgeName.substring(0, badgeName.length - 5);
+        if (badgeName?.toLowerCase().endsWith(" badge")) {
+          badgeName = badgeName.substring(0, badgeName.length - 6);
         }
       } else {
         badgeName = this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._badgeConfig.type}.name`
+          `ui.panel.lovelace.editor.badge.${this._badgeConfig.type}.name`
         );
       }
       heading = this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.typed_header",
+        "ui.panel.lovelace.editor.edit_badge.typed_header",
         { type: badgeName }
       );
     } else if (!this._badgeConfig) {
       heading = this._containerConfig.title
         ? this.hass!.localize(
-            "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
+            "ui.panel.lovelace.editor.edit_badge.pick_badge_view_title",
             { name: this._containerConfig.title }
           )
-        : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
+        : this.hass!.localize("ui.panel.lovelace.editor.edit_badge.pick_badge");
     } else {
       heading = this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.header"
+        "ui.panel.lovelace.editor.edit_badge.header"
       );
     }
 
@@ -255,7 +254,7 @@ export class HuiDialogEditBadge
               ? html`
                   <ha-circular-progress
                     indeterminate
-                    aria-label="Can't update card"
+                    aria-label="Can't update badge"
                   ></ha-circular-progress>
                 `
               : ``}
@@ -271,8 +270,8 @@ export class HuiDialogEditBadge
               >
                 ${this.hass!.localize(
                   !this._badgeEditorEl || this._GUImode
-                    ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                    : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                    ? "ui.panel.lovelace.editor.edit_badge.show_code_editor"
+                    : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
                 )}
               </mwc-button>
             `
@@ -355,10 +354,10 @@ export class HuiDialogEditBadge
     });
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.unsaved_changes"
+        "ui.panel.lovelace.editor.edit_badge.unsaved_changes"
       ),
       text: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.confirm_cancel"
+        "ui.panel.lovelace.editor.edit_badge.confirm_cancel"
       ),
       dismissText: this.hass!.localize("ui.common.stay"),
       confirmText: this.hass!.localize("ui.common.leave"),
