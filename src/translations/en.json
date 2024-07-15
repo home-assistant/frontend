@@ -6031,7 +6031,12 @@
           "badge": {
             "entity": {
               "name": "Entity",
-              "description": "The Entity badge gives you a quick overview of your entity's state."
+              "description": "The Entity badge gives you a quick overview of your entity.",
+              "color": "Color",
+              "actions": "Actions",
+              "appearance": "Appearance",
+              "default_color": "Default color (state)",
+              "state_content": "State content"
             }
           },
           "features": {

@@ -16,14 +16,14 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { LovelaceBadge } from "../types";
+import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import { EntityBadgeConfig } from "./types";
 
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
-  public static async getConfigForm() {
-    return (await import("../editor/config-elements/hui-entity-badge-editor"))
-      .default;
+  public static async getConfigElement(): Promise<LovelaceBadgeEditor> {
+    await import("../editor/config-elements/hui-entity-badge-editor");
+    return document.createElement("hui-entity-badge-editor");
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -92,6 +92,15 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       "--badge-color": color,
     };
 
+    const stateDisplay = html`
+      <state-display
+        .stateObj=${stateObj}
+        .hass=${this.hass}
+        .content=${this._config.state_content}
+      >
+      </state-display>
+    `;
+
     return html`
       <div
         style=${styleMap(style)}
@@ -110,7 +119,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
           .stateObj=${stateObj}
           .icon=${this._config.icon}
         ></ha-state-icon>
-        <span>${this.hass.formatEntityState(stateObj)}</span>
+        ${stateDisplay}
       </div>
     `;
   }
