@@ -116,7 +116,7 @@ class HaEntityStatePicker extends LitElement {
       },
       ...(domain
         ? STATE_DISPLAY_SPECIAL_CONTENT.filter((content) =>
-            STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[content]?.includes(domain)
+            STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain]?.includes(content)
           ).map((content) => ({
             label: this.hass.localize(
               `ui.components.state-content-picker.${content}`
