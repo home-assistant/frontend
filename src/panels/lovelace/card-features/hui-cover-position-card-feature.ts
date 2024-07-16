@@ -61,7 +61,7 @@ class HuiCoverPositionCardFeature
     }
 
     const percentage = stateActive(this.stateObj)
-      ? this.stateObj.attributes.current_position ?? 0
+      ? (this.stateObj.attributes.current_position ?? 0)
       : 0;
 
     const value = Math.max(Math.round(percentage), 0);
