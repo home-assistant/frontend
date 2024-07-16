@@ -273,6 +273,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         this._updateHass({ userData })
       );
 
+      clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
           promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
