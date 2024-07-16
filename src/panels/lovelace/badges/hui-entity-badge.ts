@@ -154,7 +154,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host() {
+      :host {
         --badge-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
@@ -195,6 +195,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       }
       ha-state-icon {
         color: var(--badge-color);
+        line-height: 0;
       }
     `;
   }
