@@ -183,7 +183,16 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         cursor: pointer;
         height: 100%;
       }
-
+      
+      ha-camera-stream img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-height: 100%;
+        min-width: 100%;
+      }
+      
       .footer {
         /* start paper-font-common-nowrap style */
         white-space: nowrap;
