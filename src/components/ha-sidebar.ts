@@ -210,7 +210,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _editStyleLoaded = false;
 
-  private _unsubPersistentNotifications;
+  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
   @storage({
     key: "sidebarPanelOrder",
