@@ -161,7 +161,7 @@ export class HuiGenericEntityRow extends LitElement {
               : ""}
           </div>`
         : nothing}
-      ${this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain)
+      ${(this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
         ? html`<div
             class="text-content value ${classMap({
               pointer,

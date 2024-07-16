@@ -483,12 +483,12 @@ export class HaMap extends ReactiveElement {
       const entityName =
         typeof entity !== "string" && entity.label_mode === "state"
           ? this.hass.formatEntityState(stateObj)
-          : customTitle ??
+          : (customTitle ??
             title
               .split(" ")
               .map((part) => part[0])
               .join("")
-              .substr(0, 3);
+              .substr(0, 3));
 
       // create marker with the icon
       const marker = Leaflet.marker([latitude, longitude], {

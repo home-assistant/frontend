@@ -34,7 +34,7 @@ export class HaStateControlFanSpeed extends LitElement {
   protected updated(changedProp: Map<string | number | symbol, unknown>): void {
     if (changedProp.has("stateObj")) {
       const percentage = stateActive(this.stateObj)
-        ? this.stateObj.attributes.percentage ?? 0
+        ? (this.stateObj.attributes.percentage ?? 0)
         : 0;
       this.sliderValue = Math.max(Math.round(percentage), 0);
       this.speedValue = fanPercentageToSpeed(this.stateObj, percentage);
