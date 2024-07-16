@@ -91,20 +91,18 @@ export class HuiViewBadges extends LitElement {
                   badges,
                   (badge) => this._getBadgeKey(badge),
                   (badge, idx) => html`
-                    <div class="badge">
-                      ${editMode
-                        ? html`
-                            <hui-badge-edit-mode
-                              .hass=${this.hass}
-                              .lovelace=${this.lovelace}
-                              .path=${[this.viewIndex, idx]}
-                              .hiddenOverlay=${this._dragging}
-                            >
-                              ${badge}
-                            </hui-badge-edit-mode>
-                          `
-                        : badge}
-                    </div>
+                    ${editMode
+                      ? html`
+                          <hui-badge-edit-mode
+                            .hass=${this.hass}
+                            .lovelace=${this.lovelace}
+                            .path=${[this.viewIndex, idx]}
+                            .hiddenOverlay=${this._dragging}
+                          >
+                            ${badge}
+                          </hui-badge-edit-mode>
+                        `
+                      : badge}
                   `
                 )}
                 ${editMode
@@ -141,7 +139,7 @@ export class HuiViewBadges extends LitElement {
         margin: 0;
       }
 
-      .badge {
+      hui-badge-edit-mode {
         display: block;
         position: relative;
       }

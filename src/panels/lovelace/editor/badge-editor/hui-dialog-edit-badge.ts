@@ -452,18 +452,6 @@ export class HuiDialogEditBadge
           flex-direction: column;
         }
 
-        .content hui-badge {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
-          max-width: 390px;
-        }
-        .content hui-section {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
-          max-width: var(--ha-view-sections-column-max-width, 500px);
-        }
         .content .element-editor {
           margin: 0 10px;
         }
@@ -477,16 +465,6 @@ export class HuiDialogEditBadge
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
-          }
-          .content hui-badge {
-            padding: 8px 10px;
-            margin: auto 0px;
-            max-width: 500px;
-          }
-          .content hui-section {
-            padding: 8px 10px;
-            margin: auto 0px;
-            max-width: var(--ha-view-sections-column-max-width, 500px);
           }
         }
         .hidden {
@@ -502,9 +480,11 @@ export class HuiDialogEditBadge
           position: relative;
           height: max-content;
           background: var(--primary-background-color);
-          padding: 4px;
+          padding: 10px;
           border-radius: 4px;
           display: flex;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
         }
         .element-preview ha-circular-progress {
@@ -512,12 +492,6 @@ export class HuiDialogEditBadge
           left: 50%;
           position: absolute;
           z-index: 10;
-        }
-        hui-badge {
-          padding-top: 8px;
-          margin-bottom: 4px;
-          display: block;
-          box-sizing: border-box;
         }
         .gui-mode-button {
           margin-right: auto;
