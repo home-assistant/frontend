@@ -20,6 +20,7 @@ export interface DeviceRegistryEntry {
   identifiers: Array<[string, string]>;
   manufacturer: string | null;
   model: string | null;
+  model_id: string | null;
   name: string | null;
   labels: string[];
   sw_version: string | null;
