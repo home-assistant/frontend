@@ -37,7 +37,7 @@ export class HaDeviceCard extends LitElement {
               </div>`
             : this.device.model_id
               ? html`<div class="model">${this.device.model_id}</div>`
-            : ""}
+              : ""}
           ${this.device.manufacturer
             ? html`
                 <div class="manuf">
