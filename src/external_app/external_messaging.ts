@@ -128,6 +128,9 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
     start_listening: boolean;
   };
 }
+interface EMOutgoingMessageImprovScan extends EMMessage {
+  type: "improv/scan";
+}
 
 interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   type: "thread/store_in_platform_keychain";
@@ -156,7 +159,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
-  | EMOutgoingMessageThreadStoreInPlatformKeychain;
+  | EMOutgoingMessageThreadStoreInPlatformKeychain
+  | EMOutgoingMessageImprovScan;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -252,6 +256,7 @@ export interface ExternalConfig {
   canTransferThreadCredentialsToKeychain: boolean;
   hasAssist: boolean;
   hasBarCodeScanner: number;
+  canSetupImprov: boolean;
 }
 
 export class ExternalMessaging {
