@@ -21,7 +21,7 @@ declare global {
 
 @customElement("hui-badge")
 export class HuiBadge extends ReactiveElement {
-  @property({ attribute: false }) public preview = false;
+  @property({ type: Boolean }) public preview = false;
 
   @property({ attribute: false }) public config?: LovelaceBadgeConfig;
 

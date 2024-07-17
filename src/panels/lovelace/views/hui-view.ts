@@ -216,6 +216,9 @@ export class HUIView extends ReactiveElement {
         this._cards.forEach((element) => {
           element.preview = this.lovelace.editMode;
         });
+        this._badges.forEach((element) => {
+          element.preview = this.lovelace.editMode;
+        });
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
