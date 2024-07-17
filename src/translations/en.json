@@ -4553,7 +4553,9 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
+          "thread_network_info": "Thread network information",
+          "thread_network_delete_credentials": "Delete Thread network credentials"
         },
         "zha": {
           "common": {
