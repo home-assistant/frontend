@@ -241,9 +241,11 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         border-color: var(--badge-color);
         box-shadow: var(--shadow-default), var(--shadow-focus);
       }
+      button,
       [role="button"] {
         cursor: pointer;
       }
+      button:focus,
       [role="button"]:focus {
         outline: none;
       }
