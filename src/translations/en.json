@@ -5579,7 +5579,12 @@
             "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
             "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
-            "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]"
+            "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
+            "tab_config": "Config",
+            "tab_visibility": "Visibility",
+            "visibility": {
+              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
+            }
           },
           "move_card": {
             "header": "Choose a view to move the card to",
