@@ -210,6 +210,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         --ha-ripple-color: var(--badge-color);
         --ha-ripple-hover-opacity: 0.04;
         --ha-ripple-pressed-opacity: 0.12;
+        transition:
+          box-shadow 180ms ease-in-out,
+          border-color 180ms ease-in-out;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -229,9 +232,20 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
           var(--divider-color, #e0e0e0)
         );
         --mdc-icon-size: 18px;
-        cursor: pointer;
         text-align: center;
         font-family: Roboto;
+      }
+      .badge:focus-visible {
+        --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+        --shadow-focus: 0 0 0 1px var(--badge-color);
+        border-color: var(--badge-color);
+        box-shadow: var(--shadow-default), var(--shadow-focus);
+      }
+      [role="button"] {
+        cursor: pointer;
+      }
+      [role="button"]:focus {
+        outline: none;
       }
       .badge.active {
         --badge-color: var(--primary-color);
