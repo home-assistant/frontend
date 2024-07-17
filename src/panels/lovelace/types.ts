@@ -51,7 +51,6 @@ export type LovelaceLayoutOptions = {
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
-  isPanel?: boolean;
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
