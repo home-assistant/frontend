@@ -366,7 +366,9 @@ export class HaBaseTimeInput extends LitElement {
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color:var(--mdc-text-field-fill-color, whitesmoke)
+      background-color:var(--mdc-text-field-fill-color, whitesmoke);
+      border-bottom-style: solid;
+      border-bottom-width: 1px;
     }
     label {
       -moz-osx-font-smoothing: grayscale;
