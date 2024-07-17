@@ -27,7 +27,7 @@ import {
 import { Lovelace } from "../types";
 
 @customElement("hui-badge-edit-mode")
-export class HuiCardEditMode extends LitElement {
+export class HuiBadgeEditMode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -270,6 +270,6 @@ export class HuiCardEditMode extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-badge-edit-mode": HuiCardEditMode;
+    "hui-badge-edit-mode": HuiBadgeEditMode;
   }
 }

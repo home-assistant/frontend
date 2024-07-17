@@ -8,7 +8,7 @@ import { Condition } from "../../common/validate-condition";
 import "../conditions/ha-card-conditions-editor";
 
 @customElement("hui-badge-visibility-editor")
-export class HuiCardVisibilityEditor extends LitElement {
+export class HuiBadgeVisibilityEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
@@ -54,6 +54,6 @@ export class HuiCardVisibilityEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-badge-visibility-editor": HuiCardVisibilityEditor;
+    "hui-badge-visibility-editor": HuiBadgeVisibilityEditor;
   }
 }
