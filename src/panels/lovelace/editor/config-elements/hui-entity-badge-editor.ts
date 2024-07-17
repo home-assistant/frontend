@@ -37,11 +37,11 @@ const badgeConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
+    display_type: optional(enums(DISPLAY_TYPES)),
     name: optional(string()),
     icon: optional(string()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
-    display_type: optional(enums(DISPLAY_TYPES)),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
   })
