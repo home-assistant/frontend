@@ -79,12 +79,11 @@ export class HuiViewBadges extends LitElement {
               @drag-start=${this._dragStart}
               @drag-end=${this._dragEnd}
               group="badge"
-              draggable-selector=".badge"
+              draggable-selector="[data-sortable]"
               .path=${[this.viewIndex]}
               .rollback=${false}
               .options=${BADGE_SORTABLE_OPTIONS}
               invert-swap
-              no-style
             >
               <div class="badges">
                 ${repeat(
@@ -94,6 +93,7 @@ export class HuiViewBadges extends LitElement {
                     ${editMode
                       ? html`
                           <hui-badge-edit-mode
+                            data-sortable
                             .hass=${this.hass}
                             .lovelace=${this.lovelace}
                             .path=${[this.viewIndex, idx]}

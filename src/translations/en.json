@@ -6003,7 +6003,6 @@
               "icon_tap_action": "Icon tap behavior",
               "actions": "Actions",
               "appearance": "Appearance",
-              "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
               "hide_state": "Hide state",
@@ -6035,8 +6034,14 @@
               "color": "Color",
               "actions": "Actions",
               "appearance": "Appearance",
-              "default_color": "Default color (state)",
-              "state_content": "State content"
+              "show_entity_picture": "Show entity picture",
+              "state_content": "State content",
+              "display_type": "Display type",
+              "display_type_options": {
+                "minimal": "Minimal (icon only)",
+                "standard": "Standard (icon and state)",
+                "complete": "Complete (icon, name and state)"
+              }
             }
           },
           "features": {

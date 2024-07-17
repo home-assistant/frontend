@@ -336,7 +336,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       hui-view-badges {
         display: block;
-        margin: 16px 32px;
+        margin: 16px 8px;
         text-align: center;
       }
     `;

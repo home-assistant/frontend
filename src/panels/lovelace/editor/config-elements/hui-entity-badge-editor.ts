@@ -6,6 +6,8 @@ import {
   array,
   assert,
   assign,
+  boolean,
+  enums,
   object,
   optional,
   string,
@@ -19,6 +21,10 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import {
+  DEFAULT_DISPLAY_TYPE,
+  DISPLAY_TYPES,
+} from "../../badges/hui-entity-badge";
 import { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
@@ -31,9 +37,12 @@ const badgeConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
+    name: optional(string()),
     icon: optional(string()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
+    display_type: optional(enums(DISPLAY_TYPES)),
+    show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
   })
 );
@@ -63,9 +72,29 @@ export class HuiEntityBadgeEditor
           title: localize(`ui.panel.lovelace.editor.badge.entity.appearance`),
           schema: [
             {
+              name: "display_type",
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: DISPLAY_TYPES.map((type) => ({
+                    value: type,
+                    label: localize(
+                      `ui.panel.lovelace.editor.badge.entity.display_type_options.${type}`
+                    ),
+                  })),
+                },
+              },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
+                {
+                  name: "name",
+                  selector: {
+                    text: {},
+                  },
+                },
                 {
                   name: "icon",
                   selector: {
@@ -77,6 +106,12 @@ export class HuiEntityBadgeEditor
                   name: "color",
                   selector: {
                     ui_color: { default_color: true },
+                  },
+                },
+                {
+                  name: "show_entity_picture",
+                  selector: {
+                    boolean: {},
                   },
                 },
               ],
@@ -119,7 +154,11 @@ export class HuiEntityBadgeEditor
 
     const schema = this._schema(this.hass!.localize);
 
-    const data = this._config;
+    const data = { ...this._config };
+
+    if (!data.display_type) {
+      data.display_type = DEFAULT_DISPLAY_TYPE;
+    }
 
     return html`
       <ha-form
@@ -148,6 +187,10 @@ export class HuiEntityBadgeEditor
       delete config.state_content;
     }
 
+    if (config.display_type === "standard") {
+      delete config.display_type;
+    }
+
     fireEvent(this, "config-changed", { config });
   }
 
@@ -157,6 +200,8 @@ export class HuiEntityBadgeEditor
     switch (schema.name) {
       case "color":
       case "state_content":
+      case "display_type":
+      case "show_entity_picture":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.badge.entity.${schema.name}`
         );

@@ -21,6 +21,12 @@ import { hasAction } from "../common/has-action";
 import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import { EntityBadgeConfig } from "./types";
 
+export const DISPLAY_TYPES = ["minimal", "standard", "complete"] as const;
+
+export type DisplayType = (typeof DISPLAY_TYPES)[number];
+
+export const DEFAULT_DISPLAY_TYPE: DisplayType = "standard";
+
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
   public static async getConfigElement(): Promise<LovelaceBadgeEditor> {
@@ -125,10 +131,16 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       </state-display>
     `;
 
+    const name = this._config.name || stateObj.attributes.friendly_name;
+
+    const displayType = this._config.display_type;
+
     return html`
       <div
         style=${styleMap(style)}
-        class="badge ${classMap({ active })}"
+        class="badge ${classMap({
+          active,
+        })}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -143,7 +155,16 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
           .stateObj=${stateObj}
           .icon=${this._config.icon}
         ></ha-state-icon>
-        ${stateDisplay}
+        ${displayType !== "minimal"
+          ? html`
+              <span class="content">
+                ${displayType === "complete"
+                  ? html`<span class="name">${name}</span>`
+                  : nothing}
+                <span class="state">${stateDisplay}</span>
+              </span>
+            `
+          : nothing}
       </div>
     `;
   }
@@ -168,7 +189,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         align-items: center;
         gap: 8px;
         height: 36px;
-        padding: 6px 16px 6px 12px;
+        padding: 6px 8px;
         box-sizing: border-box;
         width: auto;
         border-radius: 18px;
@@ -181,17 +202,35 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         );
         --mdc-icon-size: 18px;
         cursor: pointer;
-        color: var(--primary-text-color);
         text-align: center;
         font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 20px;
-        letter-spacing: 0.1px;
       }
       .badge.active {
         --badge-color: var(--primary-color);
+      }
+      .content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-right: 4px;
+        margin-inline-end: 4px;
+        margin-inline-start: initial;
+      }
+      .name {
+        font-size: 10px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 10px;
+        letter-spacing: 0.1px;
+        color: var(--secondary-text-color);
+      }
+      .state {
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 16px;
+        letter-spacing: 0.1px;
+        color: var(--primary-text-color);
       }
       ha-state-icon {
         color: var(--badge-color);
