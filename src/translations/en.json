@@ -4068,6 +4068,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
+          "error_delete": "Error deleting device",
           "picker": {
             "search": "Search {number} devices",
             "state": "State",
