@@ -29,6 +29,7 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
@@ -175,6 +176,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
+            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button
