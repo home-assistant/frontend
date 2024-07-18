@@ -39,6 +39,16 @@ class MoreInfoClimate extends LitElement {
 
   @state() private _mainControl: MainControl = "temperature";
 
+  protected willUpdate() {
+    if (
+      this.stateObj &&
+      this._mainControl === "humidity" &&
+      !supportsFeature(this.stateObj, ClimateEntityFeature.TARGET_HUMIDITY)
+    ) {
+      this._mainControl = "temperature";
+    }
+  }
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
