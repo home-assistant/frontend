@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
@@ -122,7 +123,7 @@ export class HaWebhookTrigger extends LitElement {
             .path=${mdiContentCopy}
           ></ha-icon-button>
         </ha-textfield>
-        <ha-button-menu multi>
+        <ha-button-menu multi @closed=${stopPropagation}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
