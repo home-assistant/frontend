@@ -29,12 +29,12 @@ import { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
 const badgeConfigStruct = assign(
-  baseLovelaceCardConfig,
+  baseLovelaceBadgeConfig,
   object({
     entity: optional(string()),
     display_type: optional(enums(DISPLAY_TYPES)),

@@ -16,7 +16,10 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import {
+  defaultBadgeConfig,
+  LovelaceBadgeConfig,
+} from "../../../../data/lovelace/config/badge";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
@@ -105,7 +108,9 @@ export class HuiDialogEditBadge
       this._badgeConfig = params.badgeConfig;
       this._dirty = true;
     } else {
-      this._badgeConfig = this._containerConfig.badges?.[params.badgeIndex];
+      const badge = this._containerConfig.badges?.[params.badgeIndex];
+      this._badgeConfig =
+        typeof badge === "string" ? defaultBadgeConfig(badge) : badge;
     }
 
     this.large = false;

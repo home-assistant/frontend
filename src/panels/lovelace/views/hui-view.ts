@@ -5,19 +5,21 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import {
+  defaultBadgeConfig,
+  LovelaceBadgeConfig,
+} from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import {
-  LovelaceViewConfig,
   isStrategyView,
+  LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import "../badges/hui-badge";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
-import { processConfigEntities } from "../common/process-config-entities";
 import { createViewElement } from "../create-element/create-view-element";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
@@ -365,10 +367,9 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    const badges = processConfigEntities(
-      config.badges as any
-    ) as LovelaceBadgeConfig[];
-    this._badges = badges.map((badgeConfig) => {
+    this._badges = config.badges.map((badge) => {
+      const badgeConfig =
+        typeof badge === "string" ? defaultBadgeConfig(badge) : badge;
       const element = this._createBadgeElement(badgeConfig);
       return element;
     });

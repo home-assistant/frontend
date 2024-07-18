@@ -11,7 +11,7 @@ export interface LovelaceBaseSectionConfig {
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   type?: string;
   cards?: LovelaceCardConfig[];
-  badges?: LovelaceBadgeConfig[]; // Not supported yet
+  badges?: (string | LovelaceBadgeConfig)[]; // Not supported yet
 }
 
 export interface LovelaceStrategySectionConfig
