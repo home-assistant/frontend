@@ -1,12 +1,12 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
   css,
+  CSSResultGroup,
   html,
+  LitElement,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -20,7 +20,6 @@ import {
   defaultBadgeConfig,
   LovelaceBadgeConfig,
 } from "../../../../data/lovelace/config/badge";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomBadgeEntry,
@@ -67,9 +66,7 @@ export class HuiDialogEditBadge
 
   @state() private _badgeConfig?: LovelaceBadgeConfig;
 
-  @state() private _containerConfig!:
-    | LovelaceViewConfig
-    | LovelaceSectionConfig;
+  @state() private _containerConfig!: LovelaceViewConfig;
 
   @state() private _saving = false;
 
