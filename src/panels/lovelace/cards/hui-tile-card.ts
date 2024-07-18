@@ -383,9 +383,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 0 10px;
-        min-height: var(--row-height, 56px);
+        padding: 10px;
         flex: 1;
+        box-sizing: border-box;
         pointer-events: none;
       }
       .vertical {
