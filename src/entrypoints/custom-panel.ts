@@ -72,7 +72,7 @@ function initialize(
     );
   }
 
-  if (__BUILD__ === "es5") {
+  if (__BUILD__ === "legacy") {
     start = start.then(() => window.loadES5Adapter());
   }
 

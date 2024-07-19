@@ -157,7 +157,7 @@ class HaConfigInfo extends LitElement {
                   )}
                 </span>
                 <span class="version">
-                  ${JS_VERSION}${JS_TYPE !== "latest" ? ` ⸱ ${JS_TYPE}` : ""}
+                  ${JS_VERSION}${JS_TYPE !== "modern" ? ` ⸱ ${JS_TYPE}` : ""}
                 </span>
               </li>
             </ul>
