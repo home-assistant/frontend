@@ -1,14 +1,10 @@
-import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
-  mdiContentCopy,
-  mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -21,7 +17,7 @@ import "../../../components/ha-svg-icon";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import {
   LovelaceCardPath,
   findLovelaceItems,
@@ -30,8 +26,8 @@ import {
 } from "../editor/lovelace-path";
 import { Lovelace } from "../types";
 
-@customElement("hui-card-edit-mode")
-export class HuiCardEditMode extends LitElement {
+@customElement("hui-badge-edit-mode")
+export class HuiBadgeEditMode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -57,9 +53,9 @@ export class HuiCardEditMode extends LitElement {
   })
   protected _clipboard?: LovelaceCardConfig;
 
-  private get _cards() {
+  private get _badges() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceItems("cards", this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("badges", this.lovelace!.config, containerPath)!;
   }
 
   private _touchStarted = false;
@@ -107,12 +103,12 @@ export class HuiCardEditMode extends LitElement {
       (this._hover || this._menuOpened || this._focused) && !this.hiddenOverlay;
 
     return html`
-      <div class="card-wrapper" inert><slot></slot></div>
-      <div class="card-overlay ${classMap({ visible: showOverlay })}">
+      <div class="badge-wrapper" inert><slot></slot></div>
+      <div class="badge-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
-          @click=${this._editCard}
-          @keydown=${this._editCard}
+          @click=${this._editBadge}
+          @keydown=${this._editBadge}
           tabindex="0"
         >
           <div class="edit-overlay"></div>
@@ -137,14 +133,6 @@ export class HuiCardEditMode extends LitElement {
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
             )}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
           </ha-list-item>
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" class="warning">
@@ -174,13 +162,7 @@ export class HuiCardEditMode extends LitElement {
         this._duplicateCard();
         break;
       case 1:
-        this._copyCard();
-        break;
-      case 2:
-        this._cutCard();
-        break;
-      case 3:
-        this._deleteCard(true);
+        this._deleteCard();
         break;
     }
   }
@@ -188,16 +170,16 @@ export class HuiCardEditMode extends LitElement {
   private _duplicateCard(): void {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
-    const cardConfig = this._cards![cardIndex];
-    showEditCardDialog(this, {
+    const badgeConfig = this._badges![cardIndex];
+    showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: containerPath,
-      cardConfig,
+      badgeConfig,
     });
   }
 
-  private _editCard(ev): void {
+  private _editBadge(ev): void {
     if (ev.defaultPrevented) {
       return;
     }
@@ -206,29 +188,18 @@ export class HuiCardEditMode extends LitElement {
     }
     ev.preventDefault();
     ev.stopPropagation();
-    fireEvent(this, "ll-edit-card", { path: this.path! });
+    fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
-  private _cutCard(): void {
-    this._copyCard();
-    this._deleteCard(false);
-  }
-
-  private _copyCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._cards[cardIndex];
-    this._clipboard = deepClone(cardConfig);
-  }
-
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-badge", { path: this.path! });
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
-        .card-overlay {
+        .badge-overlay {
           position: absolute;
           opacity: 0;
           pointer-events: none;
@@ -239,12 +210,12 @@ export class HuiCardEditMode extends LitElement {
           transition: opacity 180ms ease-in-out;
         }
 
-        .card-overlay.visible {
+        .badge-overlay.visible {
           opacity: 1;
           pointer-events: auto;
         }
 
-        .card-wrapper {
+        .badge-wrapper {
           position: relative;
           height: 100%;
           z-index: 0;
@@ -266,7 +237,6 @@ export class HuiCardEditMode extends LitElement {
           inset: 0;
           opacity: 0.8;
           background-color: var(--primary-background-color);
-          border: 1px solid var(--divider-color);
           border-radius: var(--ha-card-border-radius, 12px);
           z-index: 0;
         }
@@ -275,23 +245,23 @@ export class HuiCardEditMode extends LitElement {
           position: relative;
           color: var(--primary-text-color);
           border-radius: 50%;
-          padding: 12px;
+          padding: 4px;
           background: var(--secondary-background-color);
-          --mdc-icon-size: 24px;
+          --mdc-icon-size: 16px;
         }
         .more {
           position: absolute;
-          right: -6px;
-          top: -6px;
-          inset-inline-end: -6px;
+          right: -8px;
+          top: -8px;
+          inset-inline-end: -10px;
           inset-inline-start: initial;
         }
         .more ha-icon-button {
           cursor: pointer;
           border-radius: 50%;
           background: var(--secondary-background-color);
-          --mdc-icon-button-size: 32px;
-          --mdc-icon-size: 20px;
+          --mdc-icon-button-size: 24px;
+          --mdc-icon-size: 16px;
         }
       `,
     ];
@@ -300,6 +270,6 @@ export class HuiCardEditMode extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-card-edit-mode": HuiCardEditMode;
+    "hui-badge-edit-mode": HuiBadgeEditMode;
   }
 }

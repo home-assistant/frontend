@@ -46,7 +46,7 @@ import {
 } from "../editor/config-util";
 import {
   LovelaceCardPath,
-  findLovelaceCards,
+  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
@@ -91,7 +91,7 @@ export class HuiCardOptions extends LitElement {
 
   private get _cards() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceCards(this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("cards", this.lovelace!.config, containerPath)!;
   }
 
   protected render(): TemplateResult {
