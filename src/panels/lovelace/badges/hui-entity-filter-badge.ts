@@ -127,7 +127,10 @@ export class HuiEntityFilterBadge
         const element = document.createElement("hui-badge");
         element.hass = this.hass;
         element.preview = this.preview;
-        element.config = badgeConfig;
+        element.config = {
+          type: "entity",
+          ...badgeConfig,
+        };
         element.load();
         this._elements.push(element);
       }

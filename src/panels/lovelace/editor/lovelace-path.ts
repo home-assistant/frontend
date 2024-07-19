@@ -127,7 +127,7 @@ export const updateLovelaceContainer = (
 
 type LovelaceItemKeys = {
   cards: LovelaceCardConfig[];
-  badges: LovelaceBadgeConfig[];
+  badges: (Partial<LovelaceBadgeConfig> | string)[];
 };
 
 export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(

@@ -1,10 +1,13 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
+  mdiContentCopy,
+  mdiContentCut,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
 } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -25,6 +28,7 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { Lovelace } from "../types";
+import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -46,7 +50,7 @@ export class HuiBadgeEditMode extends LitElement {
   public _focused: boolean = false;
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardBadgeClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",
@@ -134,6 +138,14 @@ export class HuiBadgeEditMode extends LitElement {
               "ui.panel.lovelace.editor.edit_card.duplicate"
             )}
           </ha-list-item>
+          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
+          </ha-list-item>
+          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
+          </ha-list-item>
           <li divider role="separator"></li>
           <ha-list-item graphic="icon" class="warning">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
@@ -159,18 +171,35 @@ export class HuiBadgeEditMode extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._duplicateCard();
+        this._duplicateBadge();
         break;
       case 1:
-        this._deleteCard();
+        this._copyBadge();
+        break;
+      case 2:
+        this._cutBadge();
+        break;
+      case 3:
+        this._deleteBadge();
         break;
     }
   }
 
-  private _duplicateCard(): void {
+  private _cutBadge(): void {
+    this._copyBadge();
+    this._deleteBadge();
+  }
+
+  private _copyBadge(): void {
+    const { cardIndex } = parseLovelaceCardPath(this.path!);
+    const cardConfig = this._badges[cardIndex];
+    this._clipboard = deepClone(cardConfig);
+  }
+
+  private _duplicateBadge(): void {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
-    const badgeConfig = this._badges![cardIndex];
+    const badgeConfig = ensureBadgeConfig(this._badges![cardIndex]);
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
@@ -191,7 +220,7 @@ export class HuiBadgeEditMode extends LitElement {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
-  private _deleteCard(): void {
+  private _deleteBadge(): void {
     fireEvent(this, "ll-delete-badge", { path: this.path! });
   }
 

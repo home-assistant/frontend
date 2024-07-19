@@ -31,6 +31,8 @@ import {
 } from "../cards/types";
 import { EntityConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import { EntityBadgeConfig } from "../badges/types";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -308,6 +310,23 @@ export const computeCards = (
       cards,
     },
   ];
+};
+
+export const computeBadges = (
+  _states: HassEntities,
+  entityIds: string[]
+): LovelaceBadgeConfig[] => {
+  const badges: LovelaceBadgeConfig[] = [];
+
+  for (const entityId of entityIds) {
+    const config: EntityBadgeConfig = {
+      type: "entity",
+      entity: entityId,
+    };
+
+    badges.push(config);
+  }
+  return badges;
 };
 
 const computeDefaultViewStates = (
