@@ -33,7 +33,9 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   name?: string;
   icon?: string;
   color?: string;
+  show_entity_picture?: boolean;
   display_type?: "minimal" | "standard" | "complete";
+  state_content?: string | string[];
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
