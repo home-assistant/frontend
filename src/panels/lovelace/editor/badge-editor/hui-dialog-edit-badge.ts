@@ -1,15 +1,14 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
   css,
+  CSSResultGroup,
   html,
+  LitElement,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -17,11 +16,13 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import {
+  defaultBadgeConfig,
+  LovelaceBadgeConfig,
+} from "../../../../data/lovelace/config/badge";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
-  getCustomCardEntry,
+  getCustomBadgeEntry,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
@@ -30,16 +31,16 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import "../../cards/hui-card";
+import "../../badges/hui-badge";
 import "../../sections/hui-section";
-import { addCard, replaceCard } from "../config-util";
-import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
+import { addBadge, replaceBadge } from "../config-util";
+import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
-import "./hui-card-element-editor";
-import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import "./hui-badge-element-editor";
+import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
+import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
 
 declare global {
   // for fire event
@@ -52,22 +53,20 @@ declare global {
   }
 }
 
-@customElement("hui-dialog-edit-card")
-export class HuiDialogEditCard
+@customElement("hui-dialog-edit-badge")
+export class HuiDialogEditBadge
   extends LitElement
-  implements HassDialog<EditCardDialogParams>
+  implements HassDialog<EditBadgeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @state() private _params?: EditCardDialogParams;
+  @state() private _params?: EditBadgeDialogParams;
 
-  @state() private _cardConfig?: LovelaceCardConfig;
+  @state() private _badgeConfig?: LovelaceBadgeConfig;
 
-  @state() private _containerConfig!:
-    | LovelaceViewConfig
-    | LovelaceSectionConfig;
+  @state() private _containerConfig!: LovelaceViewConfig;
 
   @state() private _saving = false;
 
@@ -75,8 +74,8 @@ export class HuiDialogEditCard
 
   @state() private _guiModeAvailable? = true;
 
-  @query("hui-card-element-editor")
-  private _cardEditorEl?: HuiCardElementEditor;
+  @query("hui-badge-element-editor")
+  private _badgeEditorEl?: HuiBadgeElementEditor;
 
   @state() private _GUImode = true;
 
@@ -86,7 +85,7 @@ export class HuiDialogEditCard
 
   @state() private _isEscapeEnabled = true;
 
-  public async showDialog(params: EditCardDialogParams): Promise<void> {
+  public async showDialog(params: EditBadgeDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
     this._guiModeAvailable = true;
@@ -102,16 +101,18 @@ export class HuiDialogEditCard
 
     this._containerConfig = containerConfig;
 
-    if ("cardConfig" in params) {
-      this._cardConfig = params.cardConfig;
+    if ("badgeConfig" in params) {
+      this._badgeConfig = params.badgeConfig;
       this._dirty = true;
     } else {
-      this._cardConfig = this._containerConfig.cards?.[params.cardIndex];
+      const badge = this._containerConfig.badges?.[params.badgeIndex];
+      this._badgeConfig =
+        typeof badge === "string" ? defaultBadgeConfig(badge) : badge;
     }
 
     this.large = false;
-    if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
-      this._cardConfig = deepFreeze(this._cardConfig);
+    if (this._badgeConfig && !Object.isFrozen(this._badgeConfig)) {
+      this._badgeConfig = deepFreeze(this._badgeConfig);
     }
   }
 
@@ -124,7 +125,7 @@ export class HuiDialogEditCard
       return false;
     }
     this._params = undefined;
-    this._cardConfig = undefined;
+    this._badgeConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
     this._dirty = false;
@@ -134,20 +135,19 @@ export class HuiDialogEditCard
 
   protected updated(changedProps: PropertyValues): void {
     if (
-      !this._cardConfig ||
+      !this._badgeConfig ||
       this._documentationURL !== undefined ||
-      !changedProps.has("_cardConfig")
+      !changedProps.has("_badgeConfig")
     ) {
       return;
     }
 
-    const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
+    const oldConfig = changedProps.get("_badgeConfig") as LovelaceBadgeConfig;
 
-    if (oldConfig?.type !== this._cardConfig!.type) {
-      this._documentationURL = getCardDocumentationURL(
-        this.hass,
-        this._cardConfig!.type
-      );
+    if (oldConfig?.type !== this._badgeConfig!.type) {
+      this._documentationURL = this._badgeConfig!.type
+        ? getBadgeDocumentationURL(this.hass, this._badgeConfig!.type)
+        : undefined;
     }
   }
 
@@ -167,36 +167,36 @@ export class HuiDialogEditCard
     }
 
     let heading: string;
-    if (this._cardConfig && this._cardConfig.type) {
-      let cardName: string | undefined;
-      if (isCustomType(this._cardConfig.type)) {
+    if (this._badgeConfig && this._badgeConfig.type) {
+      let badgeName: string | undefined;
+      if (isCustomType(this._badgeConfig.type)) {
         // prettier-ignore
-        cardName = getCustomCardEntry(
-          stripCustomPrefix(this._cardConfig.type)
+        badgeName = getCustomBadgeEntry(
+          stripCustomPrefix(this._badgeConfig.type)
         )?.name;
         // Trim names that end in " Card" so as not to redundantly duplicate it
-        if (cardName?.toLowerCase().endsWith(" card")) {
-          cardName = cardName.substring(0, cardName.length - 5);
+        if (badgeName?.toLowerCase().endsWith(" badge")) {
+          badgeName = badgeName.substring(0, badgeName.length - 6);
         }
       } else {
-        cardName = this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+        badgeName = this.hass!.localize(
+          `ui.panel.lovelace.editor.badge.${this._badgeConfig.type}.name`
         );
       }
       heading = this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.typed_header",
-        { type: cardName }
+        "ui.panel.lovelace.editor.edit_badge.typed_header",
+        { type: badgeName }
       );
-    } else if (!this._cardConfig) {
+    } else if (!this._badgeConfig) {
       heading = this._containerConfig.title
         ? this.hass!.localize(
-            "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
+            "ui.panel.lovelace.editor.edit_badge.pick_badge_view_title",
             { name: this._containerConfig.title }
           )
-        : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
+        : this.hass!.localize("ui.panel.lovelace.editor.edit_badge.pick_badge");
     } else {
       heading = this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.header"
+        "ui.panel.lovelace.editor.edit_badge.header"
       );
     }
 
@@ -235,47 +235,34 @@ export class HuiDialogEditCard
         </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
-            <hui-card-element-editor
-              .showLayoutTab=${this._shouldShowLayoutTab()}
-              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
+            <hui-badge-element-editor
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
-              .value=${this._cardConfig}
+              .value=${this._badgeConfig}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
               dialogInitialFocus
-            ></hui-card-element-editor>
+            ></hui-badge-element-editor>
           </div>
           <div class="element-preview">
-            ${this._isInSection
-              ? html`
-                  <hui-section
-                    .hass=${this.hass}
-                    .config=${this._cardConfigInSection(this._cardConfig)}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-section>
-                `
-              : html`
-                  <hui-card
-                    .hass=${this.hass}
-                    .config=${this._cardConfig}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-card>
-                `}
+            <hui-badge
+              .hass=${this.hass}
+              .config=${this._badgeConfig}
+              preview
+              class=${this._error ? "blur" : ""}
+            ></hui-badge>
             ${this._error
               ? html`
                   <ha-circular-progress
                     indeterminate
-                    aria-label="Can't update card"
+                    aria-label="Can't update badge"
                   ></ha-circular-progress>
                 `
               : ``}
           </div>
         </div>
-        ${this._cardConfig !== undefined
+        ${this._badgeConfig !== undefined
           ? html`
               <mwc-button
                 slot="secondaryAction"
@@ -284,9 +271,9 @@ export class HuiDialogEditCard
                 class="gui-mode-button"
               >
                 ${this.hass!.localize(
-                  !this._cardEditorEl || this._GUImode
-                    ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                    : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                  !this._badgeEditorEl || this._GUImode
+                    ? "ui.panel.lovelace.editor.edit_badge.show_code_editor"
+                    : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
                 )}
               </mwc-button>
             `
@@ -295,7 +282,7 @@ export class HuiDialogEditCard
           <mwc-button @click=${this._cancel} dialogInitialFocus>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          ${this._cardConfig !== undefined && this._dirty
+          ${this._badgeConfig !== undefined && this._dirty
             ? html`
                 <mwc-button
                   ?disabled=${!this._canSave || this._saving}
@@ -327,7 +314,7 @@ export class HuiDialogEditCard
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    this._cardConfig = deepFreeze(ev.detail.config);
+    this._badgeConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     this._dirty = true;
@@ -340,51 +327,23 @@ export class HuiDialogEditCard
   }
 
   private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
+    this._badgeEditorEl?.toggleMode();
   }
 
   private _opened() {
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
-    this._cardEditorEl?.focusYamlEditor();
+    this._badgeEditorEl?.focusYamlEditor();
   }
-
-  private get _isInSection() {
-    return this._params!.path.length === 2;
-  }
-
-  private _shouldShowLayoutTab(): boolean {
-    /**
-     * Only show layout tab for cards in a grid section
-     * In the future, every section and view should be able to bring their own editor for layout.
-     * For now, we limit it to grid sections as it's the only section type
-     * */
-    return (
-      this._isInSection &&
-      (!this._containerConfig.type || this._containerConfig.type === "grid")
-    );
-  }
-
-  private _cardConfigInSection = memoizeOne(
-    (cardConfig?: LovelaceCardConfig) => {
-      const { cards, title, ...containerConfig } = this
-        ._containerConfig as LovelaceSectionConfig;
-
-      return {
-        ...containerConfig,
-        cards: cardConfig ? [cardConfig] : [],
-      };
-    }
-  );
 
   private get _canSave(): boolean {
     if (this._saving) {
       return false;
     }
-    if (this._cardConfig === undefined) {
+    if (this._badgeConfig === undefined) {
       return false;
     }
-    if (this._cardEditorEl && this._cardEditorEl.hasError) {
+    if (this._badgeEditorEl && this._badgeEditorEl.hasError) {
       return false;
     }
     return true;
@@ -397,10 +356,10 @@ export class HuiDialogEditCard
     });
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.unsaved_changes"
+        "ui.panel.lovelace.editor.edit_badge.unsaved_changes"
       ),
       text: this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.confirm_cancel"
+        "ui.panel.lovelace.editor.edit_badge.confirm_cancel"
       ),
       dismissText: this.hass!.localize("ui.common.stay"),
       confirmText: this.hass!.localize("ui.common.leave"),
@@ -429,12 +388,12 @@ export class HuiDialogEditCard
     this._saving = true;
     const path = this._params!.path;
     await this._params!.saveConfig(
-      "cardConfig" in this._params!
-        ? addCard(this._params!.lovelaceConfig, path, this._cardConfig!)
-        : replaceCard(
+      "badgeConfig" in this._params!
+        ? addBadge(this._params!.lovelaceConfig, path, this._badgeConfig!)
+        : replaceBadge(
             this._params!.lovelaceConfig,
-            [...path, this._params!.cardIndex],
-            this._cardConfig!
+            [...path, this._params!.badgeIndex],
+            this._badgeConfig!
           )
     );
     this._saving = false;
@@ -495,18 +454,6 @@ export class HuiDialogEditCard
           flex-direction: column;
         }
 
-        .content hui-card {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
-          max-width: 390px;
-        }
-        .content hui-section {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
-          max-width: var(--ha-view-sections-column-max-width, 500px);
-        }
         .content .element-editor {
           margin: 0 10px;
         }
@@ -520,16 +467,6 @@ export class HuiDialogEditCard
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
-          }
-          .content hui-card {
-            padding: 8px 10px;
-            margin: auto 0px;
-            max-width: 500px;
-          }
-          .content hui-section {
-            padding: 8px 10px;
-            margin: auto 0px;
-            max-width: var(--ha-view-sections-column-max-width, 500px);
           }
         }
         .hidden {
@@ -545,21 +482,18 @@ export class HuiDialogEditCard
           position: relative;
           height: max-content;
           background: var(--primary-background-color);
-          padding: 4px;
+          padding: 10px;
           border-radius: 4px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
         }
         .element-preview ha-circular-progress {
           top: 50%;
           left: 50%;
           position: absolute;
           z-index: 10;
-        }
-        hui-card {
-          padding-top: 8px;
-          margin-bottom: 4px;
-          display: block;
-          width: 100%;
-          box-sizing: border-box;
         }
         .gui-mode-button {
           margin-right: auto;
@@ -582,6 +516,6 @@ export class HuiDialogEditCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-edit-card": HuiDialogEditCard;
+    "hui-dialog-edit-badge": HuiDialogEditBadge;
   }
 }
