@@ -214,6 +214,7 @@ class HaEntityStatePicker extends LitElement {
 
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
+    this._comboBox.filteredItems = this._comboBox.items;
   }
 
   private _filterChanged(ev?: CustomEvent): void {
