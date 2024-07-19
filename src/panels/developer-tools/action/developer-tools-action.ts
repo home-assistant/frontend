@@ -192,6 +192,7 @@ class HaPanelDevAction extends LitElement {
                   copyClipboard
                   readOnly
                   autoUpdate
+                  hasExtraActions
                   .value=${this._response}
                 >
                   <ha-button slot="extra-actions" @click=${this._copyTemplate}
