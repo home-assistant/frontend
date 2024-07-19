@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -10,10 +10,11 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { CoverPositionCardFeatureConfig } from "./types";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 
 export const supportsCoverPositionCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -60,7 +61,7 @@ class HuiCoverPositionCardFeature
     }
 
     const percentage = stateActive(this.stateObj)
-      ? this.stateObj.attributes.current_position ?? 0
+      ? (this.stateObj.attributes.current_position ?? 0)
       : 0;
 
     const value = Math.max(Math.round(percentage), 0);
@@ -72,32 +73,31 @@ class HuiCoverPositionCardFeature
       : stateColorCss(this.stateObj);
 
     const style = {
-      "--color": color,
+      "--feature-color": color,
       // Use open color for inactive state to avoid grey slider that looks disabled
       "--state-cover-inactive-color": openColor,
     };
 
     return html`
-      <div class="container" style=${styleMap(style)}>
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          step="1"
-          inverted
-          show-handle
-          @value-changed=${this._valueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "current_position"
-          )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        style=${styleMap(style)}
+        .value=${value}
+        min="0"
+        max="100"
+        step="1"
+        inverted
+        show-handle
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "current_position"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -112,19 +112,7 @@ class HuiCoverPositionCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        --control-slider-color: var(--color);
-        --control-slider-background: var(--color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

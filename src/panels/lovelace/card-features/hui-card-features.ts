@@ -1,17 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
-import { createCardFeatureElement } from "../create-element/create-card-feature-element";
-import type { LovelaceCardFeature } from "../types";
+import "./hui-card-feature";
 import type { LovelaceCardFeatureConfig } from "./types";
 
 @customElement("hui-card-features")
@@ -24,44 +15,23 @@ export class HuiCardFeatures extends LitElement {
 
   @property({ attribute: false }) public color?: string;
 
-  private _featuresElements = new WeakMap<
-    LovelaceCardFeatureConfig,
-    LovelaceCardFeature | HuiErrorCard
-  >();
-
-  private _getFeatureElement(feature: LovelaceCardFeatureConfig) {
-    if (!this._featuresElements.has(feature)) {
-      const element = createCardFeatureElement(feature);
-      this._featuresElements.set(feature, element);
-      return element;
-    }
-
-    return this._featuresElements.get(feature)!;
-  }
-
-  private renderFeature(
-    featureConf: LovelaceCardFeatureConfig,
-    stateObj: HassEntity
-  ): TemplateResult {
-    const element = this._getFeatureElement(featureConf);
-
-    if (this.hass) {
-      element.hass = this.hass;
-      (element as LovelaceCardFeature).stateObj = stateObj;
-      (element as LovelaceCardFeature).color = this.color;
-    }
-
-    return html`${element}`;
-  }
-
   protected render() {
     if (!this.features) {
       return nothing;
     }
     return html`
-      ${this.features.map((featureConf) =>
-        this.renderFeature(featureConf, this.stateObj)
-      )}
+      <div class="container">
+        ${this.features.map(
+          (feature) => html`
+            <hui-card-feature
+              .hass=${this.hass}
+              .stateObj=${this.stateObj}
+              .color=${this.color}
+              .feature=${feature}
+            ></hui-card-feature>
+          `
+        )}
+      </div>
     `;
   }
 
@@ -69,8 +39,24 @@ export class HuiCardFeatures extends LitElement {
     return css`
       :host {
         --feature-color: var(--state-icon-color);
+        --feature-padding: 12px;
+        --feature-height: 42px;
+        --feature-border-radius: 12px;
+        --feature-button-spacing: 12px;
+        position: relative;
+        width: 100%;
+      }
+      .container {
+        position: relative;
         display: flex;
         flex-direction: column;
+        padding: var(--feature-padding);
+        padding-top: 0px;
+        gap: var(--feature-padding);
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        justify-content: space-evenly;
       }
     `;
   }

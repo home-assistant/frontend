@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
@@ -18,6 +18,7 @@ import {
 } from "../../../data/water_heater";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { TargetTemperatureCardFeatureConfig } from "./types";
 
 type Target = "value" | "low" | "high";
@@ -283,12 +284,7 @@ class HuiTargetTemperatureCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

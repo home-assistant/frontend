@@ -24,7 +24,7 @@ import { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
   LovelaceCardPath,
-  findLovelaceCards,
+  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
@@ -59,7 +59,7 @@ export class HuiCardEditMode extends LitElement {
 
   private get _cards() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceCards(this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("cards", this.lovelace!.config, containerPath)!;
   }
 
   private _touchStarted = false;

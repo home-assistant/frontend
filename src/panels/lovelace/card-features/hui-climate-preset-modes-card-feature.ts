@@ -1,6 +1,6 @@
 import { mdiTuneVariant } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -14,8 +14,9 @@ import { ClimateEntity, ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { ClimatePresetModesCardFeatureConfig } from "./types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
+import { ClimatePresetModesCardFeatureConfig } from "./types";
 
 export const supportsClimatePresetModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -142,84 +143,57 @@ class HuiClimatePresetModesCardFeature
 
     if (this._config.style === "icons") {
       return html`
-        <div class="container">
-          <ha-control-select
-            .options=${options}
-            .value=${this._currentPresetMode}
-            @value-changed=${this._valueChanged}
-            hide-label
-            .ariaLabel=${this.hass!.formatEntityAttributeName(
-              stateObj,
-              "preset_mode"
-            )}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
-          >
-          </ha-control-select>
-        </div>
+        <ha-control-select
+          .options=${options}
+          .value=${this._currentPresetMode}
+          @value-changed=${this._valueChanged}
+          hide-label
+          .ariaLabel=${this.hass!.formatEntityAttributeName(
+            stateObj,
+            "preset_mode"
+          )}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+        >
+        </ha-control-select>
       `;
     }
 
     return html`
-      <div class="container">
-        <ha-control-select-menu
-          show-arrow
-          hide-label
-          .label=${this.hass!.formatEntityAttributeName(
-            stateObj,
-            "preset_mode"
-          )}
-          .value=${this._currentPresetMode}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._valueChanged}
-          @closed=${stopPropagation}
-        >
-          ${this._currentPresetMode
-            ? html`<ha-attribute-icon
-                slot="icon"
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                attribute="preset_mode"
-                .attributeValue=${this._currentPresetMode}
-              ></ha-attribute-icon>`
-            : html`
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
-              `}
-          ${options.map(
-            (option) => html`
-              <ha-list-item .value=${option.value} graphic="icon">
-                ${option.icon}${option.label}
-              </ha-list-item>
-            `
-          )}
-        </ha-control-select-menu>
-      </div>
+      <ha-control-select-menu
+        show-arrow
+        hide-label
+        .label=${this.hass!.formatEntityAttributeName(stateObj, "preset_mode")}
+        .value=${this._currentPresetMode}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        fixedMenuPosition
+        naturalMenuWidth
+        @selected=${this._valueChanged}
+        @closed=${stopPropagation}
+      >
+        ${this._currentPresetMode
+          ? html`<ha-attribute-icon
+              slot="icon"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              attribute="preset_mode"
+              .attributeValue=${this._currentPresetMode}
+            ></ha-attribute-icon>`
+          : html`
+              <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
+            `}
+        ${options.map(
+          (option) => html`
+            <ha-list-item .value=${option.value} graphic="icon">
+              ${option.icon}${option.label}
+            </ha-list-item>
+          `
+        )}
+      </ha-control-select-menu>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-select-menu {
-        box-sizing: border-box;
-        --control-select-menu-height: 40px;
-        --control-select-menu-border-radius: 10px;
-        line-height: 1.2;
-        display: block;
-        width: 100%;
-      }
-      ha-control-select {
-        --control-select-color: var(--feature-color);
-        --control-select-padding: 0;
-        --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
-        --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

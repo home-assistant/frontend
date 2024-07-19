@@ -1018,6 +1018,13 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+      },
+      "state-content-picker": {
+        "state": "State",
+        "last_changed": "Last changed",
+        "last_updated": "Last updated",
+        "remaining_time": "Remaining time",
+        "install_status": "Install status"
       }
     },
     "dialogs": {
@@ -4061,6 +4068,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
+          "error_delete": "Error deleting device",
           "picker": {
             "search": "Search {number} devices",
             "state": "State",
@@ -4546,7 +4554,9 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
+          "thread_network_info": "Thread network information",
+          "thread_network_delete_credentials": "Delete Thread network credentials"
         },
         "zha": {
           "common": {
@@ -5493,7 +5503,6 @@
             "move_right": "Move view right",
             "tab_settings": "Settings",
             "tab_background": "Background",
-            "tab_badges": "Badges",
             "tab_visibility": "Visibility",
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
@@ -5550,9 +5559,31 @@
             "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
-            "layout": {
-              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
+            }
+          },
+          "edit_badge": {
+            "header": "Badge configuration",
+            "typed_header": "{type} Badge configuration",
+            "pick_badge": "Which badge would you like to add?",
+            "pick_badge_title": "Which badge would you like to add to {name}",
+            "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
+            "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
+            "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
+            "add": "Add badge",
+            "edit": "[%key:ui::panel::lovelace::editor::edit_card::edit%]",
+            "clear": "[%key:ui::panel::lovelace::editor::edit_card::clear%]",
+            "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
+            "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
+            "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
+            "visibility": {
+              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
             }
           },
           "move_card": {
@@ -5992,16 +6023,10 @@
               "icon_tap_action": "Icon tap behavior",
               "actions": "Actions",
               "appearance": "Appearance",
-              "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content",
-              "state_content_options": {
-                "state": "State",
-                "last-changed": "Last changed",
-                "last-updated": "Last updated"
-              }
+              "state_content": "State content"
             },
             "vertical-stack": {
               "name": "Vertical stack",
@@ -6029,6 +6054,23 @@
             "state_image": "State image",
             "filter": "Filter",
             "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
+          },
+          "badge": {
+            "entity": {
+              "name": "Entity",
+              "description": "The Entity badge gives you a quick overview of your entity.",
+              "color": "Color",
+              "actions": "Actions",
+              "appearance": "Appearance",
+              "show_entity_picture": "Show entity picture",
+              "state_content": "State content",
+              "display_type": "Display type",
+              "display_type_options": {
+                "minimal": "Minimal (icon only)",
+                "standard": "Standard (icon and state)",
+                "complete": "Complete (icon, name and state)"
+              }
+            }
           },
           "features": {
             "name": "Features",

@@ -94,6 +94,8 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.color_temp?.min_mireds ?? 153;
       } else if (
         "action" in selector ||
+        "trigger" in selector ||
+        "condition" in selector ||
         "media" in selector ||
         "target" in selector
       ) {

@@ -21,6 +21,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
@@ -142,6 +143,7 @@ export default class HaAutomationConditionRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
+            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button

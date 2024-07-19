@@ -215,6 +215,7 @@ const createDeviceRegistryEntries = (
     connections: [],
     manufacturer: "ESPHome",
     model: "Mock Device",
+    model_id: "ABC-001",
     name: "Tag Reader",
     sw_version: null,
     hw_version: "1.0.0",
