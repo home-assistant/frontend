@@ -28,9 +28,7 @@ const calcPoints = (
   }
   let last = [average(first), lastValue(first)];
 
-  const getY = (value: number): number => {
-    return height + strokeWidth / 2 - (value - min) / yRatio;
-  };
+  const getY = (value: number): number => height + strokeWidth / 2 - (value - min) / yRatio;
 
   const getCoords = (item: any[], i: number, offset = 0, depth = 1) => {
     if (depth > 1 && item) {
