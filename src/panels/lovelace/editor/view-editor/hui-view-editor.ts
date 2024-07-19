@@ -146,11 +146,11 @@ export class HuiViewEditor extends LitElement {
     if (
       this.isNew &&
       !this._suggestedPath &&
-      config.title &&
+      this._config.path === config.path &&
       (!this._config.path ||
         config.path === slugify(this._config.title || "", "-"))
     ) {
-      config.path = slugify(config.title, "-");
+      config.path = slugify(config.title || "", "-");
     }
 
     fireEvent(this, "view-config-changed", { config });
