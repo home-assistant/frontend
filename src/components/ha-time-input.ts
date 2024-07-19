@@ -61,7 +61,7 @@ export class HaTimeInput extends LitElement {
     const eventValue = ev.detail.value;
 
     const useAMPM = useAmPm(this.locale);
-    let value;
+    let value: string | undefined;
 
     // An undefined eventValue means the time selector is being cleared,
     // the `value` variable will (intentionally) be left undefined.
