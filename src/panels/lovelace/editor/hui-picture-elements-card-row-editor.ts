@@ -91,7 +91,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
                 @click=${this._editRow}
               ></ha-icon-button>
               <ha-icon-button
-                .label=${"ui.common.duplicate"}
+                .label=${this.hass!.localize("ui.common.duplicate")}
                 .path=${mdiContentDuplicate}
                 class="duplicate-icon"
                 .index=${index}
@@ -239,6 +239,10 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
       .secondary {
         font-size: 12px;
         color: var(--secondary-text-color);
+      }
+
+      ha-select {
+        width: 100%;
       }
     `;
   }
