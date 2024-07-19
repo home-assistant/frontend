@@ -6,7 +6,7 @@ import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import {
-  defaultBadgeConfig,
+  ensureBadgeConfig,
   LovelaceBadgeConfig,
 } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -360,8 +360,7 @@ export class HUIView extends ReactiveElement {
     }
 
     this._badges = config.badges.map((badge) => {
-      const badgeConfig =
-        typeof badge === "string" ? defaultBadgeConfig(badge) : badge;
+      const badgeConfig = ensureBadgeConfig(badge);
       const element = this._createBadgeElement(badgeConfig);
       return element;
     });

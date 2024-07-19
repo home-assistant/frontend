@@ -17,7 +17,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import {
-  defaultBadgeConfig,
+  ensureBadgeConfig,
   LovelaceBadgeConfig,
 } from "../../../../data/lovelace/config/badge";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -106,8 +106,7 @@ export class HuiDialogEditBadge
       this._dirty = true;
     } else {
       const badge = this._containerConfig.badges?.[params.badgeIndex];
-      this._badgeConfig =
-        typeof badge === "string" ? defaultBadgeConfig(badge) : badge;
+      this._badgeConfig = badge != null ? ensureBadgeConfig(badge) : badge;
     }
 
     this.large = false;

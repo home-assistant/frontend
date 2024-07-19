@@ -28,6 +28,7 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { Lovelace } from "../types";
+import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -198,7 +199,7 @@ export class HuiBadgeEditMode extends LitElement {
   private _duplicateBadge(): void {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
-    const badgeConfig = this._badges![cardIndex];
+    const badgeConfig = ensureBadgeConfig(this._badges![cardIndex]);
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,

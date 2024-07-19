@@ -1,4 +1,7 @@
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import {
+  ensureBadgeConfig,
+  LovelaceBadgeConfig,
+} from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -421,7 +424,7 @@ export const moveBadge = (
   const badge = badges![fromCardIndex];
 
   let newConfig = deleteBadge(config, fromPath);
-  newConfig = insertBadge(newConfig, toPath, badge);
+  newConfig = insertBadge(newConfig, toPath, ensureBadgeConfig(badge));
 
   return newConfig;
 };
