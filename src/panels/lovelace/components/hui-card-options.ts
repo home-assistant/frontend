@@ -67,7 +67,7 @@ export class HuiCardOptions extends LitElement {
   @property({ type: Boolean }) public hidePosition = false;
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",

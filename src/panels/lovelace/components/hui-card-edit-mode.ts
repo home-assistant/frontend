@@ -50,7 +50,7 @@ export class HuiCardEditMode extends LitElement {
   public _focused: boolean = false;
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",
