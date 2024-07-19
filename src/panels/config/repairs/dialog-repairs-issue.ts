@@ -79,7 +79,8 @@ class DialogRepairsIssue extends LitElement {
                 this._issue.translation_key || this._issue.issue_id
               }.description`,
               this._issue.translation_placeholders
-            )}
+            ) ||
+            `${this._issue.domain}: ${this._issue.translation_key || this._issue.issue_id}`}
           ></ha-markdown>
           ${this._issue.dismissed_version
             ? html`
