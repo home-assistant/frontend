@@ -52,7 +52,7 @@ export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public suggestedCards?: string[];
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: true,
     subscribe: true,
     storage: "sessionStorage",
