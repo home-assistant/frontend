@@ -32,6 +32,7 @@ import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface ConfigChangedEvent {
   config:
@@ -39,7 +40,8 @@ export interface ConfigChangedEvent {
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
-    | LovelaceStrategyConfig;
+    | LovelaceStrategyConfig
+    | LovelaceBadgeConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }

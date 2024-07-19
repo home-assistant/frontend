@@ -20,13 +20,13 @@ import { stripDiacritics } from "../../../../common/string/strip-diacritics";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import {
   CUSTOM_TYPE_PREFIX,
-  CustomCardEntry,
-  customCards,
-  getCustomCardEntry,
+  CustomBadgeEntry,
+  customBadges,
+  getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
 import { getStripDiacriticsFn } from "../../../../util/fuse";
@@ -34,36 +34,36 @@ import {
   calcUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
-import { tryCreateCardElement } from "../../create-element/create-card-element";
-import type { LovelaceCard } from "../../types";
-import { getCardStubConfig } from "../get-card-stub-config";
-import { coreCards } from "../lovelace-cards";
-import type { Card, CardPickTarget } from "../types";
+import { tryCreateBadgeElement } from "../../create-element/create-badge-element";
+import type { LovelaceBadge } from "../../types";
+import { getBadgeStubConfig } from "../get-badge-stub-config";
+import { coreBadges } from "../lovelace-badges";
+import type { Badge, BadgePickTarget } from "../types";
 
-interface CardElement {
-  card: Card;
+interface BadgeElement {
+  badge: Badge;
   element: TemplateResult;
 }
 
-@customElement("hui-card-picker")
-export class HuiCardPicker extends LitElement {
+@customElement("hui-badge-picker")
+export class HuiBadgePicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public suggestedCards?: string[];
+  @property({ attribute: false }) public suggestedBadges?: string[];
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardBadgeClipboard",
     state: true,
     subscribe: true,
     storage: "sessionStorage",
   })
-  private _clipboard?: LovelaceCardConfig;
+  private _clipboard?: LovelaceBadgeConfig;
 
-  @state() private _cards: CardElement[] = [];
+  @state() private _badges: BadgeElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
-  public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  public badgePicked?: (badgeConf: LovelaceBadgeConfig) => void;
 
   @state() private _filter = "";
 
@@ -75,49 +75,51 @@ export class HuiCardPicker extends LitElement {
 
   private _usedEntities?: string[];
 
-  private _filterCards = memoizeOne(
-    (cardElements: CardElement[], filter?: string): CardElement[] => {
+  private _filterBadges = memoizeOne(
+    (badgeElements: BadgeElement[], filter?: string): BadgeElement[] => {
       if (!filter) {
-        return cardElements;
+        return badgeElements;
       }
-      let cards = cardElements.map(
-        (cardElement: CardElement) => cardElement.card
+      let badges = badgeElements.map(
+        (badgeElement: BadgeElement) => badgeElement.badge
       );
-      const options: IFuseOptions<Card> = {
+      const options: IFuseOptions<Badge> = {
         keys: ["type", "name", "description"],
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         getFn: getStripDiacriticsFn,
       };
-      const fuse = new Fuse(cards, options);
-      cards = fuse.search(stripDiacritics(filter)).map((result) => result.item);
-      return cardElements.filter((cardElement: CardElement) =>
-        cards.includes(cardElement.card)
+      const fuse = new Fuse(badges, options);
+      badges = fuse
+        .search(stripDiacritics(filter))
+        .map((result) => result.item);
+      return badgeElements.filter((badgeElement: BadgeElement) =>
+        badges.includes(badgeElement.badge)
       );
     }
   );
 
-  private _suggestedCards = memoizeOne(
-    (cardElements: CardElement[]): CardElement[] =>
-      cardElements.filter(
-        (cardElement: CardElement) => cardElement.card.isSuggested
+  private _suggestedBadges = memoizeOne(
+    (badgeElements: BadgeElement[]): BadgeElement[] =>
+      badgeElements.filter(
+        (badgeElement: BadgeElement) => badgeElement.badge.isSuggested
       )
   );
 
-  private _customCards = memoizeOne(
-    (cardElements: CardElement[]): CardElement[] =>
-      cardElements.filter(
-        (cardElement: CardElement) =>
-          cardElement.card.isCustom && !cardElement.card.isSuggested
+  private _customBadges = memoizeOne(
+    (badgeElements: BadgeElement[]): BadgeElement[] =>
+      badgeElements.filter(
+        (badgeElement: BadgeElement) =>
+          badgeElement.badge.isCustom && !badgeElement.badge.isSuggested
       )
   );
 
-  private _otherCards = memoizeOne(
-    (cardElements: CardElement[]): CardElement[] =>
-      cardElements.filter(
-        (cardElement: CardElement) =>
-          !cardElement.card.isSuggested && !cardElement.card.isCustom
+  private _otherBadges = memoizeOne(
+    (badgeElements: BadgeElement[]): BadgeElement[] =>
+      badgeElements.filter(
+        (badgeElement: BadgeElement) =>
+          !badgeElement.badge.isSuggested && !badgeElement.badge.isCustom
       )
   );
 
@@ -131,9 +133,9 @@ export class HuiCardPicker extends LitElement {
       return nothing;
     }
 
-    const suggestedCards = this._suggestedCards(this._cards);
-    const othersCards = this._otherCards(this._cards);
-    const customCardsItems = this._customCards(this._cards);
+    const suggestedBadges = this._suggestedBadges(this._badges);
+    const otherBadges = this._otherBadges(this._badges);
+    const customBadgesItems = this._customBadges(this._badges);
 
     return html`
       <search-input
@@ -141,7 +143,7 @@ export class HuiCardPicker extends LitElement {
         .filter=${this._filter}
         @value-changed=${this._handleSearchChange}
         .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_card.search_cards"
+          "ui.panel.lovelace.editor.edit_badge.search_badgess"
         )}
       ></search-input>
       <div
@@ -151,65 +153,65 @@ export class HuiCardPicker extends LitElement {
           height: this._height ? `${this._height}px` : "auto",
         })}
       >
-        <div class="cards-container">
+        <div class="badges-container">
           ${this._filter
-            ? this._filterCards(this._cards, this._filter).map(
-                (cardElement: CardElement) => cardElement.element
+            ? this._filterBadges(this._badges, this._filter).map(
+                (badgeElement: BadgeElement) => badgeElement.element
               )
             : html`
-                ${suggestedCards.length > 0
+                ${suggestedBadges.length > 0
                   ? html`
-                      <div class="cards-container-header">
+                      <div class="badges-container-header">
                         ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.suggested_cards`
+                          `ui.panel.lovelace.editor.badge.generic.suggested_badges`
                         )}
                       </div>
                     `
                   : nothing}
-                ${this._renderClipboardCard()}
-                ${suggestedCards.map(
-                  (cardElement: CardElement) => cardElement.element
+                ${this._renderClipboardBadge()}
+                ${suggestedBadges.map(
+                  (badgeElement: BadgeElement) => badgeElement.element
                 )}
-                ${suggestedCards.length > 0
+                ${suggestedBadges.length > 0
                   ? html`
-                      <div class="cards-container-header">
+                      <div class="badges-container-header">
                         ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.other_cards`
+                          `ui.panel.lovelace.editor.badge.generic.other_badges`
                         )}
                       </div>
                     `
                   : nothing}
-                ${othersCards.map(
-                  (cardElement: CardElement) => cardElement.element
+                ${otherBadges.map(
+                  (badgeElement: BadgeElement) => badgeElement.element
                 )}
-                ${customCardsItems.length > 0
+                ${customBadgesItems.length > 0
                   ? html`
-                      <div class="cards-container-header">
+                      <div class="badges-container-header">
                         ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.custom_cards`
+                          `ui.panel.lovelace.editor.badge.generic.custom_badges`
                         )}
                       </div>
                     `
                   : nothing}
-                ${customCardsItems.map(
-                  (cardElement: CardElement) => cardElement.element
+                ${customBadgesItems.map(
+                  (badgeElement: BadgeElement) => badgeElement.element
                 )}
               `}
         </div>
-        <div class="cards-container">
+        <div class="badges-container">
           <div
-            class="card manual"
-            @click=${this._cardPicked}
+            class="badge manual"
+            @click=${this._badgePicked}
             .config=${{ type: "" }}
           >
-            <div class="card-header">
+            <div class="badge-header">
               ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual`
+                `ui.panel.lovelace.editor.badge.generic.manual`
               )}
             </div>
             <div class="preview description">
               ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual_description`
+                `ui.panel.lovelace.editor.badge.generic.manual_description`
               )}
             </div>
           </div>
@@ -250,22 +252,22 @@ export class HuiCardPicker extends LitElement {
         !isUnavailableState(this.hass!.states[eid].state)
     );
 
-    this._loadCards();
+    this._loadBages();
   }
 
-  private _loadCards() {
-    let cards: Card[] = coreCards.map((card: Card) => ({
+  private _loadBages() {
+    let badges = coreBadges.map<Badge>((badge) => ({
       name: this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${card.type}.name`
+        `ui.panel.lovelace.editor.badge.${badge.type}.name`
       ),
       description: this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${card.type}.description`
+        `ui.panel.lovelace.editor.badge.${badge.type}.description`
       ),
-      isSuggested: this.suggestedCards?.includes(card.type) || false,
-      ...card,
+      isSuggested: this.suggestedBadges?.includes(badge.type) || false,
+      ...badge,
     }));
 
-    cards = cards.sort((a, b) => {
+    badges = badges.sort((a, b) => {
       if (a.isSuggested && !b.isSuggested) {
         return -1;
       }
@@ -279,14 +281,14 @@ export class HuiCardPicker extends LitElement {
       );
     });
 
-    if (customCards.length > 0) {
-      cards = cards.concat(
-        customCards
-          .map((ccard: CustomCardEntry) => ({
-            type: ccard.type,
-            name: ccard.name,
-            description: ccard.description,
-            showElement: ccard.preview,
+    if (customBadges.length > 0) {
+      badges = badges.concat(
+        customBadges
+          .map((cbadge: CustomBadgeEntry) => ({
+            type: cbadge.type,
+            name: cbadge.name,
+            description: cbadge.description,
+            showElement: cbadge.preview,
             isCustom: true,
           }))
           .sort((a, b) =>
@@ -298,12 +300,12 @@ export class HuiCardPicker extends LitElement {
           )
       );
     }
-    this._cards = cards.map((card: Card) => ({
-      card: card,
+    this._badges = badges.map((badge) => ({
+      badge: badge,
       element: html`${until(
-        this._renderCardElement(card),
+        this._renderBadgeElement(badge),
         html`
-          <div class="card spinner">
+          <div class="badge spinner">
             <ha-circular-progress indeterminate></ha-circular-progress>
           </div>
         `
@@ -311,22 +313,22 @@ export class HuiCardPicker extends LitElement {
     }));
   }
 
-  private _renderClipboardCard() {
+  private _renderClipboardBadge() {
     if (!this._clipboard) {
       return nothing;
     }
 
     return html` ${until(
-      this._renderCardElement(
+      this._renderBadgeElement(
         {
           type: this._clipboard.type,
           showElement: true,
           isCustom: false,
           name: this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.paste"
+            "ui.panel.lovelace.editor.badge.generic.paste"
           ),
           description: `${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.paste_description",
+            "ui.panel.lovelace.editor.badge.generic.paste_description",
             {
               type: this._clipboard.type,
             }
@@ -335,7 +337,7 @@ export class HuiCardPicker extends LitElement {
         this._clipboard
       ),
       html`
-        <div class="card spinner">
+        <div class="badge spinner">
           <ha-circular-progress indeterminate></ha-circular-progress>
         </div>
       `
@@ -369,59 +371,62 @@ export class HuiCardPicker extends LitElement {
     this._filter = value;
   }
 
-  private _cardPicked(ev: Event): void {
-    const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
+  private _badgePicked(ev: Event): void {
+    const config: LovelaceBadgeConfig = (ev.currentTarget! as BadgePickTarget)
       .config;
 
     fireEvent(this, "config-changed", { config });
   }
 
-  private _tryCreateCardElement(cardConfig: LovelaceCardConfig) {
-    const element = tryCreateCardElement(cardConfig) as LovelaceCard;
+  private _tryCreateBadgeElement(badge: LovelaceBadgeConfig) {
+    const element = tryCreateBadgeElement(badge) as LovelaceBadge;
     element.hass = this.hass;
     element.addEventListener(
       "ll-rebuild",
       (ev) => {
         ev.stopPropagation();
-        this._rebuildCard(element, cardConfig);
+        this._rebuildBadge(element, badge);
       },
       { once: true }
     );
     return element;
   }
 
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
+  private _rebuildBadge(
+    badgeElToReplace: LovelaceBadge,
+    config: LovelaceBadgeConfig
   ): void {
-    let newCardEl: LovelaceCard;
+    let newBadgeEl: LovelaceBadge;
     try {
-      newCardEl = this._tryCreateCardElement(config);
+      newBadgeEl = this._tryCreateBadgeElement(config);
     } catch (err: any) {
       return;
     }
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
+    if (badgeElToReplace.parentElement) {
+      badgeElToReplace.parentElement!.replaceChild(
+        newBadgeEl,
+        badgeElToReplace
+      );
     }
   }
 
-  private async _renderCardElement(
-    card: Card,
-    config?: LovelaceCardConfig
+  private async _renderBadgeElement(
+    badge: Badge,
+    config?: LovelaceBadgeConfig
   ): Promise<TemplateResult> {
-    let { type } = card;
-    const { showElement, isCustom, name, description } = card;
-    const customCard = isCustom ? getCustomCardEntry(type) : undefined;
+    let { type } = badge;
+    const { showElement, isCustom, name, description } = badge;
+    const customBadge = isCustom ? getCustomBadgeEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
     }
 
-    let element: LovelaceCard | undefined;
-    let cardConfig: LovelaceCardConfig = config ?? { type };
+    let element: LovelaceBadge | undefined;
+    let badgeConfig: LovelaceBadgeConfig = config ?? { type };
 
     if (this.hass && this.lovelace) {
       if (!config) {
-        cardConfig = await getCardStubConfig(
+        badgeConfig = await getBadgeStubConfig(
           this.hass,
           type,
           this._unusedEntities!,
@@ -431,7 +436,7 @@ export class HuiCardPicker extends LitElement {
 
       if (showElement) {
         try {
-          element = this._tryCreateCardElement(cardConfig);
+          element = this._tryCreateBadgeElement(badgeConfig);
         } catch (err: any) {
           element = undefined;
         }
@@ -439,30 +444,30 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
-      <div class="card">
+      <div class="badge">
         <div
           class="overlay"
-          @click=${this._cardPicked}
-          .config=${cardConfig}
+          @click=${this._badgePicked}
+          .config=${badgeConfig}
         ></div>
-        <div class="card-header">
-          ${customCard
+        <div class="badge-header">
+          ${customBadge
             ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
+                "ui.panel.lovelace.editor.badge_picker.custom_badge"
+              )}: ${customBadge.name || customBadge.type}`
             : name}
         </div>
         <div
           class="preview ${classMap({
-            description: !element || element.tagName === "HUI-ERROR-CARD",
+            description: !element || element.tagName === "HUI-ERROR-BADGE",
           })}"
         >
-          ${element && element.tagName !== "HUI-ERROR-CARD"
+          ${element && element.tagName !== "HUI-ERROR-BADGE"
             ? element
-            : customCard
-              ? customCard.description ||
+            : customBadge
+              ? customBadge.description ||
                 this.hass!.localize(
-                  `ui.panel.lovelace.editor.cardpicker.no_description`
+                  `ui.panel.lovelace.editor.badge_picker.no_description`
                 )
               : description}
         </div>
@@ -475,11 +480,11 @@ export class HuiCardPicker extends LitElement {
       css`
         search-input {
           display: block;
-          --mdc-shape-small: var(--card-picker-search-shape);
-          margin: var(--card-picker-search-margin);
+          --mdc-shape-small: var(--badge-picker-search-shape);
+          margin: var(--badge-picker-search-margin);
         }
 
-        .cards-container-header {
+        .badges-container-header {
           font-size: 16px;
           font-weight: 500;
           padding: 12px 8px 4px 8px;
@@ -487,14 +492,14 @@ export class HuiCardPicker extends LitElement {
           grid-column: 1 / -1;
         }
 
-        .cards-container {
+        .badges-container {
           display: grid;
           grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           margin-top: 20px;
         }
 
-        .card {
+        .badge {
           height: 100%;
           max-width: 500px;
           display: flex;
@@ -508,7 +513,7 @@ export class HuiCardPicker extends LitElement {
             var(--ha-card-border-color, var(--divider-color));
         }
 
-        .card-header {
+        .badge-header {
           color: var(--ha-card-header-color, --primary-text-color);
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: 16px;
@@ -534,12 +539,6 @@ export class HuiCardPicker extends LitElement {
           justify-content: center;
         }
 
-        .preview > :first-child {
-          zoom: 0.6;
-          display: block;
-          width: 100%;
-        }
-
         .description {
           text-align: center;
         }
@@ -559,14 +558,14 @@ export class HuiCardPicker extends LitElement {
         }
 
         .manual {
-          max-width: none;
           grid-column: 1 / -1;
+          max-width: none;
         }
 
         .icon {
           position: absolute;
           top: 8px;
-          right: 8px
+          right: 8px;
           inset-inline-start: 8px;
           inset-inline-end: 8px;
           border-radius: 50%;
@@ -586,6 +585,6 @@ export class HuiCardPicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-card-picker": HuiCardPicker;
+    "hui-badge-picker": HuiBadgePicker;
   }
 }

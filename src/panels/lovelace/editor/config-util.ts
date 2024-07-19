@@ -331,6 +331,17 @@ export const addBadge = (
   return newConfig;
 };
 
+export const addBadges = (
+  config: LovelaceConfig,
+  path: LovelaceContainerPath,
+  badgeConfig: LovelaceBadgeConfig[]
+): LovelaceConfig => {
+  const badges = findLovelaceItems("badges", config, path);
+  const newBadges = badges ? [...badges, ...badgeConfig] : [...badgeConfig];
+  const newConfig = updateLovelaceItems("badges", config, path, newBadges);
+  return newConfig;
+};
+
 export const replaceBadge = (
   config: LovelaceConfig,
   path: LovelaceCardPath,

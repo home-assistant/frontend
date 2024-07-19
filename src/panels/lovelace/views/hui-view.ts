@@ -26,7 +26,6 @@ import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dia
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteBadge, deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
-import { getBadgeStubConfig } from "../editor/get-badge-stub-config";
 import {
   LovelaceCardPath,
   parseLovelaceCardPath,
@@ -37,6 +36,7 @@ import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
+import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
 
 declare global {
   // for fire event
@@ -332,18 +332,10 @@ export class HUIView extends ReactiveElement {
       }
     });
     this._layoutElement.addEventListener("ll-create-badge", async () => {
-      const defaultConfig = await getBadgeStubConfig(
-        this.hass,
-        "entity",
-        Object.keys(this.hass.entities),
-        []
-      );
-
-      showEditBadgeDialog(this, {
+      showCreateBadgeDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
         path: [this.index],
-        badgeConfig: defaultConfig,
       });
     });
     this._layoutElement.addEventListener("ll-edit-badge", (ev) => {
