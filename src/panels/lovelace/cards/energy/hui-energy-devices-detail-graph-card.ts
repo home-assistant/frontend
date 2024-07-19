@@ -68,7 +68,7 @@ export class HuiEnergyDevicesDetailGraphCard
   @storage({
     key: "energy-devices-hidden-stats",
     state: true,
-    subscribe: true,
+    subscribe: false,
   })
   private _hiddenStats: string[] = [];
 
