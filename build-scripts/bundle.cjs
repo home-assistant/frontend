@@ -47,7 +47,7 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __DEV__: !isProdBuild,
-  __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
+  __BUILD__: JSON.stringify(latestBuild ? "modern" : "legacy"),
   __VERSION__: JSON.stringify(env.version()),
   __DEMO__: false,
   __SUPERVISOR__: false,
@@ -79,7 +79,12 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   sourceMap: !isTestBuild,
 });
 
-module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
+module.exports.babelOptions = ({
+  latestBuild,
+  isProdBuild,
+  isTestBuild,
+  sw,
+}) => ({
   babelrc: false,
   compact: false,
   assumptions: {
@@ -87,7 +92,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     setPublicClassFields: true,
     setSpreadProperties: true,
   },
-  browserslistEnv: latestBuild ? "modern" : "legacy",
+  browserslistEnv: latestBuild ? "modern" : `legacy${sw ? "-sw" : ""}`,
   presets: [
     [
       "@babel/preset-env",
@@ -215,7 +220,13 @@ module.exports.config = {
     return {
       name: "frontend" + nameSuffix(latestBuild),
       entry: {
-        service_worker: "./src/entrypoints/service_worker.ts",
+        "service-worker":
+          !env.useRollup() && !latestBuild
+            ? {
+                import: "./src/entrypoints/service-worker.ts",
+                layer: "sw",
+              }
+            : "./src/entrypoints/service-worker.ts",
         app: "./src/entrypoints/app.ts",
         authorize: "./src/entrypoints/authorize.ts",
         onboarding: "./src/entrypoints/onboarding.ts",

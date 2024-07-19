@@ -9088,7 +9088,6 @@ __metadata:
     serve-handler: "npm:6.1.5"
     sinon: "npm:18.0.0"
     sortablejs: "npm:1.15.2"
-    source-map-url: "npm:0.4.1"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     systemjs: "npm:6.15.1"
@@ -9113,7 +9112,7 @@ __metadata:
     webpack-stats-plugin: "npm:1.1.3"
     webpackbar: "npm:6.0.1"
     weekstart: "npm:2.0.0"
-    workbox-build: "npm:7.1.1"
+    workbox-build: "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
     workbox-cacheable-response: "npm:7.1.0"
     workbox-core: "npm:7.1.0"
     workbox-expiration: "npm:7.1.0"
@@ -13273,13 +13272,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-url@npm:0.4.1":
-  version: 0.4.1
-  resolution: "source-map-url@npm:0.4.1"
-  checksum: 10/7fec0460ca017330568e1a4d67c80c397871f27d75b034e1117eaa802076db5cda5944659144d26eafd2a95008ada19296c8e0d5ec116302c32c6daa4e430003
-  languageName: node
-  linkType: hard
-
 "source-map@npm:0.5.6":
   version: 0.5.6
   resolution: "source-map@npm:0.5.6"
@@ -15182,6 +15174,51 @@ __metadata:
     workbox-sw: "npm:7.1.0"
     workbox-window: "npm:7.1.0"
   checksum: 10/65eb75fc67fd14f415e6978c1f6431c21d6b27bdaec7e5438d8586719c6b09aaad5cec6ecd89684d1d414ff3b52c4eb2de3d748e1e0873b5a6ab3a2531fe034b
+  languageName: node
+  linkType: hard
+
+"workbox-build@patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch":
+  version: 7.1.1
+  resolution: "workbox-build@patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch::version=7.1.1&hash=cd5737"
+  dependencies:
+    "@apideck/better-ajv-errors": "npm:^0.3.1"
+    "@babel/core": "npm:^7.24.4"
+    "@babel/preset-env": "npm:^7.11.0"
+    "@babel/runtime": "npm:^7.11.2"
+    "@rollup/plugin-babel": "npm:^5.2.0"
+    "@rollup/plugin-node-resolve": "npm:^15.2.3"
+    "@rollup/plugin-replace": "npm:^2.4.1"
+    "@rollup/plugin-terser": "npm:^0.4.3"
+    "@surma/rollup-plugin-off-main-thread": "npm:^2.2.3"
+    ajv: "npm:^8.6.0"
+    common-tags: "npm:^1.8.0"
+    fast-json-stable-stringify: "npm:^2.1.0"
+    fs-extra: "npm:^9.0.1"
+    glob: "npm:^7.1.6"
+    lodash: "npm:^4.17.20"
+    pretty-bytes: "npm:^5.3.0"
+    rollup: "npm:^2.43.1"
+    source-map: "npm:^0.8.0-beta.0"
+    stringify-object: "npm:^3.3.0"
+    strip-comments: "npm:^2.0.1"
+    tempy: "npm:^0.6.0"
+    upath: "npm:^1.2.0"
+    workbox-background-sync: "npm:7.1.0"
+    workbox-broadcast-update: "npm:7.1.0"
+    workbox-cacheable-response: "npm:7.1.0"
+    workbox-core: "npm:7.1.0"
+    workbox-expiration: "npm:7.1.0"
+    workbox-google-analytics: "npm:7.1.0"
+    workbox-navigation-preload: "npm:7.1.0"
+    workbox-precaching: "npm:7.1.0"
+    workbox-range-requests: "npm:7.1.0"
+    workbox-recipes: "npm:7.1.0"
+    workbox-routing: "npm:7.1.0"
+    workbox-strategies: "npm:7.1.0"
+    workbox-streams: "npm:7.1.0"
+    workbox-sw: "npm:7.1.0"
+    workbox-window: "npm:7.1.0"
+  checksum: 10/321a4f8d914ff3c1ac36e447d0c48e99d8925f4cdcff8332722c9273e93948f5a429de692149039622ce275cab454d6ba84144f9ae00a912b44b5d65f80695cc
   languageName: node
   linkType: hard
 

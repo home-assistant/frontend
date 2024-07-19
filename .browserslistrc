@@ -37,3 +37,9 @@ not dead
 unreleased versions
 last 7 years
 > 0.05% and supports websockets
+
+[legacy-sw]
+# Same as legacy plus supports service workers
+unreleased versions
+last 7 years
+> 0.05% and supports websockets and supports serviceworkers
