@@ -157,7 +157,7 @@
     "@babel/preset-typescript": "7.24.7",
     "@bundle-stats/plugin-webpack-filter": "4.13.3",
     "@koa/cors": "5.0.0",
-    "@lokalise/node-api": "12.6.0",
+    "@lokalise/node-api": "12.7.0",
     "@octokit/auth-oauth-device": "7.1.1",
     "@octokit/plugin-retry": "7.1.1",
     "@octokit/rest": "21.0.1",
