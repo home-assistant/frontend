@@ -3400,12 +3400,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-request-log@npm:^5.1.0":
-  version: 5.3.0
-  resolution: "@octokit/plugin-request-log@npm:5.3.0"
+"@octokit/plugin-request-log@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@octokit/plugin-request-log@npm:5.3.1"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/8c918b14f0687e8a3d9c7c81ef1092a49de07681940cc1aee0aeb7e3dd8ac64f69af5d65932eec32f6db4af3dca80541ad3bb13ac0fa44af3e2340ed91909272
+  checksum: 10/a27e163282c8d0ba8feee4d3cbbd1b62e1aa89a892877f7a9876fc17ddde3e1e1af922e6664221a0cabae99b8a7a2a5215b9ec2ee5222edb50e06298e99022b0
   languageName: node
   linkType: hard
 
@@ -3454,15 +3454,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:21.0.0":
-  version: 21.0.0
-  resolution: "@octokit/rest@npm:21.0.0"
+"@octokit/rest@npm:21.0.1":
+  version: 21.0.1
+  resolution: "@octokit/rest@npm:21.0.1"
   dependencies:
     "@octokit/core": "npm:^6.1.2"
     "@octokit/plugin-paginate-rest": "npm:^11.0.0"
-    "@octokit/plugin-request-log": "npm:^5.1.0"
+    "@octokit/plugin-request-log": "npm:^5.3.1"
     "@octokit/plugin-rest-endpoint-methods": "npm:^13.0.0"
-  checksum: 10/7da1c97866af04038fe4e384ce0a90cc4750bb951085c10053ceb73a4818cfe460336d7794ab3c65648cf5e195dba8e90940e36aec1e7ed22b6606cda38c88e0
+  checksum: 10/098188840d24761ce9833f2d9d866d4a6c2fdb9022d4f3cb53f4de44a1b2c90d6db5cc96382d534e139e3aea981593f5f94f693205f7cdd3ac388e266b3702e9
   languageName: node
   linkType: hard
 
@@ -9010,7 +9010,7 @@ __metadata:
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:7.1.1"
     "@octokit/plugin-retry": "npm:7.1.1"
-    "@octokit/rest": "npm:21.0.0"
+    "@octokit/rest": "npm:21.0.1"
     "@open-wc/dev-server-hmr": "npm:0.1.4"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
