@@ -999,11 +999,20 @@ export class HaConfigDevicePage extends LitElement {
               return;
             }
 
-            await removeConfigEntryFromDevice(
-              this.hass!,
-              this.deviceId,
-              entry.entry_id
-            );
+            try {
+              await removeConfigEntryFromDevice(
+                this.hass!,
+                this.deviceId,
+                entry.entry_id
+              );
+            } catch (err: any) {
+              showAlertDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.devices.error_delete"
+                ),
+                text: err.message,
+              });
+            }
           },
           classes: "warning",
           icon: mdiDelete,

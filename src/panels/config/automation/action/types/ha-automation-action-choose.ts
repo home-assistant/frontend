@@ -23,6 +23,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { listenMediaQuery } from "../../../../../common/dom/media_query";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-button";
@@ -163,6 +164,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
                       .idx=${idx}
                       @action=${this._handleAction}
                       @click=${preventDefault}
+                      @closed=${stopPropagation}
                       fixed
                     >
                       <ha-icon-button

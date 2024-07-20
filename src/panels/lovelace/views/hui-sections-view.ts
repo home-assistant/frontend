@@ -17,11 +17,14 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { HuiBadge } from "../badges/hui-badge";
+import "../badges/hui-view-badges";
+import "../components/hui-badge-edit-mode";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import { HuiSection } from "../sections/hui-section";
-import type { Lovelace, LovelaceBadge } from "../types";
+import type { Lovelace } from "../types";
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -35,11 +38,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
-  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
   @state() private _sectionCount = 0;
+
+  @state() _dragging = false;
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
@@ -47,11 +52,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _sectionConfigKeys = new WeakMap<HuiSection, string>();
 
-  private _getKey(sectionConfig: HuiSection) {
-    if (!this._sectionConfigKeys.has(sectionConfig)) {
-      this._sectionConfigKeys.set(sectionConfig, Math.random().toString());
+  private _getSectionKey(section: HuiSection) {
+    if (!this._sectionConfigKeys.has(section)) {
+      this._sectionConfigKeys.set(section, Math.random().toString());
     }
-    return this._sectionConfigKeys.get(sectionConfig)!;
+    return this._sectionConfigKeys.get(section)!;
   }
 
   private _computeSectionsCount() {
@@ -83,9 +88,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const maxColumnsCount = this._config?.max_columns;
 
     return html`
-      ${this.badges.length > 0
-        ? html`<div class="badges">${this.badges}</div>`
-        : ""}
+      <hui-view-badges
+        .hass=${this.hass}
+        .badges=${this.badges}
+        .lovelace=${this.lovelace}
+        .viewIndex=${this.index}
+      ></hui-view-badges>
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -103,7 +111,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         >
           ${repeat(
             sections,
-            (section) => this._getKey(section),
+            (section) => this._getSectionKey(section),
             (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
@@ -141,7 +149,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           ${editMode
             ? html`
                 <button
-                  class="create"
+                  class="create-section"
                   @click=${this._createSection}
                   aria-label=${this.hass.localize(
                     "ui.panel.lovelace.editor.section.create_section"
@@ -235,14 +243,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
       }
 
-      .badges {
-        margin: 4px 0;
-        padding: var(--row-gap) var(--column-gap);
-        padding-bottom: 0;
-        font-size: 85%;
-        text-align: center;
-      }
-
       .container > * {
         position: relative;
         max-width: var(--column-max-width);
@@ -313,7 +313,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         padding: 8px;
       }
 
-      .create {
+      .create-section {
         margin-top: calc(66px + var(--row-gap));
         outline: none;
         background: none;
@@ -326,12 +326,18 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         box-sizing: border-box;
       }
 
-      .create:focus {
+      .create-section:focus {
         border: 2px solid var(--primary-color);
       }
 
       .sortable-ghost {
         border-radius: var(--ha-card-border-radius, 12px);
+      }
+
+      hui-view-badges {
+        display: block;
+        margin: 16px 8px;
+        text-align: center;
       }
     `;
   }

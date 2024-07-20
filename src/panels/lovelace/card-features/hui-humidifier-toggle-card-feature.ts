@@ -1,6 +1,6 @@
 import { mdiPower, mdiWaterPercent } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
+import { LitElement, PropertyValues, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -11,6 +11,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { HumidifierToggleCardFeatureConfig } from "./types";
 
 export const supportsHumidifierToggleCardFeature = (stateObj: HassEntity) => {
@@ -95,37 +96,23 @@ class HuiHumidifierToggleCardFeature
     }));
 
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentState}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
-          style=${styleMap({
-            "--control-select-color": color,
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentState}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
+        style=${styleMap({
+          "--control-select-color": color,
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-select {
-        --control-select-color: var(--feature-color);
-        --control-select-padding: 0;
-        --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
-        --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

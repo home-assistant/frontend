@@ -1,16 +1,17 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { isUnavailableState } from "../../../data/entity";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { NumericInputCardFeatureConfig } from "./types";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
+import { isUnavailableState } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import { NumericInputCardFeatureConfig } from "./types";
 
 export const supportsNumericInputCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -81,50 +82,36 @@ class HuiNumericInputCardFeature
 
     const stateObj = this.stateObj;
 
+    if (this._config.style === "buttons") {
+      return html`
+        <ha-control-number-buttons
+          value=${stateObj.state}
+          min=${stateObj.attributes.min}
+          max=${stateObj.attributes.max}
+          step=${stateObj.attributes.step}
+          @value-changed=${this._setValue}
+          .disabled=${isUnavailableState(stateObj.state)}
+          .unit=${stateObj.attributes.unit_of_measurement}
+          .locale=${this.hass.locale}
+        ></ha-control-number-buttons>
+      `;
+    }
     return html`
-      <div class="container">
-        ${this._config.style === "buttons"
-          ? html`<ha-control-number-buttons
-              value=${stateObj.state}
-              min=${stateObj.attributes.min}
-              max=${stateObj.attributes.max}
-              step=${stateObj.attributes.step}
-              @value-changed=${this._setValue}
-              .disabled=${isUnavailableState(stateObj.state)}
-              .unit=${stateObj.attributes.unit_of_measurement}
-              .locale=${this.hass.locale}
-            ></ha-control-number-buttons>`
-          : html`<ha-control-slider
-              value=${stateObj.state}
-              min=${stateObj.attributes.min}
-              max=${stateObj.attributes.max}
-              step=${stateObj.attributes.step}
-              @value-changed=${this._setValue}
-              .disabled=${isUnavailableState(stateObj.state)}
-              .unit=${stateObj.attributes.unit_of_measurement}
-              .locale=${this.hass.locale}
-            ></ha-control-slider>`}
-      </div>
+      <ha-control-slider
+        value=${stateObj.state}
+        min=${stateObj.attributes.min}
+        max=${stateObj.attributes.max}
+        step=${stateObj.attributes.step}
+        @value-changed=${this._setValue}
+        .disabled=${isUnavailableState(stateObj.state)}
+        .unit=${stateObj.attributes.unit_of_measurement}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-number-buttons {
-        width: auto;
-      }
-      ha-control-slider {
-        --control-slider-color: var(--feature-color);
-        --control-slider-background: var(--feature-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

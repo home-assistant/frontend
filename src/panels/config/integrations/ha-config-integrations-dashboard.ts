@@ -593,6 +593,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
     });
+    if (this.hass.auth.external?.config.canSetupImprov) {
+      this.hass.auth.external!.fireMessage({
+        type: "improv/scan",
+      });
+    }
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {

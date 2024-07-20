@@ -20,7 +20,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public value?: GridSizeValue;
 
-  @property({ attribute: false }) public rows = 6;
+  @property({ attribute: false }) public rows = 8;
 
   @property({ attribute: false }) public columns = 4;
 
@@ -205,7 +205,7 @@ export class HaGridSizeEditor extends LitElement {
       .preview {
         position: relative;
         grid-area: preview;
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 1 / 1.2;
       }
       .preview > div {
         position: absolute;

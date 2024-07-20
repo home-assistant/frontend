@@ -53,7 +53,7 @@ export class HuiEntityFilterCard
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public isPanel = false;
+  @property({ attribute: false }) public layout?: string;
 
   @property({ type: Boolean }) public preview = false;
 
@@ -118,7 +118,7 @@ export class HuiEntityFilterCard
     if (this._element) {
       this._element.hass = this.hass;
       this._element.preview = this.preview;
-      this._element.isPanel = this.isPanel;
+      this._element.layout = this.layout;
     }
 
     if (changedProps.has("_config")) {

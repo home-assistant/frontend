@@ -109,7 +109,8 @@ export class DialogDataTableSettings extends LitElement {
                 const canHide = !col.main && col.hideable !== false;
                 const isVisible = !(this._columnOrder &&
                 this._columnOrder.includes(col.key)
-                  ? this._hiddenColumns?.includes(col.key) ?? col.defaultHidden
+                  ? (this._hiddenColumns?.includes(col.key) ??
+                    col.defaultHidden)
                   : col.defaultHidden);
 
                 return html`<ha-list-item

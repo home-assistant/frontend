@@ -29,8 +29,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @state() protected _config?: T;
 
-  @property({ type: Boolean, reflect: true })
-  public isPanel = false;
+  @property({ attribute: false }) public layout?: string;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -61,6 +60,10 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           card.preview = this.preview;
         });
       }
+    }
+
+    if (changedProperties.has("layout")) {
+      this.toggleAttribute("ispanel", this.layout === "panel");
     }
   }
 
