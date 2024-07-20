@@ -76,7 +76,7 @@ jobs:
       - name: Build wheels
         uses: home-assistant/wheels@2024.07.1
         with:
-          abi: cp311
+          abi: cp312
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}

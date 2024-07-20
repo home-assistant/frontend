@@ -29,9 +29,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ type: Boolean, reflect: true })
-  public isPanel = false;
-
   @property({ attribute: false })
   public layout?: string;
 
@@ -63,7 +60,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     }
 
     let padding = "";
-    const ignoreAspectRatio = this.isPanel || this.layout === "grid";
+    const ignoreAspectRatio = this.layout === "panel" || this.layout === "grid";
     if (!ignoreAspectRatio) {
       if (this._config.aspect_ratio) {
         const ratio = parseAspectRatio(this._config.aspect_ratio);

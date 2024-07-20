@@ -244,7 +244,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
 
-    const localizedState = this._config.hide_state
+    const stateDisplay = this._config.hide_state
       ? nothing
       : html`
           <state-display
@@ -311,7 +311,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             <ha-tile-info
               id="info"
               .primary=${name}
-              .secondary=${localizedState}
+              .secondary=${stateDisplay}
             ></ha-tile-info>
           </div>
           ${this._config.features
@@ -383,9 +383,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 0 10px;
-        min-height: var(--row-height, 56px);
+        padding: 10px;
         flex: 1;
+        box-sizing: border-box;
         pointer-events: none;
       }
       .vertical {

@@ -52,7 +52,7 @@ export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public suggestedCards?: string[];
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: true,
     subscribe: true,
     storage: "sessionStorage",
@@ -490,7 +490,7 @@ export class HuiCardPicker extends LitElement {
         .cards-container {
           display: grid;
           grid-gap: 8px 8px;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           margin-top: 20px;
         }
 
@@ -560,6 +560,7 @@ export class HuiCardPicker extends LitElement {
 
         .manual {
           max-width: none;
+          grid-column: 1 / -1;
         }
 
         .icon {

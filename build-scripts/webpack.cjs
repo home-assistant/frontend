@@ -63,14 +63,19 @@ const createWebpackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: {
+          use: (info) => ({
             loader: "babel-loader",
             options: {
-              ...bundle.babelOptions({ latestBuild, isProdBuild, isTestBuild }),
+              ...bundle.babelOptions({
+                latestBuild,
+                isProdBuild,
+                isTestBuild,
+                sw: info.issuerLayer === "sw",
+              }),
               cacheDirectory: !isProdBuild,
               cacheCompression: false,
             },
-          },
+          }),
           resolve: {
             fullySpecified: false,
           },
@@ -235,6 +240,7 @@ const createWebpackConfig = ({
       ),
     },
     experiments: {
+      layers: true,
       outputModule: true,
     },
   };
