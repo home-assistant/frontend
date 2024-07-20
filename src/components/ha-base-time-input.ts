@@ -79,27 +79,27 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property() dayLabel = "Day";
+  @property() dayLabel = "";
 
   /**
    * Label for the hour input
    */
-  @property() hourLabel = "Hour";
+  @property() hourLabel = "";
 
   /**
    * Label for the min input
    */
-  @property() minLabel = "Minute";
+  @property() minLabel = "";
 
   /**
    * Label for the sec input
    */
-  @property() secLabel = "Second";
+  @property() secLabel = "";
 
   /**
    * Label for the milli sec input
    */
-  @property() millisecLabel = "Milisecond";
+  @property() millisecLabel = "";
 
   /**
    * show the sec field
