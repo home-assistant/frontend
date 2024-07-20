@@ -5586,6 +5586,10 @@
               "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
             }
           },
+          "suggest_badge": {
+            "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
+            "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
+          },
           "move_card": {
             "header": "Choose a view to move the card to",
             "error_title": "Impossible to move the card",
@@ -6070,6 +6074,15 @@
                 "standard": "Standard (icon and state)",
                 "complete": "Complete (icon, name and state)"
               }
+            },
+            "generic": {
+              "manual": "Manual",
+              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "paste": "Paste from clipboard",
+              "paste_description": "Paste a {type} badge from the clipboard",
+              "suggested_badges": "Suggested badges",
+              "other_badges": "Other badges",
+              "custom_badges": "Custom badges"
             }
           },
           "features": {
@@ -6259,7 +6272,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_card": "By Card"
+            "by_card": "By card"
+          },
+          "badge_picker": {
+            "no_description": "No description available.",
+            "custom_badge": "Custom",
+            "domain": "Domain",
+            "entity": "Entity",
+            "by_entity": "By entity",
+            "by_badge": "By badge"
           },
           "header-footer": {
             "header": "Header",
