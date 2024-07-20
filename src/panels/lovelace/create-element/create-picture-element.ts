@@ -29,7 +29,7 @@ export const createPictureElementElement = (config: LovelaceElementConfig) =>
     config,
     ALWAYS_LOADED_TYPES,
     LAZY_LOAD_TYPES,
-    undefined, // DOMAIN_TO_ELEMENT_TYPE,
+    undefined,
     undefined
   );
 
