@@ -42,7 +42,7 @@ export interface ConfigChangedEvent {
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
     | LovelaceStrategyConfig
-    | LovelaceElementConfig;
+    | LovelaceElementConfig
     | LovelaceBadgeConfig;
   error?: string;
   guiModeAvailable?: boolean;
