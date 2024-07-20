@@ -38,6 +38,7 @@ import { LovelaceCard } from "../../types";
 import { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
+import { storage } from "../../../../common/decorators/storage";
 
 const UNIT = "kWh";
 
@@ -64,7 +65,12 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
-  @state() private _hiddenStats = new Set<string>();
+  @storage({
+    key: "energy-devices-hidden-stats",
+    state: true,
+    subscribe: false,
+  })
+  private _hiddenStats: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -143,19 +149,18 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _datasetHidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.add(
-      this._data!.prefs.device_consumption[ev.detail.index].stat_consumption
-    );
-    this.requestUpdate("_hiddenStats");
+    this._hiddenStats = [
+      ...this._hiddenStats,
+      this._data!.prefs.device_consumption[ev.detail.index].stat_consumption,
+    ];
   }
 
   private _datasetUnhidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.delete(
-      this._data!.prefs.device_consumption[ev.detail.index].stat_consumption
+    this._hiddenStats = this._hiddenStats.filter(
+      (stat) =>
+        stat !==
+        this._data!.prefs.device_consumption[ev.detail.index].stat_consumption
     );
-    this.requestUpdate("_hiddenStats");
   }
 
   private _createOptions = memoizeOne(
@@ -341,7 +346,7 @@ export class HuiEnergyDevicesDetailGraphCard
             statisticsMetaData[source.stat_consumption]
           ),
         hidden:
-          this._hiddenStats.has(source.stat_consumption) || itemExceedsMax,
+          this._hiddenStats.includes(source.stat_consumption) || itemExceedsMax,
         borderColor: compare ? color + "7F" : color,
         backgroundColor: compare ? color + "32" : color + "7F",
         data: consumptionData,

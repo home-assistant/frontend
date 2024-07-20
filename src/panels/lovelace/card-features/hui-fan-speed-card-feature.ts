@@ -74,7 +74,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     const speedCount = computeFanSpeedCount(this.stateObj);
 
     const percentage = stateActive(this.stateObj)
-      ? this.stateObj.attributes.percentage ?? 0
+      ? (this.stateObj.attributes.percentage ?? 0)
       : 0;
 
     if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
