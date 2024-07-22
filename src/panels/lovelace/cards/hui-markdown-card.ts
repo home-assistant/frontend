@@ -119,7 +119,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         this.style.display = "none";
         this.toggleAttribute("hidden", true);
         fireEvent(this, "card-visibility-changed", { value: false });
-      } else {
+      } else if (this.hidden) {
         this.style.display = "block";
         this.toggleAttribute("hidden", false);
         fireEvent(this, "card-visibility-changed", { value: true });
