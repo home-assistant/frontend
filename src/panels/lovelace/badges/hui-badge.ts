@@ -15,6 +15,7 @@ import type { LovelaceBadge } from "../types";
 
 declare global {
   interface HASSDomEvents {
+    "badge-visibility-changed": { value: boolean };
     "badge-updated": undefined;
   }
 }
@@ -183,6 +184,7 @@ export class HuiBadge extends ReactiveElement {
     if (this.hidden !== !visible) {
       this.style.setProperty("display", visible ? "" : "none");
       this.toggleAttribute("hidden", !visible);
+      fireEvent(this, "badge-visibility-changed", { value: visible });
     }
 
     if (!visible && this._element.parentElement) {

@@ -65,11 +65,24 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     ).length;
   }
 
+  private _sectionVisibilityChanged = () => {
+    this._computeSectionsCount();
+  };
+
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener("section-visibility-changed", () => {
-      this._computeSectionsCount();
-    });
+    this.addEventListener(
+      "section-visibility-changed",
+      this._sectionVisibilityChanged
+    );
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "section-visibility-changed",
+      this._sectionVisibilityChanged
+    );
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
