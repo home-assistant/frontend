@@ -1,5 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -32,6 +39,38 @@ export class HuiViewBadges extends LitElement {
   @state() _dragging = false;
 
   private _badgeConfigKeys = new WeakMap<HuiBadge, string>();
+
+  private _checkAllHidden() {
+    const allHidden =
+      !this.lovelace.editMode && this.badges.every((section) => section.hidden);
+    this.toggleAttribute("hidden", allHidden);
+  }
+
+  private _badgeVisibilityChanged = () => {
+    this._checkAllHidden();
+  };
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener(
+      "badge-visibility-changed",
+      this._badgeVisibilityChanged
+    );
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "badge-visibility-changed",
+      this._badgeVisibilityChanged
+    );
+  }
+
+  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+    if (changedProperties.has("badges") || changedProperties.has("lovelace")) {
+      this._checkAllHidden();
+    }
+  }
 
   private _getBadgeKey(badge: HuiBadge) {
     if (!this._badgeConfigKeys.has(badge)) {
@@ -130,6 +169,10 @@ export class HuiViewBadges extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host([hidden]) {
+        display: none !important;
+      }
+
       .badges {
         display: flex;
         align-items: flex-start;
