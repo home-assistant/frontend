@@ -136,7 +136,7 @@ const CONFIGS = [
     heading: "Person entity",
     config: `
 - type: picture-elements
-  person_entity: person.paulus
+  image_entity: person.paulus
   elements:
   - type: state-icon
     entity: sensor.battery

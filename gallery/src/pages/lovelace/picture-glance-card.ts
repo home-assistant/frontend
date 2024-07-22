@@ -103,7 +103,7 @@ const CONFIGS = [
     heading: "Person entity",
     config: `
 - type: picture-glance
-  person_entity: person.paulus
+  image_entity: person.paulus
   entities:
     - sensor.battery
     `,

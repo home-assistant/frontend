@@ -8,6 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
 import { ImageEntity, computeImageUrl } from "../../../data/image";
 import { HomeAssistant } from "../../../types";
@@ -67,7 +68,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       !(
         config.image ||
         config.image_entity ||
-        config.person_entity ||
         config.camera_image ||
         config.state_image
       ) ||
@@ -118,14 +118,21 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let stateObj: ImageEntity | PersonEntity | undefined;
-    let domain: string | undefined;
-    if (this._config.image_entity) {
-      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
-      domain = "image";
-    } else if (this._config.person_entity) {
-      stateObj = this.hass.states[this._config.person_entity] as PersonEntity;
-      domain = "person";
+    const stateObj: ImageEntity | PersonEntity | undefined =
+      this.hass.states[this._config.image_entity];
+    const domain: string | undefined = this._config.image_entity
+      ? computeDomain(this._config.image_entity)
+      : undefined;
+    let image: string | undefined;
+    switch (domain) {
+      case "image":
+        image = computeImageUrl(stateObj);
+        break;
+      case "person":
+        image = stateObj.attributes.entity_picture;
+        break;
+      default:
+        image = this._config.image;
     }
 
     return html`
@@ -133,11 +140,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         <div id="root">
           <hui-image
             .hass=${this.hass}
-            .image=${domain === "image"
-              ? computeImageUrl(stateObj as ImageEntity)
-              : domain === "person"
-                ? (stateObj as PersonEntity).attributes.entity_picture
-                : this._config.image}
+            .image=${image}
             .stateImage=${this._config.state_image}
             .stateFilter=${this._config.state_filter}
             .cameraImage=${this._config.camera_image}

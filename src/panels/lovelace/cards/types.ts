@@ -373,7 +373,6 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   image_entity?: string;
-  person_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
@@ -408,7 +407,6 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   image_entity?: string;
-  person_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;

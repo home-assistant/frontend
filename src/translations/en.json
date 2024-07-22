@@ -5910,7 +5910,6 @@
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
-              "person_entity": "Person entity",
               "camera_view": "Camera view",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
