@@ -110,9 +110,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     let image: string | undefined = this._config.image;
     if (this._config.image_entity) {
-      const domain: string | undefined = computeDomain(
-        this._config.image_entity
-      );
+      const domain: string = computeDomain(this._config.image_entity);
       switch (domain) {
         case "image":
           image = computeImageUrl(stateObj as ImageEntity);

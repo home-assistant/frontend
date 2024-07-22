@@ -188,9 +188,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (this._config.image_entity) {
       const stateObj: ImageEntity | PersonEntity | undefined =
         this.hass.states[this._config.image_entity];
-      const domain: string | undefined = computeDomain(
-        this._config.image_entity
-      );
+      const domain: string = computeDomain(this._config.image_entity);
       switch (domain) {
         case "image":
           image = computeImageUrl(stateObj as ImageEntity);

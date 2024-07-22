@@ -138,7 +138,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`<div class="footer single">${entityState}</div>`;
     }
 
-    const domain = computeDomain(this._config.entity);
+    const domain: string = computeDomain(this._config.entity);
     let image: string | undefined = this._config.image;
     switch (domain) {
       case "image":
