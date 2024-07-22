@@ -114,16 +114,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._tryConnect();
     }
-    if (this._templateResult && this._config.show_empty === false) {
-      if (this._templateResult.result.length === 0 && !this.hidden) {
-        this.style.display = "none";
-        this.toggleAttribute("hidden", true);
-        fireEvent(this, "card-visibility-changed", { value: false });
-      } else if (this.hidden) {
-        this.style.display = "block";
-        this.toggleAttribute("hidden", false);
-        fireEvent(this, "card-visibility-changed", { value: true });
-      }
+    const shouldBeHidden = this._templateResult && this._config.show_empty === false && this._templateResult.result.length === 0;
+    if (shouldBeHidden !== this.hidden) {
+      this.style.display = shouldBeHidden ? "none" : "block";
+      this.toggleAttribute("hidden", shouldBeHidden);
+      fireEvent(this, "card-visibility-changed", { value: !shouldBeHidden });
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
