@@ -6771,6 +6771,7 @@
             "all_parameters": "All available parameters",
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
+            "copy_clipboard_template": "Copy to clipboard (template)",
             "errors": {
               "ui": {
                 "no_service": "No action selected, please select an action",
