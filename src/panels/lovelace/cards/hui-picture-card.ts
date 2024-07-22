@@ -108,19 +108,19 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const domain: string | undefined = this._config.image_entity
-      ? computeDomain(this._config.image_entity)
-      : undefined;
-    let image: string | undefined;
-    switch (domain) {
-      case "image":
-        image = computeImageUrl(stateObj);
-        break;
-      case "person":
-        image = stateObj.attributes.entity_picture;
-        break;
-      default:
-        image = this._config.image;
+    let image: string | undefined = this._config.image;
+    if (this._config.image_entity) {
+      const domain: string | undefined = computeDomain(
+        this._config.image_entity
+      );
+      switch (domain) {
+        case "image":
+          image = computeImageUrl(stateObj as ImageEntity);
+          break;
+        case "person":
+          image = (stateObj as PersonEntity).attributes.entity_picture;
+          break;
+      }
     }
 
     return html`
