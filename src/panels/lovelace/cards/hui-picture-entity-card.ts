@@ -144,7 +144,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       case "image":
         image = computeImageUrl(stateObj as ImageEntity);
         break;
-      case "person":
+      case "person" && (stateObj as PersonEntity).attributes.entity_picture:
         image = (stateObj as PersonEntity).attributes.entity_picture;
         break;
     }
