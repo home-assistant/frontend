@@ -128,19 +128,22 @@ export class HaRelatedItems extends LitElement {
         </mwc-list>
       `;
     }
+    const configEntryDomains = new Set<string>();
     return html`
-      ${this._related.config_entry && this._entries
+      ${(this._related.config_entry && this._entries) ||
+      this._related.integration
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.integration")}
             </h3>
             <mwc-list
-              >${this._related.config_entry.map((relatedConfigEntryId) => {
+              >${this._related.config_entry?.map((relatedConfigEntryId) => {
                 const entry: ConfigEntry | undefined = this._entries!.find(
                   (configEntry) => configEntry.entry_id === relatedConfigEntryId
                 );
                 if (!entry) {
                   return nothing;
                 }
+                configEntryDomains.add(entry.domain);
                 return html`
                   <a
                     href=${`/config/integrations/integration/${entry.domain}#config_entry=${relatedConfigEntryId}`}
@@ -164,8 +167,34 @@ export class HaRelatedItems extends LitElement {
                     </ha-list-item>
                   </a>
                 `;
-              })}</mwc-list
-            >`
+              })}
+              ${this._related.integration
+                ?.filter((integration) => !configEntryDomains.has(integration))
+                .map(
+                  (integration) =>
+                    html`<a
+                      href=${`/config/integrations/integration/${integration}`}
+                      @click=${this._navigateAwayClose}
+                    >
+                      <ha-list-item hasMeta graphic="icon">
+                        <img
+                          .src=${brandsUrl({
+                            domain: integration,
+                            type: "icon",
+                            useFallback: true,
+                            darkOptimized: this.hass.themes?.darkMode,
+                          })}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          alt=${integration}
+                          slot="graphic"
+                        />
+                        ${this.hass.localize(`component.${integration}.title`)}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>`
+                )}
+            </mwc-list>`
         : nothing}
       ${this._related.device
         ? html`<h3>

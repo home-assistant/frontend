@@ -4270,6 +4270,7 @@
             "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
+            "yaml_entry": "This integration was not setup via the UI, you have either set it up in YAML or it is a dependency setup by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
             "add_device": "Add device",
@@ -4340,6 +4341,7 @@
             "custom_integration": "Custom integration",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
+            "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
             "state": {
