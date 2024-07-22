@@ -200,24 +200,20 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected async checkDataBaseMigration() {
-    if (this.hass?.config?.components.includes("recorder")) {
-      let recorderInfoProm: Promise<RecorderInfo> | undefined;
-      const preloadWindow = window as WindowWithPreloads;
-      // On first load, we speed up loading page by having recorderInfoProm ready
-      if (preloadWindow.recorderInfoProm) {
-        recorderInfoProm = preloadWindow.recorderInfoProm;
-        preloadWindow.recorderInfoProm = undefined;
-      }
-      const info = await (recorderInfoProm ||
-        getRecorderInfo(this.hass.connection));
-      this._databaseMigration =
-        info.migration_in_progress && !info.migration_is_live;
-      if (this._databaseMigration) {
-        // check every 5 seconds if the migration is done
-        setTimeout(() => this.checkDataBaseMigration(), 5000);
-      }
-    } else {
-      this._databaseMigration = false;
+    let recorderInfoProm: Promise<RecorderInfo> | undefined;
+    const preloadWindow = window as WindowWithPreloads;
+    // On first load, we speed up loading page by having recorderInfoProm ready
+    if (preloadWindow.recorderInfoProm) {
+      recorderInfoProm = preloadWindow.recorderInfoProm;
+      preloadWindow.recorderInfoProm = undefined;
+    }
+    const info = await (recorderInfoProm ||
+      getRecorderInfo(this.hass!.connection));
+    this._databaseMigration =
+      info.migration_in_progress && !info.migration_is_live;
+    if (this._databaseMigration) {
+      // check every 5 seconds if the migration is done
+      setTimeout(() => this.checkDataBaseMigration(), 5000);
     }
   }
 
