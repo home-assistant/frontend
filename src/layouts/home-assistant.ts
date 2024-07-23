@@ -207,8 +207,14 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       recorderInfoProm = preloadWindow.recorderInfoProm;
       preloadWindow.recorderInfoProm = undefined;
     }
-    const info = await (recorderInfoProm ||
-      getRecorderInfo(this.hass!.connection));
+    const info = await (
+      recorderInfoProm || getRecorderInfo(this.hass!.connection)
+    ).catch((err) => {
+      // If the command failed with code unknown_command, recorder is not enabled,
+      // otherwise re-throw the error
+      if (err.code !== "unknown_command") throw err;
+      return { migration_in_progress: false, migration_is_live: false };
+    });
     this._databaseMigration =
       info.migration_in_progress && !info.migration_is_live;
     if (this._databaseMigration) {
