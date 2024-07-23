@@ -1453,10 +1453,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@braintree/sanitize-url@npm:7.0.4":
-  version: 7.0.4
-  resolution: "@braintree/sanitize-url@npm:7.0.4"
-  checksum: 10/80ea0080776a0305d697d12042acac287675e88a2abd9d294464f70ec57c1b00242d8d02a110c98ef8ea1731e512d67273ff5532c4bf01a78ab8b046fabb53d9
+"@braintree/sanitize-url@npm:7.1.0":
+  version: 7.1.0
+  resolution: "@braintree/sanitize-url@npm:7.1.0"
+  checksum: 10/b25cc5358bedfd97d8378d23ab43493e56a805bd82fdb092088bdd9db6aa3f6c32859d36526f570fb2c67a5a4f9ce579aacd52c3872db4285e4c34fb9947dfc0
   languageName: node
   linkType: hard
 
@@ -8964,7 +8964,7 @@ __metadata:
     "@babel/preset-env": "npm:7.24.8"
     "@babel/preset-typescript": "npm:7.24.7"
     "@babel/runtime": "npm:7.24.8"
-    "@braintree/sanitize-url": "npm:7.0.4"
+    "@braintree/sanitize-url": "npm:7.1.0"
     "@bundle-stats/plugin-webpack-filter": "npm:4.13.3"
     "@codemirror/autocomplete": "npm:6.17.0"
     "@codemirror/commands": "npm:6.6.0"
