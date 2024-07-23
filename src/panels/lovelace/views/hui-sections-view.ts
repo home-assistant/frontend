@@ -249,6 +249,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
         --column-gap: var(--ha-view-sections-column-gap, 32px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
@@ -327,14 +328,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .create-section {
-        margin-top: calc(66px + var(--row-gap));
+        margin-top: calc(var(--row-height) + var(--row-gap));
         outline: none;
         background: none;
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
         order: 1;
-        height: calc(66px + 2 * (var(--row-gap) + 2px));
+        height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
         padding: 8px;
         box-sizing: border-box;
       }
