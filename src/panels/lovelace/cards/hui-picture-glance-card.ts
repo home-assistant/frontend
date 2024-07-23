@@ -31,6 +31,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
+import { PersonEntity } from "../../../data/person";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -183,9 +184,21 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let stateObj: ImageEntity | undefined;
+    let image: string | undefined = this._config.image;
     if (this._config.image_entity) {
-      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
+      const stateObj: ImageEntity | PersonEntity | undefined =
+        this.hass.states[this._config.image_entity];
+      const domain: string = computeDomain(this._config.image_entity);
+      switch (domain) {
+        case "image":
+          image = computeImageUrl(stateObj as ImageEntity);
+          break;
+        case "person":
+          if ((stateObj as PersonEntity).attributes.entity_picture) {
+            image = (stateObj as PersonEntity).attributes.entity_picture;
+          }
+          break;
+      }
     }
 
     return html`
@@ -209,7 +222,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           )}
           .config=${this._config}
           .hass=${this.hass}
-          .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
+          .image=${image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${this._config.camera_image}
