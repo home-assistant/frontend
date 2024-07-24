@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { FlowPreviewGeneric } from "./flow-preview-generic";
 
@@ -6,7 +6,7 @@ import { FlowPreviewGeneric } from "./flow-preview-generic";
 class FlowPreviewGenericCamera extends FlowPreviewGeneric {
   protected override render() {
     if (!this._preview) {
-      return nothing;
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
 
     const stillUrl = this._preview.attributes.stillUrl;
