@@ -28,7 +28,7 @@ export class FlowPreviewGeneric extends LitElement {
 
   @state() protected _preview?: HassEntity;
 
-  @state() private _error?: string;
+  @state() protected _error?: string;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
