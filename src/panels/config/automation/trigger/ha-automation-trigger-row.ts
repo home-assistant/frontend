@@ -144,7 +144,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (!this.trigger) return nothing;
 
     const supported =
-      customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
+      customElements.get(`ha-automation-trigger-${this.trigger.trigger}`) !==
       undefined;
     const yamlMode = this._yamlMode || !supported;
     const showId = "id" in this.trigger || this._requestShowId;
@@ -165,7 +165,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
-              .path=${TRIGGER_ICONS[this.trigger.platform]}
+              .path=${TRIGGER_ICONS[this.trigger.trigger]}
             ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
@@ -333,7 +333,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ? html`
                         ${this.hass.localize(
                           "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          { platform: this.trigger.platform }
+                          { platform: this.trigger.trigger }
                         )}
                       `
                     : ""}
@@ -363,7 +363,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     @value-changed=${this._onUiChanged}
                   >
                     ${dynamicElement(
-                      `ha-automation-trigger-${this.trigger.platform}`,
+                      `ha-automation-trigger-${this.trigger.trigger}`,
                       {
                         hass: this.hass,
                         trigger: this.trigger,

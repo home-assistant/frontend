@@ -67,10 +67,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       return;
     }
 
-    const fields = this._fields(
-      this.hass.services,
-      this.action?.service
-    ).fields;
+    const fields = this._fields(this.hass.services, this.action?.action).fields;
     if (
       this.action &&
       (Object.entries(this.action).some(
@@ -110,14 +107,14 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (!this._action) {
       return nothing;
     }
-    const [domain, service] = this._action.service
-      ? this._action.service.split(".", 2)
+    const [domain, service] = this._action.action
+      ? this._action.action.split(".", 2)
       : [undefined, undefined];
     return html`
       <ha-service-control
         .narrow=${this.narrow}
         .hass=${this.hass}
-        .value=${this._action}
+        .value=${{ service: this._action.action, ...this._action }}
         .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
@@ -168,8 +165,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
     const value = { ...this.action, ...ev.detail.value };
     if ("response_variable" in this.action) {
-      const [domain, service] = this._action!.service
-        ? this._action!.service.split(".", 2)
+      const [domain, service] = this._action!.action
+        ? this._action!.action.split(".", 2)
         : [undefined, undefined];
       if (
         domain &&

@@ -49,8 +49,8 @@ const targetStruct = object({
 export const serviceActionStruct: Describe<ServiceAction> = assign(
   baseActionStruct,
   object({
-    service: optional(string()),
-    service_template: optional(string()),
+    action: optional(string()),
+    action_template: optional(string()),
     entity_id: optional(string()),
     target: optional(targetStruct),
     data: optional(object()),
@@ -62,7 +62,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
 const playMediaActionStruct: Describe<PlayMediaAction> = assign(
   baseActionStruct,
   object({
-    service: literal("media_player.play_media"),
+    action: literal("media_player.play_media"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     data: object({ media_content_id: string(), media_content_type: string() }),
@@ -73,7 +73,7 @@ const playMediaActionStruct: Describe<PlayMediaAction> = assign(
 const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
   baseActionStruct,
   object({
-    service: literal("scene.turn_on"),
+    action: literal("scene.turn_on"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     metadata: object(),
@@ -132,8 +132,8 @@ export interface EventAction extends BaseAction {
 }
 
 export interface ServiceAction extends BaseAction {
-  service?: string;
-  service_template?: string;
+  action?: string;
+  action_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
@@ -160,7 +160,7 @@ export interface DelayAction extends BaseAction {
 }
 
 export interface ServiceSceneAction extends BaseAction {
-  service: "scene.turn_on";
+  action: "scene.turn_on";
   target?: { entity_id?: string };
   entity_id?: string;
   metadata: Record<string, unknown>;
@@ -191,7 +191,7 @@ export interface WaitForTriggerAction extends BaseAction {
 }
 
 export interface PlayMediaAction extends BaseAction {
-  service: "media_player.play_media";
+  action: "media_player.play_media";
   target?: { entity_id?: string };
   entity_id?: string;
   data: { media_content_id: string; media_content_type: string };
@@ -404,7 +404,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("service" in action) {
+  if ("action" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";

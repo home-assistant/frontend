@@ -46,7 +46,7 @@ import {
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
-  normalizeAutomationConfig,
+  migrateAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
@@ -464,14 +464,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         baseConfig = {
           ...baseConfig,
           mode: "single",
-          trigger: [],
-          condition: [],
-          action: [],
+          triggers: [],
+          conditions: [],
+          actions: [],
         };
       }
       this._config = {
         ...baseConfig,
-        ...(initData ? normalizeAutomationConfig(initData) : initData),
+        ...(initData ? migrateAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
@@ -480,7 +480,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = normalizeAutomationConfig(c.config);
+        this._config = migrateAutomationConfig(c.config);
         this._checkValidation();
       });
       this._entityId = this.entityId;
@@ -520,9 +520,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      trigger: this._config.trigger,
-      condition: this._config.condition,
-      action: this._config.action,
+      trigger: this._config.triggers || this._config.trigger,
+      condition: this._config.conditions || this._config.condition,
+      action: this._config.actions || this._config.action,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
@@ -544,7 +544,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       );
       this._dirty = false;
       this._readOnly = false;
-      this._config = normalizeAutomationConfig(config);
+      this._config = migrateAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
       const entityRegistry = await fetchEntityRegistry(this.hass.connection);
@@ -575,7 +575,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
-    this._config = ev.detail.value;
+
+    this._config = migrateAutomationConfig(ev.detail.value);
     if (this._readOnly) {
       return;
     }
@@ -677,7 +678,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       );
 
       const newConfig = {
-        ...normalizeAutomationConfig(result.substituted_config),
+        ...migrateAutomationConfig(result.substituted_config),
         id: config.id,
         alias: config.alias,
         description: config.description,

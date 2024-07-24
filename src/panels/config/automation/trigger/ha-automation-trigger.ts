@@ -139,14 +139,14 @@ export default class HaAutomationTrigger extends LitElement {
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
     } else {
-      const platform = value as Trigger["platform"];
+      const trigger = value as Trigger["trigger"];
       const elClass = customElements.get(
-        `ha-automation-trigger-${platform}`
+        `ha-automation-trigger-${trigger}`
       ) as CustomElementConstructor & {
-        defaultConfig: Omit<Trigger, "platform">;
+        defaultConfig: Omit<Trigger, "trigger">;
       };
       triggers = this.triggers.concat({
-        platform: platform as any,
+        trigger: trigger as any,
         ...elClass.defaultConfig,
       });
     }

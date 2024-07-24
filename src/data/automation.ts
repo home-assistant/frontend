@@ -6,7 +6,16 @@ import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
 import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action, MODES } from "./script";
+import {
+  Action,
+  ChooseAction,
+  IfAction,
+  MODES,
+  ParallelAction,
+  RepeatAction,
+  SequenceAction,
+  getActionType,
+} from "./script";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -26,9 +35,15 @@ export interface ManualAutomationConfig {
   id?: string;
   alias?: string;
   description?: string;
-  trigger: Trigger | Trigger[];
+  triggers: Trigger | Trigger[];
+  /** @deprecated Use `triggers` instead */
+  trigger?: Trigger | Trigger[];
+  conditions?: Condition | Condition[];
+  /** @deprecated Use `conditions` instead */
   condition?: Condition | Condition[];
-  action: Action | Action[];
+  actions: Action | Action[];
+  /** @deprecated Use `actions` instead */
+  action?: Action | Action[];
   mode?: (typeof MODES)[number];
   max?: number;
   max_exceeded?:
@@ -64,14 +79,16 @@ export interface ContextConstraint {
 
 export interface BaseTrigger {
   alias?: string;
-  platform: string;
+  /** @deprecated Use `trigger` instead */
+  platform?: string;
+  trigger: string;
   id?: string;
   variables?: Record<string, unknown>;
   enabled?: boolean;
 }
 
 export interface StateTrigger extends BaseTrigger {
-  platform: "state";
+  trigger: "state";
   entity_id: string | string[];
   attribute?: string;
   from?: string | string[];
@@ -80,25 +97,25 @@ export interface StateTrigger extends BaseTrigger {
 }
 
 export interface MqttTrigger extends BaseTrigger {
-  platform: "mqtt";
+  trigger: "mqtt";
   topic: string;
   payload?: string;
 }
 
 export interface GeoLocationTrigger extends BaseTrigger {
-  platform: "geo_location";
+  trigger: "geo_location";
   source: string;
   zone: string;
   event: "enter" | "leave";
 }
 
 export interface HassTrigger extends BaseTrigger {
-  platform: "homeassistant";
+  trigger: "homeassistant";
   event: "start" | "shutdown";
 }
 
 export interface NumericStateTrigger extends BaseTrigger {
-  platform: "numeric_state";
+  trigger: "numeric_state";
   entity_id: string | string[];
   attribute?: string;
   above?: number;
@@ -108,69 +125,69 @@ export interface NumericStateTrigger extends BaseTrigger {
 }
 
 export interface ConversationTrigger extends BaseTrigger {
-  platform: "conversation";
+  trigger: "conversation";
   command: string | string[];
 }
 
 export interface SunTrigger extends BaseTrigger {
-  platform: "sun";
+  trigger: "sun";
   offset: number;
   event: "sunrise" | "sunset";
 }
 
 export interface TimePatternTrigger extends BaseTrigger {
-  platform: "time_pattern";
+  trigger: "time_pattern";
   hours?: number | string;
   minutes?: number | string;
   seconds?: number | string;
 }
 
 export interface WebhookTrigger extends BaseTrigger {
-  platform: "webhook";
+  trigger: "webhook";
   webhook_id: string;
   allowed_methods?: string[];
   local_only?: boolean;
 }
 
 export interface PersistentNotificationTrigger extends BaseTrigger {
-  platform: "persistent_notification";
+  trigger: "persistent_notification";
   notification_id?: string;
   update_type?: string[];
 }
 
 export interface ZoneTrigger extends BaseTrigger {
-  platform: "zone";
+  trigger: "zone";
   entity_id: string;
   zone: string;
   event: "enter" | "leave";
 }
 
 export interface TagTrigger extends BaseTrigger {
-  platform: "tag";
+  trigger: "tag";
   tag_id: string;
   device_id?: string;
 }
 
 export interface TimeTrigger extends BaseTrigger {
-  platform: "time";
+  trigger: "time";
   at: string;
 }
 
 export interface TemplateTrigger extends BaseTrigger {
-  platform: "template";
+  trigger: "template";
   value_template: string;
   for?: string | number | ForDict;
 }
 
 export interface EventTrigger extends BaseTrigger {
-  platform: "event";
+  trigger: "event";
   event_type: string;
   event_data?: any;
   context?: ContextConstraint;
 }
 
 export interface CalendarTrigger extends BaseTrigger {
-  platform: "calendar";
+  trigger: "calendar";
   event: "start" | "end";
   entity_id: string;
   offset: string;
@@ -357,15 +374,117 @@ export const normalizeAutomationConfig = <
 >(
   config: T
 ): T => {
-  // Normalize data: ensure trigger, action and condition are lists
+  // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
-  for (const key of ["trigger", "condition", "action"]) {
+  for (const key of ["triggers", "conditions", "actions"]) {
     const value = config[key];
     if (value && !Array.isArray(value)) {
       config[key] = [value];
     }
   }
   return config;
+};
+
+export const migrateAutomationConfig = <
+  T extends Partial<AutomationConfig> | AutomationConfig,
+>(
+  config: T
+): T => {
+  if ("trigger" in config) {
+    if (!("triggers" in config)) {
+      config.triggers = config.trigger;
+    }
+    delete config.trigger;
+  }
+  if ("condition" in config) {
+    if (!("conditions" in config)) {
+      config.conditions = config.condition;
+    }
+    delete config.condition;
+  }
+  if ("action" in config) {
+    if (!("actions" in config)) {
+      config.actions = config.action;
+    }
+    delete config.action;
+  }
+
+  config = normalizeAutomationConfig(config);
+
+  for (const trigger of (config.triggers as Trigger[]) || []) {
+    migrateAutomationTrigger(trigger);
+  }
+
+  migrateAutomationAction(config.actions || []);
+
+  return config;
+};
+
+export const migrateAutomationTrigger = (trigger: Trigger): Trigger => {
+  if ("platform" in trigger) {
+    if (!("trigger" in trigger)) {
+      trigger.trigger = trigger.platform;
+    }
+    delete trigger.platform;
+  }
+  return trigger;
+};
+
+export const migrateAutomationAction = (
+  action: Action | Action[]
+): Action | Action[] => {
+  if (Array.isArray(action)) {
+    return action.map(migrateAutomationAction);
+  }
+
+  if ("service" in action) {
+    if (!("action" in action)) {
+      action.action = action.service;
+    }
+    delete action.service;
+  }
+
+  if ("sequence" in action) {
+    for (const sequenceAction of (action as SequenceAction).sequence) {
+      migrateAutomationAction(sequenceAction);
+    }
+  }
+
+  const actionType = getActionType(action);
+
+  if (actionType === "parallel") {
+    const _action = action as ParallelAction;
+    migrateAutomationAction(_action.parallel);
+  }
+
+  if (actionType === "choose") {
+    const _action = action as ChooseAction;
+    if (Array.isArray(_action.choose)) {
+      for (const choice of _action.choose) {
+        migrateAutomationAction(choice.sequence);
+      }
+    } else if (_action.choose) {
+      migrateAutomationAction(_action.choose.sequence);
+    }
+    if (_action.default) {
+      migrateAutomationAction(_action.default);
+    }
+  }
+
+  if (actionType === "repeat") {
+    const _action = action as RepeatAction;
+    migrateAutomationAction(_action.repeat.sequence);
+  }
+
+  if (actionType === "if") {
+    const _action = action as IfAction;
+    migrateAutomationAction(_action.then);
+    if (_action.else) {
+      migrateAutomationAction(_action.else);
+    }
+  }
+
+  return action;
 };
 
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
