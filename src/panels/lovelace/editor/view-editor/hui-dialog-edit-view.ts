@@ -46,11 +46,7 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 
-const TABS = [
-  "tab-settings",
-  "tab-background",
-  "tab-visibility",
-] as const;
+const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
