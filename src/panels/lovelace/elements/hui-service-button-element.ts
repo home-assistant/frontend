@@ -40,8 +40,14 @@ export class HuiServiceButtonElement
       return nothing;
     }
 
+    const { entity_id, label_id, floor_id, device_id, area_id } =
+      this._config.service_data ?? {};
     const updatedTarget = this._config.target ?? {
-      entity_id: this._config.service_data?.entity_id,
+      entity_id,
+      label_id,
+      floor_id,
+      device_id,
+      area_id,
     };
 
     return html`
