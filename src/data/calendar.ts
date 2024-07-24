@@ -32,7 +32,22 @@ export interface CalendarEventData {
   rrule?: string;
   description?: string;
   location?: string;
-  attendees?: string;
+  attendees?: [
+    {
+      uri: string;
+      common_name?: string;
+      user_type?: string;
+      delegator?: string;
+      delegate?: string;
+      directory_entry?: string;
+      member?: string;
+      status?: string;
+      role?: string;
+      rsvp?: string;
+      sent_by?: string;
+      language?: string;
+    },
+  ];
 }
 
 export interface CalendarEventMutableParams {
@@ -42,7 +57,22 @@ export interface CalendarEventMutableParams {
   rrule?: string;
   description?: string;
   location?: string;
-  attendees?: string;
+  attendees?: [
+    {
+      uri: string;
+      common_name?: string;
+      user_type?: string;
+      delegator?: string;
+      delegate?: string;
+      directory_entry?: string;
+      member?: string;
+      status?: string;
+      role?: string;
+      rsvp?: string;
+      sent_by?: string;
+      language?: string;
+    },
+  ];
 }
 
 // The scope of a delete/update for a recurring event
