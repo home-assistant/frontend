@@ -354,7 +354,7 @@ export const provideHass = (
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
-      value !== null ? value : stateObj.attributes[attribute] ?? "",
+      value !== null ? value : (stateObj.attributes[attribute] ?? ""),
     ...overrideData,
   };
 

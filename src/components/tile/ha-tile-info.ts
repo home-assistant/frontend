@@ -33,7 +33,7 @@ export class HaTileInfo extends LitElement {
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
-        min-height: 40px;
+        height: 36px;
       }
       span {
         text-overflow: ellipsis;

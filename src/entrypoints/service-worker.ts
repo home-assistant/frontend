@@ -13,18 +13,16 @@ import {
   StaleWhileRevalidate,
 } from "workbox-strategies";
 
+declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
+
 const noFallBackRegEx =
   /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
 
 const initRouting = () => {
-  precacheAndRoute(
-    // @ts-ignore
-    WB_MANIFEST,
-    {
-      // Ignore all URL parameters.
-      ignoreURLParametersMatching: [/.*/],
-    }
-  );
+  precacheAndRoute(__WB_MANIFEST__, {
+    // Ignore all URL parameters.
+    ignoreURLParametersMatching: [/.*/],
+  });
 
   // Cache static content (including translations) on first access.
   registerRoute(
@@ -56,11 +54,8 @@ const initRouting = () => {
   // Get api from network.
   registerRoute(/\/(api|auth)\/.*/, new NetworkOnly());
 
-  // Get manifest, service worker, onboarding from network.
-  registerRoute(
-    /\/(service_worker.js|manifest.json|onboarding.html)/,
-    new NetworkOnly()
-  );
+  // Get manifest and onboarding from network.
+  registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());
 
   // For the root "/" we ignore search
   registerRoute(

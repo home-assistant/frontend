@@ -51,7 +51,6 @@ export type LovelaceLayoutOptions = {
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
-  isPanel?: boolean;
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
@@ -82,6 +81,16 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getConfigForm?: () => LovelaceConfigForm;
 }
 
+export interface LovelaceBadgeConstructor extends Constructor<LovelaceBadge> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceBadgeConfig;
+  getConfigElement?: () => LovelaceBadgeEditor;
+  getConfigForm?: () => LovelaceConfigForm;
+}
+
 export interface LovelaceHeaderFooterConstructor
   extends Constructor<LovelaceHeaderFooter> {
   getStubConfig?: (
@@ -105,6 +114,10 @@ export interface LovelaceHeaderFooter extends HTMLElement {
 
 export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
+}
+
+export interface LovelaceBadgeEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceBadgeConfig): void;
 }
 
 export interface LovelaceHeaderFooterEditor

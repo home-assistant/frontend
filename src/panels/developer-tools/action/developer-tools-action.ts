@@ -11,10 +11,13 @@ import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { showToast } from "../../../util/toast";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
@@ -189,8 +192,15 @@ class HaPanelDevAction extends LitElement {
                   copyClipboard
                   readOnly
                   autoUpdate
+                  hasExtraActions
                   .value=${this._response}
-                ></ha-yaml-editor>
+                >
+                  <ha-button slot="extra-actions" @click=${this._copyTemplate}
+                    >${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.actions.copy_clipboard_template"
+                    )}</ha-button
+                  >
+                </ha-yaml-editor>
               </div>
             </ha-card>
           </div>`
@@ -290,6 +300,15 @@ class HaPanelDevAction extends LitElement {
           </div>`
         : ""}
     `;
+  }
+
+  private async _copyTemplate(): Promise<void> {
+    await copyToClipboard(
+      `{% set action_response = ${JSON.stringify(this._response)} %}`
+    );
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _filterSelectorFields = memoizeOne((fields) =>

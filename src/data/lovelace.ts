@@ -3,9 +3,10 @@ import {
   getCollection,
   HassEventBase,
 } from "home-assistant-js-websocket";
+import { HuiBadge } from "../panels/lovelace/badges/hui-badge";
 import type { HuiCard } from "../panels/lovelace/cards/hui-card";
 import type { HuiSection } from "../panels/lovelace/sections/hui-section";
-import { Lovelace, LovelaceBadge } from "../panels/lovelace/types";
+import { Lovelace } from "../panels/lovelace/types";
 import { HomeAssistant } from "../types";
 import { LovelaceSectionConfig } from "./lovelace/config/section";
 import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/types";
@@ -21,7 +22,7 @@ export interface LovelaceViewElement extends HTMLElement {
   narrow?: boolean;
   index?: number;
   cards?: HuiCard[];
-  badges?: LovelaceBadge[];
+  badges?: HuiBadge[];
   sections?: HuiSection[];
   isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;

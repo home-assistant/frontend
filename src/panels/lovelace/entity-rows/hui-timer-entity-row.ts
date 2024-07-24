@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../state-display/state-display-timer";
+import "../../../state-display/ha-timer-remaining-time";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -38,10 +38,10 @@ class HuiTimerEntityRow extends LitElement {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div class="text-content">
-          <state-display-timer
+          <ha-timer-remaining-time
             .hass=${this.hass}
             .stateObj=${stateObj}
-          ></state-display-timer>
+          ></ha-timer-remaining-time>
         </div>
       </hui-generic-entity-row>
     `;

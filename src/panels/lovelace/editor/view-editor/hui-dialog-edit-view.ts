@@ -36,16 +36,9 @@ import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SECTION_VIEW_LAYOUT,
-  VIEWS_NO_BADGE_SUPPORT,
 } from "../../views/const";
 import { addView, deleteView, replaceView } from "../config-util";
-import "../hui-badge-preview";
-import { processEditorEntities } from "../process-editor-entities";
-import {
-  EntitiesEditorEvent,
-  ViewEditEvent,
-  ViewVisibilityChangeEvent,
-} from "../types";
+import { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-editor";
 import "./hui-view-background-editor";
 import "./hui-view-visibility-editor";
@@ -56,7 +49,6 @@ import "@material/mwc-tab/mwc-tab";
 const TABS = [
   "tab-settings",
   "tab-background",
-  "tab-badges",
   "tab-visibility",
 ] as const;
 
@@ -168,38 +160,6 @@ export class HuiDialogEditView extends LitElement {
               .config=${this._config}
               @view-config-changed=${this._viewConfigChanged}
             ></hui-view-background-editor>
-          `;
-          break;
-        case "tab-badges":
-          content = html`
-            ${this._config?.badges?.length
-              ? html`
-                  ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
-                    ? html`
-                        <ha-alert alert-type="warning">
-                          ${this.hass!.localize(
-                            "ui.panel.lovelace.editor.edit_badges.view_no_badges"
-                          )}
-                        </ha-alert>
-                      `
-                    : nothing}
-                  <div class="preview-badges">
-                    ${this._config.badges.map(
-                      (badgeConfig) => html`
-                        <hui-badge-preview
-                          .hass=${this.hass}
-                          .config=${badgeConfig}
-                        ></hui-badge-preview>
-                      `
-                    )}
-                  </div>
-                `
-              : nothing}
-            <hui-entity-editor
-              .hass=${this.hass}
-              .entities=${this._config?.badges || []}
-              @entities-changed=${this._badgesChanged}
-            ></hui-entity-editor>
           `;
           break;
         case "tab-visibility":
@@ -428,10 +388,6 @@ export class HuiDialogEditView extends LitElement {
       viewConf.cards = [];
     }
 
-    if (!viewConf.badges?.length) {
-      delete viewConf.badges;
-    }
-
     const lovelace = this._params.lovelace!;
 
     try {
@@ -483,17 +439,6 @@ export class HuiDialogEditView extends LitElement {
         visible: ev.detail.visible,
       };
     }
-    this._dirty = true;
-  }
-
-  private _badgesChanged(ev: EntitiesEditorEvent): void {
-    if (!this.hass || !ev.detail || !ev.detail.entities) {
-      return;
-    }
-    this._config = {
-      ...this._config,
-      badges: processEditorEntities(ev.detail.entities),
-    };
     this._dirty = true;
   }
 
@@ -569,12 +514,6 @@ export class HuiDialogEditView extends LitElement {
         .error {
           color: var(--error-color);
           border-bottom: 1px solid var(--error-color);
-        }
-        .preview-badges {
-          display: flex;
-          justify-content: center;
-          margin: 12px 16px;
-          flex-wrap: wrap;
         }
         .incompatible {
           display: block;

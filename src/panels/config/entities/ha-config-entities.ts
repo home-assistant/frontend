@@ -507,8 +507,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             )
             .map((entry) => entry.entry_id);
 
+          const filteredEntitiesByDomain = new Set<string>();
+
+          const entitySources = this._entitySources || {};
+
+          const entitiesByDomain = {};
+
+          for (const [entity, source] of Object.entries(entitySources)) {
+            if (!(source.domain in entitiesByDomain)) {
+              entitiesByDomain[source.domain] = [];
+            }
+            entitiesByDomain[source.domain].push(entity);
+          }
+
+          for (const val of filter.value) {
+            if (val in entitiesByDomain) {
+              entitiesByDomain[val].forEach((item) =>
+                filteredEntitiesByDomain.add(item)
+              );
+            }
+          }
+
           filteredEntities = filteredEntities.filter(
             (entity) =>
+              filteredEntitiesByDomain.has(entity.entity_id) ||
               (filter.value as string[]).includes(entity.platform) ||
               (entity.config_entry_id &&
                 entryIds.includes(entity.config_entry_id))
@@ -951,6 +973,9 @@ ${
   }
 
   protected firstUpdated() {
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
     this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
@@ -961,9 +986,6 @@ ${
         items: undefined,
       },
     };
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
   }
 
   private _setFiltersFromUrl() {

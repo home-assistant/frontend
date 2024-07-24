@@ -127,8 +127,8 @@ export class HaCardConditionState extends LitElement {
     const condition: StateCondition = {
       condition: "state",
       ...content,
-      state: invert === "false" ? state ?? "" : undefined,
-      state_not: invert === "true" ? state ?? "" : undefined,
+      state: invert === "false" ? (state ?? "") : undefined,
+      state_not: invert === "true" ? (state ?? "") : undefined,
     };
 
     fireEvent(this, "value-changed", { value: condition });
