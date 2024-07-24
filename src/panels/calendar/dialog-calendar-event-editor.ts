@@ -26,9 +26,11 @@ import "../../components/ha-switch";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "../../components/ha-checkbox";
 import "../../components/user/ha-person-badge";
 import {
   CalendarEntityFeature,
+  CalendarEventData,
   CalendarEventMutableParams,
   RecurrenceRange,
   createCalendarEvent,
@@ -45,6 +47,10 @@ import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-edit
 import "../../layouts/hass-loading-screen";
 
 const CALENDAR_DOMAINS = ["calendar"];
+
+interface CalendarAttendee extends Person {
+  isgoing: boolean;
+}
 
 @customElement("dialog-calendar-event-editor")
 class DialogCalendarEventEditor extends LitElement {
@@ -64,8 +70,6 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _location? = "";
 
-  @state() private _attendees? = "";
-
   @state() private _rrule?: string;
 
   @state() private _allDay = false;
@@ -78,7 +82,9 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _storageItems?: Person[];
 
-  @state() private _configItems?: Person[];
+  @state() private _attendeeItems?: Person[];
+
+  @state() private _calattendees?: CalendarAttendee[];
 
   // Dates are displayed in the timezone according to the user's profile
   // which may be different from the Home Assistant timezone. When
@@ -86,19 +92,39 @@ class DialogCalendarEventEditor extends LitElement {
   // timezone, but floating without a timezone.
   private _timeZone?: string;
 
-  private async _fetchData() {
+  private async _getPersons(data?: CalendarEventData) {
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
       stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
-    this._configItems = personData.config.sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
-    );
+    this._storageItems?.map((entry) => this._attendeeItems?.push(entry));
+    this._attendeeItems?.forEach((entry) => {
+      const attendee: CalendarAttendee = {
+        id: entry.id,
+        name: entry.name,
+        device_trackers: entry.device_trackers,
+        user_id: entry.user_id,
+        picture: entry.picture,
+        isgoing: true,
+      };
+      if (typeof data?.attendees !== "undefined") {
+        if (
+          data?.attendees.some((item) => item.common_name === attendee.name)
+        ) {
+          attendee.isgoing = true;
+        } else {
+          attendee.isgoing = false;
+        }
+      }
+      this._calattendees?.push(attendee);
+    });
   }
 
   public showDialog(params: CalendarEventEditDialogParams): void {
-    this._fetchData();
+    this._attendeeItems = [];
+    this._calattendees = [];
+    this._getPersons(params.entry);
     this._error = undefined;
     this._info = undefined;
     this._params = params;
@@ -119,7 +145,6 @@ class DialogCalendarEventEditor extends LitElement {
       this._summary = entry.summary;
       this._description = entry.description;
       this._location = entry.location;
-      this._attendees = entry.attendees;
       this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart + "T00:00:00");
@@ -152,19 +177,17 @@ class DialogCalendarEventEditor extends LitElement {
     this._summary = "";
     this._description = "";
     this._location = "";
-    this._attendees = "";
+    this._attendeeItems = [];
+    this._calattendees = [];
     this._rrule = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (
-      !this.hass ||
-      this._storageItems === undefined ||
-      this._configItems === undefined
-    ) {
+    if (!this.hass || this._storageItems === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
+
     if (!this._params) {
       return nothing;
     }
@@ -231,49 +254,24 @@ class DialogCalendarEventEditor extends LitElement {
             @change=${this._handleLocationChanged}
             autogrow
           ></ha-textarea>
-          <ha-form-multi_select
-            class="select"
-            name="select"
-            .label=${this.hass.localize(
-              "ui.components.calendar.event.location"
-            )}
-            .value=${this._location}
-            @change=${this._handleLocationChanged}
-            .options
-            autogrow
-          ></ha-form-multi_select>
+          <ha-tip
+            >${this.hass.localize("ui.components.calendar.event.attendees")}
+          </ha-tip>
           <mwc-list>
-            ${this._storageItems.map(
-              (entry) => html`
-                <ha-list-item
-                  graphic="avatar"
-                  @click=${this._openEditEntry}
-                  .entry=${entry}
-                >
-                  <ha-person-badge
-                    .hass=${this.hass}
-                    .person=${entry}
-                    slot="graphic"
-                  ></ha-person-badge>
-                  <span>${entry.name}</span>
-                </ha-list-item>
+            ${this._calattendees?.map(
+              (attendee) => html`
+                <div class="attendees">
+                  <ha-checkbox
+                    tabindex="0"
+                    .entry=${attendee}
+                    .checked=${attendee.isgoing}
+                    @change=${this._handleAttendeesChanged}
+                  ></ha-checkbox>
+                  <span> ${attendee.name}</span>
+                </div>
               `
             )}
           </mwc-list>
-          ${this._storageItems.length === 0
-            ? html`
-                <div class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.config.person.no_persons_created_yet"
-                  )}
-                  <mwc-button @click=${this._createPerson}>
-                    ${this.hass.localize(
-                      "ui.panel.config.person.create_person"
-                    )}</mwc-button
-                  >
-                </div>
-              `
-            : nothing}
           <ha-entity-picker
             name="calendar"
             .hass=${this.hass}
@@ -428,7 +426,19 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _handleAttendeesChanged(ev) {
-    this._attendees = ev.target.value;
+    if (ev.target.checked) {
+      this._calattendees?.forEach((item) => {
+        if (item === ev.target.entry) {
+          item.isgoing = true;
+        }
+      });
+    } else {
+      this._calattendees?.forEach((item) => {
+        if (item === ev.target.entry) {
+          item.isgoing = false;
+        }
+      });
+    }
   }
 
   private _handleRRuleChanged(ev) {
@@ -492,7 +502,6 @@ class DialogCalendarEventEditor extends LitElement {
       summary: this._summary,
       description: this._description,
       location: this._location,
-      attendees: this._attendees,
       rrule: this._rrule || undefined,
       dtstart: "",
       dtend: "",
@@ -511,6 +520,34 @@ class DialogCalendarEventEditor extends LitElement {
         this.hass.config.time_zone
       )}T${this._formatTime(this._dtend!, this.hass.config.time_zone)}`;
     }
+    if (this._calattendees === undefined || this._calattendees?.length === 0) {
+      data.attendees = undefined;
+    } else {
+      this._calattendees.forEach((attendee) => {
+        if (attendee.isgoing) {
+          if (typeof data.attendees === "undefined") {
+            data.attendees = [
+              {
+                uri: "",
+                common_name: attendee.name,
+              },
+            ];
+          } else {
+            data.attendees?.push({ uri: "", common_name: attendee.name });
+          }
+        }
+      });
+      if (typeof data.attendees === "undefined") {
+        // We need a way to empty the attendees
+        data.attendees = [
+          {
+            uri: "",
+            common_name: "empty",
+          },
+        ];
+      }
+    }
+
     return data;
   }
 
@@ -748,6 +785,11 @@ class DialogCalendarEventEditor extends LitElement {
         .value {
           display: inline-block;
           vertical-align: top;
+        }
+        .attendees {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
         }
       `,
     ];
