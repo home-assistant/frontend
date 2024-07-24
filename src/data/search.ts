@@ -8,6 +8,7 @@ export interface RelatedResult {
   device?: string[];
   entity?: string[];
   group?: string[];
+  integration?: string[];
   scene?: string[];
   script?: string[];
   script_blueprint?: string[];

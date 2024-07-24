@@ -407,6 +407,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entities: Array<string | PictureGlanceEntityConfig>;
   title?: string;
   image?: string;
+  image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;
