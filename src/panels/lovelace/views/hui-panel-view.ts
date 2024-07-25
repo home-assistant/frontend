@@ -105,7 +105,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const card: HuiCard = this.cards[0];
-    card.isPanel = true;
+    card.layout = "panel";
 
     if (this.isStrategy || !this.lovelace?.editMode) {
       card.preview = false;

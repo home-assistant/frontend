@@ -3,7 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
-import "../state-display/state-display-timer";
+import "../state-display/ha-timer-remaining-time";
 import { HomeAssistant } from "../types";
 
 @customElement("state-card-timer")
@@ -23,10 +23,10 @@ class StateCardTimer extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         <div class="state">
-          <state-display-timer
+          <ha-timer-remaining-time
             .hass=${this.hass}
             .stateObj=${this.stateObj}
-          ></state-display-timer>
+          ></ha-timer-remaining-time>
         </div>
       </div>
     `;

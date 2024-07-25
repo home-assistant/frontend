@@ -74,7 +74,8 @@ class HaConfigRepairs extends LitElement {
                     issue.translation_key || issue.issue_id
                   }.title`,
                   issue.translation_placeholders || {}
-                )}</span
+                ) ||
+                `${issue.domain}: ${issue.translation_key || issue.issue_id}`}</span
               >
               <span slot="secondary" class="secondary">
                 ${issue.severity === "critical" || issue.severity === "error"

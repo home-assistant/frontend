@@ -1,6 +1,6 @@
 import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { CoverOpenCloseCardFeatureConfig } from "./types";
 
 export const supportsCoverOpenCloseCardFeature = (stateObj: HassEntity) => {
@@ -128,12 +129,7 @@ class HuiCoverOpenCloseCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

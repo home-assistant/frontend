@@ -1020,6 +1020,13 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+      },
+      "state-content-picker": {
+        "state": "State",
+        "last_changed": "Last changed",
+        "last_updated": "Last updated",
+        "remaining_time": "Remaining time",
+        "install_status": "Install status"
       }
     },
     "dialogs": {
@@ -4063,6 +4070,7 @@
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
+          "error_delete": "Error deleting device",
           "picker": {
             "search": "Search {number} devices",
             "state": "State",
@@ -4264,6 +4272,7 @@
             "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
+            "yaml_entry": "This integration was not setup via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
             "add_device": "Add device",
@@ -4334,6 +4343,7 @@
             "custom_integration": "Custom integration",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
+            "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
             "state": {
@@ -4548,7 +4558,9 @@
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread radio has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
-          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change)."
+          "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
+          "thread_network_info": "Thread network information",
+          "thread_network_delete_credentials": "Delete Thread network credentials"
         },
         "zha": {
           "common": {
@@ -5495,7 +5507,6 @@
             "move_right": "Move view right",
             "tab_settings": "Settings",
             "tab_background": "Background",
-            "tab_badges": "Badges",
             "tab_visibility": "Visibility",
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
@@ -5552,10 +5563,36 @@
             "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
-            "layout": {
-              "explanation": "Configure how the card will appear on the dashboard. This settings will override the default size and position of the card."
             }
+          },
+          "edit_badge": {
+            "header": "Badge configuration",
+            "typed_header": "{type} Badge configuration",
+            "pick_badge": "Which badge would you like to add?",
+            "pick_badge_title": "Which badge would you like to add to {name}",
+            "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
+            "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
+            "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
+            "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]",
+            "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
+            "edit_ui": "[%key:ui::panel::config::automation::editor::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::config::automation::editor::edit_yaml%]",
+            "add": "Add badge",
+            "edit": "[%key:ui::panel::lovelace::editor::edit_card::edit%]",
+            "clear": "[%key:ui::panel::lovelace::editor::edit_card::clear%]",
+            "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
+            "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
+            "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
+            "visibility": {
+              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
+            }
+          },
+          "suggest_badge": {
+            "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
+            "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
           },
           "move_card": {
             "header": "Choose a view to move the card to",
@@ -5979,16 +6016,10 @@
               "icon_tap_action": "Icon tap behavior",
               "actions": "Actions",
               "appearance": "Appearance",
-              "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content",
-              "state_content_options": {
-                "state": "State",
-                "last-changed": "Last changed",
-                "last-updated": "Last updated"
-              }
+              "state_content": "State content"
             },
             "vertical-stack": {
               "name": "Vertical stack",
@@ -6007,6 +6038,32 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            }
+          },
+          "badge": {
+            "entity": {
+              "name": "Entity",
+              "description": "The Entity badge gives you a quick overview of your entity.",
+              "color": "Color",
+              "actions": "Actions",
+              "appearance": "Appearance",
+              "show_entity_picture": "Show entity picture",
+              "state_content": "State content",
+              "display_type": "Display type",
+              "display_type_options": {
+                "minimal": "Minimal (icon only)",
+                "standard": "Standard (icon and state)",
+                "complete": "Complete (icon, name and state)"
+              }
+            },
+            "generic": {
+              "manual": "Manual",
+              "manual_description": "Need to add a custom badge or just want to manually write the YAML?",
+              "paste": "Paste from clipboard",
+              "paste_description": "Paste a {type} badge from the clipboard",
+              "suggested_badges": "Suggested badges",
+              "other_badges": "Other badges",
+              "custom_badges": "Custom badges"
             }
           },
           "features": {
@@ -6196,7 +6253,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_card": "By Card"
+            "by_card": "By card"
+          },
+          "badge_picker": {
+            "no_description": "No description available.",
+            "custom_badge": "Custom",
+            "domain": "Domain",
+            "entity": "Entity",
+            "by_entity": "By entity",
+            "by_badge": "By badge"
           },
           "header-footer": {
             "header": "Header",
@@ -6708,6 +6773,7 @@
             "all_parameters": "All available parameters",
             "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
             "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
+            "copy_clipboard_template": "Copy to clipboard (template)",
             "errors": {
               "ui": {
                 "no_service": "No action selected, please select an action",
