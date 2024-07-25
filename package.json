@@ -233,7 +233,7 @@
     "serve-handler": "6.1.5",
     "sinon": "18.0.0",
     "systemjs": "6.15.1",
-    "tar": "7.4.0",
+    "tar": "7.4.1",
     "terser-webpack-plugin": "5.3.10",
     "transform-async-modules-webpack-plugin": "1.1.1",
     "ts-lit-plugin": "2.0.2",
