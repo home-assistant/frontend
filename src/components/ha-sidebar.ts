@@ -210,6 +210,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _editStyleLoaded = false;
 
+  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
+
   @storage({
     key: "sidebarPanelOrder",
     state: true,
@@ -283,15 +285,26 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel
+      hass.defaultPanel !== oldHass.defaultPanel ||
+      hass.connected !== oldHass.connected
     );
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    subscribeNotifications(this.hass.connection, (notifications) => {
-      this._notifications = notifications;
-    });
+    this.subscribePersistentNotifications();
+  }
+
+  private subscribePersistentNotifications(): void {
+    if (this._unsubPersistentNotifications) {
+      this._unsubPersistentNotifications();
+    }
+    this._unsubPersistentNotifications = subscribeNotifications(
+      this.hass.connection,
+      (notifications) => {
+        this._notifications = notifications;
+      }
+    );
   }
 
   protected updated(changedProps) {
@@ -304,6 +317,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
     if (!changedProps.has("hass")) {
       return;
+    }
+
+    if (
+      this.hass &&
+      changedProps.get("hass")?.connected === false &&
+      this.hass.connected === true
+    ) {
+      this.subscribePersistentNotifications();
     }
 
     this._calculateCounts();

@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCloud, mdiPackageVariant } from "@mdi/js";
+import { mdiCloud, mdiCodeBraces, mdiPackageVariant } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -45,6 +45,8 @@ export class HaIntegrationCard extends LitElement {
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
   @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
+
+  @property({ attribute: false }) public domainEntities: string[] = [];
 
   protected render(): TemplateResult {
     const entryState = this._getState(this.items);
@@ -100,9 +102,13 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderSingleEntry(): TemplateResult {
     const devices = this._getDevices(this.items, this.hass.devices);
-    const entities = devices.length
-      ? []
-      : this._getEntities(this.items, this.entityRegistryEntries);
+    const entitiesCount = devices.length
+      ? 0
+      : this._getEntityCount(
+          this.items,
+          this.entityRegistryEntries,
+          this.domainEntities
+        );
 
     const services = !devices.some((device) => device.entry_type !== "service");
 
@@ -123,25 +129,32 @@ export class HaIntegrationCard extends LitElement {
                 )}
               </ha-button>
             </a>`
-          : entities.length > 0
+          : entitiesCount > 0
             ? html`<a
                 href=${`/config/entities?historyBack=1&domain=${this.domain}`}
               >
                 <ha-button>
                   ${this.hass.localize(
                     `ui.panel.config.integrations.config_entry.entities`,
-                    { count: entities.length }
+                    { count: entitiesCount }
                   )}
                 </ha-button>
               </a>`
-            : html`<a href=${`/config/integrations/integration/${this.domain}`}>
-                <ha-button>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entries`,
-                    { count: this.items.length }
-                  )}
-                </ha-button>
-              </a>`}
+            : this.items.find((itm) => itm.source !== "yaml")
+              ? html`<a
+                  href=${`/config/integrations/integration/${this.domain}`}
+                >
+                  <ha-button>
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.entries`,
+                      {
+                        count: this.items.filter((itm) => itm.source !== "yaml")
+                          .length,
+                      }
+                    )}
+                  </ha-button>
+                </a>`
+              : html`<div class="spacer"></div>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
             ? html`<span class="icon custom">
@@ -169,6 +182,19 @@ export class HaIntegrationCard extends LitElement {
                 >
               </div>`
             : nothing}
+          ${!this.manifest?.config_flow
+            ? html`<div class="icon yaml">
+                <ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>
+                <simple-tooltip
+                  animation-delay="0"
+                  .position=${computeRTL(this.hass) ? "right" : "left"}
+                  offset="4"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.no_config_flow"
+                  )}</simple-tooltip
+                >
+              </div>`
+            : nothing}
         </div>
       </div>
     `;
@@ -190,19 +216,42 @@ export class HaIntegrationCard extends LitElement {
     }
   );
 
-  private _getEntities = memoizeOne(
+  private _getEntityCount = memoizeOne(
     (
       configEntry: ConfigEntry[],
-      entityRegistryEntries: EntityRegistryEntry[]
-    ): EntityRegistryEntry[] => {
+      entityRegistryEntries: EntityRegistryEntry[],
+      domainEntities: string[]
+    ): number => {
       if (!entityRegistryEntries) {
-        return [];
+        return domainEntities.length;
       }
-      const entryIds = configEntry.map((entry) => entry.entry_id);
-      return entityRegistryEntries.filter(
+
+      const entryIds = configEntry
+        .map((entry) => entry.entry_id)
+        .filter(Boolean);
+
+      if (!entryIds.length) {
+        return domainEntities.length;
+      }
+
+      const entityRegEntities = entityRegistryEntries.filter(
         (entity) =>
           entity.config_entry_id && entryIds.includes(entity.config_entry_id)
       );
+
+      if (entityRegEntities.length === domainEntities.length) {
+        return domainEntities.length;
+      }
+
+      const entityIds = new Set<string>(
+        entityRegEntities.map((reg) => reg.entity_id)
+      );
+
+      for (const entity of domainEntities) {
+        entityIds.add(entity);
+      }
+
+      return entityIds.size;
     }
   );
 
@@ -308,6 +357,9 @@ export class HaIntegrationCard extends LitElement {
         .icon.custom {
           background: var(--warning-color);
         }
+        .icon.yaml {
+          background: var(--label-badge-grey);
+        }
         .icon ha-svg-icon {
           width: 16px;
           height: 16px;
@@ -315,6 +367,9 @@ export class HaIntegrationCard extends LitElement {
         }
         simple-tooltip {
           white-space: nowrap;
+        }
+        .spacer {
+          height: 36px;
         }
       `,
     ];
