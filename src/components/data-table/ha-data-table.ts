@@ -597,7 +597,7 @@ export class HaDataTable extends LitElement {
       filteredData = await this._memFilterData(
         this.data,
         this._sortColumns,
-        this._filter
+        this._filter.trim()
       );
     }
 
