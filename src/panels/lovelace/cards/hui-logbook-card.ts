@@ -25,7 +25,7 @@ export const DEFAULT_HOURS_TO_SHOW = 24;
 
 @customElement("hui-logbook-card")
 export class HuiLogbookCard extends LitElement implements LovelaceCard {
-  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+  public static async getConfigElement(): Promise {
     await import("../editor/config-elements/hui-logbook-card-editor");
     return document.createElement("hui-logbook-card-editor");
   }
@@ -143,16 +143,12 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         .content {
+          height: 100%;
           padding: 0 16px 16px;
         }
 
         .no-header .content {
           padding-top: 16px;
-        }
-
-        ha-logbook {
-          height: 385px;
-          display: block;
         }
       `,
     ];
