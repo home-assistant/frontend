@@ -27,6 +27,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
+import "../../components/ha-markdown";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
 import {
@@ -215,10 +216,11 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
-              // New lines matter for messages
-              // prettier-ignore
               (message) => html`
-                <div class=${this._computeMessageClasses(message)}>${message.text}</div>
+                <div class=${this._computeMessageClasses(message)}>
+                  <ha-markdown breaks allowSvg .content=${message.text}>
+                  </ha-markdown>
+                </div>
               `
             )}
           </div>
@@ -750,7 +752,6 @@ export class HaVoiceCommandDialog extends LitElement {
           max-height: 100%;
         }
         .message {
-          white-space: pre-line;
           font-size: 18px;
           clear: both;
           margin: 8px 0;
