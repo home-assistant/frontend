@@ -10,6 +10,8 @@ import "./ha-change-password-card";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-refresh-tokens-card";
+import "./ha-setup-passkey-card";
+import { Passkey } from "../../data/webauthn";
 
 @customElement("ha-profile-section-security")
 class HaProfileSectionSecurity extends LitElement {
@@ -18,6 +20,8 @@ class HaProfileSectionSecurity extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _refreshTokens?: RefreshToken[];
+
+  @state() private _passkeys?: Passkey[];
 
   @property({ attribute: false }) public route!: Route;
 
@@ -29,6 +33,9 @@ class HaProfileSectionSecurity extends LitElement {
   public firstUpdated() {
     if (!this._refreshTokens) {
       this._refreshRefreshTokens();
+    }
+    if (!this._passkeys) {
+      this._refreshPasskeys();
     }
   }
 
@@ -54,6 +61,13 @@ class HaProfileSectionSecurity extends LitElement {
                 ></ha-change-password-card>
               `
             : ""}
+
+          <ha-setup-passkey-card
+            .hass=${this.hass}
+            .passkeys=${this._passkeys}
+            @hass-refresh-passkeys=${this._refreshPasskeys}
+          ></ha-setup-passkey-card>
+
           <ha-mfa-modules-card
             .hass=${this.hass}
             .mfaModules=${this.hass.user!.mfa_modules}
@@ -81,6 +95,15 @@ class HaProfileSectionSecurity extends LitElement {
     }
     this._refreshTokens = await this.hass.callWS({
       type: "auth/refresh_tokens",
+    });
+  }
+
+  private async _refreshPasskeys() {
+    if (!this.hass) {
+      return;
+    }
+    this._passkeys = await this.hass.callWS<Passkey[]>({
+      type: "config/auth_provider/passkey/list",
     });
   }
 

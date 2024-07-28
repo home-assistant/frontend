@@ -1,6 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { ConfigEntry } from "./config_entries";
+import type { DataEntryFlowStepChallengeForm } from "./webauthn";
 
 export type FlowType = "config_flow" | "options_flow" | "repair_flow";
 
@@ -94,7 +95,8 @@ export type DataEntryFlowStep =
   | DataEntryFlowStepCreateEntry
   | DataEntryFlowStepAbort
   | DataEntryFlowStepProgress
-  | DataEntryFlowStepMenu;
+  | DataEntryFlowStepMenu
+  | DataEntryFlowStepChallengeForm;
 
 export const subscribeDataEntryFlowProgressed = (
   conn: Connection,

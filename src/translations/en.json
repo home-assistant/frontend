@@ -6868,6 +6868,25 @@
           "empty_state": "You have no long-lived access tokens yet.",
           "qr_code_image": "QR code for token {name}",
           "generate_qr_code": "Generate QR Code"
+        },
+        "passkeys": {
+          "header": "Passkeys",
+          "description": "Passkeys are webauthn credentials that validate your identity using touch, facial recognition, a device password, or a PIN. They can be used as a password replacement.",
+          "learn_auth_requests": "Learn how to make authenticated requests.",
+          "created_at": "Created {date}",
+          "last_used": "Last used {date}",
+          "confirm_delete_title": "Delete passkey?",
+          "confirm_delete_text": "Are you sure you want to delete the passkey ''{name}''?",
+          "delete_failed": "Failed to delete the passkey.",
+          "create": "Create Passkey",
+          "create_failed": "Failed to create the passkey.",
+          "name": "Name",
+          "prompt_name": "Give the passkey a name",
+          "prompt_copy_passkey": "Copy your passkey. It will not be shown again.",
+          "empty_state": "You have no passkeys yet.",
+          "not_used": "Has never been used",
+          "rename_failed": "Failed to rename the passkey.",
+          "register_failed": "Failed to register the passkey."
         }
       },
       "todo": {
@@ -6986,6 +7005,23 @@
               },
               "abort": {
                 "not_allowed": "Your computer is not allowed."
+              }
+            },
+            "webauthn": {
+              "step": {
+                "init": {
+                  "data": {
+                    "username": "Username"
+                  },
+                  "description": "Please enter your username."
+                }
+              },
+              "error": {
+                "invalid_user": "Invalid username",
+                "invalid_auth": "Invalid username"
+              },
+              "abort": {
+                "not_allowed": "Selected user is not allowed."
               }
             }
           }
