@@ -167,7 +167,7 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         filterable: true,
         direction: "asc",
-        grows: true,
+        flex: 2,
         template: narrow
           ? undefined
           : (entry) => html`
@@ -197,7 +197,6 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         groupable: true,
         filterable: true,
-        width: "15%",
       },
       assistants: {
         title: localize(
@@ -206,7 +205,8 @@ export class VoiceAssistantsExpose extends LitElement {
         showNarrow: true,
         sortable: true,
         filterable: true,
-        width: "160px",
+        minWidth: "160px",
+        maxWidth: "160px",
         type: "flex",
         template: (entry) =>
           html`${availableAssistants.map((key) => {
@@ -233,7 +233,6 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        width: "15%",
         template: (entry) =>
           entry.aliases.length === 0
             ? "-"

@@ -64,7 +64,8 @@ export class HuiEntityPickerTable extends LitElement {
         title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity"),
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
+        main: true,
         direction: "asc",
         template: (entity: any) => html`
           <div @click=${this._handleEntityClicked} style="cursor: pointer;">
@@ -81,7 +82,6 @@ export class HuiEntityPickerTable extends LitElement {
       title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity_id"),
       sortable: true,
       filterable: true,
-      width: "30%",
       hidden: narrow,
     };
 
@@ -89,7 +89,6 @@ export class HuiEntityPickerTable extends LitElement {
       title: this.hass!.localize("ui.panel.lovelace.unused_entities.domain"),
       sortable: true,
       filterable: true,
-      width: "15%",
       hidden: narrow,
     };
 
@@ -99,7 +98,6 @@ export class HuiEntityPickerTable extends LitElement {
       ),
       type: "numeric",
       sortable: true,
-      width: "15%",
       hidden: narrow,
       template: (entity) => html`
         <ha-relative-time

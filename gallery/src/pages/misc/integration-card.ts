@@ -203,6 +203,8 @@ const createEntityRegistryEntries = (
     options: null,
     labels: [],
     categories: {},
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 
@@ -228,6 +230,8 @@ const createDeviceRegistryEntries = (
     disabled_by: null,
     configuration_url: null,
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 

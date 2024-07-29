@@ -65,7 +65,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
@@ -84,7 +84,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
@@ -100,7 +100,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               title: "Associated Entities",
               sortable: false,
               filterable: false,
-              width: "50%",
+              flex: 2,
               template: (device) => html`
                 ${device.entities.length
                   ? device.entities.length > 3

@@ -83,15 +83,13 @@ export class HaConfigUsers extends LitElement {
           main: true,
           sortable: true,
           filterable: true,
-          width: "25%",
           direction: "asc",
-          grows: true,
+          flex: 2,
         },
         username: {
           title: localize("ui.panel.config.users.picker.headers.username"),
           sortable: true,
           filterable: true,
-          width: "20%",
           direction: "asc",
           template: (user) => html`${user.username || "—"}`,
         },
@@ -100,7 +98,6 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           groupable: true,
-          width: "20%",
           direction: "asc",
         },
         is_active: {
@@ -110,7 +107,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.is_active
@@ -124,7 +120,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.system_generated
@@ -138,7 +133,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.local_only
@@ -153,7 +147,7 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: false,
           filterable: false,
-          width: "104px",
+          minWidth: "104px",
           hidden: !narrow,
           showNarrow: true,
           template: (user) => {

@@ -7,6 +7,7 @@ import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
+import { RegistryEntry } from "./registry";
 
 export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
 
@@ -43,7 +44,7 @@ export interface EntityRegistryDisplayEntryResponse {
   entity_categories: Record<number, EntityCategory>;
 }
 
-export interface EntityRegistryEntry {
+export interface EntityRegistryEntry extends RegistryEntry {
   id: string;
   entity_id: string;
   name: string | null;

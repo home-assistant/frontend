@@ -1,19 +1,20 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
+import { ConfigEntry } from "./config_entries";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import { ConfigEntry } from "./config_entries";
 import type { EntitySources } from "./entity_sources";
+import { RegistryEntry } from "./registry";
 
 export {
   fetchDeviceRegistry,
   subscribeDeviceRegistry,
 } from "./ws-device_registry";
 
-export interface DeviceRegistryEntry {
+export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
   connections: Array<[string, string]>;

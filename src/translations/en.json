@@ -1843,6 +1843,13 @@
         "error": "An unknown error occurred"
       },
       "config": {
+        "generic": {
+          "headers": {
+            "modified_at": "Modified",
+            "created_at": "Created",
+            "actions": "Actions"
+          }
+        },
         "header": "Configure Home Assistant",
         "dashboard": {
           "devices": {
