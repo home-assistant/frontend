@@ -396,7 +396,8 @@ export class HaDataTable extends LitElement {
                 if (
                   column.hidden ||
                   (this.columnOrder && this.columnOrder.includes(key)
-                    ? this.hiddenColumns?.includes(key) ?? column.defaultHidden
+                    ? (this.hiddenColumns?.includes(key) ??
+                      column.defaultHidden)
                     : column.defaultHidden)
                 ) {
                   return nothing;
@@ -533,7 +534,7 @@ export class HaDataTable extends LitElement {
             (narrow && !column.main && !column.showNarrow) ||
             column.hidden ||
             (this.columnOrder && this.columnOrder.includes(key)
-              ? this.hiddenColumns?.includes(key) ?? column.defaultHidden
+              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
               : column.defaultHidden)
           ) {
             return nothing;
@@ -573,8 +574,8 @@ export class HaDataTable extends LitElement {
                               !column2.showNarrow &&
                               !(this.columnOrder &&
                               this.columnOrder.includes(key2)
-                                ? this.hiddenColumns?.includes(key2) ??
-                                  column2.defaultHidden
+                                ? (this.hiddenColumns?.includes(key2) ??
+                                  column2.defaultHidden)
                                 : column2.defaultHidden)
                           )
                           .map(
