@@ -551,7 +551,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
               `
-            : html`—`;
+            : "—";
         },
       },
       created_at: {
@@ -567,7 +567,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       modified_at: {
         title: localize("ui.panel.config.generic.headers.modified_at"),
@@ -582,7 +582,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       disabled_by: {
         title: "",

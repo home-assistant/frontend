@@ -142,7 +142,7 @@ export class HaConfigLabels extends LitElement {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       modified_at: {
         title: localize("ui.panel.config.generic.headers.modified_at"),
@@ -157,7 +157,7 @@ export class HaConfigLabels extends LitElement {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       actions: {
         title: "",

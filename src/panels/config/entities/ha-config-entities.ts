@@ -408,7 +408,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       modified_at: {
         title: localize("ui.panel.config.generic.headers.modified_at"),
@@ -423,7 +423,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 this.hass.locale,
                 this.hass.config
               )
-            : "-",
+            : "—",
       },
       available: {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
