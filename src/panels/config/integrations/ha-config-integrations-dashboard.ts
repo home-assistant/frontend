@@ -314,6 +314,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         this.configEntriesInProgress.map((flow) => flow.handler)
       );
     }
+    if (changed.has("configEntries") && this.configEntries) {
+      this._fetchIntegrationManifests(
+        this.configEntries.map((entry) => entry.domain)
+      );
+    }
   }
 
   protected render() {
