@@ -16,7 +16,7 @@
     "lint:lit": "lit-analyzer \"{.,*}/src/**/*.ts\"",
     "lint": "yarn run lint:eslint && yarn run lint:prettier && yarn run lint:types && yarn run lint:lit",
     "format": "yarn run format:eslint && yarn run format:prettier",
-    "postinstall": "husky install",
+    "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
     "test": "instant-mocha --webpack-config ./test/webpack.config.js --require ./test/setup.cjs \"test/**/*.ts\""
