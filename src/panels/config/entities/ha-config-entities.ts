@@ -103,6 +103,7 @@ import {
   deserializeFilters,
   DataTableFilters,
 } from "../../../data/data_table_filters";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -294,7 +295,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         direction: "asc",
-        grows: true,
+        flex: 2,
         extraTemplate: (entry) =>
           entry.label_entries.length
             ? html`
@@ -308,14 +309,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         sortable: true,
         filterable: true,
-        width: "25%",
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         sortable: true,
         groupable: true,
         filterable: true,
-        width: "20%",
       },
       domain: {
         title: localize("ui.panel.config.entities.picker.headers.domain"),
@@ -329,7 +328,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
-        width: "15%",
       },
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
@@ -348,7 +346,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         showNarrow: true,
         sortable: true,
         filterable: true,
-        width: "68px",
         template: (entry) =>
           entry.unavailable ||
           entry.disabled_by ||
@@ -396,6 +393,36 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   </simple-tooltip>
                 </div>
               `
+            : "—",
+      },
+      created_at: {
+        title: localize("ui.panel.config.generic.headers.created_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (entry) =>
+          entry.created_at
+            ? formatShortDateTime(
+                new Date(entry.created_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
+      },
+      modified_at: {
+        title: localize("ui.panel.config.generic.headers.modified_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (entry) =>
+          entry.modified_at
+            ? formatShortDateTime(
+                new Date(entry.modified_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
             : "—",
       },
       available: {
@@ -1081,6 +1108,8 @@ ${
           options: null,
           labels: [],
           categories: {},
+          created_at: 0,
+          modified_at: 0,
         });
       }
       if (changed) {

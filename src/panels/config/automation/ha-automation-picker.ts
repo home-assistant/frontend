@@ -288,7 +288,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           direction: "asc",
-          grows: true,
+          flex: 2,
           extraTemplate: (automation) =>
             automation.labels.length
               ? html`<ha-data-table-labels
@@ -320,7 +320,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         last_triggered: {
           sortable: true,
-          width: "130px",
           title: localize("ui.card.automation.last_triggered"),
           template: (automation) => {
             if (!automation.last_triggered) {
@@ -337,7 +336,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           },
         },
         formatted_state: {
-          width: "82px",
+          minWidth: "82px",
+          maxWidth: "82px",
           sortable: true,
           groupable: true,
           hidden: narrow,
@@ -353,7 +353,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         actions: {
           title: "",
-          width: "64px",
           type: "icon-button",
           showNarrow: true,
           moveable: false,

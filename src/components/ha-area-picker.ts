@@ -279,6 +279,8 @@ export class HaAreaPicker extends LitElement {
             icon: null,
             aliases: [],
             labels: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ];
       }
@@ -295,6 +297,8 @@ export class HaAreaPicker extends LitElement {
               icon: "mdi:plus",
               aliases: [],
               labels: [],
+              created_at: 0,
+              modified_at: 0,
             },
           ];
     }
@@ -377,6 +381,8 @@ export class HaAreaPicker extends LitElement {
             picture: null,
             labels: [],
             aliases: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ] as AreaRegistryEntry[];
       } else {
@@ -393,6 +399,8 @@ export class HaAreaPicker extends LitElement {
             picture: null,
             labels: [],
             aliases: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ] as AreaRegistryEntry[];
       }

@@ -42,13 +42,12 @@ class AssistDevicesPage extends LitElement {
           ),
           filterable: true,
           sortable: true,
-          grows: true,
+          flex: 2,
         },
         pipeline: {
           title: localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
           ),
-          width: "30%",
           filterable: true,
           sortable: true,
         },
@@ -58,7 +57,6 @@ class AssistDevicesPage extends LitElement {
           ),
           filterable: true,
           sortable: true,
-          width: "30%",
         },
       };
 

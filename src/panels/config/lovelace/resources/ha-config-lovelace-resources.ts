@@ -94,7 +94,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         sortable: true,
         filterable: true,
         direction: "asc",
-        grows: true,
+        flex: 2,
         forceLTR: true,
       },
       type: {
@@ -103,7 +103,6 @@ export class HaConfigLovelaceRescources extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        width: "30%",
         template: (resource) => html`
           ${this.hass.localize(
             `ui.panel.config.lovelace.resources.types.${resource.type}`

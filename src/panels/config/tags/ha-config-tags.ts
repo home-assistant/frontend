@@ -81,13 +81,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
       },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
         sortable: true,
         direction: "desc",
-        width: "20%",
         template: (tag) => html`
           ${tag.last_scanned_datetime
             ? html`<ha-relative-time

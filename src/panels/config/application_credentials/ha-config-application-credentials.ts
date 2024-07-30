@@ -87,14 +87,13 @@ export class HaConfigApplicationCredentials extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
-          grows: true,
+          flex: 2,
         },
         client_id: {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.client_id"
           ),
           filterable: true,
-          width: "30%",
         },
         localizedDomain: {
           title: localize(
@@ -102,12 +101,10 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "30%",
           direction: "asc",
         },
         actions: {
           title: "",
-          width: "64px",
           type: "overflow-menu",
           showNarrow: true,
           hideable: false,

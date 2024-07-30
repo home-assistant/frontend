@@ -69,14 +69,13 @@ class ZHADeviceNeighbors extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
             lqi: {
               title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
               sortable: true,
               filterable: true,
               type: "numeric",
-              width: "75px",
             },
           }
         : {
@@ -85,14 +84,13 @@ class ZHADeviceNeighbors extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
             lqi: {
               title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
               sortable: true,
               filterable: true,
               type: "numeric",
-              width: "75px",
             },
             relationship: {
               title: this.hass.localize(
@@ -100,14 +98,12 @@ class ZHADeviceNeighbors extends LitElement {
               ),
               sortable: true,
               filterable: true,
-              width: "150px",
             },
             depth: {
               title: this.hass.localize("ui.panel.config.zha.neighbors.depth"),
               sortable: true,
               filterable: true,
               type: "numeric",
-              width: "75px",
             },
           }
   );

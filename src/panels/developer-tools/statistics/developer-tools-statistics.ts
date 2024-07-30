@@ -89,9 +89,10 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.data_table.name"
         ),
+        main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
       },
       statistic_id: {
         title: localize(
@@ -100,7 +101,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         hidden: this.narrow,
-        width: "20%",
       },
       statistics_unit_of_measurement: {
         title: localize(
@@ -108,7 +108,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
-        width: "10%",
         forceLTR: true,
       },
       source: {
@@ -117,7 +116,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
-        width: "10%",
       },
       issues_string: {
         title: localize(
@@ -126,7 +124,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         direction: "asc",
-        width: "30%",
+        flex: 2,
         template: (statistic) =>
           html`${statistic.issues_string ??
           localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
@@ -147,12 +145,15 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                 )}
               </mwc-button>`
             : "—"}`,
-        width: "113px",
+        minWidth: "113px",
+        maxWidth: "113px",
+        showNarrow: true,
       },
       actions: {
         title: "",
         label: localize("ui.panel.developer-tools.tabs.statistics.adjust_sum"),
         type: "icon-button",
+        showNarrow: true,
         template: (statistic) =>
           statistic.has_sum
             ? html`
@@ -179,6 +180,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
         )}
+        .narrow=${this.narrow}
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
