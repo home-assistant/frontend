@@ -21,6 +21,7 @@ import { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import { LabelRegistryEntry } from "../../../../src/data/label_registry";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
+import { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -41,7 +42,7 @@ const ENTITIES = [
   }),
 ];
 
-const DEVICES = [
+const DEVICES: DeviceRegistryEntry[] = [
   {
     area_id: "bedroom",
     configuration_url: null,
@@ -61,6 +62,8 @@ const DEVICES = [
     via_device_id: null,
     serial_number: null,
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     area_id: "backyard",
@@ -81,6 +84,8 @@ const DEVICES = [
     via_device_id: null,
     serial_number: null,
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     area_id: null,
@@ -101,6 +106,8 @@ const DEVICES = [
     via_device_id: null,
     serial_number: null,
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 
@@ -113,6 +120,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     area_id: "bedroom",
@@ -122,6 +131,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     area_id: "livingroom",
@@ -131,6 +142,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 
@@ -141,6 +154,8 @@ const FLOORS: FloorRegistryEntry[] = [
     level: 0,
     icon: null,
     aliases: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     floor_id: "first",
@@ -148,6 +163,8 @@ const FLOORS: FloorRegistryEntry[] = [
     level: 1,
     icon: "mdi:numeric-1",
     aliases: [],
+    created_at: 0,
+    modified_at: 0,
   },
   {
     floor_id: "second",
@@ -155,6 +172,8 @@ const FLOORS: FloorRegistryEntry[] = [
     level: 2,
     icon: "mdi:numeric-2",
     aliases: [],
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 
@@ -165,6 +184,8 @@ const LABELS: LabelRegistryEntry[] = [
     icon: null,
     color: "yellow",
     description: null,
+    created_at: 0,
+    modified_at: 0,
   },
   {
     label_id: "entertainment",
@@ -172,6 +193,8 @@ const LABELS: LabelRegistryEntry[] = [
     icon: "mdi:popcorn",
     color: "blue",
     description: null,
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 

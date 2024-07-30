@@ -280,7 +280,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
         direction: "asc",
         extraTemplate: (helper) =>
           helper.label_entries.length
@@ -295,7 +295,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.helpers.picker.headers.entity_id"),
         sortable: true,
         filterable: true,
-        width: "25%",
       },
       category: {
         title: localize("ui.panel.config.helpers.picker.headers.category"),
@@ -314,7 +313,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       localized_type: {
         title: localize("ui.panel.config.helpers.picker.headers.type"),
         sortable: true,
-        width: "25%",
         filterable: true,
         groupable: true,
       },
@@ -344,7 +342,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       actions: {
         title: "",
         label: "Actions",
-        width: "64px",
         type: "overflow-menu",
         hideable: false,
         moveable: false,

@@ -59,7 +59,7 @@ class HaConfigBackup extends LitElement {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
         template: narrow
           ? undefined
           : (backup) =>
@@ -72,14 +72,12 @@ class HaConfigBackup extends LitElement {
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
-        width: "15%",
         filterable: true,
         sortable: true,
         template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
       },
       date: {
         title: localize("ui.panel.config.backup.created"),
-        width: "15%",
         direction: "desc",
         filterable: true,
         sortable: true,
@@ -89,7 +87,6 @@ class HaConfigBackup extends LitElement {
 
       actions: {
         title: "",
-        width: "15%",
         type: "overflow-menu",
         showNarrow: true,
         hideable: false,
