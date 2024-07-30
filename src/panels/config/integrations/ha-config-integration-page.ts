@@ -538,7 +538,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </h1>
               ${normalEntries.length === 0
                 ? html`<div class="card-content no-entries">
-                    ${this.hass.config.components.find(
+                    ${this._manifest &&
+                    !this._manifest.config_flow &&
+                    this.hass.config.components.find(
                       (comp) => comp.split(".")[0] === this.domain
                     )
                       ? this.hass.localize(

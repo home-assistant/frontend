@@ -172,6 +172,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         if (
           !entryDomains.has(componentDomain) &&
           manifests[componentDomain] &&
+          !manifests[componentDomain].config_flow &&
           (!manifests[componentDomain].integration_type ||
             ["device", "hub", "service", "integration"].includes(
               manifests[componentDomain].integration_type!
@@ -312,6 +313,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     ) {
       this._fetchIntegrationManifests(
         this.configEntriesInProgress.map((flow) => flow.handler)
+      );
+    }
+    if (changed.has("configEntries") && this.configEntries) {
+      this._fetchIntegrationManifests(
+        this.configEntries.map((entry) => entry.domain)
       );
     }
   }
