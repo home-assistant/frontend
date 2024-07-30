@@ -71,7 +71,11 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { domainToName } from "../../../data/integration";
+import {
+  IntegrationManifest,
+  domainToName,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
 import {
   LabelRegistryEntry,
   createLabelRegistryEntry,
@@ -101,6 +105,7 @@ import {
   deserializeFilters,
   DataTableFilters,
 } from "../../../data/data_table_filters";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 
 type HelperItem = {
   id: string;
@@ -186,6 +191,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
+
+  @state() private _entitySource: Record<string, string> = {};
 
   @state() private _selected: string[] = [];
 
@@ -409,7 +416,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             configEntry !== undefined || entityState.attributes.editable,
           type: configEntry
             ? configEntry.domain
-            : computeStateDomain(entityState),
+            : this._entitySource[entityState.entity_id] ||
+              computeStateDomain(entityState),
           configEntry,
           entity: entityState,
         };
@@ -441,11 +449,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const category = entityRegEntry?.categories.helpers;
           return {
             ...item,
-            localized_type: item.configEntry
-              ? domainToName(localize, item.type)
-              : localize(
-                  `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
-                ) || item.type,
+            localized_type:
+              domainToName(localize, item.type) ||
+              localize(
+                `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
+              ) ||
+              item.type,
             label_entries: (labels || []).map(
               (lbl) => labelReg!.find((label) => label.label_id === lbl)!
             ),
@@ -464,7 +473,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._entityEntries === undefined ||
       this._configEntries === undefined
     ) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     const categoryItems = html`${this._categories?.map(
@@ -923,9 +932,46 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    this._fetchEntitySources();
+
     if (this.route.path === "/add") {
       this._handleAdd();
     }
+  }
+
+  private async _fetchEntitySources() {
+    const [entitySources, fetchedManifests] = await Promise.all([
+      fetchEntitySourcesWithCache(this.hass),
+      fetchIntegrationManifests(this.hass),
+    ]);
+
+    const manifests: { [domain: string]: IntegrationManifest } = {};
+
+    for (const manifest of fetchedManifests) {
+      manifests[manifest.domain] = manifest;
+    }
+
+    const entityDomains = {};
+    const domains = new Set<string>();
+
+    for (const [entity, source] of Object.entries(entitySources)) {
+      const domain = source.domain;
+      if (
+        !(domain in manifests) ||
+        manifests[domain].integration_type !== "helper"
+      ) {
+        continue;
+      }
+      entityDomains[entity] = domain;
+      domains.add(domain);
+    }
+
+    if (domains.size) {
+      this.hass.loadBackendTranslation("title", [...domains]);
+    }
+
+    this._entitySource = entityDomains;
   }
 
   private async _handleAdd() {
@@ -994,7 +1040,8 @@ ${rejected
     let changed =
       !this._stateItems ||
       changedProps.has("_entityEntries") ||
-      changedProps.has("_configEntries");
+      changedProps.has("_configEntries") ||
+      changedProps.has("_entitySource");
 
     if (!changed && changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -1004,20 +1051,11 @@ ${rejected
       return;
     }
 
-    const extraEntities = new Set<string>();
-
-    for (const entityEntry of Object.values(this._entityEntries)) {
-      if (
-        entityEntry.config_entry_id &&
-        entityEntry.config_entry_id in this._configEntries
-      ) {
-        extraEntities.add(entityEntry.entity_id);
-      }
-    }
+    const entityIds = Object.keys(this._entitySource);
 
     const newStates = Object.values(this.hass!.states).filter(
       (entity) =>
-        extraEntities.has(entity.entity_id) ||
+        entityIds.includes(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
