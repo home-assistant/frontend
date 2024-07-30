@@ -172,6 +172,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         if (
           !entryDomains.has(componentDomain) &&
           manifests[componentDomain] &&
+          !manifests[componentDomain].config_flow &&
           (!manifests[componentDomain].integration_type ||
             ["device", "hub", "service", "integration"].includes(
               manifests[componentDomain].integration_type!
