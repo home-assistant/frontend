@@ -66,6 +66,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "tilt-position"
     | "brightness";
   action_name?: string;
+  action?: string;
+  /** @deprecated use "action" instead */
   service?: string;
   // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, unknown>;

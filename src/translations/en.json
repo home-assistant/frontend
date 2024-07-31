@@ -5787,6 +5787,7 @@
               "entity_row": {
                 "divider": "Divider",
                 "call-service": "Perform action",
+                "perform-action": "Perform action",
                 "section": "Section",
                 "weblink": "Web link",
                 "attribute": "Attribute",
