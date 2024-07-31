@@ -138,7 +138,7 @@ export class HuiTileCardEditor
         {
           name: "",
           type: "expandable",
-          title: localize(`ui.panel.lovelace.editor.card.tile.actions`),
+          title: localize(`ui.panel.lovelace.editor.card.tile.interactions`),
           iconPath: mdiGestureTap,
           schema: [
             {

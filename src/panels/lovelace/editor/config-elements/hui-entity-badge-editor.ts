@@ -131,7 +131,7 @@ export class HuiEntityBadgeEditor
         {
           name: "",
           type: "expandable",
-          title: localize(`ui.panel.lovelace.editor.badge.entity.actions`),
+          title: localize(`ui.panel.lovelace.editor.badge.entity.interactions`),
           iconPath: mdiGestureTap,
           schema: [
             {
