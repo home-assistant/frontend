@@ -203,6 +203,7 @@ export interface LegacyDeviceSelector {
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
+    enable_millisecond?: boolean;
   } | null;
 }
 
