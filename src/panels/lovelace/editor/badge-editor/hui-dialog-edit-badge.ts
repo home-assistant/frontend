@@ -109,6 +109,10 @@ export class HuiDialogEditBadge
       this._badgeConfig = badge != null ? ensureBadgeConfig(badge) : badge;
     }
 
+    if (this._badgeConfig?.type === "state-label") {
+      this._badgeConfig = { ...this._badgeConfig, type: "entity" };
+    }
+
     this.large = false;
     if (this._badgeConfig && !Object.isFrozen(this._badgeConfig)) {
       this._badgeConfig = deepFreeze(this._badgeConfig);
