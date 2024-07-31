@@ -10,10 +10,7 @@ import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import {
-  removeLaunchScreen,
-  renderLaunchScreenInfoBox,
-} from "../util/launch-screen";
+import { renderLaunchScreenInfoBox } from "../util/launch-screen";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -88,9 +85,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this.hass.services &&
       this._databaseMigration === false
     ) {
-      this.render = this.renderHass;
-      this.update = super.update;
-      removeLaunchScreen();
+      // this.render = this.renderHass;
+      // this.update = super.update;
+      // removeLaunchScreen();
     }
     super.update(changedProps);
   }
