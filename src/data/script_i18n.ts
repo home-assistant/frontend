@@ -192,7 +192,7 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (
       config.service_template ||
-      (config.service && isTemplate(config.service))
+      (config.action && isTemplate(config.action))
     ) {
       return hass.localize(
         targets.length
@@ -204,8 +204,8 @@ const tryDescribeAction = <T extends ActionType>(
       );
     }
 
-    if (config.service) {
-      const [domain, serviceName] = config.service.split(".", 2);
+    if (config.action) {
+      const [domain, serviceName] = config.action.split(".", 2);
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
@@ -217,7 +217,7 @@ const tryDescribeAction = <T extends ActionType>(
             : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
-            name: service || config.service,
+            name: service || config.action,
             targets: formatListWithAnds(hass.locale, targets),
           }
         );
@@ -230,7 +230,7 @@ const tryDescribeAction = <T extends ActionType>(
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
-            : config.service,
+            : config.action,
           targets: formatListWithAnds(hass.locale, targets),
         }
       );

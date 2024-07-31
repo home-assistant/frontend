@@ -6807,17 +6807,17 @@
             "copy_clipboard_template": "Copy to clipboard (template)",
             "errors": {
               "ui": {
-                "no_service": "No action selected, please select an action",
-                "invalid_service": "Selected action is invalid, please select a valid action",
+                "no_action": "No action selected, please select an action",
+                "invalid_action": "Selected action is invalid, please select a valid action",
                 "no_target": "This action requires a target, please select a target from the picker",
                 "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
               },
               "yaml": {
                 "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
-                "no_service": "No action defined, please define an action: key",
-                "invalid_service": "Defined action is invalid, please provide an action in the format domain.action",
-                "no_target": "This action requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
-                "missing_required_field": "This action requires field {key}, which must be provided under data:"
+                "no_action": "No action defined, please define an 'action:' key",
+                "invalid_action": "Defined action is invalid, please provide an action in the format domain.action",
+                "no_target": "This action requires a target, please define a target 'entity_id', 'device_id', or 'area_id' under 'target:' or 'data:'",
+                "missing_required_field": "This action requires field {key}, which must be provided under 'data:'"
               }
             }
           },

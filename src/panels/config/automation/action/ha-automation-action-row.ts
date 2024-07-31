@@ -87,8 +87,8 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("service" in action || "scene" in action) {
-    return getActionType(action) as "activate_scene" | "service" | "play_media";
+  if ("action" in action || "scene" in action) {
+    return getActionType(action) as "activate_scene" | "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
@@ -214,12 +214,12 @@ export default class HaAutomationActionRow extends LitElement {
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
             ${type === "service" &&
-            "service" in this.action &&
-            this.action.service
+            "action" in this.action &&
+            this.action.action
               ? html`<ha-service-icon
                   class="action-icon"
                   .hass=${this.hass}
-                  .service=${this.action.service}
+                  .service=${this.action.action}
                 ></ha-service-icon>`
               : html`<ha-svg-icon
                   class="action-icon"
