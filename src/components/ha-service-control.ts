@@ -717,7 +717,7 @@ export class HaServiceControl extends LitElement {
     }
 
     const value = {
-      service: newService,
+      action: newService,
       target,
     };
 

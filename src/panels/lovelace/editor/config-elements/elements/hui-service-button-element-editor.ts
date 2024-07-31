@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { any, assert, literal, object, optional, string } from "superstruct";
+import { any, assert, enums, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -12,7 +12,7 @@ import { ServiceButtonElementConfig } from "../../../elements/types";
 import { LovelacePictureElementEditor } from "../../../types";
 
 const serviceButtonElementConfigStruct = object({
-  type: literal("service-button"),
+  type: enums(["service-button", "action-button"]),
   style: optional(any()),
   title: optional(string()),
   action: optional(string()),

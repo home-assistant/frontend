@@ -31,7 +31,7 @@ const elementTypes: string[] = [
   "state-badge",
   "state-icon",
   "state-label",
-  "service-button",
+  "action-button",
   "icon",
   "image",
   "conditional",
@@ -141,9 +141,13 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           ).entity ??
           ""
         );
+      case "action-button":
       case "service-button":
         return (
-          element.title ?? (element as ServiceButtonElementConfig).service ?? ""
+          element.title ??
+          (element as ServiceButtonElementConfig).action ??
+          (element as ServiceButtonElementConfig).service ??
+          ""
         );
       case "image":
         return (
