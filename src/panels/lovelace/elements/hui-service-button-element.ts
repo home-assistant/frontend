@@ -40,12 +40,23 @@ export class HuiServiceButtonElement
       return nothing;
     }
 
+    const { entity_id, label_id, floor_id, device_id, area_id } =
+      this._config.service_data ?? {};
+    const updatedTarget = this._config.target ?? {
+      entity_id,
+      label_id,
+      floor_id,
+      device_id,
+      area_id,
+    };
+
     return html`
       <ha-call-service-button
         .hass=${this.hass}
         .domain=${this._domain}
         .service=${this._service}
-        .serviceData=${this._config.service_data}
+        .data=${this._config.data ?? this._config.service_data}
+        .target=${updatedTarget}
         >${this._config.title}</ha-call-service-button
       >
     `;
