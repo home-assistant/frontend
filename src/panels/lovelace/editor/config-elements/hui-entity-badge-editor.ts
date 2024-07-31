@@ -44,6 +44,8 @@ const badgeConfigStruct = assign(
     color: optional(string()),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
+    show_name: optional(boolean()),
+    image: optional(string()),
   })
 );
 
