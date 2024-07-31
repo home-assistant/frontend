@@ -56,8 +56,12 @@ export const handleAction = async (
     forwardHaptic("warning");
 
     let serviceName;
-    if (actionConfig.action === "call-service") {
-      const [domain, service] = actionConfig.service.split(".", 2);
+    if (
+      actionConfig.action === "call-service" ||
+      actionConfig.action === "perform-action"
+    ) {
+      const [domain, service] = (actionConfig.perform_action ||
+        actionConfig.service)!.split(".", 2);
       const serviceDomains = hass.services;
       if (domain in serviceDomains && service in serviceDomains[domain]) {
         await hass.loadBackendTranslation("title");
@@ -145,15 +149,17 @@ export const handleAction = async (
       }
       break;
     }
+    case "perform-action":
     case "call-service": {
-      if (!actionConfig.service) {
+      if (!actionConfig.perform_action && !actionConfig.service) {
         showToast(node, {
           message: hass.localize("ui.panel.lovelace.cards.actions.no_action"),
         });
         forwardHaptic("failure");
         return;
       }
-      const [domain, service] = actionConfig.service.split(".", 2);
+      const [domain, service] = (actionConfig.perform_action ||
+        actionConfig.service)!.split(".", 2);
       hass.callService(
         domain,
         service,
