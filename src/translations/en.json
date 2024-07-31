@@ -5997,6 +5997,7 @@
                 "state-icon": "State icon",
                 "state-label": "State label",
                 "service-button": "Perform action button",
+                "action-button": "Perform action button",
                 "icon": "Icon",
                 "image": "Image",
                 "conditional": "Conditional"
