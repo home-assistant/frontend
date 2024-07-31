@@ -7,7 +7,9 @@ import { getPictureElementClass } from "../../create-element/create-picture-elem
 @customElement("hui-picture-element-element-editor")
 export class HuiPictureElementElementEditor extends HuiElementEditor<LovelaceElementConfig> {
   protected get configElementType(): string | undefined {
-    return this.value?.type;
+    return this.value?.type === "action-button"
+      ? "service-button"
+      : this.value?.type;
   }
 
   protected async getConfigElement(): Promise<
