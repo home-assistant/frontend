@@ -50,7 +50,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
   baseActionStruct,
   object({
     action: optional(string()),
-    action_template: optional(string()),
+    service_template: optional(string()),
     entity_id: optional(string()),
     target: optional(targetStruct),
     data: optional(object()),
@@ -133,7 +133,7 @@ export interface EventAction extends BaseAction {
 
 export interface ServiceAction extends BaseAction {
   action?: string;
-  action_template?: string;
+  service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
   data?: Record<string, unknown>;
@@ -424,4 +424,61 @@ export const hasScriptFields = (
 ): boolean => {
   const fields = hass.services.script[computeObjectId(entityId)]?.fields;
   return fields !== undefined && Object.keys(fields).length > 0;
+};
+
+export const migrateAutomationAction = (
+  action: Action | Action[]
+): Action | Action[] => {
+  if (Array.isArray(action)) {
+    return action.map(migrateAutomationAction) as Action[];
+  }
+
+  if ("service" in action) {
+    if (!("action" in action)) {
+      action.action = action.service;
+    }
+    delete action.service;
+  }
+
+  if ("sequence" in action) {
+    for (const sequenceAction of (action as SequenceAction).sequence) {
+      migrateAutomationAction(sequenceAction);
+    }
+  }
+
+  const actionType = getActionType(action);
+
+  if (actionType === "parallel") {
+    const _action = action as ParallelAction;
+    migrateAutomationAction(_action.parallel);
+  }
+
+  if (actionType === "choose") {
+    const _action = action as ChooseAction;
+    if (Array.isArray(_action.choose)) {
+      for (const choice of _action.choose) {
+        migrateAutomationAction(choice.sequence);
+      }
+    } else if (_action.choose) {
+      migrateAutomationAction(_action.choose.sequence);
+    }
+    if (_action.default) {
+      migrateAutomationAction(_action.default);
+    }
+  }
+
+  if (actionType === "repeat") {
+    const _action = action as RepeatAction;
+    migrateAutomationAction(_action.repeat.sequence);
+  }
+
+  if (actionType === "if") {
+    const _action = action as IfAction;
+    migrateAutomationAction(_action.then);
+    if (_action.else) {
+      migrateAutomationAction(_action.else);
+    }
+  }
+
+  return action;
 };

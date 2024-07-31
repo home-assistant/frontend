@@ -191,7 +191,7 @@ const tryDescribeAction = <T extends ActionType>(
     }
 
     if (
-      config.action_template ||
+      config.service_template ||
       (config.action && isTemplate(config.action))
     ) {
       return hass.localize(

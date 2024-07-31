@@ -94,7 +94,7 @@ const tryDescribeTrigger = (
   }
 
   // Event Trigger
-  if (trigger.trigger === "event" && trigger.event_type) {
+  if (trigger.platform === "event" && trigger.event_type) {
     const eventTypes: string[] = [];
 
     if (Array.isArray(trigger.event_type)) {
@@ -113,7 +113,7 @@ const tryDescribeTrigger = (
   }
 
   // Home Assistant Trigger
-  if (trigger.trigger === "homeassistant" && trigger.event) {
+  if (trigger.platform === "homeassistant" && trigger.event) {
     return hass.localize(
       trigger.event === "start"
         ? `${triggerTranslationBaseKey}.homeassistant.description.started`
@@ -122,7 +122,7 @@ const tryDescribeTrigger = (
   }
 
   // Numeric State Trigger
-  if (trigger.trigger === "numeric_state" && trigger.entity_id) {
+  if (trigger.platform === "numeric_state" && trigger.entity_id) {
     const entities: string[] = [];
     const states = hass.states;
 
@@ -197,7 +197,7 @@ const tryDescribeTrigger = (
   }
 
   // State Trigger
-  if (trigger.trigger === "state") {
+  if (trigger.platform === "state") {
     const entities: string[] = [];
     const states = hass.states;
 
@@ -320,7 +320,7 @@ const tryDescribeTrigger = (
   }
 
   // Sun Trigger
-  if (trigger.trigger === "sun" && trigger.event) {
+  if (trigger.platform === "sun" && trigger.event) {
     let duration = "";
     if (trigger.offset) {
       if (typeof trigger.offset === "number") {
@@ -341,12 +341,12 @@ const tryDescribeTrigger = (
   }
 
   // Tag Trigger
-  if (trigger.trigger === "tag") {
+  if (trigger.platform === "tag") {
     return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
-  if (trigger.trigger === "time" && trigger.at) {
+  if (trigger.platform === "time" && trigger.at) {
     const result = ensureArray(trigger.at).map((at) =>
       typeof at !== "string"
         ? at
@@ -361,7 +361,7 @@ const tryDescribeTrigger = (
   }
 
   // Time Pattern Trigger
-  if (trigger.trigger === "time_pattern") {
+  if (trigger.platform === "time_pattern") {
     if (!trigger.seconds && !trigger.minutes && !trigger.hours) {
       return hass.localize(
         `${triggerTranslationBaseKey}.time_pattern.description.initial`
@@ -538,7 +538,7 @@ const tryDescribeTrigger = (
   }
 
   // Zone Trigger
-  if (trigger.trigger === "zone" && trigger.entity_id && trigger.zone) {
+  if (trigger.platform === "zone" && trigger.entity_id && trigger.zone) {
     const entities: string[] = [];
     const zones: string[] = [];
 
@@ -581,7 +581,7 @@ const tryDescribeTrigger = (
   }
 
   // Geo Location Trigger
-  if (trigger.trigger === "geo_location" && trigger.source && trigger.zone) {
+  if (trigger.platform === "geo_location" && trigger.source && trigger.zone) {
     const sources: string[] = [];
     const zones: string[] = [];
     const states = hass.states;
@@ -620,12 +620,12 @@ const tryDescribeTrigger = (
   }
 
   // MQTT Trigger
-  if (trigger.trigger === "mqtt") {
+  if (trigger.platform === "mqtt") {
     return hass.localize(`${triggerTranslationBaseKey}.mqtt.description.full`);
   }
 
   // Template Trigger
-  if (trigger.trigger === "template") {
+  if (trigger.platform === "template") {
     let duration = "";
     if (trigger.for) {
       duration = describeDuration(hass.locale, trigger.for) ?? "";
@@ -638,14 +638,14 @@ const tryDescribeTrigger = (
   }
 
   // Webhook Trigger
-  if (trigger.trigger === "webhook") {
+  if (trigger.platform === "webhook") {
     return hass.localize(
       `${triggerTranslationBaseKey}.webhook.description.full`
     );
   }
 
   // Conversation Trigger
-  if (trigger.trigger === "conversation") {
+  if (trigger.platform === "conversation") {
     if (!trigger.command) {
       return hass.localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
@@ -664,14 +664,14 @@ const tryDescribeTrigger = (
   }
 
   // Persistent Notification Trigger
-  if (trigger.trigger === "persistent_notification") {
+  if (trigger.platform === "persistent_notification") {
     return hass.localize(
       `${triggerTranslationBaseKey}.persistent_notification.description.full`
     );
   }
 
   // Device Trigger
-  if (trigger.trigger === "device" && trigger.device_id) {
+  if (trigger.platform === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -689,7 +689,7 @@ const tryDescribeTrigger = (
 
   return (
     hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${trigger.trigger}.label`
+      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
     ) ||
     hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
   );

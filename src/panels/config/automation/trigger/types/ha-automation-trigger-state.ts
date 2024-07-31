@@ -29,7 +29,7 @@ const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
     alias: optional(string()),
-    trigger: literal("state"),
+    platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
     from: optional(nullable(string())),

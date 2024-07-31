@@ -114,7 +114,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       <ha-service-control
         .narrow=${this.narrow}
         .hass=${this.hass}
-        .value=${{ service: this._action.action, ...this._action }}
+        .value=${this._action}
         .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
@@ -178,6 +178,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         this._responseChecked = false;
       }
     }
+
     fireEvent(this, "value-changed", { value });
   }
 

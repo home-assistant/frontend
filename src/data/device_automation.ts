@@ -31,7 +31,7 @@ export interface DeviceCondition extends DeviceAutomation {
 
 export type DeviceTrigger = DeviceAutomation &
   BaseTrigger & {
-    trigger: "device";
+    platform: "device";
   };
 
 export interface DeviceCapabilities {
