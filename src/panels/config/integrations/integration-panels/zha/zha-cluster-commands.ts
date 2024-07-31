@@ -115,7 +115,7 @@ export class ZHAClusterCommands extends LitElement {
                   .hass=${this.hass}
                   domain="zha"
                   service="issue_zigbee_cluster_command"
-                  .serviceData=${this._issueClusterCommandServiceData}
+                  .data=${this._issueClusterCommandServiceData}
                   .disabled=${!this._canIssueCommand}
                 >
                   ${this.hass!.localize(
