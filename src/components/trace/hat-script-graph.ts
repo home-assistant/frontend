@@ -424,7 +424,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${node.service ? undefined : mdiRoomService}
+        .iconPath=${node.action ? undefined : mdiRoomService}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
@@ -432,11 +432,11 @@ export class HatScriptGraph extends LitElement {
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       >
-        ${node.service
+        ${node.action
           ? html`<ha-service-icon
               slot="icon"
               .hass=${this.hass}
-              .service=${node.service}
+              .service=${node.action}
             ></ha-service-icon>`
           : nothing}
       </hat-graph-node>
