@@ -12,6 +12,7 @@ import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceCardFeatureConfig } from "./card-features/types";
+import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 
 declare global {
   // eslint-disable-next-line
@@ -105,6 +106,11 @@ export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
   getConfigElement?: () => LovelaceRowEditor;
 }
 
+export interface LovelaceElementConstructor
+  extends Constructor<LovelaceElement> {
+  getConfigElement?: () => LovelacePictureElementEditor;
+}
+
 export interface LovelaceHeaderFooter extends HTMLElement {
   hass?: HomeAssistant;
   type: "header" | "footer";
@@ -127,6 +133,11 @@ export interface LovelaceHeaderFooterEditor
 
 export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
+}
+
+export interface LovelacePictureElementEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceElementConfig): void;
 }
 
 export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {

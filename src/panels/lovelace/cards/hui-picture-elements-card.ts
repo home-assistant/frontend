@@ -14,13 +14,18 @@ import { ImageEntity, computeImageUrl } from "../../../data/image";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
 import { PictureElementsCardConfig } from "./types";
 import { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-picture-elements-card-editor");
+    return document.createElement("hui-picture-elements-card-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _elements?: LovelaceElement[];

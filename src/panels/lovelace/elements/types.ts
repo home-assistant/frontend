@@ -26,6 +26,7 @@ export interface LovelaceElement extends HTMLElement {
 export interface ConditionalElementConfig extends LovelaceElementConfigBase {
   conditions: Condition[];
   elements: LovelaceElementConfigBase[];
+  title?: string;
 }
 
 export interface IconElementConfig extends LovelaceElementConfigBase {
@@ -34,7 +35,8 @@ export interface IconElementConfig extends LovelaceElementConfigBase {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  icon: string;
+  icon?: string;
+  title?: string;
 }
 
 export interface ImageElementConfig extends LovelaceElementConfigBase {
@@ -52,6 +54,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   filter?: string;
   state_filter?: string;
   aspect_ratio?: string;
+  title?: string;
 }
 
 export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
@@ -64,7 +67,7 @@ export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
 }
 
 export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   title?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -72,20 +75,22 @@ export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
 }
 
 export interface StateIconElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   icon?: string;
   state_color?: boolean;
+  title?: string;
 }
 
 export interface StateLabelElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   attribute?: string;
   prefix?: string;
   suffix?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  title?: string;
 }
