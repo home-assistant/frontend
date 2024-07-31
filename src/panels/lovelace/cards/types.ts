@@ -316,6 +316,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   card_size?: number;
   entity_ids?: string | string[];
   theme?: string;
+  show_empty?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
