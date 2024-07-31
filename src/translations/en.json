@@ -6774,8 +6774,8 @@
             "copy_clipboard_template": "Copy to clipboard (template)",
             "errors": {
               "ui": {
-                "no_service": "No action selected, please select an action",
-                "invalid_service": "Selected action is invalid, please select a valid action",
+                "no_action": "No action selected, please select an action",
+                "invalid_action": "Selected action is invalid, please select a valid action",
                 "no_target": "This action requires a target, please select a target from the picker",
                 "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
               },
