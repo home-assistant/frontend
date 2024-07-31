@@ -26,18 +26,21 @@ export class HuiServiceButtonElement
   private _service?: string;
 
   public setConfig(config: ServiceButtonElementConfig): void {
-    if (!config || !config.service) {
-      throw Error("Service required");
+    if (!config || (!config.action && !config.service)) {
+      throw Error("Action required");
     }
 
-    [this._domain, this._service] = config.service.split(".", 2);
+    [this._domain, this._service] = (config.action ?? config.service)!.split(
+      ".",
+      2
+    );
 
     if (!this._domain) {
-      throw Error("Service does not have a service domain");
+      throw Error("Action does not have a domain");
     }
 
     if (!this._service) {
-      throw Error("Service does not have a service name");
+      throw Error("Action does not have a action name");
     }
 
     this._config = config;
@@ -49,7 +52,7 @@ export class HuiServiceButtonElement
     }
 
     const { entity_id, label_id, floor_id, device_id, area_id } =
-      this._config.service_data ?? {};
+      this._config.service_data ?? this._config.data ?? {};
     const updatedTarget = this._config.target ?? {
       entity_id,
       label_id,
@@ -65,8 +68,9 @@ export class HuiServiceButtonElement
         .service=${this._service}
         .data=${this._config.data ?? this._config.service_data}
         .target=${updatedTarget}
-        >${this._config.title}</ha-call-service-button
       >
+        ${this._config.title}
+      </ha-call-service-button>
     `;
   }
 

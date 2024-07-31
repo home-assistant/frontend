@@ -5996,7 +5996,7 @@
                 "state-badge": "State badge",
                 "state-icon": "State icon",
                 "state-label": "State label",
-                "service-button": "Service call button",
+                "service-button": "Perform action button",
                 "icon": "Icon",
                 "image": "Image",
                 "conditional": "Conditional"
