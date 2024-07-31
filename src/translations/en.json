@@ -2837,6 +2837,7 @@
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
             "search_in": "Search · {group}",
+            "unknown_entity": "unknown entity",
             "triggers": {
               "name": "Triggers",
               "header": "When",
