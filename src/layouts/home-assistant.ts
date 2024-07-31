@@ -10,7 +10,10 @@ import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import { renderLaunchScreenInfoBox } from "../util/launch-screen";
+import {
+  removeLaunchScreen,
+  renderLaunchScreenInfoBox,
+} from "../util/launch-screen";
 import {
   registerServiceWorker,
   supportsServiceWorker,
