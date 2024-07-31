@@ -5672,7 +5672,7 @@
             "pipeline_id": "Assistant",
             "actions": {
               "default_action": "Default",
-              "call-service": "Perform action",
+              "perform-action": "Perform action",
               "more-info": "More info",
               "toggle": "Toggle",
               "navigate": "Navigate",
