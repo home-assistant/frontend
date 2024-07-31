@@ -6781,10 +6781,10 @@
               },
               "yaml": {
                 "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
-                "no_service": "No action defined, please define an action: key",
-                "invalid_service": "Defined action is invalid, please provide an action in the format domain.action",
-                "no_target": "This action requires a target, please define a target entity_id, device_id, or area_id under target: or data:",
-                "missing_required_field": "This action requires field {key}, which must be provided under data:"
+                "no_action": "No action defined, please define an 'action:' key",
+                "invalid_action": "Defined action is invalid, please provide an action in the format domain.action",
+                "no_target": "This action requires a target, please define a target 'entity_id', 'device_id', or 'area_id' under 'target:' or 'data:'",
+                "missing_required_field": "This action requires field {key}, which must be provided under 'data:'"
               }
             }
           },

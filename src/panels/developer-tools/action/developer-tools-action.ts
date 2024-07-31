@@ -329,14 +329,14 @@ class HaPanelDevAction extends LitElement {
     const errorCategory = yamlMode ? "yaml" : "ui";
     if (!serviceData?.action) {
       return localize(
-        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_service`
+        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_action`
       );
     }
     const domain = computeDomain(serviceData.action);
     const service = computeObjectId(serviceData.action);
     if (!domain || !service) {
       return localize(
-        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_service`
+        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
       );
     }
     if (
