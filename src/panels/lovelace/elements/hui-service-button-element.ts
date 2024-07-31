@@ -3,12 +3,20 @@ import { customElement, state } from "lit/decorators";
 import "../../../components/buttons/ha-call-service-button";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElement, ServiceButtonElementConfig } from "./types";
+import { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-service-button-element")
 export class HuiServiceButtonElement
   extends LitElement
   implements LovelaceElement
 {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-service-button-element-editor"
+    );
+    return document.createElement("hui-service-button-element-editor");
+  }
+
   public hass?: HomeAssistant;
 
   @state() private _config?: ServiceButtonElementConfig;
