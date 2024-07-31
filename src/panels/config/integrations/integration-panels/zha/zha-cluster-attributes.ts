@@ -134,7 +134,7 @@ export class ZHAClusterAttributes extends LitElement {
           .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
-          .serviceData=${this._setAttributeServiceData}
+          .data=${this._setAttributeServiceData}
         >
           ${this.hass!.localize(
             "ui.panel.config.zha.cluster_attributes.write_zigbee_attribute"

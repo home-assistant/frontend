@@ -30,6 +30,7 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -86,8 +87,8 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("service" in action || "scene" in action) {
-    return getActionType(action) as "activate_scene" | "service" | "play_media";
+  if ("action" in action || "scene" in action) {
+    return getActionType(action) as "activate_scene" | "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
@@ -213,12 +214,12 @@ export default class HaAutomationActionRow extends LitElement {
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
             ${type === "service" &&
-            "service" in this.action &&
-            this.action.service
+            "action" in this.action &&
+            this.action.action
               ? html`<ha-service-icon
                   class="action-icon"
                   .hass=${this.hass}
-                  .service=${this.action.service}
+                  .service=${this.action.action}
                 ></ha-service-icon>`
               : html`<ha-svg-icon
                   class="action-icon"
@@ -253,6 +254,7 @@ export default class HaAutomationActionRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
+            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button

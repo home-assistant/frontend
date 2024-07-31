@@ -1,0 +1,55 @@
+diff --git a/build/inject-manifest.js b/build/inject-manifest.js
+index 60e3d2bb51c11a19fbbedbad65e101082ec41c36..fed6026630f43f86e25446383982cf6fb694313b 100644
+--- a/build/inject-manifest.js
++++ b/build/inject-manifest.js
+@@ -104,7 +104,7 @@ async function injectManifest(config) {
+             replaceString: manifestString,
+             searchString: options.injectionPoint,
+         });
+-        filesToWrite[options.swDest] = source;
++        filesToWrite[options.swDest] = source.replace(url, encodeURI(upath_1.default.basename(destPath)));
+         filesToWrite[destPath] = map;
+     }
+     else {
+diff --git a/build/lib/translate-url-to-sourcemap-paths.js b/build/lib/translate-url-to-sourcemap-paths.js
+index 3220c5474eeac6e8a56ca9b2ac2bd9be48529e43..5f003879a904d4840529a42dd056d288fd213771 100644
+--- a/build/lib/translate-url-to-sourcemap-paths.js
++++ b/build/lib/translate-url-to-sourcemap-paths.js
+@@ -22,7 +22,7 @@ function translateURLToSourcemapPaths(url, swSrc, swDest) {
+         const possibleSrcPath = upath_1.default.resolve(upath_1.default.dirname(swSrc), url);
+         if (fs_extra_1.default.existsSync(possibleSrcPath)) {
+             srcPath = possibleSrcPath;
+-            destPath = upath_1.default.resolve(upath_1.default.dirname(swDest), url);
++            destPath = `${swDest}.map`;
+         }
+         else {
+             warning = `${errors_1.errors['cant-find-sourcemap']} ${possibleSrcPath}`;
+diff --git a/src/inject-manifest.ts b/src/inject-manifest.ts
+index 8795ddcaa77aea7b0356417e4bc4b19e2b3f860c..fcdc68342d9ac53936c9ed40a9ccfc2f5070cad3 100644
+--- a/src/inject-manifest.ts
++++ b/src/inject-manifest.ts
+@@ -129,7 +129,10 @@ export async function injectManifest(
+       searchString: options.injectionPoint!,
+     });
+ 
+-    filesToWrite[options.swDest] = source;
++    filesToWrite[options.swDest] = source.replace(
++      url!,
++      encodeURI(upath.basename(destPath)),
++    );
+     filesToWrite[destPath] = map;
+   } else {
+     // If there's no sourcemap associated with swSrc, a simple string
+diff --git a/src/lib/translate-url-to-sourcemap-paths.ts b/src/lib/translate-url-to-sourcemap-paths.ts
+index 072eac40d4ef5d095a01cb7f7e392a9e034853bd..f0bbe69e88ef3a415de18a7e9cb264daea273d71 100644
+--- a/src/lib/translate-url-to-sourcemap-paths.ts
++++ b/src/lib/translate-url-to-sourcemap-paths.ts
+@@ -28,7 +28,7 @@ export function translateURLToSourcemapPaths(
+     const possibleSrcPath = upath.resolve(upath.dirname(swSrc), url);
+     if (fse.existsSync(possibleSrcPath)) {
+       srcPath = possibleSrcPath;
+-      destPath = upath.resolve(upath.dirname(swDest), url);
++      destPath = `${swDest}.map`;
+     } else {
+       warning = `${errors['cant-find-sourcemap']} ${possibleSrcPath}`;
+     }

@@ -25,8 +25,6 @@ declare global {
 export class HuiCard extends ReactiveElement {
   @property({ type: Boolean }) public preview = false;
 
-  @property({ attribute: false }) public isPanel = false;
-
   @property({ attribute: false }) public config?: LovelaceCardConfig;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -150,8 +148,10 @@ export class HuiCard extends ReactiveElement {
       if (changedProps.has("config")) {
         const elementConfig = this._elementConfig;
         if (this.config !== elementConfig && this.config) {
-          const typeChanged = this.config?.type !== elementConfig?.type;
-          if (typeChanged) {
+          const typeChanged =
+            this.config?.type !== elementConfig?.type || this.preview;
+          // Rebuild the card if the type of the card has changed or if we are in preview mode
+          if (typeChanged || this.preview) {
             this._loadElement(this.config);
           } else {
             this._updateElement(this.config);
@@ -176,11 +176,14 @@ export class HuiCard extends ReactiveElement {
           this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
-      if (changedProps.has("isPanel")) {
-        this._element.isPanel = this.isPanel;
-      }
       if (changedProps.has("layout")) {
-        this._element.layout = this.layout;
+        try {
+          this._element.layout = this.layout;
+          // For backwards compatibility
+          (this._element as any).isPanel = this.layout === "panel";
+        } catch (e: any) {
+          this._loadElement(createErrorCardConfig(e.message, null));
+        }
       }
     }
 

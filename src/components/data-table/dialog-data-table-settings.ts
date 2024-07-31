@@ -109,7 +109,8 @@ export class DialogDataTableSettings extends LitElement {
                 const canHide = !col.main && col.hideable !== false;
                 const isVisible = !(this._columnOrder &&
                 this._columnOrder.includes(col.key)
-                  ? this._hiddenColumns?.includes(col.key) ?? col.defaultHidden
+                  ? (this._hiddenColumns?.includes(col.key) ??
+                    col.defaultHidden)
                   : col.defaultHidden);
 
                 return html`<ha-list-item
@@ -193,6 +194,7 @@ export class DialogDataTableSettings extends LitElement {
           .filter(([_key, col]) => col.defaultHidden)
           .map(([key]) => key)),
     ];
+
     if (wasHidden && hidden.includes(column)) {
       hidden.splice(hidden.indexOf(column), 1);
     } else if (!wasHidden) {
@@ -242,7 +244,11 @@ export class DialogDataTableSettings extends LitElement {
             newOrder.splice(lastMoveable + 1, 0, col.key);
           }
 
-          if (col.defaultHidden) {
+          if (
+            col.key !== column &&
+            col.defaultHidden &&
+            !hidden.includes(col.key)
+          ) {
             hidden.push(col.key);
           }
         }

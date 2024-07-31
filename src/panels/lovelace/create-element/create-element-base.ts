@@ -12,17 +12,18 @@ import {
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
 import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import {
   LovelaceBadge,
+  LovelaceBadgeConstructor,
   LovelaceCard,
   LovelaceCardConstructor,
   LovelaceCardFeature,
   LovelaceCardFeatureConstructor,
+  LovelaceElementConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
   LovelaceRowConstructor,
@@ -39,12 +40,12 @@ interface CreateElementConfigTypes {
   badge: {
     config: LovelaceBadgeConfig;
     element: LovelaceBadge;
-    constructor: unknown;
+    constructor: LovelaceBadgeConstructor;
   };
   element: {
     config: LovelaceElementConfig;
     element: LovelaceElement;
-    constructor: unknown;
+    constructor: LovelaceElementConstructor;
   };
   row: {
     config: LovelaceRowConfig;
@@ -87,7 +88,27 @@ export const createErrorCardElement = (config: ErrorCardConfig) => {
   return el;
 };
 
+export const createErrorBadgeElement = (config: ErrorCardConfig) => {
+  const el = document.createElement("hui-error-badge");
+  if (customElements.get("hui-error-badge")) {
+    el.setConfig(config);
+  } else {
+    import("../badges/hui-error-badge");
+    customElements.whenDefined("hui-error-badge").then(() => {
+      customElements.upgrade(el);
+      el.setConfig(config);
+    });
+  }
+  return el;
+};
+
 export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
+export const createErrorBadgeConfig = (error, origConfig) => ({
   type: "error",
   error,
   origConfig,
@@ -96,7 +117,7 @@ export const createErrorCardConfig = (error, origConfig) => ({
 const _createElement = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
-): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+): CreateElementConfigTypes[T]["element"] => {
   const element = document.createElement(
     tag
   ) as CreateElementConfigTypes[T]["element"];
@@ -106,11 +127,18 @@ const _createElement = <T extends keyof CreateElementConfigTypes>(
 };
 
 const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
+  tagSuffix: T,
   error: string,
   config: CreateElementConfigTypes[T]["config"]
-): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
+): CreateElementConfigTypes[T]["element"] => {
+  if (tagSuffix === "badge") {
+    return createErrorBadgeElement(createErrorBadgeConfig(error, config));
+  }
+  return createErrorCardElement(createErrorCardConfig(error, config));
+};
 
 const _customCreate = <T extends keyof CreateElementConfigTypes>(
+  tagSuffix: T,
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
 ) => {
@@ -119,6 +147,7 @@ const _customCreate = <T extends keyof CreateElementConfigTypes>(
   }
 
   const element = _createErrorElement(
+    tagSuffix,
     `Custom element doesn't exist: ${tag}.`,
     config
   );
@@ -175,7 +204,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
   defaultType?: string
-): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+): CreateElementConfigTypes[T]["element"] => {
   try {
     return tryCreateLovelaceElement(
       tagSuffix,
@@ -188,7 +217,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   } catch (err: any) {
     // eslint-disable-next-line
     console.error(tagSuffix, config.type, err);
-    return _createErrorElement(err.message, config);
+    return _createErrorElement(tagSuffix, err.message, config);
   }
 };
 
@@ -203,7 +232,7 @@ export const tryCreateLovelaceElement = <
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
   defaultType?: string
-): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+): CreateElementConfigTypes[T]["element"] => {
   if (!config || typeof config !== "object") {
     throw new Error("Config is not an object");
   }
@@ -220,7 +249,7 @@ export const tryCreateLovelaceElement = <
   const customTag = config.type ? _getCustomTag(config.type) : undefined;
 
   if (customTag) {
-    return _customCreate(customTag, config);
+    return _customCreate(tagSuffix, customTag, config);
   }
 
   let type: string | undefined;

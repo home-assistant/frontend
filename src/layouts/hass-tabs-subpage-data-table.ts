@@ -266,7 +266,8 @@ export class HaTabsSubpageDataTable extends LitElement {
           <ha-assist-chip
             .label=${localize("ui.components.subpage-data-table.sort_by", {
               sortColumn: this._sortColumn
-                ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
+                ? ` ${this.columns[this._sortColumn]?.title || this.columns[this._sortColumn]?.label}` ||
+                  ""
                 : "",
             })}
             id="sort-by-anchor"

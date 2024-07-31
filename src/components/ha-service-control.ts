@@ -77,7 +77,7 @@ export class HaServiceControl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: {
-    service: string;
+    action: string;
     target?: HassServiceTarget;
     data?: Record<string, any>;
   };
@@ -112,23 +112,23 @@ export class HaServiceControl extends LitElement {
       | undefined
       | this["value"];
 
-    if (oldValue?.service !== this.value?.service) {
+    if (oldValue?.action !== this.value?.action) {
       this._checkedKeys = new Set();
     }
 
     const serviceData = this._getServiceInfo(
-      this.value?.service,
+      this.value?.action,
       this.hass.services
     );
 
     // Fetch the manifest if we have a service selected and the service domain changed.
     // If no service is selected, clear the manifest.
-    if (this.value?.service) {
+    if (this.value?.action) {
       if (
-        !oldValue?.service ||
-        computeDomain(this.value.service) !== computeDomain(oldValue.service)
+        !oldValue?.action ||
+        computeDomain(this.value.action) !== computeDomain(oldValue.action)
       ) {
-        this._fetchManifest(computeDomain(this.value?.service));
+        this._fetchManifest(computeDomain(this.value?.action));
       }
     } else {
       this._manifest = undefined;
@@ -168,7 +168,7 @@ export class HaServiceControl extends LitElement {
       this._value = this.value;
     }
 
-    if (oldValue?.service !== this.value?.service) {
+    if (oldValue?.action !== this.value?.action) {
       let updatedDefaultValue = false;
       if (this._value && serviceData) {
         const loadDefaults = this.value && !("data" in this.value);
@@ -367,7 +367,7 @@ export class HaServiceControl extends LitElement {
 
   protected render() {
     const serviceData = this._getServiceInfo(
-      this._value?.service,
+      this._value?.action,
       this.hass.services
     );
 
@@ -392,11 +392,11 @@ export class HaServiceControl extends LitElement {
       this._value
     );
 
-    const domain = this._value?.service
-      ? computeDomain(this._value.service)
+    const domain = this._value?.action
+      ? computeDomain(this._value.action)
       : undefined;
-    const serviceName = this._value?.service
-      ? computeObjectId(this._value.service)
+    const serviceName = this._value?.action
+      ? computeObjectId(this._value.action)
       : undefined;
 
     const description =
@@ -410,7 +410,7 @@ export class HaServiceControl extends LitElement {
       ? nothing
       : html`<ha-service-picker
           .hass=${this.hass}
-          .value=${this._value?.service}
+          .value=${this._value?.action}
           .disabled=${this.disabled}
           @value-changed=${this._serviceChanged}
         ></ha-service-picker>`}
@@ -451,7 +451,7 @@ export class HaServiceControl extends LitElement {
           >
           <span slot="description"
             >${this.hass.localize(
-              "ui.components.service-control.target_description"
+              "ui.components.service-control.target_secondary"
             )}</span
           ><ha-selector
             .hass=${this.hass}
@@ -478,7 +478,9 @@ export class HaServiceControl extends LitElement {
     ${shouldRenderServiceDataYaml
       ? html`<ha-yaml-editor
           .hass=${this.hass}
-          .label=${this.hass.localize("ui.components.service-control.data")}
+          .label=${this.hass.localize(
+            "ui.components.service-control.action_data"
+          )}
           .name=${"data"}
           .readOnly=${this.disabled}
           .defaultValue=${this._value?.data}
@@ -594,11 +596,11 @@ export class HaServiceControl extends LitElement {
   };
 
   private _localizeValueCallback = (key: string) => {
-    if (!this._value?.service) {
+    if (!this._value?.action) {
       return "";
     }
     return this.hass.localize(
-      `component.${computeDomain(this._value.service)}.selector.${key}`
+      `component.${computeDomain(this._value.action)}.selector.${key}`
     );
   };
 
@@ -610,7 +612,7 @@ export class HaServiceControl extends LitElement {
     if (checked) {
       this._checkedKeys.add(key);
       const field = this._getServiceInfo(
-        this._value?.service,
+        this._value?.action,
         this.hass.services
       )?.fields.find((_field) => _field.key === key);
 
@@ -656,7 +658,7 @@ export class HaServiceControl extends LitElement {
 
   private _serviceChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    if (ev.detail.value === this._value?.service) {
+    if (ev.detail.value === this._value?.action) {
       return;
     }
 
@@ -715,7 +717,7 @@ export class HaServiceControl extends LitElement {
     }
 
     const value = {
-      service: newService,
+      action: newService,
       target,
     };
 

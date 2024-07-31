@@ -163,10 +163,11 @@ const mainStyles = css`
     --state-light-active-color: var(--amber-color);
     --state-lock-jammed-color: var(--red-color);
     --state-lock-locked-color: var(--green-color);
-    --state-lock-pending-color: var(--orange-color);
+    --state-lock-locking-color: var(--orange-color);
     --state-lock-unlocked-color: var(--red-color);
-    --state-lock-opening-color: var(--orange-color);
+    --state-lock-unlocking-color: var(--orange-color);
     --state-lock-open-color: var(--red-color);
+    --state-lock-opening-color: var(--orange-color);
     --state-media_player-active-color: var(--light-blue-color);
     --state-person-active-color: var(--blue-color);
     --state-person-home-color: var(--green-color);

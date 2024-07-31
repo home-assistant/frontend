@@ -157,11 +157,22 @@ class HaConfigInfo extends LitElement {
                   )}
                 </span>
                 <span class="version">
-                  ${JS_VERSION}${JS_TYPE !== "latest" ? ` ⸱ ${JS_TYPE}` : ""}
+                  ${JS_VERSION}${JS_TYPE !== "modern" ? ` ⸱ ${JS_TYPE}` : ""}
                 </span>
               </li>
             </ul>
           </ha-card>
+          <ha-card outlined class="ohf">
+            <div>Proud part of</div>
+            <a
+              href="https://www.openhomefoundation.org"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img src="/static/icons/ohf.svg" alt="Open Home Foundation" />
+            </a>
+          </ha-card>
+
           <ha-card outlined class="pages">
             <mwc-list>
               ${PAGES.map(
@@ -270,6 +281,16 @@ class HaConfigInfo extends LitElement {
           line-height: 28px;
           text-align: center;
           margin: 24px;
+        }
+
+        .ohf {
+          text-align: center;
+          padding-bottom: 0;
+        }
+
+        .ohf img {
+          width: 100%;
+          max-width: 250px;
         }
 
         .versions {

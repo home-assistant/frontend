@@ -54,11 +54,7 @@ interface MapEntityConfig extends EntityConfig {
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true })
-  public isPanel = false;
-
-  @property({ attribute: false })
-  public layout?: string;
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -301,7 +297,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _computePadding(): void {
     const root = this.shadowRoot!.getElementById("root");
 
-    const ignoreAspectRatio = this.isPanel || this.layout === "grid";
+    const ignoreAspectRatio = this.layout === "panel" || this.layout === "grid";
     if (!this._config || ignoreAspectRatio || !root) {
       return;
     }

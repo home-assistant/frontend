@@ -30,15 +30,15 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import "../../cards/hui-card";
 import "../../sections/hui-section";
 import { addCard, replaceCard } from "../config-util";
-import { getCardDocumentationURL } from "../get-card-documentation-url";
+import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import "../../cards/hui-card";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {

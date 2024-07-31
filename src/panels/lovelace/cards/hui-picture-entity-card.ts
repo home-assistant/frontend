@@ -25,6 +25,8 @@ import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureEntityCardConfig } from "./types";
+import { CameraEntity } from "../../../data/camera";
+import { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -68,7 +70,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     if (
-      !["camera", "image"].includes(computeDomain(config.entity)) &&
+      !["camera", "image", "person"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
       !config.camera_image
@@ -108,7 +110,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj: CameraEntity | ImageEntity | PersonEntity | undefined =
+      this.hass.states[this._config.entity];
 
     if (!stateObj) {
       return html`
@@ -135,15 +138,24 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`<div class="footer single">${entityState}</div>`;
     }
 
-    const domain = computeDomain(this._config.entity);
+    const domain: string = computeDomain(this._config.entity);
+    let image: string | undefined = this._config.image;
+    switch (domain) {
+      case "image":
+        image = computeImageUrl(stateObj as ImageEntity);
+        break;
+      case "person":
+        if ((stateObj as PersonEntity).attributes.entity_picture) {
+          image = (stateObj as PersonEntity).attributes.entity_picture;
+        }
+        break;
+    }
 
     return html`
       <ha-card>
         <hui-image
           .hass=${this.hass}
-          .image=${domain === "image"
-            ? computeImageUrl(stateObj as ImageEntity)
-            : this._config.image}
+          .image=${image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${domain === "camera"

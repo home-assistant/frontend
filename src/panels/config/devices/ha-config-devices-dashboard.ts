@@ -22,6 +22,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -59,6 +60,11 @@ import { createAreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
+  DataTableFilters,
+  deserializeFilters,
+  serializeFilters,
+} from "../../../data/data_table_filters";
+import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
   computeDeviceName,
@@ -75,6 +81,7 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -85,12 +92,6 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import {
-  serializeFilters,
-  deserializeFilters,
-  DataTableFilters,
-} from "../../../data/data_table_filters";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -443,7 +444,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
+  private _columns = memoizeOne((localize: LocalizeFunc) => {
     type DeviceItem = ReturnType<
       typeof this._devicesAndFilterDomains
     >["devicesOutput"][number];
@@ -476,6 +477,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         grows: true,
+        flex: 2,
+        minWidth: "150px",
         extraTemplate: (device) => html`
           ${device.label_entries.length
             ? html`
@@ -491,27 +494,27 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
-        width: "15%",
+        minWidth: "120px",
       },
       model: {
         title: localize("ui.panel.config.devices.data_table.model"),
         sortable: true,
         filterable: true,
-        width: "15%",
+        minWidth: "120px",
       },
       area: {
         title: localize("ui.panel.config.devices.data_table.area"),
         sortable: true,
         filterable: true,
         groupable: true,
-        width: "15%",
+        minWidth: "120px",
       },
       integration: {
         title: localize("ui.panel.config.devices.data_table.integration"),
         sortable: true,
         filterable: true,
         groupable: true,
-        width: "15%",
+        minWidth: "120px",
       },
       battery_entity: {
         title: localize("ui.panel.config.devices.data_table.battery"),
@@ -519,8 +522,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         type: "numeric",
-        width: narrow ? "105px" : "15%",
-        maxWidth: "105px",
+        maxWidth: "101px",
+        minWidth: "101px",
         valueColumn: "battery_level",
         template: (device) => {
           const batteryEntityPair = device.battery_entity;
@@ -548,8 +551,38 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
               `
-            : html`—`;
+            : "—";
         },
+      },
+      created_at: {
+        title: localize("ui.panel.config.generic.headers.created_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (entry) =>
+          entry.created_at
+            ? formatShortDateTime(
+                new Date(entry.created_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
+      },
+      modified_at: {
+        title: localize("ui.panel.config.generic.headers.modified_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (entry) =>
+          entry.modified_at
+            ? formatShortDateTime(
+                new Date(entry.modified_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
       },
       disabled_by: {
         title: "",
@@ -675,7 +708,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           "ui.panel.config.devices.picker.search",
           { number: devicesOutput.length }
         )}
-        .columns=${this._columns(this.hass.localize, this.narrow)}
+        .columns=${this._columns(this.hass.localize)}
         .data=${devicesOutput}
         selectable
         .selected=${this._selected.length}

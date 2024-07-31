@@ -1,8 +1,6 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import {
   CSSResultGroup,
   LitElement,
@@ -38,20 +36,17 @@ import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SECTION_VIEW_LAYOUT,
-  VIEWS_NO_BADGE_SUPPORT,
 } from "../../views/const";
 import { addView, deleteView, replaceView } from "../config-util";
-import "../hui-badge-preview";
-import { processEditorEntities } from "../process-editor-entities";
-import {
-  EntitiesEditorEvent,
-  ViewEditEvent,
-  ViewVisibilityChangeEvent,
-} from "../types";
+import { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-editor";
 import "./hui-view-background-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+
+const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -63,15 +58,13 @@ export class HuiDialogEditView extends LitElement {
 
   @state() private _saving = false;
 
-  @state() private _curTab?: string;
+  @state() private _currTab: (typeof TABS)[number] = TABS[0];
 
   @state() private _dirty = false;
 
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
-
-  private _curTabIndex = 0;
 
   get _type(): string {
     if (!this._config) {
@@ -110,11 +103,11 @@ export class HuiDialogEditView extends LitElement {
   }
 
   public closeDialog(): void {
-    this._curTabIndex = 0;
     this._params = undefined;
     this._config = {};
     this._yamlMode = false;
     this._dirty = false;
+    this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -145,7 +138,7 @@ export class HuiDialogEditView extends LitElement {
         ></ha-yaml-editor>
       `;
     } else {
-      switch (this._curTab) {
+      switch (this._currTab) {
         case "tab-settings":
           content = html`
             <hui-view-editor
@@ -165,38 +158,6 @@ export class HuiDialogEditView extends LitElement {
             ></hui-view-background-editor>
           `;
           break;
-        case "tab-badges":
-          content = html`
-            ${this._config?.badges?.length
-              ? html`
-                  ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
-                    ? html`
-                        <ha-alert alert-type="warning">
-                          ${this.hass!.localize(
-                            "ui.panel.lovelace.editor.edit_badges.view_no_badges"
-                          )}
-                        </ha-alert>
-                      `
-                    : nothing}
-                  <div class="preview-badges">
-                    ${this._config.badges.map(
-                      (badgeConfig) => html`
-                        <hui-badge-preview
-                          .hass=${this.hass}
-                          .config=${badgeConfig}
-                        ></hui-badge-preview>
-                      `
-                    )}
-                  </div>
-                `
-              : nothing}
-            <hui-entity-editor
-              .hass=${this.hass}
-              .entities=${this._config?.badges || []}
-              @entities-changed=${this._badgesChanged}
-            ></hui-entity-editor>
-          `;
-          break;
         case "tab-visibility":
           content = html`
             <hui-view-visibility-editor
@@ -205,9 +166,6 @@ export class HuiDialogEditView extends LitElement {
               @view-visibility-changed=${this._viewVisibilityChanged}
             ></hui-view-visibility-editor>
           `;
-          break;
-        case "tab-cards":
-          content = html` Cards `;
           break;
       }
     }
@@ -291,33 +249,21 @@ export class HuiDialogEditView extends LitElement {
               `
             : nothing}
           ${!this._yamlMode
-            ? html`<paper-tabs
-                scrollable
-                hide-scroll-buttons
-                .selected=${this._curTabIndex}
-                @selected-item-changed=${this._handleTabSelected}
+            ? html`<mwc-tab-bar
+                .activeIndex=${TABS.indexOf(this._currTab)}
+                @MDCTabBar:activated=${this._handleTabChanged}
               >
-                <paper-tab id="tab-settings" dialogInitialFocus
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.tab_settings"
-                  )}</paper-tab
-                >
-                <paper-tab id="tab-background"
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.tab_background"
-                  )}</paper-tab
-                >
-                <paper-tab id="tab-badges"
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.tab_badges"
-                  )}</paper-tab
-                >
-                <paper-tab id="tab-visibility"
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.tab_visibility"
-                  )}</paper-tab
-                >
-              </paper-tabs>`
+                ${TABS.map(
+                  (tab) => html`
+                    <mwc-tab
+                      .label=${this.hass!.localize(
+                        `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
+                      )}
+                    >
+                    </mwc-tab>
+                  `
+                )}
+              </mwc-tab-bar>`
             : nothing}
         </ha-dialog-header>
         ${content}
@@ -409,11 +355,12 @@ export class HuiDialogEditView extends LitElement {
     this._delete();
   }
 
-  private _handleTabSelected(ev: CustomEvent): void {
-    if (!ev.detail.value) {
+  private _handleTabChanged(ev: CustomEvent): void {
+    const newTab = TABS[ev.detail.index];
+    if (newTab === this._currTab) {
       return;
     }
-    this._curTab = ev.detail.value.id;
+    this._currTab = newTab;
   }
 
   private async _save(): Promise<void> {
@@ -435,10 +382,6 @@ export class HuiDialogEditView extends LitElement {
       viewConf.sections = [{ type: "grid", cards: [] }];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
-    }
-
-    if (!viewConf.badges?.length) {
-      delete viewConf.badges;
     }
 
     const lovelace = this._params.lovelace!;
@@ -495,17 +438,6 @@ export class HuiDialogEditView extends LitElement {
     this._dirty = true;
   }
 
-  private _badgesChanged(ev: EntitiesEditorEvent): void {
-    if (!this.hass || !ev.detail || !ev.detail.entities) {
-      return;
-    }
-    this._config = {
-      ...this._config,
-      badges: processEditorEntities(ev.detail.entities),
-    };
-    this._dirty = true;
-  }
-
   private _viewYamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
@@ -553,8 +485,7 @@ export class HuiDialogEditView extends LitElement {
           font-size: inherit;
           font-weight: inherit;
         }
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(--primary-color);
+        mwc-tab-bar {
           color: var(--primary-text-color);
           text-transform: uppercase;
           padding: 0 20px;
@@ -579,12 +510,6 @@ export class HuiDialogEditView extends LitElement {
         .error {
           color: var(--error-color);
           border-bottom: 1px solid var(--error-color);
-        }
-        .preview-badges {
-          display: flex;
-          justify-content: center;
-          margin: 12px 16px;
-          flex-wrap: wrap;
         }
         .incompatible {
           display: block;

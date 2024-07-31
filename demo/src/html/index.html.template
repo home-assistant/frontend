@@ -69,6 +69,14 @@
       #ha-launch-screen .ha-launch-screen-spacer {
         flex: 1;
       }
+      .ohf-logo {
+        color: grey;
+        font-size: 12px;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     </style>
   </head>
   <body>
@@ -79,19 +87,14 @@
         <path fill="#F2F4F9" d="m107.27 239.762-40.63-40.63c-2.09.72-4.32 1.13-6.64 1.13-11.3 0-20.5-9.2-20.5-20.5s9.2-20.5 20.5-20.5 20.5 9.2 20.5 20.5c0 2.33-.41 4.56-1.13 6.65l31.63 31.63v-115.88c-6.8-3.3395-11.5-10.3195-11.5-18.3895 0-11.3 9.2-20.5 20.5-20.5s20.5 9.2 20.5 20.5c0 8.07-4.7 15.05-11.5 18.3895v81.27l31.46-31.46c-.62-1.96-.96-4.04-.96-6.2 0-11.3 9.2-20.5 20.5-20.5s20.5 9.2 20.5 20.5-9.2 20.5-20.5 20.5c-2.5 0-4.88-.47-7.09-1.29L129 208.892v30.88z"/>
       </svg>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer"></div>
+      <div class="ohf-logo">
+        a project from
+        <img src="/static/icons/ohf.svg" alt="Open Home Foundation" height="32">
+      </div>
     </div>
     <ha-demo></ha-demo>
     <%= renderTemplate("../../../src/html/_js_base.html.template") %>
     <%= renderTemplate("../../../src/html/_preload_roboto.html.template") %>
-    <script>
-      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
-      if (!isS11_12) {
-        <% for (const entry of latestEntryJS) { %>
-          import("<%= entry %>");
-        <% } %>
-        window.latestJS = true;
-      }
-    </script>
-    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
   </body>
 </html>

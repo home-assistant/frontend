@@ -66,6 +66,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "tilt-position"
     | "brightness";
   action_name?: string;
+  action?: string;
+  /** @deprecated use "action" instead */
   service?: string;
   // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, unknown>;
@@ -316,6 +318,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   card_size?: number;
   entity_ids?: string | string[];
   theme?: string;
+  show_empty?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -406,6 +409,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entities: Array<string | PictureGlanceEntityConfig>;
   title?: string;
   image?: string;
+  image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;

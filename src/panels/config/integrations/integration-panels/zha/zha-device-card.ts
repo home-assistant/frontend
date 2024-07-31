@@ -6,7 +6,6 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../../common/string/compare";
 import { slugify } from "../../../../../common/string/slugify";
-import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";

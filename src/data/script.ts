@@ -49,7 +49,7 @@ const targetStruct = object({
 export const serviceActionStruct: Describe<ServiceAction> = assign(
   baseActionStruct,
   object({
-    service: optional(string()),
+    action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
     target: optional(targetStruct),
@@ -62,7 +62,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
 const playMediaActionStruct: Describe<PlayMediaAction> = assign(
   baseActionStruct,
   object({
-    service: literal("media_player.play_media"),
+    action: literal("media_player.play_media"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     data: object({ media_content_id: string(), media_content_type: string() }),
@@ -73,7 +73,7 @@ const playMediaActionStruct: Describe<PlayMediaAction> = assign(
 const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
   baseActionStruct,
   object({
-    service: literal("scene.turn_on"),
+    action: literal("scene.turn_on"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     metadata: object(),
@@ -132,7 +132,7 @@ export interface EventAction extends BaseAction {
 }
 
 export interface ServiceAction extends BaseAction {
-  service?: string;
+  action?: string;
   service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
@@ -160,7 +160,7 @@ export interface DelayAction extends BaseAction {
 }
 
 export interface ServiceSceneAction extends BaseAction {
-  service: "scene.turn_on";
+  action: "scene.turn_on";
   target?: { entity_id?: string };
   entity_id?: string;
   metadata: Record<string, unknown>;
@@ -191,7 +191,7 @@ export interface WaitForTriggerAction extends BaseAction {
 }
 
 export interface PlayMediaAction extends BaseAction {
-  service: "media_player.play_media";
+  action: "media_player.play_media";
   target?: { entity_id?: string };
   entity_id?: string;
   data: { media_content_id: string; media_content_type: string };
@@ -404,7 +404,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("service" in action) {
+  if ("action" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
@@ -424,4 +424,61 @@ export const hasScriptFields = (
 ): boolean => {
   const fields = hass.services.script[computeObjectId(entityId)]?.fields;
   return fields !== undefined && Object.keys(fields).length > 0;
+};
+
+export const migrateAutomationAction = (
+  action: Action | Action[]
+): Action | Action[] => {
+  if (Array.isArray(action)) {
+    return action.map(migrateAutomationAction) as Action[];
+  }
+
+  if ("service" in action) {
+    if (!("action" in action)) {
+      action.action = action.service;
+    }
+    delete action.service;
+  }
+
+  if ("sequence" in action) {
+    for (const sequenceAction of (action as SequenceAction).sequence) {
+      migrateAutomationAction(sequenceAction);
+    }
+  }
+
+  const actionType = getActionType(action);
+
+  if (actionType === "parallel") {
+    const _action = action as ParallelAction;
+    migrateAutomationAction(_action.parallel);
+  }
+
+  if (actionType === "choose") {
+    const _action = action as ChooseAction;
+    if (Array.isArray(_action.choose)) {
+      for (const choice of _action.choose) {
+        migrateAutomationAction(choice.sequence);
+      }
+    } else if (_action.choose) {
+      migrateAutomationAction(_action.choose.sequence);
+    }
+    if (_action.default) {
+      migrateAutomationAction(_action.default);
+    }
+  }
+
+  if (actionType === "repeat") {
+    const _action = action as RepeatAction;
+    migrateAutomationAction(_action.repeat.sequence);
+  }
+
+  if (actionType === "if") {
+    const _action = action as IfAction;
+    migrateAutomationAction(_action.then);
+    if (_action.else) {
+      migrateAutomationAction(_action.else);
+    }
+  }
+
+  return action;
 };

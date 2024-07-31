@@ -115,8 +115,8 @@ export function computeCoverPositionStateDisplay(
   position?: number
 ) {
   const statePosition = stateActive(stateObj)
-    ? stateObj.attributes.current_position ??
-      stateObj.attributes.current_tilt_position
+    ? (stateObj.attributes.current_position ??
+      stateObj.attributes.current_tilt_position)
     : undefined;
 
   const currentPosition = position ?? statePosition;
