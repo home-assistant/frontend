@@ -85,9 +85,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this.hass.services &&
       this._databaseMigration === false
     ) {
-      // this.render = this.renderHass;
-      // this.update = super.update;
-      // removeLaunchScreen();
+      this.render = this.renderHass;
+      this.update = super.update;
+      removeLaunchScreen();
     }
     super.update(changedProps);
   }
