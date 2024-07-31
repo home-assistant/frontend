@@ -69,13 +69,14 @@ export class HuiPictureElementsCardEditor
         {
           name: "",
           type: "expandable",
+          expanded: true,
           title: localize(
             "ui.panel.lovelace.editor.card.picture-elements.card_options"
           ),
           schema: [
             { name: "title", selector: { text: {} } },
-            { name: "image", selector: { text: {} } },
-            { name: "dark_mode_image", selector: { text: {} } },
+            { name: "image", selector: { image: {} } },
+            { name: "dark_mode_image", selector: { image: {} } },
             {
               name: "camera_image",
               selector: { entity: { domain: "camera" } },

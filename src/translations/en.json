@@ -379,7 +379,8 @@
           "unknown_file": "Unknown file"
         },
         "image": {
-          "select_image": "Select image",
+          "image": "image",
+          "select_image_with_label": "Select {label}",
           "upload": "Upload picture",
           "url": "Local path or web URL"
         },
