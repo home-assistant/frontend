@@ -20,7 +20,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
 
   public static get defaultConfig(): PlayMediaAction {
     return {
-      service: "media_player.play_media",
+      action: "media_player.play_media",
       target: { entity_id: "" },
       data: { media_content_id: "", media_content_type: "" },
       metadata: {},

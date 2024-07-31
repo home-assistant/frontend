@@ -178,7 +178,11 @@ const getEntityName = (
   entityId: string | undefined
 ): string => {
   if (!entityId) {
-    return "<unknown entity>";
+    return (
+      "<" +
+      hass.localize("ui.panel.config.automation.editor.unknown_entity") +
+      ">"
+    );
   }
   if (entityId.includes(".")) {
     const state = hass.states[entityId];
@@ -191,7 +195,11 @@ const getEntityName = (
   if (entityReg) {
     return computeEntityRegistryName(hass, entityReg) || entityId;
   }
-  return "<unknown entity>";
+  return (
+    "<" +
+    hass.localize("ui.panel.config.automation.editor.unknown_entity") +
+    ">"
+  );
 };
 
 export const localizeDeviceAutomationAction = (

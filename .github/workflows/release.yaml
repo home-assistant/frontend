@@ -34,7 +34,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.0.3
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -55,7 +55,7 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.0.6
+        uses: softprops/action-gh-release@v2.0.8
         with:
           files: |
             dist/*.whl
@@ -74,9 +74,9 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2024.01.0
+        uses: home-assistant/wheels@2024.07.1
         with:
-          abi: cp311
+          abi: cp312
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}

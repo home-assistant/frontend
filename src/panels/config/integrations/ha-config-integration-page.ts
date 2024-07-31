@@ -108,6 +108,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 
 @customElement("ha-config-integration-page")
 class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
@@ -139,6 +140,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _searchParms = new URLSearchParams(
     window.location.hash.substring(1)
   );
+
+  @state() private _domainEntities: Record<string, string[]> = {};
 
   private _configPanel = memoizeOne(
     (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
@@ -185,7 +188,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._extraConfigEntries = undefined;
       this._fetchManifest();
       this._fetchDiagnostics();
+      this._fetchEntitySources();
     }
+  }
+
+  private async _fetchEntitySources() {
+    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+
+    const entitiesByDomain = {};
+
+    for (const [entity, source] of Object.entries(entitySources)) {
+      if (!(source.domain in entitiesByDomain)) {
+        entitiesByDomain[source.domain] = [];
+      }
+      entitiesByDomain[source.domain].push(entity);
+    }
+
+    this._domainEntities = entitiesByDomain;
   }
 
   protected updated(changed: PropertyValues) {
@@ -245,6 +264,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const devices = this._getDevices(configEntries, this.hass.devices);
     const entities = this._getEntities(configEntries, this._entities);
+    let numberOfEntities = entities.length;
+
+    if (
+      this.domain in this._domainEntities &&
+      numberOfEntities !== this._domainEntities[this.domain].length
+    ) {
+      if (!numberOfEntities) {
+        numberOfEntities = this._domainEntities[this.domain].length;
+      } else {
+        const entityIds = new Set(entities.map((entity) => entity.entity_id));
+        for (const entityId of this._domainEntities[this.domain]) {
+          entityIds.add(entityId);
+        }
+        numberOfEntities = entityIds.size;
+      }
+    }
 
     const services = !devices.some((device) => device.entry_type !== "service");
 
@@ -320,7 +355,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       </ha-list-item>
                     </a>`
                   : ""}
-                ${entities.length > 0
+                ${numberOfEntities > 0
                   ? html`<a
                       href=${`/config/entities?historyBack=1&domain=${this.domain}`}
                     >
@@ -331,7 +366,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                         ${this.hass.localize(
                           `ui.panel.config.integrations.config_entry.entities`,
-                          { count: entities.length }
+                          { count: numberOfEntities }
                         )}
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
@@ -503,9 +538,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </h1>
               ${normalEntries.length === 0
                 ? html`<div class="card-content no-entries">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.integration_page.no_entries"
-                    )}
+                    ${this._manifest &&
+                    !this._manifest.config_flow &&
+                    this.hass.config.components.find(
+                      (comp) => comp.split(".")[0] === this.domain
+                    )
+                      ? this.hass.localize(
+                          "ui.panel.config.integrations.integration_page.yaml_entry"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.integrations.integration_page.no_entries"
+                        )}
                   </div>`
                 : nothing}
               <ha-list-new>
@@ -683,7 +726,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const configPanel = this._configPanel(item.domain, this.hass.panels);
 
-    return html` <ha-list-item-new
+    return html`<ha-list-item-new
       class=${classMap({
         config_entry: true,
         "state-not-loaded": item!.state === "not_loaded",
@@ -1323,6 +1366,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _addIntegration() {
+    if (!this._manifest?.config_flow) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only"
+        ),
+      });
+      return;
+    }
     if (this._manifest?.single_config_entry) {
       const entries = this._domainConfigEntries(
         this.domain,

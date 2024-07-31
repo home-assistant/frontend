@@ -148,7 +148,7 @@ class MoreInfoScript extends LitElement {
     const newState = this.stateObj;
 
     if (newState && (!oldState || oldState.entity_id !== newState.entity_id)) {
-      this._scriptData = { service: newState.entity_id, data: {} };
+      this._scriptData = { action: newState.entity_id, data: {} };
     }
   }
 

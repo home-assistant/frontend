@@ -143,7 +143,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           main: true,
           sortable: true,
           filterable: true,
-          grows: true,
+          flex: 2,
           template: narrow
             ? undefined
             : (dashboard) => html`
@@ -171,7 +171,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        width: "20%",
         template: (dashboard) => html`
           ${this.hass.localize(
             `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
@@ -183,7 +182,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
           title: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.filename"
           ),
-          width: "15%",
           sortable: true,
           filterable: true,
         };
@@ -195,7 +193,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         sortable: true,
         type: "icon",
         hidden: narrow,
-        width: "100px",
         template: (dashboard) =>
           dashboard.require_admin
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
@@ -207,7 +204,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         ),
         type: "icon",
         hidden: narrow,
-        width: "121px",
         template: (dashboard) =>
           dashboard.show_in_sidebar
             ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
@@ -221,7 +217,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         ),
         filterable: true,
         showNarrow: true,
-        width: "100px",
         template: (dashboard) =>
           narrow
             ? html`

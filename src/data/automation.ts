@@ -6,7 +6,7 @@ import { navigate } from "../common/navigate";
 import { Context, HomeAssistant } from "../types";
 import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action, MODES } from "./script";
+import { Action, MODES, migrateAutomationAction } from "./script";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -28,7 +28,7 @@ export interface ManualAutomationConfig {
   description?: string;
   trigger: Trigger | Trigger[];
   condition?: Condition | Condition[];
-  action: Action | Action[];
+  action?: Action | Action[];
   mode?: (typeof MODES)[number];
   max?: number;
   max_exceeded?:
@@ -357,7 +357,7 @@ export const normalizeAutomationConfig = <
 >(
   config: T
 ): T => {
-  // Normalize data: ensure trigger, action and condition are lists
+  // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
   for (const key of ["trigger", "condition", "action"]) {
     const value = config[key];
@@ -365,6 +365,9 @@ export const normalizeAutomationConfig = <
       config[key] = [value];
     }
   }
+
+  config.action = migrateAutomationAction(config.action || []);
+
   return config;
 };
 

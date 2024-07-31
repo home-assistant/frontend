@@ -23,6 +23,7 @@ import type { HomeAssistant } from "../../../types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceElementConfig } from "../elements/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
@@ -32,6 +33,7 @@ import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface ConfigChangedEvent {
   config:
@@ -39,7 +41,9 @@ export interface ConfigChangedEvent {
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
-    | LovelaceStrategyConfig;
+    | LovelaceStrategyConfig
+    | LovelaceElementConfig
+    | LovelaceBadgeConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }

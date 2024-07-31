@@ -302,7 +302,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             state_color: this._config.state_color,
             ...(entityConf as EntityConfig),
           } as EntityConfig)
-        : entityConf
+        : entityConf.type === "perform-action"
+          ? { ...entityConf, type: "call-service" }
+          : entityConf
     );
     if (this._hass) {
       element.hass = this._hass;

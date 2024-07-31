@@ -12,6 +12,7 @@ import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceCardFeatureConfig } from "./card-features/types";
+import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 
 declare global {
   // eslint-disable-next-line
@@ -51,7 +52,6 @@ export type LovelaceLayoutOptions = {
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
-  isPanel?: boolean;
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
@@ -82,6 +82,16 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getConfigForm?: () => LovelaceConfigForm;
 }
 
+export interface LovelaceBadgeConstructor extends Constructor<LovelaceBadge> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceBadgeConfig;
+  getConfigElement?: () => LovelaceBadgeEditor;
+  getConfigForm?: () => LovelaceConfigForm;
+}
+
 export interface LovelaceHeaderFooterConstructor
   extends Constructor<LovelaceHeaderFooter> {
   getStubConfig?: (
@@ -96,6 +106,11 @@ export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
   getConfigElement?: () => LovelaceRowEditor;
 }
 
+export interface LovelaceElementConstructor
+  extends Constructor<LovelaceElement> {
+  getConfigElement?: () => LovelacePictureElementEditor;
+}
+
 export interface LovelaceHeaderFooter extends HTMLElement {
   hass?: HomeAssistant;
   type: "header" | "footer";
@@ -107,6 +122,10 @@ export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
 }
 
+export interface LovelaceBadgeEditor extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceBadgeConfig): void;
+}
+
 export interface LovelaceHeaderFooterEditor
   extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceHeaderFooterConfig): void;
@@ -114,6 +133,11 @@ export interface LovelaceHeaderFooterEditor
 
 export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
+}
+
+export interface LovelacePictureElementEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceElementConfig): void;
 }
 
 export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {

@@ -151,7 +151,10 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
     if (this.hasUpdated) {
       return;
     }
-    this._loadTranslationsPromise = this.hass.loadBackendTranslation("title");
+    this._loadTranslationsPromise = this.hass.loadBackendTranslation(
+      "title",
+      this.hass.config.components.map((comp) => comp.split(".")[0])
+    );
   }
 
   protected updatePageEl(pageEl) {

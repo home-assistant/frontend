@@ -79,7 +79,7 @@ export class ZHAGroupsDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
           }
         : {
@@ -88,19 +88,17 @@ export class ZHAGroupsDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
             group_id: {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
               type: "numeric",
-              width: "15%",
               template: (group) => html` ${formatAsPaddedHex(group.group_id)} `,
               sortable: true,
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
               type: "numeric",
-              width: "15%",
               template: (group) => html` ${group.members.length} `,
               sortable: true,
             },

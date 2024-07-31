@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -10,8 +10,9 @@ import { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { SelectOptionsCardFeatureConfig } from "./types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
+import { SelectOptionsCardFeatureConfig } from "./types";
 
 export const supportsSelectOptionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -119,45 +120,30 @@ class HuiSelectOptionsCardFeature
     );
 
     return html`
-      <div class="container">
-        <ha-control-select-menu
-          show-arrow
-          hide-label
-          .label=${this.hass.localize("ui.card.select.option")}
-          .value=${stateObj.state}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._valueChanged}
-          @closed=${stopPropagation}
-        >
-          ${options.map(
-            (option) => html`
-              <ha-list-item .value=${option}>
-                ${this.hass!.formatEntityState(stateObj, option)}
-              </ha-list-item>
-            `
-          )}
-        </ha-control-select-menu>
-      </div>
+      <ha-control-select-menu
+        show-arrow
+        hide-label
+        .label=${this.hass.localize("ui.card.select.option")}
+        .value=${stateObj.state}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        fixedMenuPosition
+        naturalMenuWidth
+        @selected=${this._valueChanged}
+        @closed=${stopPropagation}
+      >
+        ${options.map(
+          (option) => html`
+            <ha-list-item .value=${option}>
+              ${this.hass!.formatEntityState(stateObj, option)}
+            </ha-list-item>
+          `
+        )}
+      </ha-control-select-menu>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-select-menu {
-        box-sizing: border-box;
-        --control-select-menu-height: 40px;
-        --control-select-menu-border-radius: 10px;
-        line-height: 1.2;
-        display: block;
-        width: 100%;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

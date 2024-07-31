@@ -1,5 +1,4 @@
 import { mdiGestureTap, mdiPalette } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -14,9 +13,7 @@ import {
   string,
   union,
 } from "superstruct";
-import { ensureArray } from "../../../../common/array/ensure-array";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
-import { formatEntityAttributeNameFunc } from "../../../../common/translations/entity-state";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -37,59 +34,6 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
-
-const HIDDEN_ATTRIBUTES = [
-  "access_token",
-  "available_modes",
-  "code_arm_required",
-  "code_format",
-  "color_modes",
-  "device_class",
-  "editable",
-  "effect_list",
-  "entity_id",
-  "entity_picture",
-  "event_types",
-  "fan_modes",
-  "fan_speed_list",
-  "friendly_name",
-  "frontend_stream_type",
-  "has_date",
-  "has_time",
-  "hvac_modes",
-  "icon",
-  "id",
-  "max_color_temp_kelvin",
-  "max_mireds",
-  "max_temp",
-  "max",
-  "min_color_temp_kelvin",
-  "min_mireds",
-  "min_temp",
-  "min",
-  "mode",
-  "operation_list",
-  "options",
-  "percentage_step",
-  "precipitation_unit",
-  "preset_modes",
-  "pressure_unit",
-  "sound_mode_list",
-  "source_list",
-  "state_class",
-  "step",
-  "supported_color_modes",
-  "supported_features",
-  "swing_modes",
-  "target_temp_step",
-  "temperature_unit",
-  "token",
-  "unit_of_measurement",
-  "visibility_unit",
-  "wind_speed_unit",
-  "battery_icon",
-  "battery_level",
-];
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -127,9 +71,7 @@ export class HuiTileCardEditor
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      formatEntityAttributeName: formatEntityAttributeNameFunc,
       entityId: string | undefined,
-      stateObj: HassEntity | undefined,
       hideState: boolean
     ) =>
       [
@@ -183,41 +125,10 @@ export class HuiTileCardEditor
                   {
                     name: "state_content",
                     selector: {
-                      select: {
-                        mode: "dropdown",
-                        reorder: true,
-                        custom_value: true,
-                        multiple: true,
-                        options: [
-                          {
-                            label: localize(
-                              `ui.panel.lovelace.editor.card.tile.state_content_options.state`
-                            ),
-                            value: "state",
-                          },
-                          {
-                            label: localize(
-                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-changed`
-                            ),
-                            value: "last-changed",
-                          },
-                          {
-                            label: localize(
-                              `ui.panel.lovelace.editor.card.tile.state_content_options.last-updated`
-                            ),
-                            value: "last-updated",
-                          },
-                          ...Object.keys(stateObj?.attributes ?? {})
-                            .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
-                            .map((attribute) => ({
-                              value: attribute,
-                              label: formatEntityAttributeName(
-                                stateObj!,
-                                attribute
-                              ),
-                            })),
-                        ],
-                      },
+                      ui_state_content: {},
+                    },
+                    context: {
+                      filter_entity: "entity",
                     },
                   },
                 ] as const satisfies readonly HaFormSchema[])
@@ -227,7 +138,7 @@ export class HuiTileCardEditor
         {
           name: "",
           type: "expandable",
-          title: localize(`ui.panel.lovelace.editor.card.tile.actions`),
+          title: localize(`ui.panel.lovelace.editor.card.tile.interactions`),
           iconPath: mdiGestureTap,
           schema: [
             {
@@ -268,9 +179,7 @@ export class HuiTileCardEditor
 
     const schema = this._schema(
       this.hass!.localize,
-      this.hass.formatEntityAttributeName,
       this._config.entity,
-      stateObj,
       this._config.hide_state ?? false
     );
 
@@ -287,10 +196,7 @@ export class HuiTileCardEditor
       `;
     }
 
-    const data = {
-      ...this._config,
-      state_content: ensureArray(this._config.state_content),
-    };
+    const data = this._config;
 
     return html`
       <ha-form
@@ -327,12 +233,8 @@ export class HuiTileCardEditor
       delete config.state_content;
     }
 
-    if (config.state_content) {
-      if (config.state_content.length === 0) {
-        delete config.state_content;
-      } else if (config.state_content.length === 1) {
-        config.state_content = config.state_content[0];
-      }
+    if (!config.state_content) {
+      delete config.state_content;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -407,7 +309,6 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
-
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

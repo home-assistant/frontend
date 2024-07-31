@@ -67,10 +67,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       return;
     }
 
-    const fields = this._fields(
-      this.hass.services,
-      this.action?.service
-    ).fields;
+    const fields = this._fields(this.hass.services, this.action?.action).fields;
     if (
       this.action &&
       (Object.entries(this.action).some(
@@ -110,8 +107,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (!this._action) {
       return nothing;
     }
-    const [domain, service] = this._action.service
-      ? this._action.service.split(".", 2)
+    const [domain, service] = this._action.action
+      ? this._action.action.split(".", 2)
       : [undefined, undefined];
     return html`
       <ha-service-control
@@ -168,8 +165,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
     const value = { ...this.action, ...ev.detail.value };
     if ("response_variable" in this.action) {
-      const [domain, service] = this._action!.service
-        ? this._action!.service.split(".", 2)
+      const [domain, service] = this._action!.action
+        ? this._action!.action.split(".", 2)
         : [undefined, undefined];
       if (
         domain &&
@@ -181,6 +178,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         this._responseChecked = false;
       }
     }
+
     fireEvent(this, "value-changed", { value });
   }
 

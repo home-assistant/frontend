@@ -575,6 +575,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;

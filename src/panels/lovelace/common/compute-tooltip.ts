@@ -45,7 +45,7 @@ function computeActionTooltip(
       break;
     case "call-service":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.call_service",
+        "ui.panel.lovelace.cards.picture-elements.perform_action",
         { name: config.service }
       )}`;
       break;
