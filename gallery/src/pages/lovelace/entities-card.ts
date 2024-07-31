@@ -287,11 +287,11 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-    - type: call-service
+    - type: perform-action
       icon: mdi:power
       name: Bed light
       action_name: Toggle light
-      service: light.toggle
+      action: light.toggle
       data:
         entity_id: light.bed_light
     - type: section
