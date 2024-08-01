@@ -3,6 +3,7 @@ import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceBaseSectionConfig {
+  columns?: number;
   title?: string;
   visibility?: Condition[];
 }

@@ -44,6 +44,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _sectionCount = 0;
 
+  @state() private _renderedColumns = 1;
+
   @state() _dragging = false;
 
   public setConfig(config: LovelaceViewConfig): void {
@@ -59,6 +61,29 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return this._sectionConfigKeys.get(section)!;
   }
 
+  private _computeContainerColumnsCSS = () => {
+    const container = this.renderRoot.querySelector(".container");
+    if (!container) {
+      return;
+    }
+    const containerComputerStyle = window.getComputedStyle(container);
+    const columnSize = parseInt(
+      containerComputerStyle
+        .getPropertyValue("grid-template-columns")
+        .replace(" 0px", "")
+        .replace("px", "")
+        .split(" ")[0]
+    );
+    if (!columnSize) {
+      return;
+    }
+    const width = parseInt(
+      containerComputerStyle.getPropertyValue("width").replace("px", "")
+    );
+    const maxColumns = Math.trunc(width / columnSize);
+    this._renderedColumns = maxColumns;
+  };
+
   private _computeSectionsCount() {
     this._sectionCount = this.sections.filter(
       (section) => !section.hidden
@@ -67,6 +92,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _sectionVisibilityChanged = () => {
     this._computeSectionsCount();
+    this._computeContainerColumnsCSS();
+  };
+
+  private _resize = () => {
+    this._computeContainerColumnsCSS();
   };
 
   connectedCallback(): void {
@@ -75,6 +105,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    window.addEventListener("resize", this._resize);
   }
 
   disconnectedCallback(): void {
@@ -83,11 +114,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    window.removeEventListener("resize", this._resize);
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
+      this._computeContainerColumnsCSS();
     }
   }
 
@@ -97,8 +130,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const sections = this.sections;
     const totalCount = this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
-
-    const maxColumnsCount = this._config?.max_columns;
+    const maxColumnsCount = this._config?.max_columns || 1;
 
     return html`
       <hui-view-badges
@@ -118,6 +150,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
+            "--rendered-columns-count": this._renderedColumns,
             "--max-columns-count": maxColumnsCount,
             "--total-count": totalCount,
           })}
@@ -128,7 +161,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             (section, idx) => {
               (section as any).itemPath = [idx];
               return html`
-                <div class="section">
+                <div
+                  class="section"
+                  style=${styleMap({
+                    "--columns": Math.min(
+                      section.config.columns || 1,
+                      maxColumnsCount
+                    ),
+                  })}
+                >
                   ${editMode
                     ? html`
                         <div class="section-overlay">
@@ -180,10 +221,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
+  protected updated(): void {
+    this._computeContainerColumnsCSS();
+  }
+
   private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
       type: "grid",
       cards: [],
+      columns: 1,
     });
     this.lovelace!.saveConfig(newConfig);
   }
@@ -257,12 +303,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
       }
 
-      .container > * {
-        position: relative;
-        max-width: var(--column-max-width);
-        width: 100%;
-      }
-
       .section {
         border-radius: var(--ha-card-border-radius, 12px);
       }
@@ -295,6 +335,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         box-sizing: border-box;
         max-width: var(--max-width);
         margin: 0 auto;
+      }
+
+      .container > * {
+        position: relative;
+        max-width: var(--max-width);
+        min-width: var(--column-min-width);
+        width: 100%;
+        grid-column: span min(var(--columns), var(--rendered-columns-count));
       }
 
       @media (max-width: 600px) {

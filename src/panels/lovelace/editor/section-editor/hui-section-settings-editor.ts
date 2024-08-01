@@ -13,10 +13,21 @@ const SCHEMA = [
     name: "title",
     selector: { text: {} },
   },
+  {
+    name: "columns",
+    selector: {
+      number: {
+        min: 1,
+        max: 10,
+        mode: "slider",
+      },
+    },
+  },
 ] as const satisfies HaFormSchema[];
 
 type SettingsData = {
   title: string;
+  columns: number;
 };
 
 @customElement("hui-section-settings-editor")
@@ -28,6 +39,7 @@ export class HuiDialogEditSection extends LitElement {
   render() {
     const data: SettingsData = {
       title: this.config.title || "",
+      columns: this.config.columns || 1,
     };
 
     return html`
@@ -59,10 +71,15 @@ export class HuiDialogEditSection extends LitElement {
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
       title: newData.title,
+      columns: newData.columns,
     };
 
     if (!newConfig.title) {
       delete newConfig.title;
+    }
+
+    if (!newConfig.columns) {
+      delete newConfig.columns;
     }
 
     fireEvent(this, "value-changed", { value: newConfig });

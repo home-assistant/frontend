@@ -5637,7 +5637,9 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title."
+              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
+              "columns": "Columns",
+              "columns_helper": "Expand the section to take up more columns in the view."
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
