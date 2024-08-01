@@ -226,6 +226,7 @@ export const provideHass = (
       },
       suspendReconnectUntil: noop,
       suspend: noop,
+      ping: noop,
       socket: {
         readyState: WebSocket.OPEN,
       },
