@@ -49,6 +49,8 @@ export class HaYamlEditor extends LitElement {
 
   @property({ type: Boolean }) public copyClipboard = false;
 
+  @property({ type: Boolean }) public hasExtraActions = false;
+
   @state() private _yaml = "";
 
   public setValue(value): void {
@@ -100,13 +102,16 @@ export class HaYamlEditor extends LitElement {
         @value-changed=${this._onChange}
         dir="ltr"
       ></ha-code-editor>
-      ${this.copyClipboard
+      ${this.copyClipboard || this.hasExtraActions
         ? html`<div class="card-actions">
-            <mwc-button @click=${this._copyYaml}>
-              ${this.hass.localize(
-                "ui.components.yaml-editor.copy_to_clipboard"
-              )}
-            </mwc-button>
+            ${this.copyClipboard
+              ? html` <mwc-button @click=${this._copyYaml}>
+                  ${this.hass.localize(
+                    "ui.components.yaml-editor.copy_to_clipboard"
+                  )}
+                </mwc-button>`
+              : nothing}
+            <slot name="extra-actions"></slot>
           </div>`
         : nothing}
     `;

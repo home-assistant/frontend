@@ -303,6 +303,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
             icon: null,
             color: null,
             description: null,
+            created_at: 0,
+            modified_at: 0,
           },
         ];
       }
@@ -317,6 +319,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
               icon: "mdi:plus",
               color: null,
               description: null,
+              created_at: 0,
+              modified_at: 0,
             },
           ];
     }

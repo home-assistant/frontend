@@ -66,6 +66,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "tilt-position"
     | "brightness";
   action_name?: string;
+  action?: string;
+  /** @deprecated use "action" instead */
   service?: string;
   // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, unknown>;
@@ -118,85 +120,74 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergySummaryCardConfig extends LovelaceCardConfig {
+export interface EnergySummaryCardConfig extends EnergyCardBaseConfig {
   type: "energy-summary";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
+export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;
   link_dashboard?: boolean;
-  collection_key?: string;
 }
-export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
-  type: "energy-summary-graph";
+export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
+  type: "energy-usage-graph";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
+export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-graph";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
+export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-gas-graph";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyWaterGraphCardConfig extends LovelaceCardConfig {
+export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-water-graph";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
+export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;
-  collection_key?: string;
   max_devices?: number;
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends LovelaceCardConfig {
+export interface EnergyDevicesDetailGraphCardConfig
+  extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
-  collection_key?: string;
   max_devices?: number;
 }
 
-export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
+export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
+export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-consumed-gauge";
   title?: string;
-  collection_key?: string;
 }
 
 export interface EnergySelfSufficiencyGaugeCardConfig
-  extends LovelaceCardConfig {
+  extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
-  type: "energy-grid-result-gauge";
+export interface EnergyGridNeutralityGaugeCardConfig
+  extends EnergyCardBaseConfig {
+  type: "energy-grid-neutrality-gauge";
   title?: string;
-  collection_key?: string;
 }
 
-export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
+export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-carbon-consumed-gauge";
   title?: string;
-  collection_key?: string;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -327,6 +318,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   card_size?: number;
   entity_ids?: string | string[];
   theme?: string;
+  show_empty?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -417,6 +409,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entities: Array<string | PictureGlanceEntityConfig>;
   title?: string;
   image?: string;
+  image_entity?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: Record<string, unknown>;

@@ -107,6 +107,28 @@ class HaBlueprintOverview extends LitElement {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "blueprint-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "blueprint-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "blueprint-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter: string = "";
+
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
@@ -146,8 +168,6 @@ class HaBlueprintOverview extends LitElement {
 
   private _columns = memoizeOne(
     (
-      narrow,
-      _language,
       localize: LocalizeFunc
     ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
@@ -156,30 +176,21 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         direction: "asc",
-        grows: true,
-        template: narrow
-          ? (blueprint) => html`
-              ${blueprint.name}<br />
-              <div class="secondary">${blueprint.path}</div>
-            `
-          : undefined,
+        flex: 2,
       },
       translated_type: {
         title: localize("ui.panel.config.blueprint.overview.headers.type"),
         sortable: true,
         filterable: true,
         groupable: true,
-        hidden: narrow,
         direction: "asc",
-        width: "10%",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
-        hidden: narrow,
         direction: "asc",
-        width: "25%",
+        flex: 2,
       },
       fullpath: {
         title: "fullpath",
@@ -187,8 +198,10 @@ class HaBlueprintOverview extends LitElement {
       },
       actions: {
         title: "",
-        width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         template: (blueprint) =>
           blueprint.error
             ? html`<ha-svg-icon
@@ -272,11 +285,7 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.language,
-          this.hass.localize
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._processedBlueprints(this.blueprints, this.hass.localize)}
         id="fullpath"
         .noDataText=${this.hass.localize(
@@ -305,9 +314,14 @@ class HaBlueprintOverview extends LitElement {
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -540,6 +554,15 @@ class HaBlueprintOverview extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

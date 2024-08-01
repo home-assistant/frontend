@@ -35,8 +35,11 @@ const cardConfigStruct = assign(
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
-  { name: "image", selector: { text: {} } },
-  { name: "image_entity", selector: { entity: { domain: "image" } } },
+  { name: "image", selector: { image: {} } },
+  {
+    name: "image_entity",
+    selector: { entity: { domain: ["image", "person"] } },
+  },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
   {
     name: "",

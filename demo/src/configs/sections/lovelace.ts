@@ -1,40 +1,25 @@
+import { isFrontpageEmbed } from "../../util/is_frontpage";
 import { DemoConfig } from "../types";
 
-export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
+export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
   title: "Home Assistant Demo",
   views: [
     {
       type: "sections",
-      title: "Demo",
+      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
       sections: [
-        {
-          title: "Welcome 👋",
-          cards: [{ type: "custom:ha-demo-card" }],
-        },
+        ...(isFrontpageEmbed
+          ? []
+          : [
+              {
+                title: `${localize("ui.panel.page-demo.config.sections.titles.welcome")} 👋`,
+                cards: [{ type: "custom:ha-demo-card" }],
+              },
+            ]),
         {
           cards: [
-            {
-              type: "tile",
-              entity: "cover.living_room_garden_shutter",
-              name: "Garden",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_graveyard_shutter",
-              name: "Rear",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_left_shutter",
-              name: "Left",
-            },
-            {
-              type: "tile",
-              entity: "cover.living_room_right_shutter",
-              name: "Right",
-            },
             {
               type: "tile",
               entity: "light.floor_lamp",
@@ -62,11 +47,15 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
             },
             {
               type: "tile",
+              entity: "cover.living_room_garden_shutter",
+              name: "Blinds",
+            },
+            {
+              type: "tile",
               entity: "media_player.living_room_nest_mini",
-              name: "Nest Mini",
             },
           ],
-          title: "🛋️ Living room ",
+          title: `🛋️ ${localize("ui.panel.page-demo.config.sections.titles.living_room")} `,
         },
         {
           type: "grid",
@@ -99,10 +88,9 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
             {
               type: "tile",
               entity: "media_player.kitchen_nest_audio",
-              name: "Nest Audio",
             },
           ],
-          title: "👩‍🍳 Kitchen",
+          title: `👩‍🍳 ${localize("ui.panel.page-demo.config.sections.titles.kitchen")}`,
         },
         {
           type: "grid",
@@ -144,7 +132,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               color: "dark-grey",
             },
           ],
-          title: "⚡️ Energy",
+          title: `⚡️ ${localize("ui.panel.page-demo.config.sections.titles.energy")}`,
         },
         {
           type: "grid",
@@ -181,7 +169,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               state_content: ["preset_mode", "current_temperature"],
             },
           ],
-          title: "🌤️ Climate",
+          title: `🌤️ ${localize("ui.panel.page-demo.config.sections.titles.climate")}`,
         },
         {
           type: "grid",
@@ -199,7 +187,6 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
             {
               type: "tile",
               entity: "media_player.study_nest_hub",
-              name: "Nest Hub",
             },
             {
               type: "tile",
@@ -209,7 +196,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               icon: "mdi:desk",
             },
           ],
-          title: "🧑‍💻 Study",
+          title: `🧑‍💻 ${localize("ui.panel.page-demo.config.sections.titles.study")}`,
         },
         {
           type: "grid",
@@ -243,7 +230,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               name: "Illuminance",
             },
           ],
-          title: "🌳 Outdoor",
+          title: `🌳 ${localize("ui.panel.page-demo.config.sections.titles.outdoor")}`,
         },
         {
           type: "grid",
@@ -273,7 +260,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
               icon: "mdi:home-assistant",
             },
           ],
-          title: "🎉 Updates",
+          title: `🎉 ${localize("ui.panel.page-demo.config.sections.titles.updates")}`,
         },
       ],
     },

@@ -277,7 +277,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           title: this._data!.title,
         };
         await this._params!.updateDashboard(values);
-      } else {
+      } else if (this._params!.createDashboard) {
         await this._params!.createDashboard(
           this._data as LovelaceDashboardCreateParams
         );

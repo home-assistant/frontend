@@ -1,13 +1,17 @@
-import "@material/mwc-button";
+import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import { adminChangeUsername } from "../../../data/auth";
 import { PersonMutableParams } from "../../../data/person";
 import {
   deleteUser,
@@ -19,10 +23,11 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
@@ -135,11 +140,17 @@ class DialogPersonDetail extends LitElement {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.person.detail.allow_login"
-              )}
-            >
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass!.localize(
+                  "ui.panel.config.person.detail.allow_login"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass!.localize(
+                  "ui.panel.config.person.detail.allow_login_description"
+                )}
+              </span>
               <ha-switch
                 @change=${this._allowLoginChanged}
                 .disabled=${this._user &&
@@ -148,34 +159,9 @@ class DialogPersonDetail extends LitElement {
                   this._user.is_owner)}
                 .checked=${this._userId}
               ></ha-switch>
-            </ha-formfield>
+            </ha-settings-row>
 
-            ${this._user
-              ? html`<ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.person.detail.local_only"
-                    )}
-                  >
-                    <ha-switch
-                      .checked=${this._localOnly}
-                      @change=${this._localOnlyChanged}
-                    >
-                    </ha-switch>
-                  </ha-formfield>
-                  <ha-formfield
-                    .label=${this.hass.localize(
-                      "ui.panel.config.person.detail.admin"
-                    )}
-                  >
-                    <ha-switch
-                      .disabled=${this._user.system_generated ||
-                      this._user.is_owner}
-                      .checked=${this._isAdmin}
-                      @change=${this._adminChanged}
-                    >
-                    </ha-switch>
-                  </ha-formfield>`
-              : ""}
+            ${this._renderUserFields()}
             ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
@@ -233,7 +219,7 @@ class DialogPersonDetail extends LitElement {
         </div>
         ${this._params.entry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
                 class="warning"
                 @click=${this._deleteEntry}
@@ -241,20 +227,10 @@ class DialogPersonDetail extends LitElement {
                 this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-              </mwc-button>
-              ${this._user && this.hass.user?.is_owner
-                ? html`<mwc-button
-                    slot="secondaryAction"
-                    @click=${this._changePassword}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.users.editor.change_password"
-                    )}
-                  </mwc-button>`
-                : ""}
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
@@ -262,8 +238,93 @@ class DialogPersonDetail extends LitElement {
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.person.detail.update")
             : this.hass!.localize("ui.panel.config.person.detail.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
+    `;
+  }
+
+  private _renderUserFields() {
+    const user = this._user;
+    if (!user) return nothing;
+    return html`
+      ${!user.system_generated
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.config.person.detail.username")}
+              </span>
+              <span slot="description">${user.username}</span>
+              ${this.hass.user?.is_owner
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      @click=${this._changeUsername}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.person.detail.change_username"
+                      )}
+                    >
+                    </ha-icon-button>
+                  `
+                : nothing}
+            </ha-settings-row>
+          `
+        : nothing}
+      ${!user.system_generated && this.hass.user?.is_owner
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.config.person.detail.password")}
+              </span>
+              <span slot="description">************</span>
+              ${this.hass.user?.is_owner
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      @click=${this._changePassword}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.person.detail.change_password"
+                      )}
+                    >
+                    </ha-icon-button>
+                  `
+                : nothing}
+            </ha-settings-row>
+          `
+        : nothing}
+      <ha-settings-row>
+        <span slot="heading">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.local_access_only"
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.local_access_only_description"
+          )}
+        </span>
+        <ha-switch
+          .disabled=${user.system_generated}
+          .checked=${this._localOnly}
+          @change=${this._localOnlyChanged}
+        >
+        </ha-switch>
+      </ha-settings-row>
+      <ha-settings-row>
+        <span slot="heading">
+          ${this.hass.localize("ui.panel.config.person.detail.admin")}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.admin_description"
+          )}
+        </span>
+        <ha-switch
+          .disabled=${user.system_generated || user.is_owner}
+          .checked=${this._isAdmin}
+          @change=${this._adminChanged}
+        >
+        </ha-switch>
+      </ha-settings-row>
     `;
   }
 
@@ -292,11 +353,14 @@ class DialogPersonDetail extends LitElement {
         userAddedCallback: async (user?: User) => {
           if (user) {
             target.checked = true;
+            if (this._params!.entry) {
+              await this._params!.updateEntry({ user_id: user.id });
+            }
+            this._params?.refreshUsers();
             this._user = user;
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
             this._localOnly = user.local_only;
-            this._params?.refreshUsers();
           }
         },
         name: this._name,
@@ -304,14 +368,16 @@ class DialogPersonDetail extends LitElement {
     } else if (this._userId) {
       if (
         !(await showConfirmationDialog(this, {
+          title: this.hass!.localize(
+            "ui.panel.config.person.detail.confirm_delete_user_title"
+          ),
           text: this.hass!.localize(
-            "ui.panel.config.person.detail.confirm_delete_user",
+            "ui.panel.config.person.detail.confirm_delete_user_text",
             { name: this._name }
           ),
-          confirmText: this.hass!.localize(
-            "ui.panel.config.person.detail.delete"
-          ),
+          confirmText: this.hass!.localize("ui.common.delete"),
           dismissText: this.hass!.localize("ui.common.cancel"),
+          destructive: true,
         }))
       ) {
         target.checked = true;
@@ -320,6 +386,9 @@ class DialogPersonDetail extends LitElement {
       await deleteUser(this.hass, this._userId);
       this._params?.refreshUsers();
       this._userId = undefined;
+      this._user = undefined;
+      this._isAdmin = undefined;
+      this._localOnly = undefined;
     }
   }
 
@@ -347,6 +416,53 @@ class DialogPersonDetail extends LitElement {
       return;
     }
     showAdminChangePasswordDialog(this, { userId: this._user.id });
+  }
+
+  private async _changeUsername() {
+    if (!this._user) {
+      return;
+    }
+    const credential = this._user.credentials.find(
+      (cred) => cred.type === "homeassistant"
+    );
+    if (!credential) {
+      showAlertDialog(this, {
+        title: "No Home Assistant credentials found.",
+      });
+      return;
+    }
+
+    const newUsername = await showPromptDialog(this, {
+      inputLabel: this.hass.localize(
+        "ui.panel.config.users.change_username.new_username"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.users.change_username.change"
+      ),
+      title: this.hass.localize(
+        "ui.panel.config.users.change_username.caption"
+      ),
+      defaultValue: this._user.username!,
+    });
+    if (newUsername) {
+      try {
+        await adminChangeUsername(this.hass, this._user.id, newUsername);
+        this._params?.refreshUsers();
+        this._user = { ...this._user, username: newUsername };
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.users.change_username.username_changed"
+          ),
+        });
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.users.change_username.failed"
+          ),
+          text: err.message,
+        });
+      }
+    }
   }
 
   private async _updateEntry() {
@@ -425,9 +541,8 @@ class DialogPersonDetail extends LitElement {
           margin-bottom: 16px;
           --file-upload-image-border-radius: 50%;
         }
-        ha-formfield {
-          display: block;
-          padding: 16px 0;
+        ha-settings-row {
+          padding: 0;
         }
         a {
           color: var(--primary-color);

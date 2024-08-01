@@ -44,7 +44,7 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
           }
         : {
@@ -52,18 +52,16 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
-              grows: true,
+              flex: 2,
             },
             id: {
               title: "ID",
               template: (cluster) => html` ${formatAsPaddedHex(cluster.id)} `,
               sortable: true,
-              width: "25%",
             },
             endpoint_id: {
               title: "Endpoint ID",
               sortable: true,
-              width: "15%",
             },
           }
   );

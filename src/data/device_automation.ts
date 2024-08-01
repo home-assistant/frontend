@@ -178,7 +178,11 @@ const getEntityName = (
   entityId: string | undefined
 ): string => {
   if (!entityId) {
-    return "<unknown entity>";
+    return (
+      "<" +
+      hass.localize("ui.panel.config.automation.editor.unknown_entity") +
+      ">"
+    );
   }
   if (entityId.includes(".")) {
     const state = hass.states[entityId];
@@ -191,7 +195,11 @@ const getEntityName = (
   if (entityReg) {
     return computeEntityRegistryName(hass, entityReg) || entityId;
   }
-  return "<unknown entity>";
+  return (
+    "<" +
+    hass.localize("ui.panel.config.automation.editor.unknown_entity") +
+    ">"
+  );
 };
 
 export const localizeDeviceAutomationAction = (
@@ -248,6 +256,22 @@ export const localizeDeviceAutomationTrigger = (
     }
   ) ||
   (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!);
+
+export const localizeExtraFieldsComputeLabelCallback =
+  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  // Returns a callback for ha-form to calculate labels per schema object
+  (schema): string =>
+    hass.localize(
+      `component.${deviceAutomation.domain}.device_automation.extra_fields.${schema.name}`
+    ) || schema.name;
+
+export const localizeExtraFieldsComputeHelperCallback =
+  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  // Returns a callback for ha-form to calculate helper texts per schema object
+  (schema): string | undefined =>
+    hass.localize(
+      `component.${deviceAutomation.domain}.device_automation.extra_fields_descriptions.${schema.name}`
+    );
 
 export const sortDeviceAutomations = (
   automationA: DeviceAutomation,

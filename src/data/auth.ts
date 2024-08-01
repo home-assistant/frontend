@@ -138,6 +138,17 @@ export const adminChangePassword = (
     password,
   });
 
+export const adminChangeUsername = (
+  hass: HomeAssistant,
+  userId: string,
+  username: string
+) =>
+  hass.callWS<void>({
+    type: "config/auth_provider/homeassistant/admin_change_username",
+    user_id: userId,
+    username,
+  });
+
 export const deleteAllRefreshTokens = (
   hass: HomeAssistant,
   token_type?: RefreshTokenType,

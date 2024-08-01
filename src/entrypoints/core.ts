@@ -25,8 +25,6 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
-import "../resources/array.flat.polyfill";
-import "../resources/safari-14-attachshadow-patch";
 
 window.name = MAIN_WINDOW_NAME;
 (window as any).frontendVersion = __VERSION__;

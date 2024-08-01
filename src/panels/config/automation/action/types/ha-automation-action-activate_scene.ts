@@ -18,7 +18,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
 
   public static get defaultConfig(): SceneAction {
     return {
-      service: "scene.turn_on",
+      action: "scene.turn_on",
       target: {
         entity_id: "",
       },

@@ -19,7 +19,7 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
-import { Action } from "../../../../data/script";
+import { Action, migrateAutomationAction } from "../../../../data/script";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -179,7 +179,7 @@ export default class HaAutomationAction extends LitElement {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
     } else if (isService(action)) {
       actions = this.actions.concat({
-        service: getService(action),
+        action: getService(action),
         metadata: {},
       });
     } else {
@@ -243,7 +243,10 @@ export default class HaAutomationAction extends LitElement {
   private _actionChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const actions = [...this.actions];
-    const newValue = ev.detail.value;
+    const newValue =
+      ev.detail.value === null
+        ? ev.detail.value
+        : (migrateAutomationAction(ev.detail.value) as Action);
     const index = (ev.target as any).index;
 
     if (newValue === null) {

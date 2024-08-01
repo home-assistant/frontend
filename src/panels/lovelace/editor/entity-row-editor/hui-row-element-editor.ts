@@ -13,6 +13,10 @@ export class HuiRowElementEditor extends HuiElementEditor<LovelaceRowConfig> {
       return GENERIC_ROW_TYPE;
     }
 
+    if (this.value?.type === "perform-action") {
+      return "call-service";
+    }
+
     return this.value?.type;
   }
 

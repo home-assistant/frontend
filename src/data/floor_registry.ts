@@ -4,10 +4,11 @@ import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { AreaRegistryEntry } from "./area_registry";
+import { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
 
-export interface FloorRegistryEntry {
+export interface FloorRegistryEntry extends RegistryEntry {
   floor_id: string;
   name: string;
   level: number | null;

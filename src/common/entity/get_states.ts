@@ -125,6 +125,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "off",
       "idle",
       "preheating",
+      "defrosting",
       "heating",
       "cooling",
       "drying",

@@ -67,9 +67,10 @@ const castEntitiesRowConfigStruct = object({
 });
 
 const callServiceEntitiesRowConfigStruct = object({
-  type: literal("call-service"),
+  type: enums(["call-service", "perform-action"]),
   name: string(),
-  service: string(),
+  service: optional(string()),
+  action: optional(string()),
   icon: optional(string()),
   action_name: optional(string()),
   // "service_data" is kept for backwards compatibility. Replaced by "data".
@@ -149,6 +150,7 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
       case "buttons": {
         return buttonsEntitiesRowConfigStruct;
       }
+      case "perform-action":
       case "call-service": {
         return callServiceEntitiesRowConfigStruct;
       }

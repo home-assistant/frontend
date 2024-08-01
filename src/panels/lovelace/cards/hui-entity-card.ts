@@ -8,6 +8,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -36,7 +37,11 @@ import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { LovelaceCard, LovelaceHeaderFooter } from "../types";
+import {
+  LovelaceCard,
+  LovelaceHeaderFooter,
+  LovelaceLayoutOptions,
+} from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
 
@@ -68,6 +73,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property() public layout?: string;
 
   @state() private _config?: EntityCardConfig;
 
@@ -128,8 +135,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const colored = stateObj && this.getStateColor(stateObj, this._config);
 
+    const fixedFooter =
+      this.layout === "grid" && this._footerElement !== undefined;
+
     return html`
-      <ha-card @click=${this._handleClick} tabindex="0">
+      <ha-card
+        @click=${this._handleClick}
+        tabindex="0"
+        class=${classMap({ "with-fixed-footer": fixedFooter })}
+      >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
           <div class="icon">
@@ -184,7 +198,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               `
             : ""}
         </div>
-        ${this._footerElement}
+        <div class="footer">${this._footerElement}</div>
       </ha-card>
     `;
   }
@@ -241,6 +255,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
+  public getLayoutOptions(): LovelaceLayoutOptions {
+    return {
+      grid_columns: 2,
+      grid_rows: 2,
+      grid_min_columns: 2,
+      grid_min_rows: 2,
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return [
       iconColorCSS,
@@ -295,6 +318,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         .measurement {
           font-size: 18px;
           color: var(--secondary-text-color);
+        }
+
+        .with-fixed-footer {
+          justify-content: flex-start;
+        }
+        .with-fixed-footer .footer {
+          position: absolute;
+          right: 0;
+          left: 0;
+          bottom: 0;
         }
       `,
     ];

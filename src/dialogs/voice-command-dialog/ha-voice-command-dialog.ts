@@ -215,10 +215,10 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
+              // New lines matter for messages
+              // prettier-ignore
               (message) => html`
-                <div class=${this._computeMessageClasses(message)}>
-                  ${message.text}
-                </div>
+                <div class=${this._computeMessageClasses(message)}>${message.text}</div>
               `
             )}
           </div>
@@ -355,7 +355,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleSendMessage() {
     if (this._messageInput.value) {
-      this._processText(this._messageInput.value);
+      this._processText(this._messageInput.value.trim());
       this._messageInput.value = "";
       this._showSendButton = false;
     }
@@ -427,34 +427,28 @@ export class HaVoiceCommandDialog extends LitElement {
   private async _showNotSupportedMessage() {
     this._addMessage({
       who: "hass",
-      text: html`
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_browser"
-          )}
-        </p>
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation",
-            {
-              documentation_link: html`
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/securing/#remote-access"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                  )}
-                </a>
-              `,
-            }
-          )}
-        </p>
-      `,
+      text:
+        // New lines matter for messages
+        // prettier-ignore
+        html`${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_browser"
+        )}
+
+        ${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_documentation",
+          {
+            documentation_link: html`<a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/securing/#remote-access"
+                )}
+              >${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                )}</a>`,
+          }
+        )}`,
     });
   }
 
@@ -756,6 +750,7 @@ export class HaVoiceCommandDialog extends LitElement {
           max-height: 100%;
         }
         .message {
+          white-space: pre-line;
           font-size: 18px;
           clear: both;
           margin: 8px 0;
@@ -792,8 +787,12 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        .message a {
+        .message.user a {
           color: var(--text-primary-color);
+        }
+
+        .message.hass a {
+          color: var(--primary-text-color);
         }
 
         .message img {

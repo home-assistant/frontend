@@ -31,8 +31,6 @@ class DialogIntegrationStartup extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
         hideActions
         .heading=${createCloseHeading(
           this.hass,

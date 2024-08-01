@@ -24,9 +24,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-event",
         load: () => import("./event/developer-tools-event"),
       },
-      service: {
-        tag: "developer-tools-service",
-        load: () => import("./service/developer-tools-service"),
+      service: "action",
+      action: {
+        tag: "developer-tools-action",
+        load: () => import("./action/developer-tools-action"),
       },
       state: {
         tag: "developer-tools-state",

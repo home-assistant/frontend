@@ -6,7 +6,14 @@ import {
   mdiTuneVariant,
   mdiWaterPercent,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -38,6 +45,17 @@ class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public stateObj?: ClimateEntity;
 
   @state() private _mainControl: MainControl = "temperature";
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (
+      changedProps.has("stateObj") &&
+      this.stateObj &&
+      this._mainControl === "humidity" &&
+      !supportsFeature(this.stateObj, ClimateEntityFeature.TARGET_HUMIDITY)
+    ) {
+      this._mainControl = "temperature";
+    }
+  }
 
   protected render() {
     if (!this.stateObj) {

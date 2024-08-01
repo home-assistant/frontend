@@ -7,6 +7,8 @@ import {
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -65,6 +67,15 @@ export interface Card {
   isSuggested?: boolean;
 }
 
+export interface Badge {
+  type: string;
+  name?: string;
+  description?: string;
+  showElement?: boolean;
+  isCustom?: boolean;
+  isSuggested?: boolean;
+}
+
 export interface HeaderFooter {
   type: LovelaceHeaderFooterConfig["type"];
   icon?: string;
@@ -74,13 +85,18 @@ export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
 }
 
+export interface BadgePickTarget extends EventTarget {
+  config: LovelaceBadgeConfig;
+}
+
 export interface SubElementEditorConfig {
   index?: number;
   elementConfig?:
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceCardFeatureConfig;
-  type: "header" | "footer" | "row" | "feature";
+    | LovelaceCardFeatureConfig
+    | LovelaceElementConfig;
+  type: "header" | "footer" | "row" | "feature" | "element";
 }
 
 export interface EditSubElementEvent {

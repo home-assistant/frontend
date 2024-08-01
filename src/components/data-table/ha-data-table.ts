@@ -34,6 +34,7 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 export interface RowClickedEvent {
   id: string;
@@ -65,6 +66,10 @@ export interface DataTableSortColumnData {
   valueColumn?: string;
   direction?: SortingDirection;
   groupable?: boolean;
+  moveable?: boolean;
+  hideable?: boolean;
+  defaultHidden?: boolean;
+  showNarrow?: boolean;
 }
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
@@ -79,9 +84,10 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
     | "overflow-menu"
     | "flex";
   template?: (row: T) => TemplateResult | string | typeof nothing;
-  width?: string;
+  extraTemplate?: (row: T) => TemplateResult | string | typeof nothing;
+  minWidth?: string;
   maxWidth?: string;
-  grows?: boolean;
+  flex?: number;
   forceLTR?: boolean;
   hidden?: boolean;
 }
@@ -104,6 +110,10 @@ const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
@@ -144,6 +154,10 @@ export class HaDataTable extends LitElement {
   @property() public sortDirection: SortingDirection = null;
 
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
+  @property({ attribute: false }) public columnOrder?: string[];
 
   @state() private _filterable = false;
 
@@ -202,6 +216,18 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
+  protected updated() {
+    const header = this.renderRoot.querySelector(".mdc-data-table__header-row");
+    if (!header) {
+      return;
+    }
+    if (header.scrollWidth > header.clientWidth) {
+      this.style.setProperty("--table-row-width", `${header.scrollWidth}px`);
+    } else {
+      this.style.removeProperty("--table-row-width");
+    }
+  }
+
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
@@ -235,6 +261,7 @@ export class HaDataTable extends LitElement {
         (column: ClonedDataTableColumnData) => {
           delete column.title;
           delete column.template;
+          delete column.extraTemplate;
         }
       );
 
@@ -272,12 +299,46 @@ export class HaDataTable extends LitElement {
       this._sortFilterData();
     }
 
-    if (properties.has("selectable")) {
+    if (properties.has("selectable") || properties.has("hiddenColumns")) {
       this._items = [...this._items];
     }
   }
 
+  private _sortedColumns = memoizeOne(
+    (columns: DataTableColumnContainer, columnOrder?: string[]) => {
+      if (!columnOrder || !columnOrder.length) {
+        return columns;
+      }
+
+      return Object.keys(columns)
+        .sort((a, b) => {
+          const orderA = columnOrder!.indexOf(a);
+          const orderB = columnOrder!.indexOf(b);
+          if (orderA !== orderB) {
+            if (orderA === -1) {
+              return 1;
+            }
+            if (orderB === -1) {
+              return -1;
+            }
+          }
+          return orderA - orderB;
+        })
+        .reduce((obj, key) => {
+          obj[key] = columns[key];
+          return obj;
+        }, {}) as DataTableColumnContainer;
+    }
+  );
+
   protected render() {
+    const localize = this.localizeFunc || this.hass.localize;
+
+    const columns = this._sortedColumns(this.columns, this.columnOrder);
+
+    const renderRow = (row: DataTableRowData, index: number) =>
+      this._renderRow(columns, this.narrow, row, index);
+
     return html`
       <div class="mdc-data-table">
         <slot name="header" @slotchange=${this._calcTableHeight}>
@@ -306,7 +367,12 @@ export class HaDataTable extends LitElement {
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
-          <div class="mdc-data-table__header-row" role="row" aria-rowindex="1">
+          <div
+            class="mdc-data-table__header-row"
+            role="row"
+            aria-rowindex="1"
+            @scroll=${this._scrollContent}
+          >
             <slot name="header-row">
               ${this.selectable
                 ? html`
@@ -326,9 +392,15 @@ export class HaDataTable extends LitElement {
                     </div>
                   `
                 : ""}
-              ${Object.entries(this.columns).map(([key, column]) => {
-                if (column.hidden) {
-                  return "";
+              ${Object.entries(columns).map(([key, column]) => {
+                if (
+                  column.hidden ||
+                  (this.columnOrder && this.columnOrder.includes(key)
+                    ? (this.hiddenColumns?.includes(key) ??
+                      column.defaultHidden)
+                    : column.defaultHidden)
+                ) {
+                  return nothing;
                 }
                 const sorted = key === this.sortColumn;
                 const classes = {
@@ -343,18 +415,16 @@ export class HaDataTable extends LitElement {
                     column.type === "overflow",
                   sortable: Boolean(column.sortable),
                   "not-sorted": Boolean(column.sortable && !sorted),
-                  grows: Boolean(column.grows),
                 };
                 return html`
                   <div
                     aria-label=${ifDefined(column.label)}
                     class="mdc-data-table__header-cell ${classMap(classes)}"
-                    style=${column.width
-                      ? styleMap({
-                          [column.grows ? "minWidth" : "width"]: column.width,
-                          maxWidth: column.maxWidth || "",
-                        })
-                      : ""}
+                    style=${styleMap({
+                      minWidth: column.minWidth,
+                      maxWidth: column.maxWidth,
+                      flex: column.flex || 1,
+                    })}
                     role="columnheader"
                     aria-sort=${ifDefined(
                       sorted
@@ -387,7 +457,7 @@ export class HaDataTable extends LitElement {
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
                       ${this.noDataText ||
-                      this.hass.localize("ui.components.data-table.no-data")}
+                      localize("ui.components.data-table.no-data")}
                     </div>
                   </div>
                 </div>
@@ -399,7 +469,7 @@ export class HaDataTable extends LitElement {
                   @scroll=${this._saveScrollPos}
                   .items=${this._items}
                   .keyFunction=${this._keyFunction}
-                  .renderItem=${this._renderRow}
+                  .renderItem=${renderRow}
                 ></lit-virtualizer>
               `}
         </div>
@@ -409,7 +479,12 @@ export class HaDataTable extends LitElement {
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
 
-  private _renderRow = (row: DataTableRowData, index: number) => {
+  private _renderRow = (
+    columns: DataTableColumnContainer,
+    narrow: boolean,
+    row: DataTableRowData,
+    index: number
+  ) => {
     // not sure how this happens...
     if (!row) {
       return nothing;
@@ -454,8 +529,14 @@ export class HaDataTable extends LitElement {
               </div>
             `
           : ""}
-        ${Object.entries(this.columns).map(([key, column]) => {
-          if (column.hidden) {
+        ${Object.entries(columns).map(([key, column]) => {
+          if (
+            (narrow && !column.main && !column.showNarrow) ||
+            column.hidden ||
+            (this.columnOrder && this.columnOrder.includes(key)
+              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
+              : column.defaultHidden)
+          ) {
             return nothing;
           }
           return html`
@@ -472,17 +553,46 @@ export class HaDataTable extends LitElement {
                 "mdc-data-table__cell--overflow-menu":
                   column.type === "overflow-menu",
                 "mdc-data-table__cell--overflow": column.type === "overflow",
-                grows: Boolean(column.grows),
                 forceLTR: Boolean(column.forceLTR),
               })}"
-              style=${column.width
-                ? styleMap({
-                    [column.grows ? "minWidth" : "width"]: column.width,
-                    maxWidth: column.maxWidth ? column.maxWidth : "",
-                  })
-                : ""}
+              style=${styleMap({
+                minWidth: column.minWidth,
+                maxWidth: column.maxWidth,
+                flex: column.flex || 1,
+              })}
             >
-              ${column.template ? column.template(row) : row[key]}
+              ${column.template
+                ? column.template(row)
+                : narrow && column.main
+                  ? html`<div class="primary">${row[key]}</div>
+                      <div class="secondary">
+                        ${Object.entries(columns)
+                          .filter(
+                            ([key2, column2]) =>
+                              !column2.hidden &&
+                              !column2.main &&
+                              !column2.showNarrow &&
+                              !(this.columnOrder &&
+                              this.columnOrder.includes(key2)
+                                ? (this.hiddenColumns?.includes(key2) ??
+                                  column2.defaultHidden)
+                                : column2.defaultHidden)
+                          )
+                          .map(
+                            ([key2, column2], i) =>
+                              html`${i !== 0
+                                ? " ⸱ "
+                                : nothing}${column2.template
+                                ? column2.template(row)
+                                : row[key2]}`
+                          )}
+                      </div>
+                      ${column.extraTemplate
+                        ? column.extraTemplate(row)
+                        : nothing}`
+                  : html`${row[key]}${column.extraTemplate
+                      ? column.extraTemplate(row)
+                      : nothing}`}
             </div>
           `;
         })}
@@ -500,7 +610,7 @@ export class HaDataTable extends LitElement {
       filteredData = await this._memFilterData(
         this.data,
         this._sortColumns,
-        this._filter
+        this._filter.trim()
       );
     }
 
@@ -527,6 +637,8 @@ export class HaDataTable extends LitElement {
     if (this.curRequest !== curRequest) {
       return;
     }
+
+    const localize = this.localizeFunc || this.hass.localize;
 
     if (this.appendRow || this.hasFab || this.groupColumn) {
       let items = [...data];
@@ -581,7 +693,7 @@ export class HaDataTable extends LitElement {
               >
               </ha-icon-button>
               ${groupName === UNDEFINED_GROUP_KEY
-                ? this.hass.localize("ui.components.data-table.ungrouped")
+                ? localize("ui.components.data-table.ungrouped")
                 : groupName || ""}
             </div>`,
           });
@@ -716,6 +828,17 @@ export class HaDataTable extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+
+    this.renderRoot.querySelector(".mdc-data-table__header-row")!.scrollLeft = (
+      e.target as HTMLDivElement
+    ).scrollLeft;
+  }
+
+  @eventOptions({ passive: true })
+  private _scrollContent(e: Event) {
+    this.renderRoot.querySelector("lit-virtualizer")!.scrollLeft = (
+      e.target as HTMLDivElement
+    ).scrollLeft;
   }
 
   private _collapseGroup = (ev: Event) => {
@@ -729,6 +852,28 @@ export class HaDataTable extends LitElement {
     }
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   };
+
+  public expandAllGroups() {
+    this._collapsedGroups = [];
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  }
+
+  public collapseAllGroups() {
+    if (
+      !this.groupColumn ||
+      !this.data.some((item) => item[this.groupColumn!])
+    ) {
+      return;
+    }
+    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
+    if (grouped.undefined) {
+      // undefined is a reserved group name
+      grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
+      delete grouped.undefined;
+    }
+    this._collapsedGroups = Object.keys(grouped);
+    fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  }
 
   static get styles(): CSSResultGroup {
     return [
@@ -768,8 +913,8 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__row {
           display: flex;
-          width: 100%;
           height: var(--data-table-row-height, 52px);
+          width: var(--table-row-width, 100%);
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {
@@ -793,18 +938,26 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-row {
           height: 56px;
           display: flex;
-          width: 100%;
           border-bottom: 1px solid var(--divider-color);
+          overflow: auto;
         }
 
+        /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .mdc-data-table__header-row {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
         }
 
         .mdc-data-table__cell,
         .mdc-data-table__header-cell {
           padding-right: 16px;
           padding-left: 16px;
+          min-width: 150px;
           align-self: center;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -839,6 +992,7 @@ export class HaDataTable extends LitElement {
           width: 100%;
           border: 0;
           white-space: nowrap;
+          position: relative;
         }
 
         .mdc-data-table__cell {
@@ -851,6 +1005,8 @@ export class HaDataTable extends LitElement {
           letter-spacing: 0.0178571429em;
           text-decoration: inherit;
           text-transform: inherit;
+          flex-grow: 0;
+          flex-shrink: 0;
         }
 
         .mdc-data-table__cell a {
@@ -869,7 +1025,8 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-cell--icon,
         .mdc-data-table__cell--icon {
-          width: 54px;
+          min-width: 64px;
+          flex: 0 0 64px !important;
         }
 
         .mdc-data-table__cell--icon img {
@@ -909,11 +1066,14 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--overflow-menu,
         .mdc-data-table__header-cell--icon-button,
         .mdc-data-table__cell--icon-button {
+          min-width: 64px;
+          flex: 0 0 64px !important;
           padding: 8px;
         }
 
         .mdc-data-table__header-cell--icon-button,
         .mdc-data-table__cell--icon-button {
+          min-width: 56px;
           width: 56px;
         }
 

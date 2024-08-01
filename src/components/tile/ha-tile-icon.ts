@@ -17,7 +17,7 @@ export class HaTileIcon extends LitElement {
     return css`
       :host {
         --tile-icon-color: var(--disabled-color);
-        --mdc-icon-size: 24px;
+        --mdc-icon-size: 22px;
       }
       .shape::before {
         content: "";
@@ -32,9 +32,9 @@ export class HaTileIcon extends LitElement {
       }
       .shape {
         position: relative;
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;

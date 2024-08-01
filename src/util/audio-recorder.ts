@@ -70,17 +70,18 @@ export class AudioRecorder {
   }
 
   private async _createContext() {
-    // @ts-ignore-next-line
-    this._context = new (window.AudioContext || window.webkitAudioContext)();
+    // @ts-expect-error webkitAudioContext is not recognized
+    const context = new (AudioContext || webkitAudioContext)();
     this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    await this._context.audioWorklet.addModule(
-      new URL("./recorder.worklet.js", import.meta.url)
+    // Syntax here must match an item of `parser.worker` in Webpack config in
+    // order for module to be parsed and a chunk to be properly created.
+    await context.audioWorklet.addModule(
+      /* webpackChunkName: "recorder-worklet" */
+      new URL("./recorder-worklet.js", import.meta.url)
     );
-
+    this._context = context;
     this._source = this._context.createMediaStreamSource(this._stream);
-    this._recorder = new AudioWorkletNode(this._context, "recorder.worklet");
-
+    this._recorder = new AudioWorkletNode(this._context, "recorder-worklet");
     this._recorder.port.onmessage = (e) => {
       if (!this._active) {
         return;

@@ -200,24 +200,31 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected async checkDataBaseMigration() {
-    if (this.hass?.config?.components.includes("recorder")) {
-      let recorderInfoProm: Promise<RecorderInfo> | undefined;
-      const preloadWindow = window as WindowWithPreloads;
-      // On first load, we speed up loading page by having recorderInfoProm ready
-      if (preloadWindow.recorderInfoProm) {
-        recorderInfoProm = preloadWindow.recorderInfoProm;
-        preloadWindow.recorderInfoProm = undefined;
-      }
-      const info = await (recorderInfoProm ||
-        getRecorderInfo(this.hass.connection));
-      this._databaseMigration =
-        info.migration_in_progress && !info.migration_is_live;
-      if (this._databaseMigration) {
-        // check every 5 seconds if the migration is done
-        setTimeout(() => this.checkDataBaseMigration(), 5000);
-      }
-    } else {
+    if (__DEMO__) {
       this._databaseMigration = false;
+      return;
+    }
+
+    let recorderInfoProm: Promise<RecorderInfo> | undefined;
+    const preloadWindow = window as WindowWithPreloads;
+    // On first load, we speed up loading page by having recorderInfoProm ready
+    if (preloadWindow.recorderInfoProm) {
+      recorderInfoProm = preloadWindow.recorderInfoProm;
+      preloadWindow.recorderInfoProm = undefined;
+    }
+    const info = await (
+      recorderInfoProm || getRecorderInfo(this.hass!.connection)
+    ).catch((err) => {
+      // If the command failed with code unknown_command, recorder is not enabled,
+      // otherwise re-throw the error
+      if (err.code !== "unknown_command") throw err;
+      return { migration_in_progress: false, migration_is_live: false };
+    });
+    this._databaseMigration =
+      info.migration_in_progress && !info.migration_is_live;
+    if (this._databaseMigration) {
+      // check every 5 seconds if the migration is done
+      setTimeout(() => this.checkDataBaseMigration(), 5000);
     }
   }
 

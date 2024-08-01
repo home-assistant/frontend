@@ -56,48 +56,46 @@ export class DemoDateTimeDateTimeSeconds extends LitElement {
           <div class="center">12 Hours</div>
           <div class="center">24 Hours</div>
         </div>
-        ${Object.entries(translationMetadata.translations)
-          .filter(([key, _]) => key !== "test")
-          .map(
-            ([key, value]) => html`
-              <div class="container">
-                <div>${value.nativeName}</div>
-                <div class="center">
-                  ${formatDateTimeWithSeconds(
-                    this.date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      time_format: TimeFormat.language,
-                    },
-                    demoConfig
-                  )}
-                </div>
-                <div class="center">
-                  ${formatDateTimeWithSeconds(
-                    this.date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      time_format: TimeFormat.am_pm,
-                    },
-                    demoConfig
-                  )}
-                </div>
-                <div class="center">
-                  ${formatDateTimeWithSeconds(
-                    this.date,
-                    {
-                      ...defaultLocale,
-                      language: key,
-                      time_format: TimeFormat.twenty_four,
-                    },
-                    demoConfig
-                  )}
-                </div>
+        ${Object.entries(translationMetadata.translations).map(
+          ([key, value]) => html`
+            <div class="container">
+              <div>${value.nativeName}</div>
+              <div class="center">
+                ${formatDateTimeWithSeconds(
+                  this.date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    time_format: TimeFormat.language,
+                  },
+                  demoConfig
+                )}
               </div>
-            `
-          )}
+              <div class="center">
+                ${formatDateTimeWithSeconds(
+                  this.date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    time_format: TimeFormat.am_pm,
+                  },
+                  demoConfig
+                )}
+              </div>
+              <div class="center">
+                ${formatDateTimeWithSeconds(
+                  this.date,
+                  {
+                    ...defaultLocale,
+                    language: key,
+                    time_format: TimeFormat.twenty_four,
+                  },
+                  demoConfig
+                )}
+              </div>
+            </div>
+          `
+        )}
       </mwc-list>
     `;
   }

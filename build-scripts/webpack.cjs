@@ -63,16 +63,24 @@ const createWebpackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: {
+          use: (info) => ({
             loader: "babel-loader",
             options: {
-              ...bundle.babelOptions({ latestBuild, isProdBuild, isTestBuild }),
+              ...bundle.babelOptions({
+                latestBuild,
+                isProdBuild,
+                isTestBuild,
+                sw: info.issuerLayer === "sw",
+              }),
               cacheDirectory: !isProdBuild,
               cacheCompression: false,
             },
-          },
+          }),
           resolve: {
             fullySpecified: false,
+          },
+          parser: {
+            worker: ["*context.audioWorklet.addModule()", "..."],
           },
         },
         {
@@ -92,11 +100,15 @@ const createWebpackConfig = ({
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       splitChunks: {
-        // Disable splitting for web workers with ESM output
-        // Imports of external chunks are broken
-        chunks: latestBuild
-          ? (chunk) => !chunk.canBeInitial() && !/^.+-worker$/.test(chunk.name)
-          : undefined,
+        // Disable splitting for web workers and worklets because imports of
+        // external chunks are broken for:
+        // - ESM output: https://github.com/webpack/webpack/issues/17014
+        // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
+        chunks: (chunk) =>
+          !chunk.canBeInitial() &&
+          !new RegExp(`^.+-work${latestBuild ? "(?:let|er)" : "let"}$`).test(
+            chunk.name
+          ),
       },
     },
     plugins: [
@@ -228,6 +240,7 @@ const createWebpackConfig = ({
       ),
     },
     experiments: {
+      layers: true,
       outputModule: true,
     },
   };

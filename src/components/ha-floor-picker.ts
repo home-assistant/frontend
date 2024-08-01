@@ -295,6 +295,8 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
             icon: null,
             level: null,
             aliases: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ];
       }
@@ -309,6 +311,8 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
               icon: "mdi:plus",
               level: null,
               aliases: [],
+              created_at: 0,
+              modified_at: 0,
             },
           ];
     }
@@ -391,6 +395,8 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
             icon: null,
             level: null,
             aliases: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ] as FloorRegistryEntry[];
       } else {
@@ -405,6 +411,8 @@ export class HaFloorPicker extends SubscribeMixin(LitElement) {
             icon: "mdi:plus",
             level: null,
             aliases: [],
+            created_at: 0,
+            modified_at: 0,
           },
         ] as FloorRegistryEntry[];
       }

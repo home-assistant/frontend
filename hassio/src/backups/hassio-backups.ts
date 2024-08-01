@@ -127,14 +127,13 @@ export class HassioBackups extends LitElement {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
         template: (backup) =>
           html`${backup.name || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
       size: {
         title: this.supervisor.localize("backup.size"),
-        width: "15%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -142,7 +141,6 @@ export class HassioBackups extends LitElement {
       },
       location: {
         title: this.supervisor.localize("backup.location"),
-        width: "15%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -151,7 +149,6 @@ export class HassioBackups extends LitElement {
       },
       date: {
         title: this.supervisor.localize("backup.created"),
-        width: "15%",
         direction: "desc",
         hidden: narrow,
         filterable: true,
