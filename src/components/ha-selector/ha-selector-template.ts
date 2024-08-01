@@ -2,6 +2,7 @@ import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import "../ha-code-editor";
 import "../ha-input-helper-text";
 import "../ha-alert";
@@ -36,7 +37,19 @@ export class HaTemplateSelector extends LitElement {
             >${this.hass.localize(
               "ui.components.selectors.template.yaml_warning",
               { string: this.warn }
-            )}</ha-alert
+            )}
+            <br />
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href=${documentationUrl(
+                this.hass,
+                "/docs/configuration/templating/"
+              )}
+              >${this.hass.localize(
+                "ui.components.selectors.template.learn_more"
+              )}</a
+            ></ha-alert
           >`
         : nothing}
       ${this.label
