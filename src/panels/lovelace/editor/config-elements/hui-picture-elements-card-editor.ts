@@ -69,7 +69,6 @@ export class HuiPictureElementsCardEditor
         {
           name: "",
           type: "expandable",
-          expanded: true,
           title: localize(
             "ui.panel.lovelace.editor.card.picture-elements.card_options"
           ),
