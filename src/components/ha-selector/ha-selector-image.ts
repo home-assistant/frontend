@@ -45,7 +45,14 @@ export class HaImageSelector extends LitElement {
     return html`
       <div>
         <label>
-          ${this.hass.localize("ui.components.selectors.image.select_image")}
+          ${this.hass.localize(
+            "ui.components.selectors.image.select_image_with_label",
+            {
+              label:
+                this.label ||
+                this.hass.localize("ui.components.selectors.image.image"),
+            }
+          )}
           <ha-formfield
             .label=${this.hass.localize("ui.components.selectors.image.upload")}
           >

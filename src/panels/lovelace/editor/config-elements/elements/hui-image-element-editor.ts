@@ -41,7 +41,7 @@ const SCHEMA = [
       ui_action: {},
     },
   },
-  { name: "image", selector: { text: {} } },
+  { name: "image", selector: { image: {} } },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
   {
     name: "camera_view",
