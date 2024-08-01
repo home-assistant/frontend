@@ -200,6 +200,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected async checkDataBaseMigration() {
+    if (!this.hass?.config?.components.includes("recorder")) {
+      this._databaseMigration = false;
+      return;
+    }
+
     let recorderInfoProm: Promise<RecorderInfo> | undefined;
     const preloadWindow = window as WindowWithPreloads;
     // On first load, we speed up loading page by having recorderInfoProm ready
