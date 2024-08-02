@@ -8,6 +8,7 @@ import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import {
   ConditionalElementConfig,
   IconElementConfig,
@@ -77,7 +78,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
                   `
                 : nothing}
               <ha-icon-button
-                .label=${this.hass!.localize("ui.common.clear")}
+                .label=${this.hass!.localize("ui.common.delete")}
                 .path=${mdiClose}
                 class="remove-icon"
                 .index=${index}
@@ -187,11 +188,28 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
 
   private _removeRow(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newElements = this.elements!.concat();
-
-    newElements.splice(index, 1);
-
-    fireEvent(this, "elements-changed", { elements: newElements });
+    const element = this.elements?.[index];
+    if (!element) {
+      return;
+    }
+    showConfirmationDialog(this, {
+      text: this.hass!.localize(
+        "ui.panel.lovelace.editor.card.picture-elements.confirm_delete_element",
+        {
+          type:
+            this.hass!.localize(
+              `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
+            ) || element.type,
+        }
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      destructive: true,
+      confirm: () => {
+        const newElements = this.elements!.concat();
+        newElements.splice(index, 1);
+        fireEvent(this, "elements-changed", { elements: newElements });
+      },
+    });
   }
 
   private _editRow(ev: CustomEvent): void {
