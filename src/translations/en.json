@@ -420,6 +420,10 @@
             "manual": "Manual Entry"
           }
         },
+        "template": {
+          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
+          "learn_more": "Learn more about templating."
+        },
         "text": {
           "show_password": "Show password",
           "hide_password": "Hide password"
@@ -1125,6 +1129,7 @@
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
+        "conversation_no_control": "This assistant cannot control your home.",
         "how_can_i_help": "How can I assist?",
         "input_label": "Enter a request",
         "send_text": "Send text",
@@ -5990,6 +5995,7 @@
               "card_options": "Card Options",
               "elements": "Elements",
               "new_element": "Add new element",
+              "confirm_delete_element": "Are you sure you want to delete the {type} element?",
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",

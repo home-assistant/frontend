@@ -41,6 +41,8 @@ import { AudioRecorder } from "../../util/audio-recorder";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { ConversationEntityFeature } from "../../data/conversation";
 
 interface Message {
   who: string;
@@ -136,6 +138,12 @@ export class HaVoiceCommandDialog extends LitElement {
       return nothing;
     }
 
+    const controlHA = !this._pipeline
+      ? false
+      : supportsFeature(
+          this.hass.states[this._pipeline?.conversation_engine],
+          ConversationEntityFeature.CONTROL
+        );
     const supportsMicrophone = AudioRecorder.isSupported;
     const supportsSTT = this._pipeline?.stt_engine;
 
@@ -212,6 +220,15 @@ export class HaVoiceCommandDialog extends LitElement {
             ></ha-icon-button>
           </a>
         </ha-dialog-header>
+        ${controlHA
+          ? nothing
+          : html`
+              <ha-alert>
+                ${this.hass.localize(
+                  "ui.dialogs.voice_command.conversation_no_control"
+                )}
+              </ha-alert>
+            `}
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
@@ -469,10 +486,11 @@ export class HaVoiceCommandDialog extends LitElement {
       who: "user",
       text: "…",
     };
-    this._audioRecorder.start().then(() => {
-      this._addMessage(userMessage);
-      this.requestUpdate("_audioRecorder");
-    });
+    await this._audioRecorder.start();
+
+    this._addMessage(userMessage);
+    this.requestUpdate("_audioRecorder");
+
     const hassMessage: Message = {
       who: "hass",
       text: "…",

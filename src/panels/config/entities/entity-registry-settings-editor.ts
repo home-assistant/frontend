@@ -69,7 +69,10 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+} from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import {
   createOptionsFlow,
@@ -1459,7 +1462,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this.helperConfigEntry!);
+    showOptionsFlowDialog(this, this.helperConfigEntry!, {
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this.helperConfigEntry!.domain
+      ),
+    });
   }
 
   private _switchAsDomainsSorted = memoizeOne(
