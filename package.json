@@ -149,11 +149,11 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "7.24.9",
+    "@babel/core": "7.25.2",
     "@babel/helper-define-polyfill-provider": "0.6.2",
     "@babel/plugin-proposal-decorators": "7.24.7",
     "@babel/plugin-transform-runtime": "7.24.7",
-    "@babel/preset-env": "7.25.0",
+    "@babel/preset-env": "7.25.2",
     "@babel/preset-typescript": "7.24.7",
     "@bundle-stats/plugin-webpack-filter": "4.13.4",
     "@koa/cors": "5.0.0",
