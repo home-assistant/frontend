@@ -23,6 +23,12 @@ export const registerServiceWorker = async (
     return;
   }
 
+  if (registration?.active?.scriptURL.includes("service_worker.js")) {
+    // We are running an old version of the service worker. Force reload.
+    // @ts-ignore Firefox supports force reload
+    location.reload(true);
+  }
+
   reg.addEventListener("updatefound", () => {
     const installingWorker = reg.installing;
 
