@@ -486,10 +486,11 @@ export class HaVoiceCommandDialog extends LitElement {
       who: "user",
       text: "…",
     };
-    this._audioRecorder.start().then(() => {
-      this._addMessage(userMessage);
-      this.requestUpdate("_audioRecorder");
-    });
+    await this._audioRecorder.start();
+
+    this._addMessage(userMessage);
+    this.requestUpdate("_audioRecorder");
+
     const hassMessage: Message = {
       who: "hass",
       text: "…",
