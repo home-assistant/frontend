@@ -32,7 +32,6 @@ const ENTITIES = [
     min_temp: 45,
     max_temp: 95,
     temperature: 80,
-    target_temperature: 70,
     hvac_modes: ["heat", "cool", "auto", "off"],
     friendly_name: "Thermostat",
     hvac_action: "heating",
