@@ -292,7 +292,7 @@ export class HuiActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...this.config!,
-      perform_action: ev.detail.value.service || "",
+      perform_action: ev.detail.value.action || "",
       data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };
