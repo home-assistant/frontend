@@ -1125,6 +1125,7 @@
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
+        "conversation_no_control": "This assistant cannot control Home Assistant.",
         "how_can_i_help": "How can I assist?",
         "input_label": "Enter a request",
         "send_text": "Send text",
