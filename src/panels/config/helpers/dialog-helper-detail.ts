@@ -25,7 +25,10 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+} from "../../../data/integration";
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -325,6 +328,7 @@ export class DialogHelperDetail extends LitElement {
     } else {
       showConfigFlowDialog(this, {
         startFlowHandler: domain,
+        manifest: await fetchIntegrationManifest(this.hass, domain),
         dialogClosedCallback: this._params!.dialogClosedCallback,
       });
       this.closeDialog();
