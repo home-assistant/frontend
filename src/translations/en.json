@@ -5990,6 +5990,7 @@
               "card_options": "Card Options",
               "elements": "Elements",
               "new_element": "Add new element",
+              "confirm_delete_element": "Are you sure you want to delete the {type} element?",
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
