@@ -461,6 +461,7 @@ export interface UiStateContentSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   ui_state_content: {
     entity_id?: string;
+    allow_name?: boolean;
   } | null;
 }
 
