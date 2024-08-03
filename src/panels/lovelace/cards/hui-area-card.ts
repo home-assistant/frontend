@@ -72,9 +72,61 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const OTHER_DOMAINS = ["camera"];
 
-export const DEVICE_CLASSES = {
-  sensor: ["temperature", "humidity"],
-  binary_sensor: ["motion", "moisture"],
+const ALL_DOMAINS = [
+  ...SENSOR_DOMAINS,
+  ...ALERT_DOMAINS,
+  ...TOGGLE_DOMAINS,
+  ...OTHER_DOMAINS,
+];
+
+const AVG_SENSOR_CLASSES = ["temperature", "humidity"];
+
+const SUM_SENSOR_CLASSES = ["power", "energy", "volume"];
+
+const BINARY_SENSOR_CLASSES = ["motion", "moisture"];
+
+const SENSOR_CLASSES = [
+  ...AVG_SENSOR_CLASSES,
+  ...SUM_SENSOR_CLASSES,
+  ...BINARY_SENSOR_CLASSES,
+];
+
+type DeviceClassOptions = {
+  sensor_type: string;
+  default_display_function: (values: number[]) => number;
+};
+
+type DeviceClasses = { [key: string]: DeviceClassOptions };
+
+export const deviceClassesByDomain = (
+  deviceClasses: DeviceClasses,
+  domain: string
+): string[] =>
+  Object.entries(deviceClasses)
+    .filter(([_deviceClass, opts]) => opts.sensor_type === domain)
+    .map(([deviceClass, _opts]) => deviceClass);
+
+const sumValues = (values: number[]): number =>
+  values.reduce((total, value) => total + value, 0);
+
+const avgValues = (values: number[]): number =>
+  sumValues(values) / values.length;
+
+export const DEVICE_CLASSES: { [key: string]: DeviceClassOptions } = {
+  ...SENSOR_CLASSES.reduce(
+    (acc, dc) => ({
+      ...acc,
+      [dc]: {
+        sensor_type: BINARY_SENSOR_CLASSES.includes(dc)
+          ? "binary_sensor"
+          : "sensor",
+        default_display_function: SUM_SENSOR_CLASSES.includes(dc)
+          ? sumValues
+          : avgValues,
+      },
+    }),
+    {}
+  ),
 };
 
 const DOMAIN_ICONS = {
@@ -117,7 +169,7 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
-  private _deviceClasses: { [key: string]: string[] } = DEVICE_CLASSES;
+  private _deviceClasses: DeviceClasses = DEVICE_CLASSES;
 
   private _ratio: {
     w: number;
@@ -129,7 +181,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
-      deviceClasses: { [key: string]: string[] },
+      deviceClasses: DeviceClasses,
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -147,12 +199,7 @@ export class HuiAreaCard
 
       for (const entity of entitiesInArea) {
         const domain = computeDomain(entity);
-        if (
-          !TOGGLE_DOMAINS.includes(domain) &&
-          !SENSOR_DOMAINS.includes(domain) &&
-          !ALERT_DOMAINS.includes(domain) &&
-          !OTHER_DOMAINS.includes(domain)
-        ) {
+        if (!ALL_DOMAINS.includes(domain)) {
           continue;
         }
         const stateObj: HassEntity | undefined = states[entity];
@@ -162,8 +209,8 @@ export class HuiAreaCard
         }
 
         if (
-          (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
-          !deviceClasses[domain].includes(
+          [...SENSOR_DOMAINS, ...ALERT_DOMAINS].includes(domain) &&
+          !deviceClassesByDomain(deviceClasses, domain).includes(
             stateObj.attributes.device_class || ""
           )
         ) {
@@ -203,7 +250,10 @@ export class HuiAreaCard
     );
   }
 
-  private _average(domain: string, deviceClass?: string): string | undefined {
+  private _sensor_display_value(
+    domain: string,
+    deviceClass?: string
+  ): string | undefined {
     const entities = this._entitiesByDomain(
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
@@ -217,24 +267,25 @@ export class HuiAreaCard
       return undefined;
     }
     let uom;
-    const values = entities.filter((entity) => {
-      if (!isNumericState(entity) || isNaN(Number(entity.state))) {
-        return false;
-      }
-      if (!uom) {
-        uom = entity.attributes.unit_of_measurement;
-        return true;
-      }
-      return entity.attributes.unit_of_measurement === uom;
-    });
+    const values = entities
+      .filter((entity) => {
+        if (!isNumericState(entity) || isNaN(Number(entity.state))) {
+          return false;
+        }
+        if (!uom) {
+          uom = entity.attributes.unit_of_measurement;
+          return true;
+        }
+        return entity.attributes.unit_of_measurement === uom;
+      })
+      .map((entity) => Number(entity.state));
     if (!values.length) {
       return undefined;
     }
-    const sum = values.reduce(
-      (total, entity) => total + Number(entity.state),
-      0
-    );
-    return `${formatNumber(sum / values.length, this.hass!.locale, {
+    const displayValue = deviceClass
+      ? this._deviceClasses[deviceClass].default_display_function(values)
+      : "";
+    return `${formatNumber(displayValue, this.hass!.locale, {
       maximumFractionDigits: 1,
     })}${uom ? blankBeforeUnit(uom, this.hass!.locale) : ""}${uom || ""}`;
   }
@@ -280,13 +331,22 @@ export class HuiAreaCard
 
     this._config = config;
 
-    this._deviceClasses = { ...DEVICE_CLASSES };
-    if (config.sensor_classes) {
-      this._deviceClasses.sensor = config.sensor_classes;
+    if (!config.sensor_classes && !config.alert_classes) {
+      this._deviceClasses = { ...DEVICE_CLASSES };
+      return;
     }
-    if (config.alert_classes) {
-      this._deviceClasses.binary_sensor = config.alert_classes;
-    }
+
+    this._deviceClasses = Object.entries(DEVICE_CLASSES)
+      .filter(([dc, _opts]) =>
+        [...config.sensor_classes, ...config.alert_classes].includes(dc)
+      )
+      .reduce(
+        (acc, [dc, opts]) => ({
+          ...acc,
+          [dc]: opts,
+        }),
+        {}
+      );
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -388,24 +448,26 @@ export class HuiAreaCard
       if (!(domain in entitiesByDomain)) {
         return;
       }
-      this._deviceClasses[domain].forEach((deviceClass) => {
-        if (
-          entitiesByDomain[domain].some(
-            (entity) => entity.attributes.device_class === deviceClass
-          )
-        ) {
-          sensors.push(html`
-            <div class="sensor">
-              <ha-domain-icon
-                .hass=${this.hass}
-                .domain=${domain}
-                .deviceClass=${deviceClass}
-              ></ha-domain-icon>
-              ${this._average(domain, deviceClass)}
-            </div>
-          `);
+      deviceClassesByDomain(this._deviceClasses, domain).forEach(
+        (deviceClass) => {
+          if (
+            entitiesByDomain[domain].some(
+              (entity) => entity.attributes.device_class === deviceClass
+            )
+          ) {
+            sensors.push(html`
+              <div class="sensor">
+                <ha-domain-icon
+                  .hass=${this.hass}
+                  .domain=${domain}
+                  .deviceClass=${deviceClass}
+                ></ha-domain-icon>
+                ${this._sensor_display_value(domain, deviceClass)}
+              </div>
+            `);
+          }
         }
-      });
+      );
     });
 
     let cameraEntityId: string | undefined;
@@ -460,18 +522,20 @@ export class HuiAreaCard
               if (!(domain in entitiesByDomain)) {
                 return nothing;
               }
-              return this._deviceClasses[domain].map((deviceClass) => {
-                const entity = this._isOn(domain, deviceClass);
-                return entity
-                  ? html`
-                      <ha-state-icon
-                        class="alert"
-                        .hass=${this.hass}
-                        .stateObj=${entity}
-                      ></ha-state-icon>
-                    `
-                  : nothing;
-              });
+              return deviceClassesByDomain(this._deviceClasses, domain).map(
+                (deviceClass) => {
+                  const entity = this._isOn(domain, deviceClass);
+                  return entity
+                    ? html`
+                        <ha-state-icon
+                          class="alert"
+                          .hass=${this.hass}
+                          .stateObj=${entity}
+                        ></ha-state-icon>
+                      `
+                    : nothing;
+                }
+              );
             })}
           </div>
           <div class="bottom">
