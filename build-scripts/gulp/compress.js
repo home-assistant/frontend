@@ -29,7 +29,7 @@ const compressDistZopfli = (rootDir, modernDir) =>
       [
         `${rootDir}/**/${filesGlob}`,
         `!${modernDir}/**/${filesGlob}`,
-        `!${rootDir}/sw-modern.js`,
+        `!${rootDir}/{sw-modern,service_worker}.js`,
         `${rootDir}/{authorize,onboarding}.html`,
       ],
       { base: rootDir }
