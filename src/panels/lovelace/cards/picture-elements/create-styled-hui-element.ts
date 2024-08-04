@@ -12,7 +12,7 @@ export function createStyledHuiElement(
 
   if (elementConfig.style) {
     Object.keys(elementConfig.style).forEach((prop) => {
-      element.style.setProperty(prop, elementConfig.style[prop]);
+      element.style.setProperty(prop, elementConfig.style![prop]);
     });
   }
 

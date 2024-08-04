@@ -18,6 +18,10 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     return document.createElement("hui-icon-element-editor");
   }
 
+  public static getStubConfig(): IconElementConfig {
+    return { type: "icon", icon: "mdi:alert-circle" };
+  }
+
   public hass?: HomeAssistant;
 
   @state() private _config?: IconElementConfig;
