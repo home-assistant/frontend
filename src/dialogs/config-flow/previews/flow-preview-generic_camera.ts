@@ -24,7 +24,6 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
             autoplay
             playsinline
             .hass=${this.hass}
-            .controls=${false}
             .url=${streamUrl}
             posterUrl="/static/icons/spinner-48x48.svg"
           ></ha-hls-player>`
