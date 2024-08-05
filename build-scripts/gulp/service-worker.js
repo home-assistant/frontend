@@ -2,8 +2,8 @@
 
 import { deleteAsync } from "del";
 import gulp from "gulp";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
+import { basename, join, relative } from "node:path";
 import { injectManifest } from "workbox-build";
 import paths from "../paths.cjs";
 
@@ -41,10 +41,11 @@ gulp.task("gen-service-worker-app-prod", () =>
         await readFile(join(outPath, "manifest.json"), "utf-8")
       );
       const swSrc = join(paths.app_output_root, manifest["service-worker.js"]);
+      const swDest = join(paths.app_output_root, `sw-${build}.js`);
       const buildDir = relative(paths.app_output_root, outPath);
       const { warnings } = await injectManifest({
         swSrc,
-        swDest: join(paths.app_output_root, `sw-${build}.js`),
+        swDest,
         injectionPoint: "__WB_MANIFEST__",
         // Files that mach this pattern will be considered unique and skip revision check
         // ignore JS files + translation files
@@ -76,6 +77,11 @@ gulp.task("gen-service-worker-app-prod", () =>
         );
       }
       await deleteAsync(`${swSrc}?(.map)`);
+      // Needed to install new SW from a cached HTML
+      if (build === "modern") {
+        const swOld = join(paths.app_output_root, "service_worker.js");
+        await symlink(basename(swDest), swOld);
+      }
     })
   )
 );
