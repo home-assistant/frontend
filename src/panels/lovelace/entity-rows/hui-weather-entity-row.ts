@@ -136,7 +136,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex=${ifDefined(pointer ? "0" : undefined)}
+        tabindex=${ifDefined(
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
+        )}
       >
         ${weatherStateIcon ||
         html`
