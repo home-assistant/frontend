@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCloud, mdiCodeBraces, mdiPackageVariant } from "@mdi/js";
+import { mdiCloud, mdiFileCodeOutline, mdiPackageVariant } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
