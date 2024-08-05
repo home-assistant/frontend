@@ -61,9 +61,6 @@ class HuiUpdateEntityRow extends LitElement implements LovelaceRow {
       div {
         text-align: right;
       }
-      .pointer {
-        cursor: pointer;
-      }
     `;
   }
 }
