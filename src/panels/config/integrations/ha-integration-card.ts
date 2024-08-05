@@ -184,7 +184,7 @@ export class HaIntegrationCard extends LitElement {
             : nothing}
           ${this.manifest && !this.manifest?.config_flow
             ? html`<div class="icon yaml">
-                <ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiFileCodeOutline}></ha-svg-icon>
                 <simple-tooltip
                   animation-delay="0"
                   .position=${computeRTL(this.hass) ? "right" : "left"}
