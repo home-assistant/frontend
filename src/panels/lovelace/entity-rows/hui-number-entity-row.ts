@@ -123,7 +123,6 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        cursor: pointer;
         display: block;
       }
       .flex {

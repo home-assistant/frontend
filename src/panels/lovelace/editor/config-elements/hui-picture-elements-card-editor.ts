@@ -138,12 +138,23 @@ export class HuiPictureElementsCardEditor
   private _elementsChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
+    const oldLength = this._config?.elements?.length || 0;
     const config = {
       ...this._config,
       elements: ev.detail.elements as LovelaceElementConfig[],
     } as LovelaceCardConfig;
 
     fireEvent(this, "config-changed", { config });
+
+    const newLength = ev.detail.elements?.length || 0;
+    if (newLength === oldLength + 1) {
+      const index = newLength - 1;
+      this._subElementEditorConfig = {
+        index,
+        type: "element",
+        elementConfig: { ...ev.detail.elements[index] },
+      };
+    }
   }
 
   private _handleSubElementChanged(ev: CustomEvent): void {

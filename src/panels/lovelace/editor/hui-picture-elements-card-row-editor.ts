@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import { mdiClose, mdiPencil, mdiContentDuplicate } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -9,6 +10,7 @@ import { HomeAssistant } from "../../../types";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { getElementStubConfig } from "./get-element-stub-config";
 import {
   ConditionalElementConfig,
   IconElementConfig,
@@ -171,17 +173,14 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     if (value === "") {
       return;
     }
-    const newElements = this.elements!.concat({
-      type: value! as string,
-      ...(value !== "conditional"
-        ? {
-            style: {
-              top: "50%",
-              left: "50%",
-            },
-          }
-        : {}),
-    } as LovelaceElementConfig);
+    const newElements = this.elements!.concat(
+      await getElementStubConfig(
+        this.hass!,
+        value,
+        Object.keys(this.hass!.entities),
+        []
+      )
+    );
     fireEvent(this, "elements-changed", { elements: newElements });
     this._select.select(-1);
   }
@@ -225,7 +224,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
 
   private _duplicateRow(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newElements = [...this.elements!, this.elements![index]];
+    const newElements = [...this.elements!, deepClone(this.elements![index])];
 
     fireEvent(this, "elements-changed", { elements: newElements });
   }
