@@ -35,7 +35,7 @@ export const createPictureElementElement = (config: LovelaceElementConfig) =>
 
 export const getPictureElementClass = (type: string) =>
   getLovelaceElementClass(
-    type,
+    type === "action-button" ? "service-button" : type,
     "element",
     ALWAYS_LOADED_TYPES,
     LAZY_LOAD_TYPES

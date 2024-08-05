@@ -6323,7 +6323,8 @@
               "footer": "Footer editor",
               "row": "Entity row editor",
               "feature": "Feature editor",
-              "element": "Element editor"
+              "element": "Element editor",
+              "element_type": "{type} element editor"
             }
           }
         },
