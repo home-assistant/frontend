@@ -1026,6 +1026,7 @@
       },
       "state-content-picker": {
         "state": "State",
+        "name": "Name",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
@@ -6323,7 +6324,8 @@
               "footer": "Footer editor",
               "row": "Entity row editor",
               "feature": "Feature editor",
-              "element": "Element editor"
+              "element": "Element editor",
+              "element_type": "{type} element editor"
             }
           }
         },

@@ -55,6 +55,8 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public content?: StateContent;
 
+  @property({ attribute: false }) public name?: string;
+
   protected createRenderRoot() {
     return this;
   }
@@ -87,6 +89,9 @@ class StateDisplay extends LitElement {
       }
 
       return this.hass!.formatEntityState(stateObj);
+    }
+    if (content === "name") {
+      return html`${this.name || stateObj.attributes.friendly_name}`;
     }
     // Check last-changed for backwards compatibility
     if (content === "last_changed" || content === "last-changed") {
