@@ -235,9 +235,11 @@ export class HaCardConditionEditor extends LitElement {
               ? this.hass.localize(
                   "ui.panel.lovelace.editor.condition-editor.testing_pass"
                 )
-              : this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_error"
-                )
+              : this._testingResult === false
+                ? this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.testing_error"
+                  )
+                : nothing
           }
         </div>
       </ha-card>
