@@ -5625,6 +5625,7 @@
           },
           "section": {
             "unnamed_section": "Unnamed section",
+            "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section"
           },
