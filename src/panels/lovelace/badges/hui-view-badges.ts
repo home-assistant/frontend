@@ -150,10 +150,10 @@ export class HuiViewBadges extends LitElement {
                         class="add"
                         @click=${this._addBadge}
                         aria-label=${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.add_card"
+                          "ui.panel.lovelace.editor.section.add_badge"
                         )}
                         .title=${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.add_card"
+                          "ui.panel.lovelace.editor.section.add_badge"
                         )}
                       >
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
