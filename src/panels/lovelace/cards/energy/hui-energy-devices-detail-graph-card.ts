@@ -251,21 +251,31 @@ export class HuiEnergyDevicesDetailGraphCard
     datasetExtras.push(...processedDataExtras);
 
     const { summedData, compareSummedData } = getSummedData(energyData);
+
+    const hasProduction =
+      "from_grid" in summedData ||
+      "solar" in summedData ||
+      "from_battery" in summedData;
+
     const {
       consumption: consumptionData,
       compareConsumption: consumptionCompareData,
-    } = computeConsumptionData(summedData, compareSummedData);
+    } = hasProduction
+      ? computeConsumptionData(summedData, compareSummedData)
+      : { consumption: undefined, compareConsumption: undefined };
 
-    this._untrackedIndex = datasets.length;
-    const { dataset: untrackedData, datasetExtra: untrackedDataExtra } =
-      this._processUntracked(
-        computedStyle,
-        processedData,
-        consumptionData,
-        false
-      );
-    datasets.push(untrackedData);
-    datasetExtras.push(untrackedDataExtra);
+    if (hasProduction) {
+      this._untrackedIndex = datasets.length;
+      const { dataset: untrackedData, datasetExtra: untrackedDataExtra } =
+        this._processUntracked(
+          computedStyle,
+          processedData,
+          consumptionData,
+          false
+        );
+      datasets.push(untrackedData);
+      datasetExtras.push(untrackedDataExtra);
+    }
 
     if (compareData) {
       // Add empty dataset to align the bars
@@ -300,17 +310,19 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(...processedCompareData);
       datasetExtras.push(...processedCompareDataExtras);
 
-      const {
-        dataset: untrackedCompareData,
-        datasetExtra: untrackedCompareDataExtra,
-      } = this._processUntracked(
-        computedStyle,
-        processedCompareData,
-        consumptionCompareData,
-        true
-      );
-      datasets.push(untrackedCompareData);
-      datasetExtras.push(untrackedCompareDataExtra);
+      if (hasProduction) {
+        const {
+          dataset: untrackedCompareData,
+          datasetExtra: untrackedCompareDataExtra,
+        } = this._processUntracked(
+          computedStyle,
+          processedCompareData,
+          consumptionCompareData,
+          true
+        );
+        datasets.push(untrackedCompareData);
+        datasetExtras.push(untrackedCompareDataExtra);
+      }
     }
 
     this._start = energyData.start;
