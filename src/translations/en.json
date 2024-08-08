@@ -3744,6 +3744,7 @@
               "name": "Name",
               "last_activated": "Last activated",
               "category": "Category",
+              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
               "icon": "Icon"
             },
@@ -5626,6 +5627,7 @@
           },
           "section": {
             "unnamed_section": "Unnamed section",
+            "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section"
           },

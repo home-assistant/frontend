@@ -366,7 +366,9 @@ export const normalizeAutomationConfig = <
     }
   }
 
-  config.action = migrateAutomationAction(config.action || []);
+  if (config.action) {
+    config.action = migrateAutomationAction(config.action);
+  }
 
   return config;
 };
