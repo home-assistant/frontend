@@ -3744,6 +3744,7 @@
               "name": "Name",
               "last_activated": "Last activated",
               "category": "Category",
+              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
               "icon": "Icon"
             },
