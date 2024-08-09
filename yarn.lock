@@ -2197,12 +2197,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@lit-labs/observers@npm:2.0.2"
+"@lit-labs/observers@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@lit-labs/observers@npm:2.0.3"
   dependencies:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
-  checksum: 10/66622f1aa8f3d3245917490b6faced4762ad9d87c9674358bba9c41427301dd7a682bb2098dab34858c1725e668c3b4de692fbfbbf823b88aa7711c13389642f
+    lit-html: "npm:^3.2.0"
+  checksum: 10/2b4930feec18bd095eb2cb2301a376574d5d9893e3be608105534be57cecfab4004f0400093daddc7651e9c4cc747239a42fb8a82a58ab478288a7a419b2aa3d
   languageName: node
   linkType: hard
 
@@ -9015,7 +9016,7 @@ __metadata:
     "@lezer/highlight": "npm:1.2.0"
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.7"
-    "@lit-labs/observers": "npm:2.0.2"
+    "@lit-labs/observers": "npm:2.0.3"
     "@lit-labs/virtualizer": "npm:2.0.14"
     "@lokalise/node-api": "npm:12.7.0"
     "@lrnwebcomponents/simple-tooltip": "npm:8.0.2"
@@ -10635,6 +10636,15 @@ __metadata:
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
   checksum: 10/3503e55e2927c2ff94773cf041fc4128f92291869c9192f36eacb7f95132d11f6b329e5b910ab60a4456349cd2e6d23b33d83291b24d557bcd6b904d6314ac1a
+  languageName: node
+  linkType: hard
+
+"lit-html@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "lit-html@npm:3.2.0"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.2"
+  checksum: 10/c6e6f07b3aa02d6b3dc047664d144911a49c7ed95137320b769771f8386873f8d72858b205cad707fa88fd5d882de25981de80660888c6f1be106af01bbba979
   languageName: node
   linkType: hard
 
