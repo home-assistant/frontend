@@ -24,6 +24,7 @@ import {
   LightColor,
   LightColorMode,
   LightEntity,
+  lightSupportsColorMode,
 } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
@@ -111,7 +112,7 @@ class LightColorTempPicker extends LitElement {
 
     if (stateObj.state === "on") {
       this._ctPickerValue =
-        stateObj.attributes.color_mode === LightColorMode.COLOR_TEMP
+        lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP)
           ? stateObj.attributes.color_temp_kelvin
           : undefined;
     } else {
