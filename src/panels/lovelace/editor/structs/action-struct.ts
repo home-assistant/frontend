@@ -16,7 +16,7 @@ const actionConfigStructUser = object({
   user: string(),
 });
 
-const actionConfigStructConfirmation = union([
+export const actionConfigStructConfirmation = union([
   boolean(),
   object({
     text: optional(string()),
