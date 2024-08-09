@@ -488,7 +488,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if (value && !Array.isArray(value)) {
       config.sequence = [value];
     }
-    config.sequence = migrateAutomationAction(config.sequence);
+    if (config.sequence) {
+      config.sequence = migrateAutomationAction(config.sequence);
+    }
     return config;
   }
 
