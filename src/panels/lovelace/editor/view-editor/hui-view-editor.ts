@@ -82,6 +82,20 @@ export class HuiViewEditor extends LitElement {
               },
             ] as const satisfies HaFormSchema[])
           : []),
+        ...(viewType === SECTION_VIEW_LAYOUT
+          ? ([
+              {
+                name: "min_column_width",
+                selector: {
+                  number: {
+                    min: 1,
+                    max: 1000,
+                    mode: "slider",
+                  },
+                },
+              },
+            ] as const satisfies HaFormSchema[])
+          : []),
         {
           name: "subview",
           selector: {
@@ -120,6 +134,13 @@ export class HuiViewEditor extends LitElement {
       data.max_columns = 4;
     }
 
+    if (
+      data.min_column_width === undefined &&
+      this._type === SECTION_VIEW_LAYOUT
+    ) {
+      data.min_column_width = 320;
+    }
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -141,6 +162,10 @@ export class HuiViewEditor extends LitElement {
 
     if (config.type !== SECTION_VIEW_LAYOUT) {
       delete config.max_columns;
+    }
+
+    if (config.type !== SECTION_VIEW_LAYOUT) {
+      delete config.min_column_width;
     }
 
     if (
@@ -169,6 +194,10 @@ export class HuiViewEditor extends LitElement {
       case "max_columns":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.max_columns"
+        );
+      case "min_column_width":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.min_column_width"
         );
       default:
         return this.hass!.localize(
