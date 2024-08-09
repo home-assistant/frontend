@@ -209,8 +209,6 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       .badge {
         position: relative;
         --ha-ripple-color: var(--badge-color);
-        --ha-ripple-hover-opacity: 0.04;
-        --ha-ripple-pressed-opacity: 0.12;
         transition:
           box-shadow 180ms ease-in-out,
           border-color 180ms ease-in-out;
@@ -219,12 +217,12 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         align-items: center;
         justify-content: center;
         gap: 8px;
-        height: 36px;
-        min-width: 36px;
+        height: var(--ha-badge-size, 36px);
+        min-width: var(--ha-badge-size, 36px);
         padding: 0px 8px;
         box-sizing: border-box;
         width: auto;
-        border-radius: 18px;
+        border-radius: calc(var(--ha-badge-size, 36px) / 2);
         background-color: var(--card-background-color, white);
         border-width: var(--ha-card-border-width, 1px);
         border-style: solid;
@@ -232,7 +230,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
           --ha-card-border-color,
           var(--divider-color, #e0e0e0)
         );
-        --mdc-icon-size: 18px;
+        --mdc-icon-size: var(--ha-badge-icon-size, 18px);
         text-align: center;
         font-family: Roboto;
       }
