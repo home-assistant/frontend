@@ -1,4 +1,10 @@
-import { html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing
+} from "lit";
 import { property, state, query } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -87,6 +93,17 @@ class NotificationManager extends LitElement {
       </ha-toast>
     `;
   }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      .mdc-snackbar__surface  {
+        background-color: var(--ha-toast-background-color, rgba(51, 51, 51, 1));
+        color: var(--ha-toast-text-color, rgba(255, 255, 255, 0.87));
+       }
+    `;
+  }
+}
+
 
   private buttonClicked() {
     this._toast?.close("action");
