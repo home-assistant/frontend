@@ -1004,7 +1004,9 @@
             "times": "times"
           },
           "summary": "Summary",
-          "description": "Description"
+          "description": "Description",
+          "location": "Location",
+          "attendees": "Attendees"
         }
       },
       "attributes": {
