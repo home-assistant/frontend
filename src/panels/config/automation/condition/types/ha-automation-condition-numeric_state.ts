@@ -22,6 +22,7 @@ export default class HaNumericStateCondition extends LitElement {
 
   public static get defaultConfig(): NumericStateCondition {
     return {
+      condition: "numeric_state",
       entity_id: "",
     };
   }

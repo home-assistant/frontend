@@ -30,55 +30,48 @@ import { HaConversationTrigger } from "../../../../src/panels/config/automation/
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "State",
-    triggers: [{ platform: "state", ...HaStateTrigger.defaultConfig }],
+    triggers: [{ ...HaStateTrigger.defaultConfig }],
   },
 
   {
     name: "MQTT",
-    triggers: [{ platform: "mqtt", ...HaMQTTTrigger.defaultConfig }],
+    triggers: [{ ...HaMQTTTrigger.defaultConfig }],
   },
 
   {
     name: "GeoLocation",
-    triggers: [
-      { platform: "geo_location", ...HaGeolocationTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaGeolocationTrigger.defaultConfig }],
   },
 
   {
     name: "Home Assistant",
-    triggers: [{ platform: "homeassistant", ...HaHassTrigger.defaultConfig }],
+    triggers: [{ ...HaHassTrigger.defaultConfig }],
   },
 
   {
     name: "Numeric State",
-    triggers: [
-      { platform: "numeric_state", ...HaNumericStateTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaNumericStateTrigger.defaultConfig }],
   },
 
   {
     name: "Sun",
-    triggers: [{ platform: "sun", ...HaSunTrigger.defaultConfig }],
+    triggers: [{ ...HaSunTrigger.defaultConfig }],
   },
 
   {
     name: "Time Pattern",
-    triggers: [
-      { platform: "time_pattern", ...HaTimePatternTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaTimePatternTrigger.defaultConfig }],
   },
 
   {
     name: "Webhook",
-    triggers: [{ platform: "webhook", ...HaWebhookTrigger.defaultConfig }],
+    triggers: [{ ...HaWebhookTrigger.defaultConfig }],
   },
 
   {
     name: "Persistent Notification",
     triggers: [
       {
-        platform: "persistent_notification",
         ...HaPersistentNotificationTrigger.defaultConfig,
       },
     ],
@@ -86,37 +79,37 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
 
   {
     name: "Zone",
-    triggers: [{ platform: "zone", ...HaZoneTrigger.defaultConfig }],
+    triggers: [{ ...HaZoneTrigger.defaultConfig }],
   },
 
   {
     name: "Tag",
-    triggers: [{ platform: "tag", ...HaTagTrigger.defaultConfig }],
+    triggers: [{ ...HaTagTrigger.defaultConfig }],
   },
 
   {
     name: "Time",
-    triggers: [{ platform: "time", ...HaTimeTrigger.defaultConfig }],
+    triggers: [{ ...HaTimeTrigger.defaultConfig }],
   },
 
   {
     name: "Template",
-    triggers: [{ platform: "template", ...HaTemplateTrigger.defaultConfig }],
+    triggers: [{ ...HaTemplateTrigger.defaultConfig }],
   },
 
   {
     name: "Event",
-    triggers: [{ platform: "event", ...HaEventTrigger.defaultConfig }],
+    triggers: [{ ...HaEventTrigger.defaultConfig }],
   },
 
   {
     name: "Device Trigger",
-    triggers: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+    triggers: [{ ...HaDeviceTrigger.defaultConfig }],
   },
   {
     name: "Sentence",
     triggers: [
-      { platform: "conversation", ...HaConversationTrigger.defaultConfig },
+      { ...HaConversationTrigger.defaultConfig },
       {
         platform: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],

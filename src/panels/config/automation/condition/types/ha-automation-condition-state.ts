@@ -87,7 +87,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): StateCondition {
-    return { platform: "state", entity_id: "", state: "" };
+    return { condition: "state", entity_id: "", state: "" };
   }
 
   public shouldUpdate(changedProperties: PropertyValues) {
