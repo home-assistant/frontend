@@ -1471,18 +1471,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundle-stats/plugin-webpack-filter@npm:4.13.4":
-  version: 4.13.4
-  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.13.4"
+"@bundle-stats/plugin-webpack-filter@npm:4.14.0":
+  version: 4.14.0
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.14.0"
   peerDependencies:
     core-js: ^3.0.0
-  checksum: 10/2f21d8125043256bc110da3e7742467f6d3e51a9303852845238ea8873198312846385c1c58138d3e15ca297ead228a93bdb138a2e7e78924a7e09a483a565f7
+  checksum: 10/d6fa297120807e9e5e90acab0a745df0d24801cbd353e91ec09377c799679b6f58f5c5b72f90c9d34fd82de4da8aedb391df951e05b750d20c1d744a380a7748
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.17.0":
-  version: 6.17.0
-  resolution: "@codemirror/autocomplete@npm:6.17.0"
+"@codemirror/autocomplete@npm:6.18.0":
+  version: 6.18.0
+  resolution: "@codemirror/autocomplete@npm:6.18.0"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
@@ -1493,7 +1493,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 10/b38ef7ad392a88470c5e545b016bf1c443f50840ca4c7af9e19348fe27229aa9118dabc3cff8a0831143a307ab6ba948d7e126c0add7932a7f8044ab5902cda8
+  checksum: 10/29cf0857bc81ef1d7de963863b96d9597cbd90d992578a8d91943b5ca2b97f6e0c7c5f868ee9c2f844c1466f11b40799502e0237ee4c45394335c47af3b4765f
   languageName: node
   linkType: hard
 
@@ -1550,14 +1550,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.29.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0":
-  version: 6.29.1
-  resolution: "@codemirror/view@npm:6.29.1"
+"@codemirror/view@npm:6.30.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0":
+  version: 6.30.0
+  resolution: "@codemirror/view@npm:6.30.0"
   dependencies:
     "@codemirror/state": "npm:^6.4.0"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/69002f500efed9bd864c710a4040ef03136b08351a61a423c653340d1134acdcab78a92a495666a08045b2bf54ff0811274a7e328c4c1ca4456de3f67694e955
+  checksum: 10/6e3c31ef5eb731183ef4ee7bee293d49deae72724d1c01f65fd3e800f0c9cd6e662c411d6a88742599bf2793e5c9491d0a080996e5553a7ce736a148d9f9ad58
   languageName: node
   linkType: hard
 
@@ -2213,13 +2213,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:2.0.13":
-  version: 2.0.13
-  resolution: "@lit-labs/virtualizer@npm:2.0.13"
+"@lit-labs/virtualizer@npm:2.0.14":
+  version: 2.0.14
+  resolution: "@lit-labs/virtualizer@npm:2.0.14"
   dependencies:
-    lit: "npm:^3.1.0"
+    lit: "npm:^3.2.0"
     tslib: "npm:^2.0.3"
-  checksum: 10/dcb1bae7c2ae930b56da2309050719572e7e3ba2b2a7aa32c440ba22bb67c75d4b3a3818c8fc589420a206e0dbc803ada73518c8bb68063f51a7dfef4b39b8a9
+  checksum: 10/6532a7cad1b36f90f7c5809c31833978b58ab409de5cd51f18bed33e611b7b86ffecb630996df98097a5d43d1e601137b077fd0b1553f44cfd7504d62c879c4f
   languageName: node
   linkType: hard
 
@@ -6757,10 +6757,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.37.1":
-  version: 3.37.1
-  resolution: "core-js@npm:3.37.1"
-  checksum: 10/25d6bd15fcc6ffd2a0ec0be57a78ff3358b3e1fdffdb6800fc93dcfdb3854037aee41f3d101aed8c37905d107daf98218b3e7ee95cec383710d2a66a5d9e541b
+"core-js@npm:3.38.0":
+  version: 3.38.0
+  resolution: "core-js@npm:3.38.0"
+  checksum: 10/95f5c768ee14aaf79e8fece9e58023a5a6367186184c92e825a842f271d3d91c559cfadee9c75712c463f248c61d636ed5a31a1fff1c904d4f5a2ed69b23f0c2
   languageName: node
   linkType: hard
 
@@ -7283,13 +7283,6 @@ __metadata:
   version: 9.2.2
   resolution: "emoji-regex@npm:9.2.2"
   checksum: 10/915acf859cea7131dac1b2b5c9c8e35c4849e325a1d114c30adb8cd615970f6dca0e27f64f3a4949d7d6ed86ecd79a1c5c63f02e697513cddd7b5835c90948b8
-  languageName: node
-  linkType: hard
-
-"encode-utf8@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "encode-utf8@npm:1.0.3"
-  checksum: 10/0204c37cda21bf19bb8f87f7ec6c89a23d43488c2ef1e5cfa40b64ee9568e63e15dc323fa7f50a491e2c6d33843a6b409f6de09afbf6cf371cb8da596cc64b44
   languageName: node
   linkType: hard
 
@@ -8995,14 +8988,14 @@ __metadata:
     "@babel/preset-typescript": "npm:7.24.7"
     "@babel/runtime": "npm:7.25.0"
     "@braintree/sanitize-url": "npm:7.1.0"
-    "@bundle-stats/plugin-webpack-filter": "npm:4.13.4"
-    "@codemirror/autocomplete": "npm:6.17.0"
+    "@bundle-stats/plugin-webpack-filter": "npm:4.14.0"
+    "@codemirror/autocomplete": "npm:6.18.0"
     "@codemirror/commands": "npm:6.6.0"
     "@codemirror/language": "npm:6.10.2"
     "@codemirror/legacy-modes": "npm:6.4.0"
     "@codemirror/search": "npm:6.5.6"
     "@codemirror/state": "npm:6.4.1"
-    "@codemirror/view": "npm:6.29.1"
+    "@codemirror/view": "npm:6.30.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.12.5"
     "@formatjs/intl-displaynames": "npm:6.6.8"
@@ -9023,7 +9016,7 @@ __metadata:
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.7"
     "@lit-labs/observers": "npm:2.0.2"
-    "@lit-labs/virtualizer": "npm:2.0.13"
+    "@lit-labs/virtualizer": "npm:2.0.14"
     "@lokalise/node-api": "npm:12.7.0"
     "@lrnwebcomponents/simple-tooltip": "npm:8.0.2"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
@@ -9106,7 +9099,7 @@ __metadata:
     chart.js: "npm:4.4.3"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.1"
-    core-js: "npm:3.37.1"
+    core-js: "npm:3.38.0"
     cropperjs: "npm:1.6.2"
     date-fns: "npm:3.6.0"
     date-fns-tz: "npm:3.1.3"
@@ -9164,7 +9157,7 @@ __metadata:
     proxy-polyfill: "npm:0.3.2"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
-    qrcode: "npm:1.5.3"
+    qrcode: "npm:1.5.4"
     roboto-fontface: "npm:0.10.0"
     rollup: "npm:2.79.1"
     rollup-plugin-string: "npm:3.0.0"
@@ -12366,17 +12359,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qrcode@npm:1.5.3":
-  version: 1.5.3
-  resolution: "qrcode@npm:1.5.3"
+"qrcode@npm:1.5.4":
+  version: 1.5.4
+  resolution: "qrcode@npm:1.5.4"
   dependencies:
     dijkstrajs: "npm:^1.0.1"
-    encode-utf8: "npm:^1.0.3"
     pngjs: "npm:^5.0.0"
     yargs: "npm:^15.3.1"
   bin:
     qrcode: bin/qrcode
-  checksum: 10/823642d59a81ba5f406a1e78415fee37fd53856038f49a85c4ca7aa32ba6b8505ab059a832718ac16612bed75aa2a18584faae38cf3c25e2c90fb19b8c55fe46
+  checksum: 10/9a1b61760e4ea334545a0f54bbc11c537aba0a17cf52cab9fa1b07f8a1337eed0bc6f7fde41b197f2c82c249bc48728983bfaf861bb7ecb29dc597b2ae33c424
   languageName: node
   linkType: hard
 
