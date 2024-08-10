@@ -16,7 +16,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public path?: ItemPath;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): LogicalCondition {
     return {
       conditions: [],
     };

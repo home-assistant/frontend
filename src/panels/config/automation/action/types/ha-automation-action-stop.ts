@@ -14,7 +14,7 @@ export class HaStopAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): StopAction {
     return { stop: "" };
   }
 

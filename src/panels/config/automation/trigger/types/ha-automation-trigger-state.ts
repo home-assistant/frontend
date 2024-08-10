@@ -48,8 +48,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
-    return { entity_id: [] };
+  public static get defaultConfig(): StateTrigger {
+    return { platform: "state", entity_id: [] };
   }
 
   private _schema = memoizeOne(

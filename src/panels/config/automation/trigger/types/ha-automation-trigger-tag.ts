@@ -19,8 +19,8 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   @state() private _tags?: Tag[];
 
-  public static get defaultConfig() {
-    return { tag_id: "" };
+  public static get defaultConfig(): TagTrigger {
+    return { platform: "tag", tag_id: "" };
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {

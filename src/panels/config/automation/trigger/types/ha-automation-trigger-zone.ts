@@ -23,8 +23,9 @@ export class HaZoneTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): ZoneTrigger {
     return {
+      platform: "zone",
       entity_id: "",
       zone: "",
       event: "enter" as ZoneTrigger["event"],

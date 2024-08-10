@@ -20,7 +20,7 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): MqttTrigger {
     return { topic: "" };
   }
 

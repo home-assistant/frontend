@@ -21,7 +21,7 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @state() private _showElse = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): IfAction {
     return {
       if: [],
       then: [],

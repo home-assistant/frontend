@@ -20,7 +20,7 @@ export default class HaNumericStateCondition extends LitElement {
 
   @state() private _inputBelowIsEntity?: boolean;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): NumericStateCondition {
     return {
       entity_id: "",
     };

@@ -21,8 +21,9 @@ export class HaZoneCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): ZoneCondition {
     return {
+      condition: "zone",
       entity_id: "",
       zone: "",
     };

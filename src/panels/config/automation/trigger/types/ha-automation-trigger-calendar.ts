@@ -69,8 +69,9 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
       ] as const
   );
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): CalendarTrigger {
     return {
+      platform: "calendar",
       event: "start" as CalendarTrigger["event"],
       offset: 0,
     };

@@ -19,7 +19,7 @@ export class HaSequenceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: SequenceAction;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): SequenceAction {
     return {
       sequence: [],
     };

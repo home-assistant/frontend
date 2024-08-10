@@ -20,7 +20,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: Condition;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): Omit<Condition, "state" & "entity_id"> {
     return { condition: "state" };
   }
 

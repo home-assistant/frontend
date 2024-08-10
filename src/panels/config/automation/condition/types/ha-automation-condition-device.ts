@@ -36,7 +36,7 @@ export class HaDeviceCondition extends LitElement {
 
   private _origCondition?: DeviceCondition;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): DeviceCondition {
     return {
       device_id: "",
       domain: "",

@@ -25,8 +25,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
-    return {};
+  public static get defaultConfig(): TimeCondition {
+    return { condition: "time" };
   }
 
   private _schema = memoizeOne(

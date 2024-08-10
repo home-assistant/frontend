@@ -18,7 +18,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ParallelAction;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): ParallelAction {
     return {
       parallel: [],
     };
