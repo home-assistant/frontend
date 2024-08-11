@@ -1,4 +1,4 @@
-name: 'Label Issue Actions'
+name: "Issue Labeler"
 
 on:
   issues:
