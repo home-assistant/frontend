@@ -225,7 +225,12 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         box-sizing: border-box;
         width: auto;
         border-radius: 18px;
-        background-color: var(--card-background-color, white);
+        background: var(
+          --ha-card-background,
+          var(--card-background-color, white)
+        );
+        -webkit-backdrop-filter: var(--ha-card-backdrop-filter, none);
+        backdrop-filter: var(--ha-card-backdrop-filter, none);
         border-width: var(--ha-card-border-width, 1px);
         border-style: solid;
         border-color: var(
