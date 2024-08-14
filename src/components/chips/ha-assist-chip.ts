@@ -52,7 +52,7 @@ export class HaAssistChip extends MdAssistChip {
         opacity: var(--ha-assist-chip-active-container-opacity);
       }
       .label {
-        font-family: Roboto, sans-serif;
+        font-family: var(--primary-font-family), sans-serif;
       }
     `,
   ];

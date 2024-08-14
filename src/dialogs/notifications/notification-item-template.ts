@@ -26,7 +26,7 @@ export class HuiNotificationItemTemplate extends LitElement {
 
       ha-card .header {
         /* start paper-font-headline style */
-        font-family: "Roboto", "Noto", sans-serif;
+        font-family: var(--primary-font-family), "Noto", sans-serif;
         -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
         text-rendering: optimizeLegibility;
         font-size: 24px;
