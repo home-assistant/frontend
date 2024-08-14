@@ -10,20 +10,29 @@ import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
 
+// Regex to match iPadOS >= 15 and macOS >= 11 (app web view) because browserlist is not capable of this
+const ipadMacOSRegex =
+  /\b(iPadOS\s*(1[5-9]|[2-9]\d)(?:\.\d+)?(?:\.\d+)?)|(macOS\s*(1[1-9]|[2-9]\d)(?:\.\d+)?(?:\.\d+)?)\b/;
+
 const renderTemplate = (templateFile, data = {}) => {
   const compiled = template(
     fs.readFileSync(templateFile, { encoding: "utf-8" })
   );
+
+  const userAgentRegex = getUserAgentRegex({
+    env: "modern",
+    allowHigherVersions: true,
+    mobileToDesktop: true,
+    throwOnMissing: true,
+  });
+
   return compiled({
     ...data,
     useRollup: env.useRollup(),
     useWDS: env.useWDS(),
-    modernRegex: getUserAgentRegex({
-      env: "modern",
-      allowHigherVersions: true,
-      mobileToDesktop: true,
-      throwOnMissing: true,
-    }).toString(),
+    modernRegex: new RegExp(
+      `(${ipadMacOSRegex.source})|(${userAgentRegex.source})`
+    ).toString(),
     // Resolve any child/nested templates relative to the parent and pass the same data
     renderTemplate: (childTemplate) =>
       renderTemplate(
