@@ -7,7 +7,6 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "mailbox": "Mailbox",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
@@ -6354,12 +6353,6 @@
           }
         },
         "reload_lovelace": "Reload UI"
-      },
-      "mailbox": {
-        "empty": "You do not have any messages",
-        "playback_title": "Message playback",
-        "delete_prompt": "Delete this message?",
-        "delete_button": "Delete"
       },
       "media-browser": {
         "error": {
