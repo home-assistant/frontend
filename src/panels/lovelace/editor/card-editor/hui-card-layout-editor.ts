@@ -19,7 +19,10 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import {
+  LovelaceGridSectionConfig,
+  LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
@@ -27,6 +30,7 @@ import {
   CardGridSize,
   computeCardGridSize,
 } from "../../common/compute-card-grid-size";
+import { DEFAULT_GRID_BASE } from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
@@ -72,7 +76,10 @@ export class HuiCardLayoutEditor extends LitElement {
 
     const value = this._computeCardGridSize(options);
 
-    const totalColumns = (this.sectionConfig.column_span ?? 1) * 4;
+    const totalColumns =
+      (this.sectionConfig.column_span ?? 1) *
+      ((this.sectionConfig as LovelaceGridSectionConfig).grid_base ||
+        DEFAULT_GRID_BASE);
 
     return html`
       <div class="header">

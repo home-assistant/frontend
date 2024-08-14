@@ -5714,7 +5714,13 @@
               "title": "Title",
               "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "grid_density": "Grid density",
+              "grid_density_options": {
+                "default": "Default ({count} columns)",
+                "dense": "Dense ({count} columns)",
+                "custom": "Custom ({count} {count, plural,\n  one {column}\n  other {columns}\n})"
+              }
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."

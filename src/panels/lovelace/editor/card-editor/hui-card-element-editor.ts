@@ -3,12 +3,15 @@ import "@material/mwc-tab/mwc-tab";
 import { CSSResultGroup, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import {
+  LovelaceGridSectionConfig,
+  LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 
 const tabs = ["config", "visibility", "layout"] as const;
 
@@ -59,7 +62,7 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
   protected renderConfigElement(): TemplateResult {
     const displayedTabs: string[] = ["config"];
     if (this.showVisibilityTab) displayedTabs.push("visibility");
-    if (this._showLayoutTab) displayedTabs.push("layout");
+    if (this.sectionConfig?.type === "grid") displayedTabs.push("layout");
 
     if (displayedTabs.length === 1) return super.renderConfigElement();
 
@@ -83,8 +86,8 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
           <hui-card-layout-editor
             .hass=${this.hass}
             .config=${this.value}
-            .sectionConfig=${this.sectionConfig!}
             @value-changed=${this._configChanged}
+            .sectionConfig=${this.sectionConfig as LovelaceGridSectionConfig}
           >
           </hui-card-layout-editor>
         `;

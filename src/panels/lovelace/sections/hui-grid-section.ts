@@ -8,7 +8,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceGridSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
@@ -24,6 +24,8 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
 
+export const DEFAULT_GRID_BASE = 4;
+
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -37,11 +39,11 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @state() _config?: LovelaceSectionConfig;
+  @state() _config?: LovelaceGridSectionConfig;
 
   @state() _dragging = false;
 
-  public setConfig(config: LovelaceSectionConfig): void {
+  public setConfig(config: LovelaceGridSectionConfig): void {
     this._config = config;
   }
 
@@ -64,6 +66,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
 
+    const columnCount = this._config.grid_base ?? DEFAULT_GRID_BASE;
+
     return html`
       <ha-sortable
         .disabled=${!editMode}
@@ -77,7 +81,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .options=${CARD_SORTABLE_OPTIONS}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({ "edit-mode": editMode })}"
+          style=${styleMap({ "--column-count": columnCount })}
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -165,7 +172,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --base-column-count: 4;
           --row-gap: var(--ha-section-grid-row-gap, 8px);
           --column-gap: var(--ha-section-grid-column-gap, 8px);
           --row-height: var(--ha-section-grid-row-height, 56px);
@@ -175,7 +181,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
         .container {
           --grid-column-count: calc(
-            var(--base-column-count) * var(--column-span, 1)
+            var(--column-count, 4) * var(--column-span, 1)
           );
           display: grid;
           grid-template-columns: repeat(
