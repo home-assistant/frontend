@@ -49,7 +49,7 @@
     "@fullcalendar/list": "6.1.15",
     "@fullcalendar/luxon3": "6.1.15",
     "@fullcalendar/timegrid": "6.1.15",
-    "@lezer/highlight": "1.2.0",
+    "@lezer/highlight": "1.2.1",
     "@lit-labs/context": "0.4.1",
     "@lit-labs/motion": "1.0.7",
     "@lit-labs/observers": "2.0.2",
