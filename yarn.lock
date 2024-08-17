@@ -1471,12 +1471,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundle-stats/plugin-webpack-filter@npm:4.14.0":
-  version: 4.14.0
-  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.14.0"
+"@bundle-stats/plugin-webpack-filter@npm:4.14.1":
+  version: 4.14.1
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.14.1"
   peerDependencies:
     core-js: ^3.0.0
-  checksum: 10/d6fa297120807e9e5e90acab0a745df0d24801cbd353e91ec09377c799679b6f58f5c5b72f90c9d34fd82de4da8aedb391df951e05b750d20c1d744a380a7748
+  checksum: 10/4d86781a9157282e71d16242e83472893dc3675715ba8b00acd53c1ac941cd761732c11ae77e38dd6a5b7a00f9aea4bac71b7741fa3ca918283e74a699528978
   languageName: node
   linkType: hard
 
@@ -8979,7 +8979,7 @@ __metadata:
     "@babel/preset-typescript": "npm:7.24.7"
     "@babel/runtime": "npm:7.25.0"
     "@braintree/sanitize-url": "npm:7.1.0"
-    "@bundle-stats/plugin-webpack-filter": "npm:4.14.0"
+    "@bundle-stats/plugin-webpack-filter": "npm:4.14.1"
     "@codemirror/autocomplete": "npm:6.18.0"
     "@codemirror/commands": "npm:6.6.0"
     "@codemirror/language": "npm:6.10.2"
