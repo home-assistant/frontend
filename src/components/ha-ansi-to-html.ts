@@ -90,7 +90,8 @@ class HaAnsiToHtml extends LitElement {
 
   private _parseTextToColoredPre(text) {
     const pre = document.createElement("pre");
-    const re = /\033(?:\[(.*?)[@-~]|\].*?(?:\007|\033\\))/g;
+    // eslint-disable-next-line no-control-regex
+    const re = /\x1b(?:\[(.*?)[@-~]|\].*?(?:\x07|\x1b\\))/g;
     let i = 0;
 
     const state: State = {

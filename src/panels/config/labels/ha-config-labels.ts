@@ -10,15 +10,19 @@ import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { storage } from "../../../common/decorators/storage";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-relative-time";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-relative-time";
 import {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
@@ -35,7 +39,6 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -49,10 +52,41 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _labels: LabelRegistryEntry[] = [];
 
-  private _columns = memoizeOne((localize: LocalizeFunc) => {
+  @storage({
+    storage: "sessionStorage",
+    key: "labels-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
+
+  @storage({
+    key: "labels-table-sort",
+    state: false,
+    subscribe: false,
+  })
+  private _activeSorting?: SortingChangedEvent;
+
+  @storage({
+    key: "labels-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "labels-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
         title: "",
+        moveable: false,
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.icon"),
         type: "icon",
         template: (label) =>
@@ -60,6 +94,7 @@ export class HaConfigLabels extends LitElement {
       },
       color: {
         title: "",
+        showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
         template: (label) =>
@@ -76,13 +111,60 @@ export class HaConfigLabels extends LitElement {
       name: {
         title: localize("ui.panel.config.labels.headers.name"),
         main: true,
+        flex: 2,
         sortable: true,
         filterable: true,
-        grows: true,
+        template: narrow
+          ? undefined
+          : (label) => html`
+              <div>${label.name}</div>
+              ${label.description
+                ? html`<div class="secondary">${label.description}</div>`
+                : nothing}
+            `,
+      },
+      description: {
+        title: localize("ui.panel.config.labels.headers.description"),
+        hidden: !narrow,
+        filterable: true,
+        hideable: true,
+      },
+      created_at: {
+        title: localize("ui.panel.config.generic.headers.created_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (label) =>
+          label.created_at
+            ? formatShortDateTime(
+                new Date(label.created_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
+      },
+      modified_at: {
+        title: localize("ui.panel.config.generic.headers.modified_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (label) =>
+          label.modified_at
+            ? formatShortDateTime(
+                new Date(label.modified_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
       },
       actions: {
         title: "",
-        width: "64px",
+        label: localize("ui.panel.config.generic.headers.actions"),
+        showNarrow: true,
+        moveable: false,
+        hideable: false,
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-overflow-menu
@@ -139,10 +221,17 @@ export class HaConfigLabels extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.areas}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._data(this._labels)}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         hasFab
+        .initialSorting=${this._activeSorting}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        @sorting-changed=${this._handleSortingChanged}
+        .filter=${this._filter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._editLabel}
         clickable
         id="label_id"
@@ -261,6 +350,19 @@ export class HaConfigLabels extends LitElement {
     navigate(
       `/config/automation/dashboard?historyBack=1&label=${label.label_id}`
     );
+  }
+
+  private _handleSortingChanged(ev: CustomEvent) {
+    this._activeSorting = ev.detail;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

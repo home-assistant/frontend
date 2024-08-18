@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-circular-progress";
 import { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -11,7 +12,6 @@ import {
   demoConfigs,
   selectedDemoConfig,
   selectedDemoConfigIndex,
-  setDemoConfig,
 } from "../configs/demo-configs";
 
 @customElement("ha-demo-card")
@@ -64,9 +64,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                 )}
           </div>
 
-          <mwc-button @click=${this._nextConfig} .disabled=${this._switching}>
+          <ha-button @click=${this._nextConfig} .disabled=${this._switching}>
             ${this.hass.localize("ui.panel.page-demo.cards.demo.next_demo")}
-          </mwc-button>
+          </ha-button>
         </div>
         <div class="content">
           <p class="small-hidden">
@@ -87,9 +87,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </div>
         <div class="actions small-hidden">
           <a href="https://www.home-assistant.io" target="_blank">
-            <mwc-button>
+            <ha-button>
               ${this.hass.localize("ui.panel.page-demo.cards.demo.learn_more")}
-            </mwc-button>
+            </ha-button>
           </a>
         </div>
       </ha-card>
@@ -113,13 +113,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   private async _updateConfig(index: number) {
     this._switching = true;
-    try {
-      await setDemoConfig(this.hass, this.lovelace!, index);
-    } catch (err: any) {
-      alert("Failed to switch config :-(");
-    } finally {
-      this._switching = false;
-    }
+    fireEvent(this, "set-demo-config" as any, { index });
   }
 
   static get styles(): CSSResultGroup {
@@ -149,7 +143,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
           height: 60px;
         }
 
-        .picker mwc-button {
+        .picker ha-button {
           margin-right: 8px;
         }
 

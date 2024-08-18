@@ -1,18 +1,16 @@
-import { customElement } from "lit/decorators";
-import "element-internals-polyfill";
-import { CSSResult, css } from "lit";
 import { MdSubMenu } from "@material/web/menu/sub-menu";
+import { css } from "lit";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-sub-menu")
-// @ts-expect-error
 export class HaSubMenu extends MdSubMenu {
   async show() {
     super.show();
     this.menu.hasOverflow = false;
   }
 
-  static override styles: CSSResult[] = [
-    MdSubMenu.styles,
+  static override styles = [
+    ...super.styles,
     css`
       :host {
         --ha-icon-display: block;

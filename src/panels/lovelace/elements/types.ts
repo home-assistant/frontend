@@ -1,3 +1,4 @@
+import { HassServiceTarget } from "home-assistant-js-websocket";
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -5,7 +6,7 @@ import { HuiImage } from "../components/hui-image";
 
 interface LovelaceElementConfigBase {
   type: string;
-  style: Record<string, string>;
+  style?: Record<string, string>;
 }
 
 export type LovelaceElementConfig =
@@ -25,6 +26,7 @@ export interface LovelaceElement extends HTMLElement {
 export interface ConditionalElementConfig extends LovelaceElementConfigBase {
   conditions: Condition[];
   elements: LovelaceElementConfigBase[];
+  title?: string;
 }
 
 export interface IconElementConfig extends LovelaceElementConfigBase {
@@ -33,7 +35,8 @@ export interface IconElementConfig extends LovelaceElementConfigBase {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  icon: string;
+  icon?: string;
+  title?: string;
 }
 
 export interface ImageElementConfig extends LovelaceElementConfigBase {
@@ -51,16 +54,22 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   filter?: string;
   state_filter?: string;
   aspect_ratio?: string;
+  title?: string;
 }
 
 export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
   title?: string;
+  /* @deprecated "service" is kept for backwards compatibility. Replaced by "action". */
   service?: string;
+  action?: string;
+  target?: HassServiceTarget;
+  /* @deprecated "service_data" is kept for backwards compatibility. Replaced by "data". */
   service_data?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 }
 
 export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   title?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -68,20 +77,22 @@ export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
 }
 
 export interface StateIconElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   icon?: string;
   state_color?: boolean;
+  title?: string;
 }
 
 export interface StateLabelElementConfig extends LovelaceElementConfigBase {
-  entity: string;
+  entity?: string;
   attribute?: string;
   prefix?: string;
   suffix?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  title?: string;
 }

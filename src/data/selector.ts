@@ -2,6 +2,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import { isHelperDomain } from "../panels/config/helpers/const";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import { HomeAssistant, ItemPath } from "../types";
 import {
@@ -39,6 +41,7 @@ export type Selector =
   | FileSelector
   | IconSelector
   | LabelSelector
+  | ImageSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -61,7 +64,8 @@ export type Selector =
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
-  | UiColorSelector;
+  | UiColorSelector
+  | UiStateContentSelector;
 
 export interface ActionSelector {
   action: {
@@ -199,6 +203,7 @@ export interface LegacyDeviceSelector {
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
+    enable_millisecond?: boolean;
   } | null;
 }
 
@@ -255,6 +260,11 @@ export interface IconSelector {
   } | null;
 }
 
+export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  image: { original?: boolean; crop?: CropOptions } | null;
+}
+
 export interface LabelSelector {
   label: {
     multiple?: boolean;
@@ -270,7 +280,11 @@ export interface LanguageSelector {
 }
 
 export interface LocationSelector {
-  location: { radius?: boolean; icon?: string } | null;
+  location: {
+    radius?: boolean;
+    radius_readonly?: boolean;
+    icon?: string;
+  } | null;
 }
 
 export interface LocationSelectorValue {
@@ -441,6 +455,14 @@ export interface UiActionSelector {
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: { default_color?: boolean } | null;
+}
+
+export interface UiStateContentSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  ui_state_content: {
+    entity_id?: string;
+    allow_name?: boolean;
+  } | null;
 }
 
 export const expandLabelTarget = (
@@ -684,7 +706,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -701,7 +723,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
       return false;
     }
   }
@@ -816,4 +838,35 @@ export const handleLegacyDeviceSelector = (
   return {
     device: rest,
   };
+};
+
+export const computeCreateDomains = (
+  selector: EntitySelector | TargetSelector
+): undefined | string[] => {
+  let entityFilters: EntitySelectorFilter[] | undefined;
+
+  if ("target" in selector) {
+    entityFilters = ensureArray(selector.target?.entity);
+  } else if ("entity" in selector) {
+    if (selector.entity?.include_entities) {
+      return undefined;
+    }
+    entityFilters = ensureArray(selector.entity?.filter);
+  }
+  if (!entityFilters) {
+    return undefined;
+  }
+
+  const createDomains = entityFilters.flatMap((entityFilter) =>
+    !entityFilter.integration &&
+    !entityFilter.device_class &&
+    !entityFilter.supported_features &&
+    entityFilter.domain
+      ? ensureArray(entityFilter.domain).filter((domain) =>
+          isHelperDomain(domain)
+        )
+      : []
+  );
+
+  return [...new Set(createDomains)];
 };

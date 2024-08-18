@@ -5,30 +5,26 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import {
+  ensureBadgeConfig,
+  LovelaceBadgeConfig,
+} from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import {
-  LovelaceViewConfig,
   isStrategyView,
+  LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import {
-  createErrorBadgeConfig,
-  createErrorBadgeElement,
-} from "../badges/hui-error-badge";
-import type { HuiErrorCard } from "../cards/hui-error-card";
-import { processConfigEntities } from "../common/process-config-entities";
-import { createBadgeElement } from "../create-element/create-badge-element";
-import { createCardElement } from "../create-element/create-card-element";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-} from "../create-element/create-element-base";
+import "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
+import "../cards/hui-card";
+import type { HuiCard } from "../cards/hui-card";
 import { createViewElement } from "../create-element/create-view-element";
+import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { deleteCard } from "../editor/config-util";
+import { deleteBadge, deleteCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
 import {
   LovelaceCardPath,
@@ -38,8 +34,9 @@ import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { Lovelace } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
+import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
 
 declare global {
   // for fire event
@@ -47,11 +44,17 @@ declare global {
     "ll-create-card": { suggested?: string[] } | undefined;
     "ll-edit-card": { path: LovelaceCardPath };
     "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
+    "ll-create-badge": undefined;
+    "ll-edit-badge": { path: LovelaceCardPath };
+    "ll-delete-badge": { path: LovelaceCardPath };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
     "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
+    "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
+    "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
+    "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
   }
 }
 
@@ -65,9 +68,9 @@ export class HUIView extends ReactiveElement {
 
   @property({ type: Number }) public index!: number;
 
-  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: HuiCard[] = [];
 
-  @state() private _badges: LovelaceBadge[] = [];
+  @state() private _badges: HuiBadge[] = [];
 
   @state() private _sections: HuiSection[] = [];
 
@@ -77,44 +80,29 @@ export class HUIView extends ReactiveElement {
 
   private _viewConfigTheme?: string;
 
-  // Public to make demo happy
-  public createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorCardElement(
-        createErrorCardConfig(e.message, cardConfig)
-      );
-    }
-    element.addEventListener(
-      "ll-rebuild",
-      (ev: Event) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildCard(element, cardConfig);
-        }
-      },
-      { once: true }
-    );
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.preview = this.lovelace.editMode;
+    element.config = cardConfig;
+    element.addEventListener("card-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this._cards = [...this._cards];
+    });
+    element.load();
     return element;
   }
 
-  public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
-    const element = createBadgeElement(badgeConfig) as LovelaceBadge;
-    try {
-      element.hass = this.hass;
-    } catch (e: any) {
-      return createErrorBadgeElement(createErrorBadgeConfig(e.message));
-    }
-    element.addEventListener(
-      "ll-badge-rebuild",
-      () => {
-        this._rebuildBadge(element, badgeConfig);
-      },
-      { once: true }
-    );
+  public _createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
+    const element = document.createElement("hui-badge");
+    element.hass = this.hass;
+    element.preview = this.lovelace.editMode;
+    element.config = badgeConfig;
+    element.addEventListener("badge-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this._badges = [...this._badges];
+    });
+    element.load();
     return element;
   }
 
@@ -125,6 +113,7 @@ export class HUIView extends ReactiveElement {
     element.lovelace = this.lovelace;
     element.config = sectionConfig;
     element.viewIndex = this.index;
+    element.preview = this.lovelace.editMode;
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -143,7 +132,12 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._applyTheme();
+  }
+
+  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
     super.willUpdate(changedProperties);
 
     /*
@@ -156,7 +150,7 @@ export class HUIView extends ReactiveElement {
           - lovelace changes if edit mode is enabled or config has changed
     */
 
-    const oldLovelace = changedProperties.get("lovelace") as this["lovelace"];
+    const oldLovelace = changedProperties.get("lovelace");
 
     // If config has changed, create element if necessary and set all values.
     if (
@@ -178,19 +172,11 @@ export class HUIView extends ReactiveElement {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._badges.forEach((badge) => {
-          try {
-            badge.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildBadge(badge, createErrorBadgeConfig(e.message));
-          }
+          badge.hass = this.hass;
         });
 
         this._cards.forEach((element) => {
-          try {
-            element.hass = this.hass;
-          } catch (e: any) {
-            this._rebuildCard(element, createErrorCardConfig(e.message, null));
-          }
+          element.hass = this.hass;
         });
 
         this._sections.forEach((element) => {
@@ -212,7 +198,7 @@ export class HUIView extends ReactiveElement {
           this.hass.themes !== oldHass.themes ||
           this.hass.selectedTheme !== oldHass.selectedTheme
         ) {
-          applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+          this._applyTheme();
         }
       }
       if (changedProperties.has("narrow")) {
@@ -224,9 +210,16 @@ export class HUIView extends ReactiveElement {
           try {
             element.hass = this.hass;
             element.lovelace = this.lovelace;
+            element.preview = this.lovelace.editMode;
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
+        });
+        this._cards.forEach((element) => {
+          element.preview = this.lovelace.editMode;
+        });
+        this._badges.forEach((element) => {
+          element.preview = this.lovelace.editMode;
         });
       }
       if (changedProperties.has("_cards")) {
@@ -234,6 +227,28 @@ export class HUIView extends ReactiveElement {
       }
       if (changedProperties.has("_badges")) {
         this._layoutElement.badges = this._badges;
+      }
+    }
+  }
+
+  private _applyTheme() {
+    applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+    if (this._viewConfigTheme) {
+      // Set lovelace background color to root element, so it will be placed under the header too
+      const computedStyles = getComputedStyle(this);
+      let lovelaceBackground = computedStyles.getPropertyValue(
+        "--lovelace-background"
+      );
+      if (!lovelaceBackground) {
+        lovelaceBackground = computedStyles.getPropertyValue(
+          "--primary-background-color"
+        );
+      }
+      if (lovelaceBackground) {
+        this.parentElement?.style.setProperty(
+          "--lovelace-background",
+          lovelaceBackground
+        );
       }
     }
   }
@@ -316,6 +331,26 @@ export class HUIView extends ReactiveElement {
         this.lovelace.saveConfig(newLovelace);
       }
     });
+    this._layoutElement.addEventListener("ll-create-badge", async () => {
+      showCreateBadgeDialog(this, {
+        lovelaceConfig: this.lovelace.config,
+        saveConfig: this.lovelace.saveConfig,
+        path: [this.index],
+      });
+    });
+    this._layoutElement.addEventListener("ll-edit-badge", (ev) => {
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      showEditBadgeDialog(this, {
+        lovelaceConfig: this.lovelace.config,
+        saveConfig: this.lovelace.saveConfig,
+        path: [this.index],
+        badgeIndex: cardIndex,
+      });
+    });
+    this._layoutElement.addEventListener("ll-delete-badge", (ev) => {
+      const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
+      this.lovelace.saveConfig(newLovelace);
+    });
   }
 
   private _createBadges(config: LovelaceViewConfig): void {
@@ -324,14 +359,9 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    const badges = processConfigEntities(config.badges as any);
-    this._badges = badges.map((badge) => {
-      const element = createBadgeElement(badge);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorBadgeElement(createErrorBadgeConfig(e.message));
-      }
+    this._badges = config.badges.map((badge) => {
+      const badgeConfig = ensureBadgeConfig(badge);
+      const element = this._createBadgeElement(badgeConfig);
       return element;
     });
   }
@@ -343,14 +373,7 @@ export class HUIView extends ReactiveElement {
     }
 
     this._cards = config.cards.map((cardConfig) => {
-      const element = this.createCardElement(cardConfig);
-      try {
-        element.hass = this.hass;
-      } catch (e: any) {
-        return createErrorCardElement(
-          createErrorCardConfig(e.message, cardConfig)
-        );
-      }
+      const element = this._createCardElement(cardConfig);
       return element;
     });
   }
@@ -366,47 +389,6 @@ export class HUIView extends ReactiveElement {
       element.index = index;
       return element;
     });
-  }
-
-  private _rebuildCard(
-    cardElToReplace: LovelaceCard,
-    config: LovelaceCardConfig
-  ): void {
-    let newCardEl = this.createCardElement(config);
-    try {
-      newCardEl.hass = this.hass;
-    } catch (e: any) {
-      newCardEl = createErrorCardElement(
-        createErrorCardConfig(e.message, config)
-      );
-    }
-    if (cardElToReplace.parentElement) {
-      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
-    }
-    this._cards = this._cards!.map((curCardEl) =>
-      curCardEl === cardElToReplace ? newCardEl : curCardEl
-    );
-  }
-
-  private _rebuildBadge(
-    badgeElToReplace: LovelaceBadge,
-    config: LovelaceBadgeConfig
-  ): void {
-    let newBadgeEl = this.createBadgeElement(config);
-    try {
-      newBadgeEl.hass = this.hass;
-    } catch (e: any) {
-      newBadgeEl = createErrorBadgeElement(createErrorBadgeConfig(e.message));
-    }
-    if (badgeElToReplace.parentElement) {
-      badgeElToReplace.parentElement!.replaceChild(
-        newBadgeEl,
-        badgeElToReplace
-      );
-    }
-    this._badges = this._badges!.map((curBadgeEl) =>
-      curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
-    );
   }
 
   private _rebuildSection(

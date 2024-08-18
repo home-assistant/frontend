@@ -42,6 +42,9 @@ export class HaFilterEntities extends LitElement {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
+      if (this.value?.length) {
+        this._findRelated();
+      }
     }
   }
 
@@ -71,7 +74,7 @@ export class HaFilterEntities extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar">
+              <mwc-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
                     this.hass.states,
@@ -108,7 +111,7 @@ export class HaFilterEntities extends LitElement {
       ? nothing
       : html`<ha-check-list-item
           .value=${entity.entity_id}
-          .selected=${this.value?.includes(entity.entity_id)}
+          .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
         >
           <ha-state-icon
@@ -186,15 +189,12 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    const value: string[] = [];
-
     for (const entityId of this.value) {
-      value.push(entityId);
       if (this.type) {
         relatedPromises.push(findRelated(this.hass, "entity", entityId));
       }
     }
-    this.value = value;
+
     const results = await Promise.all(relatedPromises);
     const items: Set<string> = new Set();
     for (const result of results) {
@@ -204,7 +204,7 @@ export class HaFilterEntities extends LitElement {
     }
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: this.value,
       items: this.type ? items : undefined,
     });
   }

@@ -364,6 +364,9 @@ class DialogTodoItemEditor extends LitElement {
         "ui.components.todo.item.confirm_delete.delete"
       ),
       text: this.hass.localize("ui.components.todo.item.confirm_delete.prompt"),
+      destructive: true,
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
     });
     if (!confirm) {
       // Cancel

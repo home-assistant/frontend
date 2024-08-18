@@ -57,8 +57,18 @@ const SELECTOR_SCHEMAS = {
       name: "enable_day",
       selector: { boolean: {} },
     },
+    {
+      name: "enable_millisecond",
+      selector: { boolean: {} },
+    },
   ] as const,
   entity: [
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
+  ] as const,
+  floor: [
     {
       name: "multiple",
       selector: { boolean: {} },

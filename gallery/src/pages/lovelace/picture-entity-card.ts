@@ -12,6 +12,10 @@ const ENTITIES = [
   getEntity("light", "bed_light", "off", {
     friendly_name: "Bed Light",
   }),
+  getEntity("person", "paulus", "home", {
+    friendly_name: "Paulus",
+    entity_picture: "/images/paulus.jpg",
+  }),
 ];
 
 const CONFIGS = [
@@ -48,6 +52,13 @@ const CONFIGS = [
     config: `
 - type: picture-entity
   entity: camera.demo_camera
+    `,
+  },
+  {
+    heading: "Person entity",
+    config: `
+- type: picture-entity
+  entity: person.paulus
     `,
   },
   {

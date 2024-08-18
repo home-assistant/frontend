@@ -41,8 +41,12 @@ export interface TextConfig {
   text: string;
 }
 export interface CallServiceConfig extends EntityConfig {
-  type: "call-service";
-  service: string;
+  type: "call-service" | "perform-action";
+  /** @deprecated use "action" instead */
+  service?: string;
+  action: string;
+  data?: Record<string, any>;
+  /** @deprecated use "data" instead */
   service_data?: Record<string, any>;
   action_name?: string;
 }
@@ -81,7 +85,7 @@ export type LovelaceRowConfig =
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
-  editMode?: boolean;
+  preview?: boolean;
   setConfig(config: LovelaceRowConfig);
 }
 

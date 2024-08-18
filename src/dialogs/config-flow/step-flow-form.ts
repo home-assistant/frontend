@@ -25,6 +25,7 @@ import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 import { haStyle } from "../../resources/styles";
+import { previewModule } from "../../data/preview";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -76,8 +77,9 @@ class StepFlowForm extends LitElement {
                 "ui.panel.config.integrations.config_flow.preview"
               )}:
             </h3>
-            ${dynamicElement(`flow-preview-${this.step.preview}`, {
+            ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
               hass: this.hass,
+              domain: step.preview,
               flowType: this.flowConfig.flowType,
               handler: step.handler,
               stepId: step.step_id,
@@ -120,7 +122,7 @@ class StepFlowForm extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
-      import(`./previews/flow-preview-${this.step.preview}`);
+      import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
     }
   }
 

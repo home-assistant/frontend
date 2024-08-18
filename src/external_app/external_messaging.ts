@@ -37,9 +37,11 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
 
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
-  title: string;
-  description: string;
-  alternative_option_label?: string;
+  payload: {
+    title: string;
+    description: string;
+    alternative_option_label?: string;
+  };
 }
 
 interface EMOutgoingMessageBarCodeClose extends EMMessage {
@@ -48,7 +50,9 @@ interface EMOutgoingMessageBarCodeClose extends EMMessage {
 
 interface EMOutgoingMessageBarCodeNotify extends EMMessage {
   type: "bar_code/notify";
-  message: string;
+  payload: {
+    message: string;
+  };
 }
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
@@ -124,6 +128,18 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
     start_listening: boolean;
   };
 }
+interface EMOutgoingMessageImprovScan extends EMMessage {
+  type: "improv/scan";
+}
+
+interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
+  type: "thread/store_in_platform_keychain";
+  payload: {
+    mac_extended_address: string;
+    border_agent_id: string | null;
+    active_operational_dataset: string;
+  };
+}
 
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
@@ -142,7 +158,9 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageMatterCommission
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
-  | EMOutgoingMessageThemeUpdate;
+  | EMOutgoingMessageThemeUpdate
+  | EMOutgoingMessageThreadStoreInPlatformKeychain
+  | EMOutgoingMessageImprovScan;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -235,8 +253,10 @@ export interface ExternalConfig {
   hasExoPlayer: boolean;
   canCommissionMatter: boolean;
   canImportThreadCredentials: boolean;
+  canTransferThreadCredentialsToKeychain: boolean;
   hasAssist: boolean;
   hasBarCodeScanner: number;
+  canSetupImprov: boolean;
 }
 
 export class ExternalMessaging {

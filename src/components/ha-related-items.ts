@@ -6,12 +6,12 @@ import {
   mdiSofa,
 } from "@mdi/js";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -20,7 +20,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { Blueprints, fetchBlueprints } from "../data/blueprint";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import { findRelated, ItemType, RelatedResult } from "../data/search";
+import { ItemType, RelatedResult, findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
@@ -109,6 +109,26 @@ export class HaRelatedItems extends LitElement {
         )
       );
 
+  private _getConfigEntries = memoizeOne(
+    (
+      relatedConfigEntries: string[] | undefined,
+      entries: ConfigEntry[] | undefined
+    ) => {
+      const configEntries =
+        relatedConfigEntries && entries
+          ? relatedConfigEntries.map((entryId) =>
+              entries!.find((configEntry) => configEntry.entry_id === entryId)
+            )
+          : undefined;
+
+      const configEntryDomains = new Set(
+        configEntries?.map((entry) => entry?.domain)
+      );
+
+      return { configEntries, configEntryDomains };
+    }
+  );
+
   protected render() {
     if (!this._related) {
       return nothing;
@@ -128,22 +148,25 @@ export class HaRelatedItems extends LitElement {
         </mwc-list>
       `;
     }
+
+    const { configEntries, configEntryDomains } = this._getConfigEntries(
+      this._related.config_entry,
+      this._entries
+    );
+
     return html`
-      ${this._related.config_entry && this._entries
+      ${configEntries || this._related.integration
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.integration")}
             </h3>
             <mwc-list
-              >${this._related.config_entry.map((relatedConfigEntryId) => {
-                const entry: ConfigEntry | undefined = this._entries!.find(
-                  (configEntry) => configEntry.entry_id === relatedConfigEntryId
-                );
+              >${configEntries?.map((entry) => {
                 if (!entry) {
                   return nothing;
                 }
                 return html`
                   <a
-                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${relatedConfigEntryId}`}
+                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`}
                     @click=${this._navigateAwayClose}
                   >
                     <ha-list-item hasMeta graphic="icon">
@@ -164,8 +187,34 @@ export class HaRelatedItems extends LitElement {
                     </ha-list-item>
                   </a>
                 `;
-              })}</mwc-list
-            >`
+              })}
+              ${this._related.integration
+                ?.filter((integration) => !configEntryDomains.has(integration))
+                .map(
+                  (integration) =>
+                    html`<a
+                      href=${`/config/integrations/integration/${integration}`}
+                      @click=${this._navigateAwayClose}
+                    >
+                      <ha-list-item hasMeta graphic="icon">
+                        <img
+                          .src=${brandsUrl({
+                            domain: integration,
+                            type: "icon",
+                            useFallback: true,
+                            darkOptimized: this.hass.themes?.darkMode,
+                          })}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          alt=${integration}
+                          slot="graphic"
+                        />
+                        ${this.hass.localize(`component.${integration}.title`)}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>`
+                )}
+            </mwc-list>`
         : nothing}
       ${this._related.device
         ? html`<h3>

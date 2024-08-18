@@ -15,9 +15,11 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiBadge } from "../badges/hui-badge";
+import "../badges/hui-view-badges";
+import { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import type { Lovelace } from "../types";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -48,11 +50,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
-  @property({ attribute: false }) public cards: Array<
-    LovelaceCard | HuiErrorCard
-  > = [];
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _columns?: number;
 
@@ -80,9 +80,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.badges.length > 0
-        ? html`<div class="badges">${this.badges}</div>`
-        : ""}
+      <hui-view-badges
+        .hass=${this.hass}
+        .badges=${this.badges}
+        .lovelace=${this.lovelace}
+        .viewIndex=${this.index}
+      ></hui-view-badges>
       <div
         id="columns"
         class=${this.lovelace?.editMode ? "edit-mode" : ""}
@@ -250,17 +253,17 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     });
   }
 
-  private _addCardToColumn(columnEl, index, editMode) {
-    const card: LovelaceCard = this.cards[index];
-    if (!editMode || this.isStrategy) {
-      card.editMode = false;
+  private _addCardToColumn(columnEl, index, preview) {
+    const card: HuiCard = this.cards[index];
+    if (!preview || this.isStrategy) {
+      card.preview = false;
       columnEl.appendChild(card);
     } else {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
       wrapper.path = [this.index!, index];
-      card.editMode = true;
+      card.preview = true;
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
     }
@@ -291,10 +294,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         padding-top: 4px;
       }
 
-      .badges {
-        margin: 8px 16px;
+      hui-view-badges {
+        display: block;
+        margin: 12px 8px 20px 8px;
         font-size: 85%;
-        text-align: center;
       }
 
       #columns {

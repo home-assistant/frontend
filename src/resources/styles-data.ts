@@ -102,6 +102,7 @@ export const derivedStyles = {
   "mdc-theme-error": "var(--error-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
+  "app-theme-color": "var(--app-header-background-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",

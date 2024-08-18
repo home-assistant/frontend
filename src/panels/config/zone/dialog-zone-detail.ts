@@ -145,30 +145,8 @@ class DialogZoneDetail extends LitElement {
           required: true,
           selector: { location: { radius: true, icon } },
         },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "latitude",
-              required: true,
-              selector: { number: {} },
-            },
-            {
-              name: "longitude",
-              required: true,
-
-              selector: { number: {} },
-            },
-          ],
-        },
         { name: "passive_note", type: "constant" },
         { name: "passive", selector: { boolean: {} } },
-        {
-          name: "radius",
-          required: false,
-          selector: { number: { min: 0, max: 999999, mode: "box" } },
-        },
       ] as const
   );
 
@@ -184,15 +162,9 @@ class DialogZoneDetail extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
     const value = { ...ev.detail.value };
-    if (
-      value.location.latitude !== this._data!.latitude ||
-      value.location.longitude !== this._data!.longitude ||
-      value.location.radius !== this._data!.radius
-    ) {
-      value.latitude = value.location.latitude;
-      value.longitude = value.location.longitude;
-      value.radius = Math.round(value.location.radius);
-    }
+    value.latitude = value.location.latitude;
+    value.longitude = value.location.longitude;
+    value.radius = value.location.radius;
     delete value.location;
     if (!value.icon) {
       delete value.icon;

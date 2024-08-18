@@ -46,7 +46,7 @@ import {
 } from "../editor/config-util";
 import {
   LovelaceCardPath,
-  findLovelaceCards,
+  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
@@ -67,7 +67,7 @@ export class HuiCardOptions extends LitElement {
   @property({ type: Boolean }) public hidePosition = false;
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",
@@ -91,7 +91,7 @@ export class HuiCardOptions extends LitElement {
 
   private get _cards() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceCards(this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("cards", this.lovelace!.config, containerPath)!;
   }
 
   protected render(): TemplateResult {
@@ -353,7 +353,7 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        const view = this.lovelace!.config.views[viewIndex];
+        const view = selectedDashConfig.views[viewIndex];
 
         if (!isStrategyView(view) && view.type === SECTION_VIEW_LAYOUT) {
           showAlertDialog(this, {

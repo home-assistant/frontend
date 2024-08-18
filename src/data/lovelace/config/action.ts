@@ -5,10 +5,12 @@ export interface ToggleActionConfig extends BaseActionConfig {
 }
 
 export interface CallServiceActionConfig extends BaseActionConfig {
-  action: "call-service";
-  service: string;
+  action: "call-service" | "perform-action";
+  /** @deprecated "service" is kept for backwards compatibility. Replaced by "perform_action". */
+  service?: string;
+  perform_action: string;
   target?: HassServiceTarget;
-  // "service_data" is kept for backwards compatibility. Replaced by "data".
+  /** @deprecated "service_data" is kept for backwards compatibility. Replaced by "data". */
   service_data?: Record<string, unknown>;
   data?: Record<string, unknown>;
 }

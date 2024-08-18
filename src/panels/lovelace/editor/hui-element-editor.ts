@@ -20,17 +20,20 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
+import { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
 } from "../types";
+import "./card-editor/hui-card-visibility-editor";
 import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface ConfigChangedEvent {
   config:
@@ -38,7 +41,9 @@ export interface ConfigChangedEvent {
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
-    | LovelaceStrategyConfig;
+    | LovelaceStrategyConfig
+    | LovelaceElementConfig
+    | LovelaceBadgeConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -198,6 +203,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     return this.value ? (this.value as any).type : undefined;
   }
 
+  protected renderConfigElement(): TemplateResult {
+    return html`${this._configElement}`;
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
@@ -211,7 +220,7 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                         class="center margin-bot"
                       ></ha-circular-progress>
                     `
-                  : this._configElement}
+                  : this.renderConfigElement()}
               </div>
             `
           : html`

@@ -1,7 +1,6 @@
-import { customElement } from "lit/decorators";
-import "element-internals-polyfill";
 import { MdSlider } from "@material/web/slider/slider";
-import { CSSResult, css } from "lit";
+import { css } from "lit";
+import { customElement } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
@@ -11,11 +10,12 @@ export class HaSlider extends MdSlider {
     this.dir = mainWindow.document.dir;
   }
 
-  static override styles: CSSResult[] = [
-    ...MdSlider.styles,
+  static override styles = [
+    ...super.styles,
     css`
       :host {
         --md-sys-color-primary: var(--primary-color);
+        --md-sys-color-on-primary: var(--text-primary-color);
         --md-sys-color-outline: var(--outline-color);
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-slider-handle-width: 14px;

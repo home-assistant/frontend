@@ -41,7 +41,7 @@ import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 
 const AMSTERDAM: [number, number] = [52.3731339, 4.8903147];
-const mql = matchMedia("(prefers-color-scheme: dark)");
+const darkMql = matchMedia("(prefers-color-scheme: dark)");
 const LOCATION_MARKER_ID = "location";
 
 @customElement("onboarding-location")
@@ -199,7 +199,7 @@ class OnboardingLocation extends LitElement {
           this._highlightedMarker
         )}
         zoom="14"
-        .darkMode=${mql.matches}
+        .themeMode=${darkMql.matches ? "dark" : "light"}
         .disabled=${this._working}
         @location-updated=${this._locationChanged}
         @marker-clicked=${this._markerClicked}

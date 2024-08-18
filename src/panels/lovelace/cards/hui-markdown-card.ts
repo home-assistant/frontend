@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
@@ -38,7 +39,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _config?: MarkdownCardConfig;
 
@@ -113,7 +114,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._tryConnect();
     }
-
+    const shouldBeHidden =
+      this._templateResult &&
+      this._config.show_empty === false &&
+      this._templateResult.result.length === 0;
+    if (shouldBeHidden !== this.hidden) {
+      this.style.display = shouldBeHidden ? "none" : "block";
+      this.toggleAttribute("hidden", shouldBeHidden);
+      fireEvent(this, "card-visibility-changed", { value: !shouldBeHidden });
+    }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | MarkdownCardConfig
@@ -163,12 +172,12 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
             user: this.hass.user!.name,
           },
           strict: true,
-          report_errors: this.editMode,
+          report_errors: this.preview,
         }
       );
       await this._unsubRenderTemplate;
     } catch (e: any) {
-      if (this.editMode) {
+      if (this.preview) {
         this._error = e.message;
         this._errorLevel = undefined;
       }

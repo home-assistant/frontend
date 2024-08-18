@@ -231,6 +231,8 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
         locking: "mdi:lock-clock",
         unlocked: "mdi:lock-open",
         unlocking: "mdi:lock-clock",
+        opening: "mdi:lock-clock",
+        open: "mdi:lock-open-variant",
       },
     },
   },
@@ -905,6 +907,7 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
             idle: "mdi:clock-outline",
             off: "mdi:power",
             preheating: "mdi:heat-wave",
+            defrosting: "mdi:snowflake-melt",
           },
         },
         preset_mode: {

@@ -1,4 +1,4 @@
-import { startOfYesterday, subHours } from "date-fns/esm";
+import { startOfYesterday, subHours } from "date-fns";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -75,11 +75,13 @@ export class MoreInfoHistory extends LitElement {
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
-            <a href=${this._showMoreHref} @click=${this._close}
-              >${this.hass.localize(
-                "ui.dialogs.more_info_control.show_more"
-              )}</a
-            >
+            ${__DEMO__
+              ? nothing
+              : html`<a href=${this._showMoreHref} @click=${this._close}
+                  >${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}</a
+                >`}
           </div>
           ${this._error
             ? html`<div class="errors">${this._error}</div>`

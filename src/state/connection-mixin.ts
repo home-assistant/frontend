@@ -33,11 +33,14 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { HassBaseEl } from "./hass-base-mixin";
+import { promiseTimeout } from "../common/util/promise-timeout";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {
+    private __backendPingInterval?: ReturnType<typeof setInterval>;
+
     protected initializeHass(auth: Auth, conn: Connection) {
       const language = getLocalLanguage();
 
@@ -83,7 +86,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           service,
           serviceData,
           target,
-          notifyOnError = true
+          notifyOnError = true,
+          returnResponse = false
         ) => {
           if (__DEV__ || this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
@@ -101,7 +105,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               domain,
               service,
               serviceData ?? {},
-              target
+              target,
+              returnResponse
             )) as ServiceCallResponse;
           } catch (err: any) {
             if (
@@ -133,7 +138,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               const message =
                 localizedErrorMessage ||
                 (this as any).hass.localize(
-                  "ui.notification_toast.service_call_failed",
+                  "ui.notification_toast.action_failed",
                   "service",
                   `${domain}/${service}`
                 ) +
@@ -199,7 +204,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           (state != null ? state : stateObj.state) ?? "",
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
-          value != null ? value : stateObj.attributes[attribute] ?? "",
+          value != null ? value : (stateObj.attributes[attribute] ?? ""),
         ...getState(),
         ...this._pendingHass,
       };
@@ -267,6 +272,21 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeFrontendUserData(conn, "core", (userData) =>
         this._updateHass({ userData })
       );
+
+      clearInterval(this.__backendPingInterval);
+      this.__backendPingInterval = setInterval(() => {
+        if (this.hass?.connected) {
+          promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
+            if (!this.hass?.connected) {
+              return;
+            }
+
+            // eslint-disable-next-line no-console
+            console.log("Websocket died, forcing reconnect...");
+            this.hass?.connection.reconnect(true);
+          });
+        }
+      }, 10000);
     }
 
     protected hassReconnected() {
@@ -291,5 +311,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       super.hassDisconnected();
       this._updateHass({ connected: false });
       broadcastConnectionStatus("disconnected");
+      clearInterval(this.__backendPingInterval);
     }
   };

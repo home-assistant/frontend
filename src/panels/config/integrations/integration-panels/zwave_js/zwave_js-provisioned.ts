@@ -47,9 +47,8 @@ class ZWaveJSProvisioned extends LitElement {
           "ui.panel.config.zwave_js.provisioned.included"
         ),
         type: "icon",
-        width: "100px",
         template: (entry) =>
-          entry.additional_properties.nodeId
+          entry.nodeId
             ? html`
                 <ha-svg-icon
                   .label=${this.hass.localize(
@@ -71,18 +70,17 @@ class ZWaveJSProvisioned extends LitElement {
         title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
       },
       security_classes: {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.provisioned.security_classes"
         ),
-        width: "30%",
         hidden: narrow,
         filterable: true,
         sortable: true,
         template: (entry) => {
-          const securityClasses = entry.security_classes;
+          const securityClasses = entry.securityClasses;
           return securityClasses
             .map((secClass) =>
               this.hass.localize(
@@ -97,7 +95,6 @@ class ZWaveJSProvisioned extends LitElement {
           "ui.panel.config.zwave_js.provisioned.unprovison"
         ),
         type: "icon-button",
-        width: "100px",
         template: (entry) => html`
           <ha-icon-button
             .label=${this.hass.localize(

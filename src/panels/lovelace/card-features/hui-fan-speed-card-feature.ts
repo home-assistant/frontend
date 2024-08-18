@@ -24,6 +24,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCardFeature } from "../types";
 import { FanSpeedCardFeatureConfig } from "./types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsFanSpeedCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -73,7 +74,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     const speedCount = computeFanSpeedCount(this.stateObj);
 
     const percentage = stateActive(this.stateObj)
-      ? this.stateObj.attributes.percentage ?? 0
+      ? (this.stateObj.attributes.percentage ?? 0)
       : 0;
 
     if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
@@ -88,35 +89,11 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
       const speed = fanPercentageToSpeed(this.stateObj, percentage);
 
       return html`
-        <div class="container">
-          <ha-control-select
-            .options=${options}
-            .value=${speed}
-            @value-changed=${this._speedValueChanged}
-            hide-label
-            .ariaLabel=${computeAttributeNameDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.entities,
-              "percentage"
-            )}
-            .disabled=${this.stateObj!.state === UNAVAILABLE}
-          >
-          </ha-control-select>
-        </div>
-      `;
-    }
-
-    const value = Math.max(Math.round(percentage), 0);
-
-    return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          .step=${this.stateObj.attributes.percentage_step ?? 1}
-          @value-changed=${this._valueChanged}
+        <ha-control-select
+          .options=${options}
+          .value=${speed}
+          @value-changed=${this._speedValueChanged}
+          hide-label
           .ariaLabel=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
@@ -124,10 +101,30 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
             "percentage"
           )}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+        >
+        </ha-control-select>
+      `;
+    }
+
+    const value = Math.max(Math.round(percentage), 0);
+
+    return html`
+      <ha-control-slider
+        .value=${value}
+        min="0"
+        max="100"
+        .step=${this.stateObj.attributes.percentage_step ?? 1}
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "percentage"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
@@ -153,28 +150,16 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        --control-slider-color: var(--feature-color);
-        --control-slider-background: var(--feature-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      ha-control-select {
-        --control-select-color: var(--feature-color);
-        --control-select-background: var(--feature-color);
-        --control-select-background-opacity: 0.2;
-        --control-select-padding: 0;
-        --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
-        --control-select-button-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return [
+      cardFeatureStyles,
+      css`
+        ha-control-select {
+          /* Color the background to match the slider style */
+          --control-select-background: var(--feature-color);
+          --control-select-background-opacity: 0.2;
+        }
+      `,
+    ];
   }
 }
 

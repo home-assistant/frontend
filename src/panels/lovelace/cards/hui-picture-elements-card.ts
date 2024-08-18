@@ -8,17 +8,24 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
 import { ImageEntity, computeImageUrl } from "../../../data/image";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
 import { PictureElementsCardConfig } from "./types";
+import { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-picture-elements-card-editor");
+    return document.createElement("hui-picture-elements-card-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _elements?: LovelaceElement[];
@@ -116,9 +123,21 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let stateObj: ImageEntity | undefined;
+    let image: string | undefined = this._config.image;
     if (this._config.image_entity) {
-      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
+      const stateObj: ImageEntity | PersonEntity | undefined =
+        this.hass.states[this._config.image_entity];
+      const domain: string = computeDomain(this._config.image_entity);
+      switch (domain) {
+        case "image":
+          image = computeImageUrl(stateObj as ImageEntity);
+          break;
+        case "person":
+          if ((stateObj as PersonEntity).attributes.entity_picture) {
+            image = (stateObj as PersonEntity).attributes.entity_picture;
+          }
+          break;
+      }
     }
 
     return html`
@@ -126,7 +145,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         <div id="root">
           <hui-image
             .hass=${this.hass}
-            .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
+            .image=${image}
             .stateImage=${this._config.state_image}
             .stateFilter=${this._config.state_filter}
             .cameraImage=${this._config.camera_image}

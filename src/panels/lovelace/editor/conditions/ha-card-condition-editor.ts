@@ -1,4 +1,3 @@
-import { preventDefault } from "@fullcalendar/core/internal";
 import { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDelete, mdiDotsVertical, mdiFlask } from "@mdi/js";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -235,9 +235,11 @@ export class HaCardConditionEditor extends LitElement {
               ? this.hass.localize(
                   "ui.panel.lovelace.editor.condition-editor.testing_pass"
                 )
-              : this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_error"
-                )
+              : this._testingResult === false
+                ? this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.testing_error"
+                  )
+                : nothing
           }
         </div>
       </ha-card>

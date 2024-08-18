@@ -7,6 +7,7 @@ import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
+import { RegistryEntry } from "./registry";
 
 export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
 
@@ -43,7 +44,7 @@ export interface EntityRegistryDisplayEntryResponse {
   entity_categories: Record<number, EntityCategory>;
 }
 
-export interface EntityRegistryEntry {
+export interface EntityRegistryEntry extends RegistryEntry {
   id: string;
   entity_id: string;
   name: string | null;
@@ -96,6 +97,10 @@ export interface LockEntityOptions {
   default_code?: string | null;
 }
 
+export interface AlarmControlPanelEntityOptions {
+  default_code?: string | null;
+}
+
 export interface WeatherEntityOptions {
   precipitation_unit?: string | null;
   pressure_unit?: string | null;
@@ -112,6 +117,7 @@ export interface SwitchAsXEntityOptions {
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
+  alarm_control_panel?: AlarmControlPanelEntityOptions;
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
@@ -134,6 +140,7 @@ export interface EntityRegistryEntryUpdateParams {
     | SensorEntityOptions
     | NumberEntityOptions
     | LockEntityOptions
+    | AlarmControlPanelEntityOptions
     | WeatherEntityOptions
     | LightEntityOptions;
   aliases?: string[];

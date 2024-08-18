@@ -1,6 +1,5 @@
 // Compat needs to be first import
 import "../resources/compatibility";
-import "../resources/safari-14-attachshadow-patch";
 
 import { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
@@ -73,7 +72,7 @@ function initialize(
     );
   }
 
-  if (__BUILD__ === "es5") {
+  if (__BUILD__ === "legacy") {
     start = start.then(() => window.loadES5Adapter());
   }
 

@@ -9,7 +9,7 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-} from "date-fns/esm";
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import {
   calcDate,
@@ -95,6 +95,7 @@ export type EnergySolarForecasts = {
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  name?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -172,7 +173,7 @@ export interface WaterSourceTypeEnergyPreference {
   unit_of_measurement?: string | null;
 }
 
-type EnergySource =
+export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference

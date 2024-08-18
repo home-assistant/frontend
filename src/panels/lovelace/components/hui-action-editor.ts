@@ -33,7 +33,7 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "toggle",
   "navigate",
   "url",
-  "call-service",
+  "perform-action",
   "assist",
   "none",
 ];
@@ -98,12 +98,12 @@ export class HuiActionEditor extends LitElement {
 
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
-    return config?.service || "";
+    return config?.perform_action || config?.service || "";
   }
 
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
-      service: this._service,
+      action: this._service,
       ...(config.data || config.service_data
         ? { data: config.data ?? config.service_data }
         : null),
@@ -127,13 +127,19 @@ export class HuiActionEditor extends LitElement {
 
     const actions = this.actions ?? DEFAULT_ACTIONS;
 
+    let action = this.config?.action || "default";
+
+    if (action === "call-service") {
+      action = "perform-action";
+    }
+
     return html`
       <div class="dropdown">
         <ha-select
           .label=${this.label}
           .configValue=${"action"}
           @selected=${this._actionPicked}
-          .value=${this.config?.action ?? "default"}
+          .value=${action}
           @closed=${stopPropagation}
           fixedMenuPosition
           naturalMenuWidt
@@ -149,10 +155,10 @@ export class HuiActionEditor extends LitElement {
               : nothing}
           </mwc-list-item>
           ${actions.map(
-            (action) => html`
-              <mwc-list-item .value=${action}>
+            (actn) => html`
+              <mwc-list-item .value=${actn}>
                 ${this.hass!.localize(
-                  `ui.panel.lovelace.editor.action-editor.actions.${action}`
+                  `ui.panel.lovelace.editor.action-editor.actions.${actn}`
                 )}
               </mwc-list-item>
             `
@@ -188,7 +194,8 @@ export class HuiActionEditor extends LitElement {
             ></ha-textfield>
           `
         : nothing}
-      ${this.config?.action === "call-service"
+      ${this.config?.action === "call-service" ||
+      this.config?.action === "perform-action"
         ? html`
             <ha-service-control
               .hass=${this.hass}
@@ -234,8 +241,8 @@ export class HuiActionEditor extends LitElement {
         data = { url_path: this._url_path };
         break;
       }
-      case "call-service": {
-        data = { service: this._service };
+      case "perform-action": {
+        data = { perform_action: this._service };
         break;
       }
       case "navigate": {
@@ -285,7 +292,7 @@ export class HuiActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...this.config!,
-      service: ev.detail.value.service || "",
+      perform_action: ev.detail.value.action || "",
       data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };
@@ -295,6 +302,9 @@ export class HuiActionEditor extends LitElement {
     // "service_data" is allowed for backwards compatibility but replaced with "data" on write
     if ("service_data" in value) {
       delete value.service_data;
+    }
+    if ("service" in value) {
+      delete value.service;
     }
 
     fireEvent(this, "value-changed", { value });

@@ -17,6 +17,10 @@ import {
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
+type HumidifierModesCardFeatureData = HumidifierModesCardFeatureConfig & {
+  customize_modes: boolean;
+};
+
 @customElement("hui-humidifier-modes-card-feature-editor")
 export class HuiHumidifierModesCardFeatureEditor
   extends LitElement
@@ -36,7 +40,8 @@ export class HuiHumidifierModesCardFeatureEditor
     (
       localize: LocalizeFunc,
       formatEntityAttributeValue: FormatEntityAttributeValueFunc,
-      stateObj?: HassEntity
+      stateObj: HassEntity | undefined,
+      customizeModes: boolean
     ) =>
       [
         {
@@ -55,19 +60,33 @@ export class HuiHumidifierModesCardFeatureEditor
           },
         },
         {
-          name: "modes",
+          name: "customize_modes",
           selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options:
-                stateObj?.attributes.available_modes?.map((mode) => ({
-                  value: mode,
-                  label: formatEntityAttributeValue(stateObj, "mode", mode),
-                })) || [],
-            },
+            boolean: {},
           },
         },
+        ...(customizeModes
+          ? ([
+              {
+                name: "modes",
+                selector: {
+                  select: {
+                    reorder: true,
+                    multiple: true,
+                    options:
+                      stateObj?.attributes.available_modes?.map((mode) => ({
+                        value: mode,
+                        label: formatEntityAttributeValue(
+                          stateObj,
+                          "mode",
+                          mode
+                        ),
+                      })) || [],
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -80,16 +99,17 @@ export class HuiHumidifierModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const data: HumidifierModesCardFeatureConfig = {
+    const data: HumidifierModesCardFeatureData = {
       style: "dropdown",
-      modes: [],
       ...this._config,
+      customize_modes: this._config.modes !== undefined,
     };
 
     const schema = this._schema(
       this.hass.localize,
       this.hass.formatEntityAttributeValue,
-      stateObj
+      stateObj,
+      data.customize_modes
     );
 
     return html`
@@ -104,7 +124,21 @@ export class HuiHumidifierModesCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { customize_modes, ...config } = ev.detail
+      .value as HumidifierModesCardFeatureData;
+
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context?.entity_id]
+      : undefined;
+
+    if (customize_modes && !config.modes) {
+      config.modes = stateObj?.attributes.available_modes || [];
+    }
+    if (!customize_modes && config.modes) {
+      delete config.modes;
+    }
+
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeLabelCallback = (
@@ -113,6 +147,7 @@ export class HuiHumidifierModesCardFeatureEditor
     switch (schema.name) {
       case "style":
       case "modes":
+      case "customize_modes":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.humidifier-modes.${schema.name}`
         );

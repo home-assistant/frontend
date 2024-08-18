@@ -31,6 +31,7 @@ import {
   mdiFormatListBulleted,
   mdiFormatListCheckbox,
   mdiFormTextbox,
+  mdiForumOutline,
   mdiGauge,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
@@ -39,7 +40,6 @@ import {
   mdiImageFilterFrames,
   mdiLightbulb,
   mdiLightningBolt,
-  mdiMailbox,
   mdiMapMarkerRadius,
   mdiMeterGas,
   mdiMicrophoneMessage,
@@ -98,7 +98,7 @@ export const FIXED_DOMAIN_ICONS = {
   calendar: mdiCalendar,
   climate: mdiThermostat,
   configurator: mdiCog,
-  conversation: mdiMicrophoneMessage,
+  conversation: mdiForumOutline,
   counter: mdiCounter,
   date: mdiCalendar,
   datetime: mdiCalendarClock,
@@ -118,7 +118,6 @@ export const FIXED_DOMAIN_ICONS = {
   input_text: mdiFormTextbox,
   lawn_mower: mdiRobotMower,
   light: mdiLightbulb,
-  mailbox: mdiMailbox,
   notify: mdiCommentAlert,
   number: mdiRayVertex,
   persistent_notification: mdiBell,
@@ -234,6 +233,8 @@ export const SENSOR_ENTITIES = [
   "image",
   "weather",
 ];
+
+export const ASSIST_ENTITIES = ["conversation", "stt", "tts"];
 
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally

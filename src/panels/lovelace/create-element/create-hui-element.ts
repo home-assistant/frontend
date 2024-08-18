@@ -18,5 +18,9 @@ const ALWAYS_LOADED_TYPES = new Set([
   "state-label",
 ]);
 
-export const createHuiElement = (config: LovelaceElementConfig) =>
-  createLovelaceElement("element", config, ALWAYS_LOADED_TYPES);
+export const createHuiElement = (config: LovelaceElementConfig) => {
+  if (config.type === "action-button") {
+    config = { ...config, type: "service-button" };
+  }
+  return createLovelaceElement("element", config, ALWAYS_LOADED_TYPES);
+};

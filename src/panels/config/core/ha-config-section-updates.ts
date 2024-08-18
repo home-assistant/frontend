@@ -1,7 +1,7 @@
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiUpdate } from "@mdi/js";
+import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -14,11 +14,11 @@ import "../../../components/ha-check-list-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
-  fetchHassioSupervisorInfo,
   HassioSupervisorInfo,
+  SupervisorOptions,
+  fetchHassioSupervisorInfo,
   reloadSupervisor,
   setSupervisorOption,
-  SupervisorOptions,
 } from "../../../data/hassio/supervisor";
 import {
   checkForEntityUpdates,
@@ -66,7 +66,7 @@ class HaConfigSectionUpdates extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.updates.check_updates"
             )}
-            .path=${mdiUpdate}
+            .path=${mdiRefresh}
             @click=${this._checkUpdates}
           ></ha-icon-button>
           <ha-button-menu multi>
@@ -82,11 +82,14 @@ class HaConfigSectionUpdates extends LitElement {
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-check-list-item>
-            ${this._supervisorInfo?.channel !== "dev"
+            ${this._supervisorInfo
               ? html`
                   <li divider role="separator"></li>
-                  <mwc-list-item @request-selected=${this._toggleBeta}>
-                    ${this._supervisorInfo?.channel === "stable"
+                  <mwc-list-item
+                    @request-selected=${this._toggleBeta}
+                    .disabled=${this._supervisorInfo.channel === "dev"}
+                  >
+                    ${this._supervisorInfo.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
                           "ui.panel.config.updates.leave_beta"

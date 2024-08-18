@@ -32,6 +32,7 @@ const LOAD_ELEMENTS = {
   file: () => import("./ha-selector-file"),
   floor: () => import("./ha-selector-floor"),
   label: () => import("./ha-selector-label"),
+  image: () => import("./ha-selector-image"),
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
@@ -56,6 +57,7 @@ const LOAD_ELEMENTS = {
   color_temp: () => import("./ha-selector-color-temp"),
   ui_action: () => import("./ha-selector-ui-action"),
   ui_color: () => import("./ha-selector-ui-color"),
+  ui_state_content: () => import("./ha-selector-ui-state-content"),
 };
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);

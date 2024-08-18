@@ -1,5 +1,5 @@
 import { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import { SENSOR_ENTITIES } from "../../../common/const";
+import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -31,21 +31,22 @@ import {
 } from "../cards/types";
 import { EntityConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import { EntityBadgeConfig } from "../badges/types";
 
 const HIDE_DOMAIN = new Set([
   "automation",
   "configurator",
-  "conversation",
   "device_tracker",
+  "event",
   "geo_location",
+  "notify",
   "persistent_notification",
   "script",
   "sun",
-  "zone",
-  "event",
-  "tts",
-  "stt",
   "todo",
+  "zone",
+  ...ASSIST_ENTITIES,
 ]);
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);
@@ -114,7 +115,7 @@ export const computeSection = (
         type: "tile",
         entity,
         show_entity_picture:
-          ["person", "camera", "image"].includes(computeDomain(entity)) ||
+          ["camera", "image", "person"].includes(computeDomain(entity)) ||
           undefined,
       }) as TileCardConfig
   ),
@@ -309,6 +310,23 @@ export const computeCards = (
       cards,
     },
   ];
+};
+
+export const computeBadges = (
+  _states: HassEntities,
+  entityIds: string[]
+): LovelaceBadgeConfig[] => {
+  const badges: LovelaceBadgeConfig[] = [];
+
+  for (const entityId of entityIds) {
+    const config: EntityBadgeConfig = {
+      type: "entity",
+      entity: entityId,
+    };
+
+    badges.push(config);
+  }
+  return badges;
 };
 
 const computeDefaultViewStates = (

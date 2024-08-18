@@ -20,7 +20,7 @@ import {
   startOfWeek,
   startOfYear,
   subDays,
-} from "date-fns/esm";
+} from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -54,7 +54,6 @@ import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { loadPolyfillIfNeeded } from "../../../resources/resize-observer.polyfill";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-energy-period-selector")
@@ -89,7 +88,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measure(), 250, false)
       );
@@ -261,9 +259,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         </div>
 
         ${!this.narrow
-          ? html`<mwc-button dense outlined @click=${this._pickToday}>
+          ? html`<mwc-button dense outlined @click=${this._pickNow}>
               ${this.hass.localize(
-                "ui.panel.lovelace.components.energy_period_selector.today"
+                "ui.panel.lovelace.components.energy_period_selector.now"
               )}
             </mwc-button>`
           : nothing}
@@ -376,7 +374,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._updateCollectionPeriod();
   }
 
-  private _pickToday() {
+  private _pickNow() {
     if (!this._startDate) return;
 
     const range = this._simpleRange(

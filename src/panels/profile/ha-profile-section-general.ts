@@ -222,6 +222,7 @@ class HaProfileSectionGeneral extends LitElement {
       text: this.hass.localize("ui.panel.profile.logout_text"),
       confirmText: this.hass.localize("ui.panel.profile.logout"),
       confirm: () => fireEvent(this, "hass-logout"),
+      destructive: true,
     });
   }
 

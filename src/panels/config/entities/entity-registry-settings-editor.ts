@@ -59,6 +59,7 @@ import {
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
+  AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -68,7 +69,10 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+} from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import {
   createOptionsFlow,
@@ -255,6 +259,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     if (domain === "lock") {
       this._defaultCode = this.entry.options?.lock?.default_code;
+    }
+
+    if (domain === "alarm_control_panel") {
+      this._defaultCode = this.entry.options?.alarm_control_panel?.default_code;
     }
 
     if (domain === "weather") {
@@ -578,6 +586,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
               type="password"
               .invalid=${invalidDefaultCode}
+              .disabled=${this.disabled}
+              @input=${this._defaultcodeChanged}
+            ></ha-textfield>
+          `
+        : ""}
+      ${domain === "alarm_control_panel"
+        ? html`
+            <ha-textfield
+              .value=${this._defaultCode == null ? "" : this._defaultCode}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.default_code"
+              )}
+              type="password"
               .disabled=${this.disabled}
               @input=${this._defaultcodeChanged}
             ></ha-textfield>
@@ -944,7 +965,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
         <span slot="description"
           >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.hidden_description"
+            "ui.dialogs.entity_registry.editor.hidden_explanation"
           )}</span
         >
         <ha-switch
@@ -1070,6 +1091,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
       params.options_domain = domain;
       params.options = this.entry.options?.[domain] || {};
       (params.options as LockEntityOptions).default_code = this._defaultCode;
+    }
+    if (
+      domain === "alarm_control_panel" &&
+      this.entry.options?.[domain]?.default_code !== this._defaultCode
+    ) {
+      params.options_domain = domain;
+      params.options = this.entry.options?.[domain] || {};
+      (params.options as AlarmControlPanelEntityOptions).default_code =
+        this._defaultCode;
     }
     if (
       domain === "weather" &&
@@ -1432,7 +1462,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this.helperConfigEntry!);
+    showOptionsFlowDialog(this, this.helperConfigEntry!, {
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this.helperConfigEntry!.domain
+      ),
+    });
   }
 
   private _switchAsDomainsSorted = memoizeOne(

@@ -1,8 +1,8 @@
 import { customElement } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
-import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ConditionalCardConfig } from "./types";
 
@@ -37,25 +37,20 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this.hass) {
-      element.hass = this.hass;
-    }
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        ev.stopPropagation();
-        this._rebuildCard(cardConfig);
-      },
-      { once: true }
-    );
+    const element = document.createElement("hui-card");
+    element.hass = this.hass;
+    element.preview = this.preview;
+    element.config = cardConfig;
+    element.load();
     return element;
   }
 
-  private _rebuildCard(config: LovelaceCardConfig): void {
-    this._element = this._createCardElement(config);
-    if (this.lastChild) {
-      this.replaceChild(this._element, this.lastChild);
+  protected setVisibility(conditionMet: boolean): void {
+    const visible = this.preview || conditionMet;
+    const previouslyHidden = this.hidden;
+    super.setVisibility(conditionMet);
+    if (previouslyHidden !== this.hidden) {
+      fireEvent(this, "card-visibility-changed", { value: visible });
     }
   }
 }

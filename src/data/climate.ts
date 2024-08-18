@@ -28,13 +28,14 @@ export type HvacMode = (typeof HVAC_MODES)[number];
 export const CLIMATE_PRESET_NONE = "none";
 
 export type HvacAction =
-  | "off"
-  | "preheating"
-  | "heating"
   | "cooling"
+  | "defrosting"
   | "drying"
+  | "fan"
+  | "heating"
   | "idle"
-  | "fan";
+  | "off"
+  | "preheating";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -89,12 +90,13 @@ export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
 
 export const CLIMATE_HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
   cooling: "cool",
+  defrosting: "heat",
   drying: "dry",
   fan: "fan_only",
-  preheating: "heat",
   heating: "heat",
   idle: "off",
   off: "off",
+  preheating: "heat",
 };
 
 export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {

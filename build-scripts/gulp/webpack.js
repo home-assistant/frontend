@@ -40,8 +40,12 @@ const runDevServer = async ({
   compiler,
   contentBase,
   port,
-  listenHost = "localhost",
+  listenHost = undefined,
 }) => {
+  if (listenHost === undefined) {
+    // For dev container, we need to listen on all hosts
+    listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
+  }
   const server = new WebpackDevServer(
     {
       hot: false,
@@ -99,7 +103,7 @@ gulp.task("webpack-watch-app", () => {
   ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("create-translations", "copy-translations-app")
+    gulp.series("build-translations", "copy-translations-app")
   );
 });
 

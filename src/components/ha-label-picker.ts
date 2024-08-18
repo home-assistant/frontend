@@ -302,6 +302,9 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
             name: this.hass.localize("ui.components.label-picker.no_match"),
             icon: null,
             color: null,
+            description: null,
+            created_at: 0,
+            modified_at: 0,
           },
         ];
       }
@@ -315,6 +318,9 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
               name: this.hass.localize("ui.components.label-picker.add_new"),
               icon: "mdi:plus",
               color: null,
+              description: null,
+              created_at: 0,
+              modified_at: 0,
             },
           ];
     }
