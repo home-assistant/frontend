@@ -236,9 +236,10 @@ class LovelaceFullConfigEditor extends LitElement {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
         ),
-        confirmText: this.hass.localize("ui.common.remove"),
+        confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
         confirm: () => this._removeConfig(),
+        destructive: true,
       });
       return;
     }
