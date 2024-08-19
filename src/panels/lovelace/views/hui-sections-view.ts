@@ -32,6 +32,15 @@ export const DEFAULT_MAX_COLUMNS = 4;
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
+export const BREAKPOINTS: Record<string, number> = {
+  "0": 1,
+  "768": 2,
+  "1280": 3,
+  "1600": 4,
+  "1920": 5,
+  "2560": 6,
+};
+
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -321,10 +330,39 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       :host {
         --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
-        --column-gap: var(--ha-view-sections-column-gap, 32px);
+        --column-gap: var(--ha-view-sections-column-gap, 24px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         display: block;
+      }
+
+      :host {
+        --column-count: 1;
+      }
+      @media (min-width: 768px) {
+        :host {
+          --column-count: 2;
+        }
+      }
+      @media (min-width: 1280px) {
+        :host {
+          --column-count: 3;
+        }
+      }
+      @media (min-width: 1600px) {
+        :host {
+          --column-count: 4;
+        }
+      }
+      @media (min-width: 1920px) {
+        :host {
+          --column-count: 5;
+        }
+      }
+      @media (min-width: 2560px) {
+        :host {
+          --column-count: 6;
+        }
       }
 
       .container > * {
@@ -333,8 +371,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .section {
+        --section-column-span: min(var(--column-span, 1), var(--column-count));
         border-radius: var(--ha-card-border-radius, 12px);
-        grid-column: span var(--column-span);
+        grid-column: span var(--section-column-span);
         grid-row: span var(--row-span);
       }
 

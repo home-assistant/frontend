@@ -25,6 +25,7 @@ export interface LovelaceBaseViewConfig {
   // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
   max_columns?: number;
   dense_section_placement?: boolean;
+  column_breakpoints: Record<string, number>;
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
