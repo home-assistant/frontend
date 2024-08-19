@@ -30,6 +30,7 @@ import {
   getStatisticLabel,
   Statistics,
   StatisticsMetaData,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -40,6 +41,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { storage } from "../../../../common/decorators/storage";
+import { clickIsTouch } from "../../../../components/chart/click_is_touch";
 
 const UNIT = "kWh";
 
@@ -57,8 +59,6 @@ export class HuiEnergyDevicesDetailGraphCard
   @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
 
   @state() private _data?: EnergyData;
-
-  @state() private _devicesIds?: string[];
 
   @state() private _start = startOfToday();
 
@@ -200,14 +200,16 @@ export class HuiEnergyDevicesDetailGraphCard
             },
           },
         },
-        onClick: (_event, elements, chart) => {
-          const index = elements[0]?.datasetIndex ?? -1;
+        onClick: (event, elements, chart) => {
+          if (clickIsTouch(event)) return;
 
+          const index = elements[0]?.datasetIndex ?? -1;
           if (index < 0) return;
 
-          const statisticId = this._devicesIds?.[index];
+          const statisticId =
+            this._data?.prefs.device_consumption[index]?.stat_consumption;
 
-          if (!statisticId) return;
+          if (!statisticId || isExternalStatistic(statisticId)) return;
 
           fireEvent(this, "hass-more-info", { entityId: statisticId });
           chart?.canvas?.dispatchEvent(new Event("mouseout")); // to hide tooltip
@@ -299,9 +301,6 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets,
     };
     this._chartDatasetExtra = datasetExtras;
-    this._devicesIds = energyData.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
   }
 
   private _processDataSet(

@@ -16,6 +16,7 @@ import {
   HaChartBase,
   MIN_TIME_BETWEEN_UPDATES,
 } from "./ha-chart-base";
+import { clickIsTouch } from "./click_is_touch";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -220,12 +221,7 @@ export class StateHistoryChartLine extends LitElement {
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
         onClick: (e: any) => {
-          if (
-            !this.clickForMoreInfo ||
-            !(e.native instanceof MouseEvent) ||
-            (e.native instanceof PointerEvent &&
-              e.native.pointerType !== "mouse")
-          ) {
+          if (!this.clickForMoreInfo || clickIsTouch(e)) {
             return;
           }
 

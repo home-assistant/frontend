@@ -11,6 +11,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../../../../common/number/format_number";
 import { getEnergyColor } from "./common/color";
@@ -25,6 +26,7 @@ import {
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -227,7 +229,9 @@ export class HuiEnergySourcesTableCard
                 totalSolarCompare += compareEnergy;
 
                 return html`<tr
-                  class="mdc-data-table__row"
+                  class="mdc-data-table__row ${classMap({
+                    clickable: !isExternalStatistic(source.stat_energy_from),
+                  })}"
                   @click=${this._handleMoreInfo}
                   .entity=${source.stat_energy_from}
                 >
@@ -336,7 +340,9 @@ export class HuiEnergySourcesTableCard
                 totalBatteryCompare += energyFromCompare - energyToCompare;
 
                 return html`<tr
-                    class="mdc-data-table__row"
+                    class="mdc-data-table__row ${classMap({
+                      clickable: !isExternalStatistic(source.stat_energy_from),
+                    })}"
                     @click=${this._handleMoreInfo}
                     .entity=${source.stat_energy_from}
                   >
@@ -391,7 +397,9 @@ export class HuiEnergySourcesTableCard
                       : ""}
                   </tr>
                   <tr
-                    class="mdc-data-table__row"
+                    class="mdc-data-table__row ${classMap({
+                      clickable: !isExternalStatistic(source.stat_energy_to),
+                    })}"
                     @click=${this._handleMoreInfo}
                     .entity=${source.stat_energy_to}
                   >
@@ -522,7 +530,9 @@ export class HuiEnergySourcesTableCard
                     }
 
                     return html`<tr
-                      class="mdc-data-table__row"
+                      class="mdc-data-table__row ${classMap({
+                        clickable: !isExternalStatistic(flow.stat_energy_from),
+                      })}"
                       @click=${this._handleMoreInfo}
                       .entity=${flow.stat_energy_from}
                     >
@@ -637,7 +647,9 @@ export class HuiEnergySourcesTableCard
                     }
 
                     return html`<tr
-                      class="mdc-data-table__row"
+                      class="mdc-data-table__row ${classMap({
+                        clickable: !isExternalStatistic(flow.stat_energy_to),
+                      })}"
                       @click=${this._handleMoreInfo}
                       .entity=${flow.stat_energy_to}
                     >
@@ -806,7 +818,9 @@ export class HuiEnergySourcesTableCard
                 }
 
                 return html`<tr
-                  class="mdc-data-table__row"
+                  class="mdc-data-table__row ${classMap({
+                    clickable: !isExternalStatistic(source.stat_energy_from),
+                  })}"
                   @click=${this._handleMoreInfo}
                   .entity=${source.stat_energy_from}
                 >
@@ -968,7 +982,9 @@ export class HuiEnergySourcesTableCard
                 }
 
                 return html`<tr
-                  class="mdc-data-table__row"
+                  class="mdc-data-table__row ${classMap({
+                    clickable: !isExternalStatistic(source.stat_energy_from),
+                  })}"
                   @click=${this._handleMoreInfo}
                   .entity=${source.stat_energy_from}
                 >
@@ -1141,9 +1157,10 @@ export class HuiEnergySourcesTableCard
   }
 
   private _handleMoreInfo(ev): void {
-    fireEvent(this, "hass-more-info", {
-      entityId: ev.currentTarget?.entity,
-    });
+    const entityId = ev.currentTarget?.entity;
+    if (entityId && !isExternalStatistic(entityId)) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -1161,6 +1178,9 @@ export class HuiEnergySourcesTableCard
       }
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
         background-color: rgba(var(--rgb-primary-text-color), 0.04);
+      }
+      .clickable {
+        cursor: pointer;
       }
       .total {
         --mdc-typography-body2-font-weight: 500;

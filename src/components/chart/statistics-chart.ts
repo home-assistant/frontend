@@ -39,6 +39,7 @@ import type {
   ChartDatasetExtra,
   HaChartBase,
 } from "./ha-chart-base";
+import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -278,11 +279,7 @@ export class StatisticsChart extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (
-          !this.clickForMoreInfo ||
-          !(e.native instanceof MouseEvent) ||
-          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
-        ) {
+        if (!this.clickForMoreInfo || clickIsTouch(e)) {
           return;
         }
 

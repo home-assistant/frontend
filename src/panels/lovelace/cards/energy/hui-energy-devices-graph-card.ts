@@ -31,6 +31,7 @@ import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -38,6 +39,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { clickIsTouch } from "../../../../components/chart/click_is_touch";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -158,15 +160,18 @@ export class HuiEnergyDevicesGraphCard
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
+        if (clickIsTouch(e)) return;
         const chart = e.chart;
         const canvasPosition = getRelativePosition(e, chart);
 
         const index = Math.abs(
           chart.scales.y.getValueForPixel(canvasPosition.y)
         );
+        // @ts-ignore
+        const statisticId = this._chartData?.datasets[0]?.data[index]?.y;
+        if (!statisticId || isExternalStatistic(statisticId)) return;
         fireEvent(this, "hass-more-info", {
-          // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.y,
+          entityId: statisticId,
         });
         chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },
