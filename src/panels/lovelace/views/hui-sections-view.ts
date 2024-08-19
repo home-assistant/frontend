@@ -26,6 +26,15 @@ import { showEditSectionDialog } from "../editor/section-editor/show-edit-sectio
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
+export const BREAKPOINTS: Record<string, number> = {
+  "0": 1,
+  "768": 2,
+  "1280": 3,
+  "1600": 4,
+  "1920": 5,
+  "2560": 6,
+};
+
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -126,9 +135,18 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             sections,
             (section) => this._getSectionKey(section),
             (section, idx) => {
+              const sectionConfig = this._config?.sections?.[idx];
+              const columnSpan = sectionConfig?.column_span || 1;
+
               (section as any).itemPath = [idx];
+
               return html`
-                <div class="section">
+                <div
+                  class="section"
+                  style=${styleMap({
+                    "--column-span": columnSpan,
+                  })}
+                >
                   ${editMode
                     ? html`
                         <div class="section-overlay">
@@ -251,20 +269,50 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       :host {
         --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
-        --column-gap: var(--ha-view-sections-column-gap, 32px);
+        --column-gap: var(--ha-view-sections-column-gap, 24px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         display: block;
       }
 
+      :host {
+        --column-count: 1;
+      }
+      @media (min-width: 768px) {
+        :host {
+          --column-count: 2;
+        }
+      }
+      @media (min-width: 1280px) {
+        :host {
+          --column-count: 3;
+        }
+      }
+      @media (min-width: 1600px) {
+        :host {
+          --column-count: 4;
+        }
+      }
+      @media (min-width: 1920px) {
+        :host {
+          --column-count: 5;
+        }
+      }
+      @media (min-width: 2560px) {
+        :host {
+          --column-count: 6;
+        }
+      }
+
       .container > * {
         position: relative;
-        max-width: var(--column-max-width);
         width: 100%;
       }
 
       .section {
+        --section-column-span: min(var(--column-span, 1), var(--column-count));
         border-radius: var(--ha-card-border-radius, 12px);
+        grid-column: span var(--section-column-span);
       }
 
       .section:not(:has(> *:not([hidden]))) {
@@ -272,29 +320,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
-        --max-count: min(var(--total-count), var(--max-columns-count, 4));
-        --max-width: min(
-          calc(
-            (var(--max-count) + 1) * var(--column-min-width) +
-              (var(--max-count) + 2) * var(--column-gap) - 1px
-          ),
-          calc(
-            var(--max-count) * var(--column-max-width) + (var(--max-count) + 1) *
-              var(--column-gap)
-          )
-        );
+        --section-count: min(var(--column-count), var(--total-count));
         display: grid;
         align-items: start;
-        justify-items: center;
-        grid-template-columns: repeat(
-          auto-fit,
-          minmax(min(var(--column-min-width), 100%), 1fr)
-        );
+        justify-content: center;
+        grid-template-columns: repeat(var(--section-count), 1fr);
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
-        box-sizing: border-box;
-        max-width: var(--max-width);
+        box-sizing: content-box;
         margin: 0 auto;
+        max-width: calc(
+          var(--section-count) * var(--column-max-width) +
+            (var(--column-count) - 1) * var(--column-gap)
+        );
       }
 
       @media (max-width: 600px) {
