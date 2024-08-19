@@ -145,7 +145,7 @@ export class HaVoiceCommandDialog extends LitElement {
             this.hass.states[this._pipeline?.conversation_engine],
             ConversationEntityFeature.CONTROL
           )
-        : false;
+        : true;
     const supportsMicrophone = AudioRecorder.isSupported;
     const supportsSTT = this._pipeline?.stt_engine;
 
