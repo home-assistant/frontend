@@ -129,12 +129,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _attachMediaQueriesListeners() {
     this._detachMediaQueriesListeners();
-    const breakpoints = this._config?.column_breakpoints || DEFAULT_BREAKPOINTS;
+    const breakpoints = this._config?.column_breakpoints ?? DEFAULT_BREAKPOINTS;
+    const maxColumns = this._config?.max_columns ?? 4;
     const mediaQueries = buildMediaQueries(breakpoints);
     this._listeners = mediaQueries.map((mediaQuery, index) =>
       listenMediaQuery(mediaQuery, (matches) => {
         if (matches) {
-          this._columns = Object.values(breakpoints)[index];
+          const columns = Object.values(breakpoints)[index];
+          this._columns = Math.min(maxColumns, columns);
         }
       })
     );
