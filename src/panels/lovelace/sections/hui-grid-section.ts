@@ -72,6 +72,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ type: Boolean }) public isStrategy = false;
 
+  @property({ type: Number, attribute: "column_span" }) public columnSpan = 1;
+
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @state() _config?: LovelaceSectionConfig;
@@ -125,7 +127,12 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .options=${CARD_SORTABLE_OPTIONS}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({ "edit-mode": editMode })}"
+          style=${styleMap({
+            "--column-span": this.columnSpan,
+          })}
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -221,7 +228,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
         .container {
           --grid-column-count: calc(
-            var(--column-count) * var(--section-column-span, 1)
+            var(--column-count) * var(--column-span, 1)
           );
           display: grid;
           grid-template-columns: repeat(
