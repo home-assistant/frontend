@@ -7,7 +7,6 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "mailbox": "Mailbox",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
@@ -6355,12 +6354,6 @@
         },
         "reload_lovelace": "Reload UI"
       },
-      "mailbox": {
-        "empty": "You do not have any messages",
-        "playback_title": "Message playback",
-        "delete_prompt": "Delete this message?",
-        "delete_button": "Delete"
-      },
       "media-browser": {
         "error": {
           "player_not_exist": "Media player {name} does not exist"
@@ -6857,6 +6850,7 @@
             "title": "Template",
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
+            "result": "Result",
             "reset": "Reset to demo template",
             "confirm_reset": "Do you want to reset your current template back to the demo template?",
             "confirm_clear": "Do you want to clear your current template?",

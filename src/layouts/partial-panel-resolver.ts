@@ -29,7 +29,6 @@ const COMPONENTS = {
   history: () => import("../panels/history/ha-panel-history"),
   iframe: () => import("../panels/iframe/ha-panel-iframe"),
   logbook: () => import("../panels/logbook/ha-panel-logbook"),
-  mailbox: () => import("../panels/mailbox/ha-panel-mailbox"),
   map: () => import("../panels/map/ha-panel-map"),
   my: () => import("../panels/my/ha-panel-my"),
   profile: () => import("../panels/profile/ha-panel-profile"),

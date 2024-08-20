@@ -308,7 +308,7 @@ class HaPanelDevAction extends LitElement {
 
   private async _copyTemplate(): Promise<void> {
     await copyToClipboard(
-      `{% set action_response = ${JSON.stringify(this._response)} %}`
+      `{% set ${this._serviceData?.response_variable || "action_response"} = ${JSON.stringify(this._response)} %}`
     );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
