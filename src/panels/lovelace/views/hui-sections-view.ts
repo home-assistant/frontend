@@ -337,20 +337,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
-        --section-count: min(
+        --column-count: min(
           var(--max-column-count),
           var(--total-section-count)
         );
         display: grid;
         align-items: start;
         justify-content: center;
-        grid-template-columns: repeat(var(--section-count), 1fr);
+        grid-template-columns: repeat(var(--column-count), 1fr);
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
         box-sizing: content-box;
         margin: 0 auto;
         max-width: calc(
-          var(--section-count) * var(--column-max-width) +
+          var(--column-count) * var(--column-max-width) +
             (var(--column-count) - 1) * var(--column-gap)
         );
       }
