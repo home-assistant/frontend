@@ -143,10 +143,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const totalCount = this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
+    const totalSectionCount =
+      this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const maxCount = Math.min(this._columns, this._config?.max_columns || 4);
+    const maxColumnCount = Math.min(
+      this._columns,
+      this._config?.max_columns || 4
+    );
 
     return html`
       <hui-view-badges
@@ -166,8 +170,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container"
           style=${styleMap({
-            "--total-count": totalCount,
-            "--max-count": maxCount,
+            "--total-section-count": totalSectionCount,
+            "--max-column-count": maxColumnCount,
           })}
         >
           ${repeat(
@@ -177,7 +181,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               const sectionConfig = this._config?.sections?.[idx];
               const columnSpan = Math.min(
                 sectionConfig?.column_span || 1,
-                maxCount
+                maxColumnCount
               );
 
               (section as any).itemPath = [idx];
@@ -333,7 +337,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .container {
-        --section-count: min(var(--max-count), var(--total-count));
+        --section-count: min(
+          var(--max-column-count),
+          var(--total-section-count)
+        );
         display: grid;
         align-items: start;
         justify-content: center;
