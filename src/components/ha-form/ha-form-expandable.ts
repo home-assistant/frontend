@@ -28,6 +28,11 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     schema: HaFormSchema
   ) => string;
 
+  private _renderDescription() {
+    const description = this.computeHelper?.(this.schema);
+    return description ? html`<p>${description}</p>` : nothing;
+  }
+
   protected render() {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
@@ -43,9 +48,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
                   <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon>
                 `
               : nothing}
-          ${this.schema.title}
+          ${this.schema.title || this.computeLabel?.(this.schema)}
         </div>
         <div class="content">
+          ${this._renderDescription()}
           <ha-form
             .hass=${this.hass}
             .data=${this.data}
@@ -70,6 +76,9 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
       }
       .content {
         padding: 12px;
+      }
+      .content p {
+        margin: 0 0 24px;
       }
       ha-expansion-panel {
         display: block;

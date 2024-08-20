@@ -77,14 +77,28 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field) {
-      return (
-        hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.data.${field.name}`
-        ) || field.name
+      if (field.type === "expandable") {
+        return hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.section.${field.name}.name` ||
+            field.name
+        );
+      }
+      return hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.data.${field.name}` ||
+          field.name
       );
     },
 
     renderShowFormStepFieldHelper(hass, step, field) {
+      if (field.type === "expandable") {
+        const description = hass.localize(
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.section.${field.name}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
+          : "";
+      }
       const description = hass.localize(
         `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.data_description.${field.name}`,
         step.description_placeholders
