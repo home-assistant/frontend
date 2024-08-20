@@ -27,12 +27,15 @@ import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
-export const BREAKPOINTS: Record<string, number> = {
+type Breakpoints = Record<string, number>;
+
+export const DEFAULT_BREAKPOINTS: Breakpoints = {
   "0": 1,
   "768": 2,
   "1280": 3,
@@ -40,6 +43,16 @@ export const BREAKPOINTS: Record<string, number> = {
   "1920": 5,
   "2560": 6,
 };
+
+const buildMediaQueries = (breakpoints: Breakpoints) =>
+  Object.keys(breakpoints).map((breakpoint, index, array) => {
+    const nextBreakpoint = array[index + 1] as string | undefined;
+    let mediaQuery = `(min-width: ${breakpoint}px)`;
+    if (nextBreakpoint) {
+      mediaQuery += ` and (max-width: ${parseInt(nextBreakpoint) - 1}px)`;
+    }
+    return mediaQuery;
+  });
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -85,8 +98,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     },
   });
 
+  private _listeners: Array<() => void> = [];
+
+  @state() private _columns: number = 1;
+
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
+    this._attachMediaQueriesListeners();
   }
 
   private _sectionConfigKeys = new WeakMap<HuiSection, string>();
@@ -109,12 +127,32 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this._computeSectionsCount();
   };
 
+  private _attachMediaQueriesListeners() {
+    this._detachMediaQueriesListeners();
+    const breakpoints = this._config?.column_breakpoints || DEFAULT_BREAKPOINTS;
+    const mediaQueries = buildMediaQueries(breakpoints);
+    this._listeners = mediaQueries.map((mediaQuery, index) =>
+      listenMediaQuery(mediaQuery, (matches) => {
+        if (matches) {
+          this._columns = Object.values(breakpoints)[index];
+        }
+      })
+    );
+  }
+
+  private _detachMediaQueriesListeners() {
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
+  }
+
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    this._attachMediaQueriesListeners();
   }
 
   disconnectedCallback(): void {
@@ -123,6 +161,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
+    this._detachMediaQueriesListeners();
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
@@ -170,14 +209,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             (section) => this._getSectionKey(section),
             (section, idx) => {
               const sectionConfig = this._config?.sections?.[idx];
-              const columnSpan = Math.min(
-                sectionConfig?.column_span || 1,
-                maxColumnCount
-              );
+              const columnSpan = Math.min(sectionConfig?.column_span || 1);
 
               const rowSpan = sectionConfig?.row_span || 1;
 
               (section as any).itemPath = [idx];
+              (section as any).columnSpan = columnSpan;
 
               return html`
                 <div
@@ -331,38 +368,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
         --column-gap: var(--ha-view-sections-column-gap, 24px);
-        --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+        --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         display: block;
-      }
-
-      :host {
-        --column-count: 1;
-      }
-      @media (min-width: 768px) {
-        :host {
-          --column-count: 2;
-        }
-      }
-      @media (min-width: 1280px) {
-        :host {
-          --column-count: 3;
-        }
-      }
-      @media (min-width: 1600px) {
-        :host {
-          --column-count: 4;
-        }
-      }
-      @media (min-width: 1920px) {
-        :host {
-          --column-count: 5;
-        }
-      }
-      @media (min-width: 2560px) {
-        :host {
-          --column-count: 6;
-        }
       }
 
       .container > * {
@@ -371,9 +379,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .section {
-        --section-column-span: min(var(--column-span, 1), var(--column-count));
         border-radius: var(--ha-card-border-radius, 12px);
-        grid-column: span var(--section-column-span);
+        grid-column: span var(--column-span);
         grid-row: span var(--row-span);
       }
 
