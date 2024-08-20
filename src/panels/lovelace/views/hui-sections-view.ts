@@ -98,12 +98,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _attachMediaQueriesListeners() {
     this._detachMediaQueriesListeners();
-    const breakpoints = this._config?.column_breakpoints || DEFAULT_BREAKPOINTS;
+    const breakpoints = this._config?.column_breakpoints ?? DEFAULT_BREAKPOINTS;
+    const maxColumns = this._config?.max_columns ?? 4;
     const mediaQueries = buildMediaQueries(breakpoints);
     this._listeners = mediaQueries.map((mediaQuery, index) =>
       listenMediaQuery(mediaQuery, (matches) => {
         if (matches) {
-          this._columns = Object.values(breakpoints)[index];
+          const columns = Object.values(breakpoints)[index];
+          this._columns = Math.min(maxColumns, columns);
         }
       })
     );
@@ -147,10 +149,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const maxColumnCount = Math.min(
-      this._columns,
-      this._config?.max_columns || 4
-    );
+    const maxColumnCount = this._columns;
 
     return html`
       <hui-view-badges
@@ -317,7 +316,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
         --column-gap: var(--ha-view-sections-column-gap, 32px);
-        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
         display: block;
       }
