@@ -209,8 +209,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             (section) => this._getSectionKey(section),
             (section, idx) => {
               const sectionConfig = this._config?.sections?.[idx];
-              const columnSpan = Math.min(sectionConfig?.column_span || 1);
-
+              const columnSpan = Math.min(
+                sectionConfig?.column_span || 1,
+                maxColumnCount
+              );
               const rowSpan = sectionConfig?.row_span || 1;
 
               (section as any).itemPath = [idx];
