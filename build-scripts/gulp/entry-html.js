@@ -1,14 +1,66 @@
 // Tasks to generate entry HTML
 
-import { getUserAgentRegex } from "browserslist-useragent-regexp";
+import {
+  applyVersionsToRegexes,
+  compileRegex,
+  getPreUserAgentRegexes,
+} from "browserslist-useragent-regexp";
 import fs from "fs-extra";
 import gulp from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
-import path from "path";
+import { dirname, extname, resolve } from "node:path";
 import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
+
+// macOS companion app has no way to obtain the Safari version used by WKWebView,
+// and it is not in the default user agent string. So we add an additional regex
+// to serve modern based on a minimum macOS version. We take the minimum Safari
+// major version from browserslist and manually map that to a supported macOS
+// version. Note this assumes the user has kept Safari updated.
+const HA_MACOS_REGEX =
+  /Home Assistant\/[\d.]+ \(.+; macOS (\d+)\.(\d+)(?:\.(\d+))?\)/;
+const SAFARI_TO_MACOS = {
+  15: [10, 15, 0],
+  16: [11, 0, 0],
+  17: [12, 0, 0],
+  18: [13, 0, 0],
+};
+
+const getCommonTemplateVars = () => {
+  const browserRegexes = getPreUserAgentRegexes({
+    env: "modern",
+    allowHigherVersions: true,
+    mobileToDesktop: true,
+    throwOnMissing: true,
+  });
+  const minSafariVersion = browserRegexes.find(
+    (regex) => regex.family === "safari"
+  )?.matchedVersions[0][0];
+  const minMacOSVersion = SAFARI_TO_MACOS[minSafariVersion];
+  if (!minMacOSVersion) {
+    throw Error(
+      `Could not find minimum MacOS version for Safari ${minSafariVersion}.`
+    );
+  }
+  const haMacOSRegex = applyVersionsToRegexes(
+    [
+      {
+        family: "ha_macos",
+        regex: HA_MACOS_REGEX,
+        matchedVersions: [minMacOSVersion],
+        requestVersions: [minMacOSVersion],
+      },
+    ],
+    { ignorePatch: true, allowHigherVersions: true }
+  );
+  return {
+    useRollup: env.useRollup(),
+    useWDS: env.useWDS(),
+    modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
+  };
+};
 
 const renderTemplate = (templateFile, data = {}) => {
   const compiled = template(
@@ -16,20 +68,9 @@ const renderTemplate = (templateFile, data = {}) => {
   );
   return compiled({
     ...data,
-    useRollup: env.useRollup(),
-    useWDS: env.useWDS(),
-    modernRegex: getUserAgentRegex({
-      env: "modern",
-      allowHigherVersions: true,
-      mobileToDesktop: true,
-      throwOnMissing: true,
-    }).toString(),
     // Resolve any child/nested templates relative to the parent and pass the same data
     renderTemplate: (childTemplate) =>
-      renderTemplate(
-        path.resolve(path.dirname(templateFile), childTemplate),
-        data
-      ),
+      renderTemplate(resolve(dirname(templateFile), childTemplate), data),
   });
 };
 
@@ -63,10 +104,12 @@ const genPagesDevTask =
     publicRoot = ""
   ) =>
   async () => {
+    const commonVars = getCommonTemplateVars();
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
-        path.resolve(inputRoot, inputSub, `${page}.template`),
+        resolve(inputRoot, inputSub, `${page}.template`),
         {
+          ...commonVars,
           latestEntryJS: entries.map((entry) =>
             useWDS
               ? `http://localhost:8000/src/entrypoints/${entry}.ts`
@@ -81,7 +124,7 @@ const genPagesDevTask =
           es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
         }
       );
-      fs.outputFileSync(path.resolve(outputRoot, page), content);
+      fs.outputFileSync(resolve(outputRoot, page), content);
     }
   };
 
@@ -98,16 +141,18 @@ const genPagesProdTask =
   ) =>
   async () => {
     const latestManifest = fs.readJsonSync(
-      path.resolve(outputLatest, "manifest.json")
+      resolve(outputLatest, "manifest.json")
     );
     const es5Manifest = outputES5
-      ? fs.readJsonSync(path.resolve(outputES5, "manifest.json"))
+      ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
       : {};
+    const commonVars = getCommonTemplateVars();
     const minifiedHTML = [];
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
-        path.resolve(inputRoot, inputSub, `${page}.template`),
+        resolve(inputRoot, inputSub, `${page}.template`),
         {
+          ...commonVars,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
           es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
@@ -115,8 +160,8 @@ const genPagesProdTask =
         }
       );
       minifiedHTML.push(
-        minifyHtml(content, path.extname(page)).then((minified) =>
-          fs.outputFileSync(path.resolve(outputRoot, page), minified)
+        minifyHtml(content, extname(page)).then((minified) =>
+          fs.outputFileSync(resolve(outputRoot, page), minified)
         )
       );
     }
