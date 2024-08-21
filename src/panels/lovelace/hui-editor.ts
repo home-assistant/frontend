@@ -231,10 +231,10 @@ class LovelaceFullConfigEditor extends LitElement {
     if (!value) {
       showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_title"
+          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_title"
         ),
         text: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
+          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_text"
         ),
         confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
