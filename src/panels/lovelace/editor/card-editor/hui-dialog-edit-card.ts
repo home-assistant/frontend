@@ -37,7 +37,7 @@ import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
-import "./hui-card-element-editor";
+import "./hui-card-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
@@ -75,7 +75,7 @@ export class HuiDialogEditCard
 
   @state() private _guiModeAvailable? = true;
 
-  @query("hui-card-element-editor")
+  @query("hui-card-editor")
   private _cardEditorEl?: HuiCardElementEditor;
 
   @state() private _GUImode = true;
@@ -235,19 +235,17 @@ export class HuiDialogEditCard
         </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
-            <hui-card-element-editor
-              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
-              .sectionConfig=${this._isInSection
-                ? this._containerConfig
-                : undefined}
+            <hui-card-editor
+              .containerConfig=${this._containerConfig}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
-              .value=${this._cardConfig}
+              .config=${this._cardConfig}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
               dialogInitialFocus
-            ></hui-card-element-editor>
+            >
+            </hui-card-editor>
           </div>
           <div class="element-preview">
             ${this._isInSection
@@ -348,7 +346,7 @@ export class HuiDialogEditCard
   private _opened() {
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
-    this._cardEditorEl?.focusYamlEditor();
+    // this._cardEditorEl?.focusYamlEditor();
   }
 
   private get _isInSection() {
