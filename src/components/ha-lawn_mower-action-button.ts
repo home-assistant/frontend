@@ -28,6 +28,11 @@ const LAWN_MOWER_ACTIONS: Partial<
     service: "start_mowing",
     feature: LawnMowerEntityFeature.START_MOWING,
   },
+  returning: {
+    action: "pause",
+    service: "pause",
+    feature: LawnMowerEntityFeature.PAUSE,
+  },
   paused: {
     action: "resume_mowing",
     service: "start_mowing",
