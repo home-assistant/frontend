@@ -41,6 +41,8 @@ const actionConfigStructService = object({
       entity_id: optional(union([string(), array(string())])),
       device_id: optional(union([string(), array(string())])),
       area_id: optional(union([string(), array(string())])),
+      floor_id: optional(union([string(), array(string())])),
+      label_id: optional(union([string(), array(string())])),
     })
   ),
   confirmation: optional(actionConfigStructConfirmation),
