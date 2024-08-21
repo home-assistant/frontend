@@ -170,6 +170,7 @@
         "actions": {
           "resume_mowing": "Resume mowing",
           "start_mowing": "Start mowing",
+          "pause": "Pause",
           "dock": "Return to dock"
         }
       },
