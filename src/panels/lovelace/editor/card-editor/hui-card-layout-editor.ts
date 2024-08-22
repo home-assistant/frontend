@@ -50,7 +50,7 @@ export class HuiCardLayoutEditor extends LitElement {
     })
   );
 
-  private _gridSizeValue = memoizeOne(computeSizeOnGrid);
+  private _computeSizeOnGrid = memoizeOne(computeSizeOnGrid);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -63,7 +63,7 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
-    const sizeValue = this._gridSizeValue(options);
+    const sizeValue = this._computeSizeOnGrid(options);
 
     return html`
       <div class="header">
