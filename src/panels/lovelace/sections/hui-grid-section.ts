@@ -31,7 +31,7 @@ export const DEFAULT_GRID_OPTIONS = {
 
 type GridSizeValue = {
   rows?: number | "auto";
-  columns?: number;
+  columns?: number | "full";
 };
 
 export const computeSizeOnGrid = (
@@ -141,6 +141,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
+                    "full-width": columns === "full",
                   })}"
                 >
                   ${editMode
@@ -275,6 +276,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                 --row-gap
               )
           );
+        }
+
+        .card.full-width {
+          grid-column: 1 / -1;
         }
 
         .card:has(> *) {
