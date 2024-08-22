@@ -497,6 +497,11 @@ export class HaServiceControl extends LitElement {
                 dataField.name ||
                 dataField.key}
               >
+                ${this._renderSectionDescription(
+                  dataField,
+                  domain,
+                  serviceName
+                )}
                 ${Object.entries(dataField.fields).map(([key, field]) =>
                   this._renderField(
                     { key, ...field },
@@ -515,6 +520,22 @@ export class HaServiceControl extends LitElement {
                 targetEntities
               )
         )} `;
+  }
+
+  private _renderSectionDescription(
+    dataField: ExtHassService["fields"][number],
+    domain: string | undefined,
+    serviceName: string | undefined
+  ) {
+    const description = this.hass!.localize(
+      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+    );
+
+    if (!description) {
+      return nothing;
+    }
+
+    return html`<p>${description}</p>`;
   }
 
   private _renderField = (
