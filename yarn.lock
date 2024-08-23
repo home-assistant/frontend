@@ -6836,10 +6836,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.38.0":
-  version: 3.38.0
-  resolution: "core-js@npm:3.38.0"
-  checksum: 10/95f5c768ee14aaf79e8fece9e58023a5a6367186184c92e825a842f271d3d91c559cfadee9c75712c463f248c61d636ed5a31a1fff1c904d4f5a2ed69b23f0c2
+"core-js@npm:3.38.1":
+  version: 3.38.1
+  resolution: "core-js@npm:3.38.1"
+  checksum: 10/3c25fdf0b2595ed37ceb305213a61e2cf26185f628455e99d1c736dda5f69e2de4de7126e6a1da136f54260c4fcc982c4215e37b5a618790a597930f854c0a37
   languageName: node
   linkType: hard
 
@@ -9169,7 +9169,7 @@ __metadata:
     chart.js: "npm:4.4.3"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.1"
-    core-js: "npm:3.38.0"
+    core-js: "npm:3.38.1"
     cropperjs: "npm:1.6.2"
     date-fns: "npm:3.6.0"
     date-fns-tz: "npm:3.1.3"
@@ -9200,7 +9200,7 @@ __metadata:
     hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
     home-assistant-js-websocket: "npm:9.4.0"
     html-minifier-terser: "npm:7.2.0"
-    husky: "npm:9.1.4"
+    husky: "npm:9.1.5"
     idb-keyval: "npm:6.2.1"
     instant-mocha: "npm:1.5.2"
     intl-messageformat: "npm:10.5.14"
@@ -9473,12 +9473,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:9.1.4":
-  version: 9.1.4
-  resolution: "husky@npm:9.1.4"
+"husky@npm:9.1.5":
+  version: 9.1.5
+  resolution: "husky@npm:9.1.5"
   bin:
     husky: bin.js
-  checksum: 10/c43aa7cbf98246d4f347bc3da807049555b5003af7c6e1658c5cea44a9743b4d0683c72973a4fe02a4ccceb81031a664ecaa7a1a86efe4d37a80a0af17c988ea
+  checksum: 10/21a3036dd03141c41347693bde301c62502b4e3bffb87310e7e42b3011c2e55691af2e4a9a5f39bd94e6b1d69e3cfc26ec636d8e164e19737b26f11c556caf10
   languageName: node
   linkType: hard
 
