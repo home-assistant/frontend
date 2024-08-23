@@ -81,7 +81,8 @@ export class HaTargetSelector extends LitElement {
       return nothing;
     }
 
-    return html`${this.label}<ha-target-picker
+    return html` ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-target-picker
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
