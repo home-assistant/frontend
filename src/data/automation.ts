@@ -3,6 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
+import { ensureArray } from "../common/array/ensure-array";
 import { Context, HomeAssistant } from "../types";
 import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
@@ -60,6 +61,10 @@ export interface ContextConstraint {
   context_id?: string;
   parent_id?: string;
   user_id?: string | string[];
+}
+
+export interface TriggerList {
+  triggers: Trigger | Trigger[] | undefined;
 }
 
 export interface BaseTrigger {
@@ -371,6 +376,27 @@ export const normalizeAutomationConfig = <
   }
 
   return config;
+};
+
+export const flattenTriggers = (
+  triggers: undefined | (Trigger | TriggerList)[]
+): Trigger[] => {
+  if (!triggers) {
+    return [];
+  }
+
+  const flatTriggers: Trigger[] = [];
+
+  triggers.forEach((t) => {
+    if ("triggers" in t) {
+      if (t.triggers) {
+        flatTriggers.push(...ensureArray(t.triggers));
+      }
+    } else {
+      flatTriggers.push(t);
+    }
+  });
+  return flatTriggers;
 };
 
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
