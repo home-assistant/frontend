@@ -81,15 +81,16 @@ export class HaTargetSelector extends LitElement {
       return nothing;
     }
 
-    return html`<ha-target-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .helper=${this.helper}
-      .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterEntities}
-      .disabled=${this.disabled}
-      .createDomains=${this._createDomains}
-    ></ha-target-picker>`;
+    return html` ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-target-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .helper=${this.helper}
+        .deviceFilter=${this._filterDevices}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
+        .createDomains=${this._createDomains}
+      ></ha-target-picker>`;
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
