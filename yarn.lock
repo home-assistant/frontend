@@ -1550,12 +1550,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bundle-stats/plugin-webpack-filter@npm:4.14.1":
-  version: 4.14.1
-  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.14.1"
+"@bundle-stats/plugin-webpack-filter@npm:4.14.2":
+  version: 4.14.2
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.14.2"
   peerDependencies:
     core-js: ^3.0.0
-  checksum: 10/4d86781a9157282e71d16242e83472893dc3675715ba8b00acd53c1ac941cd761732c11ae77e38dd6a5b7a00f9aea4bac71b7741fa3ca918283e74a699528978
+  checksum: 10/5024a0babd398e66f4a973f41ee521ab756bdb3d35ea994c2a6e4bf9e6fca28715a53e1431e1acd5837debc129ea9e784509d8afafb3ba082a397caaed570225
   languageName: node
   linkType: hard
 
@@ -6386,12 +6386,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.4.3":
-  version: 4.4.3
-  resolution: "chart.js@npm:4.4.3"
+"chart.js@npm:4.4.4":
+  version: 4.4.4
+  resolution: "chart.js@npm:4.4.4"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: 10/89bc1f86844679d7f195ed077cfcf12182aecb7f23f9a34bba27c5934d6cfe2c0b7d521109a8e770df940a3668b01fcea992302f28093dfa2c8e71b835f8f37d
+  checksum: 10/77221dce07606c67686b31b14c3e8c56d71fadc93a5d754ef1f0abc870160253c31751edd9962a0f5bd929824ca69458b914b6c90c8a0c1e9a547d276e9ca9b0
   languageName: node
   linkType: hard
 
@@ -9058,7 +9058,7 @@ __metadata:
     "@babel/preset-typescript": "npm:7.24.7"
     "@babel/runtime": "npm:7.25.0"
     "@braintree/sanitize-url": "npm:7.1.0"
-    "@bundle-stats/plugin-webpack-filter": "npm:4.14.1"
+    "@bundle-stats/plugin-webpack-filter": "npm:4.14.2"
     "@codemirror/autocomplete": "npm:6.18.0"
     "@codemirror/commands": "npm:6.6.0"
     "@codemirror/language": "npm:6.10.2"
@@ -9166,7 +9166,7 @@ __metadata:
     babel-plugin-template-html-minifier: "npm:4.1.0"
     browserslist-useragent-regexp: "npm:4.1.3"
     chai: "npm:5.1.1"
-    chart.js: "npm:4.4.3"
+    chart.js: "npm:4.4.4"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.1"
     core-js: "npm:3.38.1"
@@ -9242,7 +9242,7 @@ __metadata:
     systemjs: "npm:6.15.1"
     tar: "npm:7.4.3"
     terser-webpack-plugin: "npm:5.3.10"
-    tinykeys: "npm:2.1.0"
+    tinykeys: "npm:3.0.0"
     transform-async-modules-webpack-plugin: "npm:1.1.1"
     ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
@@ -11076,12 +11076,12 @@ __metadata:
   linkType: hard
 
 "micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:~4.0.7":
-  version: 4.0.7
-  resolution: "micromatch@npm:4.0.7"
+  version: 4.0.8
+  resolution: "micromatch@npm:4.0.8"
   dependencies:
     braces: "npm:^3.0.3"
     picomatch: "npm:^2.3.1"
-  checksum: 10/a11ed1cb67dcbbe9a5fc02c4062cf8bb0157d73bf86956003af8dcfdf9b287f9e15ec0f6d6925ff6b8b5b496202335e497b01de4d95ef6cf06411bc5e5c474a0
+  checksum: 10/6bf2a01672e7965eb9941d1f02044fad2bd12486b5553dc1116ff24c09a8723157601dc992e74c911d896175918448762df3b3fd0a6b61037dd1a9766ddfbf58
   languageName: node
   linkType: hard
 
@@ -14096,10 +14096,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinykeys@npm:2.1.0":
-  version: 2.1.0
-  resolution: "tinykeys@npm:2.1.0"
-  checksum: 10/64d222e08472d1a55e42fb1f20f8c4587f7fab633cba0a23754eea3bf477044ae3160f203fd1061435352ed3df900fb49ecf83e829c090e847d7fa45f54491ad
+"tinykeys@npm:3.0.0":
+  version: 3.0.0
+  resolution: "tinykeys@npm:3.0.0"
+  checksum: 10/9ad9bfe3a45366ca77567a23018c8b24dbde4a66050c439f5aa439c66ca578102af0762ee5f7256ee4739b8c1ce64f076fcb8001f867fe842b4271d2bbe9de76
   languageName: node
   linkType: hard
 
