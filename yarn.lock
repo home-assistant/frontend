@@ -6386,12 +6386,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.4.3":
-  version: 4.4.3
-  resolution: "chart.js@npm:4.4.3"
+"chart.js@npm:4.4.4":
+  version: 4.4.4
+  resolution: "chart.js@npm:4.4.4"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: 10/89bc1f86844679d7f195ed077cfcf12182aecb7f23f9a34bba27c5934d6cfe2c0b7d521109a8e770df940a3668b01fcea992302f28093dfa2c8e71b835f8f37d
+  checksum: 10/77221dce07606c67686b31b14c3e8c56d71fadc93a5d754ef1f0abc870160253c31751edd9962a0f5bd929824ca69458b914b6c90c8a0c1e9a547d276e9ca9b0
   languageName: node
   linkType: hard
 
@@ -9166,7 +9166,7 @@ __metadata:
     babel-plugin-template-html-minifier: "npm:4.1.0"
     browserslist-useragent-regexp: "npm:4.1.3"
     chai: "npm:5.1.1"
-    chart.js: "npm:4.4.3"
+    chart.js: "npm:4.4.4"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.1"
     core-js: "npm:3.38.1"
