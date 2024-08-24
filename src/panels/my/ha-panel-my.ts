@@ -432,6 +432,9 @@ class HaPanelMy extends LitElement {
             >`,
           });
           break;
+        case "url_error":
+          error = this.hass.localize("ui.panel.my.url_error");
+          break;
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";
       }
@@ -471,6 +474,7 @@ class HaPanelMy extends LitElement {
       return true;
     }
     if (type === "url") {
+      value = value.replaceAll(" ", "%20");
       return value && value === sanitizeUrl(value);
     }
     return false;
