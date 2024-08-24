@@ -28,7 +28,7 @@ class HcLaunchScreen extends LitElement {
       :host {
         display: block;
         height: 100vh;
-        background-color: #f2f4f9;
+        background-color: var(--primary-background-color, #f2f4f9);
         font-size: 24px;
       }
       .container {
