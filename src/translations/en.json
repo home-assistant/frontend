@@ -70,6 +70,11 @@
     "backup": {
       "upload_backup": "Upload backup"
     },
+    "badge": {
+      "entity": {
+        "not_found": "[%key:ui::card::tile::not_found%]"
+      }
+    },
     "card": {
       "common": {
         "turn_on": "Turn on",
