@@ -1,6 +1,5 @@
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import "../cards/hui-button-card";
-import "../cards/hui-calendar-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-card";
