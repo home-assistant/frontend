@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { mdiAlertCircle } from "@mdi/js";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -12,6 +13,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-svg-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -129,7 +131,17 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
     if (!stateObj) {
-      return nothing;
+      return html`
+        <div class="badge error">
+          <ha-svg-icon .hass=${this.hass} .path=${mdiAlertCircle}></ha-svg-icon>
+          <span class="content">
+            <span class="name">${entityId}</span>
+            <span class="state">
+              ${this.hass.localize("ui.badge.entity.not_found")}
+            </span>
+          </span>
+        </div>
+      `;
     }
 
     const active = stateActive(stateObj);
@@ -205,6 +217,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       :host {
         --badge-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
+      }
+      .badge.error {
+        --badge-color: var(--red-color);
       }
       .badge {
         position: relative;
@@ -283,7 +298,8 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         letter-spacing: 0.1px;
         color: var(--primary-text-color);
       }
-      ha-state-icon {
+      ha-state-icon,
+      ha-svg-icon {
         color: var(--badge-color);
         line-height: 0;
       }
