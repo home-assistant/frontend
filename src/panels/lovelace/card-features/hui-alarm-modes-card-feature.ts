@@ -96,7 +96,12 @@ class HuiAlarmModeCardFeature
   }
 
   private async _setMode(mode: AlarmMode) {
-    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
+    await setProtectedAlarmControlPanelMode(
+      this,
+      this.hass!,
+      this.stateObj!,
+      mode
+    );
   }
 
   protected render(): TemplateResult | null {
