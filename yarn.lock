@@ -3325,13 +3325,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@material/web@npm:2.0.0"
+"@material/web@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@material/web@npm:2.1.0"
   dependencies:
     lit: "npm:^2.7.4 || ^3.0.0"
     tslib: "npm:^2.4.0"
-  checksum: 10/22979a902dccf456ab9555026165ef5e221822e7782981d5a65ad5238971959a3cdf301b643bf74819d3ad6426d45088ba4b1975dc21e632d6d0a933299f0c03
+  checksum: 10/9b853fafd25a3545bfcacc06a572fa696fa2aa9db6660a5527ab172304869de265b00f52a7f804f854f5f3d1cba86f84af24796f12c32bf402609182f9b223d0
   languageName: node
   linkType: hard
 
@@ -7767,15 +7767,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-wc@npm:2.1.0":
-  version: 2.1.0
-  resolution: "eslint-plugin-wc@npm:2.1.0"
+"eslint-plugin-wc@npm:2.1.1":
+  version: 2.1.1
+  resolution: "eslint-plugin-wc@npm:2.1.1"
   dependencies:
     is-valid-element-name: "npm:^1.0.0"
     js-levenshtein-esm: "npm:^1.2.0"
   peerDependencies:
     eslint: ">=5"
-  checksum: 10/d0d7e8377103282dc8836a347dde923b24075e910d85dc32767bb118d82b31a2597ad57b4eb2359ac4322e5239e6ca064c3be7ab8e82eeb6aff4684a472625a0
+  checksum: 10/230e7f6fcc41c2c47cb5d4cdea7cf58059545dc2b7405a24b7b5a97d28b4497fa4c39409e7a7d83d45a580938de9fa887edd53f368a54e03c3900e29dcd2879e
   languageName: node
   linkType: hard
 
@@ -9114,7 +9114,7 @@ __metadata:
     "@material/mwc-top-app-bar": "npm:0.27.0"
     "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
     "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
-    "@material/web": "npm:2.0.0"
+    "@material/web": "npm:2.1.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:7.1.1"
@@ -9186,7 +9186,7 @@ __metadata:
     eslint-plugin-lit: "npm:1.14.0"
     eslint-plugin-lit-a11y: "npm:4.1.4"
     eslint-plugin-unused-imports: "npm:4.1.3"
-    eslint-plugin-wc: "npm:2.1.0"
+    eslint-plugin-wc: "npm:2.1.1"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.2.0"
     fuse.js: "npm:7.0.0"
