@@ -103,9 +103,11 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
             ${VALID_CHANNELS.map(
               (newChannel) =>
                 html`<ha-list-item .value=${String(newChannel)}
-                  >${this.hass.localize(
-                    `ui.panel.config.zha.change_channel_dialog.channel_${newChannel}`
-                  )}</ha-list-item
+                  >${newChannel === "auto"
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.change_channel_dialog.channel_auto"
+                      )
+                    : newChannel}</ha-list-item
                 >`
             )}
           </ha-select>
