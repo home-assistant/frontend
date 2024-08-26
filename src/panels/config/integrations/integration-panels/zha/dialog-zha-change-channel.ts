@@ -8,10 +8,10 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-list-item";
-import "../../../../../components/hui-warning";
 import { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
@@ -71,11 +71,11 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
           this.hass.localize("ui.panel.config.zha.change_channel_dialog.title")
         )}
       >
-        <hui-warning>
+        <ha-alert alert-type="warning">
           ${this.hass.localize(
             "ui.panel.config.zha.change_channel_dialog.migration_warning"
           )}
-        </hui-warning>
+        </ha-alert>
 
         <p>
           ${this.hass.localize(
@@ -103,7 +103,9 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
             ${VALID_CHANNELS.map(
               (newChannel) =>
                 html`<ha-list-item .value=${String(newChannel)}
-                  >${this.hass.localize(`ui.panel.config.zha.change_channel_dialog.channel_${newChannel}`)}</ha-list-item
+                  >${this.hass.localize(
+                    `ui.panel.config.zha.change_channel_dialog.channel_${newChannel}`
+                  )}</ha-list-item
                 >`
             )}
           </ha-select>
