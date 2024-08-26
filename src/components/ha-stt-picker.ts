@@ -16,6 +16,7 @@ import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
+import { computeDomain } from "../common/entity/compute_domain";
 
 const NONE = "__NONE_OPTION__";
 
@@ -41,13 +42,27 @@ export class HaSTTPicker extends LitElement {
     if (!this._engines) {
       return nothing;
     }
-    const value =
-      this.value ??
-      (this.required
-        ? this._engines.find(
-            (engine) => engine.supported_languages?.length !== 0
-          )
-        : NONE);
+
+    let value = this.value;
+    if (!value && this.required) {
+      for (const entity of Object.values(this.hass.entities)) {
+        if (
+          entity.platform === "cloud" &&
+          computeDomain(entity.entity_id) === "stt"
+        ) {
+          value = entity.entity_id;
+          break;
+        }
+      }
+
+      if (!value) {
+        const sttEngine = this._engines.find(
+          (engine) => engine.supported_languages?.length !== 0
+        );
+        value = sttEngine ? sttEngine.engine_id : NONE;
+      }
+    }
+
     return html`
       <ha-select
         .label=${this.label ||

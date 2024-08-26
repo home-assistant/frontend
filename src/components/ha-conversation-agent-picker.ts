@@ -50,9 +50,9 @@ export class HaConversationAgentPicker extends LitElement {
       (this.required &&
       (!this.language ||
         this._agents
-          .find((agent) => agent.id === "homeassistant")
+          .find((agent) => agent.id === "conversation.home_assistant")
           ?.supported_languages.includes(this.language))
-        ? "homeassistant"
+        ? "conversation.home_assistant"
         : NONE);
     return html`
       <ha-select
