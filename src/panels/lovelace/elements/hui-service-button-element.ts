@@ -17,6 +17,14 @@ export class HuiServiceButtonElement
     return document.createElement("hui-service-button-element-editor");
   }
 
+  public static getStubConfig(hass: HomeAssistant): ServiceButtonElementConfig {
+    return {
+      type: "action-button",
+      action: "homeassistant.turn_on",
+      title: hass.localize("ui.card.common.turn_on"),
+    };
+  }
+
   public hass?: HomeAssistant;
 
   @state() private _config?: ServiceButtonElementConfig;

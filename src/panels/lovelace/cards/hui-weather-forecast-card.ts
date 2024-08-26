@@ -433,6 +433,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return {
         grid_columns: 4,
         grid_min_columns: 2,
+        grid_rows: 4,
+        grid_min_rows: 4,
+      };
+    }
+    if (this._config?.show_forecast !== false) {
+      return {
+        grid_columns: 4,
+        grid_min_columns: 2,
         grid_rows: 3,
         grid_min_rows: 3,
       };
@@ -441,7 +449,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       grid_columns: 4,
       grid_min_columns: 2,
       grid_rows: 2,
-      grid_min_rows: 1,
+      grid_min_rows: 2,
     };
   }
 

@@ -81,6 +81,9 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ type: Boolean, attribute: "allow-name" }) public allowName =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -95,43 +98,55 @@ class HaEntityStatePicker extends LitElement {
     return !(!changedProps.has("_opened") && this._opened);
   }
 
-  private options = memoizeOne((entityId?: string, stateObj?: HassEntity) => {
-    const domain = entityId ? computeDomain(entityId) : undefined;
-    return [
-      {
-        label: this.hass.localize("ui.components.state-content-picker.state"),
-        value: "state",
-      },
-      {
-        label: this.hass.localize(
-          "ui.components.state-content-picker.last_changed"
-        ),
-        value: "last_changed",
-      },
-      {
-        label: this.hass.localize(
-          "ui.components.state-content-picker.last_updated"
-        ),
-        value: "last_updated",
-      },
-      ...(domain
-        ? STATE_DISPLAY_SPECIAL_CONTENT.filter((content) =>
-            STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain]?.includes(content)
-          ).map((content) => ({
-            label: this.hass.localize(
-              `ui.components.state-content-picker.${content}`
-            ),
-            value: content,
-          }))
-        : []),
-      ...Object.keys(stateObj?.attributes ?? {})
-        .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
-        .map((attribute) => ({
-          value: attribute,
-          label: this.hass.formatEntityAttributeName(stateObj!, attribute),
-        })),
-    ];
-  });
+  private options = memoizeOne(
+    (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
+      const domain = entityId ? computeDomain(entityId) : undefined;
+      return [
+        {
+          label: this.hass.localize("ui.components.state-content-picker.state"),
+          value: "state",
+        },
+        ...(allowName
+          ? [
+              {
+                label: this.hass.localize(
+                  "ui.components.state-content-picker.name"
+                ),
+                value: "name",
+              },
+            ]
+          : []),
+        {
+          label: this.hass.localize(
+            "ui.components.state-content-picker.last_changed"
+          ),
+          value: "last_changed",
+        },
+        {
+          label: this.hass.localize(
+            "ui.components.state-content-picker.last_updated"
+          ),
+          value: "last_updated",
+        },
+        ...(domain
+          ? STATE_DISPLAY_SPECIAL_CONTENT.filter((content) =>
+              STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain]?.includes(content)
+            ).map((content) => ({
+              label: this.hass.localize(
+                `ui.components.state-content-picker.${content}`
+              ),
+              value: content,
+            }))
+          : []),
+        ...Object.keys(stateObj?.attributes ?? {})
+          .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
+          .map((attribute) => ({
+            value: attribute,
+            label: this.hass.formatEntityAttributeName(stateObj!, attribute),
+          })),
+      ];
+    }
+  );
 
   private _filter = "";
 
@@ -146,7 +161,7 @@ class HaEntityStatePicker extends LitElement {
       ? this.hass.states[this.entityId]
       : undefined;
 
-    const options = this.options(this.entityId, stateObj);
+    const options = this.options(this.entityId, stateObj, this.allowName);
     const optionItems = options.filter(
       (option) => !this._value.includes(option.value)
     );

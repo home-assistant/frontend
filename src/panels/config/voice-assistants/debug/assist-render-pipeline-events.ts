@@ -38,7 +38,7 @@ export class AssistPipelineEvents extends LitElement {
           </ha-card>`;
       }
       return html`<ha-alert alert-type="warning"
-        >There where no events in this run.</ha-alert
+        >There were no events in this run.</ha-alert
       >`;
     }
     return html`

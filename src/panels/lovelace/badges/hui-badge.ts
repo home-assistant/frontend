@@ -57,9 +57,6 @@ export class HuiBadge extends ReactiveElement {
   }
 
   private _updateElement(config: LovelaceBadgeConfig) {
-    if (config.type === "state-label") {
-      config = { ...config, type: "entity" };
-    }
     if (!this._element) {
       return;
     }
@@ -69,9 +66,6 @@ export class HuiBadge extends ReactiveElement {
   }
 
   private _loadElement(config: LovelaceBadgeConfig) {
-    if (config.type === "state-label") {
-      config = { ...config, type: "entity" };
-    }
     this._element = createBadgeElement(config);
     this._elementConfig = config;
     if (this.hass) {

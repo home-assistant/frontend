@@ -226,8 +226,15 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass) {
       return;
     }
+    let action = this.config?.action;
+
+    if (action === "call-service") {
+      action = "perform-action";
+    }
+
     const value = ev.target.value;
-    if (this.config?.action === value) {
+
+    if (action === value) {
       return;
     }
     if (value === "default") {
@@ -292,7 +299,8 @@ export class HuiActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...this.config!,
-      perform_action: ev.detail.value.service || "",
+      action: "perform-action",
+      perform_action: ev.detail.value.action || "",
       data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };

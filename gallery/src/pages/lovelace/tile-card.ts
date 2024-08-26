@@ -8,6 +8,7 @@ import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
+import { ClimateEntityFeature } from "../../../../src/data/climate";
 
 const ENTITIES = [
   getEntity("switch", "tv_outlet", "on", {
@@ -59,6 +60,36 @@ const ENTITIES = [
       CoverEntityFeature.CLOSE_TILT +
       CoverEntityFeature.OPEN_TILT +
       CoverEntityFeature.STOP_TILT,
+  }),
+  getEntity("input_number", "counter", "1.0", {
+    friendly_name: "Counter",
+    initial: 0,
+    min: 0,
+    max: 100,
+    step: 1,
+    mode: "slider",
+  }),
+  getEntity("climate", "dual_thermostat", "heat/cool", {
+    friendly_name: "Dual thermostat",
+    hvac_modes: ["off", "cool", "heat_cool", "auto", "dry", "fan_only"],
+    min_temp: 7,
+    max_temp: 35,
+    fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
+    preset_modes: ["home", "eco", "away"],
+    swing_modes: ["auto", "1", "2", "3", "off"],
+    current_temperature: 23,
+    target_temp_high: 24,
+    target_temp_low: 21,
+    fan_mode: "auto_low",
+    preset_mode: "home",
+    swing_mode: "auto",
+    supported_features:
+      ClimateEntityFeature.TURN_ON +
+      ClimateEntityFeature.TURN_OFF +
+      ClimateEntityFeature.SWING_MODE +
+      ClimateEntityFeature.PRESET_MODE +
+      ClimateEntityFeature.FAN_MODE +
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
   }),
 ];
 
@@ -191,6 +222,25 @@ const CONFIGS = [
   entity: cover.pergola_roof
   features:
   - type: "cover-tilt"
+    `,
+  },
+  {
+    heading: "Number buttons feature",
+    config: `
+- type: tile
+  entity: input_number.counter
+  features:
+  - type: numeric-input
+    style: buttons
+    `,
+  },
+  {
+    heading: "Dual thermostat feature",
+    config: `
+- type: tile
+  entity: climate.dual_thermostat
+  features:
+  - type: target-temperature
     `,
   },
 ];

@@ -70,9 +70,6 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
         margin-inline-end: -0.57em;
         margin-inline-start: initial;
       }
-      :host {
-        cursor: pointer;
-      }
     `;
   }
 

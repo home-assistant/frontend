@@ -109,6 +109,11 @@ export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
 export interface LovelaceElementConstructor
   extends Constructor<LovelaceElement> {
   getConfigElement?: () => LovelacePictureElementEditor;
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceElementConfig;
 }
 
 export interface LovelaceHeaderFooter extends HTMLElement {

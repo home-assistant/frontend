@@ -123,13 +123,10 @@ export class DialogHelperDetail extends LitElement {
     this._opened = true;
     await this.updateComplete;
     this.hass.loadFragmentTranslation("config");
-    Promise.all([
-      getConfigFlowHandlers(this.hass, ["helper"]),
-      // Ensure the titles are loaded before we render the flows.
-      this.hass.loadBackendTranslation("title", undefined, true),
-    ]).then(([flows]) => {
-      this._helperFlows = flows;
-    });
+    const flows = await getConfigFlowHandlers(this.hass, ["helper"]);
+    await this.hass.loadBackendTranslation("title", flows, true);
+    // Ensure the titles are loaded before we render the flows.
+    this._helperFlows = flows;
   }
 
   public closeDialog(): void {

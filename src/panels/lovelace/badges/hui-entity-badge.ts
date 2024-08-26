@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { mdiAlertCircle } from "@mdi/js";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -12,6 +13,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-svg-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -129,7 +131,17 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
     if (!stateObj) {
-      return nothing;
+      return html`
+        <div class="badge error">
+          <ha-svg-icon .hass=${this.hass} .path=${mdiAlertCircle}></ha-svg-icon>
+          <span class="content">
+            <span class="name">${entityId}</span>
+            <span class="state">
+              ${this.hass.localize("ui.badge.entity.not_found")}
+            </span>
+          </span>
+        </div>
+      `;
     }
 
     const active = stateActive(stateObj);
@@ -144,6 +156,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         .stateObj=${stateObj}
         .hass=${this.hass}
         .content=${this._config.state_content}
+        .name=${this._config.name}
       >
       </state-display>
     `;
@@ -205,6 +218,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         --badge-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
+      .badge.error {
+        --badge-color: var(--red-color);
+      }
       .badge {
         position: relative;
         --ha-ripple-color: var(--badge-color);
@@ -224,8 +240,14 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         box-sizing: border-box;
         width: auto;
         border-radius: 18px;
-        background-color: var(--card-background-color, white);
+        background: var(
+          --ha-card-background,
+          var(--card-background-color, white)
+        );
+        -webkit-backdrop-filter: var(--ha-card-backdrop-filter, none);
+        backdrop-filter: var(--ha-card-backdrop-filter, none);
         border-width: var(--ha-card-border-width, 1px);
+        box-shadow: var(--ha-card-box-shadow, none);
         border-style: solid;
         border-color: var(
           --ha-card-border-color,
@@ -276,7 +298,8 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         letter-spacing: 0.1px;
         color: var(--primary-text-color);
       }
-      ha-state-icon {
+      ha-state-icon,
+      ha-svg-icon {
         color: var(--badge-color);
         line-height: 0;
       }

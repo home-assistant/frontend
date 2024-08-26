@@ -349,7 +349,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       },
       actions: {
         title: "",
-        label: "Actions",
+        label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
         hideable: false,
         moveable: false,

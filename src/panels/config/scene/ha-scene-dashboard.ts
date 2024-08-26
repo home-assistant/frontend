@@ -311,6 +311,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         only_editable: {
           title: "",
+          label: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.editable"
+          ),
           type: "icon",
           showNarrow: true,
           template: (scene) =>
@@ -330,6 +333,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         actions: {
           title: "",
+          label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
           moveable: false,

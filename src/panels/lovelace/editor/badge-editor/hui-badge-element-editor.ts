@@ -1,3 +1,5 @@
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
 import { css, CSSResultGroup, html, nothing, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";

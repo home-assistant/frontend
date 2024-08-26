@@ -1,5 +1,5 @@
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import { CSSResultGroup, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";

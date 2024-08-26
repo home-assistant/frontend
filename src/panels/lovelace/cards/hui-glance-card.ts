@@ -28,7 +28,7 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-timestamp-display";
@@ -263,15 +263,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     const name = entityConf.name ?? computeStateName(stateObj);
 
-    const hasAnyAction =
-      !entityConf.tap_action ||
-      hasAction(entityConf.tap_action) ||
-      hasAction(entityConf.hold_action) ||
-      hasAction(entityConf.double_tap_action);
-
     return html`
       <div
-        class=${classMap({ entity: true, action: hasAnyAction })}
+        class=${classMap({ entity: true, action: hasAnyAction(entityConf) })}
         .config=${entityConf}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

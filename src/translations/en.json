@@ -7,7 +7,6 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "mailbox": "Mailbox",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
@@ -70,6 +69,11 @@
   "ui": {
     "backup": {
       "upload_backup": "Upload backup"
+    },
+    "badge": {
+      "entity": {
+        "not_found": "[%key:ui::card::tile::not_found%]"
+      }
     },
     "card": {
       "common": {
@@ -171,6 +175,7 @@
         "actions": {
           "resume_mowing": "Resume mowing",
           "start_mowing": "Start mowing",
+          "pause": "Pause",
           "dock": "Return to dock"
         }
       },
@@ -1026,6 +1031,7 @@
       },
       "state-content-picker": {
         "state": "State",
+        "name": "Name",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
@@ -3743,6 +3749,7 @@
               "name": "Name",
               "last_activated": "Last activated",
               "category": "Category",
+              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
               "icon": "Icon"
             },
@@ -5490,8 +5497,8 @@
             "saved": "Saved",
             "reload": "Reload",
             "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
-            "confirm_remove_config_title": "Are you sure you want to remove your dashboard configuration?",
-            "confirm_remove_config_text": "We will automatically generate your dashboard views with your areas and devices if you remove your dashboard configuration.",
+            "confirm_delete_config_title": "Delete dashboard configuration?",
+            "confirm_delete_config_text": "This dashboard will be permanently deleted. The dashboard will be automatically regenerated to display your areas, devices and entities.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
@@ -5625,6 +5632,7 @@
           },
           "section": {
             "unnamed_section": "Unnamed section",
+            "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section"
           },
@@ -6323,7 +6331,8 @@
               "footer": "Footer editor",
               "row": "Entity row editor",
               "feature": "Feature editor",
-              "element": "Element editor"
+              "element": "Element editor",
+              "element_type": "{type} element editor"
             }
           }
         },
@@ -6350,12 +6359,6 @@
           }
         },
         "reload_lovelace": "Reload UI"
-      },
-      "mailbox": {
-        "empty": "You do not have any messages",
-        "playback_title": "Message playback",
-        "delete_prompt": "Delete this message?",
-        "delete_button": "Delete"
       },
       "media-browser": {
         "error": {
@@ -6853,6 +6856,7 @@
             "title": "Template",
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
+            "result": "Result",
             "reset": "Reset to demo template",
             "confirm_reset": "Do you want to reset your current template back to the demo template?",
             "confirm_clear": "Do you want to clear your current template?",

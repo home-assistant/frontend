@@ -122,7 +122,9 @@ export class HuiEntityBadgeEditor
             {
               name: "state_content",
               selector: {
-                ui_state_content: {},
+                ui_state_content: {
+                  allow_name: true,
+                },
               },
               context: {
                 filter_entity: "entity",

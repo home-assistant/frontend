@@ -217,6 +217,7 @@ export class HaWebhookTrigger extends LitElement {
     ha-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
+      color: var(--secondary-text-color);
     }
 
     ha-button-menu {

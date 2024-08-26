@@ -198,6 +198,7 @@ class HaBlueprintOverview extends LitElement {
       },
       actions: {
         title: "",
+        label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
         showNarrow: true,
         moveable: false,

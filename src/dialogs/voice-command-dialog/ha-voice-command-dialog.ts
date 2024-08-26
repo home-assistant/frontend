@@ -101,10 +101,12 @@ export class HaVoiceCommandDialog extends LitElement {
 
     const controlHA = !this._pipeline
       ? false
-      : supportsFeature(
-          this.hass.states[this._pipeline?.conversation_engine],
-          ConversationEntityFeature.CONTROL
-        );
+      : this.hass.states[this._pipeline?.conversation_engine]
+        ? supportsFeature(
+            this.hass.states[this._pipeline?.conversation_engine],
+            ConversationEntityFeature.CONTROL
+          )
+        : true;
 
     return html`
       <ha-dialog

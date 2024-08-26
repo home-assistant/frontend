@@ -53,9 +53,19 @@ export class HuiSubElementEditor extends LitElement {
             @click=${this._goBack}
           ></ha-icon-button-prev>
           <span slot="title"
-            >${this.hass.localize(
-              `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
-            )}</span
+            >${this.config?.type === "element"
+              ? this.hass.localize(
+                  `ui.panel.lovelace.editor.sub-element-editor.types.element_type`,
+                  {
+                    type:
+                      this.hass.localize(
+                        `ui.panel.lovelace.editor.card.picture-elements.element_types.${this.config?.elementConfig?.type}`
+                      ) || this.config?.elementConfig?.type,
+                  }
+                )
+              : this.hass.localize(
+                  `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
+                )}</span
           >
         </div>
         <ha-icon-button
