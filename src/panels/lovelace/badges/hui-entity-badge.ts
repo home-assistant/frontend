@@ -162,9 +162,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       return html`
         <div class="badge error">
           <ha-svg-icon .hass=${this.hass} .path=${mdiAlertCircle}></ha-svg-icon>
-          <span class="content">
-            <span class="name">${entityId}</span>
-            <span class="state">
+          <span class="info">
+            <span class="label">${entityId}</span>
+            <span class="content">
               ${this.hass.localize("ui.badge.entity.not_found")}
             </span>
           </span>
