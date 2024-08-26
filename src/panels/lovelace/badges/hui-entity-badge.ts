@@ -222,7 +222,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         <ha-ripple .disabled=${!this.hasAction}></ha-ripple>
         ${showIcon
           ? imageUrl
-            ? html`<img src=${this._getImageUrl(stateObj)} aria-hidden />`
+            ? html`<img src=${imageUrl} aria-hidden />`
             : html`
                 <ha-state-icon
                   .hass=${this.hass}
