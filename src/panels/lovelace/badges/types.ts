@@ -3,6 +3,7 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition } from "../common/validate-condition";
 import type { EntityFilterEntityConfig } from "../entity-rows/types";
+import type { DisplayType } from "./hui-entity-badge";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
   type: "entity-filter";
@@ -33,10 +34,16 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   name?: string;
   icon?: string;
   color?: string;
+  show_name?: boolean;
+  show_state?: boolean;
+  show_icon?: boolean;
   show_entity_picture?: boolean;
-  display_type?: "minimal" | "standard" | "complete";
   state_content?: string | string[];
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  /**
+   * @deprecated use `show_state`, `show_name`, `icon_type`
+   */
+  display_type?: DisplayType;
 }
