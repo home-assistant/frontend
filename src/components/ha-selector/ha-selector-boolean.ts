@@ -1,14 +1,18 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { BooleanSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
+import "../ha-checkbox";
 import "../ha-formfield";
-import "../ha-switch";
 import "../ha-input-helper-text";
+import "../ha-switch";
 
 @customElement("ha-selector-boolean")
 export class HaBooleanSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public selector!: BooleanSelector;
 
   @property({ type: Boolean }) public value = false;
 
@@ -21,13 +25,24 @@ export class HaBooleanSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
+    const checkbox = this.selector.boolean?.mode === "checkbox";
     return html`
-      <ha-formfield alignEnd spaceBetween .label=${this.label}>
-        <ha-switch
-          .checked=${this.value ?? this.placeholder === true}
-          @change=${this._handleChange}
-          .disabled=${this.disabled}
-        ></ha-switch>
+      <ha-formfield .alignEnd=${!checkbox} spaceBetween .label=${this.label}>
+        ${checkbox
+          ? html`
+              <ha-checkbox
+                .checked=${this.value ?? this.placeholder === true}
+                @change=${this._handleChange}
+                .disabled=${this.disabled}
+              ></ha-checkbox>
+            `
+          : html`
+              <ha-switch
+                .checked=${this.value ?? this.placeholder === true}
+                @change=${this._handleChange}
+                .disabled=${this.disabled}
+              ></ha-switch>
+            `}
       </ha-formfield>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`

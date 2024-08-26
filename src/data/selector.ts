@@ -101,8 +101,9 @@ export interface AttributeSelector {
 }
 
 export interface BooleanSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  boolean: {} | null;
+  boolean: {
+    mode?: "checkbox" | "switch";
+  } | null;
 }
 
 export interface ColorRGBSelector {
