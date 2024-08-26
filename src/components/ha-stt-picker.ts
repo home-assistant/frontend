@@ -56,11 +56,16 @@ export class HaSTTPicker extends LitElement {
       }
 
       if (!value) {
-        const sttEngine = this._engines.find(
-          (engine) => engine.supported_languages?.length !== 0
-        );
-        value = sttEngine ? sttEngine.engine_id : NONE;
+        for (const sttEngine of this._engines) {
+          if (sttEngine?.supported_languages?.length !== 0) {
+            value = sttEngine.engine_id;
+            break;
+          }
+        }
       }
+    }
+    if (!value) {
+      value = NONE;
     }
 
     return html`

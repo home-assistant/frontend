@@ -59,11 +59,16 @@ export class HaTTSPicker extends LitElement {
       }
 
       if (!value) {
-        const sttEngine = this._engines.find(
-          (engine) => engine.supported_languages?.length !== 0
-        );
-        value = sttEngine ? sttEngine.engine_id : NONE;
+        for (const ttsEngine of this._engines) {
+          if (ttsEngine?.supported_languages?.length !== 0) {
+            value = ttsEngine.engine_id;
+            break;
+          }
+        }
       }
+    }
+    if (!value) {
+      value = NONE;
     }
 
     return html`
