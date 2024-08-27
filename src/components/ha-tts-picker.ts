@@ -92,7 +92,7 @@ export class HaTTSPicker extends LitElement {
             const stateObj = this.hass!.states[engine.engine_id];
             label = stateObj ? computeStateName(stateObj) : engine.engine_id;
           } else {
-            label = engine.engine_id || engine.engine_id;
+            label = engine.name || engine.engine_id;
           }
           return html`<ha-list-item
             .value=${engine.engine_id}
