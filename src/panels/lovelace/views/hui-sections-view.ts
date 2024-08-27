@@ -71,7 +71,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
       );
       const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-      return Math.min(maxColumns, columns);
+      return Math.max(Math.min(maxColumns, columns), 1);
     },
   });
 
@@ -163,7 +163,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               );
 
               (section as any).itemPath = [idx];
-              (section as any).columnSpan = columnSpan;
 
               return html`
                 <div
