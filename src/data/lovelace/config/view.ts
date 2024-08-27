@@ -26,6 +26,7 @@ export interface LovelaceBaseViewConfig {
   max_columns?: number;
   dense_section_placement?: boolean;
   column_breakpoints?: Record<string, number>;
+  experimental_breakpoints?: boolean;
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {

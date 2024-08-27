@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -27,11 +28,8 @@ import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 
 export const DEFAULT_MAX_COLUMNS = 4;
-
-const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
 type Breakpoints = Record<string, number>;
 
@@ -53,6 +51,8 @@ const buildMediaQueries = (breakpoints: Breakpoints) =>
     }
     return mediaQuery;
   });
+
+const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -100,7 +100,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _listeners: Array<() => void> = [];
 
-  @state() private _columns: number = 1;
+  @state() private _breakpointsColumns: number = 1;
+
+  private get _sizeColumns() {
+    return this._columnsController.value ?? 1;
+  }
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
@@ -129,14 +133,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _attachMediaQueriesListeners() {
     this._detachMediaQueriesListeners();
+    if (!this._config?.experimental_breakpoints) return;
     const breakpoints = this._config?.column_breakpoints ?? DEFAULT_BREAKPOINTS;
-    const maxColumns = this._config?.max_columns ?? 4;
+    const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
     const mediaQueries = buildMediaQueries(breakpoints);
     this._listeners = mediaQueries.map((mediaQuery, index) =>
       listenMediaQuery(mediaQuery, (matches) => {
         if (matches) {
           const columns = Object.values(breakpoints)[index];
-          this._columns = Math.min(maxColumns, columns);
+          this._breakpointsColumns = Math.min(maxColumns, columns);
         }
       })
     );
@@ -180,7 +185,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const maxColumnCount = this._columnsController.value ?? 1;
+    const maxColumnCount = this._config?.experimental_breakpoints
+      ? this._breakpointsColumns
+      : this._sizeColumns;
 
     return html`
       <hui-view-badges
@@ -374,6 +381,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --column-gap: var(--ha-view-sections-column-gap, 24px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
+        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         display: block;
       }
 
