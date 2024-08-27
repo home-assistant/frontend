@@ -4698,9 +4698,12 @@
             "title": "Change network channel",
             "new_channel": "New channel",
             "change_channel": "Change channel",
-            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating! It may take up to an hour for changes to propagate to all devices.",
+            "description": "Change your Zigbee channel only after you have eliminated all other sources of 2.4GHz interference by using a USB extension cable and moving your coordinator away from USB 3.0 devices and ports, SSDs, 2.4GHz WiFi networks on the same channel, motherboards, and so on.",
+            "smart_explanation": "It is recommended to use the \"Smart\" option once your environment is optimized as opposed to manually choosing a channel, as it picks the best channel for you after scanning all Zigbee channels. This does not configure ZHA to automatically change channels in the future, it only changes the channel a single time.",
             "channel_has_been_changed": "Network channel has been changed",
-            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
+            "channel_auto": "Smart"
           }
         },
         "zwave_js": {
