@@ -49,13 +49,15 @@ export interface FlowConfig {
   renderShowFormStepFieldLabel(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    field: HaFormSchema
+    field: HaFormSchema,
+    options: { prefix?: string[]; [key: string]: any }
   ): string;
 
   renderShowFormStepFieldHelper(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    field: HaFormSchema
+    field: HaFormSchema,
+    options: { prefix?: string[]; [key: string]: any }
   ): TemplateResult | string;
 
   renderShowFormStepFieldError(

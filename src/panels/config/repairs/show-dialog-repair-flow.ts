@@ -96,20 +96,20 @@ export const showRepairsFlowDialog = (
           : "";
       },
 
-      renderShowFormStepFieldLabel(hass, step, field) {
+      renderShowFormStepFieldLabel(hass, step, field, options) {
         return hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.data.${field.name}`,
+          }.fix_flow.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data.${field.name}`,
           step.description_placeholders
         );
       },
 
-      renderShowFormStepFieldHelper(hass, step, field) {
+      renderShowFormStepFieldHelper(hass, step, field, options) {
         const description = hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.data_description.${field.name}`,
+          }.fix_flow.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data_description.${field.name}`,
           step.description_placeholders
         );
         return description

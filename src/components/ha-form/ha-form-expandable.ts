@@ -21,17 +21,44 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
-    data?: HaFormDataContainer
+    data?: HaFormDataContainer,
+    options?: { prefix?: string[] }
   ) => string;
 
   @property({ attribute: false }) public computeHelper?: (
-    schema: HaFormSchema
+    schema: HaFormSchema,
+    options?: { prefix?: string[] }
   ) => string;
 
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
     return description ? html`<p>${description}</p>` : nothing;
   }
+
+  private _computeLabel = (
+    schema: HaFormSchema,
+    data?: HaFormDataContainer,
+    options?: { prefix?: string[] }
+  ) => {
+    if (!this.computeLabel) return this.computeLabel;
+
+    return this.computeLabel(schema, data, {
+      ...options,
+      prefix: [...(options?.prefix || []), this.schema.name],
+    });
+  };
+
+  private _computeHelper = (
+    schema: HaFormSchema,
+    options?: { prefix?: string[] }
+  ) => {
+    if (!this.computeHelper) return this.computeHelper;
+
+    return this.computeHelper(schema, {
+      ...options,
+      prefix: [...(options?.prefix || []), this.schema.name],
+    });
+  };
 
   protected render() {
     return html`
@@ -57,8 +84,8 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
             .data=${this.data}
             .schema=${this.schema.schema}
             .disabled=${this.disabled}
-            .computeLabel=${this.computeLabel}
-            .computeHelper=${this.computeHelper}
+            .computeLabel=${this._computeLabel}
+            .computeHelper=${this._computeHelper}
           ></ha-form>
         </div>
       </ha-expansion-panel>
