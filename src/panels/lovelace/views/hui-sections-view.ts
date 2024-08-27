@@ -29,9 +29,9 @@ import { showEditSectionDialog } from "../editor/section-editor/show-edit-sectio
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
-export const DEFAULT_MAX_COLUMNS = 4;
-
 type Breakpoints = Record<string, number>;
+
+export const DEFAULT_MAX_COLUMNS = 4;
 
 export const DEFAULT_BREAKPOINTS: Breakpoints = {
   "0": 1,
@@ -74,8 +74,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() _dragging = false;
 
+  private _listeners: Array<() => void> = [];
+
+  @state() private _breakpointsColumns: number = 1;
+
   private _columnsController = new ResizeController(this, {
     callback: (entries) => {
+      // Don't do anything if we are using breakpoints
+      if (this._config?.experimental_breakpoints) return 1;
+
       const totalWidth = entries[0]?.contentRect.width;
 
       const style = getComputedStyle(this);
@@ -97,10 +104,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       return Math.max(Math.min(maxColumns, columns), 1);
     },
   });
-
-  private _listeners: Array<() => void> = [];
-
-  @state() private _breakpointsColumns: number = 1;
 
   private get _sizeColumns() {
     return this._columnsController.value ?? 1;
