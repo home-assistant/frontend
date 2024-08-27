@@ -23,7 +23,8 @@ export interface LovelaceBaseViewConfig {
   subview?: boolean;
   back_path?: string;
   max_columns?: number; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
-  column_breakpoints?: Record<string, number>; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
+  column_breakpoints?: Record<string, number>; // Only used for section view, it should move to a section view config type when the views will have dedicated editor. It's an experimental feature and can be removed at any time.
+  experimental_breakpoints?: boolean; // Only used for section view. It's an experimental feature and can be removed at any time.
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
