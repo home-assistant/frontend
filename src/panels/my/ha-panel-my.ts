@@ -474,7 +474,6 @@ class HaPanelMy extends LitElement {
       return true;
     }
     if (type === "url") {
-      value = value.replaceAll(" ", "%20");
       return value && value === sanitizeUrl(value);
     }
     return false;
