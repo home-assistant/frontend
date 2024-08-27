@@ -20,11 +20,6 @@ import { computeDomain } from "../common/entity/compute_domain";
 
 const NONE = "__NONE_OPTION__";
 
-const NAME_MAP = {
-  cloud: "Home Assistant Cloud",
-  google_translate: "Google Translate",
-};
-
 @customElement("ha-tts-picker")
 export class HaTTSPicker extends LitElement {
   @property() public value?: string;
@@ -89,12 +84,15 @@ export class HaTTSPicker extends LitElement {
             </ha-list-item>`
           : nothing}
         ${this._engines.map((engine) => {
-          let label = engine.engine_id;
+          if (engine.deprecated && engine.engine_id !== value) {
+            return nothing;
+          }
+          let label: string;
           if (engine.engine_id.includes(".")) {
             const stateObj = this.hass!.states[engine.engine_id];
             label = stateObj ? computeStateName(stateObj) : engine.engine_id;
-          } else if (engine.engine_id in NAME_MAP) {
-            label = NAME_MAP[engine.engine_id];
+          } else {
+            label = engine.name || engine.engine_id;
           }
           return html`<ha-list-item
             .value=${engine.engine_id}
