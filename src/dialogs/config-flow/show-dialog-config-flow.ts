@@ -77,8 +77,10 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field) {
-      return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.data.${field.name}`
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.data.${field.name}`
+        ) || field.name
       );
     },
 
