@@ -14,8 +14,8 @@ import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceLayoutOptions } from "../types";
-import { conditionalClamp } from "../../../common/number/clamp";
+import type { Lovelace } from "../types";
+import { computeCardGridSize } from "../common/compute-card-grid-size";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -23,40 +23,6 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   direction: "vertical",
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
-
-export const DEFAULT_GRID_OPTIONS = {
-  grid_columns: 4,
-  grid_rows: "auto",
-} as const satisfies LovelaceLayoutOptions;
-
-type GridSizeValue = {
-  rows?: number | "auto";
-  columns?: number | "full";
-};
-
-export const computeSizeOnGrid = (
-  options: LovelaceLayoutOptions
-): GridSizeValue => {
-  const rows = options.grid_rows ?? DEFAULT_GRID_OPTIONS.grid_rows;
-  const columns = options.grid_columns ?? DEFAULT_GRID_OPTIONS.grid_columns;
-  const minRows = options.grid_min_rows;
-  const maxRows = options.grid_max_rows;
-  const minColumns = options.grid_min_columns;
-  const maxColumns = options.grid_max_columns;
-
-  const clampedRows =
-    typeof rows === "string" ? rows : conditionalClamp(rows, minRows, maxRows);
-
-  const clampedColumns =
-    typeof columns === "string"
-      ? columns
-      : conditionalClamp(columns, minColumns, maxColumns);
-
-  return {
-    rows: clampedRows,
-    columns: clampedColumns,
-  };
-};
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -131,7 +97,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               card.layout = "grid";
               const layoutOptions = card.getLayoutOptions();
 
-              const { rows, columns } = computeSizeOnGrid(layoutOptions);
+              const { rows, columns } = computeCardGridSize(layoutOptions);
 
               return html`
                 <div

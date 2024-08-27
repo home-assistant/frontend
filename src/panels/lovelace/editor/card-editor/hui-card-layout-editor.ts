@@ -21,7 +21,10 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
-import { computeSizeOnGrid } from "../../sections/hui-grid-section";
+import {
+  CardGridSize,
+  computeCardGridSize,
+} from "../../common/compute-card-grid-size";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
@@ -50,7 +53,7 @@ export class HuiCardLayoutEditor extends LitElement {
     })
   );
 
-  private _computeSizeOnGrid = memoizeOne(computeSizeOnGrid);
+  private _computeCardGridSize = memoizeOne(computeCardGridSize);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -63,7 +66,7 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
-    const sizeValue = this._computeSizeOnGrid(options);
+    const value = this._computeCardGridSize(options);
 
     return html`
       <div class="header">
@@ -128,7 +131,7 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               .hass=${this.hass}
-              .value=${sizeValue}
+              .value=${value}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
               .rowMin=${options.grid_min_rows}
@@ -195,7 +198,7 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _gridSizeChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const value = ev.detail.value;
+    const value = ev.detail.value as CardGridSize;
 
     const newConfig: LovelaceCardConfig = {
       ...this.config,
