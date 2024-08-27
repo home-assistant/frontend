@@ -11,7 +11,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -28,28 +27,7 @@ import { showEditSectionDialog } from "../editor/section-editor/show-edit-sectio
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
-type Breakpoints = Record<string, number>;
-
 export const DEFAULT_MAX_COLUMNS = 4;
-
-export const DEFAULT_BREAKPOINTS: Breakpoints = {
-  "0": 1,
-  "768": 2,
-  "1280": 3,
-  "1600": 4,
-  "1920": 5,
-  "2560": 6,
-};
-
-const buildMediaQueries = (breakpoints: Breakpoints) =>
-  Object.keys(breakpoints).map((breakpoint, index, array) => {
-    const nextBreakpoint = array[index + 1] as string | undefined;
-    let mediaQuery = `(min-width: ${breakpoint}px)`;
-    if (nextBreakpoint) {
-      mediaQuery += ` and (max-width: ${parseInt(nextBreakpoint) - 1}px)`;
-    }
-    return mediaQuery;
-  });
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
@@ -73,15 +51,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() _dragging = false;
 
-  private _listeners: Array<() => void> = [];
-
-  @state() private _breakpointsColumns: number = 1;
-
   private _columnsController = new ResizeController(this, {
     callback: (entries) => {
-      // Don't do anything if we are using breakpoints
-      if (this._config?.experimental_breakpoints) return 1;
-
       const totalWidth = entries[0]?.contentRect.width;
 
       const style = getComputedStyle(this);
@@ -104,13 +75,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     },
   });
 
-  private get _sizeColumns() {
-    return this._columnsController.value ?? 1;
-  }
-
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
-    this._attachMediaQueriesListeners();
   }
 
   private _sectionConfigKeys = new WeakMap<HuiSection, string>();
@@ -132,35 +98,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this._computeSectionsCount();
   };
 
-  private _attachMediaQueriesListeners() {
-    this._detachMediaQueriesListeners();
-    if (!this._config?.experimental_breakpoints) return;
-    const breakpoints = this._config?.column_breakpoints ?? DEFAULT_BREAKPOINTS;
-    const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-    const mediaQueries = buildMediaQueries(breakpoints);
-    this._listeners = mediaQueries.map((mediaQuery, index) =>
-      listenMediaQuery(mediaQuery, (matches) => {
-        if (matches) {
-          const columns = Object.values(breakpoints)[index];
-          this._breakpointsColumns = Math.min(maxColumns, columns);
-        }
-      })
-    );
-  }
-
-  private _detachMediaQueriesListeners() {
-    while (this._listeners.length) {
-      this._listeners.pop()!();
-    }
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._attachMediaQueriesListeners();
   }
 
   disconnectedCallback(): void {
@@ -169,7 +112,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._detachMediaQueriesListeners();
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
@@ -186,9 +128,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const maxColumnCount = this._config?.experimental_breakpoints
-      ? this._breakpointsColumns
-      : this._sizeColumns;
+    const maxColumnCount = this._columnsController.value ?? 1;
 
     return html`
       <hui-view-badges
