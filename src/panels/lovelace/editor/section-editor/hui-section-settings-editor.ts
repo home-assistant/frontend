@@ -13,10 +13,15 @@ const SCHEMA = [
     name: "title",
     selector: { text: {} },
   },
+  {
+    name: "column_span",
+    selector: { number: { min: 1, max: 3 } },
+  },
 ] as const satisfies HaFormSchema[];
 
 type SettingsData = {
   title: string;
+  column_span?: number;
 };
 
 @customElement("hui-section-settings-editor")
@@ -28,6 +33,7 @@ export class HuiDialogEditSection extends LitElement {
   render() {
     const data: SettingsData = {
       title: this.config.title || "",
+      column_span: this.config.column_span || 1,
     };
 
     return html`
@@ -59,6 +65,7 @@ export class HuiDialogEditSection extends LitElement {
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
       title: newData.title,
+      column_span: newData.column_span,
     };
 
     if (!newConfig.title) {

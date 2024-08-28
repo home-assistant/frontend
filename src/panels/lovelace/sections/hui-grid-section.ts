@@ -220,8 +220,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           gap: var(--row-gap);
         }
         .container {
+          --grid-column-count: calc(
+            var(--column-count) * var(--column-span, 1)
+          );
           display: grid;
-          grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+          grid-template-columns: repeat(
+            var(--grid-column-count),
+            minmax(0, 1fr)
+          );
           grid-auto-rows: minmax(var(--row-height), auto);
           row-gap: var(--row-gap);
           column-gap: var(--column-gap);
