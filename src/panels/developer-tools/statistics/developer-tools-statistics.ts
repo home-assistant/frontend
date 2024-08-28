@@ -705,19 +705,11 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           height: 100%;
           --data-table-border-width: 0;
         }
-        :host(:not([narrow])) ha-data-table,
-        .pane {
+        :host(:not([narrow])) ha-data-table {
           height: calc(100vh - 1px - var(--header-height));
           display: block;
         }
 
-        .pane-content {
-          height: calc(
-            100vh - 1px - var(--header-height) - var(--header-height)
-          );
-          display: flex;
-          flex-direction: column;
-        }
         :host([narrow]) {
           --expansion-panel-summary-padding: 0 16px;
         }
@@ -741,51 +733,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           display: flex;
           align-items: center;
           color: var(--secondary-text-color);
-        }
-        .badge {
-          min-width: 20px;
-          box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          background-color: var(--primary-color);
-          line-height: 20px;
-          text-align: center;
-          padding: 0px 4px;
-          color: var(--text-primary-color);
-          position: absolute;
-          right: 0;
-          inset-inline-end: 0;
-          inset-inline-start: initial;
-          top: 4px;
-          font-size: 0.65em;
-        }
-        .center {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          box-sizing: border-box;
-          height: 100%;
-          width: 100%;
-          padding: 16px;
-        }
-
-        .badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          inset-inline-end: -4px;
-          inset-inline-start: initial;
-          min-width: 16px;
-          box-sizing: border-box;
-          border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
-          background-color: var(--primary-color);
-          line-height: 16px;
-          text-align: center;
-          padding: 0px 2px;
-          color: var(--text-primary-color);
         }
 
         .narrow-header-row {
@@ -843,21 +790,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           --md-assist-chip-trailing-space: 8px;
         }
 
-        .pane {
-          border-right: 1px solid var(--divider-color);
-          border-inline-end: 1px solid var(--divider-color);
-          border-inline-start: initial;
-          box-sizing: border-box;
-          display: flex;
-          flex: 0 0 var(--sidepane-width, 250px);
-          width: var(--sidepane-width, 250px);
-          flex-direction: column;
-          position: relative;
-        }
-        .pane .ha-scrollbar {
-          flex: 1;
-        }
-
         ha-dialog {
           --mdc-dialog-min-width: calc(
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
@@ -870,12 +802,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           --vertical-align-dialog: flex-end;
           --ha-dialog-border-radius: 0;
           --dialog-content-padding: 0;
-        }
-
-        .filter-dialog-content {
-          height: calc(100vh - 1px - 61px - var(--header-height));
-          display: flex;
-          flex-direction: column;
         }
 
         #sort-by-anchor,
