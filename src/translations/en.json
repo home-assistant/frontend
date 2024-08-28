@@ -7155,7 +7155,8 @@
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
           "solar": "Solar",
-          "by_device": "Consumption by device"
+          "by_device": "Consumption by device",
+          "untracked_consumption": "Untracked consumption"
         },
         "cards": {
           "energy_usage_graph_title": "Energy usage",
