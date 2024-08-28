@@ -31,7 +31,7 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
@@ -72,10 +72,6 @@ export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public computeHelper?: (
     schema: any
   ) => string | undefined;
-
-  @property({ attribute: false }) public localizeValue?: (
-    key: string
-  ) => string;
 
   protected getFormProperties(): Record<string, any> {
     return {};
@@ -149,7 +145,6 @@ export class HaForm extends LitElement implements HaFormElement {
                   .disabled=${item.disabled || this.disabled || false}
                   .placeholder=${item.required ? "" : item.default}
                   .helper=${this._computeHelper(item)}
-                  .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
                 ></ha-selector>`
@@ -204,9 +199,10 @@ export class HaForm extends LitElement implements HaFormElement {
 
       if (ev.target === this) return;
 
-      const newValue = !schema.name
-        ? ev.detail.value
-        : { [schema.name]: ev.detail.value };
+      const newValue =
+        !schema.name || ("flatten" in schema && schema.flatten)
+          ? ev.detail.value
+          : { [schema.name]: ev.detail.value };
 
       this.data = {
         ...this.data,

@@ -74,10 +74,10 @@ export class HuiEntityBadgeEditor
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "",
+          name: "appearance",
           type: "expandable",
+          flatten: true,
           iconPath: mdiPalette,
-          title: localize(`ui.panel.lovelace.editor.badge.entity.appearance`),
           schema: [
             {
               name: "",
@@ -153,9 +153,9 @@ export class HuiEntityBadgeEditor
           ],
         },
         {
-          name: "",
+          name: "interactions",
           type: "expandable",
-          title: localize(`ui.panel.lovelace.editor.badge.entity.interactions`),
+          flatten: true,
           iconPath: mdiGestureTap,
           schema: [
             {
@@ -238,6 +238,8 @@ export class HuiEntityBadgeEditor
       case "state_content":
       case "show_entity_picture":
       case "displayed_elements":
+      case "appearance":
+      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.badge.entity.${schema.name}`
         );

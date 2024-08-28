@@ -225,11 +225,24 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (field: HaFormSchema): string =>
-    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
+  private _labelCallback = (field: HaFormSchema, _data, options): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(
+      this.hass,
+      this.step,
+      field,
+      options
+    );
 
-  private _helperCallback = (field: HaFormSchema): string | TemplateResult =>
-    this.flowConfig.renderShowFormStepFieldHelper(this.hass, this.step, field);
+  private _helperCallback = (
+    field: HaFormSchema,
+    options
+  ): string | TemplateResult =>
+    this.flowConfig.renderShowFormStepFieldHelper(
+      this.hass,
+      this.step,
+      field,
+      options
+    );
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
