@@ -13,7 +13,7 @@ export const ensureBadgeConfig = (
     return {
       type: "entity",
       entity: config,
-      display_type: "complete",
+      show_name: true,
     };
   }
   if ("type" in config && config.type) {

@@ -93,15 +93,33 @@ export const showOptionsFlowDialog = (
           : "";
       },
 
-      renderShowFormStepFieldLabel(hass, step, field) {
-        return hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.data.${field.name}`
+      renderShowFormStepFieldLabel(hass, step, field, options) {
+        if (field.type === "expandable") {
+          return hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.sections.${field.name}.name`
+          );
+        }
+
+        const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.${prefix}data.${field.name}`
+          ) || field.name
         );
       },
 
-      renderShowFormStepFieldHelper(hass, step, field) {
+      renderShowFormStepFieldHelper(hass, step, field, options) {
+        if (field.type === "expandable") {
+          return hass.localize(
+            `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.sections.${field.name}.description`
+          );
+        }
+
+        const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+
         const description = hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.${prefix}data_description.${field.name}`,
           step.description_placeholders
         );
         return description

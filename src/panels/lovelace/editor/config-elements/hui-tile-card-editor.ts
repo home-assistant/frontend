@@ -14,7 +14,6 @@ import {
   union,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -69,18 +68,14 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      entityId: string | undefined,
-      hideState: boolean
-    ) =>
+    (entityId: string | undefined, hideState: boolean) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "",
+          name: "appearance",
+          flatten: true,
           type: "expandable",
           iconPath: mdiPalette,
-          title: localize(`ui.panel.lovelace.editor.card.tile.appearance`),
           schema: [
             {
               name: "",
@@ -136,9 +131,9 @@ export class HuiTileCardEditor
           ],
         },
         {
-          name: "",
+          name: "interactions",
           type: "expandable",
-          title: localize(`ui.panel.lovelace.editor.card.tile.interactions`),
+          flatten: true,
           iconPath: mdiGestureTap,
           schema: [
             {
@@ -178,7 +173,6 @@ export class HuiTileCardEditor
       : undefined;
 
     const schema = this._schema(
-      this.hass!.localize,
       this._config.entity,
       this._config.hide_state ?? false
     );
@@ -306,6 +300,8 @@ export class HuiTileCardEditor
       case "vertical":
       case "hide_state":
       case "state_content":
+      case "appearance":
+      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
