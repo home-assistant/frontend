@@ -427,8 +427,7 @@ export interface ThemeSelector {
   theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  time: {} | null;
+  time: { no_second?: boolean } | null;
 }
 
 export interface TriggerSelector {
