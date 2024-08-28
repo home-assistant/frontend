@@ -1,3 +1,4 @@
+import { mdiAlertCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,15 +6,16 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { mdiAlertCircle } from "@mdi/js";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -22,14 +24,37 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import { EntityBadgeConfig } from "./types";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { cameraUrlWithWidthHeight } from "../../../data/camera";
 
 export const DISPLAY_TYPES = ["minimal", "standard", "complete"] as const;
-
 export type DisplayType = (typeof DISPLAY_TYPES)[number];
-
 export const DEFAULT_DISPLAY_TYPE: DisplayType = "standard";
+
+export const DEFAULT_CONFIG: EntityBadgeConfig = {
+  type: "entity",
+  show_name: false,
+  show_state: true,
+  show_icon: true,
+};
+
+export const migrateLegacyEntityBadgeConfig = (
+  config: EntityBadgeConfig
+): EntityBadgeConfig => {
+  const newConfig = { ...config };
+  if (config.display_type) {
+    if (config.show_name === undefined) {
+      if (config.display_type === "complete") {
+        newConfig.show_name = true;
+      }
+    }
+    if (config.show_state === undefined) {
+      if (config.display_type === "minimal") {
+        newConfig.show_state = false;
+      }
+    }
+    delete newConfig.display_type;
+  }
+  return newConfig;
+};
 
 @customElement("hui-entity-badge")
 export class HuiEntityBadge extends LitElement implements LovelaceBadge {
@@ -64,7 +89,10 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
   @state() protected _config?: EntityBadgeConfig;
 
   public setConfig(config: EntityBadgeConfig): void {
-    this._config = config;
+    this._config = {
+      ...DEFAULT_CONFIG,
+      ...migrateLegacyEntityBadgeConfig(config),
+    };
   }
 
   get hasAction() {
@@ -134,9 +162,9 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       return html`
         <div class="badge error">
           <ha-svg-icon .hass=${this.hass} .path=${mdiAlertCircle}></ha-svg-icon>
-          <span class="content">
-            <span class="name">${entityId}</span>
-            <span class="state">
+          <span class="info">
+            <span class="label">${entityId}</span>
+            <span class="content">
               ${this.hass.localize("ui.badge.entity.not_found")}
             </span>
           </span>
@@ -163,18 +191,25 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
 
     const name = this._config.name || stateObj.attributes.friendly_name;
 
-    const displayType = this._config.display_type || DEFAULT_DISPLAY_TYPE;
+    const showState = this._config.show_state;
+    const showName = this._config.show_name;
+    const showIcon = this._config.show_icon;
+    const showEntityPicture = this._config.show_entity_picture;
 
-    const imageUrl = this._config.show_entity_picture
+    const imageUrl = showEntityPicture
       ? this._getImageUrl(stateObj)
       : undefined;
+
+    const label = showState && showName ? name : undefined;
+    const content = showState ? stateDisplay : showName ? name : undefined;
 
     return html`
       <div
         style=${styleMap(style)}
         class="badge ${classMap({
           active,
-          [displayType]: true,
+          "no-info": !showState && !showName,
+          "no-icon": !showIcon,
         })}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -185,22 +220,22 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         tabindex=${ifDefined(this.hasAction ? "0" : undefined)}
       >
         <ha-ripple .disabled=${!this.hasAction}></ha-ripple>
-        ${imageUrl
-          ? html`<img src=${imageUrl} aria-hidden />`
-          : html`
-              <ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .icon=${this._config.icon}
-              ></ha-state-icon>
-            `}
-        ${displayType !== "minimal"
+        ${showIcon
+          ? imageUrl
+            ? html`<img src=${imageUrl} aria-hidden />`
+            : html`
+                <ha-state-icon
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .icon=${this._config.icon}
+                ></ha-state-icon>
+              `
+          : nothing}
+        ${content
           ? html`
-              <span class="content">
-                ${displayType === "complete"
-                  ? html`<span class="name">${name}</span>`
-                  : nothing}
-                <span class="state">${stateDisplay}</span>
+              <span class="info">
+                ${label ? html`<span class="label">${name}</span>` : nothing}
+                <span class="content">${content}</span>
               </span>
             `
           : nothing}
@@ -277,7 +312,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       .badge.active {
         --badge-color: var(--primary-color);
       }
-      .content {
+      .info {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -285,7 +320,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         padding-inline-end: 4px;
         padding-inline-start: initial;
       }
-      .name {
+      .label {
         font-size: 10px;
         font-style: normal;
         font-weight: 500;
@@ -293,7 +328,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         letter-spacing: 0.1px;
         color: var(--secondary-text-color);
       }
-      .state {
+      .content {
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -313,13 +348,19 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         object-fit: cover;
         overflow: hidden;
       }
-      .badge.minimal {
+      .badge.no-info {
         padding: 0;
       }
-      .badge:not(.minimal) img {
+      .badge:not(.no-icon) img {
         margin-left: -6px;
         margin-inline-start: -6px;
         margin-inline-end: initial;
+      }
+      .badge.no-icon .info {
+        padding-right: 4px;
+        padding-left: 4px;
+        padding-inline-end: 4px;
+        padding-inline-start: 4px;
       }
     `;
   }

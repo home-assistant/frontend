@@ -5959,9 +5959,9 @@
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} card from the clipboard",
               "refresh_interval": "Refresh interval",
-              "show_icon": "Show icon?",
-              "show_name": "Show name?",
-              "show_state": "Show state?",
+              "show_icon": "Show icon",
+              "show_name": "Show name",
+              "show_state": "Show state",
               "tap_action": "Tap behavior",
               "title": "Title",
               "theme": "Theme",
@@ -6101,11 +6101,11 @@
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
-              "display_type": "Display type",
-              "display_type_options": {
-                "minimal": "Minimal (icon only)",
-                "standard": "Standard (icon and state)",
-                "complete": "Complete (icon, name and state)"
+              "displayed_elements": "Displayed elements",
+              "displayed_elements_options": {
+                "icon": "Icon",
+                "name": "Name",
+                "state": "State"
               }
             },
             "generic": {
