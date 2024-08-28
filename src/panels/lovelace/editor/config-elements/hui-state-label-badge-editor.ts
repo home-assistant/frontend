@@ -30,11 +30,11 @@ export class HuiStateLabelBadgeEditor extends HuiEntityBadgeEditor {
     const entityBadgeConfig: EntityBadgeConfig = {
       type: "entity",
       entity: config.entity,
-      display_type: config.show_name === false ? "standard" : "complete",
+      show_name: config.show_name ?? true,
     };
 
     // @ts-ignore
-    this._config = entityBadgeConfig;
+    super.setConfig(entityBadgeConfig);
   }
 }
 
