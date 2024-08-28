@@ -50,8 +50,6 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
   }
 
   protected renderConfigElement(): TemplateResult {
-    const displayedTabs: string[] = ["config", "visibility"];
-
     let content: TemplateResult<1> | typeof nothing = nothing;
 
     switch (this._currTab) {
@@ -73,7 +71,7 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
         .activeIndex=${tabs.indexOf(this._currTab)}
         @MDCTabBar:activated=${this._handleTabChanged}
       >
-        ${displayedTabs.map(
+        ${tabs.map(
           (tab) => html`
             <mwc-tab
               .label=${this.hass.localize(
