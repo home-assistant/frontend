@@ -62,9 +62,7 @@ export interface ComponentIcons {
 }
 
 interface ServiceIcons {
-  [service: string]:
-    | string
-    | { service: string; sections?: { [name: string]: string } };
+  [service: string]: { service: string; sections?: { [name: string]: string } };
 }
 
 export type IconCategory = "entity" | "entity_component" | "services";
@@ -291,7 +289,7 @@ export const serviceIcon = async (
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
-    icon = typeof srvceIcon === "string" ? srvceIcon : srvceIcon.service;
+    icon = srvceIcon.service;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);
@@ -309,9 +307,7 @@ export const serviceSectionIcon = async (
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
-    if (typeof srvceIcon !== "string") {
-      return srvceIcon.sections?.[section];
-    }
+    return srvceIcon.sections?.[section];
   }
   return undefined;
 };
