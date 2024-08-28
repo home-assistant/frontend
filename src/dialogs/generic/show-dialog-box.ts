@@ -88,18 +88,22 @@ const showDialogHelper = (
             origConfirm(out);
           }
         },
-        submit: (formData) => {
-          resolve(formData);
-          if (origSubmit) {
-            origSubmit(formData);
-          }
-        },
-        secondaryAction: () => {
-          resolve(false);
-          if (origSecondaryAction) {
-            origSecondaryAction();
-          }
-        },
+        submit: origSubmit
+          ? (formData) => {
+              resolve(formData);
+              if (origSubmit) {
+                origSubmit(formData);
+              }
+            }
+          : undefined,
+        secondaryAction: origSecondaryAction
+          ? () => {
+              resolve(false);
+              if (origSecondaryAction) {
+                origSecondaryAction();
+              }
+            }
+          : undefined,
       },
     });
   });
