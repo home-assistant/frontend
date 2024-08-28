@@ -87,13 +87,12 @@ export class HaConditionAction extends LitElement implements ActionElement {
     const elClass = customElements.get(
       `ha-automation-condition-${type}`
     ) as CustomElementConstructor & {
-      defaultConfig: Omit<Condition, "condition">;
+      defaultConfig: Condition;
     };
 
     if (type !== this.action.condition) {
       fireEvent(this, "value-changed", {
         value: {
-          condition: type,
           ...elClass.defaultConfig,
         },
       });
