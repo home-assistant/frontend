@@ -77,15 +77,19 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field, options) {
+      const prefix = options?.path?.[0] ? `section.${options.path[0]}.` : "";
+
       return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data.${field.name}` ||
+        `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}` ||
           field.name
       );
     },
 
     renderShowFormStepFieldHelper(hass, step, field, options) {
+      const prefix = options?.path?.[0] ? `section.${options.path[0]}.` : "";
+
       const description = hass.localize(
-        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data_description.${field.name}`,
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.${prefix}data_description.${field.name}`,
         step.description_placeholders
       );
       return description

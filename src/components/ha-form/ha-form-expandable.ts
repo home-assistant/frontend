@@ -22,12 +22,12 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public computeLabel?: (
     schema: HaFormSchema,
     data?: HaFormDataContainer,
-    options?: { prefix?: string[] }
+    options?: { path?: string[] }
   ) => string;
 
   @property({ attribute: false }) public computeHelper?: (
     schema: HaFormSchema,
-    options?: { prefix?: string[] }
+    options?: { path?: string[] }
   ) => string;
 
   private _renderDescription() {
@@ -38,25 +38,25 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   private _computeLabel = (
     schema: HaFormSchema,
     data?: HaFormDataContainer,
-    options?: { prefix?: string[] }
+    options?: { path?: string[] }
   ) => {
     if (!this.computeLabel) return this.computeLabel;
 
     return this.computeLabel(schema, data, {
       ...options,
-      prefix: [...(options?.prefix || []), this.schema.name],
+      path: [...(options?.path || []), this.schema.name],
     });
   };
 
   private _computeHelper = (
     schema: HaFormSchema,
-    options?: { prefix?: string[] }
+    options?: { path?: string[] }
   ) => {
     if (!this.computeHelper) return this.computeHelper;
 
     return this.computeHelper(schema, {
       ...options,
-      prefix: [...(options?.prefix || []), this.schema.name],
+      path: [...(options?.path || []), this.schema.name],
     });
   };
 

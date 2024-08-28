@@ -50,14 +50,14 @@ export interface FlowConfig {
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
     field: HaFormSchema,
-    options: { prefix?: string[]; [key: string]: any }
+    options: { path?: string[]; [key: string]: any }
   ): string;
 
   renderShowFormStepFieldHelper(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
     field: HaFormSchema,
-    options: { prefix?: string[]; [key: string]: any }
+    options: { path?: string[]; [key: string]: any }
   ): TemplateResult | string;
 
   renderShowFormStepFieldError(
