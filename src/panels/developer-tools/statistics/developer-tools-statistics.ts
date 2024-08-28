@@ -1,26 +1,50 @@
 import "@material/mwc-button/mwc-button";
-import { mdiSlopeUphill } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiClose,
+  mdiCog,
+  mdiFormatListChecks,
+  mdiMenuDown,
+  mdiSlopeUphill,
+  mdiUnfoldLessHorizontal,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
+
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/data-table/ha-data-table";
-import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import type {
+  DataTableColumnContainer,
+  HaDataTable,
+  SelectionChangedEvent,
+  SortingDirection,
+} from "../../../components/data-table/ha-data-table";
+import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
+import "../../../components/ha-button-menu-new";
+import "../../../components/ha-dialog";
+import { HaMenu } from "../../../components/ha-menu";
+import "../../../components/ha-menu-item";
+import "../../../components/search-input-outlined";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
-  clearStatistics,
-  getStatisticIds,
   StatisticsMetaData,
   StatisticsValidationResult,
+  clearStatistics,
+  getStatisticIds,
   validateStatistics,
 } from "../../../data/recorder";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { showAlertDialog, showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
@@ -32,9 +56,22 @@ const FIX_ISSUES_ORDER = {
   units_changed: 3,
 };
 
+const FIXABLE_ISSUES = [
+  "no_state",
+  "entity_no_longer_recorded",
+  "unsupported_state_class",
+  "units_changed",
+];
+const SELECTABLE_ISSUES = [
+  "no_state",
+  "entity_no_longer_recorded",
+  "unsupported_state_class",
+];
+
 type StatisticData = StatisticsMetaData & {
   issues?: StatisticsValidationResult[];
   state?: HassEntity;
+  selectable?: boolean;
 };
 
 type DisplayedStatisticData = StatisticData & {
@@ -50,7 +87,39 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
+  @state() private filter = "";
+
+  @state() private _selected?;
+
+  @state() private groupOrder?: string[];
+
+  @state() private columnOrder?: string[];
+
+  @state() private hiddenColumns?: string[];
+
+  @state() private _sortColumn?: string;
+
+  @state() private _sortDirection: SortingDirection = null;
+
+  @state() private _groupColumn?: string;
+
+  @state() private _selectMode = false;
+
+  @query("ha-data-table", true) private _dataTable!: HaDataTable;
+
+  @query("#group-by-menu") private _groupByMenu!: HaMenu;
+
+  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
   private _disabledEntities = new Set<string>();
+
+  private _toggleGroupBy() {
+    this._groupByMenu.open = !this._groupByMenu.open;
+  }
+
+  private _toggleSortBy() {
+    this._sortByMenu.open = !this._sortByMenu.open;
+  }
 
   protected firstUpdated() {
     this._validateStatistics();
@@ -110,6 +179,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        groupable: true,
       },
       issues_string: {
         title: localize(
@@ -117,6 +187,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        groupable: true,
         direction: "asc",
         flex: 2,
         template: (statistic) =>
@@ -124,11 +195,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
-        title: html`<mwc-button @click=${this._fixAllAutofixableIssues}>
-          ${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.fix_all"
-          )}
-        </mwc-button>`,
+        title: "",
         label: this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
         ),
@@ -139,7 +206,11 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                 .data=${statistic.issues}
               >
                 ${localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+                  statistic.issues.some((issue) =>
+                    FIXABLE_ISSUES.includes(issue.type)
+                  )
+                    ? "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+                    : "ui.panel.developer-tools.tabs.statistics.fix_issue.info"
                 )}
               </mwc-button>`
             : "—"}`,
@@ -170,20 +241,332 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   );
 
   protected render() {
+    const localize = this.hass.localize;
+    const columns = this._columns(this.hass.localize);
+
+    const selectModeBtn = !this._selectMode
+      ? html`<ha-assist-chip
+          class="has-dropdown select-mode-chip"
+          .active=${this._selectMode}
+          @click=${this._enableSelectMode}
+          .title=${localize(
+            "ui.components.subpage-data-table.enter_selection_mode"
+          )}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiFormatListChecks}></ha-svg-icon>
+        </ha-assist-chip> `
+      : nothing;
+
+    const searchBar = html`<search-input-outlined
+      .hass=${this.hass}
+      .filter=${this.filter}
+      s
+    >
+    </search-input-outlined>`;
+
+    const sortByMenu = Object.values(columns).find((col) => col.sortable)
+      ? html`
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.sort_by", {
+              sortColumn: this._sortColumn
+                ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}` ||
+                  ""
+                : "",
+            })}
+            id="sort-by-anchor"
+            @click=${this._toggleSortBy}
+          >
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
+        `
+      : nothing;
+
+    const groupByMenu = Object.values(columns).find((col) => col.groupable)
+      ? html`
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.group_by", {
+              groupColumn: this._groupColumn
+                ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
+                : "",
+            })}
+            id="group-by-anchor"
+            @click=${this._toggleGroupBy}
+          >
+            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
+          ></ha-assist-chip>
+        `
+      : nothing;
+
+    const settingsButton = html`<ha-assist-chip
+      class="has-dropdown select-mode-chip"
+      @click=${this._openSettings}
+      .title=${localize("ui.components.subpage-data-table.settings")}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+    </ha-assist-chip>`;
+
     return html`
-      <ha-data-table
-        .hass=${this.hass}
-        .columns=${this._columns(this.hass.localize)}
-        .data=${this._displayData(this._data, this.hass.localize)}
-        .noDataText=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
+      <div>
+        ${this._selectMode
+          ? html`<div class="selection-bar">
+              <div class="selection-controls">
+                <ha-icon-button
+                  .path=${mdiClose}
+                  @click=${this._disableSelectMode}
+                  .label=${localize(
+                    "ui.components.subpage-data-table.exit_selection_mode"
+                  )}
+                ></ha-icon-button>
+                <ha-button-menu-new positioning="absolute">
+                  <ha-assist-chip
+                    .label=${localize(
+                      "ui.components.subpage-data-table.select"
+                    )}
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFormatListChecks}
+                    ></ha-svg-icon>
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon
+                  ></ha-assist-chip>
+                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                    <div slot="headline">
+                      ${localize("ui.components.subpage-data-table.select_all")}
+                    </div>
+                  </ha-menu-item>
+                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </div>
+                  </ha-menu-item>
+                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-menu-item
+                    .value=${undefined}
+                    @click=${this._disableSelectMode}
+                  >
+                    <div slot="headline">
+                      ${localize(
+                        "ui.components.subpage-data-table.close_select_mode"
+                      )}
+                    </div>
+                  </ha-menu-item>
+                </ha-button-menu-new>
+                <p>
+                  ${localize("ui.components.subpage-data-table.selected", {
+                    selected: this._selected?.length || "0",
+                  })}
+                </p>
+              </div>
+              <div class="center-vertical">
+                <slot name="selection-bar"></slot>
+              </div>
+              <ha-assist-chip
+                .label=${localize(
+                  "ui.panel.developer-tools.tabs.statistics.fix_issue.fix_selected"
+                )}
+                @click=${this._fixSelectedIssues}
+              >
+              </ha-assist-chip>
+            </div>`
+          : nothing}
+        <div slot="toolbar-icon">
+          <slot name="toolbar-icon"></slot>
+        </div>
+        ${this.narrow
+          ? html`
+              <div slot="header">
+                <slot name="header">
+                  <div class="search-toolbar">${searchBar}</div>
+                </slot>
+              </div>
+            `
+          : ""}
+        <ha-data-table
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .columns=${columns}
+          .data=${this._displayData(this._data, this.hass.localize)}
+          .noDataText=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
+          )}
+          .filter=${this.filter}
+          .selectable=${this._selectMode}
+          id="statistic_id"
+          clickable
+          .sortColumn=${this._sortColumn}
+          .sortDirection=${this._sortDirection}
+          .groupColumn=${this._groupColumn}
+          .groupOrder=${this.groupOrder}
+          .columnOrder=${this.columnOrder}
+          .hiddenColumns=${this.hiddenColumns}
+          @row-click=${this._rowClicked}
+          @selection-changed=${this._handleSelectionChanged}
+        >
+          ${!this.narrow
+            ? html`
+                <div slot="header">
+                  <slot name="header">
+                    <div class="table-header">
+                      ${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
+                    </div>
+                  </slot>
+                </div>
+              `
+            : html`<div slot="header"></div>
+                <div slot="header-row" class="narrow-header-row">
+                  ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
+                </div>`}
+        </ha-data-table>
+      </div>
+      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+        ${Object.entries(columns).map(([id, column]) =>
+          column.groupable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleGroupBy}
+                  .selected=${id === this._groupColumn}
+                  class=${classMap({ selected: id === this._groupColumn })}
+                >
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
         )}
-        .narrow=${this.narrow}
-        id="statistic_id"
-        clickable
-        @row-click=${this._rowClicked}
-      ></ha-data-table>
+        <ha-menu-item
+          .value=${undefined}
+          @click=${this._handleGroupBy}
+          .selected=${this._groupColumn === undefined}
+          class=${classMap({ selected: this._groupColumn === undefined })}
+        >
+          ${localize("ui.components.subpage-data-table.dont_group_by")}
+        </ha-menu-item>
+        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-menu-item
+          @click=${this._collapseAllGroups}
+          .disabled=${this._groupColumn === undefined}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiUnfoldLessHorizontal}
+          ></ha-svg-icon>
+          ${localize("ui.components.subpage-data-table.collapse_all_groups")}
+        </ha-menu-item>
+        <ha-menu-item
+          @click=${this._expandAllGroups}
+          .disabled=${this._groupColumn === undefined}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiUnfoldMoreHorizontal}
+          ></ha-svg-icon>
+          ${localize("ui.components.subpage-data-table.expand_all_groups")}
+        </ha-menu-item>
+      </ha-menu>
+      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+        ${Object.entries(columns).map(([id, column]) =>
+          column.sortable
+            ? html`
+                <ha-menu-item
+                  .value=${id}
+                  @click=${this._handleSortBy}
+                  keep-open
+                  .selected=${id === this._sortColumn}
+                  class=${classMap({ selected: id === this._sortColumn })}
+                >
+                  ${this._sortColumn === id
+                    ? html`
+                        <ha-svg-icon
+                          slot="end"
+                          .path=${this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                  ${column.title || column.label}
+                </ha-menu-item>
+              `
+            : nothing
+        )}
+      </ha-menu>
     `;
+  }
+
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
+  private _handleSortBy(ev) {
+    const columnId = ev.currentTarget.value;
+    if (!this._sortDirection || this._sortColumn !== columnId) {
+      this._sortDirection = "asc";
+    } else if (this._sortDirection === "asc") {
+      this._sortDirection = "desc";
+    } else {
+      this._sortDirection = null;
+    }
+    this._sortColumn = this._sortDirection === null ? undefined : columnId;
+  }
+
+  private _handleGroupBy(ev) {
+    this._setGroupColumn(ev.currentTarget.value);
+  }
+
+  private _setGroupColumn(columnId: string) {
+    this._groupColumn = columnId;
+  }
+
+  private _openSettings() {
+    showDataTableSettingsDialog(this, {
+      columns: this._columns(this.hass.localize),
+      hiddenColumns: this.hiddenColumns,
+      columnOrder: this.columnOrder,
+      onUpdate: (
+        columnOrder: string[] | undefined,
+        hiddenColumns: string[] | undefined
+      ) => {
+        this.columnOrder = columnOrder;
+        this.hiddenColumns = hiddenColumns;
+      },
+      localizeFunc: this.hass.localize,
+    });
+  }
+
+  private _collapseAllGroups() {
+    this._dataTable.collapseAllGroups();
+  }
+
+  private _expandAllGroups() {
+    this._dataTable.expandAllGroups();
+  }
+
+  private _enableSelectMode() {
+    this._selectMode = true;
+  }
+
+  private _disableSelectMode() {
+    this._selectMode = false;
+    this._dataTable.clearSelection();
+  }
+
+  private _selectAll() {
+    this._dataTable.selectAll();
+  }
+
+  private _selectNone() {
+    this._dataTable.clearSelection();
   }
 
   private _showStatisticsAdjustSumDialog(ev) {
@@ -237,6 +620,10 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           ...statistic,
           state: this.hass.states[statistic.statistic_id],
           issues: issues[statistic.statistic_id],
+          selectable:
+            issues[statistic.statistic_id]?.some((issue) =>
+              SELECTABLE_ISSUES.includes(issue.type)
+            ) || false,
         };
       });
 
@@ -251,6 +638,10 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
+          selectable:
+            issues[statisticId]?.some((issue) =>
+              SELECTABLE_ISSUES.includes(issue.type)
+            ) || false,
           has_mean: false,
           has_sum: false,
           unit_class: null,
@@ -259,28 +650,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _fixAllAutofixableIssues = async () => {
-    const validationResults = await validateStatistics(this.hass);
-    const autoFixable = new Set(["no_state", "unsupported_state_class"]);
-    const autoFixableIds = Object.entries(validationResults)
-      .filter(([, issues]) =>
-        issues.some((issue) => autoFixable.has(issue.type))
-      )
-      .map(([statistic_id]) => statistic_id);
-
-    if (autoFixableIds.length <= 0) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_not_available"
-        ),
-      });
+  private _fixSelectedIssues = async () => {
+    if (!this._selected?.length) {
       return;
     }
 
-    showConfirmationDialog(this, {
+    const deletableIds = this._selected;
+
+    await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.title"
       ),
@@ -288,19 +665,17 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_1"
         )}<br /><br />${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_2",
-          { statistic_count: autoFixableIds.length }
+          { statistic_count: deletableIds.length }
         )}<br /><br />${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_3"
         )}<br /><br />
-        ${autoFixableIds.map((i) => i).join(", ")}`,
+        ${deletableIds.map((i) => i).join(", ")}`,
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
       confirm: async () => {
-        await clearStatistics(this.hass, autoFixableIds);
-        autoFixableIds.forEach((statistic_id) =>
-          this._deletedStatistics.add(statistic_id)
-        );
+        await clearStatistics(this.hass, deletableIds);
         this._validateStatistics();
+        this._selected = [];
       },
     });
   };
@@ -317,7 +692,199 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   };
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+          height: 100%;
+        }
+
+        ha-data-table {
+          width: 100%;
+          height: 100%;
+          --data-table-border-width: 0;
+        }
+        :host(:not([narrow])) ha-data-table,
+        .pane {
+          height: calc(100vh - 1px - var(--header-height));
+          display: block;
+        }
+
+        .pane-content {
+          height: calc(
+            100vh - 1px - var(--header-height) - var(--header-height)
+          );
+          display: flex;
+          flex-direction: column;
+        }
+        :host([narrow]) {
+          --expansion-panel-summary-padding: 0 16px;
+        }
+        .table-header {
+          display: flex;
+          align-items: center;
+          --mdc-shape-small: 0;
+          height: 56px;
+          width: 100%;
+          justify-content: space-between;
+          padding: 0 16px;
+          gap: 16px;
+          box-sizing: border-box;
+          background: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+        search-input-outlined {
+          flex: 1;
+        }
+        .search-toolbar {
+          display: flex;
+          align-items: center;
+          color: var(--secondary-text-color);
+        }
+        .badge {
+          min-width: 20px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 400;
+          background-color: var(--primary-color);
+          line-height: 20px;
+          text-align: center;
+          padding: 0px 4px;
+          color: var(--text-primary-color);
+          position: absolute;
+          right: 0;
+          inset-inline-end: 0;
+          inset-inline-start: initial;
+          top: 4px;
+          font-size: 0.65em;
+        }
+        .center {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          box-sizing: border-box;
+          height: 100%;
+          width: 100%;
+          padding: 16px;
+        }
+
+        .badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          inset-inline-end: -4px;
+          inset-inline-start: initial;
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 400;
+          font-size: 11px;
+          background-color: var(--primary-color);
+          line-height: 16px;
+          text-align: center;
+          padding: 0px 2px;
+          color: var(--text-primary-color);
+        }
+
+        .narrow-header-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 0 16px;
+          overflow-x: scroll;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        .selection-bar {
+          background: rgba(var(--rgb-primary-color), 0.1);
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 12px;
+          box-sizing: border-box;
+          font-size: 14px;
+          --ha-assist-chip-container-color: var(--card-background-color);
+        }
+
+        .selection-controls {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .selection-controls p {
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+        }
+
+        .center-vertical {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .relative {
+          position: relative;
+        }
+
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+          --ha-assist-chip-container-color: var(--card-background-color);
+        }
+
+        .select-mode-chip {
+          --md-assist-chip-icon-label-space: 0;
+          --md-assist-chip-trailing-space: 8px;
+        }
+
+        .pane {
+          border-right: 1px solid var(--divider-color);
+          border-inline-end: 1px solid var(--divider-color);
+          border-inline-start: initial;
+          box-sizing: border-box;
+          display: flex;
+          flex: 0 0 var(--sidepane-width, 250px);
+          width: var(--sidepane-width, 250px);
+          flex-direction: column;
+          position: relative;
+        }
+        .pane .ha-scrollbar {
+          flex: 1;
+        }
+
+        ha-dialog {
+          --mdc-dialog-min-width: calc(
+            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+          );
+          --mdc-dialog-max-width: calc(
+            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+          );
+          --mdc-dialog-min-height: 100%;
+          --mdc-dialog-max-height: 100%;
+          --vertical-align-dialog: flex-end;
+          --ha-dialog-border-radius: 0;
+          --dialog-content-padding: 0;
+        }
+
+        .filter-dialog-content {
+          height: calc(100vh - 1px - 61px - var(--header-height));
+          display: flex;
+          flex-direction: column;
+        }
+
+        #sort-by-anchor,
+        #group-by-anchor,
+        ha-button-menu-new ha-assist-chip {
+          --md-assist-chip-trailing-space: 8px;
+        }
+      `,
+    ];
   }
 }
 
