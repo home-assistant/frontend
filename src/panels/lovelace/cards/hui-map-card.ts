@@ -426,7 +426,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public getLayoutOptions(): LovelaceLayoutOptions {
     return {
-      grid_columns: 4,
+      grid_columns: "full",
       grid_rows: 4,
       grid_min_columns: 2,
       grid_min_rows: 2,
