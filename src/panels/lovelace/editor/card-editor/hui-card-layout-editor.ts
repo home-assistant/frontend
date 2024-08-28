@@ -2,13 +2,13 @@ import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
@@ -19,6 +19,7 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
@@ -33,6 +34,8 @@ export class HuiCardLayoutEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
+
+  @property({ attribute: false }) public sectionConfig!: LovelaceSectionConfig;
 
   @state() _defaultLayoutOptions?: LovelaceLayoutOptions;
 
@@ -68,6 +71,8 @@ export class HuiCardLayoutEditor extends LitElement {
     );
 
     const value = this._computeCardGridSize(options);
+
+    const totalColumns = (this.sectionConfig.column_span ?? 1) * 4;
 
     return html`
       <div class="header">
@@ -131,6 +136,10 @@ export class HuiCardLayoutEditor extends LitElement {
           `
         : html`
             <ha-grid-size-picker
+              style=${styleMap({
+                "max-width": `${totalColumns * 45 + 50}px`,
+              })}
+              .columns=${totalColumns}
               .hass=${this.hass}
               .value=${value}
               .isDefault=${this._isDefault(this.config.layout_options)}
@@ -292,19 +301,11 @@ export class HuiCardLayoutEditor extends LitElement {
       }
       ha-grid-size-picker {
         display: block;
-        max-width: 250px;
         margin: 16px auto;
       }
       ha-yaml-editor {
         display: block;
         margin: 16px 0;
-      }
-      ha-formfield {
-        display: flex;
-        align-items: center;
-        --mdc-typography-body2-font-size: 1em;
-        max-width: 250px;
-        margin: 16px auto;
       }
     `,
   ];

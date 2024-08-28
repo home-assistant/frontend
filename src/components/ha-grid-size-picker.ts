@@ -213,7 +213,7 @@ export class HaGridSizeEditor extends LitElement {
         grid-template-areas:
           "reset column-slider"
           "row-slider preview";
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
         gap: 8px;
       }
@@ -229,17 +229,12 @@ export class HaGridSizeEditor extends LitElement {
       .preview {
         position: relative;
         grid-area: preview;
-        aspect-ratio: 1 / 1.2;
       }
       .preview > div {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
+        position: relative;
         display: grid;
         grid-template-columns: repeat(var(--total-columns), 1fr);
-        grid-template-rows: repeat(var(--total-rows), 1fr);
+        grid-template-rows: repeat(var(--total-rows), 25px);
         gap: 4px;
       }
       .preview .cell {
@@ -250,8 +245,13 @@ export class HaGridSizeEditor extends LitElement {
         opacity: 0.2;
         cursor: pointer;
       }
-      .selected {
+      .preview .selected {
+        position: absolute;
         pointer-events: none;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
       }
       .selected .cell {
         background-color: var(--primary-color);
