@@ -252,7 +252,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const { summedData, compareSummedData } = getSummedData(energyData);
 
-    const hasProduction =
+    const showUntracked =
       "from_grid" in summedData ||
       "solar" in summedData ||
       "from_battery" in summedData;
@@ -260,11 +260,11 @@ export class HuiEnergyDevicesDetailGraphCard
     const {
       consumption: consumptionData,
       compareConsumption: consumptionCompareData,
-    } = hasProduction
+    } = showUntracked
       ? computeConsumptionData(summedData, compareSummedData)
       : { consumption: undefined, compareConsumption: undefined };
 
-    if (hasProduction) {
+    if (showUntracked) {
       this._untrackedIndex = datasets.length;
       const { dataset: untrackedData, datasetExtra: untrackedDataExtra } =
         this._processUntracked(
@@ -310,7 +310,7 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(...processedCompareData);
       datasetExtras.push(...processedCompareDataExtras);
 
-      if (hasProduction) {
+      if (showUntracked) {
         const {
           dataset: untrackedCompareData,
           datasetExtra: untrackedCompareDataExtra,
