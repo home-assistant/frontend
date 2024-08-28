@@ -77,21 +77,35 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field, options) {
-      const prefix = options?.path?.[0] ? `section.${options.path[0]}.` : "";
+      if (field.type === "expandable") {
+        return hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`
+        );
+      }
 
-      return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}` ||
-          field.name
+      const prefix = options?.path?.[0] ? `sections.${options.path[0]}` : "";
+
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`
+        ) || field.name
       );
     },
 
     renderShowFormStepFieldHelper(hass, step, field, options) {
-      const prefix = options?.path?.[0] ? `section.${options.path[0]}.` : "";
+      if (field.type === "expandable") {
+        return hass.localize(
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`
+        );
+      }
+
+      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
 
       const description = hass.localize(
         `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.${prefix}data_description.${field.name}`,
         step.description_placeholders
       );
+
       return description
         ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
         : "";
