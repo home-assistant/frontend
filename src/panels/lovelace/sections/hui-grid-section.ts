@@ -102,8 +102,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": columns,
-                    "--row-size": rows,
+                    "--column-size":
+                      typeof columns === "number" ? columns : undefined,
+                    "--row-size": typeof rows === "number" ? rows : undefined,
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
@@ -232,8 +233,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .card {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
-          grid-row: span var(--row-size);
-          grid-column: span min(var(--column-size), var(--column-count));
+          grid-row: span var(--row-size, 1);
+          grid-column: span min(var(--column-size, 1), var(--column-count));
         }
 
         .card.fit-rows {
