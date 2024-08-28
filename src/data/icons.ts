@@ -289,7 +289,7 @@ export const serviceIcon = async (
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
-    icon = srvceIcon.service;
+    icon = srvceIcon?.service;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);
@@ -307,7 +307,7 @@ export const serviceSectionIcon = async (
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
     const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
-    return srvceIcon.sections?.[section];
+    return srvceIcon?.sections?.[section];
   }
   return undefined;
 };
