@@ -8,7 +8,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import { LovelaceSectionElement } from "../../../data/lovelace";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceGridSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
@@ -37,29 +37,28 @@ type GridSizeValue = {
 export const computeSizeOnGrid = (
   options: LovelaceLayoutOptions
 ): GridSizeValue => {
-  const rows =
-    typeof options.grid_rows === "number"
-      ? conditionalClamp(
-          options.grid_rows,
-          options.grid_min_rows,
-          options.grid_max_rows
-        )
-      : DEFAULT_GRID_OPTIONS.grid_rows;
+  const rows = options.grid_rows ?? DEFAULT_GRID_OPTIONS.grid_rows;
+  const columns = options.grid_columns ?? DEFAULT_GRID_OPTIONS.grid_columns;
+  const minRows = options.grid_min_rows;
+  const maxRows = options.grid_max_rows;
+  const minColumns = options.grid_min_columns;
+  const maxColumns = options.grid_max_columns;
 
-  const columns =
-    typeof options.grid_columns === "number"
-      ? conditionalClamp(
-          options.grid_columns,
-          options.grid_min_columns,
-          options.grid_max_columns
-        )
-      : DEFAULT_GRID_OPTIONS.grid_columns;
+  const clampedRows =
+    typeof rows === "string" ? rows : conditionalClamp(rows, minRows, maxRows);
+
+  const clampedColumns =
+    typeof columns === "string"
+      ? columns
+      : conditionalClamp(columns, minColumns, maxColumns);
 
   return {
-    rows,
-    columns,
+    rows: clampedRows,
+    columns: clampedColumns,
   };
 };
+
+export const DEFAULT_GRID_BASE = 4;
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -74,11 +73,11 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @state() _config?: LovelaceSectionConfig;
+  @state() _config?: LovelaceGridSectionConfig;
 
   @state() _dragging = false;
 
-  public setConfig(config: LovelaceSectionConfig): void {
+  public setConfig(config: LovelaceGridSectionConfig): void {
     this._config = config;
   }
 
@@ -97,6 +96,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     const cardsConfig = this._config?.cards ?? [];
 
     const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
+
+    const columnCount = this._config.grid_base ?? DEFAULT_GRID_BASE;
 
     return html`
       ${this._config.title || this.lovelace?.editMode
@@ -125,7 +126,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .options=${CARD_SORTABLE_OPTIONS}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({ "edit-mode": editMode })}"
+          style=${styleMap({ "--column-count": columnCount })}
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -211,7 +215,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --column-count: 4;
           --row-gap: var(--ha-section-grid-row-gap, 8px);
           --column-gap: var(--ha-section-grid-column-gap, 8px);
           --row-height: var(--ha-section-grid-row-height, 56px);
@@ -263,7 +266,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
           grid-row: span var(--row-size);
-          grid-column: span var(--column-size);
+          grid-column: span min(var(--column-size), var(--column-count));
         }
 
         .card.fit-rows {

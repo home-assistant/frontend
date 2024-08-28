@@ -231,8 +231,8 @@ export class HaGridSizeEditor extends LitElement {
       }
       .selected .cell {
         background-color: var(--primary-color);
-        grid-column: 1 / span var(--columns, 0);
-        grid-row: 1 / span var(--rows, 0);
+        grid-column: 1 / span min(var(--columns, 0), var(--total-columns));
+        grid-row: 1 / span min(var(--rows, 0), var(--total-rows));
         opacity: 0.5;
       }
     `,

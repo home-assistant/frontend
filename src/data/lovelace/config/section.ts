@@ -12,6 +12,10 @@ export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   cards?: LovelaceCardConfig[];
 }
 
+export interface LovelaceGridSectionConfig extends LovelaceSectionConfig {
+  grid_base?: number;
+}
+
 export interface LovelaceStrategySectionConfig
   extends LovelaceBaseSectionConfig {
   strategy: LovelaceStrategyConfig;

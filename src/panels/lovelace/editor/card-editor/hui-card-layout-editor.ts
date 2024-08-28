@@ -21,14 +21,21 @@ import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
-import { computeSizeOnGrid } from "../../sections/hui-grid-section";
+import {
+  computeSizeOnGrid,
+  DEFAULT_GRID_BASE,
+} from "../../sections/hui-grid-section";
 import { LovelaceLayoutOptions } from "../../types";
+import { LovelaceGridSectionConfig } from "../../../../data/lovelace/config/section";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
+
+  @property({ attribute: false })
+  public sectionConfig!: LovelaceGridSectionConfig;
 
   @state() _defaultLayoutOptions?: LovelaceLayoutOptions;
 
@@ -50,7 +57,7 @@ export class HuiCardLayoutEditor extends LitElement {
     })
   );
 
-  private _gridSizeValue = memoizeOne(computeSizeOnGrid);
+  private _computeSizeOnGrid = memoizeOne(computeSizeOnGrid);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -63,7 +70,7 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
-    const sizeValue = this._gridSizeValue(options);
+    const sizeValue = this._computeSizeOnGrid(options);
 
     return html`
       <div class="header">
@@ -135,6 +142,7 @@ export class HuiCardLayoutEditor extends LitElement {
               .rowMax=${options.grid_max_rows}
               .columnMin=${options.grid_min_columns}
               .columnMax=${options.grid_max_columns}
+              .columns=${this.sectionConfig.grid_base || DEFAULT_GRID_BASE}
             ></ha-grid-size-picker>
           `}
     `;
