@@ -35,6 +35,7 @@ import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -49,6 +50,8 @@ export class HuiDialogEditSection
 
   @state() private _config?: LovelaceSectionRawConfig;
 
+  @state() private _viewConfig?: LovelaceViewConfig;
+
   @state() private _yamlMode = false;
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
@@ -57,10 +60,10 @@ export class HuiDialogEditSection
 
   protected updated(changedProperties: PropertyValues) {
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
-      const viewConfig = {
+      const sectionConfig = {
         ...this._config,
       };
-      this._editor?.setValue(viewConfig);
+      this._editor?.setValue(sectionConfig);
     }
   }
 
@@ -70,6 +73,9 @@ export class HuiDialogEditSection
     this._config = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
       this._params.sectionIndex,
+    ]);
+    this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
+      this._params.viewIndex,
     ]);
   }
 
@@ -107,6 +113,7 @@ export class HuiDialogEditSection
             <hui-section-settings-editor
               .hass=${this.hass}
               .config=${this._config}
+              .viewConfig=${this._viewConfig}
               @value-changed=${this._configChanged}
             >
             </hui-section-settings-editor>
