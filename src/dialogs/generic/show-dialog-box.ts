@@ -30,12 +30,28 @@ export interface PromptDialogParams extends BaseDialogBoxParams {
   inputMax?: number | string;
 }
 
+export interface FormDialogParams extends BaseDialogBoxParams {
+  formSchema?: { [key: string]: any };
+  formData?: { [key: string]: any };
+  submit?: (formData?: { [key: string]: any }) => void;
+  cancel?: () => void;
+  computeLabelCallback?: (schema) => string;
+  secondaryAction?: () => void;
+  secondaryActionText?: string;
+  secondaryActionDestructive?: boolean;
+}
+
 export interface DialogBoxParams
   extends ConfirmationDialogParams,
-    PromptDialogParams {
+    PromptDialogParams,
+    FormDialogParams {
   confirm?: (out?: string) => void;
   confirmation?: boolean;
   prompt?: boolean;
+  formSchema?: { [key: string]: any };
+  formData?: { [key: string]: any };
+  submit?: (formData?: { [key: string]: any }) => void;
+  secondaryAction?: () => void;
 }
 
 export const loadGenericDialog = () => import("./dialog-box");
@@ -51,6 +67,8 @@ const showDialogHelper = (
   new Promise((resolve) => {
     const origCancel = dialogParams.cancel;
     const origConfirm = dialogParams.confirm;
+    const origSubmit = dialogParams.submit;
+    const origSecondaryAction = dialogParams.secondaryAction;
 
     fireEvent(element, "show-dialog", {
       dialogTag: "dialog-box",
@@ -68,6 +86,18 @@ const showDialogHelper = (
           resolve(extra?.prompt ? out : true);
           if (origConfirm) {
             origConfirm(out);
+          }
+        },
+        submit: (formData) => {
+          resolve(formData);
+          if (origSubmit) {
+            origSubmit(formData);
+          }
+        },
+        secondaryAction: () => {
+          resolve(false);
+          if (origSecondaryAction) {
+            origSecondaryAction();
           }
         },
       },
@@ -94,3 +124,8 @@ export const showPromptDialog = (
   showDialogHelper(element, dialogParams, { prompt: true }) as Promise<
     null | string
   >;
+
+export const showFormDialog = (
+  element: HTMLElement,
+  dialogParams: FormDialogParams
+) => showDialogHelper(element, dialogParams, {}) as Promise<null | object>;
