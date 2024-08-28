@@ -5664,7 +5664,7 @@
               "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Size",
               "column_span_unit": "columns",
-              "column_span_helper": "The size may be smaller if the view has less columns (e.g. on mobile devices)."
+              "column_span_helper": "The size may be smaller if less columns are displayed (e.g. on mobile devices)."
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
