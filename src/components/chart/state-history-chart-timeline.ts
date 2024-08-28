@@ -16,6 +16,7 @@ import {
 } from "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
 import { computeTimelineColor } from "./timeline-chart/timeline-color";
+import { clickIsTouch } from "./click_is_touch";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -224,11 +225,7 @@ export class StateHistoryChartTimeline extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (
-          !this.clickForMoreInfo ||
-          !(e.native instanceof MouseEvent) ||
-          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
-        ) {
+        if (!this.clickForMoreInfo || clickIsTouch(e)) {
           return;
         }
 
