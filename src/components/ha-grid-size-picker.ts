@@ -1,24 +1,24 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "./ha-icon-button";
 import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
+import "./ha-icon-button";
 
 import { mdiRestore } from "@mdi/js";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
 import { conditionalClamp } from "../common/number/clamp";
-
-type GridSizeValue = {
-  rows?: number | "auto";
-  columns?: number;
-};
+import {
+  CardGridSize,
+  DEFAULT_GRID_SIZE,
+} from "../panels/lovelace/common/compute-card-grid-size";
+import { HomeAssistant } from "../types";
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public value?: GridSizeValue;
+  @property({ attribute: false }) public value?: CardGridSize;
 
   @property({ attribute: false }) public rows = 8;
 
@@ -34,7 +34,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public isDefault?: boolean;
 
-  @state() public _localValue?: GridSizeValue = undefined;
+  @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("value")) {
@@ -49,6 +49,7 @@ export class HaGridSizeEditor extends LitElement {
       this.rowMin !== undefined && this.rowMin === this.rowMax;
 
     const autoHeight = this._localValue?.rows === "auto";
+    const fullWidth = this._localValue?.columns === "full";
 
     const rowMin = this.rowMin ?? 1;
     const rowMax = this.rowMax ?? this.rows;
@@ -67,7 +68,7 @@ export class HaGridSizeEditor extends LitElement {
           .min=${columnMin}
           .max=${columnMax}
           .range=${this.columns}
-          .value=${columnValue}
+          .value=${fullWidth ? this.columns : columnValue}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
@@ -104,12 +105,12 @@ export class HaGridSizeEditor extends LitElement {
             `
           : nothing}
         <div
-          class="preview"
+          class="preview ${classMap({ "full-width": fullWidth })}"
           style=${styleMap({
             "--total-rows": this.rows,
             "--total-columns": this.columns,
             "--rows": rowValue,
-            "--columns": columnValue,
+            "--columns": fullWidth ? this.columns : columnValue,
           })}
         >
           <div>
@@ -140,12 +141,21 @@ export class HaGridSizeEditor extends LitElement {
     const cell = ev.currentTarget as HTMLElement;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));
-    const clampedRow = conditionalClamp(rows, this.rowMin, this.rowMax);
-    const clampedColumn = conditionalClamp(
+    const clampedRow: CardGridSize["rows"] = conditionalClamp(
+      rows,
+      this.rowMin,
+      this.rowMax
+    );
+    let clampedColumn: CardGridSize["columns"] = conditionalClamp(
       columns,
       this.columnMin,
       this.columnMax
     );
+
+    const currentSize = this.value ?? DEFAULT_GRID_SIZE;
+    if (currentSize.columns === "full" && clampedColumn === this.columns) {
+      clampedColumn = "full";
+    }
     fireEvent(this, "value-changed", {
       value: { rows: clampedRow, columns: clampedColumn },
     });
@@ -153,12 +163,23 @@ export class HaGridSizeEditor extends LitElement {
 
   private _valueChanged(ev) {
     ev.stopPropagation();
-    const key = ev.currentTarget.id;
-    const newValue = {
-      ...this.value,
-      [key]: ev.detail.value,
+    const key = ev.currentTarget.id as "rows" | "columns";
+    const currentSize = this.value ?? DEFAULT_GRID_SIZE;
+    let value = ev.detail.value as CardGridSize[typeof key];
+
+    if (
+      key === "columns" &&
+      currentSize.columns === "full" &&
+      value === this.columns
+    ) {
+      value = "full";
+    }
+
+    const newSize = {
+      ...currentSize,
+      [key]: value,
     };
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", { value: newSize });
   }
 
   private _reset(ev) {
@@ -173,11 +194,14 @@ export class HaGridSizeEditor extends LitElement {
 
   private _sliderMoved(ev) {
     ev.stopPropagation();
-    const key = ev.currentTarget.id;
-    const value = ev.detail.value;
+    const key = ev.currentTarget.id as "rows" | "columns";
+    const currentSize = this.value ?? DEFAULT_GRID_SIZE;
+    const value = ev.detail.value as CardGridSize[typeof key] | undefined;
+
     if (value === undefined) return;
+
     this._localValue = {
-      ...this.value,
+      ...currentSize,
       [key]: ev.detail.value,
     };
   }
@@ -189,7 +213,7 @@ export class HaGridSizeEditor extends LitElement {
         grid-template-areas:
           "reset column-slider"
           "row-slider preview";
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
         gap: 8px;
       }
@@ -205,17 +229,12 @@ export class HaGridSizeEditor extends LitElement {
       .preview {
         position: relative;
         grid-area: preview;
-        aspect-ratio: 1 / 1.2;
       }
       .preview > div {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
+        position: relative;
         display: grid;
         grid-template-columns: repeat(var(--total-columns), 1fr);
-        grid-template-rows: repeat(var(--total-rows), 1fr);
+        grid-template-rows: repeat(var(--total-rows), 25px);
         gap: 4px;
       }
       .preview .cell {
@@ -226,14 +245,22 @@ export class HaGridSizeEditor extends LitElement {
         opacity: 0.2;
         cursor: pointer;
       }
-      .selected {
+      .preview .selected {
+        position: absolute;
         pointer-events: none;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
       }
       .selected .cell {
         background-color: var(--primary-color);
-        grid-column: 1 / span var(--columns, 0);
-        grid-row: 1 / span var(--rows, 0);
+        grid-column: 1 / span min(var(--columns, 0), var(--total-columns));
+        grid-row: 1 / span min(var(--rows, 0), var(--total-rows));
         opacity: 0.5;
+      }
+      .preview.full-width .selected .cell {
+        grid-column: 1 / -1;
       }
     `,
   ];

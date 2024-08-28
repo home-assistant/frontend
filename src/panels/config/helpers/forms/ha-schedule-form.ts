@@ -20,7 +20,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
@@ -352,21 +352,34 @@ class HaScheduleForm extends LitElement {
   }
 
   private async _handleEventClick(info: any) {
-    if (
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.dialogs.helper_settings.schedule.delete"),
-        text: this.hass.localize(
-          "ui.dialogs.helper_settings.schedule.confirm_delete"
-        ),
-        destructive: true,
-        confirmText: this.hass.localize("ui.common.delete"),
-      }))
-    ) {
-      return;
-    }
     const [day, index] = info.event.id.split("-");
-    const value = [...this[`_${day}`]];
+    const item = [...this[`_${day}`]][index];
+    showScheduleBlockInfoDialog(this, {
+      block: item,
+      updateBlock: (newBlock) => this._updateBlock(day, index, newBlock),
+      deleteBlock: () => this._deleteBlock(day, index),
+    });
+  }
 
+  private _updateBlock(day, index, newBlock) {
+    const [fromH, fromM, _fromS] = newBlock.from.split(":");
+    newBlock.from = `${fromH}:${fromM}`;
+    const [toH, toM, _toS] = newBlock.to.split(":");
+    newBlock.to = `${toH}:${toM}`;
+    if (Number(toH) === 0 && Number(toM) === 0) {
+      newBlock.to = "24:00";
+    }
+    const newValue = { ...this._item };
+    newValue[day] = [...this._item![day]];
+    newValue[day][index] = newBlock;
+
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
+  private _deleteBlock(day, index) {
+    const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
     value.splice(parseInt(index), 1);
     newValue[day] = value;

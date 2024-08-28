@@ -44,6 +44,7 @@ const HIDE_DOMAIN = new Set([
   "persistent_notification",
   "script",
   "sun",
+  "tag",
   "todo",
   "zone",
   ...ASSIST_ENTITIES,

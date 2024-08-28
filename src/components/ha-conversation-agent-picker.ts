@@ -45,15 +45,35 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._agents) {
       return nothing;
     }
-    const value =
-      this.value ??
-      (this.required &&
-      (!this.language ||
-        this._agents
-          .find((agent) => agent.id === "homeassistant")
-          ?.supported_languages.includes(this.language))
-        ? "homeassistant"
-        : NONE);
+    let value = this.value;
+    if (!value && this.required) {
+      // Select Home Assistant conversation agent if it supports the language
+      for (const agent of this._agents) {
+        if (
+          agent.id === "conversation.home_assistant" &&
+          agent.supported_languages.includes(this.language!)
+        ) {
+          value = agent.id;
+          break;
+        }
+      }
+      if (!value) {
+        // Select the first agent that supports the language
+        for (const agent of this._agents) {
+          if (
+            agent.supported_languages === "*" &&
+            agent.supported_languages.includes(this.language!)
+          ) {
+            value = agent.id;
+            break;
+          }
+        }
+      }
+    }
+    if (!value) {
+      value = NONE;
+    }
+
     return html`
       <ha-select
         .label=${this.label ||

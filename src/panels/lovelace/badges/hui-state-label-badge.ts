@@ -16,10 +16,10 @@ export class HuiStateLabelBadge extends HuiEntityBadge {
     const entityBadgeConfig: EntityBadgeConfig = {
       type: "entity",
       entity: config.entity,
-      display_type: config.show_name === false ? "standard" : "complete",
+      show_name: config.show_name ?? true,
     };
 
-    this._config = entityBadgeConfig;
+    super.setConfig(entityBadgeConfig);
   }
 }
 

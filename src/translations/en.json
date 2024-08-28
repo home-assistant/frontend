@@ -7,7 +7,6 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "mailbox": "Mailbox",
     "todo": "To-do lists",
     "developer_tools": "Developer tools",
     "media_browser": "Media",
@@ -70,6 +69,11 @@
   "ui": {
     "backup": {
       "upload_backup": "Upload backup"
+    },
+    "badge": {
+      "entity": {
+        "not_found": "[%key:ui::card::tile::not_found%]"
+      }
     },
     "card": {
       "common": {
@@ -171,6 +175,7 @@
         "actions": {
           "resume_mowing": "Resume mowing",
           "start_mowing": "Start mowing",
+          "pause": "Pause",
           "dock": "Return to dock"
         }
       },
@@ -1533,7 +1538,10 @@
         },
         "schedule": {
           "delete": "Delete item?",
-          "confirm_delete": "Do you want to delete this item?"
+          "confirm_delete": "Do you want to delete this item?",
+          "edit_schedule_block": "Edit schedule block",
+          "start": "Start",
+          "end": "End"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -4693,9 +4701,12 @@
             "title": "Change network channel",
             "new_channel": "New channel",
             "change_channel": "Change channel",
-            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating! It may take up to an hour for changes to propagate to all devices.",
+            "description": "Change your Zigbee channel only after you have eliminated all other sources of 2.4GHz interference by using a USB extension cable and moving your coordinator away from USB 3.0 devices and ports, SSDs, 2.4GHz WiFi networks on the same channel, motherboards, and so on.",
+            "smart_explanation": "It is recommended to use the \"Smart\" option once your environment is optimized as opposed to manually choosing a channel, as it picks the best channel for you after scanning all Zigbee channels. This does not configure ZHA to automatically change channels in the future, it only changes the channel a single time.",
             "channel_has_been_changed": "Network channel has been changed",
-            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
+            "channel_auto": "Smart"
           }
         },
         "zwave_js": {
@@ -5492,8 +5503,8 @@
             "saved": "Saved",
             "reload": "Reload",
             "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
-            "confirm_remove_config_title": "Are you sure you want to remove your dashboard configuration?",
-            "confirm_remove_config_text": "We will automatically generate your dashboard views with your areas and devices if you remove your dashboard configuration.",
+            "confirm_delete_config_title": "Delete dashboard configuration?",
+            "confirm_delete_config_text": "This dashboard will be permanently deleted. The dashboard will be automatically regenerated to display your areas, devices and entities.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
@@ -5577,6 +5588,10 @@
             "tab_layout": "Layout",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
+            },
+            "layout": {
+              "full_width": "Full width card",
+              "full_width_helper": "Take up the full width of the section whatever its size"
             }
           },
           "edit_badge": {
@@ -5646,7 +5661,10 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title."
+              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
+              "column_span": "Size",
+              "column_span_unit": "columns",
+              "column_span_helper": "The size may be smaller if less columns are displayed (e.g. on mobile devices)."
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -5948,9 +5966,9 @@
               "paste": "Paste from clipboard",
               "paste_description": "Paste a {type} card from the clipboard",
               "refresh_interval": "Refresh interval",
-              "show_icon": "Show icon?",
-              "show_name": "Show name?",
-              "show_state": "Show state?",
+              "show_icon": "Show icon",
+              "show_name": "Show name",
+              "show_state": "Show state",
               "tap_action": "Tap behavior",
               "title": "Title",
               "theme": "Theme",
@@ -6090,11 +6108,11 @@
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
-              "display_type": "Display type",
-              "display_type_options": {
-                "minimal": "Minimal (icon only)",
-                "standard": "Standard (icon and state)",
-                "complete": "Complete (icon, name and state)"
+              "displayed_elements": "Displayed elements",
+              "displayed_elements_options": {
+                "icon": "Icon",
+                "name": "Name",
+                "state": "State"
               }
             },
             "generic": {
@@ -6354,12 +6372,6 @@
           }
         },
         "reload_lovelace": "Reload UI"
-      },
-      "mailbox": {
-        "empty": "You do not have any messages",
-        "playback_title": "Message playback",
-        "delete_prompt": "Delete this message?",
-        "delete_button": "Delete"
       },
       "media-browser": {
         "error": {
@@ -6857,6 +6869,7 @@
             "title": "Template",
             "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
             "editor": "Template editor",
+            "result": "Result",
             "reset": "Reset to demo template",
             "confirm_reset": "Do you want to reset your current template back to the demo template?",
             "confirm_clear": "Do you want to clear your current template?",
@@ -7145,7 +7158,8 @@
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
           "solar": "Solar",
-          "by_device": "Consumption by device"
+          "by_device": "Consumption by device",
+          "untracked_consumption": "Untracked consumption"
         },
         "cards": {
           "energy_usage_graph_title": "Energy usage",

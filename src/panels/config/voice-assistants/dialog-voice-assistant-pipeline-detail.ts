@@ -28,6 +28,7 @@ import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
@@ -54,15 +55,36 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     if (this._params.pipeline) {
       this._data = this._params.pipeline;
       this._preferred = this._params.preferred;
-    } else {
-      this._data = {
-        language: (
-          this.hass.config.language || this.hass.locale.language
-        ).substring(0, 2),
-        stt_engine: this._cloudActive ? "cloud" : undefined,
-        tts_engine: this._cloudActive ? "cloud" : undefined,
-      };
+      return;
     }
+
+    let sstDefault: string | undefined;
+    let ttsDefault: string | undefined;
+    if (this._cloudActive) {
+      for (const entity of Object.values(this.hass.entities)) {
+        if (entity.platform !== "cloud") {
+          continue;
+        }
+        if (computeDomain(entity.entity_id) === "stt") {
+          sstDefault = entity.entity_id;
+          if (ttsDefault) {
+            break;
+          }
+        } else if (computeDomain(entity.entity_id) === "tts") {
+          ttsDefault = entity.entity_id;
+          if (sstDefault) {
+            break;
+          }
+        }
+      }
+    }
+    this._data = {
+      language: (
+        this.hass.config.language || this.hass.locale.language
+      ).substring(0, 2),
+      stt_engine: sstDefault,
+      tts_engine: ttsDefault,
+    };
   }
 
   public closeDialog(): void {

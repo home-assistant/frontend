@@ -14,8 +14,8 @@ import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { Lovelace, LovelaceLayoutOptions } from "../types";
-import { conditionalClamp } from "../../../common/number/clamp";
+import type { Lovelace } from "../types";
+import { computeCardGridSize } from "../common/compute-card-grid-size";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -23,43 +23,6 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   direction: "vertical",
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
-
-export const DEFAULT_GRID_OPTIONS = {
-  grid_columns: 4,
-  grid_rows: "auto",
-} as const satisfies LovelaceLayoutOptions;
-
-type GridSizeValue = {
-  rows?: number | "auto";
-  columns?: number;
-};
-
-export const computeSizeOnGrid = (
-  options: LovelaceLayoutOptions
-): GridSizeValue => {
-  const rows =
-    typeof options.grid_rows === "number"
-      ? conditionalClamp(
-          options.grid_rows,
-          options.grid_min_rows,
-          options.grid_max_rows
-        )
-      : DEFAULT_GRID_OPTIONS.grid_rows;
-
-  const columns =
-    typeof options.grid_columns === "number"
-      ? conditionalClamp(
-          options.grid_columns,
-          options.grid_min_columns,
-          options.grid_max_columns
-        )
-      : DEFAULT_GRID_OPTIONS.grid_columns;
-
-  return {
-    rows,
-    columns,
-  };
-};
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -134,16 +97,18 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               card.layout = "grid";
               const layoutOptions = card.getLayoutOptions();
 
-              const { rows, columns } = computeSizeOnGrid(layoutOptions);
+              const { rows, columns } = computeCardGridSize(layoutOptions);
 
               return html`
                 <div
                   style=${styleMap({
-                    "--column-size": columns,
-                    "--row-size": rows,
+                    "--column-size":
+                      typeof columns === "number" ? columns : undefined,
+                    "--row-size": typeof rows === "number" ? rows : undefined,
                   })}
                   class="card ${classMap({
                     "fit-rows": typeof layoutOptions?.grid_rows === "number",
+                    "full-width": columns === "full",
                   })}"
                 >
                   ${editMode
@@ -211,7 +176,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --column-count: 4;
+          --base-column-count: 4;
           --row-gap: var(--ha-section-grid-row-gap, 8px);
           --column-gap: var(--ha-section-grid-column-gap, 8px);
           --row-height: var(--ha-section-grid-row-height, 56px);
@@ -220,8 +185,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           gap: var(--row-gap);
         }
         .container {
+          --grid-column-count: calc(
+            var(--base-column-count) * var(--column-span, 1)
+          );
           display: grid;
-          grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
+          grid-template-columns: repeat(
+            var(--grid-column-count),
+            minmax(0, 1fr)
+          );
           grid-auto-rows: minmax(var(--row-height), auto);
           row-gap: var(--row-gap);
           column-gap: var(--column-gap);
@@ -262,8 +233,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .card {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
-          grid-row: span var(--row-size);
-          grid-column: span var(--column-size);
+          grid-row: span var(--row-size, 1);
+          grid-column: span min(var(--column-size, 1), var(--grid-column-count));
         }
 
         .card.fit-rows {
@@ -272,6 +243,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                 --row-gap
               )
           );
+        }
+
+        .card.full-width {
+          grid-column: 1 / -1;
         }
 
         .card:has(> *) {
