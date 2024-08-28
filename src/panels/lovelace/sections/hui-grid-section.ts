@@ -176,7 +176,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --column-count: 4;
+          --base-column-count: 4;
           --row-gap: var(--ha-section-grid-row-gap, 8px);
           --column-gap: var(--ha-section-grid-column-gap, 8px);
           --row-height: var(--ha-section-grid-row-height, 56px);
@@ -186,7 +186,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
         .container {
           --grid-column-count: calc(
-            var(--column-count) * var(--column-span, 1)
+            var(--base-column-count) * var(--column-span, 1)
           );
           display: grid;
           grid-template-columns: repeat(
@@ -234,7 +234,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
           grid-row: span var(--row-size, 1);
-          grid-column: span min(var(--column-size, 1), var(--column-count));
+          grid-column: span min(var(--column-size, 1), var(--grid-column-count));
         }
 
         .card.fit-rows {
