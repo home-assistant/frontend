@@ -31,7 +31,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Array }) public path?: ItemPath;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
 

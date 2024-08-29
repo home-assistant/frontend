@@ -237,8 +237,9 @@ export class HaNumericStateTrigger extends LitElement {
     }
   }
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): NumericStateTrigger {
     return {
+      platform: "numeric_state",
       entity_id: [],
     };
   }

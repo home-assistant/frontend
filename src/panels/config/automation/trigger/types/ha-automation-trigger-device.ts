@@ -38,8 +38,9 @@ export class HaDeviceTrigger extends LitElement {
 
   private _origTrigger?: DeviceTrigger;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): DeviceTrigger {
     return {
+      platform: "device",
       device_id: "",
       domain: "",
       entity_id: "",

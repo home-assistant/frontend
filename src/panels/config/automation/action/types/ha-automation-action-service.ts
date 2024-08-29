@@ -52,7 +52,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
   );
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): ServiceAction {
     return { action: "", data: {} };
   }
 

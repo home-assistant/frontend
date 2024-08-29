@@ -19,7 +19,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @state() private _timeData?: HaDurationData;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): DelayAction {
     return { delay: "" };
   }
 

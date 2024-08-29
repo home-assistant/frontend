@@ -207,10 +207,9 @@ export default class HaAutomationCondition extends LitElement {
       const elClass = customElements.get(
         `ha-automation-condition-${condition}`
       ) as CustomElementConstructor & {
-        defaultConfig: Omit<Condition, "condition">;
+        defaultConfig: Condition;
       };
       conditions = this.conditions.concat({
-        condition: condition as any,
         ...elClass.defaultConfig,
       });
     }
