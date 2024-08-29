@@ -163,6 +163,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 maxColumnCount
               );
 
+              const rowSpan = sectionConfig?.row_span || 1;
+
               (section as any).itemPath = [idx];
 
               return html`
@@ -170,6 +172,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   class="section"
                   style=${styleMap({
                     "--column-span": columnSpan,
+                    "--row-span": rowSpan,
                   })}
                 >
                   ${editMode
@@ -308,6 +311,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       .section {
         border-radius: var(--ha-card-border-radius, 12px);
         grid-column: span var(--column-span);
+        grid-row: span var(--row-span);
       }
 
       .section:not(:has(> *:not([hidden]))) {
