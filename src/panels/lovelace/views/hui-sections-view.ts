@@ -47,7 +47,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
-  @state() private _sectionCount = 0;
+  @state() private _sectionColumnCount = 0;
 
   @state() _dragging = false;
 
@@ -89,9 +89,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _computeSectionsCount() {
-    this._sectionCount = this.sections.filter(
-      (section) => !section.hidden
-    ).length;
+    this._sectionColumnCount = this.sections
+      .filter((section) => !section.hidden)
+      .map((section) => section.config.column_span ?? 1)
+      .reduce((acc, val) => acc + val, 0);
   }
 
   private _sectionVisibilityChanged = () => {
@@ -125,7 +126,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const sections = this.sections;
     const totalSectionCount =
-      this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
+      this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
     const maxColumnCount = this._columnsController.value ?? 1;
