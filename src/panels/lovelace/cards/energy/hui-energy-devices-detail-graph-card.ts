@@ -377,7 +377,9 @@ export class HuiEnergyDevicesDetailGraphCard
       });
     });
     const dataset = {
-      label: this.hass.localize("ui.panel.energy.charts.untracked_consumption"),
+      label: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+      ),
       hidden: this._hiddenStats.includes("untracked"),
       borderColor: getEnergyColor(
         computedStyle,
