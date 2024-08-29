@@ -22,8 +22,8 @@ export class HaTemplateTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
-    return { value_template: "" };
+  public static get defaultConfig(): TemplateTrigger {
+    return { platform: "template", value_template: "" };
   }
 
   public willUpdate(changedProperties: PropertyValues) {

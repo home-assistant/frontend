@@ -25,7 +25,7 @@ export class HaWaitForTriggerAction
 
   @property({ attribute: false }) public path?: ItemPath;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): WaitForTriggerAction {
     return { wait_for_trigger: [] };
   }
 

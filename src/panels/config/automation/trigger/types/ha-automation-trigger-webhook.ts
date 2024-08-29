@@ -36,8 +36,9 @@ export class HaWebhookTrigger extends LitElement {
 
   private _unsub?: UnsubscribeFunc;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): WebhookTrigger {
     return {
+      platform: "webhook",
       allowed_methods: [...DEFAULT_METHODS],
       local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,

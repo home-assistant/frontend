@@ -7,7 +7,10 @@ import "../ha-automation-condition";
 import type { ConditionElement } from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-logical")
-export class HaLogicalCondition extends LitElement implements ConditionElement {
+export abstract class HaLogicalCondition
+  extends LitElement
+  implements ConditionElement
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: LogicalCondition;
@@ -15,12 +18,6 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public path?: ItemPath;
-
-  public static get defaultConfig() {
-    return {
-      conditions: [],
-    };
-  }
 
   protected render() {
     return html`
