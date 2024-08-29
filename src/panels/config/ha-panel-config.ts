@@ -51,7 +51,6 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../types";
 import { subscribeLabelRegistry } from "../../data/label_registry";
 import { subscribeFloorRegistry } from "../../data/floor_registry";
-import { throttle } from "../../common/util/throttle";
 
 declare global {
   // for fire event
@@ -396,10 +395,6 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     initialValue: [],
   });
 
-  private _hassThrottler = throttle((el, hass) => {
-    el.hass = hass;
-  }, 1000);
-
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
@@ -646,11 +641,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
     el.route = this.routeTail;
-    if (el.hass !== undefined) {
-      this._hassThrottler(el, this.hass);
-    } else {
-      el.hass = this.hass;
-    }
+    el.hass = this.hass;
     el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
     el.isWide = isWide;
     el.narrow = this.narrow;
