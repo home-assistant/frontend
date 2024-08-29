@@ -34,7 +34,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): WaitAction {
     return { wait_template: "", continue_on_timeout: true };
   }
 

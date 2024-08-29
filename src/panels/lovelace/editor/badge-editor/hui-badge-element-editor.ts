@@ -1,5 +1,5 @@
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import { css, CSSResultGroup, html, nothing, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -8,11 +8,11 @@ import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 import "./hui-badge-visibility-editor";
 
-type Tab = "config" | "visibility";
+const tabs = ["config", "visibility"] as const;
 
 @customElement("hui-badge-element-editor")
 export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig> {
-  @state() private _curTab: Tab = "config";
+  @state() private _currTab: (typeof tabs)[number] = tabs[0];
 
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getBadgeElementClass(this.configElementType!);
@@ -36,11 +36,12 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
     return undefined;
   }
 
-  private _handleTabSelected(ev: CustomEvent): void {
-    if (!ev.detail.value) {
+  private _handleTabChanged(ev: CustomEvent): void {
+    const newTab = tabs[ev.detail.index];
+    if (newTab === this._currTab) {
       return;
     }
-    this._curTab = ev.detail.value.id;
+    this._currTab = newTab;
   }
 
   private _configChanged(ev: CustomEvent): void {
@@ -49,11 +50,9 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
   }
 
   protected renderConfigElement(): TemplateResult {
-    const displayedTabs: Tab[] = ["config", "visibility"];
-
     let content: TemplateResult<1> | typeof nothing = nothing;
 
-    switch (this._curTab) {
+    switch (this._currTab) {
       case "config":
         content = html`${super.renderConfigElement()}`;
         break;
@@ -68,22 +67,21 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
         break;
     }
     return html`
-      <paper-tabs
-        scrollable
-        hide-scroll-buttons
-        .selected=${displayedTabs.indexOf(this._curTab)}
-        @selected-item-changed=${this._handleTabSelected}
+      <mwc-tab-bar
+        .activeIndex=${tabs.indexOf(this._currTab)}
+        @MDCTabBar:activated=${this._handleTabChanged}
       >
-        ${displayedTabs.map(
-          (tab, index) => html`
-            <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
-              ${this.hass.localize(
+        ${tabs.map(
+          (tab) => html`
+            <mwc-tab
+              .label=${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_badge.tab_${tab}`
               )}
-            </paper-tab>
+            >
+            </mwc-tab>
           `
         )}
-      </paper-tabs>
+      </mwc-tab-bar>
       ${content}
     `;
   }
@@ -92,9 +90,7 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
     return [
       HuiElementEditor.styles,
       css`
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          color: var(--primary-text-color);
+        mwc-tab-bar {
           text-transform: uppercase;
           margin-bottom: 16px;
           border-bottom: 1px solid var(--divider-color);

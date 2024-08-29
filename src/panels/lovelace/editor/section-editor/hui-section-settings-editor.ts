@@ -2,7 +2,6 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   HaFormSchema,
   SchemaUnion,
@@ -25,7 +24,7 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, maxColumns: number) =>
+    (maxColumns: number) =>
       [
         {
           name: "title",
@@ -37,9 +36,7 @@ export class HuiDialogEditSection extends LitElement {
             number: {
               min: 1,
               max: maxColumns,
-              unit_of_measurement: localize(
-                `ui.panel.lovelace.editor.edit_section.settings.column_span_unit`
-              ),
+              slider_ticks: true,
             },
           },
         },
@@ -52,10 +49,7 @@ export class HuiDialogEditSection extends LitElement {
       column_span: this.config.column_span || 1,
     };
 
-    const schema = this._schema(
-      this.hass.localize,
-      this.viewConfig.max_columns || 4
-    );
+    const schema = this._schema(this.viewConfig.max_columns || 4);
 
     return html`
       <ha-form
