@@ -5435,6 +5435,9 @@
               "energy_usage": "Energy usage",
               "previous_energy_usage": "Previous energy usage"
             },
+            "energy_devices_detail_graph": {
+              "untracked_consumption": "Untracked consumption"
+            },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
@@ -5546,7 +5549,10 @@
               "sections": "Sections (experimental)"
             },
             "subview": "Subview",
-            "max_columns": "Max number of columns",
+            "max_columns": "Max number of sections wide",
+            "section_specifics": "Sections view specifics settings",
+            "dense_section_placement": "Dense section placement",
+            "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
@@ -5662,9 +5668,8 @@
             "settings": {
               "title": "Title",
               "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
-              "column_span": "Size",
-              "column_span_unit": "columns",
-              "column_span_helper": "The size may be smaller if less columns are displayed (e.g. on mobile devices)."
+              "column_span": "Width",
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -7158,8 +7163,7 @@
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
           "solar": "Solar",
-          "by_device": "Consumption by device",
-          "untracked_consumption": "Untracked consumption"
+          "by_device": "Consumption by device"
         },
         "cards": {
           "energy_usage_graph_title": "Energy usage",

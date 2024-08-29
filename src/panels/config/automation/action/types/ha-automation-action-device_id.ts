@@ -36,7 +36,7 @@ export class HaDeviceAction extends LitElement {
 
   private _origAction?: DeviceAction;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): DeviceAction {
     return {
       device_id: "",
       domain: "",

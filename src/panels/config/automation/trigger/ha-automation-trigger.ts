@@ -143,10 +143,9 @@ export default class HaAutomationTrigger extends LitElement {
       const elClass = customElements.get(
         `ha-automation-trigger-${platform}`
       ) as CustomElementConstructor & {
-        defaultConfig: Omit<Trigger, "platform">;
+        defaultConfig: Trigger;
       };
       triggers = this.triggers.concat({
-        platform: platform as any,
         ...elClass.defaultConfig,
       });
     }

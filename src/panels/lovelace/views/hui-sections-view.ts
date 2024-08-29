@@ -9,6 +9,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-icon-button";
@@ -47,7 +48,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
-  @state() private _sectionCount = 0;
+  @state() private _sectionColumnCount = 0;
 
   @state() _dragging = false;
 
@@ -89,9 +90,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _computeSectionsCount() {
-    this._sectionCount = this.sections.filter(
-      (section) => !section.hidden
-    ).length;
+    this._sectionColumnCount = this.sections
+      .filter((section) => !section.hidden)
+      .map((section) => section.config.column_span ?? 1)
+      .reduce((acc, val) => acc + val, 0);
   }
 
   private _sectionVisibilityChanged = () => {
@@ -125,7 +127,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const sections = this.sections;
     const totalSectionCount =
-      this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
+      this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
     const maxColumnCount = this._columnsController.value ?? 1;
@@ -146,7 +148,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         .rollback=${false}
       >
         <div
-          class="container"
+          class="container ${classMap({
+            dense: Boolean(this._config?.dense_section_placement),
+          })}"
           style=${styleMap({
             "--total-section-count": totalSectionCount,
             "--max-column-count": maxColumnCount,
@@ -322,6 +326,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         align-items: start;
         justify-content: center;
         grid-template-columns: repeat(var(--column-count), 1fr);
+        grid-auto-flow: row;
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
         box-sizing: content-box;
@@ -330,6 +335,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           var(--column-count) * var(--column-max-width) +
             (var(--column-count) - 1) * var(--column-gap)
         );
+      }
+      .container.dense {
+        grid-auto-flow: row dense;
       }
 
       @media (max-width: 600px) {

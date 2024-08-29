@@ -86,7 +86,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     this._unsubMql = undefined;
   }
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): ChooseAction {
     return { choose: [{ conditions: [], sequence: [] }] };
   }
 

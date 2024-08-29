@@ -323,6 +323,7 @@ export interface NumberSelector {
     step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
+    slider_ticks?: boolean;
   } | null;
 }
 
