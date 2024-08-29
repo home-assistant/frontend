@@ -81,6 +81,12 @@ export class HuiViewEditor extends LitElement {
                   },
                 },
               },
+              {
+                name: "dense_section_placement",
+                selector: {
+                  boolean: {},
+                },
+              },
             ] as const satisfies HaFormSchema[])
           : []),
         {
@@ -164,12 +170,11 @@ export class HuiViewEditor extends LitElement {
       case "path":
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
-        return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
-        return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
       case "max_columns":
+      case "dense_section_placement":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.max_columns"
+          `ui.panel.lovelace.editor.edit_view.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -183,9 +188,11 @@ export class HuiViewEditor extends LitElement {
   ) => {
     switch (schema.name) {
       case "subview":
+      case "dense_section_placement":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.subview_helper"
+          `ui.panel.lovelace.editor.edit_view.${schema.name}_helper`
         );
+
       default:
         return undefined;
     }

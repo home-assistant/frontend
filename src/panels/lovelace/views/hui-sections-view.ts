@@ -9,6 +9,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-icon-button";
@@ -147,7 +148,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         .rollback=${false}
       >
         <div
-          class="container"
+          class="container ${classMap({
+            dense: Boolean(this._config?.dense_section_placement),
+          })}"
           style=${styleMap({
             "--total-section-count": totalSectionCount,
             "--max-column-count": maxColumnCount,
@@ -323,7 +326,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         align-items: start;
         justify-content: center;
         grid-template-columns: repeat(var(--column-count), 1fr);
-        grid-auto-flow: row dense;
+        grid-auto-flow: row;
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
         box-sizing: content-box;
@@ -332,6 +335,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           var(--column-count) * var(--column-max-width) +
             (var(--column-count) - 1) * var(--column-gap)
         );
+      }
+      .container.dense {
+        grid-auto-flow: row dense;
       }
 
       @media (max-width: 600px) {

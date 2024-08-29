@@ -5550,6 +5550,8 @@
             },
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
+            "dense_section_placement": "Dense section placement",
+            "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
