@@ -323,6 +323,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         align-items: start;
         justify-content: center;
         grid-template-columns: repeat(var(--column-count), 1fr);
+        grid-auto-flow: row dense;
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
         box-sizing: content-box;
