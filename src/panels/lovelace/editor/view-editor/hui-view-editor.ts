@@ -77,6 +77,7 @@ export class HuiViewEditor extends LitElement {
                     min: 1,
                     max: 10,
                     mode: "slider",
+                    slider_ticks: true,
                   },
                 },
               },
