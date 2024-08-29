@@ -36,6 +36,7 @@ export class HuiDialogEditSection extends LitElement {
             number: {
               min: 1,
               max: maxColumns,
+              slider_ticks: true,
             },
           },
         },
