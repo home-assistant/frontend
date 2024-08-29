@@ -49,6 +49,12 @@ export class HuiViewEditor extends LitElement {
         { name: "path", selector: { text: {} } },
         { name: "theme", selector: { theme: {} } },
         {
+          name: "subview",
+          selector: {
+            boolean: {},
+          },
+        },
+        {
           name: "type",
           selector: {
             select: {
@@ -71,30 +77,32 @@ export class HuiViewEditor extends LitElement {
         ...(viewType === SECTION_VIEW_LAYOUT
           ? ([
               {
-                name: "max_columns",
-                selector: {
-                  number: {
-                    min: 1,
-                    max: 10,
-                    mode: "slider",
-                    slider_ticks: true,
+                name: "section_specifics",
+                type: "expandable",
+                flatten: true,
+                expanded: true,
+                schema: [
+                  {
+                    name: "max_columns",
+                    selector: {
+                      number: {
+                        min: 1,
+                        max: 10,
+                        mode: "slider",
+                        slider_ticks: true,
+                      },
+                    },
                   },
-                },
-              },
-              {
-                name: "dense_section_placement",
-                selector: {
-                  boolean: {},
-                },
+                  {
+                    name: "dense_section_placement",
+                    selector: {
+                      boolean: {},
+                    },
+                  },
+                ],
               },
             ] as const satisfies HaFormSchema[])
           : []),
-        {
-          name: "subview",
-          selector: {
-            boolean: {},
-          },
-        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -173,6 +181,7 @@ export class HuiViewEditor extends LitElement {
       case "subview":
       case "max_columns":
       case "dense_section_placement":
+      case "section_specifics":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}`
         );
