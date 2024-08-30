@@ -9,6 +9,8 @@ import "./hui-card-visibility-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 
 const TABS = ["config", "visibility", "layout"] as const;
 
@@ -20,23 +22,22 @@ class HuiCardEditor extends LitElement {
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
 
-  @property({ type: Boolean, attribute: "show-visibility-tab" })
-  public showVisibilityTab = false;
-
-  @property({ type: Boolean, attribute: "show-layout-tab" })
-  public showLayoutTab = false;
+  @property({ attribute: false }) public containerConfig!:
+    | LovelaceViewConfig
+    | LovelaceSectionConfig;
 
   @query("hui-card-element-editor")
   public elementEditor?: HuiCardElementEditor;
 
   @state() private _selectedTab: (typeof TABS)[number] = TABS[0];
 
-  private _tabs = memoizeOne((showLayoutTab: boolean, cardType: string) =>
-    TABS.filter((tab) => {
-      if (tab === "visibility") return cardType !== "conditional";
-      if (tab === "layout") return showLayoutTab;
-      return true;
-    })
+  private _tabs = memoizeOne(
+    (containerType: string | undefined, cardType: string) =>
+      TABS.filter((tab) => {
+        if (tab === "visibility") return cardType !== "conditional";
+        if (tab === "layout") return containerType === "grid";
+        return true;
+      })
   );
 
   private renderContent() {
@@ -78,7 +79,8 @@ class HuiCardEditor extends LitElement {
 
   protected render() {
     const cardType = this.config.type;
-    const tabs = this._tabs(this.showLayoutTab, cardType);
+    const containerType = this.containerConfig.type;
+    const tabs = this._tabs(containerType, cardType);
 
     if (tabs.length <= 1) {
       return this.renderContent();
@@ -105,7 +107,8 @@ class HuiCardEditor extends LitElement {
 
   private _handleTabChanged(ev: CustomEvent): void {
     const cardType = this.config.type;
-    const tabs = this._tabs(this.showLayoutTab, cardType);
+    const containerType = this.containerConfig.type;
+    const tabs = this._tabs(containerType, cardType);
     const newTab = tabs[ev.detail.index];
     if (newTab === this._selectedTab) {
       return;
