@@ -349,7 +349,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         overflow: hidden;
       }
       .badge.no-info {
-        padding: 0;
+        padding: 0 0 0 6px;
       }
       .badge:not(.no-icon) img {
         margin-left: -6px;
