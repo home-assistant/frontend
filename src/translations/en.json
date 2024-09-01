@@ -3311,6 +3311,7 @@
                     "service_name_no_targets": "{domain} ''{name}''",
                     "service": "Perform an action",
                     "target_template": "templated {name}",
+                    "target_every_entity": "every entity",
                     "target_unknown_entity": "unknown entity",
                     "target_unknown_device": "unknown device",
                     "target_unknown_area": "unknown area",

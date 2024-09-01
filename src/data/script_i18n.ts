@@ -127,6 +127,12 @@ const tryDescribeAction = <T extends ActionType>(
                 targets.push(
                   computeEntityRegistryName(hass, entityReg) || targetThing
                 );
+              } else if (targetThing === "all") {
+                targets.push(
+                  hass.localize(
+                    `${actionTranslationBaseKey}.service.description.target_every_entity`
+                  )
+                );
               } else {
                 targets.push(
                   hass.localize(
