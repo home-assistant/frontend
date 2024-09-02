@@ -194,29 +194,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: var(--row-height);
         }
 
-        .title {
-          color: var(--primary-text-color);
-          font-size: 20px;
-          font-weight: normal;
-          margin: 0px;
-          letter-spacing: 0.1px;
-          line-height: 32px;
-          text-align: var(--ha-view-sections-title-text-align, start);
-          min-height: 32px;
-          display: block;
-          height: var(--row-height);
-          box-sizing: border-box;
-          padding: 0 10px 10px;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-        }
-
-        .title.placeholder {
-          color: var(--secondary-text-color);
-          font-style: italic;
-        }
-
         .card {
           border-radius: var(--ha-card-border-radius, 12px);
           position: relative;
