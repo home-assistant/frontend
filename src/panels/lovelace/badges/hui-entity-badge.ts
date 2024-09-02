@@ -351,7 +351,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       .badge.no-info {
         padding: 0;
       }
-      .badge:not(.no-icon) img {
+      .badge:not(.no-icon):not(.no-info) img {
         margin-left: -6px;
         margin-inline-start: -6px;
         margin-inline-end: initial;
