@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
 } from "@mdi/js";
 import deepFreeze from "deep-freeze";
+import { dump, load } from "js-yaml";
 import {
   CSSResultGroup,
   LitElement,
@@ -23,6 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu-new";
 import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-code-editor";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
@@ -82,7 +84,7 @@ export class HuiDialogEditCard
   @query("hui-card-editor")
   private _cardEditorEl?: HuiCardElementEditor;
 
-  @state() private _yamlMode = true;
+  @state() private _yamlMode = false;
 
   @state() private _documentationURL?: string;
 
@@ -92,8 +94,7 @@ export class HuiDialogEditCard
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
-    this._yamlMode = true;
-    this._guiModeAvailable = true;
+    this._yamlMode = false;
 
     const containerConfig = findLovelaceContainer(
       params.lovelaceConfig,
@@ -275,17 +276,33 @@ export class HuiDialogEditCard
         </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
-            <hui-card-editor
-              .containerConfig=${this._containerConfig}
-              .hass=${this.hass}
-              .lovelace=${this._params.lovelaceConfig}
-              .config=${this._cardConfig}
-              @config-changed=${this._handleConfigChanged}
-              @GUImode-changed=${this._handleGUIModeChanged}
-              @editor-save=${this._save}
-              dialogInitialFocus
-            >
-            </hui-card-editor>
+            ${this._yamlMode
+              ? html`
+                  <ha-code-editor
+                    mode="yaml"
+                    autofocus
+                    autocomplete-entities
+                    autocomplete-icons
+                    .hass=${this.hass}
+                    .value=${dump(this._cardConfig)}
+                    @value-changed=${this._handleYAMLChanged}
+                    @keydown=${this._ignoreKeydown}
+                    dir="ltr"
+                  ></ha-code-editor>
+                `
+              : html`
+                  <hui-card-editor
+                    .containerConfig=${this._containerConfig}
+                    .hass=${this.hass}
+                    .lovelace=${this._params.lovelaceConfig}
+                    .config=${this._cardConfig}
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
+                    @editor-save=${this._save}
+                    dialogInitialFocus
+                  >
+                  </hui-card-editor>
+                `}
           </div>
           <div class="element-preview">
             ${this._isInSection
@@ -361,17 +378,20 @@ export class HuiDialogEditCard
     ev.stopPropagation();
   }
 
+  private _handleYAMLChanged(ev: CustomEvent) {
+    this._cardConfig = load(ev.detail.value) as LovelaceCardConfig;
+    this._dirty = true;
+  }
+
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
-    this._guiModeAvailable = ev.detail.guiModeAvailable;
     this._dirty = true;
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
     this._yamlMode = ev.detail.guiMode;
-    this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   private _opened() {
