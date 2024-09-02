@@ -1,4 +1,5 @@
 import { Button } from "@material/mwc-button";
+import { Corner } from "@material/web/menu/menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
@@ -14,8 +15,20 @@ export class HaButtonMenuNew extends LitElement {
 
   @property() public positioning?: "fixed" | "absolute" | "popover";
 
-  @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
-    false;
+  @property({ type: Boolean, attribute: "no-horizontal-flip" })
+  public noHorizontalFlip = false;
+
+  @property({ type: Boolean, attribute: "no-vertical-flip" })
+  public noVerticalFlip = false;
+
+  @property({ attribute: "anchor-corner" })
+  public anchorCorner: Corner = Corner.END_START;
+
+  @property({ attribute: "menu-corner" })
+  public menuCorner: Corner = Corner.START_START;
+
+  @property({ type: Boolean, attribute: "has-overflow" })
+  public hasOverflow = false;
 
   @query("ha-menu", true) private _menu!: HaMenu;
 
@@ -39,6 +52,10 @@ export class HaButtonMenuNew extends LitElement {
       <ha-menu
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
+        .anchorCorner=${this.anchorCorner}
+        .menuCorner=${this.menuCorner}
+        .noVerticalFlip=${this.noVerticalFlip}
+        .noHorizontalFlip=${this.noHorizontalFlip}
       >
         <slot></slot>
       </ha-menu>

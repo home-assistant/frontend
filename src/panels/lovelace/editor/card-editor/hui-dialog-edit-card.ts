@@ -1,4 +1,12 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import "@material/mwc-list";
+import "@material/web/divider/divider";
+import {
+  mdiCheck,
+  mdiClose,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiOpenInNew,
+} from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   CSSResultGroup,
@@ -12,25 +20,23 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-button";
+import "../../../../components/ha-button-menu-new";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-menu-item";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import {
-  getCustomCardEntry,
-  isCustomType,
-  stripCustomPrefix,
-} from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
+import { computeCardName } from "../../common/compute-card-name";
 import "../../sections/hui-section";
 import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
@@ -73,12 +79,10 @@ export class HuiDialogEditCard
 
   @state() private _error?: string;
 
-  @state() private _guiModeAvailable? = true;
-
   @query("hui-card-editor")
   private _cardEditorEl?: HuiCardElementEditor;
 
-  @state() private _GUImode = true;
+  @state() private _yamlMode = true;
 
   @state() private _documentationURL?: string;
 
@@ -88,7 +92,7 @@ export class HuiDialogEditCard
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
-    this._GUImode = true;
+    this._yamlMode = true;
     this._guiModeAvailable = true;
 
     const containerConfig = findLovelaceContainer(
@@ -168,21 +172,7 @@ export class HuiDialogEditCard
 
     let heading: string;
     if (this._cardConfig && this._cardConfig.type) {
-      let cardName: string | undefined;
-      if (isCustomType(this._cardConfig.type)) {
-        // prettier-ignore
-        cardName = getCustomCardEntry(
-          stripCustomPrefix(this._cardConfig.type)
-        )?.name;
-        // Trim names that end in " Card" so as not to redundantly duplicate it
-        if (cardName?.toLowerCase().endsWith(" card")) {
-          cardName = cardName.substring(0, cardName.length - 5);
-        }
-      } else {
-        cardName = this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
-        );
-      }
+      const cardName = computeCardName(this._cardConfig, this.hass!.localize);
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.typed_header",
         { type: cardName }
@@ -218,20 +208,70 @@ export class HuiDialogEditCard
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" @click=${this._enlarge}>${heading}</span>
-          ${this._documentationURL !== undefined
-            ? html`
-                <a
-                  slot="actionItems"
-                  href=${this._documentationURL}
-                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                  target="_blank"
-                  rel="noreferrer"
-                  dir=${computeRTLDirection(this.hass)}
-                >
-                  <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
-                </a>
-              `
-            : nothing}
+          <ha-button-menu-new
+            slot="actionItems"
+            anchor-corner="end-end"
+            menu-corner="start-end"
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            >
+            </ha-icon-button>
+            <ha-menu-item @click=${this._enableGuiMode}>
+              ${!this._yamlMode
+                ? html`
+                    <ha-svg-icon
+                      class="selected_menu_item"
+                      slot="start"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>
+                  `
+                : html`<span class="blank-icon" slot="start"></span>`}
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.edit_ui"
+                )}
+              </div>
+            </ha-menu-item>
+            <ha-menu-item @click=${this._enableYamlMode}>
+              ${this._yamlMode
+                ? html`
+                    <ha-svg-icon
+                      class="selected_menu_item"
+                      slot="start"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>
+                  `
+                : html`<span class="blank-icon" slot="start"></span>`}
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.edit_yaml"
+                )}
+              </div>
+            </ha-menu-item>
+            ${this._documentationURL !== undefined
+              ? html`
+                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-menu-item
+                    type="link"
+                    href=${this._documentationURL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiHelpCircle}
+                    ></ha-svg-icon>
+                    <div slot="headline">
+                      ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                    </div>
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-menu-item>
+                `
+              : nothing}
+          </ha-button-menu-new>
         </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
@@ -275,47 +315,42 @@ export class HuiDialogEditCard
               : ``}
           </div>
         </div>
-        ${this._cardConfig !== undefined
+        <ha-button
+          @click=${this._cancel}
+          slot="secondaryAction"
+          dialogInitialFocus
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        ${this._cardConfig !== undefined && this._dirty
           ? html`
-              <mwc-button
-                slot="secondaryAction"
-                @click=${this._toggleMode}
-                .disabled=${!this._guiModeAvailable}
-                class="gui-mode-button"
+              <ha-button
+                slot="primaryAction"
+                ?disabled=${!this._canSave || this._saving}
+                @click=${this._save}
               >
-                ${this.hass!.localize(
-                  !this._cardEditorEl || this._GUImode
-                    ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                    : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                )}
-              </mwc-button>
+                ${this._saving
+                  ? html`
+                      <ha-circular-progress
+                        indeterminate
+                        aria-label="Saving"
+                        size="small"
+                      ></ha-circular-progress>
+                    `
+                  : this.hass!.localize("ui.common.save")}
+              </ha-button>
             `
-          : ""}
-        <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._cancel} dialogInitialFocus>
-            ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
-          ${this._cardConfig !== undefined && this._dirty
-            ? html`
-                <mwc-button
-                  ?disabled=${!this._canSave || this._saving}
-                  @click=${this._save}
-                >
-                  ${this._saving
-                    ? html`
-                        <ha-circular-progress
-                          indeterminate
-                          aria-label="Saving"
-                          size="small"
-                        ></ha-circular-progress>
-                      `
-                    : this.hass!.localize("ui.common.save")}
-                </mwc-button>
-              `
-            : ``}
-        </div>
+          : nothing}
       </ha-dialog>
     `;
+  }
+
+  private _enableGuiMode() {
+    this._yamlMode = false;
+  }
+
+  private _enableYamlMode() {
+    this._yamlMode = true;
   }
 
   private _enlarge() {
@@ -335,12 +370,8 @@ export class HuiDialogEditCard
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
-    this._GUImode = ev.detail.guiMode;
+    this._yamlMode = ev.detail.guiMode;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
-  }
-
-  private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
   }
 
   private _opened() {
@@ -562,6 +593,12 @@ export class HuiDialogEditCard
         ha-dialog-header a {
           color: inherit;
           text-decoration: none;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        .blank-icon {
+          width: 16px;
         }
       `,
     ];
