@@ -65,20 +65,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
 
     return html`
-      ${this._config.title || this.lovelace?.editMode
-        ? html`
-            <h2
-              class="title ${classMap({
-                placeholder: !this._config.title,
-              })}"
-            >
-              ${this._config.title ||
-              this.hass.localize(
-                "ui.panel.lovelace.editor.section.unnamed_section"
-              )}
-            </h2>
-          `
-        : nothing}
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._cardMoved}
@@ -206,31 +192,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .container.edit-mode {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
+          border-start-end-radius: 0px;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
-        }
-
-        .title {
-          color: var(--primary-text-color);
-          font-size: 20px;
-          font-weight: normal;
-          margin: 0px;
-          letter-spacing: 0.1px;
-          line-height: 32px;
-          text-align: var(--ha-view-sections-title-text-align, start);
-          min-height: 32px;
-          display: block;
-          height: var(--row-height);
-          box-sizing: border-box;
-          padding: 0 10px 10px;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-        }
-
-        .title.placeholder {
-          color: var(--secondary-text-color);
-          font-style: italic;
         }
 
         .card {
