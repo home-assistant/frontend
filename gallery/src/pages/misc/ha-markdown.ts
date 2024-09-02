@@ -67,6 +67,8 @@ export class DemoMiscMarkdown extends LitElement {
               <ha-markdown
                 .content=${generateContent(md)}
                 .breaks=${md.breaks}
+                .allowSvg=${md.allowSvg}
+                .lazyImages=${md.lazyImages}
               ></ha-markdown>
             </ha-card>`
         )}
