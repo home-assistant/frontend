@@ -175,30 +175,53 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     "--column-span": columnSpan,
                   })}
                 >
-                  ${editMode
-                    ? html`
-                        <div class="section-actions">
-                          <ha-svg-icon
-                            aria-hidden="true"
-                            class="handle"
-                            .path=${mdiArrowAll}
-                          ></ha-svg-icon>
-                          <ha-icon-button
-                            .label=${this.hass.localize("ui.common.edit")}
-                            @click=${this._editSection}
-                            .index=${idx}
-                            .path=${mdiPencil}
-                          ></ha-icon-button>
-                          <ha-icon-button
-                            .label=${this.hass.localize("ui.common.delete")}
-                            @click=${this._deleteSection}
-                            .index=${idx}
-                            .path=${mdiDelete}
-                          ></ha-icon-button>
-                        </div>
-                      `
-                    : nothing}
-                  ${section}
+                    ${
+                      sectionConfig?.title || this.lovelace?.editMode
+                        ? html`
+                            <div class="section-header">
+                              <h2
+                                class="section-title ${classMap({
+                                  placeholder: !sectionConfig?.title,
+                                })}"
+                              >
+                                ${sectionConfig?.title ||
+                                this.hass.localize(
+                                  "ui.panel.lovelace.editor.section.unnamed_section"
+                                )}
+                              </h2>
+                              ${editMode
+                                ? html`
+                                    <div class="section-actions">
+                                      <ha-svg-icon
+                                        aria-hidden="true"
+                                        class="handle"
+                                        .path=${mdiArrowAll}
+                                      ></ha-svg-icon>
+                                      <ha-icon-button
+                                        .label=${this.hass.localize(
+                                          "ui.common.edit"
+                                        )}
+                                        @click=${this._editSection}
+                                        .index=${idx}
+                                        .path=${mdiPencil}
+                                      ></ha-icon-button>
+                                      <ha-icon-button
+                                        .label=${this.hass.localize(
+                                          "ui.common.delete"
+                                        )}
+                                        @click=${this._deleteSection}
+                                        .index=${idx}
+                                        .path=${mdiDelete}
+                                      ></ha-icon-button>
+                                    </div>
+                                  `
+                                : nothing}
+                            </div>
+                          `
+                        : nothing
+                    }
+                    ${section}
+                  </div>
                 </div>
               `;
             }
@@ -344,27 +367,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         }
       }
 
-      .section-actions {
-        position: absolute;
-        height: 36px;
-        top: calc(var(--row-height) + var(--row-gap) - 36px + 2px);
-        right: 0;
-        inset-inline-end: 0;
-        inset-inline-start: initial;
-        opacity: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.2s ease-in-out;
-        background-color: rgba(var(--rgb-card-background-color), 0.3);
-        border-top-left-radius: 18px;
-        border-top-right-radius: 18px;
-        background: var(--secondary-background-color);
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-        color: var(--primary-text-color);
-      }
-
       .handle {
         cursor: grab;
         padding: 8px;
@@ -395,6 +397,55 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
         margin: 16px 8px;
         text-align: center;
+      }
+
+      .section-header {
+        position: relative;
+        height: var(--row-height);
+        margin-bottom: var(--row-gap);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .section-title {
+        color: var(--primary-text-color);
+        font-size: 20px;
+        font-weight: normal;
+        margin: 0px;
+        letter-spacing: 0.1px;
+        line-height: 32px;
+        text-align: var(--ha-view-sections-title-text-align, start);
+        min-height: 32px;
+        box-sizing: border-box;
+        padding: 0 10px 10px;
+      }
+
+      .section-title.placeholder {
+        color: var(--secondary-text-color);
+        font-style: italic;
+      }
+
+      .section-actions {
+        position: absolute;
+        height: 36px;
+        bottom: calc(-1 * var(--row-gap) - 2px);
+        right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
+        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease-in-out;
+        background-color: rgba(var(--rgb-card-background-color), 0.3);
+        border-radius: var(--ha-card-border-radius, 12px);
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        background: var(--secondary-background-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+        color: var(--primary-text-color);
       }
     `;
   }
