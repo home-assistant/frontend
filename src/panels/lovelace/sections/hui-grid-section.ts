@@ -48,7 +48,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   private _cardConfigKeys = new WeakMap<LovelaceCardConfig, string>();
 
   private _getKey(cardConfig: LovelaceCardConfig) {
-    if (!this._cardConfigKeys.has(cardConfig)) {
+    if (
+      !this._cardConfigKeys.has(cardConfig) &&
+      typeof cardConfig === "object"
+    ) {
       this._cardConfigKeys.set(cardConfig, Math.random().toString());
     }
     return this._cardConfigKeys.get(cardConfig)!;
