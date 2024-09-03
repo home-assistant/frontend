@@ -334,7 +334,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         grid-column: span var(--column-span);
       }
 
-      .section:not(:has(> *:not([hidden]))) {
+      .section:has(hui-section[hidden]) {
         display: none;
       }
 
