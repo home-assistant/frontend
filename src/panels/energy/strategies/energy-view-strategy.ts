@@ -3,11 +3,13 @@ import { customElement } from "lit/decorators";
 import {
   EnergyPreferences,
   getEnergyPreferences,
+  getGenericEnergyTypes,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { HomeAssistant } from "../../../types";
 import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
   await import("../cards/energy-setup-wizard-card");
@@ -109,6 +111,15 @@ export class EnergyViewStrategy extends ReactiveElement {
         collection_key: "energy_dashboard",
       });
     }
+
+    getGenericEnergyTypes(prefs).forEach((type) => {
+      view.cards!.push({
+        title: capitalizeFirstLetter(type.replaceAll("_", " ")),
+        type: "energy-generic-graph",
+        energyType: type,
+        collection_key: "energy_dashboard",
+      });
+    });
 
     // Only include if we have a grid.
     if (hasGrid) {

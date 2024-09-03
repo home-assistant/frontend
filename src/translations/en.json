@@ -2297,6 +2297,30 @@
               "water_usage": "Water usage"
             }
           },
+          "generic": {
+            "new_title": "Custom energy",
+            "new_type_button": "Add new energy type",
+            "sub": "Let Home Assistant monitor your {type}.",
+            "edit_generic_source": "Edit {type} source",
+            "delete_generic_source": "Delete {type} source",
+            "add_generic_source": "Add {type} source",
+            "dialog": {
+              "header": "Configure generic consumption",
+              "pick_type": "Enter a key that defines this type of consumption, e.g. 'oil', 'hot water', or another label of your choice.",
+              "paragraph": "Monitor consumption for a custom category.",
+              "entity_para": "Pick a sensor which measures consumption for {type, select, \n undefined {this type} \n other {{type}}\n }{unit, select, \n undefined {} \n other { in units of {unit}}\n }.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumption.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "generic_usage": "Generic usage"
+            }
+          },
+
           "device_consumption": {
             "title": "Individual devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
@@ -5382,6 +5406,7 @@
               "gas_total": "Gas total",
               "solar_total": "Solar total",
               "water_total": "Water total",
+              "generic_total": "{type} total",
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
@@ -5397,6 +5422,9 @@
             },
             "energy_gas_graph": {
               "total_consumed": "Total consumed {num} {unit}"
+            },
+            "energy_generic_graph": {
+              "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "energy_water_graph": {
               "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"

@@ -150,6 +150,12 @@ export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergyGenericGraphCardConfig extends EnergyCardBaseConfig {
+  type: "energy-generic-graph";
+  title?: string;
+  energyType: string;
+}
+
 export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
   title?: string;

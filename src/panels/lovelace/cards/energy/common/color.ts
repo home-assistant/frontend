@@ -6,6 +6,7 @@ import {
   theme2hex,
 } from "../../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../../common/color/lab";
+import { getGraphColorByIndex } from "../../../../../common/color/colors";
 
 export function getEnergyColor(
   computedStyles: CSSStyleDeclaration,
@@ -19,10 +20,19 @@ export function getEnergyColor(
     .getPropertyValue(propertyName + "-" + idx)
     .trim();
 
-  const themeColor =
+  let themeColor =
     themeIdxColor.length > 0
       ? themeIdxColor
       : computedStyles.getPropertyValue(propertyName).trim();
+
+  if (themeColor.length === 0) {
+    // If we don't have a defined color, pick a graph color derived from the hash of the key name.
+    // eslint-disable-next-line no-bitwise
+    const hashCode = propertyName
+      .split("")
+      .reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
+    themeColor = getGraphColorByIndex(Math.abs(hashCode), computedStyles);
+  }
 
   let hexColor = theme2hex(themeColor);
 

@@ -86,6 +86,16 @@ export const emptyWaterEnergyPreference =
     number_energy_price: null,
   });
 
+export const emptyGenericEnergyPreference =
+  (): GenericSourceTypeEnergyPreference => ({
+    type: "custom",
+    custom_type: "",
+    stat_energy_from: "",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
+
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
@@ -174,12 +184,31 @@ export interface WaterSourceTypeEnergyPreference {
   unit_of_measurement?: string | null;
 }
 
+export interface GenericSourceTypeEnergyPreference {
+  type: "custom";
+
+  // user specified name for type of source
+  custom_type: string;
+
+  // volume meter
+  stat_energy_from: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+  unit_of_measurement?: string | null;
+}
+
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
-  | WaterSourceTypeEnergyPreference;
+  | WaterSourceTypeEnergyPreference
+  | GenericSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -258,7 +287,15 @@ interface EnergySourceByType {
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
+  custom?: GenericSourceTypeEnergyPreference[];
 }
+
+export const getGenericEnergyTypes = (prefs: EnergyPreferences) => {
+  const custom = prefs.energy_sources.filter(
+    (source) => source.type === "custom"
+  );
+  return Array.from(new Set(custom.map((source) => source.custom_type)));
+};
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
@@ -296,7 +333,11 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "gas" || source.type === "water") {
+    if (
+      source.type === "gas" ||
+      source.type === "water" ||
+      source.type === "custom"
+    ) {
       statIDs.push(source.stat_energy_from);
 
       if (source.stat_cost) {
@@ -396,7 +437,9 @@ const getEnergyData = async (
   ]);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds];
+  const miscStatIds = getReferencedStatisticIds(prefs, info, ["custom"]);
+
+  const allStatIDs = [...energyStatIds, ...waterStatIds, ...miscStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
@@ -421,12 +464,18 @@ const getEnergyData = async (
         "change",
       ])
     : {};
+  const _miscStats: Statistics | Promise<Statistics> = miscStatIds.length
+    ? fetchStatistics(hass!, start, end, miscStatIds, period, undefined, [
+        "change",
+      ])
+    : {};
 
   let statsCompare;
   let startCompare;
   let endCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
+  let _miscStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
     if (
@@ -489,6 +538,17 @@ const getEnergyData = async (
         ["change"]
       );
     }
+    if (miscStatIds.length) {
+      _miscStatsCompare = fetchStatistics(
+        hass!,
+        startCompare,
+        endCompare,
+        miscStatIds,
+        period,
+        undefined,
+        ["change"]
+      );
+    }
   }
 
   let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
@@ -525,23 +585,31 @@ const getEnergyData = async (
   const [
     energyStats,
     waterStats,
+    miscStats,
     energyStatsCompare,
     waterStatsCompare,
+    miscStatsCompare,
     statsMetadataArray,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
     _waterStats,
+    _miscStats,
     _energyStatsCompare,
     _waterStatsCompare,
+    _miscStatsCompare,
     _getStatisticMetadata,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
-  const stats = { ...energyStats, ...waterStats };
+  const stats = { ...energyStats, ...waterStats, ...miscStats };
   if (compare) {
-    statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+    statsCompare = {
+      ...energyStatsCompare,
+      ...waterStatsCompare,
+      ...miscStatsCompare,
+    };
   }
   if (allStatIDs.length) {
     statsMetadataArray.forEach((x) => {

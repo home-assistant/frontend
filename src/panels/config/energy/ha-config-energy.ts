@@ -9,6 +9,7 @@ import {
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
+  getGenericEnergyTypes,
 } from "../../../data/energy";
 import {
   getStatisticMetadata,
@@ -25,6 +26,8 @@ import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
+import "./components/ha-energy-generic-settings";
+import "./components/ha-energy-new-generic-settings";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -131,6 +134,22 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
+          ${getGenericEnergyTypes(this._preferences!).map(
+            (type) =>
+              html`<ha-energy-generic-settings
+                .hass=${this.hass}
+                .energyType=${type}
+                .preferences=${this._preferences!}
+                .statsMetadata=${this._statsMetadata}
+                .validationResult=${this._validationResult}
+                @value-changed=${this._prefsChanged}
+              ></ha-energy-generic-settings>`
+          )}
+          <ha-energy-new-generic-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-new-generic-settings>
         </div>
       </hass-subpage>
     `;

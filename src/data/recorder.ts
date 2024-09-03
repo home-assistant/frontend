@@ -39,6 +39,7 @@ export interface Statistic {
 
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
+  display_unit_of_measurement?: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
