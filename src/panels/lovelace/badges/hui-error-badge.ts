@@ -61,7 +61,7 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
         label="Error"
       >
         <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
-        ${this._config.error}
+        <div class="content">${this._config.error}</div>
       </ha-badge>
     `;
   }
@@ -71,6 +71,17 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
       ha-badge {
         --badge-color: var(--error-color);
         --ha-card-border-color: var(--error-color);
+      }
+      .content {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
+        white-space: break-spaces;
+        user-select: text;
       }
     `;
   }
