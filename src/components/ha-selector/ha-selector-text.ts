@@ -82,6 +82,7 @@ export class HaTextSelector extends LitElement {
         .disabled=${this.disabled}
         .type=${this._unmaskedPassword ? "text" : this.selector.text?.type}
         @input=${this._handleChange}
+        @change=${this._handleChange}
         .label=${this.label || ""}
         .prefix=${this.selector.text?.prefix}
         .suffix=${this.selector.text?.type === "password"
