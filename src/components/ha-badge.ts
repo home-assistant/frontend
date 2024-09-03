@@ -31,7 +31,7 @@ export class HaBadge extends LitElement {
           ? nothing
           : html`<span class="info">
               ${label ? html`<span class="label">${label}</span>` : nothing}
-              <span class="content"> <slot></slot></span>
+              <span class="content"><slot></slot></span>
             </span>`}
       </div>
     `;
