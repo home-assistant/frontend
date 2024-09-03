@@ -162,8 +162,14 @@ export class HaLocationSelector extends LitElement {
 
   private _computeLabel = (
     entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(`ui.components.selectors.location.${entry.name}`);
+  ): string => {
+    if (entry.name) {
+      return this.hass.localize(
+        `ui.components.selectors.location.${entry.name}`
+      );
+    }
+    return "";
+  };
 
   static styles = css`
     ha-locations-editor {

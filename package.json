@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "7.25.4",
+    "@babel/runtime": "7.25.6",
     "@braintree/sanitize-url": "7.1.0",
     "@codemirror/autocomplete": "6.18.0",
     "@codemirror/commands": "6.6.0",
@@ -33,7 +33,7 @@
     "@codemirror/legacy-modes": "6.4.1",
     "@codemirror/search": "6.5.6",
     "@codemirror/state": "6.4.1",
-    "@codemirror/view": "6.32.0",
+    "@codemirror/view": "6.33.0",
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "6.12.5",
     "@formatjs/intl-displaynames": "6.6.8",
@@ -88,8 +88,8 @@
     "@polymer/paper-tabs": "3.1.0",
     "@polymer/polymer": "3.5.1",
     "@thomasloven/round-slider": "0.6.0",
-    "@vaadin/combo-box": "24.4.5",
-    "@vaadin/vaadin-themable-mixin": "24.4.5",
+    "@vaadin/combo-box": "24.4.7",
+    "@vaadin/vaadin-themable-mixin": "24.4.7",
     "@vibrant/color": "3.2.1-alpha.1",
     "@vibrant/core": "3.2.1-alpha.1",
     "@vibrant/quantizer-mmcq": "3.2.1-alpha.1",
@@ -118,7 +118,7 @@
     "leaflet-draw": "1.0.4",
     "lit": "2.8.0",
     "luxon": "3.5.0",
-    "marked": "14.0.0",
+    "marked": "14.1.0",
     "memoize-one": "6.0.0",
     "node-vibrant": "3.2.1-alpha.1",
     "proxy-polyfill": "0.3.2",
@@ -155,7 +155,7 @@
     "@babel/plugin-transform-runtime": "7.25.4",
     "@babel/preset-env": "7.25.4",
     "@babel/preset-typescript": "7.24.7",
-    "@bundle-stats/plugin-webpack-filter": "4.14.2",
+    "@bundle-stats/plugin-webpack-filter": "4.15.0",
     "@koa/cors": "5.0.0",
     "@lokalise/node-api": "12.7.0",
     "@octokit/auth-oauth-device": "7.1.1",
@@ -258,5 +258,5 @@
     "sortablejs@1.15.2": "patch:sortablejs@npm%3A1.15.2#~/.yarn/patches/sortablejs-npm-1.15.2-73347ae85a.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
-  "packageManager": "yarn@4.4.0"
+  "packageManager": "yarn@4.4.1"
 }

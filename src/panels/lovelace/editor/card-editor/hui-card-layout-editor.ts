@@ -1,7 +1,8 @@
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
@@ -18,10 +19,14 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { HuiCard } from "../../cards/hui-card";
-import { computeSizeOnGrid } from "../../sections/hui-grid-section";
+import {
+  CardGridSize,
+  computeCardGridSize,
+} from "../../common/compute-card-grid-size";
 import { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
@@ -29,6 +34,8 @@ export class HuiCardLayoutEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceCardConfig;
+
+  @property({ attribute: false }) public sectionConfig!: LovelaceSectionConfig;
 
   @state() _defaultLayoutOptions?: LovelaceLayoutOptions;
 
@@ -50,7 +57,7 @@ export class HuiCardLayoutEditor extends LitElement {
     })
   );
 
-  private _gridSizeValue = memoizeOne(computeSizeOnGrid);
+  private _computeCardGridSize = memoizeOne(computeCardGridSize);
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
@@ -63,7 +70,9 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultLayoutOptions
     );
 
-    const sizeValue = this._gridSizeValue(options);
+    const value = this._computeCardGridSize(options);
+
+    const totalColumns = (this.sectionConfig.column_span ?? 1) * 4;
 
     return html`
       <div class="header">
@@ -127,8 +136,12 @@ export class HuiCardLayoutEditor extends LitElement {
           `
         : html`
             <ha-grid-size-picker
+              style=${styleMap({
+                "max-width": `${totalColumns * 45 + 50}px`,
+              })}
+              .columns=${totalColumns}
               .hass=${this.hass}
-              .value=${sizeValue}
+              .value=${value}
               .isDefault=${this._isDefault(this.config.layout_options)}
               @value-changed=${this._gridSizeChanged}
               .rowMin=${options.grid_min_rows}
@@ -136,6 +149,24 @@ export class HuiCardLayoutEditor extends LitElement {
               .columnMin=${options.grid_min_columns}
               .columnMax=${options.grid_max_columns}
             ></ha-grid-size-picker>
+            <ha-settings-row>
+              <span slot="heading" data-for="full-width">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.full_width"
+                )}
+              </span>
+              <span slot="description" data-for="full-width">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.full_width_helper"
+                )}
+              </span>
+              <ha-switch
+                @change=${this._fullWidthChanged}
+                .checked=${value.columns === "full"}
+                name="full-width"
+              >
+              </ha-switch>
+            </ha-settings-row>
           `}
     `;
   }
@@ -195,7 +226,7 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _gridSizeChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const value = ev.detail.value;
+    const value = ev.detail.value as CardGridSize;
 
     const newConfig: LovelaceCardConfig = {
       ...this.config,
@@ -229,6 +260,21 @@ export class HuiCardLayoutEditor extends LitElement {
     fireEvent(this, "value-changed", { value: newConfig });
   }
 
+  private _fullWidthChanged(ev): void {
+    ev.stopPropagation();
+    const value = ev.target.checked;
+    const newConfig: LovelaceCardConfig = {
+      ...this.config,
+      layout_options: {
+        ...this.config.layout_options,
+        grid_columns: value
+          ? "full"
+          : (this._defaultLayoutOptions?.grid_min_columns ?? 1),
+      },
+    };
+    fireEvent(this, "value-changed", { value: newConfig });
+  }
+
   static styles = [
     haStyle,
     css`
@@ -255,7 +301,6 @@ export class HuiCardLayoutEditor extends LitElement {
       }
       ha-grid-size-picker {
         display: block;
-        max-width: 250px;
         margin: 16px auto;
       }
       ha-yaml-editor {

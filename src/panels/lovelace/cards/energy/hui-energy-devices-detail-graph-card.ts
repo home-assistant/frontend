@@ -18,18 +18,22 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { getEnergyColor } from "./common/color";
 import { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyData,
   getEnergyDataCollection,
+  getSummedData,
+  computeConsumptionData,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
   Statistics,
   StatisticsMetaData,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -38,7 +42,9 @@ import { LovelaceCard } from "../../types";
 import { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { storage } from "../../../../common/decorators/storage";
+import { clickIsTouch } from "../../../../components/chart/click_is_touch";
 
 const UNIT = "kWh";
 
@@ -71,6 +77,8 @@ export class HuiEnergyDevicesDetailGraphCard
     subscribe: false,
   })
   private _hiddenStats: string[] = [];
+
+  private _untrackedIndex?: number;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -149,17 +157,22 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _datasetHidden(ev) {
-    this._hiddenStats = [
-      ...this._hiddenStats,
-      this._data!.prefs.device_consumption[ev.detail.index].stat_consumption,
-    ];
+    const hiddenEntity =
+      ev.detail.index === this._untrackedIndex
+        ? "untracked"
+        : this._data!.prefs.device_consumption[ev.detail.index]
+            .stat_consumption;
+    this._hiddenStats = [...this._hiddenStats, hiddenEntity];
   }
 
   private _datasetUnhidden(ev) {
+    const hiddenEntity =
+      ev.detail.index === this._untrackedIndex
+        ? "untracked"
+        : this._data!.prefs.device_consumption[ev.detail.index]
+            .stat_consumption;
     this._hiddenStats = this._hiddenStats.filter(
-      (stat) =>
-        stat !==
-        this._data!.prefs.device_consumption[ev.detail.index].stat_consumption
+      (stat) => stat !== hiddenEntity
     );
   }
 
@@ -196,6 +209,20 @@ export class HuiEnergyDevicesDetailGraphCard
               usePointStyle: true,
             },
           },
+        },
+        onClick: (event, elements, chart) => {
+          if (clickIsTouch(event)) return;
+
+          const index = elements[0]?.datasetIndex ?? -1;
+          if (index < 0) return;
+
+          const statisticId =
+            this._data?.prefs.device_consumption[index]?.stat_consumption;
+
+          if (!statisticId || isExternalStatistic(statisticId)) return;
+
+          fireEvent(this, "hass-more-info", { entityId: statisticId });
+          chart?.canvas?.dispatchEvent(new Event("mouseout")); // to hide tooltip
         },
       };
       return options;
@@ -240,6 +267,33 @@ export class HuiEnergyDevicesDetailGraphCard
 
     datasetExtras.push(...processedDataExtras);
 
+    const { summedData, compareSummedData } = getSummedData(energyData);
+
+    const showUntracked =
+      "from_grid" in summedData ||
+      "solar" in summedData ||
+      "from_battery" in summedData;
+
+    const {
+      consumption: consumptionData,
+      compareConsumption: consumptionCompareData,
+    } = showUntracked
+      ? computeConsumptionData(summedData, compareSummedData)
+      : { consumption: undefined, compareConsumption: undefined };
+
+    if (showUntracked) {
+      this._untrackedIndex = datasets.length;
+      const { dataset: untrackedData, datasetExtra: untrackedDataExtra } =
+        this._processUntracked(
+          computedStyle,
+          processedData,
+          consumptionData,
+          false
+        );
+      datasets.push(untrackedData);
+      datasetExtras.push(untrackedDataExtra);
+    }
+
     if (compareData) {
       // Add empty dataset to align the bars
       datasets.push({
@@ -272,6 +326,20 @@ export class HuiEnergyDevicesDetailGraphCard
 
       datasets.push(...processedCompareData);
       datasetExtras.push(...processedCompareDataExtras);
+
+      if (showUntracked) {
+        const {
+          dataset: untrackedCompareData,
+          datasetExtra: untrackedCompareDataExtra,
+        } = this._processUntracked(
+          computedStyle,
+          processedCompareData,
+          consumptionCompareData,
+          true
+        );
+        datasets.push(untrackedCompareData);
+        datasetExtras.push(untrackedCompareDataExtra);
+      }
     }
 
     this._start = energyData.start;
@@ -284,6 +352,59 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets,
     };
     this._chartDatasetExtra = datasetExtras;
+  }
+
+  private _processUntracked(
+    computedStyle: CSSStyleDeclaration,
+    processedData,
+    consumptionData,
+    compare: boolean
+  ): { dataset; datasetExtra } {
+    const totalDeviceConsumption: { [start: number]: number } = {};
+
+    processedData.forEach((device) => {
+      device.data.forEach((datapoint) => {
+        totalDeviceConsumption[datapoint.x] =
+          (totalDeviceConsumption[datapoint.x] || 0) + datapoint.y;
+      });
+    });
+
+    const untrackedConsumption: { x: number; y: number }[] = [];
+    Object.keys(consumptionData.total).forEach((time) => {
+      untrackedConsumption.push({
+        x: Number(time),
+        y: consumptionData.total[time] - (totalDeviceConsumption[time] || 0),
+      });
+    });
+    const dataset = {
+      label: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+      ),
+      hidden: this._hiddenStats.includes("untracked"),
+      borderColor: getEnergyColor(
+        computedStyle,
+        this.hass.themes.darkMode,
+        false,
+        compare,
+        "--state-unavailable-color"
+      ),
+      backgroundColor: getEnergyColor(
+        computedStyle,
+        this.hass.themes.darkMode,
+        true,
+        compare,
+        "--state-unavailable-color"
+      ),
+      data: untrackedConsumption,
+      order: 1 + this._untrackedIndex!,
+      stack: "devices",
+      pointStyle: compare ? false : "circle",
+      xAxisID: compare ? "xAxisCompare" : undefined,
+    };
+    const datasetExtra = {
+      show_legend: !compare,
+    };
+    return { dataset, datasetExtra };
   }
 
   private _processDataSet(

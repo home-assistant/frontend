@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -8,6 +9,7 @@ import {
   nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-icon-button";
@@ -26,6 +28,10 @@ import { showEditSectionDialog } from "../editor/section-editor/show-edit-sectio
 import { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
+export const DEFAULT_MAX_COLUMNS = 4;
+
+const parsePx = (value: string) => parseInt(value.replace("px", ""));
+
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,9 +48,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
-  @state() private _sectionCount = 0;
+  @state() private _sectionColumnCount = 0;
 
   @state() _dragging = false;
+
+  private _columnsController = new ResizeController(this, {
+    callback: (entries) => {
+      const totalWidth = entries[0]?.contentRect.width;
+
+      const style = getComputedStyle(this);
+      const container = this.shadowRoot!.querySelector(".container")!;
+      const containerStyle = getComputedStyle(container);
+
+      const paddingLeft = parsePx(containerStyle.paddingLeft);
+      const paddingRight = parsePx(containerStyle.paddingRight);
+      const padding = paddingLeft + paddingRight;
+      const minColumnWidth = parsePx(
+        style.getPropertyValue("--column-min-width")
+      );
+      const columnGap = parsePx(containerStyle.columnGap);
+
+      const columns = Math.floor(
+        (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
+      );
+      const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
+      return Math.max(Math.min(maxColumns, columns), 1);
+    },
+  });
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
@@ -60,9 +90,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _computeSectionsCount() {
-    this._sectionCount = this.sections.filter(
-      (section) => !section.hidden
-    ).length;
+    this._sectionColumnCount = this.sections
+      .filter((section) => !section.hidden)
+      .map((section) => section.config.column_span ?? 1)
+      .reduce((acc, val) => acc + val, 0);
   }
 
   private _sectionVisibilityChanged = () => {
@@ -95,10 +126,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const totalCount = this._sectionCount + (this.lovelace?.editMode ? 1 : 0);
+    const totalSectionCount =
+      this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
-    const maxColumnsCount = this._config?.max_columns;
+    const maxColumnCount = this._columnsController.value ?? 1;
 
     return html`
       <hui-view-badges
@@ -116,45 +148,83 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         .rollback=${false}
       >
         <div
-          class="container"
+          class="container ${classMap({
+            dense: Boolean(this._config?.dense_section_placement),
+          })}"
           style=${styleMap({
-            "--max-columns-count": maxColumnsCount,
-            "--total-count": totalCount,
+            "--total-section-count": totalSectionCount,
+            "--max-column-count": maxColumnCount,
           })}
         >
           ${repeat(
             sections,
             (section) => this._getSectionKey(section),
             (section, idx) => {
+              const sectionConfig = this._config?.sections?.[idx];
+              const columnSpan = Math.min(
+                sectionConfig?.column_span || 1,
+                maxColumnCount
+              );
+
+              const rowSpan = sectionConfig?.row_span || 1;
+
               (section as any).itemPath = [idx];
+
               return html`
-                <div class="section">
-                  ${editMode
-                    ? html`
-                        <div class="section-overlay">
-                          <div class="section-actions">
-                            <ha-svg-icon
-                              aria-hidden="true"
-                              class="handle"
-                              .path=${mdiArrowAll}
-                            ></ha-svg-icon>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.edit")}
-                              @click=${this._editSection}
-                              .index=${idx}
-                              .path=${mdiPencil}
-                            ></ha-icon-button>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              @click=${this._deleteSection}
-                              .index=${idx}
-                              .path=${mdiDelete}
-                            ></ha-icon-button>
-                          </div>
-                        </div>
-                      `
-                    : nothing}
-                  ${section}
+                <div
+                  class="section"
+                  style=${styleMap({
+                    "--column-span": columnSpan,
+                    "--row-span": rowSpan,
+                  })}
+                >
+                    ${
+                      sectionConfig?.title || this.lovelace?.editMode
+                        ? html`
+                            <div class="section-header">
+                              <h2
+                                class="section-title ${classMap({
+                                  placeholder: !sectionConfig?.title,
+                                })}"
+                              >
+                                ${sectionConfig?.title ||
+                                this.hass.localize(
+                                  "ui.panel.lovelace.editor.section.unnamed_section"
+                                )}
+                              </h2>
+                              ${editMode
+                                ? html`
+                                    <div class="section-actions">
+                                      <ha-svg-icon
+                                        aria-hidden="true"
+                                        class="handle"
+                                        .path=${mdiArrowAll}
+                                      ></ha-svg-icon>
+                                      <ha-icon-button
+                                        .label=${this.hass.localize(
+                                          "ui.common.edit"
+                                        )}
+                                        @click=${this._editSection}
+                                        .index=${idx}
+                                        .path=${mdiPencil}
+                                      ></ha-icon-button>
+                                      <ha-icon-button
+                                        .label=${this.hass.localize(
+                                          "ui.common.delete"
+                                        )}
+                                        @click=${this._deleteSection}
+                                        .index=${idx}
+                                        .path=${mdiDelete}
+                                      ></ha-icon-button>
+                                    </div>
+                                  `
+                                : nothing}
+                            </div>
+                          `
+                        : nothing
+                    }
+                    ${section}
+                  </div>
                 </div>
               `;
             }
@@ -252,74 +322,53 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --row-height: var(--ha-view-sections-row-height, 56px);
         --row-gap: var(--ha-view-sections-row-gap, 8px);
         --column-gap: var(--ha-view-sections-column-gap, 32px);
-        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
+        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         display: block;
       }
 
       .container > * {
         position: relative;
-        max-width: var(--column-max-width);
         width: 100%;
       }
 
       .section {
         border-radius: var(--ha-card-border-radius, 12px);
+        grid-column: span var(--column-span);
+        grid-row: span var(--row-span);
       }
 
-      .section:not(:has(> *:not([hidden]))) {
+      .section:has(hui-section[hidden]) {
         display: none;
       }
 
       .container {
-        --max-count: min(var(--total-count), var(--max-columns-count, 4));
-        --max-width: min(
-          calc(
-            (var(--max-count) + 1) * var(--column-min-width) +
-              (var(--max-count) + 2) * var(--column-gap) - 1px
-          ),
-          calc(
-            var(--max-count) * var(--column-max-width) + (var(--max-count) + 1) *
-              var(--column-gap)
-          )
+        --column-count: min(
+          var(--max-column-count),
+          var(--total-section-count)
         );
         display: grid;
         align-items: start;
-        justify-items: center;
-        grid-template-columns: repeat(
-          auto-fit,
-          minmax(min(var(--column-min-width), 100%), 1fr)
-        );
+        justify-content: center;
+        grid-template-columns: repeat(var(--column-count), 1fr);
+        grid-auto-flow: row;
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) var(--column-gap);
-        box-sizing: border-box;
-        max-width: var(--max-width);
+        box-sizing: content-box;
         margin: 0 auto;
+        max-width: calc(
+          var(--column-count) * var(--column-max-width) +
+            (var(--column-count) - 1) * var(--column-gap)
+        );
+      }
+      .container.dense {
+        grid-auto-flow: row dense;
       }
 
       @media (max-width: 600px) {
         .container {
           --column-gap: var(--row-gap);
         }
-      }
-
-      .section-actions {
-        position: absolute;
-        top: 0;
-        right: 0;
-        inset-inline-end: 0;
-        inset-inline-start: initial;
-        opacity: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.2s ease-in-out;
-        background-color: rgba(var(--rgb-card-background-color), 0.3);
-        border-radius: 18px;
-        background: var(--secondary-background-color);
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-        color: var(--primary-text-color);
       }
 
       .handle {
@@ -352,6 +401,55 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
         margin: 16px 8px;
         text-align: center;
+      }
+
+      .section-header {
+        position: relative;
+        height: var(--row-height);
+        margin-bottom: var(--row-gap);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .section-title {
+        color: var(--primary-text-color);
+        font-size: 20px;
+        font-weight: normal;
+        margin: 0px;
+        letter-spacing: 0.1px;
+        line-height: 32px;
+        text-align: var(--ha-view-sections-title-text-align, start);
+        min-height: 32px;
+        box-sizing: border-box;
+        padding: 0 10px 10px;
+      }
+
+      .section-title.placeholder {
+        color: var(--secondary-text-color);
+        font-style: italic;
+      }
+
+      .section-actions {
+        position: absolute;
+        height: 36px;
+        bottom: calc(-1 * var(--row-gap) - 2px);
+        right: 0;
+        inset-inline-end: 0;
+        inset-inline-start: initial;
+        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease-in-out;
+        background-color: rgba(var(--rgb-card-background-color), 0.3);
+        border-radius: var(--ha-card-border-radius, 12px);
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        background: var(--secondary-background-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+        color: var(--primary-text-color);
       }
     `;
   }

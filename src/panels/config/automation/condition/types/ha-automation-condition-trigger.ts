@@ -27,8 +27,9 @@ export class HaTriggerCondition extends LitElement {
 
   private _unsub?: UnsubscribeFunc;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): TriggerCondition {
     return {
+      condition: "trigger",
       id: "",
     };
   }

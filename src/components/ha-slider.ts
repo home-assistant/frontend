@@ -20,6 +20,7 @@ export class HaSlider extends MdSlider {
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-slider-handle-width: 14px;
         --md-slider-handle-height: 14px;
+        --md-slider-state-layer-size: 24px;
         min-width: 100px;
         min-inline-size: 100px;
         width: 200px;

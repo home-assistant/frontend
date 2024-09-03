@@ -44,6 +44,7 @@ import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+import "./ha-service-section-icon";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -496,7 +497,18 @@ export class HaServiceControl extends LitElement {
                 ) ||
                 dataField.name ||
                 dataField.key}
+                .secondary=${this._getSectionDescription(
+                  dataField,
+                  domain,
+                  serviceName
+                )}
               >
+                <ha-service-section-icon
+                  slot="icons"
+                  .hass=${this.hass}
+                  .service=${this._value!.action}
+                  .section=${dataField.key}
+                ></ha-service-section-icon>
                 ${Object.entries(dataField.fields).map(([key, field]) =>
                   this._renderField(
                     { key, ...field },
@@ -515,6 +527,16 @@ export class HaServiceControl extends LitElement {
                 targetEntities
               )
         )} `;
+  }
+
+  private _getSectionDescription(
+    dataField: ExtHassService["fields"][number],
+    domain: string | undefined,
+    serviceName: string | undefined
+  ) {
+    return this.hass!.localize(
+      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+    );
   }
 
   private _renderField = (

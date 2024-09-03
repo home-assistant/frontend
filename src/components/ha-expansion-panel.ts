@@ -68,8 +68,8 @@ export class HaExpansionPanel extends LitElement {
                 ></ha-svg-icon>
               `
             : ""}
+          <slot name="icons"></slot>
         </div>
-        <slot name="icons"></slot>
       </div>
       <div
         class="container ${classMap({ expanded: this.expanded })}"

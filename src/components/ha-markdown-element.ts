@@ -96,7 +96,25 @@ class HaMarkdownElement extends ReactiveElement {
 
           haAlertNode.append(
             ...Array.from(node.childNodes)
-              .map((child) => Array.from(child.childNodes))
+              .map((child) => {
+                const arr = Array.from(child.childNodes);
+                if (!this.breaks && arr.length) {
+                  // When we are not breaking, the first line of the blockquote is not considered,
+                  // so we need to adjust the first child text content
+                  const firstChild = arr[0];
+                  if (
+                    firstChild.nodeType === Node.TEXT_NODE &&
+                    firstChild.textContent === gitHubAlertMatch.input &&
+                    firstChild.textContent?.includes("\n")
+                  ) {
+                    firstChild.textContent = firstChild.textContent
+                      .split("\n")
+                      .slice(1)
+                      .join("\n");
+                  }
+                }
+                return arr;
+              })
               .reduce((acc, val) => acc.concat(val), [])
               .filter(
                 (childNode) =>

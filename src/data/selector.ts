@@ -323,6 +323,7 @@ export interface NumberSelector {
     step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
+    slider_ticks?: boolean;
   } | null;
 }
 
@@ -427,8 +428,7 @@ export interface ThemeSelector {
   theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  time: {} | null;
+  time: { no_second?: boolean } | null;
 }
 
 export interface TriggerSelector {
