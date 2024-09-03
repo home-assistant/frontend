@@ -27,9 +27,9 @@ export function getEnergyColor(
 
   if (themeColor.length === 0) {
     // If we don't have a defined color, pick a graph color derived from the hash of the key name.
-    // eslint-disable-next-line no-bitwise
     const hashCode = propertyName
       .split("")
+      // eslint-disable-next-line no-bitwise
       .reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
     themeColor = getGraphColorByIndex(Math.abs(hashCode), computedStyles);
   }
