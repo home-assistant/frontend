@@ -9098,7 +9098,7 @@ __metadata:
     rrule: "npm:2.8.1"
     serve-handler: "npm:6.1.5"
     sinon: "npm:18.0.0"
-    sortablejs: "npm:1.15.2"
+    sortablejs: "npm:1.15.3"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     systemjs: "npm:6.15.1"
@@ -13271,17 +13271,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.15.2":
-  version: 1.15.2
-  resolution: "sortablejs@npm:1.15.2"
-  checksum: 10/d149dd04bb05904ea20ca477d97cdfbbbd46edf7ede8c80958f2ad881dd6d7b1633cce31665992b341e0ea01fc7ef9d7571ccb7eb995baf01f9418b44e935eac
-  languageName: node
-  linkType: hard
-
-"sortablejs@patch:sortablejs@npm%3A1.15.2#~/.yarn/patches/sortablejs-npm-1.15.2-73347ae85a.patch":
-  version: 1.15.2
-  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.2#~/.yarn/patches/sortablejs-npm-1.15.2-73347ae85a.patch::version=1.15.2&hash=1591ab"
-  checksum: 10/d44399e9ca660157c76b13705eaa26191f71c4bd025e2d47b9f7e50a8f9bdb7deaaa2783a8032e55f39627fa4007042bcfd62cb4bbeb2931f6a5d6ee06047e2e
+"sortablejs@npm:1.15.3":
+  version: 1.15.3
+  resolution: "sortablejs@npm:1.15.3"
+  checksum: 10/85d39a172ef47adedf273afa65daa8aefcbaafd43a5b5c480d8637add93033f5784da697d0d3545d9bb6e11fd71f1847f307ee26be452942f3785a683fd44bb5
   languageName: node
   linkType: hard
 
