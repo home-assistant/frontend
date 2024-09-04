@@ -25,7 +25,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
-import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
@@ -35,6 +34,7 @@ import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
 import { LocalizeFunc } from "../../common/translations/localize";
+import { nextRender } from "../../common/util/render-status";
 
 export interface RowClickedEvent {
   id: string;
@@ -169,8 +169,6 @@ export class HaDataTable extends LitElement {
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
-  @state() private _items: DataTableRowData[] = [];
-
   @state() private _collapsedGroups: string[] = [];
 
   private _checkableRowsCount?: number;
@@ -179,7 +177,9 @@ export class HaDataTable extends LitElement {
 
   private _sortColumns: SortableColumnContainer = {};
 
-  private curRequest = 0;
+  private _curRequest = 0;
+
+  private _lastUpdate = 0;
 
   // @ts-ignore
   @restoreScroll(".scroller") private _savedScrollPos?: number;
@@ -206,9 +206,9 @@ export class HaDataTable extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._items.length) {
+    if (this._filteredData.length) {
       // Force update of location of rows
-      this._items = [...this._items];
+      this._filteredData = [...this._filteredData];
     }
   }
 
@@ -291,16 +291,13 @@ export class HaDataTable extends LitElement {
       properties.has("columns") ||
       properties.has("_filter") ||
       properties.has("sortColumn") ||
-      properties.has("sortDirection") ||
-      properties.has("groupColumn") ||
-      properties.has("groupOrder") ||
-      properties.has("_collapsedGroups")
+      properties.has("sortDirection")
     ) {
       this._sortFilterData();
     }
 
     if (properties.has("selectable") || properties.has("hiddenColumns")) {
-      this._items = [...this._items];
+      this._filteredData = [...this._filteredData];
     }
   }
 
@@ -467,7 +464,15 @@ export class HaDataTable extends LitElement {
                   scroller
                   class="mdc-data-table__content scroller ha-scrollbar"
                   @scroll=${this._saveScrollPos}
-                  .items=${this._items}
+                  .items=${this._groupData(
+                    this._filteredData,
+                    localize,
+                    this.appendRow,
+                    this.hasFab,
+                    this.groupColumn,
+                    this.groupOrder,
+                    this._collapsedGroups
+                  )}
                   .keyFunction=${this._keyFunction}
                   .renderItem=${renderRow}
                 ></lit-virtualizer>
@@ -602,8 +607,13 @@ export class HaDataTable extends LitElement {
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();
-    this.curRequest++;
-    const curRequest = this.curRequest;
+    const timeBetweenUpdate = startTime - this._lastUpdate;
+    const timeBetweenRequest = startTime - this._curRequest;
+    this._curRequest = startTime;
+
+    const forceUpdate =
+      !this._lastUpdate ||
+      (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
     let filteredData = this.data;
     if (this._filter) {
@@ -612,6 +622,10 @@ export class HaDataTable extends LitElement {
         this._sortColumns,
         this._filter.trim()
       );
+    }
+
+    if (!forceUpdate && this._curRequest !== startTime) {
+      return;
     }
 
     const prom = this.sortColumn
@@ -634,90 +648,102 @@ export class HaDataTable extends LitElement {
         setTimeout(resolve, 100 - elapsed);
       });
     }
-    if (this.curRequest !== curRequest) {
+
+    if (!forceUpdate && this._curRequest !== startTime) {
       return;
     }
 
-    const localize = this.localizeFunc || this.hass.localize;
-
-    if (this.appendRow || this.hasFab || this.groupColumn) {
-      let items = [...data];
-
-      if (this.groupColumn) {
-        const grouped = groupBy(items, (item) => item[this.groupColumn!]);
-        if (grouped.undefined) {
-          // make sure ungrouped items are at the bottom
-          grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
-          delete grouped.undefined;
-        }
-        const sorted: {
-          [key: string]: DataTableRowData[];
-        } = Object.keys(grouped)
-          .sort((a, b) => {
-            const orderA = this.groupOrder?.indexOf(a) ?? -1;
-            const orderB = this.groupOrder?.indexOf(b) ?? -1;
-            if (orderA !== orderB) {
-              if (orderA === -1) {
-                return 1;
-              }
-              if (orderB === -1) {
-                return -1;
-              }
-              return orderA - orderB;
-            }
-            return stringCompare(
-              ["", "-", "—"].includes(a) ? "zzz" : a,
-              ["", "-", "—"].includes(b) ? "zzz" : b,
-              this.hass.locale.language
-            );
-          })
-          .reduce((obj, key) => {
-            obj[key] = grouped[key];
-            return obj;
-          }, {});
-        const groupedItems: DataTableRowData[] = [];
-        Object.entries(sorted).forEach(([groupName, rows]) => {
-          groupedItems.push({
-            append: true,
-            content: html`<div
-              class="mdc-data-table__cell group-header"
-              role="cell"
-              .group=${groupName}
-              @click=${this._collapseGroup}
-            >
-              <ha-icon-button
-                .path=${mdiChevronUp}
-                class=${this._collapsedGroups.includes(groupName)
-                  ? "collapsed"
-                  : ""}
-              >
-              </ha-icon-button>
-              ${groupName === UNDEFINED_GROUP_KEY
-                ? localize("ui.components.data-table.ungrouped")
-                : groupName || ""}
-            </div>`,
-          });
-          if (!this._collapsedGroups.includes(groupName)) {
-            groupedItems.push(...rows);
-          }
-        });
-        items = groupedItems;
-      }
-
-      if (this.appendRow) {
-        items.push({ append: true, content: this.appendRow });
-      }
-
-      if (this.hasFab) {
-        items.push({ empty: true });
-      }
-
-      this._items = items;
-    } else {
-      this._items = data;
-    }
+    this._lastUpdate = startTime;
     this._filteredData = data;
   }
+
+  private _groupData = memoizeOne(
+    (
+      data: DataTableRowData[],
+      localize: LocalizeFunc,
+      appendRow,
+      hasFab: boolean,
+      groupColumn: string | undefined,
+      groupOrder: string[] | undefined,
+      collapsedGroups: string[]
+    ) => {
+      if (appendRow || hasFab || groupColumn) {
+        let items = [...data];
+
+        if (groupColumn) {
+          const grouped = groupBy(items, (item) => item[groupColumn]);
+          if (grouped.undefined) {
+            // make sure ungrouped items are at the bottom
+            grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
+            delete grouped.undefined;
+          }
+          const sorted: {
+            [key: string]: DataTableRowData[];
+          } = Object.keys(grouped)
+            .sort((a, b) => {
+              const orderA = groupOrder?.indexOf(a) ?? -1;
+              const orderB = groupOrder?.indexOf(b) ?? -1;
+              if (orderA !== orderB) {
+                if (orderA === -1) {
+                  return 1;
+                }
+                if (orderB === -1) {
+                  return -1;
+                }
+                return orderA - orderB;
+              }
+              return stringCompare(
+                ["", "-", "—"].includes(a) ? "zzz" : a,
+                ["", "-", "—"].includes(b) ? "zzz" : b,
+                this.hass.locale.language
+              );
+            })
+            .reduce((obj, key) => {
+              obj[key] = grouped[key];
+              return obj;
+            }, {});
+          const groupedItems: DataTableRowData[] = [];
+          Object.entries(sorted).forEach(([groupName, rows]) => {
+            groupedItems.push({
+              append: true,
+              content: html`<div
+                class="mdc-data-table__cell group-header"
+                role="cell"
+                .group=${groupName}
+                @click=${this._collapseGroup}
+              >
+                <ha-icon-button
+                  .path=${mdiChevronUp}
+                  class=${collapsedGroups.includes(groupName)
+                    ? "collapsed"
+                    : ""}
+                >
+                </ha-icon-button>
+                ${groupName === UNDEFINED_GROUP_KEY
+                  ? localize("ui.components.data-table.ungrouped")
+                  : groupName || ""}
+              </div>`,
+            });
+            if (!collapsedGroups.includes(groupName)) {
+              groupedItems.push(...rows);
+            }
+          });
+          items = groupedItems;
+        }
+
+        if (appendRow) {
+          items.push({ append: true, content: appendRow });
+        }
+
+        if (hasFab) {
+          items.push({ empty: true });
+        }
+
+        return items;
+      }
+      return data;
+    }
+  );
 
   private _memFilterData = memoizeOne(
     (
@@ -802,8 +828,8 @@ export class HaDataTable extends LitElement {
 
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
-    if (this._items.length) {
-      this._items = [...this._items];
+    if (this._filteredData.length) {
+      this._filteredData = [...this._filteredData];
     }
     fireEvent(this, "selection-changed", {
       value: this._checkedRows,
