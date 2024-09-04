@@ -2,12 +2,11 @@ import { mdiAlertCircle } from "@mdi/js";
 import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import "../../../components/ha-label-badge";
+import "../../../components/ha-badge";
 import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../custom-card-helpers";
 import { LovelaceBadge } from "../types";
-import { HuiEntityBadge } from "./hui-entity-badge";
 import { ErrorBadgeConfig } from "./types";
 
 export const createErrorBadgeElement = (config) => {
@@ -55,41 +54,36 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     }
 
     return html`
-      <button class="badge error" @click=${this._viewDetail}>
-        <ha-svg-icon .hass=${this.hass} .path=${mdiAlertCircle}></ha-svg-icon>
-        <ha-ripple></ha-ripple>
-        <span class="content">
-          <span class="name">Error</span>
-          <span class="state">${this._config.error}</span>
-        </span>
-      </button>
+      <ha-badge
+        class="error"
+        @click=${this._viewDetail}
+        type="button"
+        label="Error"
+      >
+        <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
+        <div class="content">${this._config.error}</div>
+      </ha-badge>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      HuiEntityBadge.styles,
-      css`
-        .badge.error {
-          --badge-color: var(--error-color);
-          border-color: var(--badge-color);
-        }
-        ha-svg-icon {
-          color: var(--badge-color);
-        }
-        .state {
-          max-width: 100px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        pre {
-          font-family: var(--code-font-family, monospace);
-          white-space: break-spaces;
-          user-select: text;
-        }
-      `,
-    ];
+    return css`
+      ha-badge {
+        --badge-color: var(--error-color);
+        --ha-card-border-color: var(--error-color);
+      }
+      .content {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      pre {
+        font-family: var(--code-font-family, monospace);
+        white-space: break-spaces;
+        user-select: text;
+      }
+    `;
   }
 }
 
