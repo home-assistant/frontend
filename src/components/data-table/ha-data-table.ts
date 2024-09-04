@@ -606,14 +606,14 @@ export class HaDataTable extends LitElement {
   };
 
   private async _sortFilterData() {
-    this._curRequest++;
-    const curRequest = this._curRequest;
-
     const startTime = new Date().getTime();
     const timeBetweenUpdate = startTime - this._lastUpdate;
+    const timeBetweenRequest = startTime - this._curRequest;
+    this._curRequest = startTime;
+
     const forceUpdate =
       !this._lastUpdate ||
-      (timeBetweenUpdate > 1000 && timeBetweenUpdate < 2000);
+      (timeBetweenUpdate > 500 && timeBetweenRequest < 500);
 
     let filteredData = this.data;
     if (this._filter) {
@@ -624,7 +624,7 @@ export class HaDataTable extends LitElement {
       );
     }
 
-    if (!forceUpdate && this._curRequest !== curRequest) {
+    if (!forceUpdate && this._curRequest !== startTime) {
       return;
     }
 
@@ -649,7 +649,7 @@ export class HaDataTable extends LitElement {
       });
     }
 
-    if (!forceUpdate && this._curRequest !== curRequest) {
+    if (!forceUpdate && this._curRequest !== startTime) {
       return;
     }
 
