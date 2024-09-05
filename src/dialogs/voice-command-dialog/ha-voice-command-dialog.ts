@@ -650,6 +650,7 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-end: -24px;
           margin-inline-start: initial;
           direction: var(--direction);
+          transform: scaleX(var(--scale-direction));
         }
 
         .listening-icon[active] {
