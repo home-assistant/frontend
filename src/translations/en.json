@@ -4781,6 +4781,7 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
+            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "remove_failed": "Remove failed",

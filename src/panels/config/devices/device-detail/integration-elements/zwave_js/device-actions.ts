@@ -5,6 +5,7 @@ import {
   mdiHospitalBox,
   mdiInformation,
   mdiUpload,
+  mdiWrench,
 } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
@@ -98,6 +99,13 @@ export const getZwaveDeviceActions = async (
           showZWaveJSNodeStatisticsDialog(el, {
             device,
           }),
+      },
+      {
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.installer_settings"
+        ),
+        icon: mdiWrench,
+        href: `/config/zwave_js/node_installer/${device.id}?config_entry=${entryId}`,
       }
     );
   }
