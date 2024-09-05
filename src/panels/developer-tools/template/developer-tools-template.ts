@@ -279,12 +279,11 @@ class HaPanelDevTemplate extends LitElement {
             max(16px, env(safe-area-inset-right))
             max(16px, env(safe-area-inset-bottom))
             max(16px, env(safe-area-inset-left));
-          --code-mirror-max-height: calc(100vh - 310px);
         }
-        @media all and (max-width: 870px) {
-          .content {
-            --code-mirror-max-height: initial;
-          }
+
+        .content.horizontal {
+          --code-mirror-max-height: calc(100vh - 410px);
+          max-height: calc(var(--code-mirror-max-height) + 150px);
         }
 
         ha-card {
@@ -299,8 +298,9 @@ class HaPanelDevTemplate extends LitElement {
           color: var(--primary-color);
         }
 
-        .horizontal .edit-pane {
-          max-width: 50%;
+        .content.horizontal > * {
+          width: 50%;
+          margin-bottom: 0px;
         }
 
         .render-spinner {
@@ -323,13 +323,8 @@ class HaPanelDevTemplate extends LitElement {
           background-color: var(--secondary-background-color);
           padding: 8px;
           direction: ltr;
-          max-height: calc(var(--code-mirror-max-height) + 86px);
           overflow: auto;
-        }
-        @media all and (max-width: 870px) {
-          .rendered {
-            max-height: initial;
-          }
+          max-height: calc(var(--code-mirror-max-height) - 30px);
         }
 
         .all_listeners {
