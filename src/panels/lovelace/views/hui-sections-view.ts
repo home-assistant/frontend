@@ -225,10 +225,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 sectionConfig?.column_span || 1,
                 maxColumnCount
               );
+
               const rowSpan = sectionConfig?.row_span || 1;
 
               (section as any).itemPath = [idx];
-              (section as any).columnSpan = columnSpan;
 
               return html`
                 <div
@@ -384,7 +384,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --column-gap: var(--ha-view-sections-column-gap, 24px);
         --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         --column-max-width: var(--ha-view-sections-column-max-width, 500px);
-        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
         display: block;
       }
 

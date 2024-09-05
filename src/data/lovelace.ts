@@ -33,7 +33,6 @@ export interface LovelaceSectionElement extends HTMLElement {
   lovelace?: Lovelace;
   preview?: boolean;
   viewIndex?: number;
-  columnSpan?: number;
   index?: number;
   cards?: HuiCard[];
   isStrategy: boolean;

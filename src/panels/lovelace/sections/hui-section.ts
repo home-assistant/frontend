@@ -47,8 +47,6 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public viewIndex!: number;
 
-  @property({ type: Number }) public columnSpan!: number;
-
   @state() private _cards: HuiCard[] = [];
 
   private _layoutElementType?: string;
@@ -133,9 +131,6 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
-      if (changedProperties.has("columnSpan")) {
-        this._layoutElement.columnSpan = this.columnSpan;
-      }
       if (changedProperties.has("hass") || changedProperties.has("preview")) {
         this._updateElement();
       }
@@ -200,7 +195,6 @@ export class HuiSection extends ReactiveElement {
     this._layoutElement!.lovelace = this.lovelace;
     this._layoutElement!.index = this.index;
     this._layoutElement!.viewIndex = this.viewIndex;
-    this._layoutElement!.columnSpan = this.columnSpan;
     this._layoutElement!.cards = this._cards;
 
     if (addLayoutElement) {
