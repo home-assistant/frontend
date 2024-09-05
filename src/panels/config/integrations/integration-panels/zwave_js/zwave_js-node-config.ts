@@ -275,6 +275,11 @@ class ZWaveJSNodeConfig extends LitElement {
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
           .suffix=${item.metadata.unit}
+          .helper=${this.hass.localize(
+            "ui.panel.config.zwave_js.node_config.between_min_max",
+            { min: item.metadata.min, max: item.metadata.max }
+          )}
+          helperPersistent
         >
         </ha-textfield>`;
     }
@@ -354,6 +359,19 @@ class ZWaveJSNodeConfig extends LitElement {
     }
     const value = Number(ev.target.value);
     if (Number(this._config![ev.target.key].value) === value) {
+      return;
+    }
+    if (
+      (ev.target.min !== undefined && value < ev.target.min) ||
+      (ev.target.max !== undefined && value > ev.target.max)
+    ) {
+      this.setError(
+        ev.target.key,
+        this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_not_in_range",
+          { min: ev.target.min, max: ev.target.max }
+        )
+      );
       return;
     }
     this.setResult(ev.target.key, undefined);
