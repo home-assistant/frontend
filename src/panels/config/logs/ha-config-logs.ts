@@ -250,7 +250,7 @@ export class HaConfigLogs extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
           --mdc-icon-size: 36px;
         }
-        ha-button-menu > mwc-button > ha-svg-icon {
+        ha-button-menu > ha-button > ha-svg-icon {
           margin-inline-end: 0px;
           margin-inline-start: 8px;
         }
