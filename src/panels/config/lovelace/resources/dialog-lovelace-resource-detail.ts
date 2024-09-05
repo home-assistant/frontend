@@ -1,10 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiClose } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-new";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-icon-button";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -40,6 +43,8 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   @state() private _submitting = false;
 
+  @query("ha-dialog-new") private _dialog?: HaDialogNew;
+
   public showDialog(params: LovelaceResourceDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -60,27 +65,34 @@ export class DialogLovelaceResourceDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _closeDialog(): void {
+    this._dialog?.close();
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
     }
     const urlInvalid = !this._data?.url || this._data.url.trim() === "";
+
+    const dialogTitle =
+      this._params.resource?.url ||
+      this.hass!.localize(
+        "ui.panel.config.lovelace.resources.detail.new_resource"
+      );
+
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.resource
-            ? this._params.resource.url
-            : this.hass!.localize(
-                "ui.panel.config.lovelace.resources.detail.new_resource"
-              )
-        )}
-      >
-        <div>
+      <ha-dialog-new disable-esc-scrim-cancel @closed=${this.closeDialog}>
+        <ha-dialog-header slot="headline">
+          <ha-icon-button
+            slot="navigationIcon"
+            .label=${this.hass.localize("ui.dialogs.generic.close") ?? "Close"}
+            .path=${mdiClose}
+            @click=${this._closeDialog}
+          ></ha-icon-button>
+          <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
+        </ha-dialog-header>
+        <div slot="content">
           <ha-alert
             alert-type="warning"
             .title=${this.hass!.localize(
@@ -104,7 +116,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         ${this._params.resource
           ? html`
               <mwc-button
-                slot="secondaryAction"
+                slot="actions"
                 class="warning"
                 @click=${this._deleteResource}
                 .disabled=${this._submitting}
@@ -116,7 +128,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
             `
           : nothing}
         <mwc-button
-          slot="primaryAction"
+          slot="actions"
           @click=${this._updateResource}
           .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
         >
@@ -128,7 +140,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                 "ui.panel.config.lovelace.resources.detail.create"
               )}
         </mwc-button>
-      </ha-dialog>
+      </ha-dialog-new>
     `;
   }
 
