@@ -322,22 +322,16 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hasFab
         clickable
       >
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <ha-button-menu slot="toolbar-icon" activatable>
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.hass.localize("ui.common.menu")}
-                  .path=${mdiDotsVertical}
-                ></ha-icon-button>
-                <ha-clickable-list-item href="/config/lovelace/resources">
-                  ${this.hass.localize(
-                    "ui.panel.config.lovelace.resources.caption"
-                  )}
-                </ha-clickable-list-item>
-              </ha-button-menu>
-            `
-          : ""}
+        <ha-button-menu slot="toolbar-icon" activatable>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-clickable-list-item href="/config/lovelace/resources">
+            ${this.hass.localize("ui.panel.config.lovelace.resources.caption")}
+          </ha-clickable-list-item>
+        </ha-button-menu>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
