@@ -4900,7 +4900,19 @@
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
-            "bitmask": "Bitmask"
+            "bitmask": "Bitmask",
+            "reset_to_default": {
+              "button_label": "Reset to default configuration",
+              "dialog": {
+                "title": "Reset to default",
+                "text": "Are you sure you want to reset all configuration parameters of the device {deviceName} to their default values?",
+                "text_loading": "Resetting in progress…",
+                "text_success": "The device configuration for {deviceName} has been reset to its default values.",
+                "text_error": "Something went wrong while resetting the device {deviceName} to its default values. Please check your logs!",
+                "reset": "Reset",
+                "cancel": "Cancel"
+              }
+            }
           },
           "network_status": {
             "connected": "Connected",

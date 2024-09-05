@@ -17,6 +17,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-alert";
@@ -27,6 +28,10 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-icon-button";
 import { groupBy } from "../../../../../common/util/group-by";
 import {
   computeDeviceName,
@@ -36,6 +41,7 @@ import {
 import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
+  resetAllZwaveNodeConfigParameter,
   setZwaveNodeConfigParameter,
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
@@ -89,6 +95,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @state() private _error?: string;
 
+  @state() private _resetDialog:
+    | "hidden"
+    | "info"
+    | "loading"
+    | "success"
+    | "error" = "hidden";
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.deviceId = this.route.path.substr(1);
@@ -127,6 +140,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
     const device = this._device!;
 
+    const deviceName = device ? computeDeviceName(device, this.hass) : "";
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -147,7 +162,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
             ${device
               ? html`
                   <div class="device-info">
-                    <h2>${computeDeviceName(device, this.hass)}</h2>
+                    <h2>${deviceName}</h2>
                     <p>${device.manufacturer} ${device.model}</p>
                   </div>
                 `
@@ -207,8 +222,91 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 </ha-card>
               </div>`
           )}
+          <div class="reset">
+            <ha-button @click=${this._openResetDialog}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
+              )}
+            </ha-button>
+          </div>
         </ha-config-section>
       </hass-tabs-subpage>
+      ${this._resetDialog !== "hidden"
+        ? html`
+            <ha-dialog
+              open
+              @closed=${this._closeResetDialog}
+              heading=" "
+              scrimClickAction=${ifDefined(
+                this._resetDialog === "loading" ? "" : undefined
+              )}
+              escapeKeyAction=${ifDefined(
+                this._resetDialog === "loading" ? "" : undefined
+              )}
+            >
+              <ha-dialog-header slot="heading">
+                <span
+                  slot="title"
+                  .title=${this.hass.localize(
+                    "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
+                  )}
+                  >${this.hass.localize(
+                    "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
+                  )}</span
+                >
+              </ha-dialog-header>
+              ${this._resetDialog === "info"
+                ? html`
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text",
+                      { deviceName: html`<b>${deviceName}</b>` }
+                    )}
+                  `
+                : this._resetDialog === "loading"
+                  ? html`
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_loading"
+                      )}
+                    `
+                  : this._resetDialog === "success"
+                    ? html`
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_success",
+                          { deviceName: html`<b>${deviceName}</b>` }
+                        )}
+                      `
+                    : this._resetDialog === "error"
+                      ? html`
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_error",
+                            { deviceName: html`<b>${deviceName}</b>` }
+                          )}
+                        `
+                      : nothing}
+              ${this._resetDialog === "info"
+                ? html`<mwc-button
+                    slot="primaryAction"
+                    @click=${this._closeResetDialog}
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </mwc-button>`
+                : nothing}
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._resetDialog === "info"
+                  ? this._resetAllConfigParameters
+                  : this._closeResetDialog}
+                .disabled=${this._resetDialog === "loading"}
+              >
+                ${this._resetDialog === "info"
+                  ? this.hass.localize(
+                      "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.reset"
+                    )
+                  : this.hass.localize("ui.common.close")}
+              </mwc-button>
+            </ha-dialog>
+          `
+        : nothing}
     `;
   }
 
@@ -441,6 +539,26 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     ]);
   }
 
+  private _openResetDialog() {
+    this._resetDialog = "info";
+  }
+
+  private _closeResetDialog() {
+    this._resetDialog = "hidden";
+  }
+
+  private async _resetAllConfigParameters() {
+    this._resetDialog = "loading";
+    try {
+      await resetAllZwaveNodeConfigParameter(this.hass, this._device!.id);
+
+      await this._fetchData();
+      this._resetDialog = "success";
+    } catch (err: any) {
+      this._resetDialog = "error";
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -522,6 +640,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
         .switch {
           text-align: right;
+        }
+
+        .reset {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 24px;
         }
       `,
     ];
