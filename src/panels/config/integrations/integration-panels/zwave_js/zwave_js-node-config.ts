@@ -362,8 +362,8 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
     if (
-      (ev.target.min !== undefined && value < ev.target.min) ||
-      (ev.target.max !== undefined && value > ev.target.max)
+      (ev.target.min !== undefined && value <= ev.target.min) ||
+      (ev.target.max !== undefined && value >= ev.target.max)
     ) {
       this.setError(
         ev.target.key,
