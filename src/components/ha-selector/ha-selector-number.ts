@@ -67,7 +67,9 @@ export class HaNumberSelector extends LitElement {
     }
 
     return html`
-      ${this.label ? html`${this.label}${this.required ? "*" : ""}` : nothing}
+      ${this.label && !isBox
+        ? html`${this.label}${this.required ? "*" : ""}`
+        : nothing}
       <div class="input">
         ${!isBox
           ? html`
