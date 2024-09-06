@@ -388,7 +388,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           device.config_entries
             .filter((entId) => entId in entryLookup)
             .map((entId) => entryLookup[entId]),
-          manifestLookup
+          device.primary_config_entry
         );
 
         const labels = labelReg && device?.labels;
