@@ -232,6 +232,7 @@ const createDeviceRegistryEntries = (
     labels: [],
     created_at: 0,
     modified_at: 0,
+    primary_config_entry: null,
   },
 ];
 
