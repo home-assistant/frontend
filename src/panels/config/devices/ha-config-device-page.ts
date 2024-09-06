@@ -153,7 +153,7 @@ export class HaConfigDevicePage extends LitElement {
         .filter((entId) => entId in entryLookup)
         .map((entry) => entryLookup[entry]);
 
-      return sortConfigEntries(deviceEntries, manifestLookup);
+      return sortConfigEntries(deviceEntries, device.primary_config_entry);
     }
   );
 

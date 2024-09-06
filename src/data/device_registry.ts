@@ -33,6 +33,7 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   entry_type: "service" | null;
   disabled_by: "user" | "integration" | "config_entry" | null;
   configuration_url: string | null;
+  primary_config_entry: string | null;
 }
 
 export interface DeviceEntityDisplayLookup {
