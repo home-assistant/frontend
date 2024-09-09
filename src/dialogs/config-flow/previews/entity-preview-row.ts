@@ -6,6 +6,11 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-select";
+import "../../../components/ha-time-input";
+import "../../../components/ha-climate-state";
+import "../../../components/ha-cover-controls";
+import "../../../components/ha-cover-tilt-controls";
+import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
@@ -236,6 +241,62 @@ class EntityPreviewRow extends LitElement {
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}
         </mwc-button>
+      `;
+    }
+    if (domain === "button") {
+      return html`
+        <mwc-button .disabled=${isUnavailableState(stateObj.state)}>
+          ${this.hass.localize("ui.card.button.press")}
+        </mwc-button>
+      `;
+    }
+    if (domain === "climate") {
+      return html`
+        <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
+        </ha-climate-state>
+      `;
+    }
+    if (domain === "cover") {
+      return html`
+        ${isTiltOnly(stateObj)
+          ? html`
+              <ha-cover-tilt-controls
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-cover-tilt-controls>
+            `
+          : html`
+              <ha-cover-controls
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-cover-controls>
+            `}
+      `;
+    }
+    if (domain === "text") {
+      return html`
+        <ha-textfield
+          .label=${computeStateName(stateObj)}
+          .disabled=${isUnavailableState(stateObj.state)}
+          .value=${stateObj.state}
+          .minlength=${stateObj.attributes.min}
+          .maxlength=${stateObj.attributes.max}
+          .autoValidate=${stateObj.attributes.pattern}
+          .pattern=${stateObj.attributes.pattern}
+          .type=${stateObj.attributes.mode}
+          placeholder=${this.hass!.localize("ui.card.text.emtpy_value")}
+        ></ha-textfield>
+      `;
+    }
+    if (domain === "weather") {
+      return html`
+        <div>
+          ${isUnavailableState(stateObj.state) ||
+          stateObj.attributes.temperature === undefined ||
+          stateObj.attributes.temperature === null
+            ? this.hass.formatEntityState(stateObj)
+            : this.hass.formatEntityAttributeValue(stateObj, "temperature")}
+        </div>
       `;
     }
     return html` ${this.hass.formatEntityState(stateObj)} `;
