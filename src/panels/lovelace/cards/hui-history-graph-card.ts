@@ -6,14 +6,13 @@ import {
   html,
   nothing,
 } from "lit";
-import { mdiChevronRight } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-next";
 import {
   HistoryResult,
   computeHistory,
@@ -209,9 +208,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           ? html`
               <h1 class="card-header">
                 ${this._config.title}
-                <a href=${configUrl}
-                  ><ha-icon-button .path=${mdiChevronRight}></ha-icon-button
-                ></a>
+                <a href=${configUrl}><ha-icon-next></ha-icon-next></a>
               </h1>
             `
           : nothing}
@@ -258,7 +255,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         justify-content: space-between;
         display: flex;
       }
-      .card-header ha-icon-button {
+      .card-header ha-icon-next {
         --mdc-icon-button-size: 24px;
         line-height: 24px;
         color: var(--primary-text-color);
