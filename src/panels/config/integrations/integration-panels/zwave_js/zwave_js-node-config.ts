@@ -6,19 +6,18 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
+import { groupBy } from "../../../../../common/util/group-by";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -30,26 +29,20 @@ import "../../../../../components/ha-textfield";
 import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-icon-button";
-import { groupBy } from "../../../../../common/util/group-by";
+import { computeDeviceName } from "../../../../../data/device_registry";
 import {
-  computeDeviceName,
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
-import {
+  ZWaveJSNodeConfigParam,
+  ZWaveJSNodeConfigParams,
+  ZWaveJSSetConfigParamResult,
+  ZwaveJSNodeMetadata,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   resetAllZwaveNodeConfigParameter,
   setZwaveNodeConfigParameter,
-  ZWaveJSNodeConfigParam,
-  ZWaveJSNodeConfigParams,
-  ZwaveJSNodeMetadata,
-  ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
@@ -63,16 +56,8 @@ const icons = {
   error: mdiCloseCircle,
 };
 
-const getDevice = memoizeOne(
-  (
-    deviceId: string,
-    entries?: DeviceRegistryEntry[]
-  ): DeviceRegistryEntry | undefined =>
-    entries?.find((device) => device.id === deviceId)
-);
-
 @customElement("zwave_js-node-config")
-class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
+class ZWaveJSNodeConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -84,8 +69,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property() public configEntryId?: string;
 
   @property() public deviceId!: string;
-
-  @state() private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
@@ -102,19 +85,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this.deviceId = this.route.path.substr(1);
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._deviceRegistryEntries = entries;
-      }),
-    ];
-  }
-
   protected updated(changedProps: PropertyValues): void {
-    if (
-      (!this._config || changedProps.has("deviceId")) &&
-      changedProps.has("_deviceRegistryEntries")
-    ) {
+    if (!this._config || changedProps.has("deviceId")) {
       this._fetchData();
     }
   }
@@ -133,7 +105,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
-    const device = this._device!;
+    const device = this.hass.devices[this.deviceId];
 
     const deviceName = device ? computeDeviceName(device, this.hass) : "";
 
@@ -347,6 +319,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
           .suffix=${item.metadata.unit}
+          .helper=${this.hass.localize(
+            "ui.panel.config.zwave_js.node_config.between_min_max",
+            { min: item.metadata.min, max: item.metadata.max }
+          )}
+          helperPersistent
         >
         </ha-textfield>`;
     }
@@ -428,6 +405,19 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
+    if (
+      (ev.target.min !== undefined && value < ev.target.min) ||
+      (ev.target.max !== undefined && value > ev.target.max)
+    ) {
+      this.setError(
+        ev.target.key,
+        this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.error_not_in_range",
+          { min: ev.target.min, max: ev.target.max }
+        )
+      );
+      return;
+    }
     this.setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
   }
@@ -436,7 +426,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     try {
       const result = await setZwaveNodeConfigParameter(
         this.hass,
-        this._device!.id,
+        this.deviceId,
         target.property,
         target.endpoint,
         value,
@@ -464,16 +454,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._results = { ...this._results, [key]: errorParam };
   }
 
-  private get _device(): DeviceRegistryEntry | undefined {
-    return getDevice(this.deviceId, this._deviceRegistryEntries);
-  }
-
   private async _fetchData() {
-    if (!this.configEntryId || !this._deviceRegistryEntries) {
+    if (!this.configEntryId) {
       return;
     }
 
-    const device = this._device;
+    const device = this.hass.devices[this.deviceId];
     if (!device) {
       this._error = "device_not_found";
       return;
@@ -511,7 +497,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     });
 
     try {
-      await resetAllZwaveNodeConfigParameter(this.hass, this._device!.id);
+      const device = this.hass.devices[this.deviceId];
+      if (!device) {
+        throw new Error("device_not_found");
+      }
+      await resetAllZwaveNodeConfigParameter(this.hass, device.id);
 
       fireEvent(this, "hass-notification", {
         message: this.hass.localize(

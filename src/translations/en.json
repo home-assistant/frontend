@@ -4895,6 +4895,8 @@
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
+            "between_min_max": "Between {min} and {max}",
+            "error_not_in_range": "Value must be between {min} and {max}",
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",

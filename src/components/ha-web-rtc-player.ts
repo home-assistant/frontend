@@ -109,7 +109,7 @@ class HaWebRtcPlayer extends LitElement {
     let candidates = ""; // Build an Offer SDP string with ice candidates
     const iceResolver = new Promise<void>((resolve) => {
       peerConnection.addEventListener("icecandidate", async (event) => {
-        if (!event.candidate) {
+        if (!event.candidate?.candidate) {
           resolve(); // Gathering complete
           return;
         }
