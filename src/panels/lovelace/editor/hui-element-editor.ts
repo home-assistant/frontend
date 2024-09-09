@@ -7,6 +7,7 @@ import {
   TemplateResult,
   css,
   html,
+  nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -208,8 +209,17 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const guiModeAvailable = !(
+      this.hasWarning ||
+      this.hasError ||
+      this._guiSupported === false
+    );
+
     return html`
       <div class="wrapper">
+        <ha-button @click=${this.toggleMode} .disabled=${!guiModeAvailable}>
+          ${guiModeAvailable && this._guiMode ? "Show yaml" : "Show UI"}
+        </ha-button>
         ${this.GUImode
           ? html`
               <div class="gui-editor">
@@ -241,24 +251,23 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
             `}
         ${this._guiSupported === false && this.configElementType
           ? html`
-              <div class="info">
+              <ha-alert alert-type="info">
                 ${this.hass.localize("ui.errors.config.editor_not_available", {
                   type: this.configElementType,
                 })}
-              </div>
+              </ha-alert>
             `
-          : ""}
+          : nothing}
         ${this.hasError
           ? html`
-              <div class="error">
+              <ha-alert alert-type="error">
                 ${this.hass.localize("ui.errors.config.error_detected")}:
-                <br />
                 <ul>
                   ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
-              </div>
+              </ha-alert>
             `
-          : ""}
+          : nothing}
         ${this.hasWarning
           ? html`
               <ha-alert
@@ -268,16 +277,18 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
                 )}:"
               >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
+                  ? html`
+                      <ul>
+                        ${this._warnings!.map(
+                          (warning) => html`<li>${warning}</li>`
+                        )}
+                      </ul>
+                    `
+                  : nothing}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </ha-alert>
             `
-          : ""}
+          : nothing}
       </div>
     `;
   }

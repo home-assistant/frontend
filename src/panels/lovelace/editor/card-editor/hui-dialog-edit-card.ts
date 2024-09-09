@@ -44,7 +44,6 @@ import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
-import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
@@ -297,7 +296,6 @@ export class HuiDialogEditCard
                     .lovelace=${this._params.lovelaceConfig}
                     .config=${this._cardConfig}
                     @config-changed=${this._handleConfigChanged}
-                    @GUImode-changed=${this._handleGUIModeChanged}
                     @editor-save=${this._save}
                     dialogInitialFocus
                   >
@@ -387,11 +385,6 @@ export class HuiDialogEditCard
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._dirty = true;
-  }
-
-  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
-    ev.stopPropagation();
-    this._yamlMode = ev.detail.guiMode;
   }
 
   private _opened() {
@@ -599,11 +592,6 @@ export class HuiDialogEditCard
           display: block;
           width: 100%;
           box-sizing: border-box;
-        }
-        .gui-mode-button {
-          margin-right: auto;
-          margin-inline-end: auto;
-          margin-inline-start: initial;
         }
         .header {
           display: flex;

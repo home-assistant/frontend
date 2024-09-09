@@ -1,16 +1,18 @@
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import { HomeAssistant } from "../../../../types";
 import "./hui-card-element-editor";
+import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 
 const TABS = ["config", "visibility", "layout"] as const;
 
@@ -64,6 +66,7 @@ class HuiCardEditor extends LitElement {
         <hui-card-layout-editor
           .hass=${this.hass}
           .config=${this.config}
+          .sectionConfig=${this.containerConfig as LovelaceSectionConfig}
           @value-changed=${this._configChanged}
         >
         </hui-card-layout-editor>
