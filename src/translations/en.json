@@ -1797,9 +1797,12 @@
     "errors": {
       "config": {
         "no_type_provided": "No type provided.",
-        "error_detected": "Configuration errors detected",
+        "invalid_configuration": "Invalid configuration",
+        "error_details": "The configuration contains the following errors:",
         "editor_not_available": "No visual editor available for type ''{type}''.",
-        "editor_not_supported": "Visual editor is not supported for this configuration",
+        "editor_not_supported": "Visual editor not supported",
+        "editor_not_supported_details": "The visual editor is not supported for type ''{type}''.",
+        "warning_details": "The configuration contains the following warnings:",
         "edit_in_yaml_supported": "You can still edit your config in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",

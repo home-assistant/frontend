@@ -251,17 +251,30 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
             `}
         ${this._guiSupported === false && this.configElementType
           ? html`
-              <ha-alert alert-type="info">
-                ${this.hass.localize("ui.errors.config.editor_not_available", {
-                  type: this.configElementType,
-                })}
+              <ha-alert
+                alert-type="info"
+                .title=${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}
+              >
+                ${this.hass.localize(
+                  "ui.errors.config.editor_not_supported_details",
+                  { type: this.configElementType }
+                )}
+                <br />
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </ha-alert>
             `
           : nothing}
         ${this.hasError
           ? html`
-              <ha-alert alert-type="error">
-                ${this.hass.localize("ui.errors.config.error_detected")}:
+              <ha-alert
+                alert-type="error"
+                .title=${this.hass.localize(
+                  "ui.errors.config.invalid_configuration"
+                )}
+              >
+                ${this.hass.localize("ui.errors.config.error_details")}
                 <ul>
                   ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
@@ -272,12 +285,13 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
           ? html`
               <ha-alert
                 alert-type="warning"
-                .title="${this.hass.localize(
+                .title=${this.hass.localize(
                   "ui.errors.config.editor_not_supported"
-                )}:"
+                )}
               >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html`
+                      ${this.hass.localize("ui.errors.config.warning_details")}
                       <ul>
                         ${this._warnings!.map(
                           (warning) => html`<li>${warning}</li>`
