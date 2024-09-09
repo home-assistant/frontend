@@ -74,6 +74,9 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ type: Boolean, attribute: "show-toggle-mode-button" })
+  public showToggleModeButton = false;
+
   @state() private _yaml?: string;
 
   @state() private _config?: T;
@@ -217,9 +220,16 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
     return html`
       <div class="wrapper">
-        <ha-button @click=${this.toggleMode} .disabled=${!guiModeAvailable}>
-          ${guiModeAvailable && this._guiMode ? "Show yaml" : "Show UI"}
-        </ha-button>
+        ${this.showToggleModeButton
+          ? html`
+              <ha-button
+                @click=${this.toggleMode}
+                .disabled=${!guiModeAvailable}
+              >
+                ${guiModeAvailable && this._guiMode ? "Show yaml" : "Show UI"}
+              </ha-button>
+            `
+          : nothing}
         ${this.GUImode
           ? html`
               <div class="gui-editor">

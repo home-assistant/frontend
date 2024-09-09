@@ -49,6 +49,7 @@ class HuiCardEditor extends LitElement {
           .hass=${this.hass}
           .lovelace=${this.lovelace}
           .value=${this.config}
+          show-toggle-mode-button
         ></hui-card-element-editor>
       `;
     }

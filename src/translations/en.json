@@ -1803,7 +1803,7 @@
         "editor_not_supported": "Visual editor not supported",
         "editor_not_supported_details": "The visual editor is not supported for type ''{type}''.",
         "warning_details": "The configuration contains the following warnings:",
-        "edit_in_yaml_supported": "You can still edit your config in YAML.",
+        "edit_in_yaml_supported": "You can still edit the configuration in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
