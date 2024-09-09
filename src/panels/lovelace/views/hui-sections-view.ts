@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -56,6 +57,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     callback: (entries) => {
       const totalWidth = entries[0]?.contentRect.width;
 
+      if (!totalWidth) return 1;
+
       const style = getComputedStyle(this);
       const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
@@ -72,7 +75,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
       );
       const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-      return Math.max(Math.min(maxColumns, columns), 1);
+      return clamp(columns, 1, maxColumns);
     },
   });
 
