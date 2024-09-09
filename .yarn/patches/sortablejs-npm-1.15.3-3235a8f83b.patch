@@ -1,16 +1,7 @@
 diff --git a/modular/sortable.core.esm.js b/modular/sortable.core.esm.js
-index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b441f523f 100644
+index 8b5e49b011713c8859c669069fbe85ce53974e1d..6a0afc92787157b8a31c38cc5f67dfa526090a00 100644
 --- a/modular/sortable.core.esm.js
 +++ b/modular/sortable.core.esm.js
-@@ -1461,7 +1461,7 @@ Sortable.prototype = /** @lends Sortable.prototype */{
-           }
-           target = parent; // store last element
-         }
--        /* jshint boss:true */ while (parent = parent.parentNode);
-+        /* jshint boss:true */ while (parent = parent.parentNode || parent.getRootNode().host);
-       }
-       _unhideGhostForTarget();
-     }
 @@ -1781,11 +1781,16 @@ Sortable.prototype = /** @lends Sortable.prototype */{
          }
          if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
@@ -33,7 +24,7 @@ index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b
            }
            parentEl = el; // actualization
  
-@@ -1802,7 +1807,13 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+@@ -1802,7 +1807,12 @@ Sortable.prototype = /** @lends Sortable.prototype */{
          targetRect = getRect(target);
          if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, false) !== false) {
            capture();
@@ -44,11 +35,10 @@ index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b
 +          catch(err) {
 +            return completed(false);
 +          }
-+          
            parentEl = el; // actualization
  
            changed();
-@@ -1849,12 +1860,17 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+@@ -1849,10 +1859,15 @@ Sortable.prototype = /** @lends Sortable.prototype */{
            _silent = true;
            setTimeout(_unsilent, 30);
            capture();
@@ -56,8 +46,6 @@ index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b
 -            el.appendChild(dragEl);
 -          } else {
 -            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
--          }
- 
 +          try {
 +            if (after && !nextSibling) {
 +              el.appendChild(dragEl);
@@ -67,7 +55,6 @@ index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b
 +          }
 +          catch(err) {
 +            return completed(false);
-+          }
+           }
+ 
            // Undo chrome's scroll adjustment (has no effect on other browsers)
-           if (scrolledPastTop) {
-             scrollBy(scrolledPastTop, 0, scrollBefore - scrolledPastTop.scrollTop);
