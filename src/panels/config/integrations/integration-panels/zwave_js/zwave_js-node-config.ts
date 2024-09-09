@@ -17,7 +17,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-alert";
@@ -28,9 +27,8 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
+import "../../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-icon-button";
 import { groupBy } from "../../../../../common/util/group-by";
 import {
@@ -56,6 +54,8 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const icons = {
   accepted: mdiCheckCircle,
@@ -95,12 +95,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @state() private _error?: string;
 
-  @state() private _resetDialog:
-    | "hidden"
-    | "info"
-    | "loading"
-    | "success"
-    | "error" = "hidden";
+  @state() private _resetDialogProgress = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -223,90 +218,18 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </div>`
           )}
           <div class="reset">
-            <ha-button @click=${this._openResetDialog}>
+            <ha-progress-button
+              .disabled=${this._resetDialogProgress}
+              .progress=${this._resetDialogProgress}
+              @click=${this._openResetDialog}
+            >
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
               )}
-            </ha-button>
+            </ha-progress-button>
           </div>
         </ha-config-section>
       </hass-tabs-subpage>
-      ${this._resetDialog !== "hidden"
-        ? html`
-            <ha-dialog
-              open
-              @closed=${this._closeResetDialog}
-              heading=" "
-              scrimClickAction=${ifDefined(
-                this._resetDialog === "loading" ? "" : undefined
-              )}
-              escapeKeyAction=${ifDefined(
-                this._resetDialog === "loading" ? "" : undefined
-              )}
-            >
-              <ha-dialog-header slot="heading">
-                <span
-                  slot="title"
-                  .title=${this.hass.localize(
-                    "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
-                  )}
-                  >${this.hass.localize(
-                    "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
-                  )}</span
-                >
-              </ha-dialog-header>
-              ${this._resetDialog === "info"
-                ? html`
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text",
-                      { deviceName: html`<b>${deviceName}</b>` }
-                    )}
-                  `
-                : this._resetDialog === "loading"
-                  ? html`
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_loading"
-                      )}
-                    `
-                  : this._resetDialog === "success"
-                    ? html`
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_success",
-                          { deviceName: html`<b>${deviceName}</b>` }
-                        )}
-                      `
-                    : this._resetDialog === "error"
-                      ? html`
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_error",
-                            { deviceName: html`<b>${deviceName}</b>` }
-                          )}
-                        `
-                      : nothing}
-              ${this._resetDialog === "info"
-                ? html`<mwc-button
-                    slot="primaryAction"
-                    @click=${this._closeResetDialog}
-                  >
-                    ${this.hass.localize("ui.common.cancel")}
-                  </mwc-button>`
-                : nothing}
-              <mwc-button
-                slot="primaryAction"
-                @click=${this._resetDialog === "info"
-                  ? this._resetAllConfigParameters
-                  : this._closeResetDialog}
-                .disabled=${this._resetDialog === "loading"}
-              >
-                ${this._resetDialog === "info"
-                  ? this.hass.localize(
-                      "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.reset"
-                    )
-                  : this.hass.localize("ui.common.close")}
-              </mwc-button>
-            </ha-dialog>
-          `
-        : nothing}
     `;
   }
 
@@ -315,6 +238,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     item: ZWaveJSNodeConfigParam
   ): TemplateResult {
     const result = this._results[id];
+
+    const isTypeBoolean =
+      item.configuration_value_type === "boolean" ||
+      this._isEnumeratedBool(item);
+
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
@@ -363,14 +291,32 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 : nothing}
             </p>`
           : nothing}
+        ${item.metadata.writeable && item.metadata.default !== undefined
+          ? html`
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.default"
+                )}:
+                ${isTypeBoolean
+                  ? this.hass.localize(
+                      item.metadata.default === 1
+                        ? "ui.common.yes"
+                        : "ui.common.no"
+                    )
+                  : item.configuration_value_type === "enumerated"
+                    ? item.metadata.states[item.metadata.default] ||
+                      item.metadata.default
+                    : item.metadata.default}${item.metadata.unit
+                  ? ` (${item.metadata.unit})`
+                  : nothing}
+              </div>
+            `
+          : nothing}
       </span>
     `;
 
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
-    if (
-      item.configuration_value_type === "boolean" ||
-      this._isEnumeratedBool(item)
-    ) {
+    if (isTypeBoolean) {
       return html`
         ${labelAndDescription}
         <div class="switch">
@@ -539,24 +485,51 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     ]);
   }
 
-  private _openResetDialog() {
-    this._resetDialog = "info";
+  private async _openResetDialog(event: Event) {
+    const progressButton = event.currentTarget as HaProgressButton;
+
+    await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.reset"
+      ),
+      confirm: () => this._resetAllConfigParameters(progressButton),
+    });
   }
 
-  private _closeResetDialog() {
-    this._resetDialog = "hidden";
-  }
+  private async _resetAllConfigParameters(progressButton: HaProgressButton) {
+    this._resetDialogProgress = true;
+    fireEvent(this, "hass-notification", {
+      message: this.hass.localize(
+        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_loading"
+      ),
+    });
 
-  private async _resetAllConfigParameters() {
-    this._resetDialog = "loading";
     try {
       await resetAllZwaveNodeConfigParameter(this.hass, this._device!.id);
 
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_success"
+        ),
+      });
+
       await this._fetchData();
-      this._resetDialog = "success";
+      progressButton.actionSuccess();
     } catch (err: any) {
-      this._resetDialog = "error";
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_error"
+        ),
+      });
+      progressButton.actionError();
     }
+    this._resetDialogProgress = false;
   }
 
   static get styles(): CSSResultGroup {
