@@ -95,10 +95,10 @@ export const computeInitialHaFormData = (
       } else if (
         "action" in selector ||
         "trigger" in selector ||
-        "condition" in selector ||
-        "media" in selector ||
-        "target" in selector
+        "condition" in selector
       ) {
+        data[field.name] = [];
+      } else if ("media" in selector || "target" in selector) {
         data[field.name] = {};
       } else {
         throw new Error(
