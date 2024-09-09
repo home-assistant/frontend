@@ -262,27 +262,6 @@ class ZWaveJSNodeConfig extends LitElement {
                 : nothing}
             </p>`
           : nothing}
-        ${item.metadata.writeable && item.metadata.default !== undefined
-          ? html`
-              <div>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.node_config.default"
-                )}:
-                ${isTypeBoolean
-                  ? this.hass.localize(
-                      item.metadata.default === 1
-                        ? "ui.common.yes"
-                        : "ui.common.no"
-                    )
-                  : item.configuration_value_type === "enumerated"
-                    ? item.metadata.states[item.metadata.default] ||
-                      item.metadata.default
-                    : item.metadata.default}${item.metadata.unit
-                  ? ` (${item.metadata.unit})`
-                  : nothing}
-              </div>
-            `
-          : nothing}
       </span>
     `;
 
