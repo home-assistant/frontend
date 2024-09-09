@@ -83,7 +83,7 @@ export const showConfigFlowDialog = (
         );
       }
 
-      const prefix = options?.path?.[0] ? `sections.${options.path[0]}` : "";
+      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
 
       return (
         hass.localize(
