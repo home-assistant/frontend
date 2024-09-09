@@ -1,4 +1,4 @@
-import "@material/mwc-button";
+import { mdiCodeBraces, mdiListBox } from "@mdi/js";
 import { dump, load } from "js-yaml";
 import {
   CSSResultGroup,
@@ -17,14 +17,17 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
+import "../../../components/ha-outlined-segmented-button";
+import "../../../components/ha-outlined-segmented-button-set";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceElementConfig } from "../elements/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
@@ -34,7 +37,6 @@ import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface ConfigChangedEvent {
   config:
@@ -222,12 +224,28 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       <div class="wrapper">
         ${this.showToggleModeButton
           ? html`
-              <ha-button
-                @click=${this.toggleMode}
-                .disabled=${!guiModeAvailable}
-              >
-                ${guiModeAvailable && this._guiMode ? "Show yaml" : "Show UI"}
-              </ha-button>
+              <div class="header">
+                <ha-outlined-segmented-button-set
+                  @segmented-button-set-selection=${this._handleModeSelected}
+                >
+                  <ha-outlined-segmented-button
+                    .selected=${this._guiMode}
+                    .disabled=${!guiModeAvailable}
+                    no-checkmark
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiListBox}></ha-svg-icon>
+                  </ha-outlined-segmented-button>
+                  <ha-outlined-segmented-button
+                    .selected=${!this._guiMode}
+                    no-checkmark
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCodeBraces}
+                    ></ha-svg-icon>
+                  </ha-outlined-segmented-button>
+                </ha-outlined-segmented-button-set>
+              </div>
             `
           : nothing}
         ${this.GUImode
@@ -344,6 +362,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       }
     });
     this.value = config as unknown as T;
+  }
+
+  private _handleModeSelected(ev) {
+    this.GUImode = ev.detail.index === 0;
   }
 
   private _handleYAMLChanged(ev: CustomEvent) {
@@ -486,6 +508,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       ha-circular-progress {
         display: block;
         margin: auto;
+      }
+      .header {
+        display: flex;
+        justify-content: flex-end;
       }
     `;
   }

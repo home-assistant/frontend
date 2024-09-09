@@ -42,14 +42,20 @@ class HuiCardEditor extends LitElement {
       })
   );
 
+  private _elementConfig = memoizeOne((config: LovelaceCardConfig) => {
+    const { visibility, layout_options, ...elementConfig } = config;
+    return elementConfig;
+  });
+
   private renderContent() {
     if (this._selectedTab === "config") {
       return html`
         <hui-card-element-editor
           .hass=${this.hass}
           .lovelace=${this.lovelace}
-          .value=${this.config}
+          .value=${this._elementConfig(this.config)}
           show-toggle-mode-button
+          @config-changed=${this._elementConfigChanged}
         ></hui-card-element-editor>
       `;
     }
@@ -79,6 +85,17 @@ class HuiCardEditor extends LitElement {
   private _configChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _elementConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const config = ev.detail.config;
+    const newConfig = {
+      ...config,
+      visibility: this.config.visibility,
+      layout_options: this.config.layout_options,
+    };
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   protected render() {
