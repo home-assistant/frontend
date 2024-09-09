@@ -1,16 +1,16 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import { CSSResultGroup, html, LitElement, nothing, css } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mdiClose } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog-new";
+import type { HaDialogNew } from "../../../../components/ha-dialog-new";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-button";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
-import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
@@ -113,33 +113,23 @@ export class DialogLovelaceResourceDetail extends LitElement {
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
-        ${this._params.resource
-          ? html`
-              <mwc-button
-                slot="actions"
-                class="warning"
-                @click=${this._deleteResource}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.lovelace.resources.detail.delete"
+        <div slot="actions">
+          <mwc-button @click=${this._closeDialog} class="desktop-only">
+            ${this.hass!.localize("ui.common.cancel")}
+          </mwc-button>
+          <mwc-button
+            @click=${this._updateResource}
+            .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
+          >
+            ${this._params.resource
+              ? this.hass!.localize(
+                  "ui.panel.config.lovelace.resources.detail.update"
+                )
+              : this.hass!.localize(
+                  "ui.panel.config.lovelace.resources.detail.create"
                 )}
-              </mwc-button>
-            `
-          : nothing}
-        <mwc-button
-          slot="actions"
-          @click=${this._updateResource}
-          .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
-        >
-          ${this._params.resource
-            ? this.hass!.localize(
-                "ui.panel.config.lovelace.resources.detail.update"
-              )
-            : this.hass!.localize(
-                "ui.panel.config.lovelace.resources.detail.create"
-              )}
-        </mwc-button>
+          </mwc-button>
+        </div>
       </ha-dialog-new>
     `;
   }
@@ -244,19 +234,16 @@ export class DialogLovelaceResourceDetail extends LitElement {
     }
   }
 
-  private async _deleteResource() {
-    this._submitting = true;
-    try {
-      if (await this._params!.removeResource()) {
-        this.closeDialog();
-      }
-    } finally {
-      this._submitting = false;
-    }
-  }
-
   static get styles(): CSSResultGroup {
-    return haStyleDialog;
+    return [
+      css`
+        .desktop-only {
+          @media all and (max-width: 450px), all and (max-height: 500px) {
+            display: none;
+          }
+        }
+      `,
+    ];
   }
 }
 
