@@ -3,13 +3,14 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-select";
-import "../../../components/ha-time-input";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
+import "../../../components/ha-humidifier-state";
+import "../../../components/ha-select";
+import "../../../components/ha-time-input";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -110,7 +111,8 @@ class EntityPreviewRow extends LitElement {
           : this.hass.formatEntityState(stateObj)}
       `;
     }
-    if (domain === "switch") {
+    const toggleDomains = ["fan", "light", "remote", "siren", "switch"];
+    if (toggleDomains.includes(domain)) {
       const showToggle =
         stateObj.state === "on" ||
         stateObj.state === "off" ||
@@ -243,6 +245,12 @@ class EntityPreviewRow extends LitElement {
         </mwc-button>
       `;
     }
+    if (domain === "humidifier") {
+      return html`
+        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
+        </ha-humidifier-state>
+      `;
+    }
     if (domain === "button") {
       return html`
         <mwc-button .disabled=${isUnavailableState(stateObj.state)}>
@@ -250,7 +258,26 @@ class EntityPreviewRow extends LitElement {
         </mwc-button>
       `;
     }
-    if (domain === "climate") {
+    if (domain === "event") {
+      return html`
+        <div class="when">
+          ${isUnavailableState(stateObj.state)
+            ? this.hass.formatEntityState(stateObj)
+            : html`<hui-timestamp-display
+                .hass=${this.hass}
+                .ts=${new Date(stateObj.state)}
+                capitalize
+              ></hui-timestamp-display>`}
+        </div>
+        <div class="what">
+          ${isUnavailableState(stateObj.state)
+            ? nothing
+            : this.hass.formatEntityAttributeValue(stateObj, "event_type")}
+        </div>
+      `;
+    }
+    const climateDomains = ["climate", "water_heater"];
+    if (climateDomains.includes(domain)) {
       return html`
         <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
         </ha-climate-state>
