@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/entity/state-badge";
@@ -13,6 +14,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-time-input";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
@@ -89,6 +91,10 @@ class EntityPreviewRow extends LitElement {
         margin-right: -0.57em;
         margin-inline-end: -0.57em;
         margin-inline-start: initial;
+      }
+      img {
+        display: block;
+        width: 100%;
       }
     `;
   }
@@ -324,6 +330,15 @@ class EntityPreviewRow extends LitElement {
             ? this.hass.formatEntityState(stateObj)
             : this.hass.formatEntityAttributeValue(stateObj, "temperature")}
         </div>
+      `;
+    }
+    if (domain === "image") {
+      const image: string = computeImageUrl(stateObj as ImageEntity);
+      return html`
+        <img
+          alt=${ifDefined(stateObj?.attributes.friendly_name)}
+          src=${this.hass.hassUrl(image)}
+        />
       `;
     }
     return this.hass.formatEntityState(stateObj);
