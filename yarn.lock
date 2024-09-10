@@ -13207,6 +13207,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sortablejs@patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch":
+  version: 1.15.3
+  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch::version=1.15.3&hash=fba0ad"
+  checksum: 10/249f4cfd2b4a811f4e1505b25d4d67a97521afabdabd2f5482f985da20785d995c2899d442ad79075c7ba547e477aef81f09b0028f12d1de468cbca4f2b8c043
+  languageName: node
+  linkType: hard
+
 "source-list-map@npm:^2.0.1":
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"
