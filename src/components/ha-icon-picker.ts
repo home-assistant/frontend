@@ -67,11 +67,14 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
   }
 };
 
-const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
-  html`<ha-list-item graphic="avatar">
+const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) => html`
+  <ha-list-item graphic="avatar">
     <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
     ${item.icon}
-  </ha-list-item>`;
+  </ha-list-item>
+`;
+
+export const CUSTOM_STATE_ICON = "___CUSTOM_STATE_ICON___";
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {

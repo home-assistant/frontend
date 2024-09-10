@@ -35,7 +35,6 @@ export class HaIconSelector extends LitElement {
 
     const placeholder =
       this.selector.icon?.placeholder ||
-      stateObj?.attributes.icon ||
       (stateObj && until(entityIcon(this.hass, stateObj)));
 
     return html`

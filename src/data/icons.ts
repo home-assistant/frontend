@@ -178,17 +178,27 @@ export const getServiceIcons = async (
 export const entityIcon = async (
   hass: HomeAssistant,
   stateObj: HassEntity,
-  state?: string
-) => {
+  stateValue?: string
+): Promise<string | undefined> => {
   const entry = hass.entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
+
   if (entry?.icon) {
-    return entry.icon;
+    if (typeof entry.icon === "string") {
+      return entry.icon;
+    }
+    const state = stateValue ?? stateObj.state;
+    return entry.icon.state?.[state] || entry.icon.default;
   }
+
+  if (stateObj?.attributes.icon) {
+    return stateObj.attributes.icon;
+  }
+
   const domain = computeStateDomain(stateObj);
 
-  return getEntityIcon(hass, domain, stateObj, state, entry);
+  return getEntityIcon(hass, domain, stateObj, stateValue, entry);
 };
 
 export const entryIcon = async (
@@ -196,7 +206,7 @@ export const entryIcon = async (
   entry: EntityRegistryEntry | EntityRegistryDisplayEntry
 ) => {
   if (entry.icon) {
-    return entry.icon;
+    return typeof entry.icon === "string" ? entry.icon : entry.icon.default;
   }
   const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
   const domain = computeDomain(entry.entity_id);

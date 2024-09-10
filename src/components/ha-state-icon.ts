@@ -20,10 +20,8 @@ export class HaStateIcon extends LitElement {
   @property() public icon?: string;
 
   protected render() {
-    const overrideIcon =
-      this.icon ||
-      (this.stateObj && this.hass?.entities[this.stateObj.entity_id]?.icon) ||
-      this.stateObj?.attributes.icon;
+    const overrideIcon = this.icon;
+
     if (overrideIcon) {
       return html`<ha-icon .icon=${overrideIcon}></ha-icon>`;
     }
