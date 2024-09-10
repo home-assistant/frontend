@@ -19,7 +19,9 @@
     "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
-    "test": "instant-mocha --webpack-config ./test/webpack.config.js --require ./test/setup.cjs \"test/**/*.ts\""
+    "test": "instant-mocha --webpack-config ./test/webpack.config.js --require ./test/setup.cjs \"test/**/*.ts\"",
+    "start": "script/develop",
+    "setup": "script/setup"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
