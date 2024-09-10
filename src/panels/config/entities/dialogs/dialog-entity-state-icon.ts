@@ -29,15 +29,20 @@ class DialogEntityStateIcon extends LitElement {
 
     const icon = this._params.icon;
 
-    this._config = icon ?? {
-      default: icon || (await entryIcon(this.hass, this._params.entry)) || "",
-    };
+    this._config =
+      typeof icon === "object"
+        ? icon
+        : {
+            default:
+              icon || (await entryIcon(this.hass, this._params.entry)) || "",
+          };
 
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this._params = undefined;
+    this._config = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -83,7 +88,9 @@ class DialogEntityStateIcon extends LitElement {
     this._submitting = true;
     try {
       const icon =
-        Object.keys(this._config!).length === 0 ? null : this._config!;
+        !this._config || Object.keys(this._config).length === 0
+          ? null
+          : this._config;
       this._params!.updateIcon(icon);
       this.closeDialog();
     } catch (err: any) {

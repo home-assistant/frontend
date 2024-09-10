@@ -352,7 +352,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _renderIconPicker(stateObj: HassEntity) {
-    const value = typeof this._icon === "object" ? "" : this._icon;
+    const useStateIcon = typeof this._icon === "object";
+
+    const value = useStateIcon ? "Custom state icons" : this._icon;
+
     const placeholder =
       this.entry.original_icon ||
       (stateObj && until(entityIcon(this.hass, stateObj))) ||
@@ -367,16 +370,26 @@ export class EntityRegistrySettingsEditor extends LitElement {
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
           .placeholder=${placeholder}
           .disabled=${this.disabled}
+          .forceFallbackIcon=${useStateIcon}
         >
-          ${!this._icon && !stateObj?.attributes.icon && stateObj
+          ${useStateIcon
             ? html`
-                <ha-state-icon
+                <ha-icon
                   slot="fallback"
-                  .hass=${this.hass}
-                  .stateObj=${stateObj}
-                ></ha-state-icon>
+                  .icon=${(this._icon as EntityRegistryIcon).state?.[
+                    stateObj.state
+                  ] || (this._icon as EntityRegistryIcon).default}
+                ></ha-icon>
               `
-            : nothing}
+            : !this._icon && !stateObj?.attributes.icon && stateObj
+              ? html`
+                  <ha-state-icon
+                    slot="fallback"
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                  ></ha-state-icon>
+                `
+              : nothing}
         </ha-icon-picker>
         <ha-icon-button
           .path=${mdiCog}
