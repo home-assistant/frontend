@@ -11,8 +11,8 @@ export class HaDialogNew extends MdDialog {
   /**
    * When true the dialog will not close when the user presses the esc key or press out of the dialog.
    */
-  @property({ attribute: "disable-esc-scrim-cancel", type: Boolean })
-  public disableEscScrimCancel = false;
+  @property({ attribute: "disable-cancel-action", type: Boolean })
+  public disableCancelAction = false;
 
   constructor() {
     super();
@@ -25,7 +25,7 @@ export class HaDialogNew extends MdDialog {
   }
 
   _handleCancel(closeEvent: Event) {
-    if (this.disableEscScrimCancel) {
+    if (this.disableCancelAction) {
       closeEvent.preventDefault();
       const dialogElement = this.shadowRoot?.querySelector("dialog");
       dialogElement?.animate(
@@ -57,11 +57,13 @@ export class HaDialogNew extends MdDialog {
       :host {
         --md-dialog-container-color: var(--card-background-color);
         --md-dialog-headline-color: var(--primary-text-color);
+        --md-dialog-supporting-text-color: var(--primary-text-color);
         --md-sys-color-scrim: #000000;
 
         --md-dialog-headline-weight: 400;
         --md-dialog-headline-size: 1.574rem;
         --md-dialog-supporting-text-size: 1rem;
+        --md-dialog-supporting-text-line-height: 1.5rem;
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           min-width: calc(

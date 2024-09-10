@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, nothing, css } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mdiClose } from "@mdi/js";
@@ -60,12 +60,12 @@ export class DialogLovelaceResourceDetail extends LitElement {
     }
   }
 
-  public closeDialog(): void {
+  private _closeDialog(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _closeDialog(): void {
+  public closeDialog(): void {
     this._dialog?.close();
   }
 
@@ -81,14 +81,27 @@ export class DialogLovelaceResourceDetail extends LitElement {
         "ui.panel.config.lovelace.resources.detail.new_resource"
       );
 
+    const ariaLabel = this._params.resource?.url
+      ? this.hass!.localize(
+          "ui.panel.config.lovelace.resources.detail.edit_resource"
+        )
+      : this.hass!.localize(
+          "ui.panel.config.lovelace.resources.detail.new_resource"
+        );
+
     return html`
-      <ha-dialog-new disable-esc-scrim-cancel @closed=${this.closeDialog}>
+      <ha-dialog-new
+        disable-cancel-action
+        @closed=${this._closeDialog}
+        .ariaLabel=${ariaLabel}
+        type="alert"
+      >
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
             .label=${this.hass.localize("ui.dialogs.generic.close") ?? "Close"}
             .path=${mdiClose}
-            @click=${this._closeDialog}
+            @click=${this.closeDialog}
           ></ha-icon-button>
           <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
         </ha-dialog-header>
@@ -114,7 +127,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
           ></ha-form>
         </div>
         <div slot="actions">
-          <mwc-button @click=${this._closeDialog} class="desktop-only">
+          <mwc-button @click=${this.closeDialog}>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
           <mwc-button
@@ -232,18 +245,6 @@ export class DialogLovelaceResourceDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      css`
-        .desktop-only {
-          @media all and (max-width: 450px), all and (max-height: 500px) {
-            display: none;
-          }
-        }
-      `,
-    ];
   }
 }
 

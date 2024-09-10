@@ -120,8 +120,7 @@ export class HaConfigLovelaceRescources extends LitElement {
             @click=${this._removeResource}
             .label=${this.hass.localize("ui.common.delete")}
             .path=${mdiDelete}
-            .resourceId=${resource.id}
-            .resourceUrl=${resource.url}
+            .resource=${resource}
           ></ha-icon-button>`,
       },
     })
@@ -254,8 +253,7 @@ export class HaConfigLovelaceRescources extends LitElement {
   }
 
   private _removeResource = async (event: any) => {
-    const resourceId = event.currentTarget.resourceId;
-    const resourceUrl = event.currentTarget.resourceUrl;
+    const resource = event.currentTarget.resource as LovelaceResource;
 
     if (
       !(await showConfirmationDialog(this, {
@@ -264,7 +262,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         ),
         text: this.hass!.localize(
           "ui.panel.config.lovelace.resources.confirm_delete_text",
-          { url: resourceUrl }
+          { url: resource.url }
         ),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.delete"),
@@ -275,8 +273,8 @@ export class HaConfigLovelaceRescources extends LitElement {
     }
 
     try {
-      await deleteResource(this.hass!, resourceId);
-      this._resources = this._resources!.filter(({ id }) => id !== resourceId);
+      await deleteResource(this.hass!, resource.id);
+      this._resources = this._resources!.filter(({ id }) => id !== resource.id);
       showConfirmationDialog(this, {
         title: this.hass!.localize(
           "ui.panel.config.lovelace.resources.refresh_header"
