@@ -349,7 +349,7 @@ const tryDescribeTrigger = (
   if (trigger.platform === "time" && trigger.at) {
     const result = ensureArray(trigger.at).map((at) =>
       typeof at !== "string"
-        ? at
+        ? `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id} ${at.offset ? " " + hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, { offset: describeDuration(hass.locale, at.offset) }) : ""}`
         : at.includes(".")
           ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
           : localizeTimeString(at, hass.locale, hass.config)

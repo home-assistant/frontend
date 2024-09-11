@@ -3043,6 +3043,9 @@
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
+                  "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
+                  "entity": "Entity with timestamp",
+                  "offset_by": "offset by {offset}",
                   "mode": "Mode",
                   "description": {
                     "picker": "At a specific time, or on a specific date.",

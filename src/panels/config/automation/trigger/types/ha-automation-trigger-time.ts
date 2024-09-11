@@ -9,6 +9,9 @@ import type { TimeTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
+const MODE_TIME = "time";
+const MODE_ENTITY = "entity";
+
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -17,48 +20,60 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() private _inputMode?: boolean;
+  @state() private _inputMode:
+    | undefined
+    | typeof MODE_TIME
+    | typeof MODE_ENTITY;
 
   public static get defaultConfig(): TimeTrigger {
     return { platform: "time", at: "" };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, inputMode?: boolean) => {
-      const atSelector = inputMode
-        ? {
-            entity: {
-              filter: [
-                { domain: "input_datetime" },
-                { domain: "sensor", device_class: "timestamp" },
-              ],
-            },
-          }
-        : { time: {} };
-
-      return [
+    (
+      localize: LocalizeFunc,
+      inputMode: typeof MODE_TIME | typeof MODE_ENTITY,
+      showOffset: boolean
+    ) =>
+      [
         {
           name: "mode",
           type: "select",
           required: true,
           options: [
             [
-              "value",
+              MODE_TIME,
               localize(
                 "ui.panel.config.automation.editor.triggers.type.time.type_value"
               ),
             ],
             [
-              "input",
+              MODE_ENTITY,
               localize(
                 "ui.panel.config.automation.editor.triggers.type.time.type_input"
               ),
             ],
           ],
         },
-        { name: "at", selector: atSelector },
-      ] as const;
-    }
+        ...(inputMode === MODE_TIME
+          ? ([{ name: "time", selector: { time: {} } }] as const)
+          : ([
+              {
+                name: "entity",
+                selector: {
+                  entity: {
+                    filter: [
+                      { domain: "input_datetime" },
+                      { domain: "sensor", device_class: "timestamp" },
+                    ],
+                  },
+                },
+              },
+            ] as const)),
+        ...(showOffset
+          ? ([{ name: "offset", selector: { text: {} } }] as const)
+          : ([] as const)),
+      ] as const
   );
 
   public willUpdate(changedProperties: PropertyValues) {
@@ -82,15 +97,26 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       return nothing;
     }
 
-    const inputMode =
-      this._inputMode ??
-      (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
+    const entity =
+      typeof at === "object"
+        ? at.entity_id
+        : at?.startsWith("input_datetime.") || at?.startsWith("sensor.")
+          ? at
+          : undefined;
+    const time = entity ? undefined : at;
+    const offset = typeof at === "object" ? at.offset : undefined;
 
-    const schema = this._schema(this.hass.localize, inputMode);
+    const mode = this._inputMode ?? (entity ? MODE_ENTITY : MODE_TIME);
+
+    const showOffset = mode === MODE_ENTITY && entity?.startsWith("sensor.");
+
+    const schema = this._schema(this.hass.localize, mode, !!showOffset);
 
     const data = {
-      mode: inputMode ? "input" : "value",
-      ...this.trigger,
+      mode,
+      entity,
+      time,
+      offset,
     };
 
     return html`
@@ -107,26 +133,43 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
-
-    this._inputMode = newValue.mode === "input";
-    delete newValue.mode;
-
-    Object.keys(newValue).forEach((key) =>
-      newValue[key] === undefined || newValue[key] === ""
-        ? delete newValue[key]
-        : {}
-    );
-
-    fireEvent(this, "value-changed", { value: newValue });
+    const newValue = { ...ev.detail.value };
+    this._inputMode = newValue.mode;
+    if (newValue.mode === MODE_TIME) {
+      delete newValue.entity;
+      delete newValue.offset;
+    } else {
+      delete newValue.time;
+      if (!newValue.entity?.startsWith("sensor.")) {
+        delete newValue.offset;
+      }
+    }
+    fireEvent(this, "value-changed", {
+      value: {
+        platform: "time",
+        at: newValue.offset
+          ? {
+              entity_id: newValue.entity,
+              offset: newValue.offset,
+            }
+          : newValue.entity || newValue.time,
+      },
+    });
   }
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
+  ): string => {
+    switch (schema.name) {
+      case "time":
+        return this.hass.localize(
+          `ui.panel.config.automation.editor.triggers.type.time.at`
+        );
+    }
+    return this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
     );
+  };
 }
 
 declare global {

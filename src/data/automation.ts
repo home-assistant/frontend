@@ -153,7 +153,7 @@ export interface TagTrigger extends BaseTrigger {
 
 export interface TimeTrigger extends BaseTrigger {
   platform: "time";
-  at: string;
+  at: string | { entity_id: string; offset?: string };
 }
 
 export interface TemplateTrigger extends BaseTrigger {
