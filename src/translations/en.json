@@ -7018,7 +7018,7 @@
               },
               "error": {
                 "invalid_user": "Invalid username",
-                "invalid_auth": "Invalid username"
+                "invalid_auth": "Invalid authentication"
               },
               "abort": {
                 "not_allowed": "Selected user is not allowed."
