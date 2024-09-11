@@ -6,8 +6,8 @@ import { customElement, property } from "lit/decorators";
  * Based on the home assistant design: https://design.home-assistant.io/#components/ha-dialogs
  *
  */
-@customElement("ha-dialog-new")
-export class HaDialogNew extends MdDialog {
+@customElement("ha-md-dialog")
+export class HaMdDialog extends MdDialog {
   /**
    * When true the dialog will not close when the user presses the esc key or press out of the dialog.
    */
@@ -91,6 +91,6 @@ export class HaDialogNew extends MdDialog {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-dialog-new": HaDialogNew;
+    "ha-md-dialog": HaMdDialog;
   }
 }

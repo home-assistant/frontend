@@ -4,8 +4,8 @@ import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mdiClose } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog-new";
-import type { HaDialogNew } from "../../../../components/ha-dialog-new";
+import "../../../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-button";
@@ -43,7 +43,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   @state() private _submitting = false;
 
-  @query("ha-dialog-new") private _dialog?: HaDialogNew;
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public showDialog(params: LovelaceResourceDetailsDialogParams): void {
     this._params = params;
@@ -90,7 +90,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         );
 
     return html`
-      <ha-dialog-new
+      <ha-md-dialog
         disable-cancel-action
         @closed=${this._closeDialog}
         .ariaLabel=${ariaLabel}
@@ -143,7 +143,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                 )}
           </mwc-button>
         </div>
-      </ha-dialog-new>
+      </ha-md-dialog>
     `;
   }
 
