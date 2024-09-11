@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import type { RefreshToken } from "../../data/refresh_token";
+import { AuthProvider, fetchAuthProviders } from "../../data/auth";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-change-password-card";
@@ -21,6 +22,8 @@ class HaProfileSectionSecurity extends LitElement {
 
   @state() private _refreshTokens?: RefreshToken[];
 
+  @state() private _authProviders?: AuthProvider[];
+
   @state() private _passkeys?: Passkey[];
 
   @property({ attribute: false }) public route!: Route;
@@ -28,14 +31,15 @@ class HaProfileSectionSecurity extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._refreshRefreshTokens();
+    this._fetchAuthProviders();
   }
 
   public firstUpdated() {
     if (!this._refreshTokens) {
       this._refreshRefreshTokens();
     }
-    if (!this._passkeys) {
-      this._refreshPasskeys();
+    if (!this._authProviders) {
+      this._fetchAuthProviders();
     }
   }
 
@@ -61,12 +65,17 @@ class HaProfileSectionSecurity extends LitElement {
                 ></ha-change-password-card>
               `
             : ""}
-
-          <ha-setup-passkey-card
-            .hass=${this.hass}
-            .passkeys=${this._passkeys}
-            @hass-refresh-passkeys=${this._refreshPasskeys}
-          ></ha-setup-passkey-card>
+          ${this._authProviders?.some(
+            (provider) => provider.type === "webauthn"
+          )
+            ? html`
+                <ha-setup-passkey-card
+                  .hass=${this.hass}
+                  .passkeys=${this._passkeys}
+                  @hass-refresh-passkeys=${this._refreshPasskeys}
+                ></ha-setup-passkey-card>
+              `
+            : ""}
 
           <ha-mfa-modules-card
             .hass=${this.hass}
@@ -105,6 +114,24 @@ class HaProfileSectionSecurity extends LitElement {
     this._passkeys = await this.hass.callWS<Passkey[]>({
       type: "config/auth_provider/passkey/list",
     });
+  }
+
+  private async _fetchAuthProviders() {
+    if (!this.hass) {
+      return;
+    }
+
+    const response = await ((window as any).providersPromise ||
+      fetchAuthProviders());
+    const authProviders = await response.json();
+    this._authProviders = authProviders.providers;
+
+    if (
+      !this._passkeys &&
+      this._authProviders?.some((provider) => provider.type === "webauthn")
+    ) {
+      this._refreshPasskeys();
+    }
   }
 
   static get styles(): CSSResultGroup {
