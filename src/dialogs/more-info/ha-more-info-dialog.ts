@@ -283,21 +283,19 @@ export class MoreInfoDialog extends LitElement {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const name =
-      (stateObj &&
-        computeEntityName(stateObj, this.hass.entities, this.hass.devices)) ||
-      entityId;
 
     const isAdmin = this.hass.user!.is_admin;
 
     const deviceId = this._getDeviceId();
 
-    const title = this._childView?.viewTitle ?? name;
-
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon = isDefaultView || isSpecificInitialView;
+
+    const entityName = stateObj
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
+      : entityId;
 
     const areaName = stateObj
       ? computeEntityAreaName(
@@ -307,13 +305,17 @@ export class MoreInfoDialog extends LitElement {
           this.hass.areas
         )
       : "";
+
     const deviceName = stateObj
       ? computeEntityDeviceName(stateObj, this.hass.entities, this.hass.devices)
       : "";
 
+    const title =
+      this._childView?.viewTitle || entityName || deviceName || entityId;
+
     const subtitle = this._childView?.viewTitle
       ? undefined
-      : [name !== deviceName ? deviceName : undefined, areaName]
+      : [entityName ? deviceName : undefined, areaName]
           .filter(Boolean)
           .join(" ⸱ ");
 

@@ -12,14 +12,24 @@ export const computeEntityName = (
   devices: HomeAssistant["devices"]
 ): string | undefined => {
   const entry = entities[stateObj.entity_id] as EntityRegistryDisplayEntry;
-  const device = entry?.device_id ? devices[entry.device_id] : undefined;
 
+  // Use entity name from entity registry
+  if (entry?.has_entity_name) {
+    return entry.name;
+  }
+
+  // Then fallback to state name
+  const device = entry?.device_id ? devices[entry.device_id] : undefined;
   const name = computeStateName(stateObj).trim();
   const deviceName = device ? computeDeviceName(device) : undefined;
   if (!deviceName) {
     return name;
   }
-  return stripPrefixFromEntityName(name, deviceName.toLowerCase()) || name;
+  // if the device name equals the entity name, consider empty entity name
+  if (deviceName === name) {
+    return undefined;
+  }
+  return stripPrefixFromEntityName(name, deviceName.toLowerCase());
 };
 
 export const computeEntityDeviceName = (
