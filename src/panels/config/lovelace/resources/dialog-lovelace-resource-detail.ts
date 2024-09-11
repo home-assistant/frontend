@@ -60,7 +60,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     }
   }
 
-  private _closeDialog(): void {
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
