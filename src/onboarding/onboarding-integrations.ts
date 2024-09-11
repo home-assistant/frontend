@@ -117,6 +117,22 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
     const foundIntegrations = domains.length;
 
+    // there is a possibility that the user has no integrations
+    if (domains.length === 0) {
+      return html`
+        <div class="all-set-icon">🎉</div>
+        <h1>All set!</h1>
+        <p>Let’s start your private smart home adventure.</p>
+        <div class="footer">
+          <mwc-button unelevated @click=${this._finish}>
+            ${this.onboardingLocalize(
+              "ui.panel.page-onboarding.integration.finish"
+            )}
+          </mwc-button>
+        </div>
+      `;
+    }
+
     if (domains.length > 12) {
       domains = domains.slice(0, 11);
     }
@@ -192,6 +208,10 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           justify-content: center;
           align-items: center;
           height: 100%;
+        }
+        .all-set-icon {
+          font-size: 64px;
+          text-align: center;
         }
       `,
     ];
