@@ -15,7 +15,7 @@ export interface Passkey {
   last_used_at?: string;
 }
 
-export interface PublicKeyCredentialCreationOptionsJSON {
+interface PublicKeyCredentialCreationOptionsJSON {
   rp: PublicKeyCredentialRpEntity;
   user: PublicKeyCredentialUserEntityJSON;
   challenge: string;
@@ -27,19 +27,19 @@ export interface PublicKeyCredentialCreationOptionsJSON {
   extensions?: AuthenticationExtensionsClientInputs;
 }
 
-export interface PublicKeyCredentialUserEntityJSON {
+interface PublicKeyCredentialUserEntityJSON {
   id: string;
   name: string;
   displayName: string;
 }
 
-export interface PublicKeyCredentialDescriptorJSON {
+interface PublicKeyCredentialDescriptorJSON {
   type: PublicKeyCredentialType;
   id: string;
   transports?: AuthenticatorTransport[];
 }
 
-export interface PublicKeyCredentialCreationOptions {
+interface PublicKeyCredentialCreationOptions {
   rp: PublicKeyCredentialRpEntity;
   user: PublicKeyCredentialUserEntity;
   challenge: BufferSource;
@@ -51,7 +51,7 @@ export interface PublicKeyCredentialCreationOptions {
   extensions?: AuthenticationExtensionsClientInputs;
 }
 
-export interface PublicKeyCredentialRequestOptionsJSON {
+interface PublicKeyCredentialRequestOptionsJSON {
   id: string;
   challenge: string;
   timeout?: number;
@@ -61,7 +61,7 @@ export interface PublicKeyCredentialRequestOptionsJSON {
   extensions?: AuthenticationExtensionsClientInputs;
 }
 
-export interface PublicKeyCredentialRequestOptions {
+interface PublicKeyCredentialRequestOptions {
   id: string;
   challenge: BufferSource;
   timeout?: number;
@@ -71,74 +71,63 @@ export interface PublicKeyCredentialRequestOptions {
   extensions?: AuthenticationExtensionsClientInputs;
 }
 
-export interface PublicKeyCredentialRpEntity {
+interface PublicKeyCredentialRpEntity {
   id: string;
   name: string;
 }
 
-export interface PublicKeyCredentialUserEntity {
+interface PublicKeyCredentialUserEntity {
   id: BufferSource;
   name: string;
   displayName: string;
 }
 
-export interface PublicKeyCredentialParameters {
+interface PublicKeyCredentialParameters {
   type: PublicKeyCredentialType;
   alg: COSEAlgorithmIdentifier;
 }
 
-export type PublicKeyCredentialType = "public-key";
+type PublicKeyCredentialType = "public-key";
 
-export type COSEAlgorithmIdentifier = -7 | -257 | -65535 | -257 | -65535;
+type COSEAlgorithmIdentifier = -7 | -257 | -65535 | -257 | -65535;
 
-export interface PublicKeyCredentialDescriptor {
+interface PublicKeyCredentialDescriptor {
   type: PublicKeyCredentialType;
   id: BufferSource;
   transports?: AuthenticatorTransport[];
 }
 
-export type AuthenticatorTransport = "usb" | "nfc" | "ble" | "internal";
+type AuthenticatorTransport = "usb" | "nfc" | "ble" | "internal";
 
-export type AuthenticatorAttachment = "platform" | "cross-platform";
+type AuthenticatorAttachment = "platform" | "cross-platform";
 
-export type UserVerificationRequirement =
-  | "required"
-  | "preferred"
-  | "discouraged";
+type UserVerificationRequirement = "required" | "preferred" | "discouraged";
 
-export interface AuthenticatorSelectionCriteria {
+interface AuthenticatorSelectionCriteria {
   authenticatorAttachment?: AuthenticatorAttachment;
   requireResidentKey?: boolean;
   userVerification?: UserVerificationRequirement;
 }
 
-export type AttestationConveyancePreference = "none" | "indirect" | "direct";
+type AttestationConveyancePreference = "none" | "indirect" | "direct";
 
-export interface AuthenticationExtensionsClientInputs {
+interface AuthenticationExtensionsClientInputs {
   [key: string]: any;
 }
 
-export interface PublicKeyCredentialWithClientExtensionOutputs {
-  clientExtensionResults: AuthenticationExtensionsClientOutputs;
-}
-
-export interface AuthenticationExtensionsClientOutputs {
-  [key: string]: any;
-}
-
-export interface PublicKeyCredentialAttestationResponse {
+interface PublicKeyCredentialAttestationResponse {
   clientDataJSON: BufferSource;
   attestationObject: BufferSource;
 }
 
-export interface PublicKeyCredentialAssertionResponse {
+interface PublicKeyCredentialAssertionResponse {
   clientDataJSON: BufferSource;
   authenticatorData: BufferSource;
   signature: BufferSource;
   userHandle: BufferSource;
 }
 
-export interface PublicKeyRegistartionCredentialResponseJSON {
+interface PublicKeyRegistartionCredentialResponseJSON {
   authenticatorAttachment: string;
   id: string;
   rawId: string;
@@ -146,12 +135,12 @@ export interface PublicKeyRegistartionCredentialResponseJSON {
   type: string;
 }
 
-export interface PublicKeyCredentialAttestationResponseJSON {
+interface PublicKeyCredentialAttestationResponseJSON {
   clientDataJSON: string;
   attestationObject: string;
 }
 
-export interface PublicKeyRegistartionCredentialResponse {
+interface PublicKeyRegistartionCredentialResponse {
   authenticatorAttachment: string;
   id: string;
   rawId: BufferSource;
@@ -159,7 +148,7 @@ export interface PublicKeyRegistartionCredentialResponse {
   type: string;
 }
 
-export interface AuthenticationCredentialJSON {
+interface AuthenticationCredentialJSON {
   authenticatorAttachment: string;
   id: string;
   rawId: string;
@@ -167,14 +156,14 @@ export interface AuthenticationCredentialJSON {
   type: string;
 }
 
-export interface PublicKeyCredentialAssertionResponseJSON {
+interface PublicKeyCredentialAssertionResponseJSON {
   clientDataJSON: string;
   authenticatorData: string;
   signature: string;
   userHandle: string;
 }
 
-export interface AuthenticationCredential {
+interface AuthenticationCredential {
   authenticatorAttachment: string;
   id: string;
   rawId: BufferSource;
@@ -236,6 +225,26 @@ const _generateRegistrationCredentialsJSON = async (
   return credentials;
 };
 
+const _generateAuthenticationCredentialsJSON = async (
+  authCredentials: AuthenticationCredential
+) => {
+  const authenticationCredentialJSON: AuthenticationCredentialJSON = {
+    id: authCredentials.id,
+    authenticatorAttachment: authCredentials.authenticatorAttachment,
+    rawId: base64url.encode(authCredentials.rawId),
+    response: {
+      userHandle: base64url.encode(authCredentials.response.userHandle),
+      clientDataJSON: base64url.encode(authCredentials.response.clientDataJSON),
+      authenticatorData: base64url.encode(
+        authCredentials.response.authenticatorData
+      ),
+      signature: base64url.encode(authCredentials.response.signature),
+    },
+    type: authCredentials.type,
+  };
+  return authenticationCredentialJSON;
+};
+
 const _verifyRegistration = async (
   hass: HomeAssistant,
   credentials: PublicKeyRegistartionCredentialResponseJSON
@@ -288,4 +297,25 @@ export const renamePasskey = async (
     credential_id,
     name,
   });
+};
+
+export const generateAuthenticationCredentialsJSON = async (
+  publicKeyOptions: PublicKeyCredentialRequestOptionsJSON
+) => {
+  const _publicKeyOptions: PublicKeyCredentialRequestOptions = {
+    ...publicKeyOptions,
+    challenge: base64url.decode(publicKeyOptions.challenge),
+    allowCredentials: publicKeyOptions.allowCredentials.map((cred) => ({
+      ...cred,
+      id: base64url.decode(cred.id),
+    })),
+  };
+
+  const result = await navigator.credentials.get({
+    publicKey: _publicKeyOptions,
+  });
+  const authenticationCredential = result as AuthenticationCredential;
+  const authenticationCredentialJSON =
+    await _generateAuthenticationCredentialsJSON(authenticationCredential);
+  return authenticationCredentialJSON;
 };

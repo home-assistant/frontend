@@ -17,12 +17,7 @@ import {
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
-import type {
-  PublicKeyCredentialRequestOptions,
-  PublicKeyCredentialRequestOptionsJSON,
-  AuthenticationCredentialJSON,
-  AuthenticationCredential,
-} from "../data/webauthn";
+import { generateAuthenticationCredentialsJSON } from "../data/webauthn";
 import type {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -274,24 +269,6 @@ export class HaAuthFlow extends LitElement {
     }
   }
 
-  private _base64url = {
-    encode: function (buffer) {
-      const base64 = window.btoa(
-        String.fromCharCode(...new Uint8Array(buffer))
-      );
-      return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-    },
-    decode: function (base64url) {
-      const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-      const binStr = window.atob(base64);
-      const bin = new Uint8Array(binStr.length);
-      for (let i = 0; i < binStr.length; i++) {
-        bin[i] = binStr.charCodeAt(i);
-      }
-      return bin.buffer;
-    },
-  };
-
   private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
     this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
@@ -431,60 +408,26 @@ export class HaAuthFlow extends LitElement {
     }
   }
 
-  private async _getWebauthnCredentials(
-    publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptionsJSON
-  ) {
-    const publicKeyOptions: PublicKeyCredentialRequestOptions = {
-      ...publicKeyCredentialRequestOptions,
-      challenge: this._base64url.decode(
-        publicKeyCredentialRequestOptions.challenge
-      ),
-      allowCredentials: publicKeyCredentialRequestOptions.allowCredentials.map(
-        (cred) => ({
-          ...cred,
-          id: this._base64url.decode(cred.id),
-        })
-      ),
-    };
+  private async _getWebauthnCredentials(publicKeyCredentialRequestOptions) {
     try {
-      const result = await navigator.credentials.get({
-        publicKey: publicKeyOptions,
-      });
-      const authenticationCredential = result as AuthenticationCredential;
-      const authenticationCredentialJSON: AuthenticationCredentialJSON = {
-        id: authenticationCredential.id,
-        authenticatorAttachment:
-          authenticationCredential.authenticatorAttachment,
-        rawId: this._base64url.encode(authenticationCredential.rawId),
-        response: {
-          userHandle: this._base64url.encode(
-            authenticationCredential.response.userHandle
-          ),
-          clientDataJSON: this._base64url.encode(
-            authenticationCredential.response.clientDataJSON
-          ),
-          authenticatorData: this._base64url.encode(
-            authenticationCredential.response.authenticatorData
-          ),
-          signature: this._base64url.encode(
-            authenticationCredential.response.signature
-          ),
-        },
-        type: authenticationCredential.type,
-      };
+      const authenticationCredentialJSON =
+        await generateAuthenticationCredentialsJSON(
+          publicKeyCredentialRequestOptions
+        );
       this._stepData = {
         authentication_credential: authenticationCredentialJSON,
         client_id: this.clientId,
       };
       this._handleSubmit(new Event("submit"));
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       if (err instanceof DOMException) {
         this._errorMessage = "WebAuthn operation was aborted.";
       } else {
         this._errorMessage =
           "An unexpected error occurred during WebAuthn authentication.";
       }
+      // eslint-disable-next-line no-console
+      console.error("Error getting WebAuthn credentials", err);
       this._state = "error";
     } finally {
       this._submitting = false;
