@@ -10,10 +10,9 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-textfield";
 import {
   Passkey,
-  PublicKeyCredentialCreationOptions,
-  PublicKeyCredentialCreationOptionsJSON,
-  PublicKeyRegistartionCredentialResponse,
-  PublicKeyRegistartionCredentialResponseJSON,
+  registerPasskey,
+  deletePasskey,
+  renamePasskey,
 } from "../../data/webauthn";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -90,8 +89,9 @@ class HaSetupPasskeyCard extends LitElement {
                           ></ha-svg-icon>
                           ${this.hass.localize("ui.common.rename")}
                         </ha-list-item>
-                        <ha-list-item graphic="icon">
+                        <ha-list-item class="warning" graphic="icon">
                           <ha-svg-icon
+                            class="warning"
                             .path=${mdiDelete}
                             slot="graphic"
                           ></ha-svg-icon>
@@ -134,11 +134,7 @@ class HaSetupPasskeyCard extends LitElement {
       return;
     }
     try {
-      await this.hass.callWS({
-        type: "config/auth_provider/passkey/rename",
-        credential_id: passkey.credential_id,
-        name: newName,
-      });
+      await renamePasskey(this.hass, passkey.credential_id, newName);
       fireEvent(this, "hass-refresh-passkeys");
     } catch (err: any) {
       showAlertDialog(this, {
@@ -165,10 +161,7 @@ class HaSetupPasskeyCard extends LitElement {
       return;
     }
     try {
-      await this.hass.callWS({
-        type: "config/auth_provider/passkey/delete",
-        credential_id: passkey.credential_id,
-      });
+      await deletePasskey(this.hass, passkey.credential_id);
       fireEvent(this, "hass-refresh-passkeys");
     } catch (err: any) {
       showAlertDialog(this, {
@@ -180,43 +173,8 @@ class HaSetupPasskeyCard extends LitElement {
 
   private async _registerPasskey() {
     try {
-      const registrationOptions: PublicKeyCredentialCreationOptionsJSON =
-        await this.hass.callWS({
-          type: "config/auth_provider/passkey/register",
-        });
-      const options: PublicKeyCredentialCreationOptions = {
-        ...registrationOptions,
-        user: {
-          ...registrationOptions.user,
-          id: this._base64url.decode(registrationOptions.user.id),
-        },
-        challenge: this._base64url.decode(registrationOptions.challenge),
-        excludeCredentials: registrationOptions.excludeCredentials.map(
-          (cred) => ({
-            ...cred,
-            id: this._base64url.decode(cred.id),
-          })
-        ),
-      };
-
-      const result = await navigator.credentials.create({ publicKey: options });
-      const publicKeyCredential =
-        result as PublicKeyRegistartionCredentialResponse;
-      const credentials: PublicKeyRegistartionCredentialResponseJSON = {
-        id: publicKeyCredential.id,
-        authenticatorAttachment: publicKeyCredential.authenticatorAttachment,
-        type: publicKeyCredential.type,
-        rawId: this._base64url.encode(publicKeyCredential.rawId),
-        response: {
-          clientDataJSON: this._base64url.encode(
-            publicKeyCredential.response.clientDataJSON
-          ),
-          attestationObject: this._base64url.encode(
-            publicKeyCredential.response.attestationObject
-          ),
-        },
-      };
-      this._verifyRegistrationPasskey(credentials);
+      await registerPasskey(this.hass);
+      fireEvent(this, "hass-refresh-passkeys");
     } catch (error: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.profile.passkeys.register_failed"),
@@ -224,44 +182,6 @@ class HaSetupPasskeyCard extends LitElement {
       });
     }
   }
-
-  private async _verifyRegistrationPasskey(
-    credential: PublicKeyRegistartionCredentialResponseJSON
-  ) {
-    try {
-      this.hass
-        .callWS({
-          type: "config/auth_provider/passkey/register_verify",
-          credential: credential,
-        })
-        .then(() => {
-          fireEvent(this, "hass-refresh-passkeys");
-        });
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.profile.passkeys.register_failed"),
-        text: err.message,
-      });
-    }
-  }
-
-  private _base64url = {
-    encode: function (buffer) {
-      const base64 = window.btoa(
-        String.fromCharCode(...new Uint8Array(buffer))
-      );
-      return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-    },
-    decode: function (base64url) {
-      const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-      const binStr = window.atob(base64);
-      const bin = new Uint8Array(binStr.length);
-      for (let i = 0; i < binStr.length; i++) {
-        bin[i] = binStr.charCodeAt(i);
-      }
-      return bin.buffer;
-    },
-  };
 
   static get styles(): CSSResultGroup {
     return [

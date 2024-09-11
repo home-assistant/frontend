@@ -1,4 +1,5 @@
 import type { HaFormSchema } from "../components/ha-form/types";
+import type { HomeAssistant } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -193,3 +194,98 @@ export interface DataEntryFlowStepChallengeForm {
   preview?: string;
   translation_domain?: string;
 }
+
+export const base64url = {
+  encode: function (buffer) {
+    const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+  },
+  decode: function (_base64url) {
+    const base64 = _base64url.replace(/-/g, "+").replace(/_/g, "/");
+    const binStr = window.atob(base64);
+    const bin = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) {
+      bin[i] = binStr.charCodeAt(i);
+    }
+    return bin.buffer;
+  },
+};
+
+const _generateRegistrationCredentialsJSON = async (
+  registrationOptions: PublicKeyCredentialCreationOptions
+) => {
+  const result = await navigator.credentials.create({
+    publicKey: registrationOptions,
+  });
+
+  const publicKeyCredential = result as PublicKeyRegistartionCredentialResponse;
+  const credentials: PublicKeyRegistartionCredentialResponseJSON = {
+    id: publicKeyCredential.id,
+    authenticatorAttachment: publicKeyCredential.authenticatorAttachment,
+    type: publicKeyCredential.type,
+    rawId: base64url.encode(publicKeyCredential.rawId),
+    response: {
+      clientDataJSON: base64url.encode(
+        publicKeyCredential.response.clientDataJSON
+      ),
+      attestationObject: base64url.encode(
+        publicKeyCredential.response.attestationObject
+      ),
+    },
+  };
+  return credentials;
+};
+
+const _verifyRegistration = async (
+  hass: HomeAssistant,
+  credentials: PublicKeyRegistartionCredentialResponseJSON
+) => {
+  await hass.callWS({
+    type: "config/auth_provider/passkey/register_verify",
+    credential: credentials,
+  });
+};
+
+export const registerPasskey = async (hass: HomeAssistant) => {
+  const registrationOptions: PublicKeyCredentialCreationOptionsJSON =
+    await hass.callWS({
+      type: "config/auth_provider/passkey/register",
+    });
+  const options: PublicKeyCredentialCreationOptions = {
+    ...registrationOptions,
+    user: {
+      ...registrationOptions.user,
+      id: base64url.decode(registrationOptions.user.id),
+    },
+    challenge: base64url.decode(registrationOptions.challenge),
+    excludeCredentials: registrationOptions.excludeCredentials.map((cred) => ({
+      ...cred,
+      id: base64url.decode(cred.id),
+    })),
+  };
+
+  const credentials = await _generateRegistrationCredentialsJSON(options);
+  await _verifyRegistration(hass, credentials);
+};
+
+export const deletePasskey = async (
+  hass: HomeAssistant,
+  credential_id: string
+) => {
+  await hass.callWS({
+    type: "config/auth_provider/passkey/delete",
+    credential_id,
+  });
+};
+
+export const renamePasskey = async (
+  hass: HomeAssistant,
+  credential_id: string,
+  name: string
+) => {
+  await hass.callWS({
+    type: "config/auth_provider/passkey/rename",
+    credential_id,
+    name,
+  });
+};
