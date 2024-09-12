@@ -6,7 +6,6 @@ import {
   mdiPencil,
   mdiPlus,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -15,15 +14,15 @@ import {
   html,
   nothing,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
@@ -34,7 +33,6 @@ import {
   createFloorRegistryEntry,
   deleteFloorRegistryEntry,
   getFloorAreaLookup,
-  subscribeFloorRegistry,
   updateFloorRegistryEntry,
 } from "../../../data/floor_registry";
 import {
@@ -42,7 +40,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -57,7 +54,7 @@ const UNASSIGNED_PATH = ["__unassigned__"];
 const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
 @customElement("ha-config-areas-dashboard")
-export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
+export class HaConfigAreasDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -66,14 +63,12 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _floors?: FloorRegistryEntry[];
-
   private _processAreas = memoizeOne(
     (
       areas: HomeAssistant["areas"],
       devices: HomeAssistant["devices"],
       entities: HomeAssistant["entities"],
-      floors: FloorRegistryEntry[]
+      floors: HomeAssistant["floors"]
     ) => {
       const processArea = (area: AreaRegistryEntry) => {
         let noDevicesInArea = 0;
@@ -109,7 +104,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
         (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
       );
       return {
-        floors: floors.map((floor) => ({
+        floors: Object.values(floors).map((floor) => ({
           ...floor,
           areas: (floorAreaLookup[floor.floor_id] || []).map(processArea),
         })),
@@ -118,26 +113,18 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
     }
   );
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeFloorRegistry(this.hass.connection, (floors) => {
-        this._floors = floors;
-      }),
-    ];
-  }
-
   protected render(): TemplateResult {
     const areasAndFloors =
       !this.hass.areas ||
       !this.hass.devices ||
       !this.hass.entities ||
-      !this._floors
+      !this.hass.floors
         ? undefined
         : this._processAreas(
             this.hass.areas,
             this.hass.devices,
             this.hass.entities,
-            this._floors
+            this.hass.floors
           );
 
     return html`
@@ -327,7 +314,7 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this.hass.devices,
       this.hass.entities,
-      this._floors!
+      this.hass.floors
     );
     let area: AreaRegistryEntry;
     if (ev.detail.oldPath === UNASSIGNED_PATH) {
