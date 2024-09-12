@@ -1536,6 +1536,10 @@ export class HaConfigDevicePage extends LitElement {
           padding-bottom: 16px;
         }
 
+        ha-card:has(ha-logbook) {
+          padding-bottom: var(--ha-card-border-radius, 12px);
+        }
+
         ha-logbook {
           height: 400px;
         }
