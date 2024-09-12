@@ -143,7 +143,7 @@ export const motionLightTrace: DemoTrace = {
       ],
       action: [
         {
-          service: "light.turn_on",
+          action: "light.turn_on",
           target: {
             entity_id: "light.elgato_key_light_air",
           },
@@ -162,7 +162,7 @@ export const motionLightTrace: DemoTrace = {
           delay: 0,
         },
         {
-          service: "light.turn_off",
+          action: "light.turn_off",
           target: {
             entity_id: "light.elgato_key_light_air",
           },
