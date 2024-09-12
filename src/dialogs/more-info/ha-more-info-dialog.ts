@@ -310,12 +310,11 @@ export class MoreInfoDialog extends LitElement {
       ? computeEntityDeviceName(stateObj, this.hass.entities, this.hass.devices)
       : "";
 
-    const title =
-      this._childView?.viewTitle || entityName || deviceName || entityId;
+    const title = this._childView?.viewTitle || entityName || entityId;
 
     const subtitle = this._childView?.viewTitle
       ? undefined
-      : [entityName ? deviceName : undefined, areaName]
+      : [entityName !== deviceName ? deviceName : undefined, areaName] // Do not include device name if it's the same as entity name
           .filter(Boolean)
           .join(" ⸱ ");
 
