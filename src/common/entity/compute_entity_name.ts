@@ -13,23 +13,25 @@ export const computeEntityName = (
 ): string | undefined => {
   const entry = entities[stateObj.entity_id] as EntityRegistryDisplayEntry;
 
-  // Use entity name from entity registry
-  if (entry?.has_entity_name) {
-    return entry.name;
+  const device = entry?.device_id ? devices[entry.device_id] : undefined;
+  const name = entry?.has_entity_name
+    ? entry.name?.trim()
+    : computeStateName(stateObj).trim();
+
+  if (!name) {
+    return undefined;
   }
 
-  // Then fallback to state name
-  const device = entry?.device_id ? devices[entry.device_id] : undefined;
-  const name = computeStateName(stateObj).trim();
   const deviceName = device ? computeDeviceName(device) : undefined;
   if (!deviceName) {
     return name;
   }
+
   // if the device name equals the entity name, consider empty entity name
   if (deviceName === name) {
     return undefined;
   }
-  return stripPrefixFromEntityName(name, deviceName.toLowerCase());
+  return stripPrefixFromEntityName(name, deviceName.toLowerCase()) || name;
 };
 
 export const computeEntityDeviceName = (
@@ -42,7 +44,7 @@ export const computeEntityDeviceName = (
     | undefined;
   const device = entry?.device_id ? devices[entry.device_id] : undefined;
 
-  return device ? computeDeviceName(device) : "";
+  return device ? computeDeviceName(device) : undefined;
 };
 
 export const computeEntityAreaName = (
@@ -59,5 +61,5 @@ export const computeEntityAreaName = (
   const areaId = entry?.area_id || device?.area_id;
   const area = areaId ? areas[areaId] : undefined;
 
-  return area ? computeAreaName(area) : "";
+  return area ? computeAreaName(area) : undefined;
 };
