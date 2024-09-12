@@ -89,7 +89,7 @@ export class HaTracePathDetails extends LitElement {
       );
     }
 
-    // HACK: default choice node is not part of paths. We filter them out here by checking parent.
+    // HACK: default choice node is not part of paths. We filter them out here by checking parent .
     const pathParts = this.selected.path.split("/");
     if (pathParts[pathParts.length - 1] === "default") {
       const parentTraceInfo = paths[
