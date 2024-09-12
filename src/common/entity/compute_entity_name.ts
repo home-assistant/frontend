@@ -6,12 +6,38 @@ import { computeStateName } from "./compute_state_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeAreaName } from "./compute_area_name";
 
+export const computeEntityFullName = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"]
+): string | undefined => {
+  const entry = entities[stateObj.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+
+  const entityName = computeEntityName(stateObj, entities, devices);
+
+  if (!entry?.has_entity_name) {
+    return entityName;
+  }
+
+  const deviceName = computeEntityDeviceName(stateObj, entities, devices);
+
+  if (!entityName || !deviceName || entityName === deviceName) {
+    return entityName || deviceName;
+  }
+
+  return `${deviceName} ${entityName}`;
+};
+
 export const computeEntityName = (
   stateObj: HassEntity,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"]
 ): string | undefined => {
-  const entry = entities[stateObj.entity_id] as EntityRegistryDisplayEntry;
+  const entry = entities[stateObj.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
 
   const device = entry?.device_id ? devices[entry.device_id] : undefined;
 
