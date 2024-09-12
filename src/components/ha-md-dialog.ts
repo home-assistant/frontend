@@ -25,7 +25,6 @@ export class HaMdDialog extends MdDialog {
 
   constructor() {
     super();
-
     this.addEventListener("cancel", this._handleCancel);
 
     if (typeof HTMLDialogElement !== "function") {
@@ -37,6 +36,11 @@ export class HaMdDialog extends MdDialog {
     }
 
     // if browser doesn't support animate API disable open/close animations
+    if (this.animate === undefined) {
+      this.quick = true;
+    }
+
+    // disable dialog animations on older browsers
     if (this.animate === undefined) {
       this.quick = true;
     }
