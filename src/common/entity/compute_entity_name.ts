@@ -14,23 +14,19 @@ export const computeEntityName = (
   const entry = entities[stateObj.entity_id] as EntityRegistryDisplayEntry;
 
   const device = entry?.device_id ? devices[entry.device_id] : undefined;
-  const name = entry?.has_entity_name
-    ? entry.name?.trim()
-    : computeStateName(stateObj).trim();
 
-  if (!name) {
-    return undefined;
-  }
+  const name = (entry ? entry.name : computeStateName(stateObj))?.trim();
 
   const deviceName = device ? computeDeviceName(device) : undefined;
-  if (!deviceName) {
+
+  if (!name || !deviceName) {
+    return name || deviceName;
+  }
+
+  if (name === deviceName) {
     return name;
   }
 
-  // if the device name equals the entity name, consider empty entity name
-  if (deviceName === name) {
-    return undefined;
-  }
   return stripPrefixFromEntityName(name, deviceName.toLowerCase()) || name;
 };
 
