@@ -19,11 +19,6 @@ export class HaMdDialog extends MdDialog {
     if (typeof HTMLDialogElement === "function") {
       this.open = true;
     }
-
-    // handle unsupported animations
-    if (this.shadowRoot?.querySelector("dialog")?.animate === undefined) {
-      this.quick = true; // disables animations for open/close
-    }
   }
 
   async connectedCallback() {
@@ -39,6 +34,11 @@ export class HaMdDialog extends MdDialog {
       dialogPolyfill.default.registerDialog(dialog);
       await this._loadStylesheet("/static/polyfills/dialog-polyfill.css");
       this.open = true;
+    }
+
+    // disable dialog animations on older browsers
+    if (this.animate === undefined) {
+      this.quick = true;
     }
   }
 
