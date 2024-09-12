@@ -123,6 +123,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
     const transactions: TransactionSpec[] = [];
     if (changedProps.has("mode")) {
+      // TODO: not sure how to handle things here
       transactions.push({
         effects: this._loadedCodeMirror!.langCompartment!.reconfigure(
           this._mode
@@ -195,6 +196,11 @@ export class HaCodeEditor extends ReactiveElement {
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
     ];
+
+    if (this.mode === "yaml") {
+      extensions.push(this._loadedCodeMirror.foldGutter());
+      extensions.push(this._loadedCodeMirror.foldingOnIndent);
+    }
 
     if (!this.readOnly) {
       const completionSources: CompletionSource[] = [];
