@@ -128,7 +128,7 @@ export class HaTracePathDetails extends LitElement {
 
       const data: ActionTraceStep[] = paths[curPath];
 
-      // Extract details from this.selected.config child props: used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
+      // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
       const nestPath = curPath
         .substring(this.selected.path.length + 1)
         .split("/");
