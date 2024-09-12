@@ -16,38 +16,74 @@ export class HaMdDialog extends MdDialog {
 
   constructor() {
     super();
-    this.open = true;
+    if (typeof HTMLDialogElement === "function") {
+      this.open = true;
+    }
+
+    // handle unsupported animations
+    if (this.shadowRoot?.querySelector("dialog")?.animate === undefined) {
+      this.quick = true; // disables animations for open/close
+    }
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback();
     this.addEventListener("cancel", this._handleCancel);
+
+    // polyfill dialog for older browsers
+    if (typeof HTMLDialogElement !== "function" && this.shadowRoot?.host) {
+      const dialogPolyfill = await import("dialog-polyfill");
+      const dialog = this.shadowRoot?.querySelector(
+        "dialog"
+      ) as HTMLDialogElement;
+      dialogPolyfill.default.registerDialog(dialog);
+      await this._loadStylesheet("/static/polyfills/dialog-polyfill.css");
+      this.open = true;
+    }
+  }
+
+  private async _loadStylesheet(href) {
+    // Create a <link> element
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+
+    // Return a promise that resolves when the CSS is loaded
+    return new Promise<void>((resolve, reject) => {
+      link.onload = () => resolve();
+      link.onerror = () =>
+        reject(new Error(`Stylesheet failed to load: ${href}`));
+
+      this.shadowRoot?.appendChild(link);
+    });
   }
 
   _handleCancel(closeEvent: Event) {
     if (this.disableCancelAction) {
       closeEvent.preventDefault();
       const dialogElement = this.shadowRoot?.querySelector("dialog");
-      dialogElement?.animate(
-        [
+      if (!this.quick) {
+        dialogElement?.animate(
+          [
+            {
+              transform: "rotate(-1deg)",
+              "animation-timing-function": "ease-in",
+            },
+            {
+              transform: "rotate(1.5deg)",
+              "animation-timing-function": "ease-out",
+            },
+            {
+              transform: "rotate(0deg)",
+              "animation-timing-function": "ease-in",
+            },
+          ],
           {
-            transform: "rotate(-1deg)",
-            "animation-timing-function": "ease-in",
-          },
-          {
-            transform: "rotate(1.5deg)",
-            "animation-timing-function": "ease-out",
-          },
-          {
-            transform: "rotate(0deg)",
-            "animation-timing-function": "ease-in",
-          },
-        ],
-        {
-          duration: 200,
-          iterations: 2,
-        }
-      );
+            duration: 200,
+            iterations: 2,
+          }
+        );
+      }
     }
   }
 
