@@ -99,6 +99,7 @@ class StateDisplay extends LitElement {
         <ha-relative-time
           .hass=${this.hass}
           .datetime=${stateObj.last_changed}
+          capitalize
         ></ha-relative-time>
       `;
     }
@@ -108,6 +109,7 @@ class StateDisplay extends LitElement {
         <ha-relative-time
           .hass=${this.hass}
           .datetime=${stateObj.last_updated}
+          capitalize
         ></ha-relative-time>
       `;
     }
@@ -116,6 +118,7 @@ class StateDisplay extends LitElement {
         <ha-relative-time
           .hass=${this.hass}
           .datetime=${stateObj.attributes.last_triggered}
+          capitalize
         ></ha-relative-time>
       `;
     }
