@@ -20,37 +20,44 @@ export class HaMdDialog extends MdDialog {
     super();
 
     this.addEventListener("cancel", this._handleCancel);
+    this.addEventListener("open", this._handleOpen);
 
-    if (typeof HTMLDialogElement === "function") {
-      this.open = true;
-    } else {
-      // load polyfill dialog for older browsers
-      this.open = false;
-      this._loadDialogPolyfill();
+    if (typeof HTMLDialogElement !== "function") {
+      this._dialogPolyfill = import("dialog-polyfill");
     }
 
+    // if browser doesn't support animate API disable open/close animations
     if (this.animate === undefined) {
       this.quick = true;
     }
   }
 
-  async firstUpdated() {
+  firstUpdated() {
+    super.firstUpdated();
+
     // setup polyfill dialog for older browsers
     if (typeof HTMLDialogElement !== "function") {
-      const dialog = this.shadowRoot?.querySelector(
-        "dialog"
-      ) as HTMLDialogElement;
-      const dialogPolyfill = await this._dialogPolyfill;
-      dialogPolyfill.default.registerDialog(dialog);
-      await this._loadPolyfillStylesheet(
-        "/static/polyfills/dialog-polyfill.css"
-      );
-      this.open = true;
+      this._setupDialogPolyfill();
     }
   }
 
-  private async _loadDialogPolyfill() {
-    this._dialogPolyfill = import("dialog-polyfill");
+  private async _setupDialogPolyfill() {
+    this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
+    const dialog = this.shadowRoot?.querySelector(
+      "dialog"
+    ) as HTMLDialogElement;
+    const dialogPolyfill = await this._dialogPolyfill;
+    dialogPolyfill.default.registerDialog(dialog);
+  }
+
+  private async _handleOpen(openEvent: Event) {
+    // prevent open in older browsers and wait for polyfill to load
+    if (typeof HTMLDialogElement !== "function") {
+      openEvent.preventDefault();
+      await this._dialogPolyfill;
+      this.removeEventListener("open", this._handleOpen);
+      this.show();
+    }
   }
 
   private async _loadPolyfillStylesheet(href) {

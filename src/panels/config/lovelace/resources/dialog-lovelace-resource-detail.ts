@@ -91,6 +91,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
     return html`
       <ha-md-dialog
+        open
         disable-cancel-action
         @closed=${this._dialogClosed}
         .ariaLabel=${ariaLabel}
