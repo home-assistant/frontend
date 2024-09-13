@@ -14,7 +14,9 @@ export class HaMdDialog extends MdDialog {
   @property({ attribute: "disable-cancel-action", type: Boolean })
   public disableCancelAction = false;
 
-  private _dialogPolyfill: any;
+  private _dialogPolyfill?: Promise<any>;
+
+  private _dialogPolyfillSetup?: Promise<void>;
 
   constructor() {
     super();
@@ -37,7 +39,7 @@ export class HaMdDialog extends MdDialog {
 
     // setup polyfill dialog for older browsers
     if (typeof HTMLDialogElement !== "function") {
-      this._setupDialogPolyfill();
+      this._dialogPolyfillSetup = this._setupDialogPolyfill();
     }
   }
 
@@ -54,7 +56,7 @@ export class HaMdDialog extends MdDialog {
     // prevent open in older browsers and wait for polyfill to load
     if (typeof HTMLDialogElement !== "function") {
       openEvent.preventDefault();
-      await this._dialogPolyfill;
+      await this._dialogPolyfillSetup;
       this.removeEventListener("open", this._handleOpen);
       this.show();
     }
