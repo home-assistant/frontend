@@ -183,6 +183,10 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.indentationMarkers({
         thickness: 0,
         activeThickness: 1,
+        colors: {
+          activeLight: "var(--secondary-text-color)",
+          activeDark: "var(--secondary-text-color)",
+        },
       }),
       this._loadedCodeMirror.keymap.of([
         ...this._loadedCodeMirror.defaultKeymap,
