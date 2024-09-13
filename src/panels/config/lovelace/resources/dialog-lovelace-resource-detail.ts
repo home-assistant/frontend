@@ -94,7 +94,6 @@ export class DialogLovelaceResourceDetail extends LitElement {
         disable-cancel-action
         @closed=${this._dialogClosed}
         .ariaLabel=${ariaLabel}
-        type="alert"
       >
         <ha-dialog-header slot="headline">
           <ha-icon-button

@@ -14,41 +14,50 @@ export class HaMdDialog extends MdDialog {
   @property({ attribute: "disable-cancel-action", type: Boolean })
   public disableCancelAction = false;
 
+  private _dialogPolyfill: any;
+
   constructor() {
     super();
-    if (typeof HTMLDialogElement === "function") {
-      this.open = true;
-    }
-  }
 
-  async connectedCallback() {
-    super.connectedCallback();
     this.addEventListener("cancel", this._handleCancel);
 
-    // polyfill dialog for older browsers
-    if (typeof HTMLDialogElement !== "function" && this.shadowRoot?.host) {
-      const dialogPolyfill = await import("dialog-polyfill");
-      const dialog = this.shadowRoot?.querySelector(
-        "dialog"
-      ) as HTMLDialogElement;
-      dialogPolyfill.default.registerDialog(dialog);
-      await this._loadStylesheet("/static/polyfills/dialog-polyfill.css");
+    if (typeof HTMLDialogElement === "function") {
       this.open = true;
+    } else {
+      // load polyfill dialog for older browsers
+      this.open = false;
+      this._loadDialogPolyfill();
     }
 
-    // disable dialog animations on older browsers
     if (this.animate === undefined) {
       this.quick = true;
     }
   }
 
-  private async _loadStylesheet(href) {
-    // Create a <link> element
+  async firstUpdated() {
+    // setup polyfill dialog for older browsers
+    if (typeof HTMLDialogElement !== "function") {
+      const dialog = this.shadowRoot?.querySelector(
+        "dialog"
+      ) as HTMLDialogElement;
+      const dialogPolyfill = await this._dialogPolyfill;
+      dialogPolyfill.default.registerDialog(dialog);
+      await this._loadPolyfillStylesheet(
+        "/static/polyfills/dialog-polyfill.css"
+      );
+      this.open = true;
+    }
+  }
+
+  private async _loadDialogPolyfill() {
+    this._dialogPolyfill = import("dialog-polyfill");
+  }
+
+  private async _loadPolyfillStylesheet(href) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = href;
 
-    // Return a promise that resolves when the CSS is loaded
     return new Promise<void>((resolve, reject) => {
       link.onload = () => resolve();
       link.onerror = () =>
@@ -62,7 +71,7 @@ export class HaMdDialog extends MdDialog {
     if (this.disableCancelAction) {
       closeEvent.preventDefault();
       const dialogElement = this.shadowRoot?.querySelector("dialog");
-      if (!this.quick) {
+      if (this.animate !== undefined) {
         dialogElement?.animate(
           [
             {
