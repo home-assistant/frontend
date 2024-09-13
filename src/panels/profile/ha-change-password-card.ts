@@ -75,6 +75,7 @@ class HaChangePasswordCard extends LitElement {
                   type="password"
                   autocomplete="new-password"
                   .value=${this._password}
+                  @input=${this._newPasswordChanged}
                   @change=${this._newPasswordChanged}
                   required
                   auto-validate
