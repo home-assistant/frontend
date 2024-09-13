@@ -40,7 +40,6 @@ export class HaMdDialog extends MdDialog {
       this.quick = true;
     }
 
-    // disable dialog animations on older browsers
     if (this.animate === undefined) {
       this.quick = true;
     }
