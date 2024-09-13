@@ -123,7 +123,6 @@ export class HaCodeEditor extends ReactiveElement {
     }
     const transactions: TransactionSpec[] = [];
     if (changedProps.has("mode")) {
-      // TODO: not sure how to handle things here
       transactions.push({
         effects: [
           this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
