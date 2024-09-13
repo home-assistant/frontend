@@ -34,6 +34,7 @@ import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { HassBaseEl } from "./hass-base-mixin";
 import { promiseTimeout } from "../common/util/promise-timeout";
+import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -52,6 +53,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         entities: null as any,
         devices: null as any,
         areas: null as any,
+        floors: null as any,
         config: null as any,
         themes: null as any,
         selectedTheme: null,
@@ -265,6 +267,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           areas[area.area_id] = area;
         }
         this._updateHass({ areas });
+      });
+      subscribeFloorRegistry(conn, (floorReg) => {
+        const floors: HomeAssistant["floors"] = {};
+        for (const floor of floorReg) {
+          floors[floor.floor_id] = floor;
+        }
+        this._updateHass({ floors });
       });
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
