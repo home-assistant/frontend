@@ -16,8 +16,6 @@ export class HaMdDialog extends MdDialog {
 
   private _dialogPolyfill?: Promise<any>;
 
-  private _dialogPolyfillSetup?: Promise<void>;
-
   constructor() {
     super();
 
@@ -34,29 +32,16 @@ export class HaMdDialog extends MdDialog {
     }
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-
-    // setup polyfill dialog for older browsers
-    if (typeof HTMLDialogElement !== "function") {
-      this._dialogPolyfillSetup = this._setupDialogPolyfill();
-    }
-  }
-
-  private async _setupDialogPolyfill() {
-    this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
-    const dialog = this.shadowRoot?.querySelector(
-      "dialog"
-    ) as HTMLDialogElement;
-    const dialogPolyfill = await this._dialogPolyfill;
-    dialogPolyfill.default.registerDialog(dialog);
-  }
-
   private async _handleOpen(openEvent: Event) {
     // prevent open in older browsers and wait for polyfill to load
     if (typeof HTMLDialogElement !== "function") {
       openEvent.preventDefault();
-      await this._dialogPolyfillSetup;
+      this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
+      const dialog = this.shadowRoot?.querySelector(
+        "dialog"
+      ) as HTMLDialogElement;
+      const dialogPolyfill = await this._dialogPolyfill;
+      dialogPolyfill.default.registerDialog(dialog);
       this.removeEventListener("open", this._handleOpen);
       this.show();
     }
