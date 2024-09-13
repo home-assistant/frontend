@@ -109,7 +109,7 @@ export class HaTextField extends TextFieldBase {
         color: var(--secondary-text-color);
       }
 
-      .mdc-text-field__icon {
+      .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon {
         color: var(--secondary-text-color);
       }
 
