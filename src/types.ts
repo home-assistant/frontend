@@ -12,6 +12,7 @@ import { LocalizeFunc } from "./common/translations/localize";
 import { AreaRegistryEntry } from "./data/area_registry";
 import { DeviceRegistryEntry } from "./data/device_registry";
 import { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import { FloorRegistryEntry } from "./data/floor_registry";
 import { CoreFrontendUserData } from "./data/frontend";
 import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
@@ -210,6 +211,7 @@ export interface HomeAssistant {
   entities: { [id: string]: EntityRegistryDisplayEntry };
   devices: { [id: string]: DeviceRegistryEntry };
   areas: { [id: string]: AreaRegistryEntry };
+  floors: { [id: string]: FloorRegistryEntry };
   services: HassServices;
   config: HassConfig;
   themes: Themes;

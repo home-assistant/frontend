@@ -36,10 +36,6 @@ import {
 } from "../data/device_registry";
 import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import {
-  FloorRegistryEntry,
-  subscribeFloorRegistry,
-} from "../data/floor_registry";
-import {
   LabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
@@ -103,17 +99,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
-  @state() private _floors?: FloorRegistryEntry[];
-
   @state() private _labels?: LabelRegistryEntry[];
 
   private _opened = false;
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
-      subscribeFloorRegistry(this.hass.connection, (floors) => {
-        this._floors = floors;
-      }),
       subscribeLabelRegistry(this.hass.connection, (labels) => {
         this._labels = labels;
       }),
@@ -132,9 +123,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div class="mdc-chip-set items">
         ${this.value?.floor_id
           ? ensureArray(this.value.floor_id).map((floor_id) => {
-              const floor = this._floors?.find(
-                (flr) => flr.floor_id === floor_id
-              );
+              const floor = this.hass.floors[floor_id];
               return this._renderChip(
                 "floor_id",
                 floor_id,
