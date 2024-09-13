@@ -502,3 +502,9 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
 }
+
+export interface HeaderCardConfig extends LovelaceCardConfig {
+  title?: string;
+  icon?: string;
+  tap_action?: ActionConfig;
+}

@@ -5992,6 +5992,13 @@
               "custom_cards": "Custom cards",
               "features": "Features"
             },
+            "header": {
+              "name": "Header",
+              "description": "TODO add description",
+              "title": "Title",
+              "icon": "Icon",
+              "interactions": "Interactions"
+            },
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
