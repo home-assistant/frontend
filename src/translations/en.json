@@ -7090,7 +7090,9 @@
           "header": "We found compatible devices!",
           "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",
-          "finish": "Finish"
+          "finish": "Finish",
+          "all_set": "All set!",
+          "lets_start": "Let’s start your private smart home adventure."
         },
         "analytics": {
           "header": "Help us help you",

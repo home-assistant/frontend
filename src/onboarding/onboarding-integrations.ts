@@ -121,8 +121,16 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     if (domains.length === 0) {
       return html`
         <div class="all-set-icon">🎉</div>
-        <h1>All set!</h1>
-        <p>Let’s start your private smart home adventure.</p>
+        <h1>
+          ${this.onboardingLocalize(
+            "ui.panel.page-onboarding.integration.all_set"
+          )}
+        </h1>
+        <p>
+          ${this.onboardingLocalize(
+            "ui.panel.page-onboarding.integration.lets_start"
+          )}
+        </p>
         <div class="footer">
           <mwc-button unelevated @click=${this._finish}>
             ${this.onboardingLocalize(
