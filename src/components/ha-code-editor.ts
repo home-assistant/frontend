@@ -180,6 +180,10 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.crosshairCursor(),
       this._loadedCodeMirror.highlightSelectionMatches(),
       this._loadedCodeMirror.highlightActiveLine(),
+      this._loadedCodeMirror.indentationMarkers({
+        thickness: 0,
+        activeThickness: 1,
+      }),
       this._loadedCodeMirror.keymap.of([
         ...this._loadedCodeMirror.defaultKeymap,
         ...this._loadedCodeMirror.searchKeymap,
