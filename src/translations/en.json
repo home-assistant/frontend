@@ -4908,7 +4908,7 @@
               "button_label": "Reset to default configuration",
               "dialog": {
                 "title": "Reset to default",
-                "text": "All device parameters will be reset to their default values",
+                "text": "All device parameters will be reset to their default values.",
                 "text_loading": "Resetting in progress…",
                 "text_success": "The device configuration has been reset to its default values.",
                 "text_error": "Something went wrong while resetting the device to its default values. Please check your logs!",

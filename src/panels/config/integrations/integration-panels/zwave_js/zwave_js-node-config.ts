@@ -469,6 +469,7 @@ class ZWaveJSNodeConfig extends LitElement {
     const progressButton = event.currentTarget as HaProgressButton;
 
     await showConfirmationDialog(this, {
+      destructive: true,
       title: this.hass.localize(
         "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
       ),
