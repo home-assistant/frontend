@@ -2,6 +2,8 @@ import { MdDialog } from "@material/web/dialog/dialog";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
+let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
+
 /**
  * Based on the home assistant design: https://design.home-assistant.io/#components/ha-dialogs
  *
@@ -14,16 +16,19 @@ export class HaMdDialog extends MdDialog {
   @property({ attribute: "disable-cancel-action", type: Boolean })
   public disableCancelAction = false;
 
-  private _dialogPolyfill?: Promise<any>;
+  private _polyfillDialogRegistered = false;
 
   constructor() {
     super();
 
     this.addEventListener("cancel", this._handleCancel);
-    this.addEventListener("open", this._handleOpen);
 
     if (typeof HTMLDialogElement !== "function") {
-      this._dialogPolyfill = import("dialog-polyfill");
+      this.addEventListener("open", this._handleOpen);
+
+      if (!DIALOG_POLYFILL) {
+        DIALOG_POLYFILL = import("dialog-polyfill");
+      }
     }
 
     // if browser doesn't support animate API disable open/close animations
@@ -34,15 +39,22 @@ export class HaMdDialog extends MdDialog {
 
   private async _handleOpen(openEvent: Event) {
     // prevent open in older browsers and wait for polyfill to load
-    if (typeof HTMLDialogElement !== "function") {
+    if (
+      typeof HTMLDialogElement !== "function" &&
+      !this._polyfillDialogRegistered
+    ) {
       openEvent.preventDefault();
+
       this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
       const dialog = this.shadowRoot?.querySelector(
         "dialog"
       ) as HTMLDialogElement;
-      const dialogPolyfill = await this._dialogPolyfill;
+
+      const dialogPolyfill = await DIALOG_POLYFILL;
       dialogPolyfill.default.registerDialog(dialog);
       this.removeEventListener("open", this._handleOpen);
+
+      this._polyfillDialogRegistered = true;
       this.show();
     }
   }
