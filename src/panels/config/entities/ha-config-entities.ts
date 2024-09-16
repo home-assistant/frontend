@@ -903,7 +903,16 @@ ${
               </ha-alert>`
             : nothing
         }
-
+        <ha-filter-floor-areas
+          .hass=${this.hass}
+          type="entity"
+          .value=${this._filters["ha-filter-floor-areas"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-floor-areas>
         <ha-filter-devices
           .hass=${this.hass}
           .type=${"entity"}
@@ -984,9 +993,7 @@ ${
     const type = ev.target.localName;
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
-    if (ev.detail.items) {
-      this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    }
+    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
   }
 
   protected firstUpdated() {
