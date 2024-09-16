@@ -26,7 +26,6 @@ export class HaMdDialog extends MdDialog {
   constructor() {
     super();
     this.addEventListener("cancel", this._handleCancel);
-    this.addEventListener("open", this._handleOpen);
 
     if (typeof HTMLDialogElement !== "function") {
       this.addEventListener("open", this._handleOpen);
