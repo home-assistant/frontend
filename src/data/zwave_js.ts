@@ -284,6 +284,16 @@ export interface ZWaveJSRebuildRoutesStatusMessage {
   rebuild_routes_status: { [key: number]: string };
 }
 
+export interface ZWaveJSResetAllConfigParamData {
+  type: string;
+  device_id: string;
+}
+
+export interface ZWaveJSResetAllConfigParamResult {
+  status?: string;
+  error?: string;
+}
+
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
   event: "statistics updated";
   source: "controller";
@@ -872,3 +882,14 @@ export const setZWaveJSLogLevel = (
     entry_id,
     config: { level },
   });
+
+export const resetAllZwaveNodeConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<ZWaveJSResetAllConfigParamResult> => {
+  const data: ZWaveJSResetAllConfigParamData = {
+    type: "zwave_js/reset_all_config_parameters",
+    device_id,
+  };
+  return hass.callWS(data);
+};
