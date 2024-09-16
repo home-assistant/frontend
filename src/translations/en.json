@@ -2584,6 +2584,7 @@
             "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
+              "edit_resource": "Edit resource",
               "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
@@ -7090,7 +7091,9 @@
           "header": "We found compatible devices!",
           "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",
-          "finish": "Finish"
+          "finish": "Finish",
+          "all_set": "All set!",
+          "lets_start": "Let’s start your private smart home adventure."
         },
         "analytics": {
           "header": "Help us help you",
