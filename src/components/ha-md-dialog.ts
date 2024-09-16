@@ -45,6 +45,7 @@ export class HaMdDialog extends MdDialog {
       return;
     }
 
+    this._polyfillDialogRegistered = true;
     this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
     const dialog = this.shadowRoot?.querySelector(
       "dialog"
@@ -54,7 +55,6 @@ export class HaMdDialog extends MdDialog {
     dialogPolyfill.default.registerDialog(dialog);
     this.removeEventListener("open", this._handleOpen);
 
-    this._polyfillDialogRegistered = true;
     this.show();
   }
 
