@@ -10,7 +10,6 @@ export interface LovelaceResourceDetailsDialogParams {
   updateResource: (
     updates: Partial<LovelaceResourcesMutableParams>
   ) => Promise<unknown>;
-  removeResource: () => Promise<boolean>;
 }
 
 export const loadResourceDetailDialog = () =>

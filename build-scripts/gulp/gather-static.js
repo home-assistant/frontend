@@ -60,6 +60,12 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
+
+  // dialog-polyfill css
+  copyFileDir(
+    npmPath("dialog-polyfill/dialog-polyfill.css"),
+    staticPath("polyfills/")
+  );
 }
 
 function copyLoaderJS(staticDir) {
