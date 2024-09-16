@@ -40,19 +40,22 @@ export class HaMdDialog extends MdDialog {
   // prevent open in older browsers and wait for polyfill to load
   private async _handleOpen(openEvent: Event) {
     openEvent.preventDefault();
-    if (!this._polyfillDialogRegistered) {
-      this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
-      const dialog = this.shadowRoot?.querySelector(
-        "dialog"
-      ) as HTMLDialogElement;
 
-      const dialogPolyfill = await DIALOG_POLYFILL;
-      dialogPolyfill.default.registerDialog(dialog);
-      this.removeEventListener("open", this._handleOpen);
-
-      this._polyfillDialogRegistered = true;
-      this.show();
+    if (this._polyfillDialogRegistered) {
+      return;
     }
+
+    this._loadPolyfillStylesheet("/static/polyfills/dialog-polyfill.css");
+    const dialog = this.shadowRoot?.querySelector(
+      "dialog"
+    ) as HTMLDialogElement;
+
+    const dialogPolyfill = await DIALOG_POLYFILL;
+    dialogPolyfill.default.registerDialog(dialog);
+    this.removeEventListener("open", this._handleOpen);
+
+    this._polyfillDialogRegistered = true;
+    this.show();
   }
 
   private async _loadPolyfillStylesheet(href) {
