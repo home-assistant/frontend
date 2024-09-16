@@ -24,7 +24,6 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import { computeDeviceName } from "../../../../../data/device_registry";
