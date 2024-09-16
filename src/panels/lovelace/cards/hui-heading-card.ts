@@ -1,5 +1,6 @@
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -14,26 +15,28 @@ import type {
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import type { HeaderCardConfig } from "./types";
+import type { HeadingCardConfig } from "./types";
 
-@customElement("hui-header-card")
-export class HuiHeaderCard extends LitElement implements LovelaceCard {
+@customElement("hui-heading-card")
+export class HuiHeadingCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-header-card-editor");
-    return document.createElement("hui-header-card-editor");
+    await import("../editor/config-elements/hui-heading-card-editor");
+    return document.createElement("hui-heading-card-editor");
   }
 
-  public static getStubConfig(): HeaderCardConfig {
+  public static getStubConfig(hass: HomeAssistant): HeadingCardConfig {
     return {
-      type: "header",
+      type: "heading",
+      icon: "mdi:fridge",
+      heading: hass.localize("ui.panel.lovelace.cards.heading.default_heading"),
     };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: HeaderCardConfig;
+  @state() private _config?: HeadingCardConfig;
 
-  public setConfig(config: HeaderCardConfig): void {
+  public setConfig(config: HeadingCardConfig): void {
     this._config = {
       tap_action: {
         action: "none",
@@ -49,7 +52,7 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
   public getLayoutOptions(): LovelaceLayoutOptions {
     return {
       grid_columns: "full",
-      grid_rows: 1,
+      grid_rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
     };
   }
 
@@ -64,11 +67,13 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
 
     const actionable = hasAction(this._config.tap_action);
 
+    const style = this._config.heading_style || "title";
+
     return html`
       <ha-card>
         <div class="container">
           <div
-            class="content"
+            class="content ${classMap({ [style]: true })}"
             @action=${this._handleAction}
             .actionHandler=${actionHandler()}
             role=${ifDefined(actionable ? "button" : undefined)}
@@ -77,7 +82,7 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
             ${this._config.icon
               ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
               : nothing}
-            <p>${this._config.title}</p>
+            <p>${this._config.heading}</p>
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
         </div>
@@ -105,7 +110,7 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
         transition: transform 180ms ease-in-out;
       }
       .container {
-        padding: 4px;
+        padding: 2px 4px;
       }
       .content:hover ha-icon-next {
         transform: translateX(calc(4px * var(--scale-direction)));
@@ -113,32 +118,39 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
       .content {
         display: flex;
         flex-direction: row;
-
+        align-items: center;
         gap: 8px;
         flex: 1;
         min-width: 0;
         color: var(--primary-text-color);
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+        letter-spacing: 0.1px;
+        --mdc-icon-size: 20px;
       }
       .content ha-icon,
       .content ha-icon-next {
-        padding: 2px 0;
-        --mdc-icon-size: 20px;
         display: flex;
         flex: none;
       }
       .content p {
         margin: 0;
         font-family: Roboto;
-        font-size: 16px;
         font-style: normal;
-        font-weight: 500;
-        line-height: 24px;
-        letter-spacing: 0.1px;
+
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         flex-shrink: 1;
         min-width: 0;
+      }
+      .content.subtitle {
+        color: var(--secondary-text-color);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        --mdc-icon-size: 16px;
       }
     `;
   }
@@ -146,6 +158,6 @@ export class HuiHeaderCard extends LitElement implements LovelaceCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-header-card": HuiHeaderCard;
+    "hui-heading-card": HuiHeadingCard;
   }
 }

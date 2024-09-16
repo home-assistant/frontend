@@ -126,7 +126,7 @@ export const coreCards: Card[] = [
     type: "todo-list",
   },
   {
-    type: "header",
+    type: "heading",
     showElement: true,
   },
 ];

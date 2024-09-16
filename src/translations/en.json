@@ -5447,6 +5447,9 @@
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
+          },
+          "heading": {
+            "default_heading": "Kitchen"
           }
         },
         "unused_entities": {
@@ -5992,12 +5995,18 @@
               "custom_cards": "Custom cards",
               "features": "Features"
             },
-            "header": {
-              "name": "Header",
-              "description": "TODO add description",
-              "title": "Title",
+            "heading": {
+              "name": "Heading",
+              "description": "The heading card structures your dashboard by providing title, icon and navigation.",
+              "heading": "Heading",
               "icon": "Icon",
-              "interactions": "Interactions"
+              "interactions": "Interactions",
+              "heading_style": "Heading style",
+              "heading_style_options": {
+                "title": "Title",
+                "subtitle": "Subtitle"
+              },
+              "default_heading": "Kitchen"
             },
             "map": {
               "name": "Map",

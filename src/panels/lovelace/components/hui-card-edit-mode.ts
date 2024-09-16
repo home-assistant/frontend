@@ -275,9 +275,9 @@ export class HuiCardEditMode extends LitElement {
           position: relative;
           color: var(--primary-text-color);
           border-radius: 50%;
-          padding: 12px;
+          padding: 8px;
           background: var(--secondary-background-color);
-          --mdc-icon-size: 24px;
+          --mdc-icon-size: 20px;
         }
         .more {
           position: absolute;

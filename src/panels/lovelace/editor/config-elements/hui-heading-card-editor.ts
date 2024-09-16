@@ -2,7 +2,15 @@ import { mdiGestureTap } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  literal,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -10,42 +18,58 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { HeaderCardConfig } from "../../cards/types";
+import type { HeadingCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
 import { UiAction } from "../../components/hui-action-editor";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    title: optional(string()),
+    heading_style: optional(union([literal("title"), literal("subtitle")])),
+    heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
   })
 );
 
-@customElement("hui-header-card-editor")
-export class HuiHeaderCardEditor
+@customElement("hui-heading-card-editor")
+export class HuiHeadingCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: HeaderCardConfig;
+  @state() private _config?: HeadingCardConfig;
 
-  public setConfig(config: HeaderCardConfig): void {
+  public setConfig(config: HeadingCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
 
   private _schema = memoizeOne(
-    () =>
+    (localize: LocalizeFunc) =>
       [
-        { name: "title", selector: { text: {} } },
+        {
+          name: "heading_style",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["title", "subtitle"].map((value) => ({
+                label: localize(
+                  `ui.panel.lovelace.editor.card.heading.heading_style_options.${value}`
+                ),
+                value: value,
+              })),
+            },
+          },
+        },
+        { name: "heading", selector: { text: {} } },
         {
           name: "icon",
           selector: {
@@ -77,12 +101,20 @@ export class HuiHeaderCardEditor
       return nothing;
     }
 
-    const schema = this._schema();
+    const data = {
+      ...this._config,
+    };
+
+    if (!data.heading_style) {
+      data.heading_style = "title";
+    }
+
+    const schema = this._schema(this.hass.localize);
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -96,7 +128,7 @@ export class HuiHeaderCardEditor
       return;
     }
 
-    const config = ev.detail.value as HeaderCardConfig;
+    const config = ev.detail.value as HeadingCardConfig;
 
     fireEvent(this, "config-changed", { config });
   }
@@ -105,11 +137,12 @@ export class HuiHeaderCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "title":
+      case "heading_style":
+      case "heading":
       case "icon":
       case "interactions":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.header.${schema.name}`
+          `ui.panel.lovelace.editor.card.heading.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -128,7 +161,6 @@ export class HuiHeaderCardEditor
         }
         ha-form {
           display: block;
-          /* margin-bottom: 24px; */
         }
       `,
     ];
@@ -137,6 +169,6 @@ export class HuiHeaderCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-header-card-editor": HuiHeaderCardEditor;
+    "hui-heading-card-editor": HuiHeadingCardEditor;
   }
 }
