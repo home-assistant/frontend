@@ -26,6 +26,7 @@ import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-selector/ha-selector-boolean";
 import { computeDeviceName } from "../../../../../data/device_registry";
 import {
   ZWaveJSNodeConfigParam,
@@ -189,6 +190,11 @@ class ZWaveJSNodeConfig extends LitElement {
     item: ZWaveJSNodeConfigParam
   ): TemplateResult {
     const result = this._results[id];
+
+    const isTypeBoolean =
+      item.configuration_value_type === "boolean" ||
+      this._isEnumeratedBool(item);
+
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
@@ -240,6 +246,21 @@ class ZWaveJSNodeConfig extends LitElement {
       </span>
     `;
 
+    const defaultLabel =
+      item.metadata.writeable && item.metadata.default !== undefined
+        ? `${this.hass.localize("ui.panel.config.zwave_js.node_config.default")}:
+          ${
+            isTypeBoolean
+              ? this.hass.localize(
+                  item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
+                )
+              : item.configuration_value_type === "enumerated"
+                ? item.metadata.states[item.metadata.default] ||
+                  item.metadata.default
+                : item.metadata.default
+          }`
+        : "";
+
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
     if (
       item.configuration_value_type === "boolean" ||
@@ -248,15 +269,16 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <div class="switch">
-          <ha-switch
+          <ha-selector-boolean
             .property=${item.property}
             .endpoint=${item.endpoint}
             .propertyKey=${item.property_key}
-            .checked=${item.value === 1}
+            .value=${item.value === 1}
             .key=${id}
             @change=${this._switchToggled}
             .disabled=${!item.metadata.writeable}
-          ></ha-switch>
+            .helper=${defaultLabel}
+          ></ha-selector-boolean>
         </div>
       `;
     }
@@ -275,10 +297,7 @@ class ZWaveJSNodeConfig extends LitElement {
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
           .suffix=${item.metadata.unit}
-          .helper=${this.hass.localize(
-            "ui.panel.config.zwave_js.node_config.between_min_max",
-            { min: item.metadata.min, max: item.metadata.max }
-          )}
+          .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
           helperPersistent
         >
         </ha-textfield>`;
@@ -295,6 +314,7 @@ class ZWaveJSNodeConfig extends LitElement {
           .endpoint=${item.endpoint}
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
+          .helper=${defaultLabel}
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
