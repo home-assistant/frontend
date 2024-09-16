@@ -148,6 +148,9 @@ export class HaMdDialog extends MdDialog {
         display: contents;
       }
 
+      slot[name="content"]::slotted(*) {
+        padding: var(--dialog-content-padding, 24px);
+      }
       .scrim {
         z-index: 10; // overlay navigation
       }
