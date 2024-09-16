@@ -503,9 +503,16 @@ export interface TileCardConfig extends LovelaceCardConfig {
   features?: LovelaceCardFeatureConfig[];
 }
 
+export interface HeadingCardEntityConfig {
+  entity: string;
+  content?: string | string[];
+  icon?: string;
+}
+
 export interface HeadingCardConfig extends LovelaceCardConfig {
   heading_style?: "title" | "subtitle";
   heading?: string;
   icon?: string;
   tap_action?: ActionConfig;
+  entities?: HeadingCardEntityConfig[];
 }

@@ -3,6 +3,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
+  any,
+  array,
   assert,
   assign,
   literal,
@@ -17,14 +19,18 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../components/hui-entity-editor";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig } from "../../cards/types";
+import type {
+  HeadingCardConfig,
+  HeadingCardEntityConfig,
+} from "../../cards/types";
+import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
-import { UiAction } from "../../components/hui-action-editor";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -35,6 +41,7 @@ const cardConfigStruct = assign(
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
+    entities: optional(array(any())),
   })
 );
 
@@ -119,7 +126,27 @@ export class HuiHeadingCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      <hui-entity-editor
+        .hass=${this.hass}
+        .entities=${this._config.entities}
+        @entities-changed=${this._entitiesChanged}
+      >
+      </hui-entity-editor>
     `;
+  }
+
+  private _entitiesChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const config = {
+      ...this._config,
+      entities: ev.detail.entities as HeadingCardEntityConfig[],
+    };
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {

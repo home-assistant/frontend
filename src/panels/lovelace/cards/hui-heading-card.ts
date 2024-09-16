@@ -5,7 +5,9 @@ import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-state-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import "../../../state-display/state-display";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -15,7 +17,7 @@ import type {
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import type { HeadingCardConfig } from "./types";
+import type { HeadingCardConfig, HeadingCardEntityConfig } from "./types";
 
 @customElement("hui-heading-card")
 export class HuiHeadingCard extends LitElement implements LovelaceCard {
@@ -31,6 +33,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       heading: hass.localize("ui.panel.lovelace.cards.heading.default_heading"),
     };
   }
+
+  @property({ attribute: false }) public preview?: boolean;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -85,8 +89,46 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             <p>${this._config.heading}</p>
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
+          ${this._config.entities?.length
+            ? html`
+                <div class="entities">
+                  ${this._config.entities.map((config) =>
+                    this._renderEntity(config)
+                  )}
+                </div>
+              `
+            : nothing}
         </div>
       </ha-card>
+    `;
+  }
+
+  _renderEntity(entityConfig: string | HeadingCardEntityConfig) {
+    const config =
+      typeof entityConfig === "string"
+        ? { entity: entityConfig }
+        : entityConfig;
+
+    const stateObj = this.hass!.states[config.entity];
+
+    if (!stateObj) {
+      return nothing;
+    }
+
+    return html`
+      <span class="entity">
+        <ha-state-icon
+          .hass=${this.hass}
+          .icon=${config.icon}
+          .stateObj=${stateObj}
+        ></ha-state-icon>
+
+        <state-display
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+          .content=${config.content || "state"}
+        ></state-display>
+      </span>
     `;
   }
 
@@ -111,6 +153,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       }
       .container {
         padding: 2px 4px;
+        display: flex;
+        flex-direction: row;
       }
       .content:hover ha-icon-next {
         transform: translateX(calc(4px * var(--scale-direction)));
@@ -138,7 +182,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         margin: 0;
         font-family: Roboto;
         font-style: normal;
-
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -151,6 +194,30 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         font-weight: 500;
         line-height: 20px;
         --mdc-icon-size: 16px;
+      }
+      .entities {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+      .entities .entity {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        color: var(--secondary-text-color);
+        font-family: Roboto;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 20px; /* 142.857% */
+        letter-spacing: 0.1px;
+        --mdc-icon-size: 14px;
+      }
+      .entities .entity ha-state-icon {
+        --ha-icon-display: block;
+        display: flex;
       }
     `;
   }
