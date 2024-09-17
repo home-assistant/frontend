@@ -1,11 +1,15 @@
-import "@material/mwc-button/mwc-button";
+import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../../components/ha-md-dialog";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog-header";
+import { domainToName } from "../../../data/integration";
 import "../../../components/ha-markdown";
 import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";
 import { haStyleDialog } from "../../../resources/styles";
@@ -20,12 +24,14 @@ class DialogRepairsIssue extends LitElement {
 
   @state() private _params?: RepairsIssueDialogParams;
 
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+
   public showDialog(params: RepairsIssueDialogParams): void {
     this._params = params;
     this._issue = this._params.issue;
   }
 
-  public closeDialog() {
+  private _dialogClosed() {
     if (this._params?.dialogClosedCallback) {
       this._params.dialogClosedCallback();
     }
@@ -33,6 +39,10 @@ class DialogRepairsIssue extends LitElement {
     this._params = undefined;
     this._issue = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  public closeDialog() {
+    this._dialog?.close();
   }
 
   protected render() {
@@ -43,23 +53,24 @@ class DialogRepairsIssue extends LitElement {
     const learnMoreUrlIsHomeAssistant =
       this._issue.learn_more_url?.startsWith("homeassistant://") || false;
 
+    const dialogTitle =
+      this.hass.localize(
+        `component.${this._issue.domain}.issues.${this._issue.translation_key || this._issue.issue_id}.title`,
+        this._issue.translation_placeholders || {}
+      ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
+
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `component.${this._issue.domain}.issues.${
-              this._issue.translation_key || this._issue.issue_id
-            }.title`,
-            this._issue.translation_placeholders || {}
-          ) || this.hass!.localize("ui.panel.config.repairs.dialog.title")
-        )}
-      >
-        <div>
+      <ha-md-dialog open @closed=${this._dialogClosed}>
+        <ha-dialog-header slot="headline">
+          <ha-icon-button
+            slot="navigationIcon"
+            .label=${this.hass.localize("ui.dialogs.generic.close") ?? "Close"}
+            .path=${mdiClose}
+            @click=${this.closeDialog}
+          ></ha-icon-button>
+          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
+        </ha-dialog-header>
+        <div slot="content">
           ${this._issue.breaks_in_ha_version
             ? html`
                 <ha-alert alert-type="warning">
@@ -98,7 +109,7 @@ class DialogRepairsIssue extends LitElement {
                 `ui.panel.config.repairs.${this._issue.severity}`
               )}
             </span>
-            -
+            ⸱
             ${this._issue.created
               ? formatDateNumeric(
                   new Date(this._issue.created),
@@ -106,37 +117,44 @@ class DialogRepairsIssue extends LitElement {
                   this.hass.config
                 )
               : ""}
+            ⸱ ${this.hass.localize(`ui.panel.config.repairs.reported_by`)}
+            ${domainToName(this.hass.localize, this._issue.domain)}
           </div>
         </div>
-        ${this._issue.learn_more_url
-          ? html`
-              <a
-                .href=${learnMoreUrlIsHomeAssistant
-                  ? this._issue.learn_more_url.replace("homeassistant://", "/")
-                  : this._issue.learn_more_url}
-                .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
-                @click=${learnMoreUrlIsHomeAssistant
-                  ? this.closeDialog
-                  : undefined}
-                slot="primaryAction"
-                rel="noopener noreferrer"
-              >
-                <mwc-button
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.repairs.dialog.learn"
-                  )}
-                ></mwc-button>
-              </a>
-            `
-          : ""}
-        <mwc-button
-          slot="secondaryAction"
-          .label=${this._issue!.ignored
-            ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
-            : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
-          @click=${this._ignoreIssue}
-        ></mwc-button>
-      </ha-dialog>
+        <div slot="actions">
+          ${this._issue.learn_more_url
+            ? html`
+                <a
+                  .href=${learnMoreUrlIsHomeAssistant
+                    ? this._issue.learn_more_url.replace(
+                        "homeassistant://",
+                        "/"
+                      )
+                    : this._issue.learn_more_url}
+                  .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                  @click=${learnMoreUrlIsHomeAssistant
+                    ? this.closeDialog
+                    : undefined}
+                  slot="primaryAction"
+                  rel="noopener noreferrer"
+                >
+                  <ha-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.repairs.dialog.learn"
+                    )}
+                  ></ha-button>
+                </a>
+              `
+            : ""}
+          <ha-button
+            slot="secondaryAction"
+            .label=${this._issue!.ignored
+              ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
+              : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
+            @click=${this._ignoreIssue}
+          ></ha-button>
+        </div>
+      </ha-md-dialog>
     `;
   }
 

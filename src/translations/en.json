@@ -1967,6 +1967,8 @@
           "system_information": "System information",
           "integration_startup_time": "Integration startup time",
           "copy": "Copy",
+          "reported_by": "Reported by",
+          "by": "By",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",
