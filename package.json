@@ -27,7 +27,7 @@
   "dependencies": {
     "@babel/runtime": "7.25.6",
     "@braintree/sanitize-url": "7.1.0",
-    "@codemirror/autocomplete": "6.18.0",
+    "@codemirror/autocomplete": "6.18.1",
     "@codemirror/commands": "6.6.1",
     "@codemirror/language": "6.10.2",
     "@codemirror/legacy-modes": "6.4.1",
