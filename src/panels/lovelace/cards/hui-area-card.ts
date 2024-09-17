@@ -330,22 +330,18 @@ export class HuiAreaCard
 
     this._config = config;
 
-    if (!config.sensor_classes && !config.alert_classes) {
+    const validClasses = [...config.sensor_classes, ...config.alert_classes];
+
+    if (!validClasses.length) {
       this._deviceClasses = { ...DEVICE_CLASSES };
       return;
     }
 
-    this._deviceClasses = Object.entries(DEVICE_CLASSES)
-      .filter(([dc, _opts]) =>
-        [...config.sensor_classes, ...config.alert_classes].includes(dc)
-      )
-      .reduce(
-        (acc, [dc, opts]) => ({
-          ...acc,
-          [dc]: opts,
-        }),
-        {}
-      );
+    this._deviceClasses = Object.entries(DEVICE_CLASSES).reduce(
+      (acc, [dc, opts]) =>
+        validClasses.includes(dc) ? { ...acc, [dc]: opts } : acc,
+      {}
+    );
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
