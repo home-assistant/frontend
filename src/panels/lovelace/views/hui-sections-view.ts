@@ -248,8 +248,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       type: "grid",
       cards: [
         {
-          type: "header",
-          title: "New Section",
+          type: "heading",
+          heading: "New Section",
         },
       ],
     });
