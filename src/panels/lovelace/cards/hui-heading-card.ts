@@ -34,8 +34,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public preview?: boolean;
-
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HeadingCardConfig;

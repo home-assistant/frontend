@@ -6006,6 +6006,10 @@
                 "title": "Title",
                 "subtitle": "Subtitle"
               },
+              "entity_config": {
+                "icon": "Icon",
+                "content": "Content"
+              },
               "default_heading": "Kitchen"
             },
             "map": {
@@ -6150,6 +6154,13 @@
               "other_badges": "Other badges",
               "custom_badges": "Custom badges"
             }
+          },
+          "entities": {
+            "name": "Entities",
+            "add": "Add entity",
+            "edit": "Edit entity",
+            "remove": "Remove entity",
+            "form-label": "Edit entity"
           },
           "features": {
             "name": "Features",

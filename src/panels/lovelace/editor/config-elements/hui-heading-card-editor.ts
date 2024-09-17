@@ -1,5 +1,5 @@
 import { mdiGestureTap } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -13,14 +13,13 @@ import {
   string,
   union,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../components/hui-entity-editor";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../types";
 import type {
   HeadingCardConfig,
@@ -28,9 +27,12 @@ import type {
 } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
+import "../hui-sub-form-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { SubFormEditorData } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "./hui-entities-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -45,6 +47,12 @@ const cardConfigStruct = assign(
   })
 );
 
+const entityConfigStruct = object({
+  entity: string(),
+  content: optional(union([string(), array(string())])),
+  icon: optional(string()),
+});
+
 @customElement("hui-heading-card-editor")
 export class HuiHeadingCardEditor
   extends LitElement
@@ -54,9 +62,16 @@ export class HuiHeadingCardEditor
 
   @state() private _config?: HeadingCardConfig;
 
+  @state()
+  private _entityFormEditorData?: SubFormEditorData<HeadingCardEntityConfig>;
+
   public setConfig(config: HeadingCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
+  }
+
+  public _assertEntityConfig(config: HeadingCardEntityConfig): void {
+    assert(config, entityConfigStruct);
   }
 
   private _schema = memoizeOne(
@@ -103,9 +118,48 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _entitySchema = memoizeOne(
+    () =>
+      [
+        {
+          name: "entity",
+          selector: { entity: {} },
+        },
+        {
+          name: "icon",
+          selector: { icon: {} },
+          context: { icon_entity: "entity" },
+        },
+        {
+          name: "content",
+          selector: { ui_state_content: {} },
+          context: { filter_entity: "entity" },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
+    }
+
+    if (this._entityFormEditorData) {
+      const schema = this._entitySchema();
+      return html`
+        <hui-sub-form-editor
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.entities.form-label"
+          )}
+          .hass=${this.hass}
+          .data=${this._entityFormEditorData.data}
+          @go-back=${this._goBack}
+          @value-changed=${this._subFormChanged}
+          .schema=${schema}
+          .assertConfig=${this._assertEntityConfig}
+          .computeLabel=${this._computeEntityLabelCallback}
+        >
+        </hui-sub-form-editor>
+      `;
     }
 
     const data = {
@@ -126,12 +180,13 @@ export class HuiHeadingCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-entity-editor
+      <hui-entities-editor
         .hass=${this.hass}
         .entities=${this._config.entities}
         @entities-changed=${this._entitiesChanged}
+        @edit-entity=${this._editEntity}
       >
-      </hui-entity-editor>
+      </hui-entities-editor>
     `;
   }
 
@@ -159,6 +214,62 @@ export class HuiHeadingCardEditor
 
     fireEvent(this, "config-changed", { config });
   }
+
+  private _subFormChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const value = ev.detail.value;
+
+    const newEntities = this._config!.entities
+      ? [...this._config!.entities]
+      : [];
+
+    if (!value) {
+      newEntities.splice(this._entityFormEditorData!.index!, 1);
+      this._goBack();
+    } else {
+      newEntities[this._entityFormEditorData!.index!] = value;
+    }
+
+    this._config = { ...this._config!, entities: newEntities };
+
+    this._entityFormEditorData = {
+      ...this._entityFormEditorData!,
+      data: value,
+    };
+
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
+    this._entityFormEditorData = {
+      data: this._config!.entities![ev.detail.index],
+      index: ev.detail.index,
+    };
+  }
+
+  private _goBack(): void {
+    this._entityFormEditorData = undefined;
+  }
+
+  private _computeEntityLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._entitySchema>>
+  ) => {
+    switch (schema.name) {
+      case "icon":
+      case "content":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
@@ -188,6 +299,7 @@ export class HuiHeadingCardEditor
         }
         ha-form {
           display: block;
+          margin-bottom: 24px;
         }
       `,
     ];
