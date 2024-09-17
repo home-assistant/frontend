@@ -6,7 +6,7 @@ import {
 } from "@material/web/menu/internal/controllers/shared";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import type { HaMenuItem } from "./ha-menu-item";
+import type { HaMenuItem } from "./ha-md-menu-item";
 
 @customElement("ha-menu")
 export class HaMenu extends MdMenu {

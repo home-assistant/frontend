@@ -60,7 +60,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-menu-item";
+import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
@@ -704,7 +704,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-menu-item
+        return html`<ha-md-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -722,13 +722,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item>`;
+        </ha-md-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div></ha-menu-item
+        </div></ha-md-menu-item
       >`;
 
     return html`
@@ -786,7 +786,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
 ${
   !this.narrow
-    ? html`<ha-button-menu-new slot="selection-bar">
+    ? html`<ha-md-button-menu slot="selection-bar">
         <ha-assist-chip
           slot="trigger"
           .label=${this.hass.localize(
@@ -796,10 +796,10 @@ ${
           <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
         </ha-assist-chip>
         ${labelItems}
-      </ha-button-menu-new>`
+      </ha-md-button-menu>`
     : nothing
 }
-<ha-button-menu-new has-overflow slot="selection-bar">
+<ha-md-button-menu has-overflow slot="selection-bar">
   ${
     this.narrow
       ? html`<ha-assist-chip
@@ -824,29 +824,29 @@ ${
   ${
     this.narrow
       ? html`<ha-sub-menu>
-            <ha-menu-item slot="item">
+            <ha-md-menu-item slot="item">
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.bulk_actions.add_label"
                 )}
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
-            </ha-menu-item>
+            </ha-md-menu-item>
             <ha-menu slot="menu">${labelItems}</ha-menu>
           </ha-sub-menu>
           <md-divider role="separator" tabindex="-1"></md-divider>`
       : nothing
   }
 
-  <ha-menu-item @click=${this._enableSelected}>
+  <ha-md-menu-item @click=${this._enableSelected}>
     <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
     <div slot="headline">
       ${this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <ha-menu-item @click=${this._disableSelected}>
+  </ha-md-menu-item>
+  <ha-md-menu-item @click=${this._disableSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiToggleSwitchOffOutline}
@@ -856,10 +856,10 @@ ${
         "ui.panel.config.entities.picker.disable_selected.button"
       )}
     </div>
-  </ha-menu-item>
+  </ha-md-menu-item>
   <md-divider role="separator" tabindex="-1"></md-divider>
 
-  <ha-menu-item @click=${this._unhideSelected}>
+  <ha-md-menu-item @click=${this._unhideSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiEye}
@@ -869,8 +869,8 @@ ${
         "ui.panel.config.entities.picker.unhide_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <ha-menu-item @click=${this._hideSelected}>
+  </ha-md-menu-item>
+  <ha-md-menu-item @click=${this._hideSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiEyeOff}
@@ -880,10 +880,10 @@ ${
         "ui.panel.config.entities.picker.hide_selected.button"
       )}
     </div>
-  </ha-menu-item>
+  </ha-md-menu-item>
   <md-divider role="separator" tabindex="-1"></md-divider>
 
-  <ha-menu-item @click=${this._removeSelected} class="warning">
+  <ha-md-menu-item @click=${this._removeSelected} class="warning">
     <ha-svg-icon
       slot="start"
       .path=${mdiDelete}
@@ -893,9 +893,9 @@ ${
         "ui.panel.config.entities.picker.delete_selected.button"
       )}
     </div>
-  </ha-menu-item>
+  </ha-md-menu-item>
 
-</ha-button-menu-new>
+</ha-md-button-menu>
         ${
           Array.isArray(this._filters.config_entry?.value) &&
           this._filters.config_entry?.value.length
@@ -1468,7 +1468,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {
