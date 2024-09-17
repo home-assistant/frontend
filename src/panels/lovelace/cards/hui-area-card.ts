@@ -98,13 +98,12 @@ type DeviceClassOptions = {
 
 type DeviceClasses = { [key: string]: DeviceClassOptions };
 
-export const deviceClassesByDomain = (
-  deviceClasses: DeviceClasses,
-  domain: string
-): string[] =>
-  Object.entries(deviceClasses)
-    .filter(([_deviceClass, opts]) => opts.sensor_type === domain)
-    .map(([deviceClass, _opts]) => deviceClass);
+export const deviceClassesByDomain = memoizeOne(
+  (deviceClasses: DeviceClasses, domain: string): string[] =>
+    Object.entries(deviceClasses)
+      .filter(([_deviceClass, opts]) => opts.sensor_type === domain)
+      .map(([deviceClass, _opts]) => deviceClass)
+);
 
 const sumValues = (values: number[]): number =>
   values.reduce((total, value) => total + value, 0);
