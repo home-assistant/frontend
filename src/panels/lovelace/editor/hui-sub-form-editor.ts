@@ -9,14 +9,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-yaml-editor";
 import "../../../components/ha-alert";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceConfigForm } from "../types";
 import type { EditSubFormEvent } from "./types";
@@ -50,8 +49,6 @@ export class HuiSubFormEditor<T = any> extends LitElement {
   @state() private _errors?: string[];
 
   @state() private _warnings?: string[];
-
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected render(): TemplateResult {
     const uiAvailable = !this.hasWarning && !this.hasError;
