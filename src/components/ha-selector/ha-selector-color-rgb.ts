@@ -31,7 +31,7 @@ export class HaColorRGBSelector extends LitElement {
         .label=${this.label || ""}
         .required=${this.required}
         .helper=${this.helper}
-        .disalbled=${this.disabled}
+        .disabled=${this.disabled}
         @change=${this._valueChanged}
       ></ha-textfield>
     `;
