@@ -124,7 +124,7 @@ export class HaMdDialog extends MdDialog {
           );
           min-height: 100%;
           max-height: 100%;
-          border-radius: 0;
+          --md-dialog-container-shape: 0;
         }
       }
 
