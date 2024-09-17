@@ -157,7 +157,6 @@ class MoreInfoScript extends LitElement {
             this.entry?.entity_id === newState.entity_id
               ? `script.${this.entry.unique_id}`
               : newState.entity_id,
-          data: {},
         };
       }
     }
