@@ -20,7 +20,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
-import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
+import { showFormDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
@@ -354,10 +354,55 @@ class HaScheduleForm extends LitElement {
   private async _handleEventClick(info: any) {
     const [day, index] = info.event.id.split("-");
     const item = [...this[`_${day}`]][index];
-    showScheduleBlockInfoDialog(this, {
-      block: item,
-      updateBlock: (newBlock) => this._updateBlock(day, index, newBlock),
-      deleteBlock: () => this._deleteBlock(day, index),
+
+    const formSchema = [
+      {
+        name: "start",
+        required: true,
+        selector: {
+          time: {
+            no_second: true,
+          },
+        },
+      },
+      {
+        name: "end",
+        required: true,
+        selector: {
+          time: {
+            no_second: true,
+          },
+        },
+      },
+    ] as const;
+
+    const initialFormData = {
+      start: item.from,
+      end: item.to,
+    };
+
+    showFormDialog(this, {
+      title: this.hass.localize(
+        "ui.dialogs.helper_settings.schedule.edit_schedule_block"
+      ),
+      confirmText: this.hass.localize("ui.common.submit"),
+      secondaryActionText: this.hass.localize("ui.common.delete"),
+      secondaryActionDestructive: true,
+      formSchema,
+      formData: initialFormData,
+      submit: async (formData) => {
+        this._updateBlock(day, index, {
+          from: formData?.start,
+          to: formData?.end,
+        });
+      },
+      computeLabelCallback: (schema) =>
+        schema.name === "start"
+          ? this.hass.localize("ui.dialogs.helper_settings.schedule.start")
+          : this.hass.localize("ui.dialogs.helper_settings.schedule.end"),
+      secondaryAction: async () => {
+        this._deleteBlock(day, index);
+      },
     });
   }
 
