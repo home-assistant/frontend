@@ -8,7 +8,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { LitElement, TemplateResult, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -21,8 +21,11 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
-  ScorableTextItem,
   fuzzyFilterSort,
+  MatchToken,
+  ScorableTextItem,
+  tokenizeConcatenatedMatchInfo,
+  tokenizeMatchInfo,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-circular-progress";
@@ -30,6 +33,7 @@ import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
+import "../../components/ha-match-segment";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -126,11 +130,23 @@ export class QuickBar extends LitElement {
   }
 
   private _getItems = memoizeOne(
-    (commandMode: boolean, commandItems, entityItems, filter: string) => {
-      const items = commandMode ? commandItems : entityItems;
+    (
+      commandMode: boolean,
+      commandItems: CommandItem[] | undefined,
+      entityItems: EntityItem[] | undefined,
+      filter: string
+    ) => {
+      const items: QuickBarItem[] | undefined = commandMode
+        ? commandItems
+        : entityItems;
 
       if (items && filter && filter !== " ") {
         return this._filterItems(items, filter);
+      }
+      if (items) {
+        items.forEach((item) => {
+          item.matchInfo = undefined;
+        });
       }
       return items;
     }
@@ -286,6 +302,9 @@ export class QuickBar extends LitElement {
   };
 
   private _renderEntityItem(item: EntityItem, index?: number) {
+    const { primaryTextMatchTokens, altTextMatchTokens } =
+      this._applyEntityItemMatchingInfo(item);
+
     return html`
       <ha-list-item
         .twoline=${Boolean(item.altText)}
@@ -302,12 +321,18 @@ export class QuickBar extends LitElement {
               ></ha-svg-icon>
             `
           : html`<span slot="graphic">${item.icon}</span>`}
-        <span>${item.primaryText}</span>
+        <span
+          ><ha-match-segment
+            .segments=${primaryTextMatchTokens}
+          ></ha-match-segment
+        ></span>
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary"
-                >${item.altText}</span
-              >
+                ><ha-match-segment
+                  .segments=${altTextMatchTokens}
+                ></ha-match-segment
+              ></span>
             `
           : nothing}
       </ha-list-item>
@@ -315,6 +340,9 @@ export class QuickBar extends LitElement {
   }
 
   private _renderCommandItem(item: CommandItem, index?: number) {
+    const { categoryTextMatchInfo, primaryTextMatchInfo } =
+      this._applyCommandItemMatchingInfo(item);
+
     return html`
       <ha-list-item
         .item=${item}
@@ -332,13 +360,59 @@ export class QuickBar extends LitElement {
                   <ha-svg-icon .path=${item.iconPath} slot="icon"></ha-svg-icon>
                 `
               : nothing}
-            ${item.categoryText}
+            <ha-match-segment
+              .segments=${categoryTextMatchInfo}
+            ></ha-match-segment>
           </ha-label>
         </span>
 
-        <span class="command-text">${item.primaryText}</span>
+        <span class="command-text"
+          ><ha-match-segment
+            .segments=${primaryTextMatchInfo}
+          ></ha-match-segment
+        ></span>
       </ha-list-item>
     `;
+  }
+
+  private _applyCommandItemMatchingInfo(item: CommandItem): {
+    categoryTextMatchInfo: MatchToken[];
+    primaryTextMatchInfo: MatchToken[];
+  } {
+    // Mimic the concatenation of _generateServerControlCommands()
+    const matchingElements = [item.categoryText, " ", item.primaryText];
+    const tokens = tokenizeConcatenatedMatchInfo(
+      matchingElements,
+      item.matchInfo?.segments
+    );
+
+    return {
+      categoryTextMatchInfo: tokens[0],
+      primaryTextMatchInfo: tokens[2],
+    };
+  }
+
+  private _applyEntityItemMatchingInfo(item: EntityItem): {
+    primaryTextMatchTokens: MatchToken[];
+    altTextMatchTokens: MatchToken[];
+  } {
+    let a: MatchToken[];
+    let b: MatchToken[];
+    if (!item.matchInfo) {
+      return {
+        primaryTextMatchTokens: [{ text: item.primaryText, match: false }],
+        altTextMatchTokens: [{ text: item.altText, match: false }],
+      };
+    }
+    if (item.matchInfo.index === 0) {
+      a = tokenizeMatchInfo(item.primaryText, item.matchInfo.segments);
+      b = tokenizeMatchInfo(item.altText, undefined);
+    } else {
+      a = tokenizeMatchInfo(item.primaryText, undefined);
+      b = tokenizeMatchInfo(item.altText, item.matchInfo.segments);
+    }
+
+    return { primaryTextMatchTokens: a, altTextMatchTokens: b };
   }
 
   private async processItemAndCloseDialog(item: QuickBarItem, index: number) {

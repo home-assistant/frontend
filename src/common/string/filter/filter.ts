@@ -126,8 +126,9 @@ enum Arrow {
  * 0. the score
  * 1. the offset at which matching started
  * 2. `<match_pos_N>`
- * 3. `<match_pos_1>`
- * 4. `<match_pos_0>` etc
+ * 3. ...
+ * 4. `<match_pos_1>`
+ * 5. `<match_pos_0>` etc
  */
 // export type FuzzyScore = [score: number, wordStart: number, ...matches: number[]];// [number, number, number];
 export type FuzzyScore = Array<number>;
