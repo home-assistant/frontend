@@ -1,5 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -26,6 +24,7 @@ import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-md-secondary-tab";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -80,21 +79,21 @@ export class HuiConditionalCardEditor
     const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
-      <mwc-tab-bar
-        .activeIndex=${this._cardTab ? 1 : 0}
-        @MDCTabBar:activated=${this._selectTab}
+      <ha-md-tabs
+        active-tab-index=${this._cardTab ? 1 : 0}
+        @change=${this._selectTab}
       >
-        <mwc-tab
-          .label=${this.hass!.localize(
+        <ha-md-secondary-tab
+          >${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.conditions"
-          )}
-        ></mwc-tab>
-        <mwc-tab
-          .label=${this.hass!.localize(
+          )}</ha-md-secondary-tab
+        >
+        <ha-md-secondary-tab
+          >${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.card"
-          )}
-        ></mwc-tab>
-      </mwc-tab-bar>
+          )}</ha-md-secondary-tab
+        >
+      </ha-md-tabs>
       ${this._cardTab
         ? html`
             <div class="card">
@@ -158,8 +157,8 @@ export class HuiConditionalCardEditor
     `;
   }
 
-  private _selectTab(ev: MDCTabBarActivatedEvent): void {
-    this._cardTab = ev.detail.index === 1;
+  private _selectTab(ev: Event): void {
+    this._cardTab = (ev.target as any).activeTabIndex === 1;
   }
 
   private _toggleMode(): void {
@@ -234,9 +233,6 @@ export class HuiConditionalCardEditor
     return [
       configElementStyle,
       css`
-        mwc-tab-bar {
-          border-bottom: 1px solid var(--divider-color);
-        }
         ha-alert {
           display: block;
           margin-top: 12px;
@@ -261,6 +257,9 @@ export class HuiConditionalCardEditor
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;
+        }
+        ha-md-tabs {
+          text-transform: uppercase;
         }
       `,
     ];

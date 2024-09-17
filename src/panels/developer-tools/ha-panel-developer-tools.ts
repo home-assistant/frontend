@@ -1,8 +1,6 @@
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
@@ -12,6 +10,18 @@ import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
+import "../../components/ha-md-tabs";
+import "../../components/ha-md-secondary-tab";
+
+const tabs = [
+  { page: "yaml", label: "yaml" },
+  { page: "state", label: "states" },
+  { page: "action", label: "actions" },
+  { page: "template", label: "templates" },
+  { page: "event", label: "events" },
+  { page: "statistics", label: "statistics" },
+  { page: "assist", label: "assist" },
+] as const;
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {
@@ -21,13 +31,17 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state() private _activeTabIndex: number = 0;
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    const path = this.route.path.substring(1);
+    this._activeTabIndex = tabs.findIndex((tab) => tab.page === path) || 0;
   }
 
   protected render(): TemplateResult {
-    const page = this._page;
     return html`
       <div class="header">
         <div class="toolbar">
@@ -50,36 +64,21 @@ class PanelDeveloperTools extends LitElement {
             </ha-list-item>
           </ha-button-menu>
         </div>
-        <paper-tabs
-          scrollable
-          attr-for-selected="page-name"
-          .selected=${page}
-          @selected-changed=${this.handlePageSelected}
+        <ha-md-tabs
+          class="scrolling"
+          active-tab-index=${this._activeTabIndex}
+          @change=${this._handleTabChanged}
         >
-          <paper-tab page-name="yaml">
-            ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
-          </paper-tab>
-          <paper-tab page-name="state">
-            ${this.hass.localize("ui.panel.developer-tools.tabs.states.title")}
-          </paper-tab>
-          <paper-tab page-name="action">
-            ${this.hass.localize("ui.panel.developer-tools.tabs.actions.title")}
-          </paper-tab>
-          <paper-tab page-name="template">
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.title"
-            )}
-          </paper-tab>
-          <paper-tab page-name="event">
-            ${this.hass.localize("ui.panel.developer-tools.tabs.events.title")}
-          </paper-tab>
-          <paper-tab page-name="statistics">
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.title"
-            )}
-          </paper-tab>
-          <paper-tab page-name="assist">Assist</paper-tab>
-        </paper-tabs>
+          ${tabs.map(
+            (tab) => html`
+              <ha-md-secondary-tab
+                >${this.hass.localize(
+                  `ui.panel.developer-tools.tabs.${tab.label}.title`
+                )}
+              </ha-md-secondary-tab>
+            `
+          )}
+        </ha-md-tabs>
       </div>
       <developer-tools-router
         .route=${this.route}
@@ -89,13 +88,13 @@ class PanelDeveloperTools extends LitElement {
     `;
   }
 
-  private handlePageSelected(ev) {
-    const newPage = ev.detail.value;
-    if (newPage !== this._page) {
-      navigate(`/developer-tools/${newPage}`);
-    } else {
-      scrollTo({ behavior: "smooth", top: 0 });
+  private _handleTabChanged(ev: CustomEvent): void {
+    const newActiveTabIndex: number = (ev.target as any).activeTabIndex;
+    if (newActiveTabIndex === this._activeTabIndex) {
+      return;
     }
+    this._activeTabIndex = newActiveTabIndex;
+    navigate(`/developer-tools/${tabs[newActiveTabIndex].page}`);
   }
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
@@ -106,17 +105,13 @@ class PanelDeveloperTools extends LitElement {
     }
   }
 
-  private get _page() {
-    return this.route.path.substr(1);
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
         :host {
-          color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
+          color: var(--secondary-text-color);
+          --paper-card-header-color: var(--secondary-text-color);
           display: flex;
           min-height: 100vh;
         }
@@ -160,16 +155,16 @@ class PanelDeveloperTools extends LitElement {
           flex: 1 1 100%;
           max-width: 100%;
         }
-        paper-tabs {
-          margin-left: max(env(safe-area-inset-left), 24px);
-          margin-right: max(env(safe-area-inset-right), 24px);
-          margin-inline-start: max(env(safe-area-inset-left), 24px);
-          margin-inline-end: max(env(safe-area-inset-right), 24px);
-          --paper-tabs-selection-bar-color: var(
-            --app-header-selection-bar-color,
-            var(--app-header-text-color, #fff)
-          );
+        ha-md-tabs {
           text-transform: uppercase;
+          --md-sys-color-primary: var(--app-header-text-color, white);
+          --md-sys-color-secondary: var(--app-header-text-color, white);
+          --md-sys-color-surface: var(--app-header-background-color);
+          --md-sys-color-on-surface: var(--app-header-text-color, white);
+          --md-sys-color-on-surface-variant: var(
+            --app-header-text-color,
+            white
+          );
         }
       `,
     ];
