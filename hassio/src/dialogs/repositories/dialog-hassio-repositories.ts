@@ -25,8 +25,8 @@ import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-list-new";
-import "../../../../src/components/ha-list-item-new";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -107,11 +107,11 @@ class HassioRepositoriesDialog extends LitElement {
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         <div class="form">
-          <ha-list-new>
+          <ha-md-list>
             ${repositories.length
               ? repositories.map(
                   (repo) => html`
-                    <ha-list-item-new class="option">
+                    <ha-md-list-item class="option">
                       ${repo.name}
                       <div slot="supporting-text">
                         <div>${repo.maintainer}</div>
@@ -142,11 +142,11 @@ class HassioRepositoriesDialog extends LitElement {
                           )}
                         </simple-tooltip>
                       </div>
-                    </ha-list-item-new>
+                    </ha-md-list-item>
                   `
                 )
-              : html`<ha-list-item-new> No repositories </ha-list-item-new>`}
-          </ha-list-new>
+              : html`<ha-md-list-item> No repositories </ha-md-list-item>`}
+          </ha-md-list>
           <div class="layout horizontal bottom">
             <ha-textfield
               class="flex-auto"
@@ -209,7 +209,7 @@ class HassioRepositoriesDialog extends LitElement {
         div.delete ha-icon-button {
           color: var(--error-color);
         }
-        ha-list-item-new {
+        ha-md-list-item {
           position: relative;
         }
       `,
