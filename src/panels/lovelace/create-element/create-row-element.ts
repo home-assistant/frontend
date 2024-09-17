@@ -26,6 +26,7 @@ const ALWAYS_LOADED_TYPES = new Set([
 ]);
 const LAZY_LOAD_TYPES = {
   "button-entity": () => import("../entity-rows/hui-button-entity-row"),
+  "camera-entity": () => import("../entity-rows/hui-camera-entity-row"),
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
   "date-entity": () => import("../entity-rows/hui-date-entity-row"),
@@ -65,6 +66,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   alert: "toggle",
   automation: "toggle",
   button: "button",
+  camera: "camera",
   climate: "climate",
   cover: "cover",
   date: "date",

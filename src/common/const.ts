@@ -201,6 +201,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
 export const DOMAINS_WITH_CARD = [
   "alert",
   "button",
+  "camera",
   "climate",
   "cover",
   "configurator",

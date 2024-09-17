@@ -5,10 +5,13 @@ import {
 import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
+import { UNAVAILABLE } from "./entity";
+import { supportsFeature } from "../common/entity/supports-feature";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
+export const CAMERA_SUPPORT_MOTION_ON_OFF = 4;
 
 export const STREAM_TYPE_HLS = "hls";
 export const STREAM_TYPE_WEB_RTC = "web_rtc";
@@ -23,6 +26,13 @@ interface CameraEntityAttributes extends HassEntityAttributeBase {
 
 export interface CameraEntity extends HassEntityBase {
   attributes: CameraEntityAttributes;
+}
+
+export function supportsMotionOnOff(stateObj: CameraEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return supportsFeature(stateObj, CAMERA_SUPPORT_MOTION_ON_OFF);
 }
 
 export interface CameraPreferences {

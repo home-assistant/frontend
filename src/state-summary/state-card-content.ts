@@ -6,6 +6,7 @@ import { dynamicElement } from "../common/dom/dynamic-element-directive";
 import { stateCardType } from "../common/entity/state_card_type";
 import "./state-card-alert";
 import "./state-card-button";
+import "./state-card-camera";
 import "./state-card-climate";
 import "./state-card-configurator";
 import "./state-card-cover";

@@ -112,7 +112,9 @@
         "press": "Press"
       },
       "camera": {
-        "not_available": "Image not available"
+        "not_available": "Image not available",
+        "enable_motion_detection": "Enable motion detection",
+        "disable_motion_detection": "Disable motion detection"
       },
       "climate": {
         "currently": "Currently",
