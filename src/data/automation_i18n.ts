@@ -8,6 +8,7 @@ import {
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { HomeAssistant } from "../types";
 import { Condition, ForDict, Trigger } from "./automation";
 import {
@@ -347,13 +348,22 @@ const tryDescribeTrigger = (
 
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
-    const result = ensureArray(trigger.at).map((at) =>
-      typeof at !== "string"
-        ? `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id} ${at.offset ? " " + hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, { offset: describeDuration(hass.locale, at.offset) }) : ""}`
-        : at.includes(".")
-          ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-          : localizeTimeString(at, hass.locale, hass.config)
-    );
+    const result = ensureArray(trigger.at).map((at) => {
+      if (typeof at === "string") {
+        if (isValidEntityId(at)) {
+          return `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`;
+        }
+        return localizeTimeString(at, hass.locale, hass.config);
+      }
+      const entityStr = `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id}`;
+      const offsetStr = at.offset
+        ? " " +
+          hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, {
+            offset: describeDuration(hass.locale, at.offset),
+          })
+        : "";
+      return `${entityStr}${offsetStr}`;
+    });
 
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
