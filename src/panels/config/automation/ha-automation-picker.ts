@@ -68,7 +68,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-menu";
 import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
-import type { HaMenuItem } from "../../../components/ha-md-menu-item";
+import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
@@ -1056,13 +1056,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._applyFilters();
   }
 
-  private _showInfo = (item: HaMenuItem) => {
+  private _showInfo = (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
   };
 
-  private _showSettings = (item: HaMenuItem) => {
+  private _showSettings = (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
@@ -1072,14 +1072,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _runActions = (item: HaMenuItem) => {
+  private _runActions = (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
     triggerAutomationActions(this.hass, automation.entity_id);
   };
 
-  private _editCategory = (item: HaMenuItem) => {
+  private _editCategory = (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
@@ -1103,7 +1103,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _showTrace = (item: HaMenuItem) => {
+  private _showTrace = (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
@@ -1120,7 +1120,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
   };
 
-  private _toggle = async (item: HaMenuItem): Promise<void> => {
+  private _toggle = async (item: HaMdMenuItem): Promise<void> => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
@@ -1130,7 +1130,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _deleteConfirm = async (item: HaMenuItem) => {
+  private _deleteConfirm = async (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
@@ -1167,7 +1167,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _duplicate = async (item: HaMenuItem) => {
+  private _duplicate = async (item: HaMdMenuItem) => {
     const automation = ((item.parentElement as HaMenu)!.anchorElement as any)!
       .automation;
 
