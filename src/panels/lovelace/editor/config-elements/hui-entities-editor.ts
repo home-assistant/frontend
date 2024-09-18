@@ -51,7 +51,7 @@ export class HuiEntitiesEditor extends LitElement {
   }
 
   protected render() {
-    if (!this.entities || !this.hass) {
+    if (!this.hass) {
       return nothing;
     }
 
@@ -62,59 +62,63 @@ export class HuiEntitiesEditor extends LitElement {
           ${this.hass!.localize("ui.panel.lovelace.editor.entities.name")}
         </h3>
         <div class="content">
-          <ha-sortable
-            handle-selector=".handle"
-            @item-moved=${this._entityMoved}
-          >
-            <div class="entities">
-              ${repeat(
-                this.entities,
-                (entityConf) => this._getKey(entityConf),
-                (entityConf, index) => {
-                  const editable = true;
+          ${this.entities
+            ? html`
+                <ha-sortable
+                  handle-selector=".handle"
+                  @item-moved=${this._entityMoved}
+                >
+                  <div class="entities">
+                    ${repeat(
+                      this.entities,
+                      (entityConf) => this._getKey(entityConf),
+                      (entityConf, index) => {
+                        const editable = true;
 
-                  const entityId = entityConf.entity;
-                  const stateObj = this.hass.states[entityId];
-                  const name = stateObj
-                    ? stateObj.attributes.friendly_name
-                    : undefined;
-                  return html`
-                    <div class="entity">
-                      <div class="handle">
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                      </div>
-                      <div class="entity-content">
-                        <span>${name || entityId}</span>
-                      </div>
-                      ${editable
-                        ? html`
+                        const entityId = entityConf.entity;
+                        const stateObj = this.hass.states[entityId];
+                        const name = stateObj
+                          ? stateObj.attributes.friendly_name
+                          : undefined;
+                        return html`
+                          <div class="entity">
+                            <div class="handle">
+                              <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                            </div>
+                            <div class="entity-content">
+                              <span>${name || entityId}</span>
+                            </div>
+                            ${editable
+                              ? html`
+                                  <ha-icon-button
+                                    .label=${this.hass!.localize(
+                                      `ui.panel.lovelace.editor.entities.edit`
+                                    )}
+                                    .path=${mdiPencil}
+                                    class="edit-icon"
+                                    .index=${index}
+                                    @click=${this._editEntity}
+                                    .disabled=${!editable}
+                                  ></ha-icon-button>
+                                `
+                              : nothing}
                             <ha-icon-button
                               .label=${this.hass!.localize(
-                                `ui.panel.lovelace.editor.entities.edit`
+                                `ui.panel.lovelace.editor.entities.remove`
                               )}
-                              .path=${mdiPencil}
-                              class="edit-icon"
+                              .path=${mdiDelete}
+                              class="remove-icon"
                               .index=${index}
-                              @click=${this._editEntity}
-                              .disabled=${!editable}
+                              @click=${this._removeEntity}
                             ></ha-icon-button>
-                          `
-                        : nothing}
-                      <ha-icon-button
-                        .label=${this.hass!.localize(
-                          `ui.panel.lovelace.editor.entities.remove`
-                        )}
-                        .path=${mdiDelete}
-                        class="remove-icon"
-                        .index=${index}
-                        @click=${this._removeEntity}
-                      ></ha-icon-button>
-                    </div>
-                  `;
-                }
-              )}
-            </div>
-          </ha-sortable>
+                          </div>
+                        `;
+                      }
+                    )}
+                  </div>
+                </ha-sortable>
+              `
+            : nothing}
           <div class="add-container">
             <ha-button
               data-add-entity
@@ -193,7 +197,7 @@ export class HuiEntitiesEditor extends LitElement {
       return;
     }
     const newEntity: EntityConfig = { entity: ev.detail.value };
-    const newEntities = this.entities!.concat(newEntity);
+    const newEntities = (this.entities || []).concat(newEntity);
     fireEvent(this, "entities-changed", { entities: newEntities });
   }
 
@@ -201,7 +205,7 @@ export class HuiEntitiesEditor extends LitElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const newEntities = this.entities!.concat();
+    const newEntities = (this.entities || []).concat();
 
     newEntities.splice(newIndex, 0, newEntities.splice(oldIndex, 1)[0]);
 
@@ -210,7 +214,7 @@ export class HuiEntitiesEditor extends LitElement {
 
   private _removeEntity(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newEntities = this.entities!.concat();
+    const newEntities = (this.entities || []).concat();
 
     newEntities.splice(index, 1);
 
