@@ -2,8 +2,8 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
-import "../../../../../../components/ha-list-item-new";
-import "../../../../../../components/ha-list-new";
+import "../../../../../../components/ha-md-list-item";
+import "../../../../../../components/ha-md-list";
 import { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
