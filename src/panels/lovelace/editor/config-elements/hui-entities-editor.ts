@@ -1,4 +1,4 @@
-import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -56,84 +56,74 @@ export class HuiEntitiesEditor extends LitElement {
     }
 
     return html`
-      <ha-expansion-panel outlined>
-        <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
-          ${this.hass!.localize("ui.panel.lovelace.editor.entities.name")}
-        </h3>
-        <div class="content">
-          ${this.entities
-            ? html`
-                <ha-sortable
-                  handle-selector=".handle"
-                  @item-moved=${this._entityMoved}
-                >
-                  <div class="entities">
-                    ${repeat(
-                      this.entities,
-                      (entityConf) => this._getKey(entityConf),
-                      (entityConf, index) => {
-                        const editable = true;
-
-                        const entityId = entityConf.entity;
-                        const stateObj = this.hass.states[entityId];
-                        const name = stateObj
-                          ? stateObj.attributes.friendly_name
-                          : undefined;
-                        return html`
-                          <div class="entity">
-                            <div class="handle">
-                              <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                            </div>
-                            <div class="entity-content">
-                              <span>${name || entityId}</span>
-                            </div>
-                            ${editable
-                              ? html`
-                                  <ha-icon-button
-                                    .label=${this.hass!.localize(
-                                      `ui.panel.lovelace.editor.entities.edit`
-                                    )}
-                                    .path=${mdiPencil}
-                                    class="edit-icon"
-                                    .index=${index}
-                                    @click=${this._editEntity}
-                                    .disabled=${!editable}
-                                  ></ha-icon-button>
-                                `
-                              : nothing}
-                            <ha-icon-button
-                              .label=${this.hass!.localize(
-                                `ui.panel.lovelace.editor.entities.remove`
-                              )}
-                              .path=${mdiDelete}
-                              class="remove-icon"
-                              .index=${index}
-                              @click=${this._removeEntity}
-                            ></ha-icon-button>
-                          </div>
-                        `;
-                      }
-                    )}
-                  </div>
-                </ha-sortable>
-              `
-            : nothing}
-          <div class="add-container">
-            <ha-button
-              data-add-entity
-              outlined
-              .label=${this.hass!.localize(
-                `ui.panel.lovelace.editor.entities.add`
-              )}
-              @click=${this._addEntity}
+      ${this.entities
+        ? html`
+            <ha-sortable
+              handle-selector=".handle"
+              @item-moved=${this._entityMoved}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-            </ha-button>
-            ${this._renderPicker()}
-          </div>
-        </div>
-      </ha-expansion-panel>
+              <div class="entities">
+                ${repeat(
+                  this.entities,
+                  (entityConf) => this._getKey(entityConf),
+                  (entityConf, index) => {
+                    const editable = true;
+
+                    const entityId = entityConf.entity;
+                    const stateObj = this.hass.states[entityId];
+                    const name = stateObj
+                      ? stateObj.attributes.friendly_name
+                      : undefined;
+                    return html`
+                      <div class="entity">
+                        <div class="handle">
+                          <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                        </div>
+                        <div class="entity-content">
+                          <span>${name || entityId}</span>
+                        </div>
+                        ${editable
+                          ? html`
+                              <ha-icon-button
+                                .label=${this.hass!.localize(
+                                  `ui.panel.lovelace.editor.entities.edit`
+                                )}
+                                .path=${mdiPencil}
+                                class="edit-icon"
+                                .index=${index}
+                                @click=${this._editEntity}
+                                .disabled=${!editable}
+                              ></ha-icon-button>
+                            `
+                          : nothing}
+                        <ha-icon-button
+                          .label=${this.hass!.localize(
+                            `ui.panel.lovelace.editor.entities.remove`
+                          )}
+                          .path=${mdiDelete}
+                          class="remove-icon"
+                          .index=${index}
+                          @click=${this._removeEntity}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  }
+                )}
+              </div>
+            </ha-sortable>
+          `
+        : nothing}
+      <div class="add-container">
+        <ha-button
+          data-add-entity
+          outlined
+          .label=${this.hass!.localize(`ui.panel.lovelace.editor.entities.add`)}
+          @click=${this._addEntity}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </ha-button>
+        ${this._renderPicker()}
+      </div>
     `;
   }
 
@@ -234,23 +224,6 @@ export class HuiEntitiesEditor extends LitElement {
         display: flex !important;
         flex-direction: column;
       }
-      .content {
-        padding: 12px;
-      }
-      ha-expansion-panel {
-        display: block;
-        --expansion-panel-content-padding: 0;
-        border-radius: 6px;
-      }
-      h3 {
-        margin: 0;
-        font-size: inherit;
-        font-weight: inherit;
-      }
-      ha-svg-icon,
-      ha-icon {
-        color: var(--secondary-text-color);
-      }
       ha-button {
         margin-top: 8px;
       }
@@ -307,6 +280,7 @@ export class HuiEntitiesEditor extends LitElement {
       mwc-menu-surface {
         --mdc-menu-min-width: 100%;
       }
+
       ha-entity-picker {
         display: block;
         width: 100%;

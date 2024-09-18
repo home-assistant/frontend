@@ -6005,6 +6005,7 @@
                 "title": "Title",
                 "subtitle": "Subtitle"
               },
+              "entities": "Entities",
               "entity_config": {
                 "content": "Content"
               },

@@ -1,4 +1,4 @@
-import { mdiGestureTap } from "@mdi/js";
+import { mdiGestureTap, mdiListBox } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -16,11 +16,13 @@ import {
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import type {
   HeadingCardConfig,
@@ -186,6 +188,10 @@ export class HuiHeadingCardEditor
     `;
   }
 
+  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
+    processEditorEntities(entities || [])
+  );
+
   private _renderForm() {
     const data = {
       ...this._config!,
@@ -205,13 +211,25 @@ export class HuiHeadingCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-entities-editor
-        .hass=${this.hass}
-        .entities=${processEditorEntities(this._config!.entities)}
-        @entities-changed=${this._entitiesChanged}
-        @edit-entity=${this._editEntity}
-      >
-      </hui-entities-editor>
+      <ha-expansion-panel outlined>
+        <h3 slot="header">
+          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.heading.entities"
+          )}
+        </h3>
+        <div class="content">
+          <hui-entities-editor
+            .hass=${this.hass}
+            .entities=${processEditorEntities(
+              this._entities(this._config!.entities)
+            )}
+            @entities-changed=${this._entitiesChanged}
+            @edit-entity=${this._editEntity}
+          >
+          </hui-entities-editor>
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -270,8 +288,9 @@ export class HuiHeadingCardEditor
   }
 
   private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
+    const entities = this._entities(this._config!.entities);
     this._entityFormEditorData = {
-      data: processEditorEntities(this._config!.entities!)[ev.detail.index],
+      data: entities[ev.detail.index],
       index: ev.detail.index,
     };
   }
