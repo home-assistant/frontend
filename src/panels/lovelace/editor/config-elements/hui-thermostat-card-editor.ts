@@ -1,6 +1,7 @@
 import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -30,9 +31,9 @@ import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
+import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
-import { configElementStyle } from "./config-elements-style";
 
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "climate-hvac-modes",
@@ -95,22 +96,29 @@ export class HuiThermostatCardEditor
       return nothing;
     }
 
-    const stateObj = this._config.entity
-      ? this.hass.states[this._config.entity]
-      : undefined;
+    return cache(
+      this._subElementEditorConfig
+        ? this._renderFeatureForm()
+        : this._renderForm()
+    );
+  }
 
-    if (this._subElementEditorConfig) {
-      return html`
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          .context=${this._context(this._config.entity)}
-          @go-back=${this._goBack}
-          @config-changed=${this.subElementChanged}
-        >
-        </hui-sub-element-editor>
-      `;
-    }
+  private _renderFeatureForm() {
+    return html`
+      <hui-sub-element-editor
+        .hass=${this.hass}
+        .config=${this._subElementEditorConfig}
+        .context=${this._context(this._config!.entity)}
+        @go-back=${this._goBack}
+        @config-changed=${this.subElementChanged}
+      >
+      </hui-sub-element-editor>
+    `;
+  }
+
+  private _renderForm() {
+    const entityId = this._config!.entity;
+    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     return html`
       <ha-form

@@ -1,6 +1,7 @@
 import { mdiGestureTap, mdiListBox, mdiPalette } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -15,12 +16,12 @@ import {
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   LovelaceCardFeatureConfig,
@@ -170,27 +171,31 @@ export class HuiTileCardEditor
       return nothing;
     }
 
-    const stateObj = this._config.entity
-      ? this.hass.states[this._config.entity]
-      : undefined;
-
-    const schema = this._schema(
-      this._config.entity,
-      this._config.hide_state ?? false
+    return cache(
+      this._subElementEditorConfig
+        ? this._renderFeatureForm()
+        : this._renderForm()
     );
+  }
 
-    if (this._subElementEditorConfig) {
-      return html`
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          .context=${this._context(this._config.entity)}
-          @go-back=${this._goBack}
-          @config-changed=${this.subElementChanged}
-        >
-        </hui-sub-element-editor>
-      `;
-    }
+  private _renderFeatureForm() {
+    return html`
+      <hui-sub-element-editor
+        .hass=${this.hass}
+        .config=${this._subElementEditorConfig}
+        .context=${this._context(this._config!.entity)}
+        @go-back=${this._goBack}
+        @config-changed=${this.subElementChanged}
+      >
+      </hui-sub-element-editor>
+    `;
+  }
+
+  private _renderForm() {
+    const entityId = this._config!.entity;
+    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
+
+    const schema = this._schema(entityId, this._config!.hide_state ?? false);
 
     const data = this._config;
 
