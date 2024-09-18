@@ -153,11 +153,11 @@ export class HuiHeadingCardEditor
     const schema = this._entitySchema();
     return html`
       <hui-sub-form-editor
-        .label=${this.hass.localize(
+        .label=${this.hass!.localize(
           "ui.panel.lovelace.editor.entities.form-label"
         )}
         .hass=${this.hass}
-        .data=${this._entityFormEditorData.data}
+        .data=${this._entityFormEditorData!.data}
         @go-back=${this._goBack}
         @value-changed=${this._subFormChanged}
         .schema=${schema}
@@ -170,14 +170,14 @@ export class HuiHeadingCardEditor
 
   private _renderForm() {
     const data = {
-      ...this._config,
+      ...this._config!,
     };
 
     if (!data.heading_style) {
       data.heading_style = "title";
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass!.localize);
 
     return html`
       <ha-form
@@ -189,7 +189,7 @@ export class HuiHeadingCardEditor
       ></ha-form>
       <hui-entities-editor
         .hass=${this.hass}
-        .entities=${this._config.entities}
+        .entities=${this._config!.entities}
         @entities-changed=${this._entitiesChanged}
         @edit-entity=${this._editEntity}
       >
