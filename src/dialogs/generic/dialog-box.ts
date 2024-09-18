@@ -58,6 +58,8 @@ class DialogBox extends LitElement {
         .disableCancelAction=${confirmPrompt || false}
         @closed=${this._dialogClosed}
         type="alert"
+        aria-labelledby="dialog-box-title"
+        aria-describedby="dialog-box-description"
       >
         <div slot="headline">
           <span .title=${dialogTitle}>
