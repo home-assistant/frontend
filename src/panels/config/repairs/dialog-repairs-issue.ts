@@ -92,7 +92,7 @@ class DialogRepairsIssue extends LitElement {
               `
             : ""}
           <ha-markdown
-            if="dialog-repairs-issue-description"
+            id="dialog-repairs-issue-description"
             allowsvg
             breaks
             @click=${this._clickHandler}
