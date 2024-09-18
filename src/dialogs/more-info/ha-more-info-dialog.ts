@@ -22,6 +22,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import {
   computeEntityAreaName,
   computeEntityDeviceName,
+  computeEntityFloorName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
@@ -306,6 +307,16 @@ export class MoreInfoDialog extends LitElement {
         )
       : "";
 
+    const floorName = stateObj
+      ? computeEntityFloorName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        )
+      : "";
+
     const deviceName = stateObj
       ? computeEntityDeviceName(stateObj, this.hass.entities, this.hass.devices)
       : "";
@@ -314,7 +325,11 @@ export class MoreInfoDialog extends LitElement {
 
     const subtitle = this._childView?.viewTitle
       ? undefined
-      : [entityName !== deviceName ? deviceName : undefined, areaName] // Do not include device name if it's the same as entity name
+      : [
+          entityName !== deviceName ? deviceName : undefined,
+          areaName,
+          floorName,
+        ] // Do not include device name if it's the same as entity name
           .filter(Boolean)
           .join(" ⸱ ");
 
