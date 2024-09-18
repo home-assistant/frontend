@@ -9,6 +9,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import {
   computeEntityAreaName,
   computeEntityDeviceName,
+  computeEntityFloorName,
   computeEntityFullName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
@@ -343,6 +344,13 @@ export class HaEntityPicker extends LitElement {
       hass.devices,
       hass.areas
     );
+    const floorName = computeEntityFloorName(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
     const deviceName = computeEntityDeviceName(
       stateObj,
       hass.entities,
@@ -361,6 +369,7 @@ export class HaEntityPicker extends LitElement {
     const entityContext = [
       entityName !== deviceName ? deviceName : undefined,
       areaName,
+      floorName,
     ]
       .filter(Boolean)
       .join(" ⸱ ");
@@ -373,6 +382,7 @@ export class HaEntityPicker extends LitElement {
         displayedName ?? "",
         areaName ?? "",
         deviceName ?? "",
+        floorName ?? "",
       ].filter(Boolean),
       entity_name: entityName,
       entity_context: entityContext,

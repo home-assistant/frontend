@@ -5,6 +5,7 @@ import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";
 import { computeStateName } from "./compute_state_name";
 import { computeDeviceName } from "./compute_device_name";
 import { computeAreaName } from "./compute_area_name";
+import { computeFloorName } from "./compute_floor_name";
 
 export const computeEntityFullName = (
   stateObj: HassEntity,
@@ -84,4 +85,23 @@ export const computeEntityAreaName = (
   const area = areaId ? areas[areaId] : undefined;
 
   return area ? computeAreaName(area) : undefined;
+};
+
+export const computeEntityFloorName = (
+  stateObj: HassEntity,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"]
+): string | undefined => {
+  const entry = entities[stateObj.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+  const device = entry?.device_id ? devices[entry?.device_id] : undefined;
+
+  const areaId = entry?.area_id || device?.area_id;
+  const area = areaId ? areas[areaId] : undefined;
+  const floor = area?.floor_id ? floors[area?.floor_id] : undefined;
+
+  return floor ? computeFloorName(floor) : undefined;
 };
