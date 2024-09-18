@@ -60,7 +60,12 @@ class DialogRepairsIssue extends LitElement {
       ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
+      <ha-md-dialog
+        open
+        @closed=${this._dialogClosed}
+        aria-labelledby="dialog-repairs-issue-title"
+        aria-describedby="dialog-repairs-issue-description"
+      >
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
@@ -68,7 +73,12 @@ class DialogRepairsIssue extends LitElement {
             .path=${mdiClose}
             @click=${this.closeDialog}
           ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
+          <span
+            slot="title"
+            id="dialog-repairs-issue-title"
+            .title=${dialogTitle}
+            >${dialogTitle}</span
+          >
         </ha-dialog-header>
         <div slot="content">
           ${this._issue.breaks_in_ha_version
@@ -82,6 +92,7 @@ class DialogRepairsIssue extends LitElement {
               `
             : ""}
           <ha-markdown
+            if="dialog-repairs-issue-description"
             allowsvg
             breaks
             @click=${this._clickHandler}
@@ -117,8 +128,10 @@ class DialogRepairsIssue extends LitElement {
                   this.hass.config
                 )
               : ""}
-            ⸱ ${this.hass.localize(`ui.panel.config.repairs.reported_by`)}
-            ${domainToName(this.hass.localize, this._issue.domain)}
+            ⸱
+            ${this.hass.localize(`ui.panel.config.repairs.reported_by`, {
+              integration: domainToName(this.hass.localize, this._issue.domain),
+            })}
           </div>
         </div>
         <div slot="actions">

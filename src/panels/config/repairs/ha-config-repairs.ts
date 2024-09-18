@@ -43,7 +43,7 @@ class HaConfigRepairs extends LitElement {
       <ha-list-new>
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
-          const reportedBy = `${this.hass.localize(`ui.panel.config.repairs.by`)} ${domainName}`;
+          const reportedBy = `${this.hass.localize(`ui.panel.config.repairs.by`, { integration: domainName })}`;
 
           return html`
             <ha-list-item-new
