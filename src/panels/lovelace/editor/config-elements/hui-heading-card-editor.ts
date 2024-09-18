@@ -53,6 +53,7 @@ const entityConfigStruct = object({
   entity: string(),
   content: optional(union([string(), array(string())])),
   icon: optional(string()),
+  tap_action: optional(actionConfigStruct),
 });
 
 @customElement("hui-heading-card-editor")
@@ -136,6 +137,22 @@ export class HuiHeadingCardEditor
           name: "content",
           selector: { ui_state_content: {} },
           context: { filter_entity: "entity" },
+        },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "none",
+                },
+              },
+            },
+          ],
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -267,7 +284,6 @@ export class HuiHeadingCardEditor
     schema: SchemaUnion<ReturnType<typeof this._entitySchema>>
   ) => {
     switch (schema.name) {
-      case "icon":
       case "content":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}`
@@ -285,8 +301,6 @@ export class HuiHeadingCardEditor
     switch (schema.name) {
       case "heading_style":
       case "heading":
-      case "icon":
-      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.${schema.name}`
         );

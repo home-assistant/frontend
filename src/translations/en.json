@@ -5982,6 +5982,7 @@
               "show_name": "Show name",
               "show_state": "Show state",
               "tap_action": "Tap behavior",
+              "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5999,15 +6000,12 @@
               "name": "Heading",
               "description": "The heading card structures your dashboard by providing title, icon and navigation.",
               "heading": "Heading",
-              "icon": "Icon",
-              "interactions": "Interactions",
               "heading_style": "Heading style",
               "heading_style_options": {
                 "title": "Title",
                 "subtitle": "Subtitle"
               },
               "entity_config": {
-                "icon": "Icon",
                 "content": "Content"
               },
               "default_heading": "Kitchen"

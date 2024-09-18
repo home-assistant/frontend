@@ -102,6 +102,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private _handleEntityAction(ev: ActionHandlerEvent) {
+    const config = {
+      tap_action: {
+        action: "none",
+      },
+      ...(ev.currentTarget as any).config,
+    };
+
+    handleAction(this, this.hass!, config, ev.detail.action!);
+  }
+
   _renderEntity(entityConfig: string | HeadingCardEntityConfig) {
     const config =
       typeof entityConfig === "string"
@@ -114,20 +125,28 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const actionable = hasAction(config.tap_action || { action: "none" });
+
     return html`
-      <span class="entity">
+      <div
+        .config=${config}
+        class="entity"
+        @action=${this._handleEntityAction}
+        .actionHandler=${actionHandler()}
+        role=${ifDefined(actionable ? "button" : undefined)}
+        tabindex=${ifDefined(actionable ? "0" : undefined)}
+      >
         <ha-state-icon
           .hass=${this.hass}
           .icon=${config.icon}
           .stateObj=${stateObj}
         ></ha-state-icon>
-
         <state-display
           .hass=${this.hass}
           .stateObj=${stateObj}
           .content=${config.content || "state"}
         ></state-display>
-      </span>
+      </div>
     `;
   }
 
