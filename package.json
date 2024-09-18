@@ -27,7 +27,7 @@
   "dependencies": {
     "@babel/runtime": "7.25.6",
     "@braintree/sanitize-url": "7.1.0",
-    "@codemirror/autocomplete": "6.18.0",
+    "@codemirror/autocomplete": "6.18.1",
     "@codemirror/commands": "6.6.1",
     "@codemirror/language": "6.10.2",
     "@codemirror/legacy-modes": "6.4.1",
@@ -106,6 +106,7 @@
     "date-fns-tz": "3.1.3",
     "deep-clone-simple": "1.1.1",
     "deep-freeze": "0.0.1",
+    "dialog-polyfill": "0.5.6",
     "element-internals-polyfill": "1.3.11",
     "fuse.js": "7.0.0",
     "google-timezones-json": "1.2.0",
@@ -133,7 +134,7 @@
     "tinykeys": "3.0.0",
     "tsparticles-engine": "2.12.0",
     "tsparticles-preset-links": "2.12.0",
-    "ua-parser-js": "1.0.38",
+    "ua-parser-js": "1.0.39",
     "unfetch": "5.0.0",
     "vis-data": "7.1.9",
     "vis-network": "9.1.9",
@@ -202,7 +203,7 @@
     "eslint-plugin-import": "2.30.0",
     "eslint-plugin-lit": "1.15.0",
     "eslint-plugin-lit-a11y": "4.1.4",
-    "eslint-plugin-unused-imports": "4.1.3",
+    "eslint-plugin-unused-imports": "4.1.4",
     "eslint-plugin-wc": "2.1.1",
     "fancy-log": "2.0.0",
     "fs-extra": "11.2.0",
@@ -213,7 +214,7 @@
     "gulp-rename": "2.0.0",
     "gulp-zopfli-green": "6.0.2",
     "html-minifier-terser": "7.2.0",
-    "husky": "9.1.5",
+    "husky": "9.1.6",
     "instant-mocha": "1.5.2",
     "jszip": "3.10.1",
     "lint-staged": "15.2.10",
@@ -258,5 +259,5 @@
     "sortablejs@1.15.3": "patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch",
     "leaflet-draw@1.0.4": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
   },
-  "packageManager": "yarn@4.4.1"
+  "packageManager": "yarn@4.5.0"
 }

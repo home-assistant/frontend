@@ -48,8 +48,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
-import "../../../components/ha-list-item-new";
-import "../../../components/ha-list-new";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-md-list";
 import "../../../components/ha-md-menu-item";
 import {
   deleteApplicationCredential,
@@ -474,10 +474,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       "ui.panel.config.integrations.discovered"
                     )}
                   </h1>
-                  <ha-list-new>
+                  <ha-md-list>
                     ${discoveryFlows.map(
                       (flow) =>
-                        html`<ha-list-item-new class="discovered">
+                        html`<ha-md-list-item class="discovered">
                           ${flow.localized_title}
                           <ha-button
                             slot="end"
@@ -488,9 +488,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                               "ui.panel.config.integrations.configure"
                             )}
                           ></ha-button>
-                        </ha-list-item-new>`
+                        </ha-md-list-item>`
                     )}
-                  </ha-list-new>
+                  </ha-md-list>
                 </ha-card>`
               : ""}
             ${attentionFlows.length || attentionEntries.length
@@ -500,12 +500,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `ui.panel.config.integrations.integration_page.attention_entries`
                     )}
                   </h1>
-                  <ha-list-new>
+                  <ha-md-list>
                     ${attentionFlows.map((flow) => {
                       const attention = ATTENTION_SOURCES.includes(
                         flow.context.source
                       );
-                      return html` <ha-list-item-new
+                      return html` <ha-md-list-item
                         class="config_entry ${attention ? "attention" : ""}"
                       >
                         ${flow.localized_title}
@@ -527,7 +527,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             }`
                           )}
                         ></ha-button>
-                      </ha-list-item-new>`;
+                      </ha-md-list-item>`;
                     })}
                     ${attentionEntries.map(
                       (item, index) =>
@@ -539,7 +539,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             ></md-divider>`
                           : ""} `
                     )}
-                  </ha-list-new>
+                  </ha-md-list>
                 </ha-card>`
               : ""}
 
@@ -568,7 +568,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         )}
                   </div>`
                 : nothing}
-              <ha-list-new>
+              <ha-md-list>
                 ${normalEntries.map(
                   (item, index) =>
                     html`${this._renderConfigEntry(item)}
@@ -579,7 +579,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></md-divider>`
                       : ""} `
                 )}
-              </ha-list-new>
+              </ha-md-list>
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
@@ -743,7 +743,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
     const configPanel = this._configPanel(item.domain, this.hass.panels);
 
-    return html`<ha-list-item-new
+    return html`<ha-md-list-item
       class=${classMap({
         config_entry: true,
         "state-not-loaded": item!.state === "not_loaded",
@@ -958,7 +958,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             `
           : nothing}
       </ha-md-button-menu>
-    </ha-list-item-new>`;
+    </ha-md-list-item>`;
   }
 
   private async _highlightEntry() {
@@ -1485,13 +1485,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-alert:first-of-type {
           margin-top: 16px;
         }
-        ha-list-item-new {
+        ha-md-list-item {
           position: relative;
         }
-        ha-list-item-new.discovered {
+        ha-md-list-item.discovered {
           height: 72px;
         }
-        ha-list-item-new.config_entry::after {
+        ha-md-list-item.config_entry::after {
           position: absolute;
           top: 0;
           right: 0;
@@ -1561,7 +1561,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .state-disabled [slot="supporting-text"] {
           opacity: var(--md-list-item-disabled-opacity, 0.3);
         }
-        ha-list-new {
+        ha-md-list {
           margin-top: 8px;
           margin-bottom: 8px;
         }
