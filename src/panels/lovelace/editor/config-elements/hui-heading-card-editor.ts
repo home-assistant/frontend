@@ -1,6 +1,7 @@
 import { mdiGestureTap } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -143,25 +144,31 @@ export class HuiHeadingCardEditor
       return nothing;
     }
 
-    if (this._entityFormEditorData) {
-      const schema = this._entitySchema();
-      return html`
-        <hui-sub-form-editor
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.entities.form-label"
-          )}
-          .hass=${this.hass}
-          .data=${this._entityFormEditorData.data}
-          @go-back=${this._goBack}
-          @value-changed=${this._subFormChanged}
-          .schema=${schema}
-          .assertConfig=${this._assertEntityConfig}
-          .computeLabel=${this._computeEntityLabelCallback}
-        >
-        </hui-sub-form-editor>
-      `;
-    }
+    return cache(
+      this._entityFormEditorData ? this._renderEntityForm() : this._renderForm()
+    );
+  }
 
+  private _renderEntityForm() {
+    const schema = this._entitySchema();
+    return html`
+      <hui-sub-form-editor
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.entities.form-label"
+        )}
+        .hass=${this.hass}
+        .data=${this._entityFormEditorData.data}
+        @go-back=${this._goBack}
+        @value-changed=${this._subFormChanged}
+        .schema=${schema}
+        .assertConfig=${this._assertEntityConfig}
+        .computeLabel=${this._computeEntityLabelCallback}
+      >
+      </hui-sub-form-editor>
+    `;
+  }
+
+  private _renderForm() {
     const data = {
       ...this._config,
     };
