@@ -2,8 +2,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
-import "../../../components/ha-list-new";
-import "../../../components/ha-list-item-new";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import { domainToName } from "../../../data/integration";
 import {
   fetchRepairsIssueData,
@@ -40,13 +40,13 @@ class HaConfigRepairs extends LitElement {
           count: this.total || this.repairsIssues.length,
         })}
       </div>
-      <ha-list-new>
+      <ha-md-list>
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
           const reportedBy = `${this.hass.localize(`ui.panel.config.repairs.by`, { integration: domainName })}`;
 
           return html`
-            <ha-list-item-new
+            <ha-md-list-item
               .hasMeta=${!this.narrow}
               .issue=${issue}
               class=${issue.ignored ? "ignored" : ""}
@@ -104,10 +104,10 @@ class HaConfigRepairs extends LitElement {
               ${!this.narrow
                 ? html`<ha-icon-next slot="end"></ha-icon-next>`
                 : ""}
-            </ha-list-item-new>
+            </ha-md-list-item>
           `;
         })}
-      </ha-list-new>
+      </ha-md-list>
     `;
   }
 
@@ -164,11 +164,11 @@ class HaConfigRepairs extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-list-item-new div[slot="start"] img {
+    ha-md-list-item div[slot="start"] img {
       width: 40px;
       height: 40px;
     }
-    ha-list-item-new div[slot="supporting-text"] {
+    ha-md-list-item div[slot="supporting-text"] {
       text-wrap: nowrap;
     }
     .error {
