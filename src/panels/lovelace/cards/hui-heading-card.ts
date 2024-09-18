@@ -1,6 +1,5 @@
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -75,7 +74,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="container">
           <div
-            class="content ${classMap({ [style]: true })}"
+            class="content ${style}"
             @action=${this._handleAction}
             .actionHandler=${actionHandler()}
             role=${ifDefined(actionable ? "button" : undefined)}
