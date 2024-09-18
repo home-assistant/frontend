@@ -21,8 +21,8 @@ class HaMatchSegment extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .highlight {
-          opacity: 0.7;
-          text-decoration: underline;
+        opacity: 0.7;
+        text-decoration: underline;
       }
     `;
   }
