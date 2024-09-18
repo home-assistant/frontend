@@ -156,7 +156,12 @@ class DialogLightColorFavorite extends LitElement {
     }
 
     return html`
-      <ha-md-dialog open @cancel=${this._cancel} @closed=${this._dialogClosed}>
+      <ha-md-dialog
+        open
+        @cancel=${this._cancel}
+        @closed=${this._dialogClosed}
+        aria-labelledby="dialog-light-color-favorite-title"
+      >
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
@@ -164,7 +169,9 @@ class DialogLightColorFavorite extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">${this._dialogParams?.title}</span>
+          <span slot="title" id="dialog-light-color-favorite-title"
+            >${this._dialogParams?.title}</span
+          >
         </ha-dialog-header>
         <div slot="content">
           <div class="header">
