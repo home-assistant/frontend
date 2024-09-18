@@ -1,3 +1,4 @@
+import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,11 +13,13 @@ import {
   string,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   LovelaceCardFeatureConfig,
@@ -29,6 +32,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
+import { configElementStyle } from "./config-elements-style";
 
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "humidifier-modes",
@@ -118,14 +122,24 @@ export class HuiHumidifierCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-card-features-editor
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
-        .features=${this._config!.features ?? []}
-        @features-changed=${this._featuresChanged}
-        @edit-detail-element=${this._editDetailElement}
-      ></hui-card-features-editor>
+      <ha-expansion-panel outlined>
+        <h3 slot="header">
+          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.features"
+          )}
+        </h3>
+        <div class="content">
+          <hui-card-features-editor
+            .hass=${this.hass}
+            .stateObj=${stateObj}
+            .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
+            .features=${this._config!.features ?? []}
+            @features-changed=${this._featuresChanged}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-card-features-editor>
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -202,12 +216,15 @@ export class HuiHumidifierCardEditor
   };
 
   static get styles() {
-    return css`
-      ha-form {
-        display: block;
-        margin-bottom: 24px;
-      }
-    `;
+    return [
+      configElementStyle,
+      css`
+        ha-form {
+          display: block;
+          margin-bottom: 24px;
+        }
+      `,
+    ];
   }
 }
 
