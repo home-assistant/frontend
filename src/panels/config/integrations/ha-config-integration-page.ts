@@ -45,12 +45,12 @@ import { isDevVersion } from "../../../common/config/version";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu-new";
+import "../../../components/ha-md-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-md-list";
-import "../../../components/ha-menu-item";
+import "../../../components/ha-md-menu-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -797,23 +797,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </mwc-button>
               `
             : ""}
-      <ha-button-menu-new positioning="popover" slot="end">
+      <ha-md-button-menu positioning="popover" slot="end">
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         ${item.supports_options && stateText
-          ? html`<ha-menu-item @click=${this._showOptions}>
+          ? html`<ha-md-menu-item @click=${this._showOptions}>
               <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.configure"
               )}
-            </ha-menu-item>`
+            </ha-md-menu-item>`
           : ""}
         ${item.disabled_by && devices.length
           ? html`
-              <ha-menu-item
+              <ha-md-menu-item
                 href=${devices.length === 1
                   ? `/config/devices/device/${devices[0].id}`
                   : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
@@ -824,11 +824,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   { count: devices.length }
                 )}
                 <ha-icon-next slot="end"></ha-icon-next>
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : ""}
         ${item.disabled_by && services.length
-          ? html`<ha-menu-item
+          ? html`<ha-md-menu-item
               href=${services.length === 1
                 ? `/config/devices/device/${services[0].id}`
                 : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
@@ -842,11 +842,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 { count: services.length }
               )}
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-menu-item> `
+            </ha-md-menu-item> `
           : ""}
         ${item.disabled_by && entities.length
           ? html`
-              <ha-menu-item
+              <ha-md-menu-item
                 href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
               >
                 <ha-svg-icon
@@ -858,7 +858,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   { count: entities.length }
                 )}
                 <ha-icon-next slot="end"></ha-icon-next>
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : ""}
         ${!item.disabled_by &&
@@ -866,27 +866,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         item.supports_unload &&
         item.source !== "system"
           ? html`
-              <ha-menu-item @click=${this._handleReload}>
+              <ha-md-menu-item @click=${this._handleReload}>
                 <ha-svg-icon slot="start" .path=${mdiReload}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.reload"
                 )}
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : nothing}
 
-        <ha-menu-item @click=${this._handleRename} graphic="icon">
+        <ha-md-menu-item @click=${this._handleRename} graphic="icon">
           <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.integrations.config_entry.rename"
           )}
-        </ha-menu-item>
+        </ha-md-menu-item>
 
         <md-divider role="separator" tabindex="-1"></md-divider>
 
         ${this._diagnosticHandler && item.state === "loaded"
           ? html`
-              <ha-menu-item
+              <ha-md-menu-item
                 href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                 target="_blank"
                 @click=${this._signUrl}
@@ -895,41 +895,41 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.download_diagnostics"
                 )}
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : ""}
         ${!item.disabled_by &&
         item.supports_reconfigure &&
         item.source !== "system"
           ? html`
-              <ha-menu-item @click=${this._handleReconfigure}>
+              <ha-md-menu-item @click=${this._handleReconfigure}>
                 <ha-svg-icon slot="start" .path=${mdiWrench}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.reconfigure"
                 )}
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : nothing}
 
-        <ha-menu-item @click=${this._handleSystemOptions} graphic="icon">
+        <ha-md-menu-item @click=${this._handleSystemOptions} graphic="icon">
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.integrations.config_entry.system_options"
           )}
-        </ha-menu-item>
+        </ha-md-menu-item>
         ${item.disabled_by === "user"
           ? html`
-              <ha-menu-item @click=${this._handleEnable}>
+              <ha-md-menu-item @click=${this._handleEnable}>
                 <ha-svg-icon
                   slot="start"
                   .path=${mdiPlayCircleOutline}
                 ></ha-svg-icon>
                 ${this.hass.localize("ui.common.enable")}
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : item.source !== "system"
             ? html`
-                <ha-menu-item
+                <ha-md-menu-item
                   class="warning"
                   @click=${this._handleDisable}
                   graphic="icon"
@@ -940,12 +940,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     .path=${mdiStopCircleOutline}
                   ></ha-svg-icon>
                   ${this.hass.localize("ui.common.disable")}
-                </ha-menu-item>
+                </ha-md-menu-item>
               `
             : nothing}
         ${item.source !== "system"
           ? html`
-              <ha-menu-item class="warning" @click=${this._handleDelete}>
+              <ha-md-menu-item class="warning" @click=${this._handleDelete}>
                 <ha-svg-icon
                   slot="start"
                   class="warning"
@@ -954,10 +954,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.delete"
                 )}
-              </ha-menu-item>
+              </ha-md-menu-item>
             `
           : nothing}
-      </ha-button-menu-new>
+      </ha-md-button-menu>
     </ha-md-list-item>`;
   }
 

@@ -479,7 +479,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     const categoryItems = html`${this._categories?.map(
         (category) =>
-          html`<ha-menu-item
+          html`<ha-md-menu-item
             .value=${category.category_id}
             @click=${this._handleBulkCategory}
           >
@@ -487,21 +487,21 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
               : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
             <div slot="headline">${category.name}</div>
-          </ha-menu-item>`
+          </ha-md-menu-item>`
       )}
-      <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
-      </ha-menu-item>
+      </ha-md-menu-item>
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateCategory}>
+      <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
-      </ha-menu-item>`;
+      </ha-md-menu-item>`;
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
@@ -512,7 +512,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-menu-item
+        return html`<ha-md-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -530,13 +530,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item> `;
+        </ha-md-menu-item> `;
       })}<md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div>
-      </ha-menu-item>`;
+      </ha-md-menu-item>`;
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
@@ -637,7 +637,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-categories>
 
         ${!this.narrow
-          ? html`<ha-button-menu-new slot="selection-bar">
+          ? html`<ha-md-button-menu slot="selection-bar">
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -650,10 +650,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-assist-chip>
                 ${categoryItems}
-              </ha-button-menu-new>
+              </ha-md-button-menu>
               ${labelsInOverflow
                 ? nothing
-                : html`<ha-button-menu-new slot="selection-bar">
+                : html`<ha-md-button-menu slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -666,11 +666,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-assist-chip>
                     ${labelItems}
-                  </ha-button-menu-new>`}`
+                  </ha-md-button-menu>`}`
           : nothing}
         ${this.narrow || labelsInOverflow
           ? html`
-          <ha-button-menu-new has-overflow slot="selection-bar">
+          <ha-md-button-menu has-overflow slot="selection-bar">
             ${
               this.narrow
                 ? html`<ha-assist-chip
@@ -698,7 +698,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${
               this.narrow
                 ? html`<ha-sub-menu>
-                    <ha-menu-item slot="item">
+                    <ha-md-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.move_category"
@@ -708,7 +708,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-menu-item>
+                    </ha-md-menu-item>
                     <ha-menu slot="menu">${categoryItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
@@ -716,7 +716,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${
               this.narrow || this.hass.dockedSidebar === "docked"
                 ? html` <ha-sub-menu>
-                    <ha-menu-item slot="item">
+                    <ha-md-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.add_label"
@@ -726,12 +726,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-menu-item>
+                    </ha-md-menu-item>
                     <ha-menu slot="menu">${labelItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }
-          </ha-button-menu-new>`
+          </ha-md-button-menu>`
           : nothing}
 
         <ha-integration-overflow-menu
@@ -1155,7 +1155,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {
