@@ -68,9 +68,18 @@ export const describeTrigger = (
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
-) => {
+): string => {
   try {
-    return tryDescribeTrigger(trigger, hass, entityRegistry, ignoreAlias);
+    const description = tryDescribeTrigger(
+      trigger,
+      hass,
+      entityRegistry,
+      ignoreAlias
+    );
+    if (typeof description !== "string") {
+      throw new Error(String(description));
+    }
+    return description;
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
@@ -700,9 +709,18 @@ export const describeCondition = (
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
-) => {
+): string => {
   try {
-    return tryDescribeCondition(condition, hass, entityRegistry, ignoreAlias);
+    const description = tryDescribeCondition(
+      condition,
+      hass,
+      entityRegistry,
+      ignoreAlias
+    );
+    if (typeof description !== "string") {
+      throw new Error(String(description));
+    }
+    return description;
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);

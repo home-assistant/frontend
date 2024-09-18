@@ -189,20 +189,20 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) => {
         const domain = computeDomain(entry.entity_id);
 
-        if (entry.entity_category) {
-          return entry.entity_category;
+        if (ASSIST_ENTITIES.includes(domain)) {
+          return "assist";
         }
 
         if (domain === "event" || domain === "notify") {
           return domain;
         }
 
-        if (SENSOR_ENTITIES.includes(domain)) {
-          return "sensor";
+        if (entry.entity_category) {
+          return entry.entity_category;
         }
 
-        if (ASSIST_ENTITIES.includes(domain)) {
-          return "assist";
+        if (SENSOR_ENTITIES.includes(domain)) {
+          return "sensor";
         }
 
         return "control";
