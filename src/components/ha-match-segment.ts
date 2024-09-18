@@ -13,13 +13,18 @@ class HaMatchSegment extends LitElement {
 
     return html`${this.segments.map((segment) =>
       segment.match
-        ? html`<u><b style="opacity: 0.7">${segment.text}</b></u>`
+        ? html`<span class="highlight">${segment.text}</span>`
         : html`${segment.text}`
     )}`;
   }
 
   static get styles(): CSSResultGroup {
-    return [css``];
+    return css`
+      .highlight {
+          opacity: 0.7;
+          text-decoration: underline;
+      }
+    `;
   }
 }
 
