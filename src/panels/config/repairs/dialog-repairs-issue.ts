@@ -148,7 +148,6 @@ class DialogRepairsIssue extends LitElement {
                   @click=${learnMoreUrlIsHomeAssistant
                     ? this.closeDialog
                     : undefined}
-                  slot="primaryAction"
                   rel="noopener noreferrer"
                 >
                   <ha-button
@@ -160,7 +159,6 @@ class DialogRepairsIssue extends LitElement {
               `
             : ""}
           <ha-button
-            slot="secondaryAction"
             .label=${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
