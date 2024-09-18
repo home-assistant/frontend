@@ -84,7 +84,9 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             ${this._config.icon
               ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
               : nothing}
-            <p>${this._config.heading}</p>
+            ${this._config.heading
+              ? html`<p>${this._config.heading}</p>`
+              : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
           ${this._config.entities?.length
@@ -153,17 +155,29 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         padding: 2px 4px;
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+        gap: 8px;
       }
       .content:hover ha-icon-next {
         transform: translateX(calc(4px * var(--scale-direction)));
+      }
+      .container .content {
+        flex: 1 0 fill;
+        min-width: 100px;
+      }
+      .container .content:not(:has(p)) {
+        min-width: fit-content;
+      }
+      .container .entities {
+        flex: 0 0;
       }
       .content {
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 8px;
-        flex: 1;
-        min-width: 0;
         color: var(--primary-text-color);
         font-size: 16px;
         font-weight: 500;
@@ -196,11 +210,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 10px;
+        justify-content: flex-end;
+        gap: 4px 10px;
       }
       .entities .entity {
         display: flex;
         flex-direction: row;
+        white-space: nowrap;
         align-items: center;
         gap: 3px;
         color: var(--secondary-text-color);
