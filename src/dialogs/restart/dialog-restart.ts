@@ -13,9 +13,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
-import "../../components/ha-list-new";
+import "../../components/ha-md-list";
 import "../../components/ha-expansion-panel";
-import "../../components/ha-list-item-new";
+import "../../components/ha-md-list-item";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -104,10 +104,10 @@ class DialogRestart extends LitElement {
                 </div>
               `
             : html`
-                <ha-list-new dialogInitialFocus>
+                <ha-md-list dialogInitialFocus>
                   ${showReload
                     ? html`
-                        <ha-list-item-new type="button" @click=${this._reload}>
+                        <ha-md-list-item type="button" @click=${this._reload}>
                           <div slot="headline">
                             ${this.hass.localize(
                               "ui.dialogs.restart.reload.title"
@@ -121,10 +121,10 @@ class DialogRestart extends LitElement {
                           <div slot="start" class="icon-background reload">
                             <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
                           </div>
-                        </ha-list-item-new>
+                        </ha-md-list-item>
                       `
                     : nothing}
-                  <ha-list-item-new
+                  <ha-md-list-item
                     type="button"
                     @click=${this._showRestartDialog}
                   >
@@ -139,17 +139,17 @@ class DialogRestart extends LitElement {
                         "ui.dialogs.restart.restart.description"
                       )}
                     </div>
-                  </ha-list-item-new>
-                </ha-list-new>
+                  </ha-md-list-item>
+                </ha-md-list>
                 <ha-expansion-panel
                   .header=${this.hass.localize(
                     "ui.dialogs.restart.advanced_options"
                   )}
                 >
-                  <ha-list-new>
+                  <ha-md-list>
                     ${showRebootShutdown
                       ? html`
-                          <ha-list-item-new
+                          <ha-md-list-item
                             type="button"
                             @click=${this._hostReboot}
                           >
@@ -166,8 +166,8 @@ class DialogRestart extends LitElement {
                                 "ui.dialogs.restart.reboot.description"
                               )}
                             </div>
-                          </ha-list-item-new>
-                          <ha-list-item-new
+                          </ha-md-list-item>
+                          <ha-md-list-item
                             type="button"
                             @click=${this._hostShutdown}
                           >
@@ -184,10 +184,10 @@ class DialogRestart extends LitElement {
                                 "ui.dialogs.restart.shutdown.description"
                               )}
                             </div>
-                          </ha-list-item-new>
+                          </ha-md-list-item>
                         `
                       : nothing}
-                    <ha-list-item-new
+                    <ha-md-list-item
                       type="button"
                       @click=${this._showRestartSafeModeDialog}
                     >
@@ -207,8 +207,8 @@ class DialogRestart extends LitElement {
                           "ui.dialogs.restart.restart-safe-mode.description"
                         )}
                       </div>
-                    </ha-list-item-new>
-                  </ha-list-new>
+                    </ha-md-list-item>
+                  </ha-md-list>
                 </ha-expansion-panel>
               `}
         </div>
