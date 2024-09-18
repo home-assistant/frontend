@@ -6,8 +6,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item-new";
-import "../../../../components/ha-list-new";
+import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-md-list";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 
@@ -90,7 +90,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             ></ha-icon-button>
           </a>
         </ha-dialog-header>
-        <ha-list-new
+        <ha-md-list
           role="listbox"
           tabindex="0"
           aria-activedescendant="option-${this._newMode}"
@@ -103,7 +103,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
               `ui.panel.config.automation.editor.modes.${mode}`
             );
             return html`
-              <ha-list-item-new
+              <ha-md-list-item
                 class="option"
                 type="button"
                 @click=${this._modeChanged}
@@ -132,10 +132,10 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                     `ui.panel.config.automation.editor.modes.${mode}_description`
                   )}
                 </div>
-              </ha-list-item-new>
+              </ha-md-list-item>
             `;
           })}
-        </ha-list-new>
+        </ha-md-list>
 
         ${isMaxMode(this._newMode)
           ? html`

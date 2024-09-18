@@ -28,8 +28,8 @@ import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item-new";
-import "../../../components/ha-list-new";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-md-list";
 import "../../../components/ha-service-icon";
 import "../../../components/search-input";
 import {
@@ -434,7 +434,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
   protected _opened(): void {
     // Store the width and height so that when we search, box doesn't jump
     const boundingRect =
-      this.shadowRoot!.querySelector("ha-list-new")?.getBoundingClientRect();
+      this.shadowRoot!.querySelector("ha-md-list")?.getBoundingClientRect();
     this._width = boundingRect?.width;
     this._height = boundingRect?.height;
   }
@@ -526,7 +526,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                 )}
           ></search-input>
         </div>
-        <ha-list-new
+        <ha-md-list
           dialogInitialFocus=${ifDefined(this._fullScreen ? "" : undefined)}
           style=${styleMap({
             width: this._width ? `${this._width}px` : "auto",
@@ -537,7 +537,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           !this._filter &&
           (!this._group ||
             items.find((item) => item.key === this._params!.clipboardItem))
-            ? html`<ha-list-item-new
+            ? html`<ha-md-list-item
                   interactive
                   type="button"
                   class="paste"
@@ -558,14 +558,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                     .path=${mdiContentPaste}
                   ></ha-svg-icon
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
-                </ha-list-item-new>
+                </ha-md-list-item>
                 <md-divider role="separator" tabindex="-1"></md-divider>`
             : ""}
           ${repeat(
             items,
             (item) => item.key,
             (item) => html`
-              <ha-list-item-new
+              <ha-md-list-item
                 interactive
                 type="button"
                 .value=${item.key}
@@ -588,10 +588,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                       slot="end"
                       .path=${mdiPlus}
                     ></ha-svg-icon>`}
-              </ha-list-item-new>
+              </ha-md-list-item>
             `
           )}
-        </ha-list-new>
+        </ha-md-list>
       </ha-dialog>
     `;
   }
@@ -643,13 +643,13 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ha-icon-next {
           width: 24px;
         }
-        ha-list-new {
+        ha-md-list {
           max-height: 468px;
           max-width: 100vw;
           --md-list-item-leading-space: 24px;
           --md-list-item-trailing-space: 24px;
         }
-        ha-list-item-new img {
+        ha-md-list-item img {
           width: 24px;
         }
         search-input {
