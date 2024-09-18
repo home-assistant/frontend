@@ -1,5 +1,15 @@
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  assert,
+  boolean,
+  literal,
+  number,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -7,6 +17,17 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { NumericStateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+
+const numericStateConditionStruct = object({
+  alias: optional(string()),
+  condition: literal("numeric_state"),
+  entity_id: optional(string()),
+  attribute: optional(string()),
+  above: optional(union([number(), string()])),
+  below: optional(union([number(), string()])),
+  value_template: optional(string()),
+  enabled: optional(boolean()),
+});
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
@@ -25,6 +46,18 @@ export default class HaNumericStateCondition extends LitElement {
       condition: "numeric_state",
       entity_id: "",
     };
+  }
+
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("condition")) {
+      try {
+        assert(this.condition, numericStateConditionStruct);
+      } catch (e: any) {
+        fireEvent(this, "ui-mode-not-available", e);
+        return false;
+      }
+    }
+    return true;
   }
 
   private _schema = memoizeOne(

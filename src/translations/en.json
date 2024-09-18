@@ -3170,7 +3170,8 @@
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}",
+                    "more_entities": " and {count} more entities"
                   }
                 },
                 "or": {

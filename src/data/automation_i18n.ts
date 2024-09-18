@@ -889,8 +889,15 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    const stateObj = hass.states[condition.entity_id];
-    const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
+    const entities = ensureArray(condition.entity_id) || [];
+    const stateObj = hass.states[entities[0]];
+    let entity = stateObj ? computeStateName(stateObj) : entities[0];
+    if (entities.length > 1) {
+      entity += hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.more_entities`,
+        { count: entities.length - 1 }
+      );
+    }
 
     const attribute = condition.attribute
       ? computeAttributeNameDisplay(
