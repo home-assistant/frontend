@@ -2,8 +2,8 @@ import { MdMenuItem } from "@material/web/menu/menu-item";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
-@customElement("ha-menu-item")
-export class HaMenuItem extends MdMenuItem {
+@customElement("ha-md-menu-item")
+export class HaMdMenuItem extends MdMenuItem {
   @property({ attribute: false }) clickAction?: (item?: HTMLElement) => void;
 
   static override styles = [
@@ -41,6 +41,6 @@ export class HaMenuItem extends MdMenuItem {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-menu-item": HaMenuItem;
+    "ha-md-menu-item": HaMdMenuItem;
   }
 }
