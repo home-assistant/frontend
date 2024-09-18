@@ -114,7 +114,14 @@ export class HaMdDialog extends MdDialog {
         --md-dialog-headline-size: 1.574rem;
         --md-dialog-supporting-text-size: 1rem;
         --md-dialog-supporting-text-line-height: 1.5rem;
+      }
 
+      :host([type="alert"]) {
+        max-width: 320px;
+        min-width: 320px;
+      }
+
+      :host(:not([type="alert"])) {
         @media all and (max-width: 450px), all and (max-height: 500px) {
           min-width: calc(
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
