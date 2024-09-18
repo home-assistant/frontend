@@ -62,7 +62,7 @@ class DialogBox extends LitElement {
         aria-describedby="dialog-box-description"
       >
         <div slot="headline">
-          <span .title=${dialogTitle}>
+          <span .title=${dialogTitle} id="dialog-box-title">
             ${this._params.warning
               ? html`<ha-svg-icon
                   .path=${mdiAlertOutline}
@@ -72,7 +72,7 @@ class DialogBox extends LitElement {
             ${dialogTitle}
           </span>
         </div>
-        <div slot="content">
+        <div slot="content" id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
             ? html`
