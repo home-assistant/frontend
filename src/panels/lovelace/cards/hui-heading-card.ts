@@ -169,7 +169,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         font-weight: 500;
         line-height: 24px;
         letter-spacing: 0.1px;
-        --mdc-icon-size: 20px;
+        --mdc-icon-size: 16px;
       }
       .content ha-icon,
       .content ha-icon-next {
@@ -191,19 +191,18 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         font-size: 14px;
         font-weight: 500;
         line-height: 20px;
-        --mdc-icon-size: 16px;
       }
       .entities {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
       .entities .entity {
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
         color: var(--secondary-text-color);
         font-family: Roboto;
         font-size: 14px;
@@ -215,7 +214,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       }
       .entities .entity ha-state-icon {
         --ha-icon-display: block;
-        display: flex;
       }
     `;
   }
