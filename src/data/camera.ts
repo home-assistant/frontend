@@ -134,11 +134,16 @@ export const isCameraMediaSource = (mediaContentId: string) =>
 export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
   mediaContentId.substring(CAMERA_MEDIA_SOURCE_PREFIX.length);
 
-export const fetchWebRtcConfiguration = async (
+export interface WebRTCClientConfiguration {
+  configuration: RTCConfiguration;
+  dataChannel?: string;
+}
+
+export const fetchWebRtcClientConfiguration = async (
   hass: HomeAssistant,
   entityId: string
 ) =>
-  hass.callWS<RTCConfiguration>({
-    type: "camera/webrtc/get_config",
+  hass.callWS<WebRTCClientConfiguration>({
+    type: "camera/webrtc/get_client_config",
     entity_id: entityId,
   });
