@@ -514,5 +514,5 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
   heading?: string;
   icon?: string;
   tap_action?: ActionConfig;
-  entities?: HeadingCardEntityConfig[];
+  entities?: (string | HeadingCardEntityConfig)[];
 }

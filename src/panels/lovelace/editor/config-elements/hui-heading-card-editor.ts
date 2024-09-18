@@ -29,6 +29,7 @@ import type {
 import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-form-editor";
+import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { SubFormEditorData } from "../types";
@@ -189,7 +190,7 @@ export class HuiHeadingCardEditor
       ></ha-form>
       <hui-entities-editor
         .hass=${this.hass}
-        .entities=${this._config!.entities}
+        .entities=${processEditorEntities(this._config!.entities)}
         @entities-changed=${this._entitiesChanged}
         @edit-entity=${this._editEntity}
       >
@@ -253,7 +254,7 @@ export class HuiHeadingCardEditor
 
   private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
     this._entityFormEditorData = {
-      data: this._config!.entities![ev.detail.index],
+      data: processEditorEntities(this._config!.entities!)[ev.detail.index],
       index: ev.detail.index,
     };
   }
