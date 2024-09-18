@@ -164,14 +164,12 @@ class HaConfigRepairs extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-list-item-new {
-      div[slot="start"] img {
-        width: 40px;
-        height: 40px;
-      }
-      div[slot="supporting-text"] {
-        text-wrap: nowrap;
-      }
+    ha-list-item-new div[slot="start"] img {
+      width: 40px;
+      height: 40px;
+    }
+    ha-list-item-new div[slot="supporting-text"] {
+      text-wrap: nowrap;
     }
     .error {
       color: var(--error-color);
