@@ -6794,10 +6794,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:3.6.0":
-  version: 3.6.0
-  resolution: "date-fns@npm:3.6.0"
-  checksum: 10/cac35c58926a3b5d577082ff2b253612ec1c79eb6754fddef46b6a8e826501ea2cb346ecbd211205f1ba382ddd1f9d8c3f00bf433ad63cc3063454d294e3a6b8
+"date-fns@npm:4.0.0":
+  version: 4.0.0
+  resolution: "date-fns@npm:4.0.0"
+  checksum: 10/928045b380087cf3bd5459daf80bf8dc8b23f354184a590531b2a679efc4f10192fb7e7a235a17157b579dc8f8eb412d90996d653e669809b8484769744494c7
   languageName: node
   linkType: hard
 
@@ -9015,7 +9015,7 @@ __metadata:
     comlink: "npm:4.4.1"
     core-js: "npm:3.38.1"
     cropperjs: "npm:1.6.2"
-    date-fns: "npm:3.6.0"
+    date-fns: "npm:4.0.0"
     date-fns-tz: "npm:3.1.3"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
