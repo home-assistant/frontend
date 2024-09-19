@@ -221,9 +221,7 @@ export class HuiHeadingCardEditor
         <div class="content">
           <hui-entities-editor
             .hass=${this.hass}
-            .entities=${processEditorEntities(
-              this._entities(this._config!.entities)
-            )}
+            .entities=${this._entities(this._config!.entities)}
             @entities-changed=${this._entitiesChanged}
             @edit-entity=${this._editEntity}
           >
