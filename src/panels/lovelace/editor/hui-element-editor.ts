@@ -18,7 +18,10 @@ import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceConfigForm, LovelaceGenericEditor } from "../types";
+import type {
+  LovelaceConfigForm,
+  LovelaceGenericElementEditor,
+} from "../types";
 import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
@@ -57,7 +60,7 @@ export abstract class HuiElementEditor<
 
   @state() private _config?: T;
 
-  @state() private _configElement?: LovelaceGenericEditor;
+  @state() private _configElement?: LovelaceGenericElementEditor;
 
   @state() private _guiMode = true;
 
@@ -168,7 +171,7 @@ export abstract class HuiElementEditor<
   }
 
   protected async getConfigElement(): Promise<
-    LovelaceGenericEditor | undefined
+    LovelaceGenericElementEditor | undefined
   > {
     return undefined;
   }
