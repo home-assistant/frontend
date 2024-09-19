@@ -4903,7 +4903,8 @@
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
-            "bitmask": "Bitmask"
+            "bitmask": "Bitmask",
+            "default": "Default"
           },
           "network_status": {
             "connected": "Connected",
