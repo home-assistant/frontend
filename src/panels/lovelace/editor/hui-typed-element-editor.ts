@@ -1,7 +1,7 @@
 import { state } from "lit/decorators";
 import { HuiElementEditor } from "./hui-element-editor";
 
-export abstract class HuiElementTypeEditor<
+export abstract class HuiTypedElementEditor<
   T extends object,
   C = any,
 > extends HuiElementEditor<T, C> {

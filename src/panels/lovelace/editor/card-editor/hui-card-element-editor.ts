@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
-import { HuiElementTypeEditor } from "../hui-element-type-editor";
+import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
 import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
@@ -13,7 +13,7 @@ import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section"
 const tabs = ["config", "visibility", "layout"] as const;
 
 @customElement("hui-card-element-editor")
-export class HuiCardElementEditor extends HuiElementTypeEditor<LovelaceCardConfig> {
+export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConfig> {
   @property({ type: Boolean, attribute: "show-visibility-tab" })
   public showVisibilityTab = false;
 
@@ -119,7 +119,7 @@ export class HuiCardElementEditor extends HuiElementTypeEditor<LovelaceCardConfi
 
   static get styles(): CSSResultGroup {
     return [
-      HuiElementTypeEditor.styles,
+      HuiTypedElementEditor.styles,
       css`
         mwc-tab-bar {
           text-transform: uppercase;
