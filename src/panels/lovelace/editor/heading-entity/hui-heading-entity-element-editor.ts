@@ -1,11 +1,11 @@
 import { customElement } from "lit/decorators";
 
 import { HeadingCardEntityConfig } from "../../cards/types";
-import { HuiBaseEditor } from "../hui-base-editor";
+import { HuiElementEditor } from "../hui-element-editor";
 import type { HuiHeadingEntityEditor } from "./hui-heading-entity-editor";
 
 @customElement("hui-heading-entity-element-editor")
-export class HuiCardFeatureElementEditor extends HuiBaseEditor<HeadingCardEntityConfig> {
+export class HuiCardFeatureElementEditor extends HuiElementEditor<HeadingCardEntityConfig> {
   protected async getConfigElement(): Promise<
     HuiHeadingEntityEditor | undefined
   > {

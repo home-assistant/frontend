@@ -8,10 +8,10 @@ import type {
   LovelaceConfigForm,
   LovelaceCardFeatureEditor,
 } from "../../types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiElementTypeEditor } from "../hui-element-type-editor";
 
 @customElement("hui-card-feature-element-editor")
-export class HuiCardFeatureElementEditor extends HuiElementEditor<
+export class HuiCardFeatureElementEditor extends HuiElementTypeEditor<
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext
 > {

@@ -2,10 +2,10 @@ import { customElement } from "lit/decorators";
 import { LovelaceDashboardStrategyConfig } from "../../../../data/lovelace/config/types";
 import { getLovelaceStrategy } from "../../strategies/get-strategy";
 import { LovelaceStrategyEditor } from "../../strategies/types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiElementTypeEditor } from "../hui-element-type-editor";
 
 @customElement("hui-dashboard-strategy-element-editor")
-export class HuiDashboardStrategyElementEditor extends HuiElementEditor<LovelaceDashboardStrategyConfig> {
+export class HuiDashboardStrategyElementEditor extends HuiElementTypeEditor<LovelaceDashboardStrategyConfig> {
   protected async getConfigElement(): Promise<
     LovelaceStrategyEditor | undefined
   > {

@@ -2,10 +2,10 @@ import { customElement } from "lit/decorators";
 import { getHeaderFooterElementClass } from "../../create-element/create-header-footer-element";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import type { LovelaceHeaderFooterEditor } from "../../types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiElementTypeEditor } from "../hui-element-type-editor";
 
 @customElement("hui-headerfooter-element-editor")
-export class HuiHeaderFooterElementEditor extends HuiElementEditor<LovelaceHeaderFooterConfig> {
+export class HuiHeaderFooterElementEditor extends HuiElementTypeEditor<LovelaceHeaderFooterConfig> {
   protected async getConfigElement(): Promise<
     LovelaceHeaderFooterEditor | undefined
   > {

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiCodeBraces, mdiListBoxOutline } from "@mdi/js";
 import {
   css,
@@ -13,8 +12,6 @@ import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceRowConfig } from "../entity-rows/types";
-import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
@@ -41,11 +38,14 @@ export class HuiSubElementEditor extends LitElement {
 
   @state() private _guiMode = true;
 
-  @query(".editor") private _editorElement?: HuiElementEditor<
-    LovelaceRowConfig | LovelaceHeaderFooterConfig
-  >;
+  @query(".editor") private _editorElement?: HuiElementEditor;
 
   protected render(): TemplateResult {
+    const elementType =
+      this.config.elementConfig && "type" in this.config.elementConfig
+        ? this.config.elementConfig.type
+        : "";
+
     return html`
       <div class="header">
         <div class="back-title">
@@ -60,8 +60,8 @@ export class HuiSubElementEditor extends LitElement {
                   {
                     type:
                       this.hass.localize(
-                        `ui.panel.lovelace.editor.card.picture-elements.element_types.${this.config?.elementConfig?.type}`
-                      ) || this.config?.elementConfig?.type,
+                        `ui.panel.lovelace.editor.card.picture-elements.element_types.${elementType}`
+                      ) || elementType,
                   }
                 )
               : this.hass.localize(
