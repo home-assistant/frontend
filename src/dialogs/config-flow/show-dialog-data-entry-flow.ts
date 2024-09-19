@@ -39,7 +39,7 @@ export interface FlowConfig {
   renderShowFormStepHeader(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm
-  ): string;
+  ): string | TemplateResult;
 
   renderShowFormStepDescription(
     hass: HomeAssistant,

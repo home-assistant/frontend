@@ -1,6 +1,7 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { DataEntryFlowStep } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
+import "./dialog-repairs-issue-subtitle";
 import {
   RepairsIssue,
   createRepairsFlow,
@@ -87,14 +88,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormStepHeader(hass, step) {
-        return (
-          hass.localize(
+        return html`
+          ${hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize("ui.dialogs.repair_flow.form.header")
-        );
+          ) || hass.localize("ui.dialogs.repair_flow.form.header")}
+          <dialog-repairs-issue-subtitle
+            .hass=${hass}
+            .issue=${issue}
+          ></dialog-repairs-issue-subtitle>
+        `;
       },
 
       renderShowFormStepDescription(hass, step) {
@@ -113,7 +118,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}`;
+          : nothing}`;
       },
 
       renderShowFormStepFieldLabel(hass, step, field, options) {
@@ -135,7 +140,7 @@ export const showRepairsFlowDialog = (
         return html`${renderIssueDescription(hass, issue)}
         ${description
           ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
-          : ""}`;
+          : nothing}`;
       },
 
       renderShowFormStepFieldError(hass, step, error) {
@@ -206,7 +211,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}`;
+          : nothing}`;
       },
 
       renderMenuHeader(hass, step) {
@@ -236,7 +241,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}`;
+          : nothing}`;
       },
 
       renderMenuOption(hass, step, option) {

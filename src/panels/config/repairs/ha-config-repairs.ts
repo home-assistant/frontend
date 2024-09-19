@@ -43,7 +43,16 @@ class HaConfigRepairs extends LitElement {
       <ha-md-list>
         ${issues.map((issue) => {
           const domainName = domainToName(this.hass.localize, issue.domain);
-          const reportedBy = `${this.hass.localize(`ui.panel.config.repairs.by`, { integration: domainName })}`;
+
+          const createdBy =
+            issue.created && domainName
+              ? this.hass.localize("ui.panel.config.repairs.created_by", {
+                  date: capitalizeFirstLetter(
+                    relativeTime(new Date(issue.created), this.hass.locale)
+                  ),
+                  integration: domainName,
+                })
+              : "";
 
           return html`
             <ha-md-list-item
@@ -88,18 +97,15 @@ class HaConfigRepairs extends LitElement {
                 issue.created
                   ? " ⸱ "
                   : ""}
-                ${issue.created
-                  ? capitalizeFirstLetter(
-                      relativeTime(new Date(issue.created), this.hass.locale)
-                    )
-                  : ""}
+                ${createdBy
+                  ? html`<span .title=${createdBy}>${createdBy}</span>`
+                  : nothing}
                 ${issue.ignored
                   ? ` ⸱ ${this.hass.localize(
                       "ui.panel.config.repairs.dialog.ignored_in_version_short",
                       { version: issue.dismissed_version }
                     )}`
                   : ""}
-                <span .title=${reportedBy}> ⸱ ${reportedBy} </span>
               </div>
               ${!this.narrow
                 ? html`<ha-icon-next slot="end"></ha-icon-next>`

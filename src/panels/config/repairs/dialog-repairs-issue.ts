@@ -1,7 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import "../../../components/ha-alert";
@@ -9,12 +8,13 @@ import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
-import { domainToName } from "../../../data/integration";
+import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
 import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
+import { domainToName } from "../../../data/integration";
 
 @customElement("dialog-repairs-issue")
 class DialogRepairsIssue extends LitElement {
@@ -59,6 +59,16 @@ class DialogRepairsIssue extends LitElement {
         this._issue.translation_placeholders || {}
       ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
 
+    const severity = this.hass.localize(
+      `ui.panel.config.repairs.${this._issue.severity}`
+    );
+    const domainName = domainToName(this.hass.localize, this._issue.domain);
+    const reportedBy = domainName
+      ? ` ⸱ ${this.hass.localize(`ui.panel.config.repairs.reported_by`, {
+          integration: domainName,
+        })}`
+      : "";
+
     return html`
       <ha-md-dialog
         open
@@ -79,8 +89,12 @@ class DialogRepairsIssue extends LitElement {
             .title=${dialogTitle}
             >${dialogTitle}</span
           >
+          <span slot="subtitle" .title=${`${severity}${reportedBy}`}>
+            <span class=${this._issue.severity}> ${severity} </span>
+            ${reportedBy || nothing}
+          </span>
         </ha-dialog-header>
-        <div slot="content">
+        <div slot="content" class="dialog-content">
           ${this._issue.breaks_in_ha_version
             ? html`
                 <ha-alert alert-type="warning">
@@ -114,25 +128,6 @@ class DialogRepairsIssue extends LitElement {
                 >
               `
             : ""}
-          <div class="secondary">
-            <span class=${this._issue.severity}
-              >${this.hass.localize(
-                `ui.panel.config.repairs.${this._issue.severity}`
-              )}
-            </span>
-            ⸱
-            ${this._issue.created
-              ? formatDateNumeric(
-                  new Date(this._issue.created),
-                  this.hass.locale,
-                  this.hass.config
-                )
-              : ""}
-            ⸱
-            ${this.hass.localize(`ui.panel.config.repairs.reported_by`, {
-              integration: domainToName(this.hass.localize, this._issue.domain),
-            })}
-          </div>
         </div>
         <div slot="actions">
           ${this._issue.learn_more_url
@@ -183,6 +178,9 @@ class DialogRepairsIssue extends LitElement {
   static styles: CSSResultGroup = [
     haStyleDialog,
     css`
+      .dialog-content {
+        padding-top: 0;
+      }
       ha-alert {
         margin-bottom: 16px;
         display: block;
@@ -192,11 +190,6 @@ class DialogRepairsIssue extends LitElement {
       }
       .dismissed {
         font-style: italic;
-      }
-      .secondary {
-        margin-top: 8px;
-        text-align: right;
-        color: var(--secondary-text-color);
       }
       .error,
       .critical {
