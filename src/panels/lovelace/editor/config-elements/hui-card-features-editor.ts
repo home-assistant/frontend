@@ -1,11 +1,10 @@
-import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
@@ -236,119 +235,108 @@ export class HuiCardFeaturesEditor extends LitElement {
     );
 
     return html`
-      <ha-expansion-panel outlined>
-        <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
-          ${this.hass!.localize("ui.panel.lovelace.editor.features.name")}
-        </h3>
-        <div class="content">
-          ${supportedFeaturesType.length === 0 && this.features.length === 0
-            ? html`
-                <ha-alert type="info">
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.features.no_compatible_available"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
-          <ha-sortable
-            handle-selector=".handle"
-            @item-moved=${this._featureMoved}
-          >
-            <div class="features">
-              ${repeat(
-                this.features,
-                (featureConf) => this._getKey(featureConf),
-                (featureConf, index) => {
-                  const type = featureConf.type;
-                  const supported = this._supportsFeatureType(type);
-                  const editable = this._isFeatureTypeEditable(type);
-                  return html`
-                    <div class="feature">
-                      <div class="handle">
-                        <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                      </div>
-                      <div class="feature-content">
-                        <div>
-                          <span> ${this._getFeatureTypeLabel(type)} </span>
-                          ${this.stateObj && !supported
-                            ? html`
-                                <span class="secondary">
-                                  ${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.features.not_compatible"
-                                  )}
-                                </span>
-                              `
-                            : nothing}
-                        </div>
-                      </div>
-                      ${editable
+      ${supportedFeaturesType.length === 0 && this.features.length === 0
+        ? html`
+            <ha-alert type="info">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.features.no_compatible_available"
+              )}
+            </ha-alert>
+          `
+        : nothing}
+      <ha-sortable handle-selector=".handle" @item-moved=${this._featureMoved}>
+        <div class="features">
+          ${repeat(
+            this.features,
+            (featureConf) => this._getKey(featureConf),
+            (featureConf, index) => {
+              const type = featureConf.type;
+              const supported = this._supportsFeatureType(type);
+              const editable = this._isFeatureTypeEditable(type);
+              return html`
+                <div class="feature">
+                  <div class="handle">
+                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                  </div>
+                  <div class="feature-content">
+                    <div>
+                      <span> ${this._getFeatureTypeLabel(type)} </span>
+                      ${this.stateObj && !supported
                         ? html`
-                            <ha-icon-button
-                              .label=${this.hass!.localize(
-                                `ui.panel.lovelace.editor.features.edit`
+                            <span class="secondary">
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.editor.features.not_compatible"
                               )}
-                              .path=${mdiPencil}
-                              class="edit-icon"
-                              .index=${index}
-                              @click=${this._editFeature}
-                              .disabled=${!supported}
-                            ></ha-icon-button>
+                            </span>
                           `
                         : nothing}
-                      <ha-icon-button
-                        .label=${this.hass!.localize(
-                          `ui.panel.lovelace.editor.features.remove`
-                        )}
-                        .path=${mdiDelete}
-                        class="remove-icon"
-                        .index=${index}
-                        @click=${this._removeFeature}
-                      ></ha-icon-button>
                     </div>
-                  `;
-                }
-              )}
-            </div>
-          </ha-sortable>
-          ${supportedFeaturesType.length > 0
-            ? html`
-                <ha-button-menu
-                  fixed
-                  @action=${this._addFeature}
-                  @closed=${stopPropagation}
-                >
-                  <ha-button
-                    slot="trigger"
-                    outlined
-                    .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.features.add`
-                    )}
-                  >
-                    <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-                  </ha-button>
-                  ${types.map(
-                    (type) => html`
-                      <ha-list-item .value=${type}>
-                        ${this._getFeatureTypeLabel(type)}
-                      </ha-list-item>
-                    `
-                  )}
-                  ${types.length > 0 && customTypes.length > 0
-                    ? html`<li divider role="separator"></li>`
+                  </div>
+                  ${editable
+                    ? html`
+                        <ha-icon-button
+                          .label=${this.hass!.localize(
+                            `ui.panel.lovelace.editor.features.edit`
+                          )}
+                          .path=${mdiPencil}
+                          class="edit-icon"
+                          .index=${index}
+                          @click=${this._editFeature}
+                          .disabled=${!supported}
+                        ></ha-icon-button>
+                      `
                     : nothing}
-                  ${customTypes.map(
-                    (type) => html`
-                      <ha-list-item .value=${type}>
-                        ${this._getFeatureTypeLabel(type)}
-                      </ha-list-item>
-                    `
-                  )}
-                </ha-button-menu>
-              `
-            : nothing}
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      `ui.panel.lovelace.editor.features.remove`
+                    )}
+                    .path=${mdiDelete}
+                    class="remove-icon"
+                    .index=${index}
+                    @click=${this._removeFeature}
+                  ></ha-icon-button>
+                </div>
+              `;
+            }
+          )}
         </div>
-      </ha-expansion-panel>
+      </ha-sortable>
+      ${supportedFeaturesType.length > 0
+        ? html`
+            <ha-button-menu
+              fixed
+              @action=${this._addFeature}
+              @closed=${stopPropagation}
+            >
+              <ha-button
+                slot="trigger"
+                outlined
+                .label=${this.hass!.localize(
+                  `ui.panel.lovelace.editor.features.add`
+                )}
+              >
+                <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              </ha-button>
+              ${types.map(
+                (type) => html`
+                  <ha-list-item .value=${type}>
+                    ${this._getFeatureTypeLabel(type)}
+                  </ha-list-item>
+                `
+              )}
+              ${types.length > 0 && customTypes.length > 0
+                ? html`<li divider role="separator"></li>`
+                : nothing}
+              ${customTypes.map(
+                (type) => html`
+                  <ha-list-item .value=${type}>
+                    ${this._getFeatureTypeLabel(type)}
+                  </ha-list-item>
+                `
+              )}
+            </ha-button-menu>
+          `
+        : nothing}
     `;
   }
 
@@ -408,23 +396,6 @@ export class HuiCardFeaturesEditor extends LitElement {
       :host {
         display: flex !important;
         flex-direction: column;
-      }
-      .content {
-        padding: 12px;
-      }
-      ha-expansion-panel {
-        display: block;
-        --expansion-panel-content-padding: 0;
-        border-radius: 6px;
-      }
-      h3 {
-        margin: 0;
-        font-size: inherit;
-        font-weight: inherit;
-      }
-      ha-svg-icon,
-      ha-icon {
-        color: var(--secondary-text-color);
       }
       ha-button-menu {
         margin-top: 8px;
