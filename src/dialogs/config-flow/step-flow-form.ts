@@ -276,7 +276,7 @@ class StepFlowForm extends LitElement {
         }
         h2 {
           word-break: break-word;
-          padding-inline-end: 72px;
+          margin-right: 24px;
           direction: var(--direction);
         }
       `,

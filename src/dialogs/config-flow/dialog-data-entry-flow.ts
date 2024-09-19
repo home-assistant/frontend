@@ -438,13 +438,23 @@ class DataEntryFlowDialog extends LitElement {
           padding: 16px;
           position: absolute;
           top: 0;
-          right: 0;
           inset-inline-start: initial;
-          inset-inline-end: 0px;
           direction: var(--direction);
         }
         .dialog-actions > * {
           color: var(--secondary-text-color);
+        }
+        .secondary {
+          margin-top: 8px;
+          text-align: right;
+          color: var(--secondary-text-color);
+        }
+        .error,
+        .critical {
+          color: var(--error-color);
+        }
+        .warning {
+          color: var(--warning-color);
         }
       `,
     ];
