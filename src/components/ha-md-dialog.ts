@@ -7,6 +7,40 @@ import {
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
+// workaround to be able to overlay an dialog with another dialog
+MdDialog.addInitializer(async (instance) => {
+  await instance.updateComplete;
+
+  const dialogInstance = instance as MdDialog;
+
+  // @ts-expect-error dialog is private
+  dialogInstance.dialog.prepend(dialogInstance.scrim);
+  // @ts-expect-error scrim is private
+  dialogInstance.scrim.style.inset = 0;
+  // @ts-expect-error scrim is private
+  dialogInstance.scrim.style.zIndex = 0;
+
+  const { getOpenAnimation, getCloseAnimation } = dialogInstance;
+  dialogInstance.getOpenAnimation = () => {
+    const animations = getOpenAnimation.call(this);
+    animations.container = [
+      ...(animations.container ?? []),
+      ...(animations.dialog ?? []),
+    ];
+    animations.dialog = [];
+    return animations;
+  };
+  dialogInstance.getCloseAnimation = () => {
+    const animations = getCloseAnimation.call(this);
+    animations.container = [
+      ...(animations.container ?? []),
+      ...(animations.dialog ?? []),
+    ];
+    animations.dialog = [];
+    return animations;
+  };
+});
+
 let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
 
 /**
@@ -84,7 +118,7 @@ export class HaMdDialog extends MdDialog {
   _handleCancel(closeEvent: Event) {
     if (this.disableCancelAction) {
       closeEvent.preventDefault();
-      const dialogElement = this.shadowRoot?.querySelector("dialog");
+      const dialogElement = this.shadowRoot?.querySelector("dialog .container");
       if (this.animate !== undefined) {
         dialogElement?.animate(
           [

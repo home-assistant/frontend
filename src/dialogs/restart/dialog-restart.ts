@@ -121,6 +121,7 @@ class DialogRestart extends LitElement {
                           <div slot="start" class="icon-background reload">
                             <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
                           </div>
+                          <ha-icon-next slot="end"></ha-icon-next>
                         </ha-md-list-item>
                       `
                     : nothing}
@@ -139,6 +140,7 @@ class DialogRestart extends LitElement {
                         "ui.dialogs.restart.restart.description"
                       )}
                     </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
                   </ha-md-list-item>
                 </ha-md-list>
                 <ha-expansion-panel
@@ -166,6 +168,7 @@ class DialogRestart extends LitElement {
                                 "ui.dialogs.restart.reboot.description"
                               )}
                             </div>
+                            <ha-icon-next slot="end"></ha-icon-next>
                           </ha-md-list-item>
                           <ha-md-list-item
                             type="button"
@@ -184,6 +187,7 @@ class DialogRestart extends LitElement {
                                 "ui.dialogs.restart.shutdown.description"
                               )}
                             </div>
+                            <ha-icon-next slot="end"></ha-icon-next>
                           </ha-md-list-item>
                         `
                       : nothing}
@@ -207,6 +211,7 @@ class DialogRestart extends LitElement {
                           "ui.dialogs.restart.restart-safe-mode.description"
                         )}
                       </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
                     </ha-md-list-item>
                   </ha-md-list>
                 </ha-expansion-panel>
