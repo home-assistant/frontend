@@ -1796,11 +1796,13 @@
     },
     "errors": {
       "config": {
+        "visual_editor_not_supported": "Visual editor not supported",
+        "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
+        "edit_in_yaml_supported": "You can still edit your config using YAML.",
+        "configuration_error": "Configuration error",
+        "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
-        "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
-        "edit_in_yaml_supported": "You can still edit your config in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",

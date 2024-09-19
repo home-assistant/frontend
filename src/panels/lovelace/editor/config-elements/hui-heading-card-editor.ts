@@ -8,7 +8,7 @@ import {
   array,
   assert,
   assign,
-  literal,
+  enums,
   object,
   optional,
   string,
@@ -43,7 +43,7 @@ const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    heading_style: optional(union([literal("title"), literal("subtitle")])),
+    heading_style: optional(enums(["title", "subtitle"])),
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),

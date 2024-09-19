@@ -7,6 +7,7 @@ import {
   TemplateResult,
   css,
   html,
+  nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -16,14 +17,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
+import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
+import { LovelaceElementConfig } from "../elements/types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceElementConfig } from "../elements/types";
 import type {
   LovelaceConfigForm,
   LovelaceGenericElementEditor,
@@ -33,7 +35,6 @@ import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 export interface ConfigChangedEvent {
   config:
@@ -241,43 +242,49 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
             `}
         ${this._guiSupported === false && this.configElementType
           ? html`
-              <div class="info">
-                ${this.hass.localize("ui.errors.config.editor_not_available", {
-                  type: this.configElementType,
-                })}
-              </div>
+              <ha-alert
+                alert-type="info"
+                .title=${this.hass.localize(
+                  "ui.errors.config.visual_editor_not_supported"
+                )}
+              >
+                ${this.hass.localize(
+                  "ui.errors.config.visual_editor_not_supported_reason_type"
+                )}
+                <br />
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+              </ha-alert>
             `
-          : ""}
+          : nothing}
         ${this.hasError
           ? html`
-              <div class="error">
-                ${this.hass.localize("ui.errors.config.error_detected")}:
-                <br />
+              <ha-alert
+                alert-type="error"
+                .title=${this.hass.localize(
+                  "ui.errors.config.configuration_error"
+                )}
+              >
                 <ul>
                   ${this._errors!.map((error) => html`<li>${error}</li>`)}
                 </ul>
-              </div>
+              </ha-alert>
             `
-          : ""}
+          : nothing}
         ${this.hasWarning
           ? html`
               <ha-alert
                 alert-type="warning"
-                .title="${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}:"
+                .title=${this.hass.localize(
+                  "ui.errors.config.visual_editor_not_supported"
+                )}
               >
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
+                <ul>
+                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
+                </ul>
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </ha-alert>
             `
-          : ""}
+          : nothing}
       </div>
     `;
   }
@@ -430,26 +437,6 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
       }
       ha-code-editor {
         --code-mirror-max-height: calc(100vh - 245px);
-      }
-      .error,
-      .warning,
-      .info {
-        word-break: break-word;
-        margin-top: 8px;
-      }
-      .error {
-        color: var(--error-color);
-      }
-      .warning {
-        color: var(--warning-color);
-      }
-      .warning ul,
-      .error ul {
-        margin: 4px 0;
-      }
-      .warning li,
-      .error li {
-        white-space: pre-wrap;
       }
       ha-circular-progress {
         display: block;
