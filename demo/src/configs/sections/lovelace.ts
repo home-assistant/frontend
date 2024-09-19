@@ -9,6 +9,22 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
       title: isFrontpageEmbed ? "Home Assistant" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
+      badges: [
+        {
+          type: "entity",
+          entity: "sensor.outdoor_temperature",
+          color: "red",
+        },
+        {
+          type: "entity",
+          entity: "sensor.outdoor_humidity",
+          color: "indigo",
+        },
+        {
+          type: "entity",
+          entity: "device_tracker.car",
+        },
+      ],
       sections: [
         ...(isFrontpageEmbed
           ? []
