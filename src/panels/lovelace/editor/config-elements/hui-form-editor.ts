@@ -7,14 +7,11 @@ import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceGenericElementEditor } from "../../types";
+import type { LovelaceGenericEditor } from "../../types";
 import { configElementStyle } from "./config-elements-style";
 
 @customElement("hui-form-editor")
-export class HuiFormEditor
-  extends LitElement
-  implements LovelaceGenericElementEditor
-{
+export class HuiFormEditor extends LitElement implements LovelaceGenericEditor {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public schema!: HaFormSchema[];

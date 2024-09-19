@@ -123,29 +123,27 @@ export interface LovelaceHeaderFooter extends HTMLElement {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
+export interface LovelaceCardEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceCardConfig): void;
 }
 
-export interface LovelaceBadgeEditor extends LovelaceGenericElementEditor {
+export interface LovelaceBadgeEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceBadgeConfig): void;
 }
 
-export interface LovelaceHeaderFooterEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelaceHeaderFooterEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
+export interface LovelaceRowEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceRowConfig): void;
 }
 
-export interface LovelacePictureElementEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelacePictureElementEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceElementConfig): void;
 }
 
-export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
+export interface LovelaceGenericEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
   context?: C;
@@ -174,7 +172,6 @@ export interface LovelaceCardFeatureConstructor
   isSupported?: (stateObj?: HassEntity) => boolean;
 }
 
-export interface LovelaceCardFeatureEditor
-  extends LovelaceGenericElementEditor {
+export interface LovelaceCardFeatureEditor extends LovelaceGenericEditor {
   setConfig(config: LovelaceCardFeatureConfig): void;
 }

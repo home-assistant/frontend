@@ -96,7 +96,7 @@ export interface SubElementEditorConfig {
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
     | LovelaceElementConfig;
-  type: "header" | "footer" | "row" | "feature" | "element";
+  type: "header" | "footer" | "row" | "feature" | "element" | "heading-entity";
 }
 
 export interface EditSubElementEvent {
