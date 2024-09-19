@@ -125,4 +125,8 @@ export const coreCards: Card[] = [
   {
     type: "todo-list",
   },
+  {
+    type: "heading",
+    showElement: true,
+  },
 ];
