@@ -5989,7 +5989,8 @@
               "state_color": "Color icons based on state?",
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
-              "custom_cards": "Custom cards"
+              "custom_cards": "Custom cards",
+              "features": "Features"
             },
             "map": {
               "name": "Map",
