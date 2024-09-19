@@ -3,6 +3,7 @@ import { Context, HomeAssistant } from "../types";
 import {
   BlueprintAutomationConfig,
   ManualAutomationConfig,
+  flattenTriggers,
 } from "./automation";
 import { BlueprintScriptConfig, ScriptConfig } from "./script";
 
@@ -190,7 +191,11 @@ export const getDataFromPath = (
       if (!tempResult && raw === "sequence") {
         continue;
       }
-      result = tempResult;
+      if (raw === "trigger") {
+        result = flattenTriggers(tempResult);
+      } else {
+        result = tempResult;
+      }
       continue;
     }
 
