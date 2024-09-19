@@ -102,12 +102,3 @@ export interface SubElementEditorConfig {
 export interface EditSubElementEvent {
   subElementConfig: SubElementEditorConfig;
 }
-
-export interface SubFormEditorData<T = any> {
-  index?: number;
-  data?: T;
-}
-
-export interface EditSubFormEvent<T = any> {
-  subFormData: SubFormEditorData<T>;
-}
