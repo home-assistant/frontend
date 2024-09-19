@@ -4,7 +4,10 @@ import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-md-dialog";
+import {
+  getMobileOpenFromBottomAnimation,
+  getMobileCloseToBottomAnimation,
+} from "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button-toggle";
@@ -161,6 +164,8 @@ class DialogLightColorFavorite extends LitElement {
         @cancel=${this._cancel}
         @closed=${this._dialogClosed}
         aria-labelledby="dialog-light-color-favorite-title"
+        .getOpenAnimation=${getMobileOpenFromBottomAnimation}
+        .getCloseAnimation=${getMobileCloseToBottomAnimation}
       >
         <ha-dialog-header slot="headline">
           <ha-icon-button
@@ -244,8 +249,10 @@ class DialogLightColorFavorite extends LitElement {
             600px,
             100% - 48px
           ); /* prevent scrolling on desktop */
+        }
 
-          @media all and (max-width: 450px), all and (max-height: 500px) {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-md-dialog {
             min-width: 100%;
             min-height: auto;
             max-height: calc(100% - 100px);

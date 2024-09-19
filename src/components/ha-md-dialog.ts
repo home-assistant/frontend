@@ -1,4 +1,9 @@
 import { MdDialog } from "@material/web/dialog/dialog";
+import {
+  type DialogAnimation,
+  DIALOG_DEFAULT_CLOSE_ANIMATION,
+  DIALOG_DEFAULT_OPEN_ANIMATION,
+} from "@material/web/dialog/internal/animations";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -145,6 +150,58 @@ export class HaMdDialog extends MdDialog {
     `,
   ];
 }
+
+// by default the dialog open/close animation will be from/to the top
+// but if we have a special mobile dialog which is at the bottom of the screen, an from bottom animation can be used:
+const OPEN_FROM_BOTTOM_ANIMATION: DialogAnimation = {
+  ...DIALOG_DEFAULT_OPEN_ANIMATION,
+  dialog: [
+    [
+      // Dialog slide up
+      [{ transform: "translateY(50px)" }, { transform: "translateY(0)" }],
+      { duration: 500, easing: "cubic-bezier(.3,0,0,1)" },
+    ],
+  ],
+  container: [
+    [
+      // Container fade in
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 50, easing: "linear", pseudoElement: "::before" },
+    ],
+  ],
+};
+
+const CLOSE_TO_BOTTOM_ANIMATION: DialogAnimation = {
+  ...DIALOG_DEFAULT_CLOSE_ANIMATION,
+  dialog: [
+    [
+      // Dialog slide down
+      [{ transform: "translateY(0)" }, { transform: "translateY(50px)" }],
+      { duration: 150, easing: "cubic-bezier(.3,0,0,1)" },
+    ],
+  ],
+  container: [
+    [
+      // Container fade out
+      [{ opacity: "1" }, { opacity: "0" }],
+      { delay: 100, duration: 50, easing: "linear", pseudoElement: "::before" },
+    ],
+  ],
+};
+
+export const getMobileOpenFromBottomAnimation = () => {
+  const matches = window.matchMedia(
+    "all and (max-width: 450px), all and (max-height: 500px)"
+  ).matches;
+  return matches ? OPEN_FROM_BOTTOM_ANIMATION : DIALOG_DEFAULT_OPEN_ANIMATION;
+};
+
+export const getMobileCloseToBottomAnimation = () => {
+  const matches = window.matchMedia(
+    "all and (max-width: 450px), all and (max-height: 500px)"
+  ).matches;
+  return matches ? CLOSE_TO_BOTTOM_ANIMATION : DIALOG_DEFAULT_CLOSE_ANIMATION;
+};
 
 declare global {
   interface HTMLElementTagNameMap {
