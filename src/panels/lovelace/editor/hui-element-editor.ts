@@ -319,12 +319,49 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     }
   }
 
+  private async _loadConfigElement(): Promise<void> {
+    let configElement = await this.getConfigElement();
+
+    if (!configElement) {
+      const form = await this.getConfigForm();
+      if (form) {
+        await import("./config-elements/hui-form-editor");
+        configElement = document.createElement("hui-form-editor");
+        const { schema, assertConfig, computeLabel, computeHelper } = form;
+        (configElement as HuiFormEditor).schema = schema;
+        if (computeLabel) {
+          (configElement as HuiFormEditor).computeLabel = computeLabel;
+        }
+        if (computeHelper) {
+          (configElement as HuiFormEditor).computeHelper = computeHelper;
+        }
+        if (assertConfig) {
+          (configElement as HuiFormEditor).assertConfig = assertConfig;
+        }
+      }
+    }
+
+    if (configElement) {
+      configElement.hass = this.hass;
+      if ("lovelace" in configElement) {
+        configElement.lovelace = this.lovelace;
+      }
+      configElement.context = this.context;
+      configElement.addEventListener("config-changed", (ev) =>
+        this._handleUIConfigChanged(ev as UIConfigChangedEvent)
+      );
+      this._guiSupported = true;
+    } else {
+      this._guiSupported = false;
+    }
+
+    this._configElement = configElement;
+  }
+
   private async _updateConfigElement(): Promise<void> {
     if (!this.value) {
       return;
     }
-
-    let configElement: LovelaceGenericElementEditor | undefined;
 
     try {
       this._errors = undefined;
@@ -342,42 +379,8 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
         }
 
         this._configElementType = this.configElementType;
-
         this._loading = true;
-        configElement = await this.getConfigElement();
-
-        if (!configElement) {
-          const form = await this.getConfigForm();
-          if (form) {
-            await import("./config-elements/hui-form-editor");
-            configElement = document.createElement("hui-form-editor");
-            const { schema, assertConfig, computeLabel, computeHelper } = form;
-            (configElement as HuiFormEditor).schema = schema;
-            if (computeLabel) {
-              (configElement as HuiFormEditor).computeLabel = computeLabel;
-            }
-            if (computeHelper) {
-              (configElement as HuiFormEditor).computeHelper = computeHelper;
-            }
-            if (assertConfig) {
-              (configElement as HuiFormEditor).assertConfig = assertConfig;
-            }
-          }
-        }
-
-        if (configElement) {
-          configElement.hass = this.hass;
-          if ("lovelace" in configElement) {
-            configElement.lovelace = this.lovelace;
-          }
-          configElement.context = this.context;
-          configElement.addEventListener("config-changed", (ev) =>
-            this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-          );
-
-          this._configElement = configElement;
-          this._guiSupported = true;
-        }
+        await this._loadConfigElement();
       }
 
       if (this._configElement) {
