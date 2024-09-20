@@ -6333,6 +6333,16 @@
                 },
                 "customize_modes": "Customize swing modes"
               },
+              "climate-swing-horizontal-modes": {
+                "label": "Climate horizontal swing modes",
+                "swing_horizontal_modes": "Horizontal swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "customize_modes": "Customize horizontal swing modes"
+              },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
                 "hvac_modes": "HVAC modes",

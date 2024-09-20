@@ -78,16 +78,19 @@ const ENTITIES = [
     fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
     preset_modes: ["home", "eco", "away"],
     swing_modes: ["auto", "1", "2", "3", "off"],
+    switch_horizontal_modes: ["auto", "4", "5", "6", "off"],
     current_temperature: 23,
     target_temp_high: 24,
     target_temp_low: 21,
     fan_mode: "auto_low",
     preset_mode: "home",
     swing_mode: "auto",
+    swing_horizontal_mode: "off",
     supported_features:
       ClimateEntityFeature.TURN_ON +
       ClimateEntityFeature.TURN_OFF +
       ClimateEntityFeature.SWING_MODE +
+      ClimateEntityFeature.SWING_HORIZONTAL_MODE +
       ClimateEntityFeature.PRESET_MODE +
       ClimateEntityFeature.FAN_MODE +
       ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
