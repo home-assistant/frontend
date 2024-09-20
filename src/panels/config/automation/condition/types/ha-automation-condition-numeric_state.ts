@@ -273,7 +273,7 @@ export default class HaNumericStateCondition extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newCondition = ev.detail.value;
+    const newCondition = { ...ev.detail.value };
 
     this._inputAboveIsEntity = newCondition.mode_above === "input";
     this._inputBelowIsEntity = newCondition.mode_below === "input";

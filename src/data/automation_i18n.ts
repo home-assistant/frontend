@@ -889,15 +889,14 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    const entities = ensureArray(condition.entity_id) || [];
-    const stateObj = hass.states[entities[0]];
-    let entity = stateObj ? computeStateName(stateObj) : entities[0];
-    if (entities.length > 1) {
-      entity += hass.localize(
-        `${conditionsTranslationBaseKey}.numeric_state.description.more_entities`,
-        { count: entities.length - 1 }
-      );
-    }
+    const entity_ids = ensureArray(condition.entity_id);
+    const stateObj = hass.states[entity_ids[0]];
+    const entity = formatListWithAnds(
+      hass.locale,
+      entity_ids.map((id) =>
+        hass.states[id] ? computeStateName(hass.states[id]) : id || ""
+      )
+    );
 
     const attribute = condition.attribute
       ? computeAttributeNameDisplay(
@@ -912,8 +911,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           above: condition.above,
           below: condition.below,
         }
@@ -923,8 +923,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           above: condition.above,
         }
       );
@@ -933,8 +934,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.below`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           below: condition.below,
         }
       );
