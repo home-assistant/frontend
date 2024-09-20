@@ -245,7 +245,7 @@ export const computeMediaDescription = (
       secondaryTitle = stateObj.attributes.media_artist!;
       break;
     case "playlist":
-      secondaryTitle = stateObj.attributes.media_playlist!;
+      secondaryTitle = stateObj.attributes.media_playlist || stateObj.attributes.media_artist!;
       break;
     case "tvshow":
       secondaryTitle = stateObj.attributes.media_series_title!;
