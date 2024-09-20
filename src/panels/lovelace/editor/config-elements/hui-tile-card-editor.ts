@@ -162,7 +162,7 @@ export class HuiTileCardEditor
               name: "hold_action",
               selector: {
                 ui_action: {
-                  default_action: "more-info",
+                  default_action: "none",
                 },
               },
             },

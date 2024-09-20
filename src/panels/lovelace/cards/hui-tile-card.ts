@@ -96,9 +96,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       icon_tap_action: {
         action: getEntityDefaultTileIconAction(config.entity),
       },
-      hold_action: {
-        action: "more-info",
-      },
       ...config,
     };
   }
