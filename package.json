@@ -80,7 +80,7 @@
     "@material/mwc-top-app-bar": "0.27.0",
     "@material/mwc-top-app-bar-fixed": "0.27.0",
     "@material/top-app-bar": "=14.0.0-canary.53b3cad2f.0",
-    "@material/web": "2.1.0",
+    "@material/web": "2.2.0",
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
     "@polymer/paper-item": "3.0.1",
