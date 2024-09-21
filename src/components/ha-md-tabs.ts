@@ -98,6 +98,9 @@ export class HaMdTabs extends MdTabs {
         --md-sys-color-surface: var(--card-background-color);
         --md-sys-color-on-surface: var(--primary-color);
         --md-sys-color-on-surface-variant: var(--secondary-color);
+        --md-divider-thickness: 0px;
+        --md-primary-tab-container-height: 56px;
+        --md-secondary-tab-container-height: 56px;
       }
 
       :host {

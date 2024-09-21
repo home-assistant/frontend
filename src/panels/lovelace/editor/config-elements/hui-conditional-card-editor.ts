@@ -1,4 +1,3 @@
-import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
@@ -80,7 +79,7 @@ export class HuiConditionalCardEditor
 
     return html`
       <ha-md-tabs
-        active-tab-index=${this._cardTab ? 1 : 0}
+        .activeTabIndex=${this._cardTab ? 1 : 0}
         @change=${this._selectTab}
       >
         <ha-md-secondary-tab

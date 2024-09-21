@@ -66,7 +66,7 @@ class PanelDeveloperTools extends LitElement {
         </div>
         <ha-md-tabs
           class="scrolling"
-          active-tab-index=${this._activeTabIndex}
+          .activeTabIndex=${this._activeTabIndex}
           @change=${this._handleTabChanged}
         >
           ${tabs.map(
