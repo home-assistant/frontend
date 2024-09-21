@@ -1,13 +1,14 @@
-import "@material/mwc-button/mwc-button";
 import { mdiAlertOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
+import "../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../components/ha-md-dialog";
+import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
-import "../../components/ha-switch";
+import "../../components/ha-button";
 import { HaTextField } from "../../components/ha-textfield";
 import { HomeAssistant } from "../../types";
 import { DialogBoxParams } from "./show-dialog-box";
@@ -18,7 +19,11 @@ class DialogBox extends LitElement {
 
   @state() private _params?: DialogBoxParams;
 
+  @state() private _closeState?: "canceled" | "confirmed";
+
   @query("ha-textfield") private _textField?: HaTextField;
+
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public async showDialog(params: DialogBoxParams): Promise<void> {
     this._params = params;
@@ -42,33 +47,33 @@ class DialogBox extends LitElement {
 
     const confirmPrompt = this._params.confirmation || this._params.prompt;
 
+    const dialogTitle =
+      this._params.title ||
+      (this._params.confirmation &&
+        this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
+
     return html`
-      <ha-dialog
+      <ha-md-dialog
         open
-        ?scrimClickAction=${confirmPrompt}
-        ?escapeKeyAction=${confirmPrompt}
+        .disableCancelAction=${confirmPrompt || false}
         @closed=${this._dialogClosed}
-        defaultAction="ignore"
-        .heading=${html`${this._params.warning
-          ? html`<ha-svg-icon
-              .path=${mdiAlertOutline}
-              style="color: var(--warning-color)"
-            ></ha-svg-icon> `
-          : ""}${this._params.title
-          ? this._params.title
-          : this._params.confirmation &&
-            this.hass.localize(
-              "ui.dialogs.generic.default_confirmation_title"
-            )}`}
+        type="alert"
+        aria-labelledby="dialog-box-title"
+        aria-describedby="dialog-box-description"
       >
-        <div>
-          ${this._params.text
-            ? html`
-                <p class=${this._params.prompt ? "no-bottom-padding" : ""}>
-                  ${this._params.text}
-                </p>
-              `
-            : ""}
+        <div slot="headline">
+          <span .title=${dialogTitle} id="dialog-box-title">
+            ${this._params.warning
+              ? html`<ha-svg-icon
+                  .path=${mdiAlertOutline}
+                  style="color: var(--warning-color)"
+                ></ha-svg-icon> `
+              : nothing}
+            ${dialogTitle}
+          </span>
+        </div>
+        <div slot="content" id="dialog-box-description">
+          ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
           ${this._params.prompt
             ? html`
                 <ha-textfield
@@ -87,58 +92,64 @@ class DialogBox extends LitElement {
               `
             : ""}
         </div>
-        ${confirmPrompt &&
-        html`
-          <mwc-button
-            @click=${this._dismiss}
-            slot="secondaryAction"
+        <div slot="actions">
+          ${confirmPrompt &&
+          html`
+            <ha-button
+              @click=${this._dismiss}
+              ?dialogInitialFocus=${!this._params.prompt &&
+              this._params.destructive}
+            >
+              ${this._params.dismissText
+                ? this._params.dismissText
+                : this.hass.localize("ui.dialogs.generic.cancel")}
+            </ha-button>
+          `}
+          <ha-button
+            @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
-            this._params.destructive}
+            !this._params.destructive}
+            class=${classMap({
+              destructive: this._params.destructive || false,
+            })}
           >
-            ${this._params.dismissText
-              ? this._params.dismissText
-              : this.hass.localize("ui.dialogs.generic.cancel")}
-          </mwc-button>
-        `}
-        <mwc-button
-          @click=${this._confirm}
-          ?dialogInitialFocus=${!this._params.prompt &&
-          !this._params.destructive}
-          slot="primaryAction"
-          class=${classMap({
-            destructive: this._params.destructive || false,
-          })}
-        >
-          ${this._params.confirmText
-            ? this._params.confirmText
-            : this.hass.localize("ui.dialogs.generic.ok")}
-        </mwc-button>
-      </ha-dialog>
+            ${this._params.confirmText
+              ? this._params.confirmText
+              : this.hass.localize("ui.dialogs.generic.ok")}
+          </ha-button>
+        </div>
+      </ha-md-dialog>
     `;
   }
 
-  private _dismiss(): void {
+  private _cancel(): void {
     if (this._params?.cancel) {
       this._params.cancel();
     }
-    this._close();
+  }
+
+  private _dismiss(): void {
+    this._cancel();
+    this._closeState = "canceled";
+    this._closeDialog();
   }
 
   private _confirm(): void {
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
-    this._close();
+    this._closeState = "confirmed";
+    this._closeDialog();
   }
 
-  private _dialogClosed(ev) {
-    if (ev.detail.action === "ignore") {
-      return;
+  private _closeDialog() {
+    this._dialog?.close();
+  }
+
+  private _dialogClosed() {
+    if (!this._closeState) {
+      this._cancel();
     }
-    this._dismiss();
-  }
-
-  private _close(): void {
     if (!this._params) {
       return;
     }
@@ -167,10 +178,6 @@ class DialogBox extends LitElement {
       }
       .destructive {
         --mdc-theme-primary: var(--error-color);
-      }
-      ha-dialog {
-        /* Place above other dialogs */
-        --dialog-z-index: 104;
       }
       @media all and (min-width: 600px) {
         ha-dialog {
