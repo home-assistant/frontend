@@ -54,7 +54,7 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-menu-item";
+import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry, sortConfigEntries } from "../../../data/config_entries";
@@ -388,7 +388,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           device.config_entries
             .filter((entId) => entId in entryLookup)
             .map((entId) => entryLookup[entId]),
-          manifestLookup
+          device.primary_config_entry
         );
 
         const labels = labelReg && device?.labels;
@@ -629,7 +629,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
     const areaItems = html`${Object.values(this.hass.areas).map(
         (area) =>
-          html`<ha-menu-item
+          html`<ha-md-menu-item
             .value=${area.area_id}
             @click=${this._handleBulkArea}
           >
@@ -640,23 +640,23 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   .path=${mdiTextureBox}
                 ></ha-svg-icon>`}
             <div slot="headline">${area.name}</div>
-          </ha-menu-item>`
+          </ha-md-menu-item>`
       )}
-      <ha-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
           )}
         </div>
-      </ha-menu-item>
+      </ha-md-menu-item>
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateArea}>
+      <ha-md-menu-item @click=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
           )}
         </div>
-      </ha-menu-item>`;
+      </ha-md-menu-item>`;
 
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
@@ -668,7 +668,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           this._selected.some((deviceId) =>
             this.hass.devices[deviceId]?.labels.includes(label.label_id)
           );
-        return html`<ha-menu-item
+        return html`<ha-md-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -686,13 +686,13 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item>`;
+        </ha-md-menu-item>`;
       })}
       <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div></ha-menu-item
+        </div></ha-md-menu-item
       >`;
 
     return html`
@@ -802,7 +802,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         ></ha-filter-labels>
 
         ${!this.narrow
-          ? html`<ha-button-menu-new slot="selection-bar">
+          ? html`<ha-md-button-menu slot="selection-bar">
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -815,11 +815,11 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-assist-chip>
                 ${labelItems}
-              </ha-button-menu-new>
+              </ha-md-button-menu>
 
               ${areasInOverflow
                 ? nothing
-                : html`<ha-button-menu-new slot="selection-bar">
+                : html`<ha-md-button-menu slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -832,10 +832,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-assist-chip>
                     ${areaItems}
-                  </ha-button-menu-new>`}`
+                  </ha-md-button-menu>`}`
           : nothing}
         ${this.narrow || areasInOverflow
-          ? html`<ha-button-menu-new has-overflow slot="selection-bar">
+          ? html`<ha-md-button-menu has-overflow slot="selection-bar">
               ${this.narrow
                 ? html`<ha-assist-chip
                     .label=${this.hass.localize(
@@ -855,7 +855,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   ></ha-icon-button>`}
               ${this.narrow
                 ? html` <ha-sub-menu>
-                    <ha-menu-item slot="item">
+                    <ha-md-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.add_label"
@@ -865,12 +865,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-menu-item>
+                    </ha-md-menu-item>
                     <ha-menu slot="menu">${labelItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing}
               <ha-sub-menu>
-                <ha-menu-item slot="item">
+                <ha-md-menu-item slot="item">
                   <div slot="headline">
                     ${this.hass.localize(
                       "ui.panel.config.devices.picker.bulk_actions.move_area"
@@ -880,10 +880,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     slot="end"
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
-                </ha-menu-item>
+                </ha-md-menu-item>
                 <ha-menu slot="menu">${areaItems}</ha-menu>
               </ha-sub-menu>
-            </ha-button-menu-new>`
+            </ha-md-button-menu>`
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
@@ -1100,7 +1100,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {

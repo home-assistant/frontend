@@ -1,16 +1,34 @@
 import { html } from "lit";
+import { DataEntryFlowStep } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
 import {
+  RepairsIssue,
   createRepairsFlow,
   deleteRepairsFlow,
   fetchRepairsFlow,
   handleRepairsFlowStep,
-  RepairsIssue,
 } from "../../../data/repairs";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
+import { HomeAssistant } from "../../../types";
+
+const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
+  step.description_placeholders && issue.translation_placeholders
+    ? { ...issue.translation_placeholders, ...step.description_placeholders }
+    : step.description_placeholders || issue.translation_placeholders;
+
+const renderIssueDescription = (hass: HomeAssistant, issue: RepairsIssue) =>
+  issue.breaks_in_ha_version
+    ? html`
+        <ha-alert alert-type="warning">
+          ${hass.localize("ui.panel.config.repairs.dialog.breaks_in_version", {
+            version: issue.breaks_in_ha_version,
+          })} </ha-alert
+        ><br />
+      `
+    : "";
 
 export const loadRepairFlowDialog = loadDataEntryFlowDialog;
 
@@ -53,10 +71,11 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.abort.${step.reason}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
 
-        return description
+        return html`${renderIssueDescription(hass, issue)}
+        ${description
           ? html`
               <ha-markdown
                 breaks
@@ -64,7 +83,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : step.reason;
+          : step.reason}`;
       },
 
       renderShowFormStepHeader(hass, step) {
@@ -73,7 +92,7 @@ export const showRepairsFlowDialog = (
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
-            step.description_placeholders
+            mergePlaceholders(issue, step)
           ) || hass.localize("ui.dialogs.repair_flow.form.header")
         );
       },
@@ -83,9 +102,10 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.description`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
-        return description
+        return html`${renderIssueDescription(hass, issue)}
+        ${description
           ? html`
               <ha-markdown
                 allowsvg
@@ -93,7 +113,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : "";
+          : ""}`;
       },
 
       renderShowFormStepFieldLabel(hass, step, field, options) {
@@ -101,7 +121,7 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data.${field.name}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
       },
 
@@ -110,11 +130,12 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.${options?.prefix ? `section.${options.prefix[0]}.` : ""}data_description.${field.name}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
-        return description
+        return html`${renderIssueDescription(hass, issue)}
+        ${description
           ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
-          : "";
+          : ""}`;
       },
 
       renderShowFormStepFieldError(hass, step, error) {
@@ -122,7 +143,7 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.error.${error}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
       },
 
@@ -165,7 +186,7 @@ export const showRepairsFlowDialog = (
             `component.${issue.domain}.issues.step.${
               issue.translation_key || issue.issue_id
             }.fix_flow.${step.step_id}.title`,
-            step.description_placeholders
+            mergePlaceholders(issue, step)
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
@@ -175,9 +196,9 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.progress.${step.progress_action}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
-        return description
+        return html`${renderIssueDescription(hass, issue)}${description
           ? html`
               <ha-markdown
                 allowsvg
@@ -185,7 +206,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : "";
+          : ""}`;
       },
 
       renderMenuHeader(hass, step) {
@@ -194,7 +215,7 @@ export const showRepairsFlowDialog = (
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
-            step.description_placeholders
+            mergePlaceholders(issue, step)
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
@@ -204,9 +225,10 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.description`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
-        return description
+        return html`${renderIssueDescription(hass, issue)}
+        ${description
           ? html`
               <ha-markdown
                 allowsvg
@@ -214,7 +236,7 @@ export const showRepairsFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : "";
+          : ""}`;
       },
 
       renderMenuOption(hass, step, option) {
@@ -222,7 +244,7 @@ export const showRepairsFlowDialog = (
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
           }.fix_flow.step.${step.step_id}.menu_options.${option}`,
-          step.description_placeholders
+          mergePlaceholders(issue, step)
         );
       },
 

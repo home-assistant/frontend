@@ -62,6 +62,7 @@ class HaChangePasswordCard extends LitElement {
             autocomplete="current-password"
             .value=${this._currentPassword}
             @input=${this._currentPasswordChanged}
+            @change=${this._currentPasswordChanged}
             required
           ></ha-textfield>
 
@@ -74,6 +75,7 @@ class HaChangePasswordCard extends LitElement {
                   type="password"
                   autocomplete="new-password"
                   .value=${this._password}
+                  @input=${this._newPasswordChanged}
                   @change=${this._newPasswordChanged}
                   required
                   auto-validate
@@ -87,6 +89,7 @@ class HaChangePasswordCard extends LitElement {
                   autocomplete="new-password"
                   .value=${this._passwordConfirm}
                   @input=${this._newPasswordConfirmChanged}
+                  @change=${this._newPasswordConfirmChanged}
                   required
                   auto-validate
                 ></ha-textfield>`

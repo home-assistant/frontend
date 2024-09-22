@@ -2,6 +2,8 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import { subscribeDeviceRegistry } from "./device_registry";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { getThreadDataSetTLV, listThreadDataSets } from "./thread";
 
 export enum NetworkType {
   THREAD = "thread",
@@ -51,10 +53,30 @@ export interface MatterCommissioningParameters {
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
 
-export const startExternalCommissioning = (hass: HomeAssistant) =>
-  hass.auth.external!.fireMessage({
+export const startExternalCommissioning = async (hass: HomeAssistant) => {
+  if (isComponentLoaded(hass, "thread")) {
+    const datasets = await listThreadDataSets(hass);
+    const preferredDataset = datasets.datasets.find(
+      (dataset) => dataset.preferred
+    );
+    if (preferredDataset) {
+      return hass.auth.external!.fireMessage({
+        type: "matter/commission",
+        payload: {
+          active_operational_dataset: (
+            await getThreadDataSetTLV(hass, preferredDataset.dataset_id)
+          ).tlv,
+          border_agent_id: preferredDataset.preferred_border_agent_id,
+          mac_extended_address: preferredDataset.preferred_extended_address,
+        },
+      });
+    }
+  }
+
+  return hass.auth.external!.fireMessage({
     type: "matter/commission",
   });
+};
 
 export const redirectOnNewMatterDevice = (
   hass: HomeAssistant,

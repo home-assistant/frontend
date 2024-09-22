@@ -232,7 +232,7 @@ export const basicTrace: DemoTrace = {
       ],
       action: [
         {
-          service: "input_boolean.toggle",
+          action: "input_boolean.toggle",
           target: {
             entity_id: "input_boolean.toggle_4",
           },
@@ -268,7 +268,7 @@ export const basicTrace: DemoTrace = {
           ],
           default: [
             {
-              service: "input_boolean.toggle",
+              action: "input_boolean.toggle",
               alias: "Toggle 2",
               target: {
                 entity_id: "input_boolean.toggle_2",
@@ -277,7 +277,7 @@ export const basicTrace: DemoTrace = {
           ],
         },
         {
-          service: "input_boolean.toggle",
+          action: "input_boolean.toggle",
           target: {
             entity_id: "input_boolean.toggle_4",
           },

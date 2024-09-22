@@ -153,7 +153,7 @@ export class HaConfigDevicePage extends LitElement {
         .filter((entId) => entId in entryLookup)
         .map((entry) => entryLookup[entry]);
 
-      return sortConfigEntries(deviceEntries, manifestLookup);
+      return sortConfigEntries(deviceEntries, device.primary_config_entry);
     }
   );
 
@@ -189,20 +189,20 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) => {
         const domain = computeDomain(entry.entity_id);
 
-        if (entry.entity_category) {
-          return entry.entity_category;
+        if (ASSIST_ENTITIES.includes(domain)) {
+          return "assist";
         }
 
         if (domain === "event" || domain === "notify") {
           return domain;
         }
 
-        if (SENSOR_ENTITIES.includes(domain)) {
-          return "sensor";
+        if (entry.entity_category) {
+          return entry.entity_category;
         }
 
-        if (ASSIST_ENTITIES.includes(domain)) {
-          return "assist";
+        if (SENSOR_ENTITIES.includes(domain)) {
+          return "sensor";
         }
 
         return "control";
@@ -1534,6 +1534,10 @@ export class HaConfigDevicePage extends LitElement {
 
         .items {
           padding-bottom: 16px;
+        }
+
+        ha-card:has(ha-logbook) {
+          padding-bottom: var(--ha-card-border-radius, 12px);
         }
 
         ha-logbook {

@@ -2584,6 +2584,7 @@
             "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
+              "edit_resource": "Edit resource",
               "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
@@ -4895,12 +4896,15 @@
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
+            "between_min_max": "Between {min} and {max}",
+            "error_not_in_range": "Value must be between {min} and {max}",
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
-            "bitmask": "Bitmask"
+            "bitmask": "Bitmask",
+            "default": "Default"
           },
           "network_status": {
             "connected": "Connected",
@@ -5444,6 +5448,9 @@
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
+          },
+          "heading": {
+            "default_heading": "Kitchen"
           }
         },
         "unused_entities": {
@@ -5976,6 +5983,7 @@
               "show_name": "Show name",
               "show_state": "Show state",
               "tap_action": "Tap behavior",
+              "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5986,7 +5994,23 @@
               "state_color": "Color icons based on state?",
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
-              "custom_cards": "Custom cards"
+              "custom_cards": "Custom cards",
+              "features": "Features"
+            },
+            "heading": {
+              "name": "Heading",
+              "description": "The heading card structures your dashboard by providing title, icon and navigation.",
+              "heading": "Heading",
+              "heading_style": "Heading style",
+              "heading_style_options": {
+                "title": "Title",
+                "subtitle": "Subtitle"
+              },
+              "entities": "Entities",
+              "entity_config": {
+                "content": "Content"
+              },
+              "default_heading": "Kitchen"
             },
             "map": {
               "name": "Map",
@@ -6130,6 +6154,13 @@
               "other_badges": "Other badges",
               "custom_badges": "Custom badges"
             }
+          },
+          "entities": {
+            "name": "Entities",
+            "add": "Add entity",
+            "edit": "Edit entity",
+            "remove": "Remove entity",
+            "form-label": "Edit entity"
           },
           "features": {
             "name": "Features",
@@ -7088,7 +7119,9 @@
           "header": "We found compatible devices!",
           "intro": "These are found on your local network. Some are already added, others may need extra configuration.",
           "more_integrations": "+{count} more",
-          "finish": "Finish"
+          "finish": "Finish",
+          "all_set": "All set!",
+          "lets_start": "Let’s start your private smart home adventure."
         },
         "analytics": {
           "header": "Help us help you",
