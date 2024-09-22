@@ -55,6 +55,7 @@ import {
   Action,
   NonConditionAction,
   getActionType,
+  migrateAutomationAction,
 } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -73,10 +74,10 @@ import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
-import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
@@ -564,7 +565,9 @@ export default class HaAutomationActionRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    fireEvent(this, "value-changed", {
+      value: migrateAutomationAction(ev.detail.value),
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {

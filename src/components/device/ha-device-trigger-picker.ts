@@ -26,7 +26,7 @@ class HaDeviceTriggerPicker extends HaDeviceAutomationPicker<DeviceTrigger> {
       fetchDeviceTriggers,
       (deviceId?: string) => ({
         device_id: deviceId || "",
-        platform: "device",
+        trigger: "device",
         domain: "",
         entity_id: "",
       })

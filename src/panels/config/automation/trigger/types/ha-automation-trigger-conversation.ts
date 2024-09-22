@@ -26,7 +26,7 @@ export class HaConversationTrigger
   @query("#option_input", true) private _optionInput?: HaTextField;
 
   public static get defaultConfig(): ConversationTrigger {
-    return { platform: "conversation", command: "" };
+    return { trigger: "conversation", command: "" };
   }
 
   protected render() {
