@@ -89,7 +89,7 @@ export class HaManualAutomationEditor extends LitElement {
       <ha-automation-trigger
         role="region"
         aria-labelledby="triggers-heading"
-        .triggers=${this.config.trigger || []}
+        .triggers=${this.config.triggers || []}
         .path=${["trigger"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
@@ -119,7 +119,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!ensureArray(this.config.condition)?.length
+      ${!ensureArray(this.config.conditions)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.description",
@@ -131,7 +131,7 @@ export class HaManualAutomationEditor extends LitElement {
       <ha-automation-condition
         role="region"
         aria-labelledby="conditions-heading"
-        .conditions=${this.config.condition || []}
+        .conditions=${this.config.conditions || []}
         .path=${["condition"]}
         @value-changed=${this._conditionChanged}
         @item-moved=${this._itemMoved}
@@ -160,7 +160,7 @@ export class HaManualAutomationEditor extends LitElement {
           </a>
         </div>
       </div>
-      ${!ensureArray(this.config.action)?.length
+      ${!ensureArray(this.config.actions)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.actions.description"
@@ -171,7 +171,7 @@ export class HaManualAutomationEditor extends LitElement {
       <ha-automation-action
         role="region"
         aria-labelledby="actions-heading"
-        .actions=${this.config.action}
+        .actions=${this.config.actions || []}
         .path=${["action"]}
         @value-changed=${this._actionChanged}
         @item-moved=${this._itemMoved}
@@ -185,7 +185,7 @@ export class HaManualAutomationEditor extends LitElement {
   private _triggerChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.config!, trigger: ev.detail.value as Trigger[] },
+      value: { ...this.config!, triggers: ev.detail.value as Trigger[] },
     });
   }
 
@@ -194,7 +194,7 @@ export class HaManualAutomationEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.config!,
-        condition: ev.detail.value as Condition[],
+        conditions: ev.detail.value as Condition[],
       },
     });
   }
@@ -202,7 +202,7 @@ export class HaManualAutomationEditor extends LitElement {
   private _actionChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.config!, action: ev.detail.value as Action[] },
+      value: { ...this.config!, actions: ev.detail.value as Action[] },
     });
   }
 

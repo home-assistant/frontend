@@ -46,6 +46,7 @@ import {
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
+  migrateAutomationConfig,
   normalizeAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
@@ -520,9 +521,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      trigger: this._config.trigger,
-      condition: this._config.condition,
-      action: this._config.action,
+      triggers: this._config.triggers,
+      conditions: this._config.conditions,
+      actions: this._config.actions,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
@@ -637,7 +638,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = { id: this._config?.id, ...ev.detail.value };
+    this._config = {
+      id: this._config?.id,
+      ...migrateAutomationConfig(ev.detail.value),
+    };
     this._errors = undefined;
     this._dirty = true;
   }
