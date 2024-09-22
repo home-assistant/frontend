@@ -10,7 +10,7 @@ interface InvalidConfig {
   error: string;
 }
 
-type ValidKeys = "triggers" | "actions" | "conditions";
+type ValidKeys = "trigger" | "action" | "condition";
 
 export const validateConfig = <
   T extends Partial<{ [key in ValidKeys]: unknown }>,

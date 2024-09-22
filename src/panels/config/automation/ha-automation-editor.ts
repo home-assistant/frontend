@@ -521,9 +521,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      triggers: this._config.triggers,
-      conditions: this._config.conditions,
-      actions: this._config.actions,
+      trigger: this._config.triggers,
+      condition: this._config.conditions,
+      action: this._config.actions,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
