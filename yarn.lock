@@ -3392,16 +3392,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:7.1.1":
-  version: 7.1.1
-  resolution: "@octokit/plugin-retry@npm:7.1.1"
+"@octokit/plugin-retry@npm:7.1.2":
+  version: 7.1.2
+  resolution: "@octokit/plugin-retry@npm:7.1.2"
   dependencies:
     "@octokit/request-error": "npm:^6.0.0"
     "@octokit/types": "npm:^13.0.0"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/ff7d2f0b45e61ff688c213ad28670fceffa8d56603850beabab21cbb79021d91d8bf40cdc2062949eeb6b031c6e5ad39bcbbc40b0caa7924c81d3c90b8fb0843
+  checksum: 10/adb2caa0785a451f86c9a25709d8f5e53ba6fac922052329a420526bba59764ecf469edc03f90397a32e1156968fe6bc2fc897fa2371a2263bacba2e559ba249
   languageName: node
   linkType: hard
 
@@ -8951,7 +8951,7 @@ __metadata:
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:7.1.1"
-    "@octokit/plugin-retry": "npm:7.1.1"
+    "@octokit/plugin-retry": "npm:7.1.2"
     "@octokit/rest": "npm:21.0.2"
     "@open-wc/dev-server-hmr": "npm:0.1.4"
     "@polymer/paper-item": "npm:3.0.1"
