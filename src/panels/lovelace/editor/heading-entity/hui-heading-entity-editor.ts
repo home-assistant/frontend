@@ -10,8 +10,8 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
+import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
+import type { LovelaceGenericElementEditor } from "../../types";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
 
@@ -25,13 +25,13 @@ const entityConfigStruct = object({
 @customElement("hui-heading-entity-editor")
 export class HuiHeadingEntityEditor
   extends LitElement
-  implements LovelaceCardEditor
+  implements LovelaceGenericElementEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: HeadingCardConfig;
+  @state() private _config?: HeadingEntityConfig;
 
-  public setConfig(config: HeadingCardConfig): void {
+  public setConfig(config: HeadingEntityConfig): void {
     assert(config, entityConfigStruct);
     this._config = config;
   }

@@ -9,7 +9,7 @@ import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { HeadingCardEntityConfig } from "../cards/types";
+import { HeadingEntityConfig } from "../cards/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -97,7 +97,7 @@ export interface SubElementEditorConfig {
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
     | LovelaceElementConfig
-    | HeadingCardEntityConfig;
+    | HeadingEntityConfig;
   type: "header" | "footer" | "row" | "feature" | "element" | "heading-entity";
 }
 

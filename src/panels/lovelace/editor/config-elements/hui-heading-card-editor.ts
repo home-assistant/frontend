@@ -23,10 +23,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  HeadingCardConfig,
-  HeadingCardEntityConfig,
-} from "../../cards/types";
+import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
@@ -186,7 +183,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.entities as HeadingCardEntityConfig[],
+      entities: ev.detail.entities as HeadingEntityConfig[],
     };
 
     fireEvent(this, "config-changed", { config });

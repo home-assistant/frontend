@@ -1,11 +1,10 @@
 import { customElement } from "lit/decorators";
-
-import { HeadingCardEntityConfig } from "../../cards/types";
+import { HeadingEntityConfig } from "../../cards/types";
 import { HuiElementEditor } from "../hui-element-editor";
 import type { HuiHeadingEntityEditor } from "./hui-heading-entity-editor";
 
 @customElement("hui-heading-entity-element-editor")
-export class HuiCardFeatureElementEditor extends HuiElementEditor<HeadingCardEntityConfig> {
+export class HuiHeadingEntityElementEditor extends HuiElementEditor<HeadingEntityConfig> {
   protected async getConfigElement(): Promise<
     HuiHeadingEntityEditor | undefined
   > {
@@ -16,6 +15,6 @@ export class HuiCardFeatureElementEditor extends HuiElementEditor<HeadingCardEnt
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-heading-entity-element-editor": HuiCardFeatureElementEditor;
+    "hui-heading-entity-element-editor": HuiHeadingEntityElementEditor;
   }
 }
