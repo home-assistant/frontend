@@ -94,7 +94,10 @@ class HaEntitiesPickerLight extends LitElement {
               .hass=${this.hass}
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
-              .includeEntities=${this.includeEntities}
+              .includeEntities=${this._includeEntities(
+                this.value,
+                this.includeEntities
+              )}
               .excludeEntities=${this.excludeEntities}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
@@ -117,7 +120,10 @@ class HaEntitiesPickerLight extends LitElement {
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
-          .includeEntities=${this.includeEntities}
+          .includeEntities=${this._includeEntities(
+            this.value,
+            this.includeEntities
+          )}
           .excludeEntities=${this.excludeEntities}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
@@ -132,6 +138,20 @@ class HaEntitiesPickerLight extends LitElement {
       </div>
     `;
   }
+
+  private _includeEntities = memoizeOne(
+    (
+      value: string[] | undefined,
+      includeEntities: string[] | undefined
+    ): string[] | undefined => {
+      if (!includeEntities) {
+        return undefined;
+      }
+      return includeEntities.filter(
+        (entity) => !value || !value.includes(entity)
+      );
+    }
+  );
 
   private _getEntityFilter = memoizeOne(
     (
