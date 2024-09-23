@@ -106,13 +106,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               "ui.panel.config.thread.add_dataset_from_tlv"
             )}</mwc-list-item
           >
-          ${!this._otbrInfo
-            ? html`<mwc-list-item @click=${this._addOTBR}
-                >${this.hass.localize(
-                  "ui.panel.config.thread.add_open_thread_border_router"
-                )}</mwc-list-item
-              >`
-            : ""}
+          <mwc-list-item @click=${this._addOTBR}
+            >${this.hass.localize(
+              "ui.panel.config.thread.add_open_thread_border_router"
+            )}</mwc-list-item
+          >
         </ha-button-menu>
         <div class="content">
           <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
@@ -342,8 +340,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       type: "thread/store_in_platform_keychain",
       payload: {
         mac_extended_address: otbr.extended_address,
-        border_agent_id: otbr.border_agent_id ?? "",
-        active_operational_dataset: otbr.active_dataset_tlvs ?? "",
+        border_agent_id: otbr.border_agent_id,
+        active_operational_dataset: otbr.active_dataset_tlvs,
       },
     });
   }

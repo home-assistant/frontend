@@ -22,7 +22,7 @@ import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { Condition, Trigger } from "../../data/automation";
+import { Condition, Trigger, flattenTriggers } from "../../data/automation";
 import {
   Action,
   ChooseAction,
@@ -572,8 +572,8 @@ export class HatScriptGraph extends LitElement {
     const paths = Object.keys(this.trackedNodes);
     const trigger_nodes =
       "trigger" in this.trace.config
-        ? ensureArray(this.trace.config.trigger).map((trigger, i) =>
-            this.render_trigger(trigger, i)
+        ? flattenTriggers(ensureArray(this.trace.config.trigger)).map(
+            (trigger, i) => this.render_trigger(trigger, i)
           )
         : undefined;
     try {
