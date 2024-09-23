@@ -5655,17 +5655,13 @@
             "strategy_type": "strategy"
           },
           "section": {
-            "unnamed_section": "Unnamed section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section"
           },
           "delete_section": {
             "title": "Delete section",
-            "text_named_section_only": "''{name}'' section will be deleted.",
-            "text_unnamed_section_only": "This section will be deleted.",
-            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
-            "text_unnamed_section_cards": "This section and all its cards will be deleted."
+            "text": "This section and all its cards will be deleted."
           },
           "edit_section": {
             "header": "Edit section",
