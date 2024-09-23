@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
@@ -9,10 +10,13 @@ import {
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -24,8 +28,33 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
+  private _deviceEntities = memoizeOne(
+    (
+      deviceId: string,
+      entities: EntityRegistryDisplayEntry[]
+    ): EntityRegistryDisplayEntry[] =>
+      entities.filter((entity) => entity.device_id === deviceId)
+  );
+
   protected render(): TemplateResult {
     const localize = this.hass.localize;
+
+    if (this.devices.length === 1) {
+      // integration_type === "device"
+      const deviceEntities = this._deviceEntities(
+        this.devices[0].id,
+        Object.values(this.hass.entities)
+      );
+      const assistSatellite = deviceEntities.find(
+        (entity) => computeDomain(entity.entity_id) === "assist_satellite"
+      );
+      if (assistSatellite) {
+        this._flowDone();
+        showVoiceAssistantSetupDialog(this, {
+          deviceId: this.devices[0].id,
+        });
+      }
+    }
 
     return html`
       <h2>${localize("ui.panel.config.integrations.config_flow.success")}!</h2>

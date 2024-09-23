@@ -5,6 +5,7 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
+  mdiMicrophone,
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
@@ -82,6 +83,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -1062,6 +1064,20 @@ export class HaConfigDevicePage extends LitElement {
       });
     }
 
+    const entities = this._entities(this.deviceId, this._entityReg);
+
+    if (
+      entities.some(
+        (ent) => computeDomain(ent.entity_id) === "assist_satellite"
+      )
+    ) {
+      deviceActions.push({
+        action: this._voiceAssistantSetup,
+        label: "Set up voice assistant",
+        icon: mdiMicrophone,
+      });
+    }
+
     const domains = this._integrations(
       device,
       this.entries,
@@ -1395,6 +1411,12 @@ export class HaConfigDevicePage extends LitElement {
 
     (ev.currentTarget as any).action(ev);
   }
+
+  private _voiceAssistantSetup = () => {
+    showVoiceAssistantSetupDialog(this, {
+      deviceId: this.deviceId,
+    });
+  };
 
   static get styles(): CSSResultGroup {
     return [
