@@ -21,16 +21,28 @@ export class HuiHeadingEntity extends LitElement {
   @property({ attribute: false }) public config!: HeadingEntityConfig | string;
 
   private _handleAction(ev: ActionHandlerEvent) {
-    const config = this._config(this.config);
+    const config: HeadingEntityConfig = {
+      tap_action: {
+        action: "none",
+      },
+      ...this._config(this.config),
+    };
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
   private _config = memoizeOne(
-    (config: HeadingEntityConfig | string): HeadingEntityConfig => {
-      if (typeof config === "string") {
-        return { entity: config };
-      }
-      return config;
+    (configOrString: HeadingEntityConfig | string): HeadingEntityConfig => {
+      const config =
+        typeof configOrString === "string"
+          ? { entity: configOrString }
+          : configOrString;
+
+      return {
+        tap_action: {
+          action: "none",
+        },
+        ...config,
+      };
     }
   );
 
@@ -43,7 +55,7 @@ export class HuiHeadingEntity extends LitElement {
       return nothing;
     }
 
-    const actionable = hasAction(config.tap_action || { action: "none" });
+    const actionable = hasAction(config.tap_action);
 
     return html`
       <div
