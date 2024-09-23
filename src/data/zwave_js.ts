@@ -252,6 +252,7 @@ export interface ZWaveJSNodeConfigParamMetadata {
   type: string;
   unit: string;
   states: { [key: number]: string };
+  default: any;
 }
 
 export interface ZWaveJSSetConfigParamData {

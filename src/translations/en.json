@@ -4905,7 +4905,8 @@
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
-            "bitmask": "Bitmask"
+            "bitmask": "Bitmask",
+            "default": "Default"
           },
           "network_status": {
             "connected": "Connected",
@@ -5449,6 +5450,9 @@
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
+          },
+          "heading": {
+            "default_heading": "Kitchen"
           }
         },
         "unused_entities": {
@@ -5981,6 +5985,7 @@
               "show_name": "Show name",
               "show_state": "Show state",
               "tap_action": "Tap behavior",
+              "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5991,7 +5996,23 @@
               "state_color": "Color icons based on state?",
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
-              "custom_cards": "Custom cards"
+              "custom_cards": "Custom cards",
+              "features": "Features"
+            },
+            "heading": {
+              "name": "Heading",
+              "description": "The heading card structures your dashboard by providing title, icon and navigation.",
+              "heading": "Heading",
+              "heading_style": "Heading style",
+              "heading_style_options": {
+                "title": "Title",
+                "subtitle": "Subtitle"
+              },
+              "entities": "Entities",
+              "entity_config": {
+                "content": "Content"
+              },
+              "default_heading": "Kitchen"
             },
             "map": {
               "name": "Map",
@@ -6135,6 +6156,13 @@
               "other_badges": "Other badges",
               "custom_badges": "Custom badges"
             }
+          },
+          "entities": {
+            "name": "Entities",
+            "add": "Add entity",
+            "edit": "Edit entity",
+            "remove": "Remove entity",
+            "form-label": "Edit entity"
           },
           "features": {
             "name": "Features",
