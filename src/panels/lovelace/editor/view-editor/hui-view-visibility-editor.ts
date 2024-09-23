@@ -13,6 +13,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/user/ha-user-badge";
+import "../../../../components/ha-list-item";
 import {
   LovelaceViewConfig,
   ShowViewConfig,
@@ -71,7 +72,7 @@ export class HuiViewVisibilityEditor extends LitElement {
       </p>
       ${this._sortedUsers(this._users).map(
         (user) => html`
-          <mwc-list-item graphic="avatar" hasMeta>
+          <ha-list-item graphic="avatar" hasMeta>
             <ha-user-badge
               slot="graphic"
               .hass=${this.hass}
@@ -84,7 +85,7 @@ export class HuiViewVisibilityEditor extends LitElement {
               @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
-          </mwc-list-item>
+          </ha-list-item>
         `
       )}
     `;
