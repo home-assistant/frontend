@@ -7,6 +7,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-button";
+import "../../../components/buttons/ha-filled-tonal-button";
+import "../../../components/buttons/ha-text-button";
 import "../../../components/ha-dialog-header";
 import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
@@ -132,33 +134,38 @@ class DialogRepairsIssue extends LitElement {
         <div slot="actions">
           ${this._issue.learn_more_url
             ? html`
-                <a
-                  .href=${learnMoreUrlIsHomeAssistant
-                    ? this._issue.learn_more_url.replace(
-                        "homeassistant://",
-                        "/"
-                      )
-                    : this._issue.learn_more_url}
-                  .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
-                  @click=${learnMoreUrlIsHomeAssistant
-                    ? this.closeDialog
-                    : undefined}
-                  rel="noopener noreferrer"
-                >
-                  <ha-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.repairs.dialog.learn"
-                    )}
-                  ></ha-button>
-                </a>
+                <div class="more-info-button">
+                  <a
+                    rel="noopener noreferrer"
+                    .href=${learnMoreUrlIsHomeAssistant
+                      ? this._issue.learn_more_url.replace(
+                          "homeassistant://",
+                          "/"
+                        )
+                      : this._issue.learn_more_url}
+                    .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                  >
+                    <ha-text-button
+                      @click=${learnMoreUrlIsHomeAssistant
+                        ? this.closeDialog
+                        : undefined}
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.config.repairs.dialog.learn"
+                      )}
+                    </ha-text-button>
+                  </a>
+                </div>
               `
             : ""}
-          <ha-button
-            .label=${this._issue!.ignored
+          <ha-text-button @click=${this.closeDialog}>
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-text-button>
+          <ha-filled-tonal-button @click=${this._ignoreIssue}>
+            ${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
-            @click=${this._ignoreIssue}
-          ></ha-button>
+          </ha-filled-tonal-button>
         </div>
       </ha-md-dialog>
     `;
@@ -185,8 +192,9 @@ class DialogRepairsIssue extends LitElement {
         margin-bottom: 16px;
         display: block;
       }
-      a {
+      .more-info-button {
         text-decoration: none;
+        flex: 1;
       }
       .dismissed {
         font-style: italic;
