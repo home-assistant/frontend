@@ -1,4 +1,10 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import { supportsFeature } from "../common/entity/supports-feature";
+
+export const enum AssistSatelliteEntityFeature {
+  ANNOUNCE = 1,
+}
 
 export interface WakeWordInterceptMessage {
   wake_word_phrase: string;
@@ -65,3 +71,9 @@ export const setWakeWords = (
     entity_id,
     wake_word_ids,
   });
+
+export const assistSatelliteSupportsSetupFlow = (
+  assistSatelliteEntity: HassEntity | undefined
+) =>
+  assistSatelliteEntity &&
+  supportsFeature(assistSatelliteEntity, AssistSatelliteEntityFeature.ANNOUNCE);

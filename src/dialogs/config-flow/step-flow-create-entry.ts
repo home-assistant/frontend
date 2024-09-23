@@ -17,6 +17,7 @@ import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
+import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -48,7 +49,12 @@ class StepFlowCreateEntry extends LitElement {
       const assistSatellite = deviceEntities.find(
         (entity) => computeDomain(entity.entity_id) === "assist_satellite"
       );
-      if (assistSatellite) {
+      if (
+        assistSatellite &&
+        assistSatelliteSupportsSetupFlow(
+          this.hass.states[assistSatellite.entity_id]
+        )
+      ) {
         this._flowDone();
         showVoiceAssistantSetupDialog(this, {
           deviceId: this.devices[0].id,

@@ -84,6 +84,7 @@ import {
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
 import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
+import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -1066,9 +1067,14 @@ export class HaConfigDevicePage extends LitElement {
 
     const entities = this._entities(this.deviceId, this._entityReg);
 
+    const assistSatellite = entities.find(
+      (ent) => computeDomain(ent.entity_id) === "assist_satellite"
+    );
+
     if (
-      entities.some(
-        (ent) => computeDomain(ent.entity_id) === "assist_satellite"
+      assistSatellite &&
+      assistSatelliteSupportsSetupFlow(
+        this.hass.states[assistSatellite.entity_id]
       )
     ) {
       deviceActions.push({
