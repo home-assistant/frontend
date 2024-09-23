@@ -25,6 +25,7 @@ export interface EntityRegistryDisplayEntry {
   translation_key?: string;
   platform?: string;
   display_precision?: number;
+  has_entity_name?: boolean;
 }
 
 export interface EntityRegistryDisplayEntryResponse {
@@ -40,6 +41,7 @@ export interface EntityRegistryDisplayEntryResponse {
     tk?: string;
     hb?: boolean;
     dp?: number;
+    hn?: boolean;
   }[];
   entity_categories: Record<number, EntityCategory>;
 }

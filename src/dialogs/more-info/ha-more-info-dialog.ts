@@ -13,11 +13,17 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import {
+  computeEntityAreaName,
+  computeEntityDeviceName,
+  computeEntityFloorName,
+  computeEntityName,
+} from "../../common/entity/compute_entity_name";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -265,18 +271,54 @@ export class MoreInfoDialog extends LitElement {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const name = (stateObj && computeStateName(stateObj)) || entityId;
 
     const isAdmin = this.hass.user!.is_admin;
 
     const deviceId = this._getDeviceId();
 
-    const title = this._childView?.viewTitle ?? name;
-
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon = isDefaultView || isSpecificInitialView;
+
+    const entityName = stateObj
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
+      : entityId;
+
+    const areaName = stateObj
+      ? computeEntityAreaName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas
+        )
+      : "";
+
+    const floorName = stateObj
+      ? computeEntityFloorName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        )
+      : "";
+
+    const deviceName = stateObj
+      ? computeEntityDeviceName(stateObj, this.hass.entities, this.hass.devices)
+      : "";
+
+    const title = this._childView?.viewTitle || entityName || entityId;
+
+    const subtitle = this._childView?.viewTitle
+      ? undefined
+      : [
+          entityName !== deviceName ? deviceName : undefined,
+          areaName,
+          floorName,
+        ] // Do not include device name if it's the same as entity name
+          .filter(Boolean)
+          .join(" ⸱ ");
 
     return html`
       <ha-dialog
@@ -308,8 +350,14 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" .title=${title} @click=${this._enlarge}>
-            ${title}
+          <span
+            slot="title"
+            .title=${title}
+            @click=${this._enlarge}
+            class="title ${classMap({ "two-line": !!subtitle })}"
+          >
+            <p class="primary">${title}</p>
+            ${subtitle ? html`<p class="secondary">${subtitle}</p>` : nothing}
           </span>
           ${isDefaultView
             ? html`
@@ -591,6 +639,33 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
+        }
+
+        .title {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .title p {
+          margin: 0;
+          min-width: 0;
+          width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .title .primary {
+          color: var(--primary-text-color);
+        }
+
+        .title .secondary {
+          color: var(--secondary-text-color);
+          font-size: 14px;
+        }
+
+        .title.two-line .primary {
+          margin-top: -4px;
+          margin-bottom: -6px;
         }
       `,
     ];

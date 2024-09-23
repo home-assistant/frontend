@@ -1,32 +1,40 @@
-import "../ha-list-item";
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import {
+  computeEntityAreaName,
+  computeEntityDeviceName,
+  computeEntityFloorName,
+  computeEntityFullName,
+  computeEntityName,
+} from "../../common/entity/compute_entity_name";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
-import { ValueChangedEvent, HomeAssistant } from "../../types";
+import { domainToName } from "../../data/integration";
+import {
+  HelperDomain,
+  isHelperDomain,
+} from "../../panels/config/helpers/const";
+import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
+import "../ha-list-item-new";
 import "../ha-svg-icon";
 import "./state-badge";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
-import { domainToName } from "../../data/integration";
-import {
-  isHelperDomain,
-  HelperDomain,
-} from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
-  friendly_name: string;
+  displayed_name: string;
+  entity_name?: string;
+  entity_context?: string;
 }
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
@@ -108,7 +116,7 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Boolean }) public hideClearIcon = false;
 
   @property({ attribute: "item-label-path" }) public itemLabelPath =
-    "friendly_name";
+    "displayed_name";
 
   @state() private _opened = false;
 
@@ -130,22 +138,36 @@ export class HaEntityPicker extends LitElement {
 
   private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
     item
-  ) =>
-    html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
+  ) => html`
+    <ha-list-item
+      graphic="avatar"
+      .twoline=${!!item.entity_id}
+      multiline-secondary
+    >
       ${item.state
-        ? html`<state-badge
-            slot="graphic"
-            .stateObj=${item}
-            .hass=${this.hass}
-          ></state-badge>`
-        : ""}
-      <span>${item.friendly_name}</span>
-      <span slot="secondary"
-        >${item.entity_id.startsWith(CREATE_ID)
+        ? html`
+            <state-badge
+              slot="graphic"
+              .stateObj=${item}
+              .hass=${this.hass}
+            ></state-badge>
+          `
+        : nothing}
+      <span>${item.entity_name ?? item.displayed_name}</span>
+      ${item.entity_context
+        ? html`
+            <div slot="secondary" style="margin-bottom: 6px">
+              ${item.entity_context}
+            </div>
+          `
+        : nothing}
+      <div slot="secondary">
+        ${item.entity_id.startsWith(CREATE_ID)
           ? this.hass.localize("ui.components.entity.entity-picker.new_entity")
-          : item.entity_id}</span
-      >
-    </ha-list-item>`;
+          : item.entity_id}
+      </div>
+    </ha-list-item>
+  `;
 
   private _getStates = memoizeOne(
     (
@@ -168,8 +190,8 @@ export class HaEntityPicker extends LitElement {
       let entityIds = Object.keys(hass.states);
 
       const createItems = createDomains?.length
-        ? createDomains.map((domain) => {
-            const newFriendlyName = hass.localize(
+        ? createDomains.map<HassEntityWithCachedName>((domain) => {
+            const displayedName = hass.localize(
               "ui.components.entity.entity-picker.create_helper",
               {
                 domain: isHelperDomain(domain)
@@ -186,11 +208,11 @@ export class HaEntityPicker extends LitElement {
               last_changed: "",
               last_updated: "",
               context: { id: "", user_id: null, parent_id: null },
-              friendly_name: newFriendlyName,
+              displayed_name: displayedName,
               attributes: {
                 icon: "mdi:plus",
               },
-              strings: [domain, newFriendlyName],
+              strings: [domain, displayedName],
             };
           })
         : [];
@@ -203,7 +225,7 @@ export class HaEntityPicker extends LitElement {
             last_changed: "",
             last_updated: "",
             context: { id: "", user_id: null, parent_id: null },
-            friendly_name: this.hass!.localize(
+            displayed_name: this.hass!.localize(
               "ui.components.entity.entity-picker.no_entities"
             ),
             attributes: {
@@ -224,18 +246,11 @@ export class HaEntityPicker extends LitElement {
         );
 
         return entityIds
-          .map((key) => {
-            const friendly_name = computeStateName(hass!.states[key]) || key;
-            return {
-              ...hass!.states[key],
-              friendly_name,
-              strings: [key, friendly_name],
-            };
-          })
+          .map((key) => this._stateObjToRowItem(hass!.states[key], hass))
           .sort((entityA, entityB) =>
             caseInsensitiveStringCompare(
-              entityA.friendly_name,
-              entityB.friendly_name,
+              entityA.displayed_name,
+              entityB.displayed_name,
               this.hass.locale.language
             )
           );
@@ -260,18 +275,11 @@ export class HaEntityPicker extends LitElement {
       }
 
       states = entityIds
-        .map((key) => {
-          const friendly_name = computeStateName(hass!.states[key]) || key;
-          return {
-            ...hass!.states[key],
-            friendly_name,
-            strings: [key, friendly_name],
-          };
-        })
+        .map((key) => this._stateObjToRowItem(hass!.states[key], hass))
         .sort((entityA, entityB) =>
           caseInsensitiveStringCompare(
-            entityA.friendly_name,
-            entityB.friendly_name,
+            entityA.displayed_name,
+            entityB.displayed_name,
             this.hass.locale.language
           )
         );
@@ -314,7 +322,7 @@ export class HaEntityPicker extends LitElement {
             last_changed: "",
             last_updated: "",
             context: { id: "", user_id: null, parent_id: null },
-            friendly_name: this.hass!.localize(
+            displayed_name: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
             ),
             attributes: {
@@ -336,6 +344,61 @@ export class HaEntityPicker extends LitElement {
       return states;
     }
   );
+
+  private _stateObjToRowItem(
+    stateObj: HassEntity,
+    hass: HomeAssistant
+  ): HassEntityWithCachedName {
+    const areaName = computeEntityAreaName(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas
+    );
+    const floorName = computeEntityFloorName(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+    const deviceName = computeEntityDeviceName(
+      stateObj,
+      hass.entities,
+      hass.devices
+    );
+
+    const entityName = computeEntityName(stateObj, hass.entities, hass.devices);
+
+    const displayedName = computeEntityFullName(
+      stateObj,
+      hass.entities,
+      hass.devices
+    );
+
+    // Do not include device name if it's the same as entity name
+    const entityContext = [
+      entityName !== deviceName ? deviceName : undefined,
+      areaName,
+      floorName,
+    ]
+      .filter(Boolean)
+      .join(" ⸱ ");
+
+    return {
+      ...stateObj,
+      displayed_name: displayedName ?? "",
+      strings: [
+        stateObj.entity_id,
+        displayedName ?? "",
+        areaName ?? "",
+        deviceName ?? "",
+        floorName ?? "",
+      ].filter(Boolean),
+      entity_name: entityName,
+      entity_context: entityContext,
+    };
+  }
 
   protected shouldUpdate(changedProps: PropertyValues) {
     if (
