@@ -7,8 +7,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-button";
-import "../../../components/buttons/ha-filled-tonal-button";
-import "../../../components/buttons/ha-text-button";
 import "../../../components/ha-dialog-header";
 import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
@@ -145,7 +143,7 @@ class DialogRepairsIssue extends LitElement {
                       : this._issue.learn_more_url}
                     .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                   >
-                    <ha-text-button
+                    <ha-button
                       @click=${learnMoreUrlIsHomeAssistant
                         ? this.closeDialog
                         : undefined}
@@ -153,19 +151,19 @@ class DialogRepairsIssue extends LitElement {
                       ${this.hass!.localize(
                         "ui.panel.config.repairs.dialog.learn"
                       )}
-                    </ha-text-button>
+                    </ha-button>
                   </a>
                 </div>
               `
             : ""}
-          <ha-text-button @click=${this.closeDialog}>
+          <ha-button @click=${this.closeDialog}>
             ${this.hass!.localize("ui.common.cancel")}
-          </ha-text-button>
-          <ha-filled-tonal-button @click=${this._ignoreIssue}>
+          </ha-button>
+          <ha-button @click=${this._ignoreIssue}>
             ${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
-          </ha-filled-tonal-button>
+          </ha-button>
         </div>
       </ha-md-dialog>
     `;
