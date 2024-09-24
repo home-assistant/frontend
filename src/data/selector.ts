@@ -454,7 +454,11 @@ export interface UiActionSelector {
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  ui_color: { default_color?: boolean } | null;
+  ui_color: {
+    default_color?: string;
+    include_uncolored?: boolean;
+    include_state?: boolean;
+  } | null;
 }
 
 export interface UiStateContentSelector {

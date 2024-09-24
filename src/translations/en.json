@@ -699,7 +699,9 @@
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "color-picker": {
-        "default_color": "Default color (state)",
+        "default": "default",
+        "state": "State color",
+        "uncolored": "Uncolored",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",

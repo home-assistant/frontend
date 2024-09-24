@@ -92,7 +92,9 @@ export class HuiEntityBadgeEditor
                 {
                   name: "color",
                   selector: {
-                    ui_color: { default_color: true },
+                    ui_color: {
+                      include_state: true,
+                    },
                   },
                 },
                 {
