@@ -26,8 +26,8 @@ export class HaColorPicker extends LitElement {
   @property({ type: Boolean, attribute: "include_state" })
   public includeState = false;
 
-  @property({ type: Boolean, attribute: "include_uncolored" })
-  public includeUncolored = false;
+  @property({ type: Boolean, attribute: "include_none" })
+  public includeNone = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -58,7 +58,7 @@ export class HaColorPicker extends LitElement {
         ${value
           ? html`
               <span slot="icon">
-                ${value === "uncolored"
+                ${value === "none"
                   ? html`
                       <ha-svg-icon path=${mdiInvertColorsOff}></ha-svg-icon>
                     `
@@ -68,11 +68,11 @@ export class HaColorPicker extends LitElement {
               </span>
             `
           : nothing}
-        ${this.includeUncolored
+        ${this.includeNone
           ? html`
-              <ha-list-item value="uncolored" graphic="icon">
-                ${this.hass.localize("ui.components.color-picker.uncolored")}
-                ${this.defaultColor === "uncolored"
+              <ha-list-item value="none" graphic="icon">
+                ${this.hass.localize("ui.components.color-picker.none")}
+                ${this.defaultColor === "none"
                   ? ` (${this.hass.localize("ui.components.color-picker.default")})`
                   : nothing}
                 <ha-svg-icon

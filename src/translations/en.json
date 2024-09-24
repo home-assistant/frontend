@@ -701,7 +701,7 @@
       "color-picker": {
         "default": "default",
         "state": "State color",
-        "uncolored": "Uncolored",
+        "none": "No color",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",

@@ -24,7 +24,7 @@ export class HaSelectorUiColor extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
-        .includeUncolored=${this.selector.ui_color?.include_uncolored}
+        .includeNone=${this.selector.ui_color?.include_none}
         .includeState=${this.selector.ui_color?.include_state}
         .defaultColor=${this.selector.ui_color?.default_color}
         @value-changed=${this._valueChanged}

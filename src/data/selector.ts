@@ -456,7 +456,7 @@ export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: {
     default_color?: string;
-    include_uncolored?: boolean;
+    include_none?: boolean;
     include_state?: boolean;
   } | null;
 }

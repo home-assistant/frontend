@@ -93,9 +93,9 @@ export class HuiHeadingEntityEditor
                   name: "color",
                   selector: {
                     ui_color: {
-                      default_color: "uncolored",
+                      default_color: "none",
                       include_state: true,
-                      include_uncolored: true,
+                      include_none: true,
                     },
                   },
                 },
