@@ -521,9 +521,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      trigger: this._config.triggers,
-      condition: this._config.conditions,
-      action: this._config.actions,
+      triggers: this._config.triggers,
+      conditions: this._config.conditions,
+      actions: this._config.actions,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
@@ -531,7 +531,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       value.valid
         ? ""
         : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}s.name`
+              `ui.panel.config.automation.editor.${key}.name`
             )}:
             ${value.error}<br />`
     );
