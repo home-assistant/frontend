@@ -509,6 +509,7 @@ export interface HeadingEntityConfig {
   icon?: string;
   show_state?: boolean;
   show_icon?: boolean;
+  color?: string;
   tap_action?: ActionConfig;
   visibility?: Condition[];
 }
