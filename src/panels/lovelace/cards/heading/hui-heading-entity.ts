@@ -24,6 +24,7 @@ import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
 } from "../../common/validate-condition";
+import { DEFAULT_CONFIG } from "../../editor/heading-entity/hui-heading-entity-editor";
 import type { HeadingEntityConfig } from "../types";
 
 @customElement("hui-heading-entity")
@@ -54,6 +55,7 @@ export class HuiHeadingEntity extends LitElement {
           : configOrString;
 
       return {
+        ...DEFAULT_CONFIG,
         tap_action: {
           action: "none",
         },
@@ -133,16 +135,24 @@ export class HuiHeadingEntity extends LitElement {
         role=${ifDefined(actionable ? "button" : undefined)}
         tabindex=${ifDefined(actionable ? "0" : undefined)}
       >
-        <ha-state-icon
-          .hass=${this.hass}
-          .icon=${config.icon}
-          .stateObj=${stateObj}
-        ></ha-state-icon>
-        <state-display
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .content=${config.content || "state"}
-        ></state-display>
+        ${config.show_icon
+          ? html`
+              <ha-state-icon
+                .hass=${this.hass}
+                .icon=${config.icon}
+                .stateObj=${stateObj}
+              ></ha-state-icon>
+            `
+          : nothing}
+        ${config.show_state
+          ? html`
+              <state-display
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                .content=${config.state_content}
+              ></state-display>
+            `
+          : nothing}
       </div>
     `;
   }
