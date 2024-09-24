@@ -16,7 +16,8 @@ import type {
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import type { HeadingCardConfig, HeadingCardEntityConfig } from "./types";
+import "./heading/hui-heading-entity";
+import type { HeadingCardConfig } from "./types";
 
 @customElement("hui-heading-card")
 export class HuiHeadingCard extends LitElement implements LovelaceCard {
@@ -91,62 +92,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
           ${this._config.entities?.length
             ? html`
                 <div class="entities">
-                  ${this._config.entities.map((config) =>
-                    this._renderEntity(config)
+                  ${this._config.entities.map(
+                    (config) => html`
+                      <hui-heading-entity .config=${config} .hass=${this.hass}>
+                      </hui-heading-entity>
+                    `
                   )}
                 </div>
               `
             : nothing}
         </div>
       </ha-card>
-    `;
-  }
-
-  private _handleEntityAction(ev: ActionHandlerEvent) {
-    const config = {
-      tap_action: {
-        action: "none",
-      },
-      ...(ev.currentTarget as any).config,
-    };
-
-    handleAction(this, this.hass!, config, ev.detail.action!);
-  }
-
-  _renderEntity(entityConfig: string | HeadingCardEntityConfig) {
-    const config =
-      typeof entityConfig === "string"
-        ? { entity: entityConfig }
-        : entityConfig;
-
-    const stateObj = this.hass!.states[config.entity];
-
-    if (!stateObj) {
-      return nothing;
-    }
-
-    const actionable = hasAction(config.tap_action || { action: "none" });
-
-    return html`
-      <div
-        .config=${config}
-        class="entity"
-        @action=${this._handleEntityAction}
-        .actionHandler=${actionHandler()}
-        role=${ifDefined(actionable ? "button" : undefined)}
-        tabindex=${ifDefined(actionable ? "0" : undefined)}
-      >
-        <ha-state-icon
-          .hass=${this.hass}
-          .icon=${config.icon}
-          .stateObj=${stateObj}
-        ></ha-state-icon>
-        <state-display
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .content=${config.content || "state"}
-        ></state-display>
-      </div>
     `;
   }
 
@@ -230,24 +186,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         align-items: center;
         justify-content: flex-end;
         gap: 4px 10px;
-      }
-      .entities .entity {
-        display: flex;
-        flex-direction: row;
-        white-space: nowrap;
-        align-items: center;
-        gap: 3px;
-        color: var(--secondary-text-color);
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 20px; /* 142.857% */
-        letter-spacing: 0.1px;
-        --mdc-icon-size: 14px;
-      }
-      .entities .entity ha-state-icon {
-        --ha-icon-display: block;
       }
     `;
   }
