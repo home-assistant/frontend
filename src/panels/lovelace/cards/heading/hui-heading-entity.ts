@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
   LitElement,
@@ -8,8 +9,18 @@ import {
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../../common/color/compute-color";
+import {
+  hsv2rgb,
+  rgb2hex,
+  rgb2hsv,
+} from "../../../../common/color/convert-color";
 import { MediaQueriesListener } from "../../../../common/dom/media_query";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { stateActive } from "../../../../common/entity/state_active";
+import { stateColorCss } from "../../../../common/entity/state_color";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -116,6 +127,43 @@ export class HuiHeadingEntity extends LitElement {
     );
   }
 
+  private _computeStateColor = memoizeOne(
+    (entity: HassEntity, color?: string) => {
+      if (!color || color === "none") {
+        return undefined;
+      }
+
+      if (color === "state") {
+        // Use light color if the light support rgb
+        if (
+          computeDomain(entity.entity_id) === "light" &&
+          entity.attributes.rgb_color
+        ) {
+          const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+          // Modify the real rgb color for better contrast
+          if (hsvColor[1] < 0.4) {
+            // Special case for very light color (e.g: white)
+            if (hsvColor[1] < 0.1) {
+              hsvColor[2] = 225;
+            } else {
+              hsvColor[1] = 0.4;
+            }
+          }
+          return rgb2hex(hsv2rgb(hsvColor));
+        }
+        // Fallback to state color
+        return stateColorCss(entity);
+      }
+
+      if (color) {
+        // Use custom color if active
+        return stateActive(entity) ? computeCssColor(color) : undefined;
+      }
+      return color;
+    }
+  );
+
   protected render() {
     const config = this._config(this.config);
 
@@ -125,7 +173,13 @@ export class HuiHeadingEntity extends LitElement {
       return nothing;
     }
 
+    const color = this._computeStateColor(stateObj, config.color);
+
     const actionable = hasAction(config.tap_action);
+
+    const style = {
+      "--color": color,
+    };
 
     return html`
       <div
@@ -134,6 +188,7 @@ export class HuiHeadingEntity extends LitElement {
         .actionHandler=${actionHandler()}
         role=${ifDefined(actionable ? "button" : undefined)}
         tabindex=${ifDefined(actionable ? "0" : undefined)}
+        style=${styleMap(style)}
       >
         ${config.show_icon
           ? html`
@@ -179,6 +234,7 @@ export class HuiHeadingEntity extends LitElement {
       }
       .entity ha-state-icon {
         --ha-icon-display: block;
+        color: var(--color);
       }
     `;
   }

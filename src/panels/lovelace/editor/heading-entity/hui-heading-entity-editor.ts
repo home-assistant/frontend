@@ -39,6 +39,7 @@ const entityConfigStruct = object({
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
   show_icon: optional(boolean()),
+  color: optional(string()),
   tap_action: optional(actionConfigStruct),
   visibility: optional(array(any())),
 });
@@ -80,9 +81,25 @@ export class HuiHeadingEntityEditor
           iconPath: mdiPalette,
           schema: [
             {
-              name: "icon",
-              selector: { icon: {} },
-              context: { icon_entity: "entity" },
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "icon",
+                  selector: { icon: {} },
+                  context: { icon_entity: "entity" },
+                },
+                {
+                  name: "color",
+                  selector: {
+                    ui_color: {
+                      default_color: "uncolored",
+                      include_state: true,
+                      include_uncolored: true,
+                    },
+                  },
+                },
+              ],
             },
             {
               name: "displayed_elements",
