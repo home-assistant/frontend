@@ -179,11 +179,6 @@ class DialogBox extends LitElement {
       .destructive {
         --mdc-theme-primary: var(--error-color);
       }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
-      }
       ha-textfield {
         width: 100%;
       }

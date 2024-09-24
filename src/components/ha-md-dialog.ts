@@ -160,7 +160,6 @@ export class HaMdDialog extends MdDialog {
       }
 
       :host([type="alert"]) {
-        max-width: 320px;
         min-width: 320px;
       }
 
