@@ -31,6 +31,11 @@ export interface FlowConfig {
 
   deleteFlow(hass: HomeAssistant, flowId: string): Promise<unknown>;
 
+  renderAbortHeader?(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepAbort
+  ): TemplateResult | string;
+
   renderAbortDescription(
     hass: HomeAssistant,
     step: DataEntryFlowStepAbort
@@ -95,14 +100,17 @@ export interface FlowConfig {
   renderShowFormProgressHeader(
     hass: HomeAssistant,
     step: DataEntryFlowStepProgress
-  ): string;
+  ): string | TemplateResult;
 
   renderShowFormProgressDescription(
     hass: HomeAssistant,
     step: DataEntryFlowStepProgress
   ): TemplateResult | "";
 
-  renderMenuHeader(hass: HomeAssistant, step: DataEntryFlowStepMenu): string;
+  renderMenuHeader(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu
+  ): string | TemplateResult;
 
   renderMenuDescription(
     hass: HomeAssistant,

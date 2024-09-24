@@ -67,6 +67,16 @@ export const showRepairsFlowDialog = (
       handleFlowStep: handleRepairsFlowStep,
       deleteFlow: deleteRepairsFlow,
 
+      renderAbortHeader(hass) {
+        return html`
+          ${hass.localize("ui.dialogs.repair_flow.form.header")}
+          <dialog-repairs-issue-subtitle
+            .hass=${hass}
+            .issue=${issue}
+          ></dialog-repairs-issue-subtitle>
+        `;
+      },
+
       renderAbortDescription(hass, step) {
         const description = hass.localize(
           `component.${issue.domain}.issues.${
@@ -186,14 +196,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormProgressHeader(hass, step) {
-        return (
-          hass.localize(
+        return html`
+          ${hass.localize(
             `component.${issue.domain}.issues.step.${
               issue.translation_key || issue.issue_id
             }.fix_flow.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize(`component.${issue.domain}.title`)
-        );
+          ) || hass.localize(`component.${issue.domain}.title`)}
+          <dialog-repairs-issue-subtitle
+            .hass=${hass}
+            .issue=${issue}
+          ></dialog-repairs-issue-subtitle>
+        `;
       },
 
       renderShowFormProgressDescription(hass, step) {
@@ -215,14 +229,18 @@ export const showRepairsFlowDialog = (
       },
 
       renderMenuHeader(hass, step) {
-        return (
-          hass.localize(
+        return html`
+          ${hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
             mergePlaceholders(issue, step)
-          ) || hass.localize(`component.${issue.domain}.title`)
-        );
+          ) || hass.localize(`component.${issue.domain}.title`)}
+          <dialog-repairs-issue-subtitle
+            .hass=${hass}
+            .issue=${issue}
+          ></dialog-repairs-issue-subtitle>
+        `;
       },
 
       renderMenuDescription(hass, step) {

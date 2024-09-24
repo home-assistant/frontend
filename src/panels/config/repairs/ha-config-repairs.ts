@@ -175,7 +175,7 @@ class HaConfigRepairs extends LitElement {
       height: 40px;
     }
     ha-md-list-item div[slot="supporting-text"] {
-      text-wrap: nowrap;
+      white-space: nowrap;
     }
     .error {
       color: var(--error-color);
