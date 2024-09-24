@@ -381,14 +381,6 @@ export const normalizeAutomationConfig = <
     }
   }
 
-  if (config.triggers) {
-    config.triggers = migrateAutomationTrigger(config.triggers);
-  }
-
-  if (config.actions) {
-    config.actions = migrateAutomationAction(config.actions);
-  }
-
   return config;
 };
 
@@ -415,6 +407,15 @@ export const migrateAutomationConfig = <
     }
     delete config.action;
   }
+
+  if (config.triggers) {
+    config.triggers = migrateAutomationTrigger(config.triggers);
+  }
+
+  if (config.actions) {
+    config.actions = migrateAutomationAction(config.actions);
+  }
+
   return config;
 };
 
