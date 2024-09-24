@@ -6007,7 +6007,9 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content"
+                "content": "Content",
+                "visibility": "Visibility",
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown."
               },
               "default_heading": "Kitchen"
             },

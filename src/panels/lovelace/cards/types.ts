@@ -508,6 +508,7 @@ export interface HeadingEntityConfig {
   content?: string | string[];
   icon?: string;
   tap_action?: ActionConfig;
+  visibility?: Condition[];
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {
