@@ -130,40 +130,35 @@ class DialogRepairsIssue extends LitElement {
             : ""}
         </div>
         <div slot="actions">
-          ${this._issue.learn_more_url
-            ? html`
-                <div class="more-info-button">
-                  <a
-                    rel="noopener noreferrer"
-                    .href=${learnMoreUrlIsHomeAssistant
-                      ? this._issue.learn_more_url.replace(
-                          "homeassistant://",
-                          "/"
-                        )
-                      : this._issue.learn_more_url}
-                    .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
-                  >
-                    <ha-button
-                      @click=${learnMoreUrlIsHomeAssistant
-                        ? this.closeDialog
-                        : undefined}
-                    >
-                      ${this.hass!.localize(
-                        "ui.panel.config.repairs.dialog.learn"
-                      )}
-                    </ha-button>
-                  </a>
-                </div>
-              `
-            : ""}
-          <ha-button @click=${this.closeDialog}>
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
           <ha-button @click=${this._ignoreIssue}>
             ${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
           </ha-button>
+          ${this._issue.learn_more_url
+            ? html`
+                <a
+                  rel="noopener noreferrer"
+                  .href=${learnMoreUrlIsHomeAssistant
+                    ? this._issue.learn_more_url.replace(
+                        "homeassistant://",
+                        "/"
+                      )
+                    : this._issue.learn_more_url}
+                  .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                >
+                  <ha-button
+                    @click=${learnMoreUrlIsHomeAssistant
+                      ? this.closeDialog
+                      : undefined}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.repairs.dialog.learn"
+                    )}
+                  </ha-button>
+                </a>
+              `
+            : ""}
         </div>
       </ha-md-dialog>
     `;
@@ -189,10 +184,6 @@ class DialogRepairsIssue extends LitElement {
       ha-alert {
         margin-bottom: 16px;
         display: block;
-      }
-      .more-info-button {
-        text-decoration: none;
-        flex: 1;
       }
       .dismissed {
         font-style: italic;
