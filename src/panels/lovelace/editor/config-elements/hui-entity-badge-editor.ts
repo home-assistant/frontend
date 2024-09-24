@@ -205,7 +205,7 @@ export class HuiEntityBadgeEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
-        .computeHelpText=${this._computeHelperCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;

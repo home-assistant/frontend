@@ -6105,7 +6105,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
-              "color_helper": "Applied when the entity state is active (e.g. on, open, detected)",
+              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "interactions": "Interactions",
               "appearance": "Appearance",
