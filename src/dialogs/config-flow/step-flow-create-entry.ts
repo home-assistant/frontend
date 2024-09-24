@@ -1,5 +1,12 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -32,27 +39,33 @@ class StepFlowCreateEntry extends LitElement {
   private _deviceEntities = memoizeOne(
     (
       deviceId: string,
-      entities: EntityRegistryDisplayEntry[]
+      entities: EntityRegistryDisplayEntry[],
+      domain?: string
     ): EntityRegistryDisplayEntry[] =>
-      entities.filter((entity) => entity.device_id === deviceId)
+      entities.filter(
+        (entity) =>
+          entity.device_id === deviceId &&
+          (!domain || computeDomain(entity.entity_id) === domain)
+      )
   );
 
-  protected render(): TemplateResult {
-    const localize = this.hass.localize;
-
-    if (this.devices.length === 1) {
+  protected willUpdate(changedProps: PropertyValues) {
+    if (
+      (changedProps.has("devices") || changedProps.has("hass")) &&
+      this.devices.length === 1
+    ) {
       // integration_type === "device"
-      const deviceEntities = this._deviceEntities(
+      const assistSatellites = this._deviceEntities(
         this.devices[0].id,
-        Object.values(this.hass.entities)
-      );
-      const assistSatellite = deviceEntities.find(
-        (entity) => computeDomain(entity.entity_id) === "assist_satellite"
+        Object.values(this.hass.entities),
+        "assist_satellite"
       );
       if (
-        assistSatellite &&
-        assistSatelliteSupportsSetupFlow(
-          this.hass.states[assistSatellite.entity_id]
+        assistSatellites.length &&
+        assistSatellites.some((satellite) =>
+          assistSatelliteSupportsSetupFlow(
+            this.hass.states[satellite.entity_id]
+          )
         )
       ) {
         this._flowDone();
@@ -61,6 +74,10 @@ class StepFlowCreateEntry extends LitElement {
         });
       }
     }
+  }
+
+  protected render(): TemplateResult {
+    const localize = this.hass.localize;
 
     return html`
       <h2>${localize("ui.panel.config.integrations.config_flow.success")}!</h2>
