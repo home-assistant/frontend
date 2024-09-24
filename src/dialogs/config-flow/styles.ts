@@ -6,8 +6,8 @@ export const configFlowContentStyles = css`
     margin-inline-start: 0px;
     margin-inline-end: 38px;
     padding: 0 24px;
-    padding-inline-start: 72px;
-    padding-inline-end: 0;
+    padding-inline-start: 24px;
+    padding-inline-end: 24px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     font-family: var(

@@ -197,13 +197,6 @@ class DialogRepairsIssue extends LitElement {
       .dismissed {
         font-style: italic;
       }
-      .error,
-      .critical {
-        color: var(--error-color);
-      }
-      .warning {
-        color: var(--warning-color);
-      }
     `,
   ];
 }

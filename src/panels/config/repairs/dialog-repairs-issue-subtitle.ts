@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import { domainToName } from "../../../data/integration";
@@ -23,7 +23,7 @@ class DialogRepairsIssueSubtitle extends LitElement {
     return html`
       <div class="secondary" .title=${`${severity}${reportedBy}`}>
         <span class=${this.issue.severity}> ${severity} </span>
-        ${reportedBy || nothing}
+        ${reportedBy}
       </div>
     `;
   }
