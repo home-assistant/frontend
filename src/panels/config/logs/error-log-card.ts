@@ -20,12 +20,9 @@ import "../../../components/ha-svg-icon";
 
 import { getSignedPath } from "../../../data/auth";
 
-import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
+import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import {
-  fetchHassioLogs,
-  getHassioLogDownloadUrl,
-} from "../../../data/hassio/supervisor";
+import { getHassioLogDownloadUrl } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
 import { debounce } from "../../../common/util/debounce";
 import { fileDownload } from "../../../util/file_download";
@@ -44,9 +41,13 @@ class ErrorLogCard extends LitElement {
 
   @state() private _isLogLoaded = false;
 
+  @state() private _logChunks?: string[];
+
   @state() private _logHTML?: TemplateResult[] | TemplateResult | string;
 
   @state() private _error?: string;
+
+  @state() private _logStreamAborter?: AbortController;
 
   protected render(): TemplateResult {
     return html`
@@ -122,12 +123,23 @@ class ErrorLogCard extends LitElement {
       (changedProps.has("show") && this.show) ||
       (changedProps.has("provider") && this.show)
     ) {
+      if (changedProps.has("provider") && this._logStreamAborter) {
+        this._logStreamAborter.abort();
+      }
       this._refreshLogs();
       return;
     }
 
     if (changedProps.has("filter")) {
       this._debounceSearch();
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._logStreamAborter) {
+      this._logStreamAborter.abort();
     }
   }
 
@@ -153,70 +165,110 @@ class ErrorLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
+  private _readChunks(reader) {
+    return {
+      async *[Symbol.asyncIterator]() {
+        let readResult = await reader.read();
+        while (!readResult.done) {
+          yield readResult.value;
+          // eslint-disable-next-line no-await-in-loop
+          readResult = await reader.read();
+        }
+      },
+    };
+  }
+
   private async _refreshLogs(): Promise<void> {
     this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
-    let log: string;
+    // let log: string;
 
     if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
       try {
-        log = await fetchHassioLogs(this.hass, this.provider);
-        if (this.filter) {
-          log = log
-            .split("\n")
-            .filter((entry) =>
-              entry.toLowerCase().includes(this.filter.toLowerCase())
-            )
-            .join("\n");
+        // log = await fetchHassioLogs(this.hass, this.provider);
+        // if (this.filter) {
+        //   log = log
+        //     .split("\n")
+        //     .filter((entry) =>
+        //       entry.toLowerCase().includes(this.filter.toLowerCase())
+        //     )
+        //     .join("\n");
+        // }
+        // if (!log) {
+        //   this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
+        //   return;
+        // }
+        // this._logHTML = html`<ha-ansi-to-html .content=${log}>
+        // </ha-ansi-to-html>`;
+        // this._isLogLoaded = true;
+        // return;
+
+        this._logStreamAborter = new AbortController();
+
+        this._logChunks = [];
+
+        const response = await fetch(
+          `/api/hassio/${this.provider.includes("_") ? `addons/${this.provider}` : this.provider}/logs/follow`,
+          {
+            headers: {
+              authorization: `Bearer ${this.hass.auth.accessToken}`,
+            },
+            signal: this._logStreamAborter.signal,
+          }
+        );
+
+        const reader = response.body?.getReader();
+
+        if (!reader) {
+          throw new Error("No stream reader found");
         }
-        if (!log) {
-          this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
-          return;
+
+        for await (const chunk of this._readChunks(reader)) {
+          const value = new TextDecoder().decode(chunk);
+          this._logChunks.push(value);
+          this._logHTML = html`<ha-ansi-to-html
+            .content=${this._logChunks.join("")}
+          ></ha-ansi-to-html>`;
         }
-        this._logHTML = html`<ha-ansi-to-html .content=${log}>
-        </ha-ansi-to-html>`;
-        this._isLogLoaded = true;
-        return;
       } catch (err: any) {
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
           { provider: this.provider, error: extractApiErrorMessage(err) }
         );
-        return;
       }
     } else {
-      log = await fetchErrorLog(this.hass!);
+      // log = await fetchErrorLog(this.hass!);
     }
 
-    this._isLogLoaded = true;
+    // this._isLogLoaded = true;
 
-    const split = log && log.split("\n");
+    // const split = log && log.split("\n");
 
-    this._logHTML = split
-      ? (this.filter
-          ? split.filter((entry) => {
-              if (this.filter) {
-                return entry.toLowerCase().includes(this.filter.toLowerCase());
-              }
-              return entry;
-            })
-          : split
-        ).map((entry) => {
-          if (entry.includes("INFO"))
-            return html`<div class="info">${entry}</div>`;
+    // this._logHTML = split
+    //   ? (this.filter
+    //       ? split.filter((entry) => {
+    //           if (this.filter) {
+    //             return entry.toLowerCase().includes(this.filter.toLowerCase());
+    //           }
+    //           return entry;
+    //         })
+    //       : split
+    //     ).map((entry) => {
+    //       if (entry.includes("INFO"))
+    //         return html`<div class="info">${entry}</div>`;
 
-          if (entry.includes("WARNING"))
-            return html`<div class="warning">${entry}</div>`;
+    //       if (entry.includes("WARNING"))
+    //         return html`<div class="warning">${entry}</div>`;
 
-          if (
-            entry.includes("ERROR") ||
-            entry.includes("FATAL") ||
-            entry.includes("CRITICAL")
-          )
-            return html`<div class="error">${entry}</div>`;
+    //       if (
+    //         entry.includes("ERROR") ||
+    //         entry.includes("FATAL") ||
+    //         entry.includes("CRITICAL")
+    //       )
+    //         return html`<div class="error">${entry}</div>`;
 
-          return html`<div>${entry}</div>`;
-        })
-      : this.hass.localize("ui.panel.config.logs.no_errors");
+    //       return html`<div>${entry}</div>`;
+    //     })
+    //   : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 
   static styles: CSSResultGroup = css`
@@ -243,7 +295,6 @@ class ErrorLogCard extends LitElement {
       line-height: 48px;
       display: block;
       margin-block-start: 0px;
-      margin-block-end: 0px;
       font-weight: normal;
     }
 
@@ -262,6 +313,28 @@ class ErrorLogCard extends LitElement {
       clear: both;
       text-align: left;
       padding-top: 12px;
+      padding-bottom: 12px;
+
+      min-height: calc(100vh - 240px);
+      max-height: calc(100vh - 240px);
+      overflow: auto;
+
+      scroll-snap-type: y proximity;
+      align-content: end;
+      border-top: 1px solid var(--divider-color);
+    }
+
+    @media all and (max-width: 870px) {
+      .error-log {
+        min-height: calc(100vh - 190px);
+        max-height: calc(100vh - 190px);
+      }
+    }
+
+    .error-log::after {
+      display: block;
+      content: "";
+      scroll-snap-align: end;
     }
 
     .error-log > div {
