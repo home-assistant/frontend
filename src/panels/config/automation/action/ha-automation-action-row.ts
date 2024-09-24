@@ -510,15 +510,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private async _runAction() {
     const validated = await validateConfig(this.hass, {
-      action: this.action,
+      actions: this.action,
     });
 
-    if (!validated.action.valid) {
+    if (!validated.actions.valid) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
-        text: validated.action.error,
+        text: validated.actions.error,
       });
       return;
     }

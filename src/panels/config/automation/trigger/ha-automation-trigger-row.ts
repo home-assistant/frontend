@@ -436,11 +436,11 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
 
     const validateResult = await validateConfig(this.hass, {
-      trigger,
+      triggers: trigger,
     });
 
     // Don't do anything if trigger not valid or if trigger changed.
-    if (!validateResult.trigger.valid || this.trigger !== trigger) {
+    if (!validateResult.triggers.valid || this.trigger !== trigger) {
       return;
     }
 

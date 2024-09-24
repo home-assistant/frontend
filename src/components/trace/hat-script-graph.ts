@@ -569,10 +569,15 @@ export class HatScriptGraph extends LitElement {
   }
 
   protected render() {
+    const triggerKey = "triggers" in this.trace.config ? "triggers" : "trigger";
+    const conditionKey =
+      "conditions" in this.trace.config ? "conditions" : "condition";
+    const actionKey = "actions" in this.trace.config ? "actions" : "action";
+
     const paths = Object.keys(this.trackedNodes);
     const trigger_nodes =
-      "trigger" in this.trace.config
-        ? flattenTriggers(ensureArray(this.trace.config.trigger)).map(
+      triggerKey in this.trace.config
+        ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
             (trigger, i) => this.render_trigger(trigger, i)
           )
         : undefined;
@@ -584,14 +589,14 @@ export class HatScriptGraph extends LitElement {
                 ${trigger_nodes}
               </hat-graph-branch>`
             : ""}
-          ${"condition" in this.trace.config
-            ? html`${ensureArray(this.trace.config.condition)?.map(
+          ${conditionKey in this.trace.config
+            ? html`${ensureArray(this.trace.config[conditionKey])?.map(
                 (condition, i) => this.render_condition(condition, i)
               )}`
             : ""}
-          ${"action" in this.trace.config
-            ? html`${ensureArray(this.trace.config.action).map((action, i) =>
-                this.render_action_node(action, `action/${i}`)
+          ${actionKey in this.trace.config
+            ? html`${ensureArray(this.trace.config[actionKey]).map(
+                (action, i) => this.render_action_node(action, `action/${i}`)
               )}`
             : ""}
           ${"sequence" in this.trace.config
