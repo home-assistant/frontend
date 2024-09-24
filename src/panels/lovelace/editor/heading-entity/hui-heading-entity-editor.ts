@@ -176,6 +176,7 @@ export class HuiHeadingEntityEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
@@ -245,6 +246,7 @@ export class HuiHeadingEntityEditor
       case "state_content":
       case "displayed_elements":
       case "appearance":
+      case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}`
         );
@@ -252,6 +254,19 @@ export class HuiHeadingEntityEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}_helper`
+        );
+      default:
+        return undefined;
     }
   };
 

@@ -6009,6 +6009,8 @@
               },
               "entities": "Entities",
               "entity_config": {
+                "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+                "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
                 "appearance": "Appearance",
@@ -6103,6 +6105,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
+              "color_helper": "Applied when the entity state is active (e.g. on, open, detected)",
               "icon_tap_action": "Icon tap behavior",
               "interactions": "Interactions",
               "appearance": "Appearance",
@@ -6142,7 +6145,8 @@
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of your entity.",
-              "color": "Color",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
               "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",

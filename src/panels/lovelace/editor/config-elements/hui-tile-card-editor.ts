@@ -208,6 +208,7 @@ export class HuiTileCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
@@ -329,6 +330,19 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
+        );
+      default:
+        return undefined;
     }
   };
 
