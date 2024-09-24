@@ -6007,9 +6007,15 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content",
                 "visibility": "Visibility",
-                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown."
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
+                "appearance": "Appearance",
+                "state_content": "State content",
+                "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
+                "displayed_elements_options": {
+                  "icon": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::icon%]",
+                  "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
+                }
               },
               "default_heading": "Kitchen"
             },

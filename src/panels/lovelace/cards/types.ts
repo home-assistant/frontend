@@ -505,8 +505,10 @@ export interface TileCardConfig extends LovelaceCardConfig {
 
 export interface HeadingEntityConfig {
   entity: string;
-  content?: string | string[];
+  state_content?: string | string[];
   icon?: string;
+  show_state?: boolean;
+  show_icon?: boolean;
   tap_action?: ActionConfig;
   visibility?: Condition[];
 }
