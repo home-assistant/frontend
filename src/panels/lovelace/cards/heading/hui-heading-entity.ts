@@ -231,6 +231,7 @@ export class HuiHeadingEntity extends LitElement {
         line-height: 20px; /* 142.857% */
         letter-spacing: 0.1px;
         --mdc-icon-size: 14px;
+        --state-inactive-color: initial;
       }
       .entity ha-state-icon {
         --ha-icon-display: block;
