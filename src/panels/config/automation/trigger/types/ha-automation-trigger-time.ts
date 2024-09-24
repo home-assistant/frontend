@@ -90,34 +90,46 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   }
 
+  private _data = memoizeOne(
+    (
+      inputMode: undefined | typeof MODE_ENTITY | typeof MODE_TIME,
+      at:
+        | string
+        | { entity_id: string | undefined; offset?: string | undefined }
+    ): {
+      mode: typeof MODE_TIME | typeof MODE_ENTITY;
+      entity: string | undefined;
+      time: string | undefined;
+      offset: string | undefined;
+    } => {
+      const entity =
+        typeof at === "object"
+          ? at.entity_id
+          : at?.startsWith("input_datetime.") || at?.startsWith("sensor.")
+            ? at
+            : undefined;
+      const time = entity ? undefined : (at as string | undefined);
+      const offset = typeof at === "object" ? at.offset : undefined;
+      const mode = inputMode ?? (entity ? MODE_ENTITY : MODE_TIME);
+      return {
+        mode,
+        entity,
+        time,
+        offset,
+      };
+    }
+  );
+
   protected render() {
     const at = this.trigger.at;
 
     if (Array.isArray(at)) {
       return nothing;
     }
-
-    const entity =
-      typeof at === "object"
-        ? at.entity_id
-        : at?.startsWith("input_datetime.") || at?.startsWith("sensor.")
-          ? at
-          : undefined;
-    const time = entity ? undefined : at;
-    const offset = typeof at === "object" ? at.offset : undefined;
-
-    const mode = this._inputMode ?? (entity ? MODE_ENTITY : MODE_TIME);
-
-    const showOffset = mode === MODE_ENTITY && entity?.startsWith("sensor.");
-
-    const schema = this._schema(this.hass.localize, mode, !!showOffset);
-
-    const data = {
-      mode,
-      entity,
-      time,
-      offset,
-    };
+    const data = this._data(this._inputMode, at);
+    const showOffset =
+      data.mode === MODE_ENTITY && data.entity?.startsWith("sensor.");
+    const schema = this._schema(this.hass.localize, data.mode, !!showOffset);
 
     return html`
       <ha-form
