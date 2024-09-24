@@ -22,7 +22,10 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       if (oldHass) {
         const oldState = oldHass.states[this.updateEntityId];
         const newState = this.hass.states[this.updateEntityId];
-        if (oldState.state === UNAVAILABLE && newState.state !== UNAVAILABLE) {
+        if (
+          oldState?.state === UNAVAILABLE &&
+          newState?.state !== UNAVAILABLE
+        ) {
           // Device is rebooted, let's move on
           this._tryUpdate();
         }

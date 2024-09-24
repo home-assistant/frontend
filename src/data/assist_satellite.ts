@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { UNAVAILABLE } from "./entity";
 
 export const enum AssistSatelliteEntityFeature {
   ANNOUNCE = 1,
@@ -76,4 +77,5 @@ export const assistSatelliteSupportsSetupFlow = (
   assistSatelliteEntity: HassEntity | undefined
 ) =>
   assistSatelliteEntity &&
+  assistSatelliteEntity.state !== UNAVAILABLE &&
   supportsFeature(assistSatelliteEntity, AssistSatelliteEntityFeature.ANNOUNCE);
