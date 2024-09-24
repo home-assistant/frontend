@@ -32,7 +32,7 @@ export class HuiHeadingEntity extends LitElement {
 
   @property({ attribute: false }) public config!: HeadingEntityConfig | string;
 
-  @property() public preview = false;
+  @property({ type: Boolean }) public preview = false;
 
   private _listeners: MediaQueriesListener[] = [];
 
