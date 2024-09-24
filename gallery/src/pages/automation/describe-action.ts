@@ -121,7 +121,7 @@ const ACTIONS = [
 ];
 
 const initialAction: Action = {
-  service: "light.turn_on",
+  action: "light.turn_on",
   target: {
     entity_id: "light.kitchen",
   },

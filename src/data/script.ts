@@ -404,7 +404,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("action" in action) {
+  if ("action" in action || "service" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
