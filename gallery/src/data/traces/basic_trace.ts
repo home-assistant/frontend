@@ -219,7 +219,7 @@ export const basicTrace: DemoTrace = {
       description: "",
       triggers: [
         {
-          platform: "state",
+          trigger: "state",
           entity_id: "input_boolean.toggle_1",
         },
       ],
