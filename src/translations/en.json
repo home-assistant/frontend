@@ -1796,11 +1796,13 @@
     },
     "errors": {
       "config": {
+        "visual_editor_not_supported": "Visual editor not supported",
+        "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
+        "edit_in_yaml_supported": "You can still edit your config using YAML.",
+        "configuration_error": "Configuration error",
+        "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
-        "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
-        "edit_in_yaml_supported": "You can still edit your config in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
@@ -1852,6 +1854,7 @@
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
         "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
+        "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
         "download_app": "Click here to download the app",
         "faq_link": "My Home Assistant FAQ",
@@ -3169,9 +3172,9 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
                   }
                 },
                 "or": {
@@ -5655,17 +5658,13 @@
             "strategy_type": "strategy"
           },
           "section": {
-            "unnamed_section": "Unnamed section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section"
           },
           "delete_section": {
             "title": "Delete section",
-            "text_named_section_only": "''{name}'' section will be deleted.",
-            "text_unnamed_section_only": "This section will be deleted.",
-            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
-            "text_unnamed_section_cards": "This section and all its cards will be deleted."
+            "text": "This section and all its cards will be deleted."
           },
           "edit_section": {
             "header": "Edit section",
@@ -6008,7 +6007,9 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content"
+                "content": "Content",
+                "visibility": "Visibility",
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown."
               },
               "default_heading": "Kitchen"
             },
@@ -6382,6 +6383,7 @@
               "row": "Entity row editor",
               "feature": "Feature editor",
               "element": "Element editor",
+              "heading-entity": "Entity editor",
               "element_type": "{type} element editor"
             }
           }
@@ -6940,25 +6942,25 @@
                 "info_text_1": "Fixing this issue is not supported yet."
               },
               "no_state": {
-                "title": "Entity has no state",
+                "title": "{name} has no state",
                 "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
                 "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "entity_not_recorded": {
-                "title": "Entity not recorded",
+                "title": "{name} is not recorded",
                 "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
-                "title": "Entity no longer recorded",
+                "title": "{name} is no longer recorded",
                 "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "unsupported_state_class": {
-                "title": "Unsupported state class",
+                "title": "{name} has an unsupported state class",
                 "info_text_1": "The state class of this entity, {state_class} is not supported.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
                 "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
@@ -6968,7 +6970,7 @@
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
-                "title": "The unit of this entity changed",
+                "title": "The unit of {name} changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
                 "clear": "Delete all old statistic data for this entity",
                 "how_to_fix": "How do you want to fix this issue?",

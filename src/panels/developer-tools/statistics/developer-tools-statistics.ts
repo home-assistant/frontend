@@ -265,7 +265,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
     );
     const issue = issues[0];
-    const result = await fixStatisticsIssue(this, this.hass.localize, issue);
+    const result = await fixStatisticsIssue(
+      this,
+      this.hass,
+      this.hass.localize,
+      issue
+    );
     if (
       result &&
       [

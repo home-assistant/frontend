@@ -7,6 +7,7 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import {
   clearStatistics,
+  getStatisticLabel,
   updateStatisticsMetadata,
 } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -48,7 +49,14 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         escapeKeyAction
         @closed=${this._closeDialog}
         .heading=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title"
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title",
+          {
+            name: getStatisticLabel(
+              this.hass,
+              this._params.issue.data.statistic_id,
+              undefined
+            ),
+          }
         )}
       >
         <p>
