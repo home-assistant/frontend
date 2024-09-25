@@ -1,4 +1,3 @@
-import { dump, load } from "js-yaml";
 import {
   CSSResultGroup,
   LitElement,
@@ -14,8 +13,8 @@ import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-code-editor";
-import type { HaCodeEditor } from "../../../components/ha-code-editor";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type {
@@ -56,8 +55,6 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
-  @state() private _yaml?: string;
-
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -74,25 +71,7 @@ export abstract class HuiElementEditor<
 
   @state() private _loading = false;
 
-  @query("ha-code-editor") _yamlEditor?: HaCodeEditor;
-
-  public get yaml(): string {
-    if (!this._yaml) {
-      this._yaml = dump(this._config);
-    }
-    return this._yaml || "";
-  }
-
-  public set yaml(_yaml: string) {
-    this._yaml = _yaml;
-    try {
-      this._config = load(this.yaml) as any;
-      this._errors = undefined;
-    } catch (err: any) {
-      this._errors = [err.message];
-    }
-    this._setConfig();
-  }
+  @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
 
   public get value(): T | undefined {
     return this._config;
@@ -103,7 +82,6 @@ export abstract class HuiElementEditor<
       return;
     }
     this._config = config;
-    this._yaml = undefined;
     this._errors = undefined;
     this._setConfig();
   }
@@ -164,10 +142,10 @@ export abstract class HuiElementEditor<
     if (this._configElement?.focusYamlEditor) {
       this._configElement.focusYamlEditor();
     }
-    if (!this._yamlEditor?.codemirror) {
+    if (!this._yamlEditor) {
       return;
     }
-    this._yamlEditor.codemirror.focus();
+    this._yamlEditor.focus();
   }
 
   protected async getConfigElement(): Promise<
@@ -202,18 +180,14 @@ export abstract class HuiElementEditor<
             `
           : html`
               <div class="yaml-editor">
-                <ha-code-editor
-                  mode="yaml"
+                <ha-yaml-editor
+                  .defaultValue=${this._config}
                   autofocus
-                  autocomplete-entities
-                  autocomplete-icons
                   .hass=${this.hass}
-                  .value=${this.yaml}
-                  .error=${Boolean(this._errors)}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
-                ></ha-code-editor>
+                ></ha-yaml-editor>
               </div>
             `}
         ${this._guiSupported === false && this._loading === false
@@ -296,9 +270,11 @@ export abstract class HuiElementEditor<
 
   private _handleYAMLChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const newYaml = ev.detail.value;
-    if (newYaml !== this.yaml) {
-      this.yaml = newYaml;
+    const config = ev.detail.value;
+    if (ev.detail.isValid) {
+      this._config = config;
+      this._errors = undefined;
+      this._setConfig();
     }
   }
 
