@@ -32,8 +32,6 @@ export class HuiSubElementEditor extends LitElement {
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
 
-  @property({ attribute: false }) public context?: any;
-
   @state() private _guiModeAvailable = true;
 
   @state() private _guiMode = true;
@@ -87,6 +85,7 @@ export class HuiSubElementEditor extends LitElement {
 
   private _renderEditor() {
     const type = this.config.type;
+
     switch (type) {
       case "row":
         return html`
@@ -94,7 +93,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-row-element-editor>
@@ -106,7 +105,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-headerfooter-element-editor>
@@ -117,7 +116,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-picture-element-element-editor>
@@ -128,7 +127,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-card-feature-element-editor>
@@ -139,7 +138,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-heading-entity-element-editor>

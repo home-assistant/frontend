@@ -1,16 +1,21 @@
 import {
+  css,
   CSSResultGroup,
+  html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
-  css,
-  html,
-  nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { cache } from "lit/directives/cache";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
+import {
+  findNestedObject,
+  updateNestedObject,
+} from "../../../common/util/nested-object";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-yaml-editor";
@@ -23,7 +28,12 @@ import type {
 } from "../types";
 import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import { GUISupportError } from "./gui-support-error";
-import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
+import {
+  EditDetailElementEvent,
+  EditSubElementEvent,
+  GUIModeChangedEvent,
+  SubElementEditorConfig,
+} from "./types";
 
 export interface ConfigChangedEvent<T extends object = object> {
   config: T;
@@ -35,7 +45,8 @@ declare global {
   interface HASSDomEvents {
     "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;
-    "edit-detail-element": EditSubElementEvent;
+    "edit-detail-element": EditDetailElementEvent;
+    "edit-sub-element": EditSubElementEvent;
   }
 }
 
@@ -58,6 +69,8 @@ export abstract class HuiElementEditor<
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
+
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   @state() private _guiMode = true;
 
@@ -162,12 +175,71 @@ export abstract class HuiElementEditor<
     return html`${this._configElement}`;
   }
 
+  private _renderSubElement() {
+    return html`
+      <hui-sub-element-editor
+        .hass=${this.hass}
+        .config=${this._subElementEditorConfig}
+        @go-back=${this._goBack}
+        @config-changed=${this._subElementChanged}
+      >
+      </hui-sub-element-editor>
+    `;
+  }
+
+  private _subElementChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const value = ev.detail.config;
+
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: value,
+    };
+
+    const config = updateNestedObject(
+      this._config,
+      this._subElementEditorConfig.path!,
+      value
+    );
+
+    this._config = config;
+    this._setConfig();
+  }
+
+  private _goBack(ev): void {
+    ev.stopPropagation();
+    this._subElementEditorConfig = undefined;
+  }
+
+  private async _editSubElement(
+    ev: HASSDomEvent<EditSubElementEvent>
+  ): Promise<void> {
+    if (!ev.detail.path) {
+      return;
+    }
+    ev.stopPropagation();
+    const config = findNestedObject(this._config, ev.detail.path);
+
+    if (!config) {
+      throw new Error("Failed to edit config");
+    }
+
+    await import("./hui-sub-element-editor");
+
+    this._subElementEditorConfig = {
+      type: ev.detail.type,
+      path: ev.detail.path,
+      elementConfig: config,
+    };
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
         ${this.GUImode
           ? html`
-              <div class="gui-editor">
+              <div class="gui-editor" @edit-sub-element=${this._editSubElement}>
                 ${this._loading
                   ? html`
                       <ha-circular-progress
@@ -175,7 +247,11 @@ export abstract class HuiElementEditor<
                         class="center margin-bot"
                       ></ha-circular-progress>
                     `
-                  : this.renderConfigElement()}
+                  : cache(
+                      this._subElementEditorConfig
+                        ? this._renderSubElement()
+                        : this.renderConfigElement()
+                    )}
               </div>
             `
           : html`

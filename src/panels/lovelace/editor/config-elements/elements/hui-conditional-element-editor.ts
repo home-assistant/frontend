@@ -20,7 +20,7 @@ import {
 import "../../conditions/ha-card-conditions-editor";
 import "../../hui-picture-elements-card-row-editor";
 import { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
-import { EditSubElementEvent, SubElementEditorConfig } from "../../types";
+import { EditDetailElementEvent, SubElementEditorConfig } from "../../types";
 import "../../hui-sub-element-editor";
 import { SchemaUnion } from "../../../../../components/ha-form/types";
 
@@ -154,7 +154,7 @@ export class HuiConditionalElementEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 
