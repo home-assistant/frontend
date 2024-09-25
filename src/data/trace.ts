@@ -187,10 +187,21 @@ export const getDataFromPath = (
     const asNumber = Number(raw);
 
     if (isNaN(asNumber)) {
-      const tempResult = result[raw];
+      let tempResult = result[raw];
       if (!tempResult && raw === "sequence") {
         continue;
       }
+
+      if (!tempResult && raw === "trigger") {
+        tempResult = result.triggers;
+      }
+      if (!tempResult && raw === "condition") {
+        tempResult = result.conditions;
+      }
+      if (!tempResult && raw === "action") {
+        tempResult = result.actions;
+      }
+
       if (raw === "trigger") {
         result = flattenTriggers(tempResult);
       } else {

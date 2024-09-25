@@ -699,7 +699,9 @@
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "color-picker": {
-        "default_color": "Default color (state)",
+        "default": "default",
+        "state": "State color",
+        "none": "No color",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
@@ -6007,7 +6009,17 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content"
+                "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+                "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
+                "visibility": "Visibility",
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
+                "appearance": "Appearance",
+                "state_content": "State content",
+                "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
+                "displayed_elements_options": {
+                  "icon": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::icon%]",
+                  "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
+                }
               },
               "default_heading": "Kitchen"
             },
@@ -6093,6 +6105,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
+              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "interactions": "Interactions",
               "appearance": "Appearance",
@@ -6132,7 +6145,8 @@
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of your entity.",
-              "color": "Color",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
               "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",

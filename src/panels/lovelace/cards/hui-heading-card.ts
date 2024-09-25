@@ -36,6 +36,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public preview = false;
+
   @state() private _config?: HeadingCardConfig;
 
   public setConfig(config: HeadingCardConfig): void {
@@ -94,7 +96,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
                 <div class="entities">
                   ${this._config.entities.map(
                     (config) => html`
-                      <hui-heading-entity .config=${config} .hass=${this.hass}>
+                      <hui-heading-entity
+                        .config=${config}
+                        .hass=${this.hass}
+                        .preview=${this.preview}
+                      >
                       </hui-heading-entity>
                     `
                   )}

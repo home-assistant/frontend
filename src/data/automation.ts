@@ -27,8 +27,14 @@ export interface ManualAutomationConfig {
   id?: string;
   alias?: string;
   description?: string;
-  trigger: Trigger | Trigger[];
+  triggers: Trigger | Trigger[];
+  /** @deprecated Use `triggers` instead */
+  trigger?: Trigger | Trigger[];
+  conditions?: Condition | Condition[];
+  /** @deprecated Use `conditions` instead */
   condition?: Condition | Condition[];
+  actions: Action | Action[];
+  /** @deprecated Use `actions` instead */
   action?: Action | Action[];
   mode?: (typeof MODES)[number];
   max?: number;
@@ -362,24 +368,52 @@ export const normalizeAutomationConfig = <
 >(
   config: T
 ): T => {
+  config = migrateAutomationConfig(config);
+
   // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
-  for (const key of ["trigger", "condition", "action"]) {
+  for (const key of ["triggers", "conditions", "actions"]) {
     const value = config[key];
     if (value && !Array.isArray(value)) {
       config[key] = [value];
     }
   }
 
-  if (config.action) {
-    config.action = migrateAutomationAction(config.action);
+  if (config.actions) {
+    config.actions = migrateAutomationAction(config.actions);
   }
 
   return config;
 };
 
+export const migrateAutomationConfig = <
+  T extends Partial<AutomationConfig> | AutomationConfig,
+>(
+  config: T
+) => {
+  if ("trigger" in config) {
+    if (!("triggers" in config)) {
+      config.triggers = config.trigger;
+    }
+    delete config.trigger;
+  }
+  if ("condition" in config) {
+    if (!("conditions" in config)) {
+      config.conditions = config.condition;
+    }
+    delete config.condition;
+  }
+  if ("action" in config) {
+    if (!("actions" in config)) {
+      config.actions = config.action;
+    }
+    delete config.action;
+  }
+  return config;
+};
+
 export const flattenTriggers = (
-  triggers: undefined | (Trigger | TriggerList)[]
+  triggers: undefined | Trigger | (Trigger | TriggerList)[]
 ): Trigger[] => {
   if (!triggers) {
     return [];
@@ -387,7 +421,7 @@ export const flattenTriggers = (
 
   const flatTriggers: Trigger[] = [];
 
-  triggers.forEach((t) => {
+  ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {
       if (t.triggers) {
         flatTriggers.push(...ensureArray(t.triggers));
