@@ -413,7 +413,7 @@ export const migrateAutomationConfig = <
 };
 
 export const flattenTriggers = (
-  triggers: undefined | (Trigger | TriggerList)[]
+  triggers: undefined | Trigger | (Trigger | TriggerList)[]
 ): Trigger[] => {
   if (!triggers) {
     return [];
@@ -421,7 +421,7 @@ export const flattenTriggers = (
 
   const flatTriggers: Trigger[] = [];
 
-  triggers.forEach((t) => {
+  ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {
       if (t.triggers) {
         flatTriggers.push(...ensureArray(t.triggers));
