@@ -15,6 +15,7 @@ import "./ha-code-editor";
 import { showToast } from "../util/toast";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import type { HaCodeEditor } from "./ha-code-editor";
+import "./ha-button";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -99,7 +100,7 @@ export class HaYamlEditor extends LitElement {
     return html`
       ${this.label
         ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
-        : ""}
+        : nothing}
       <ha-code-editor
         .hass=${this.hass}
         .value=${this._yaml}
@@ -112,16 +113,20 @@ export class HaYamlEditor extends LitElement {
         dir="ltr"
       ></ha-code-editor>
       ${this.copyClipboard || this.hasExtraActions
-        ? html`<div class="card-actions">
-            ${this.copyClipboard
-              ? html` <mwc-button @click=${this._copyYaml}>
-                  ${this.hass.localize(
-                    "ui.components.yaml-editor.copy_to_clipboard"
-                  )}
-                </mwc-button>`
-              : nothing}
-            <slot name="extra-actions"></slot>
-          </div>`
+        ? html`
+            <div class="card-actions">
+              ${this.copyClipboard
+                ? html`
+                    <ha-button @click=${this._copyYaml}>
+                      ${this.hass.localize(
+                        "ui.components.yaml-editor.copy_to_clipboard"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
+              <slot name="extra-actions"></slot>
+            </div>
+          `
         : nothing}
     `;
   }
