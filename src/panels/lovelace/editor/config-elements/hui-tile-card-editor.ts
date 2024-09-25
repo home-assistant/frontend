@@ -31,7 +31,7 @@ import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import { EditDetailElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -60,8 +60,6 @@ export class HuiTileCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
-
-  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: TileCardConfig): void {
     assert(config, cardConfigStruct);
