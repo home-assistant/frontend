@@ -9,6 +9,7 @@ import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardFeatureConfig } from "../card-features/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import { HeadingEntityConfig } from "../cards/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -95,19 +96,11 @@ export interface SubElementEditorConfig {
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
-    | LovelaceElementConfig;
-  type: "header" | "footer" | "row" | "feature" | "element";
+    | LovelaceElementConfig
+    | HeadingEntityConfig;
+  type: "header" | "footer" | "row" | "feature" | "element" | "heading-entity";
 }
 
 export interface EditSubElementEvent {
   subElementConfig: SubElementEditorConfig;
-}
-
-export interface SubFormEditorData<T = any> {
-  index?: number;
-  data?: T;
-}
-
-export interface EditSubFormEvent<T = any> {
-  subFormData: SubFormEditorData<T>;
 }

@@ -1,5 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiArrowAll, mdiDelete, mdiPencil, mdiViewGridPlus } from "@mdi/js";
+import { mdiDelete, mdiDrag, mdiPencil, mdiViewGridPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -182,26 +182,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   })}
                 >
                     ${
-                      sectionConfig?.title || this.lovelace?.editMode
+                      this.lovelace?.editMode
                         ? html`
                             <div class="section-header">
-                              <h2
-                                class="section-title ${classMap({
-                                  placeholder: !sectionConfig?.title,
-                                })}"
-                              >
-                                ${sectionConfig?.title ||
-                                this.hass.localize(
-                                  "ui.panel.lovelace.editor.section.unnamed_section"
-                                )}
-                              </h2>
                               ${editMode
                                 ? html`
                                     <div class="section-actions">
                                       <ha-svg-icon
                                         aria-hidden="true"
                                         class="handle"
-                                        .path=${mdiArrowAll}
+                                        .path=${mdiDrag}
                                       ></ha-svg-icon>
                                       <ha-icon-button
                                         .label=${this.hass.localize(
@@ -256,7 +246,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
       type: "grid",
-      cards: [],
+      cards: [
+        {
+          type: "heading",
+          heading: "New Section",
+        },
+      ],
     });
     this.lovelace!.saveConfig(newConfig);
   }
@@ -281,20 +276,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const section = findLovelaceContainer(this.lovelace!.config, path);
 
-    const title = section.title?.trim();
     const cardCount = "cards" in section && section.cards?.length;
 
-    if (title || cardCount) {
-      const named = title ? "named" : "unnamed";
-      const type = cardCount ? "cards" : "only";
-
+    if (cardCount) {
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.lovelace.editor.delete_section.title"
         ),
         text: this.hass.localize(
-          `ui.panel.lovelace.editor.delete_section.text_${named}_section_${type}`,
-          { name: title }
+          `ui.panel.lovelace.editor.delete_section.text`
         ),
         confirmText: this.hass.localize("ui.common.delete"),
         destructive: true,
@@ -380,7 +370,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .create-section {
-        margin-top: calc(var(--row-height) + var(--row-gap));
+        margin-top: 36px;
         outline: none;
         background: none;
         cursor: pointer;
@@ -408,35 +398,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .section-header {
         position: relative;
-        height: var(--row-height);
-        margin-bottom: var(--row-gap);
+        height: 34px;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
       }
 
-      .section-title {
-        color: var(--primary-text-color);
-        font-size: 20px;
-        font-weight: normal;
-        margin: 0px;
-        letter-spacing: 0.1px;
-        line-height: 32px;
-        text-align: var(--ha-view-sections-title-text-align, start);
-        min-height: 32px;
-        box-sizing: border-box;
-        padding: 0 10px 10px;
-      }
-
-      .section-title.placeholder {
-        color: var(--secondary-text-color);
-        font-style: italic;
-      }
-
       .section-actions {
         position: absolute;
         height: 36px;
-        bottom: calc(-1 * var(--row-gap) - 2px);
+        bottom: -2px;
         right: 0;
         inset-inline-end: 0;
         inset-inline-start: initial;
@@ -445,7 +416,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         align-items: center;
         justify-content: center;
         transition: opacity 0.2s ease-in-out;
-        background-color: rgba(var(--rgb-card-background-color), 0.3);
         border-radius: var(--ha-card-border-radius, 12px);
         border-bottom-left-radius: 0px;
         border-bottom-right-radius: 0px;

@@ -3,10 +3,13 @@ import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceBaseSectionConfig {
-  title?: string;
   visibility?: Condition[];
   column_span?: number;
   row_span?: number;
+  /**
+   * @deprecated Use heading card instead.
+   */
+  title?: string;
 }
 
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {

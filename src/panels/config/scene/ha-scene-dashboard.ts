@@ -50,6 +50,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -69,6 +70,11 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
+import {
+  DataTableFilters,
+  deserializeFilters,
+  serializeFilters,
+} from "../../../data/data_table_filters";
 import { isUnavailableState } from "../../../data/entity";
 import {
   EntityRegistryEntry,
@@ -104,11 +110,6 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  serializeFilters,
-  deserializeFilters,
-  DataTableFilters,
-} from "../../../data/data_table_filters";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -440,7 +441,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
@@ -477,7 +478,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-md-menu-item>`;
       })}
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
@@ -506,7 +507,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
