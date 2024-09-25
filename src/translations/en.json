@@ -6009,7 +6009,6 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content",
                 "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
                 "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
                 "visibility": "Visibility",
