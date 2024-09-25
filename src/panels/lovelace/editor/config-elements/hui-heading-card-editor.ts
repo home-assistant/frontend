@@ -1,7 +1,6 @@
 import { mdiGestureTap, mdiListBox } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -26,11 +25,9 @@ import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-entities-editor";
 
@@ -55,9 +52,6 @@ export class HuiHeadingCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HeadingCardConfig;
-
-  @state()
-  private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: HeadingCardConfig): void {
     assert(config, cardConfigStruct);
@@ -108,35 +102,15 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
+    processEditorEntities(entities || [])
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    return cache(
-      this._subElementEditorConfig
-        ? this._renderEntityForm()
-        : this._renderForm()
-    );
-  }
-
-  private _renderEntityForm() {
-    return html`
-      <hui-sub-element-editor
-        .hass=${this.hass}
-        .config=${this._subElementEditorConfig}
-        @go-back=${this._goBack}
-        @config-changed=${this._subElementChanged}
-      >
-      </hui-sub-element-editor>
-    `;
-  }
-
-  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
-    processEditorEntities(entities || [])
-  );
-
-  private _renderForm() {
     const data = {
       ...this._config!,
     };
@@ -200,46 +174,12 @@ export class HuiHeadingCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _subElementChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const value = ev.detail.config;
-
-    const newConfigEntities = this._config!.entities
-      ? [...this._config!.entities]
-      : [];
-
-    if (!value) {
-      newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigEntities[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._config = { ...this._config!, entities: newConfigEntities };
-
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
-  }
-
   private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
-    const entities = this._entities(this._config!.entities);
-    this._subElementEditorConfig = {
-      elementConfig: entities[ev.detail.index],
-      index: ev.detail.index,
+    ev.stopPropagation();
+    fireEvent(this, "edit-sub-element", {
+      path: ["entities", ev.detail.index],
       type: "heading-entity",
-    };
-  }
-
-  private _goBack(): void {
-    this._subElementEditorConfig = undefined;
+    });
   }
 
   private _computeLabelCallback = (
