@@ -47,6 +47,14 @@ export interface StatisticsMetaData {
   unit_class: string | null;
 }
 
+export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
+  "entity_not_recorded",
+  "entity_no_longer_recorded",
+  "unsupported_state_class",
+  "units_changed",
+  "no_state",
+];
+
 export type StatisticsValidationResult =
   | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded

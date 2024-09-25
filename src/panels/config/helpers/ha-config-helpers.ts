@@ -52,6 +52,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import {
@@ -66,11 +67,16 @@ import {
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext } from "../../../data/context";
 import {
+  DataTableFiltersItems,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
+import {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import {
   IntegrationManifest,
   domainToName,
@@ -101,12 +107,6 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import {
-  serializeFilters,
-  deserializeFilters,
-  DataTableFilters,
-} from "../../../data/data_table_filters";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 
 type HelperItem = {
   id: string;
@@ -201,13 +201,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "helpers-table-filters-full",
+    key: "helpers-table-filters",
     state: true,
     subscribe: false,
-    serializer: serializeFilters,
-    deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _filters: DataTableFiltersValues = {};
+
+  @state() private _filteredItems: DataTableFiltersItems = {};
 
   @state() private _expandedFilter?: string;
 
@@ -479,7 +479,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     const categoryItems = html`${this._categories?.map(
         (category) =>
-          html`<ha-menu-item
+          html`<ha-md-menu-item
             .value=${category.category_id}
             @click=${this._handleBulkCategory}
           >
@@ -487,21 +487,21 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
               : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
             <div slot="headline">${category.name}</div>
-          </ha-menu-item>`
+          </ha-md-menu-item>`
       )}
-      <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
-      </ha-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateCategory}>
+      </ha-md-menu-item>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+      <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
-      </ha-menu-item>`;
+      </ha-md-menu-item>`;
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
@@ -512,7 +512,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-menu-item
+        return html`<ha-md-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -530,13 +530,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item> `;
-      })}<md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateLabel}>
+        </ha-md-menu-item> `;
+      })}<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+      <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div>
-      </ha-menu-item>`;
+      </ha-md-menu-item>`;
     const labelsInOverflow =
       (this._sizeController.value && this._sizeController.value < 700) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
@@ -566,10 +566,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         hasFilters
         .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter.value)
-            ? filter.value.length
-            : filter.value &&
-              Object.values(filter.value).some((val) =>
+          Array.isArray(filter)
+            ? filter.length
+            : filter &&
+              Object.values(filter).some((val) =>
                 Array.isArray(val) ? val.length : val
               )
         ).length}
@@ -599,7 +599,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         <ha-filter-floor-areas
           .hass=${this.hass}
           .type=${"entity"}
-          .value=${this._filters["ha-filter-floor-areas"]?.value}
+          .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
@@ -609,7 +609,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         <ha-filter-devices
           .hass=${this.hass}
           .type=${"entity"}
-          .value=${this._filters["ha-filter-devices"]?.value}
+          .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-devices"}
@@ -618,7 +618,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-devices>
         <ha-filter-labels
           .hass=${this.hass}
-          .value=${this._filters["ha-filter-labels"]?.value}
+          .value=${this._filters["ha-filter-labels"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-labels"}
@@ -628,7 +628,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         <ha-filter-categories
           .hass=${this.hass}
           scope="helpers"
-          .value=${this._filters["ha-filter-categories"]?.value}
+          .value=${this._filters["ha-filter-categories"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-categories"}
@@ -637,7 +637,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ></ha-filter-categories>
 
         ${!this.narrow
-          ? html`<ha-button-menu-new slot="selection-bar">
+          ? html`<ha-md-button-menu slot="selection-bar">
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -650,10 +650,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-assist-chip>
                 ${categoryItems}
-              </ha-button-menu-new>
+              </ha-md-button-menu>
               ${labelsInOverflow
                 ? nothing
-                : html`<ha-button-menu-new slot="selection-bar">
+                : html`<ha-md-button-menu slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -666,11 +666,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-assist-chip>
                     ${labelItems}
-                  </ha-button-menu-new>`}`
+                  </ha-md-button-menu>`}`
           : nothing}
         ${this.narrow || labelsInOverflow
           ? html`
-          <ha-button-menu-new has-overflow slot="selection-bar">
+          <ha-md-button-menu has-overflow slot="selection-bar">
             ${
               this.narrow
                 ? html`<ha-assist-chip
@@ -698,7 +698,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${
               this.narrow
                 ? html`<ha-sub-menu>
-                    <ha-menu-item slot="item">
+                    <ha-md-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.move_category"
@@ -708,7 +708,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-menu-item>
+                    </ha-md-menu-item>
                     <ha-menu slot="menu">${categoryItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
@@ -716,7 +716,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${
               this.narrow || this.hass.dockedSidebar === "docked"
                 ? html` <ha-sub-menu>
-                    <ha-menu-item slot="item">
+                    <ha-md-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.add_label"
@@ -726,12 +726,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-menu-item>
+                    </ha-md-menu-item>
                     <ha-menu slot="menu">${labelItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }
-          </ha-button-menu-new>`
+          </ha-md-button-menu>`
           : nothing}
 
         <ha-integration-overflow-menu
@@ -762,36 +762,44 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters = { ...this._filters, [type]: ev.detail };
+
+    this._filters = { ...this._filters, [type]: ev.detail.value };
+    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
     this._applyFilters();
   }
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
+
     let items: Set<string> | undefined;
-    for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
+
+    Object.values(this._filteredItems).forEach((itms) => {
+      if (!itms) {
+        return;
       }
+      if (!items) {
+        items = itms;
+        return;
+      }
+      items =
+        "intersection" in items
+          ? // @ts-ignore
+            items.intersection(itms)
+          : new Set([...items].filter((x) => itms!.has(x)));
+    });
+
+    for (const [key, filter] of filters) {
       if (
         key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        Array.isArray(filter) &&
+        filter.length
       ) {
         const labelItems: Set<string> = new Set();
         this._stateItems
           .filter((stateItem) =>
             this._entityReg
               .find((reg) => reg.entity_id === stateItem.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+              ?.labels.some((lbl) => filter.includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
         if (!items) {
@@ -806,14 +814,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       }
       if (
         key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        Array.isArray(filter) &&
+        filter.length
       ) {
         const categoryItems: Set<string> = new Set();
         this._stateItems
           .filter(
             (stateItem) =>
-              filter.value![0] ===
+              filter[0] ===
               this._entityReg.find(
                 (reg) => reg.entity_id === stateItem.entity_id
               )?.categories.helpers
@@ -830,11 +838,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             : new Set([...items].filter((x) => categoryItems!.has(x)));
       }
     }
+
     this._filteredStateItems = items ? [...items] : undefined;
   }
 
   private _clearFilter() {
     this._filters = {};
+    this._filteredItems = {};
     this._applyFilters();
   }
 
@@ -1155,7 +1165,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {

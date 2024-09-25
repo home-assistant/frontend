@@ -87,7 +87,7 @@ export class HaEntityPicker extends LitElement {
   public includeUnitOfMeasurement?: string[];
 
   /**
-   * List of allowed entities to show. Will ignore all other filters.
+   * List of allowed entities to show.
    * @type {Array}
    * @attr include-entities
    */
@@ -220,30 +220,13 @@ export class HaEntityPicker extends LitElement {
 
       if (includeEntities) {
         entityIds = entityIds.filter((entityId) =>
-          this.includeEntities!.includes(entityId)
+          includeEntities.includes(entityId)
         );
-
-        return entityIds
-          .map((key) => {
-            const friendly_name = computeStateName(hass!.states[key]) || key;
-            return {
-              ...hass!.states[key],
-              friendly_name,
-              strings: [key, friendly_name],
-            };
-          })
-          .sort((entityA, entityB) =>
-            caseInsensitiveStringCompare(
-              entityA.friendly_name,
-              entityB.friendly_name,
-              this.hass.locale.language
-            )
-          );
       }
 
       if (excludeEntities) {
         entityIds = entityIds.filter(
-          (entityId) => !excludeEntities!.includes(entityId)
+          (entityId) => !excludeEntities.includes(entityId)
         );
       }
 

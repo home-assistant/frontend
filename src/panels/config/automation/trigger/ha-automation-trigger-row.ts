@@ -41,7 +41,11 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-textfield";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { AutomationClipboard } from "../../../../data/automation";
-import { Trigger, subscribeTrigger } from "../../../../data/automation";
+import {
+  Trigger,
+  migrateAutomationTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -71,6 +75,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { preventDefault } from "../../../../common/dom/prevent_default";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -97,8 +102,6 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   }
   fireEvent(element, "value-changed", { value: newTrigger });
 };
-
-const preventDefault = (ev) => ev.preventDefault();
 
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
@@ -144,7 +147,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (!this.trigger) return nothing;
 
     const supported =
-      customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
+      customElements.get(`ha-automation-trigger-${this.trigger.trigger}`) !==
       undefined;
     const yamlMode = this._yamlMode || !supported;
     const showId = "id" in this.trigger || this._requestShowId;
@@ -165,7 +168,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
-              .path=${TRIGGER_ICONS[this.trigger.platform]}
+              .path=${TRIGGER_ICONS[this.trigger.trigger]}
             ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
@@ -333,7 +336,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ? html`
                         ${this.hass.localize(
                           "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          { platform: this.trigger.platform }
+                          { platform: this.trigger.trigger }
                         )}
                       `
                     : ""}
@@ -363,7 +366,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     @value-changed=${this._onUiChanged}
                   >
                     ${dynamicElement(
-                      `ha-automation-trigger-${this.trigger.platform}`,
+                      `ha-automation-trigger-${this.trigger.trigger}`,
                       {
                         hass: this.hass,
                         trigger: this.trigger,
@@ -436,11 +439,11 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
 
     const validateResult = await validateConfig(this.hass, {
-      trigger,
+      triggers: trigger,
     });
 
     // Don't do anything if trigger not valid or if trigger changed.
-    if (!validateResult.trigger.valid || this.trigger !== trigger) {
+    if (!validateResult.triggers.valid || this.trigger !== trigger) {
       return;
     }
 
@@ -574,7 +577,9 @@ export default class HaAutomationTriggerRow extends LitElement {
       return;
     }
     this._warnings = undefined;
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    fireEvent(this, "value-changed", {
+      value: migrateAutomationTrigger(ev.detail.value),
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {

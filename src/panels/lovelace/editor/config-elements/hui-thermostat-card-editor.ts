@@ -1,6 +1,6 @@
+import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -12,11 +12,13 @@ import {
   string,
 } from "superstruct";
 import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   LovelaceCardFeatureConfig,
@@ -24,9 +26,9 @@ import {
 } from "../../card-features/types";
 import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditSubElementEvent, SubElementEditorConfig } from "../types";
+import { EditDetailElementEvent, EditSubElementEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 import type { FeatureType } from "./hui-card-features-editor";
 
@@ -75,38 +77,18 @@ export class HuiThermostatCardEditor
 
   @state() private _config?: ThermostatCardConfig;
 
-  @state() private _subElementEditorConfig?: SubElementEditorConfig;
-
   public setConfig(config: ThermostatCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
-
-  private _context = memoizeOne(
-    (entity_id?: string): LovelaceCardFeatureContext => ({ entity_id })
-  );
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const stateObj = this._config.entity
-      ? this.hass.states[this._config.entity]
-      : undefined;
-
-    if (this._subElementEditorConfig) {
-      return html`
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          .context=${this._context(this._config.entity)}
-          @go-back=${this._goBack}
-          @config-changed=${this.subElementChanged}
-        >
-        </hui-sub-element-editor>
-      `;
-    }
+    const entityId = this._config!.entity;
+    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     return html`
       <ha-form
@@ -116,14 +98,24 @@ export class HuiThermostatCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-card-features-editor
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
-        .features=${this._config!.features ?? []}
-        @features-changed=${this._featuresChanged}
-        @edit-detail-element=${this._editDetailElement}
-      ></hui-card-features-editor>
+      <ha-expansion-panel outlined>
+        <h3 slot="header">
+          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.features"
+          )}
+        </h3>
+        <div class="content">
+          <hui-card-features-editor
+            .hass=${this.hass}
+            .stateObj=${stateObj}
+            .featuresTypes=${COMPATIBLE_FEATURES_TYPES}
+            .features=${this._config!.features ?? []}
+            @features-changed=${this._featuresChanged}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-card-features-editor>
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -150,41 +142,30 @@ export class HuiThermostatCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private subElementChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    const index = ev.detail.subElementConfig.index;
+    const config = this._config!.features![index!];
 
-    const value = ev.detail.config;
-
-    const newConfigFeatures = this._config!.features
-      ? [...this._config!.features]
-      : [];
-
-    if (!value) {
-      newConfigFeatures.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigFeatures[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._config = { ...this._config!, features: newConfigFeatures };
-
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "edit-sub-element", {
+      config: config,
+      saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
+      context: {
+        entity_id: this._config!.entity,
+      },
+      type: "feature",
+    } as EditSubElementEvent<
+      LovelaceCardFeatureConfig,
+      LovelaceCardFeatureContext
+    >);
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
-    this._subElementEditorConfig = ev.detail.subElementConfig;
-  }
-
-  private _goBack(): void {
-    this._subElementEditorConfig = undefined;
+  private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
+    const features = this._config!.features!.concat();
+    features[index] = feature;
+    const config = { ...this._config!, features };
+    fireEvent(this, "config-changed", {
+      config: config,
+    });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
@@ -200,12 +181,15 @@ export class HuiThermostatCardEditor
   };
 
   static get styles() {
-    return css`
-      ha-form {
-        display: block;
-        margin-bottom: 24px;
-      }
-    `;
+    return [
+      configElementStyle,
+      css`
+        ha-form {
+          display: block;
+          margin-bottom: 24px;
+        }
+      `,
+    ];
   }
 }
 

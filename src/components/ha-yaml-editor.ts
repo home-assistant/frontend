@@ -7,13 +7,15 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import "./ha-code-editor";
 import { showToast } from "../util/toast";
 import { copyToClipboard } from "../common/util/copy-clipboard";
+import type { HaCodeEditor } from "./ha-code-editor";
+import "./ha-button";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -53,6 +55,8 @@ export class HaYamlEditor extends LitElement {
 
   @state() private _yaml = "";
 
+  @query("ha-code-editor") _codeEditor?: HaCodeEditor;
+
   public setValue(value): void {
     try {
       this._yaml =
@@ -83,6 +87,12 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
+  public focus(): void {
+    if (this._codeEditor?.codemirror) {
+      this._codeEditor?.codemirror.focus();
+    }
+  }
+
   protected render() {
     if (this._yaml === undefined) {
       return nothing;
@@ -90,7 +100,7 @@ export class HaYamlEditor extends LitElement {
     return html`
       ${this.label
         ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
-        : ""}
+        : nothing}
       <ha-code-editor
         .hass=${this.hass}
         .value=${this._yaml}
@@ -103,16 +113,20 @@ export class HaYamlEditor extends LitElement {
         dir="ltr"
       ></ha-code-editor>
       ${this.copyClipboard || this.hasExtraActions
-        ? html`<div class="card-actions">
-            ${this.copyClipboard
-              ? html` <mwc-button @click=${this._copyYaml}>
-                  ${this.hass.localize(
-                    "ui.components.yaml-editor.copy_to_clipboard"
-                  )}
-                </mwc-button>`
-              : nothing}
-            <slot name="extra-actions"></slot>
-          </div>`
+        ? html`
+            <div class="card-actions">
+              ${this.copyClipboard
+                ? html`
+                    <ha-button @click=${this._copyYaml}>
+                      ${this.hass.localize(
+                        "ui.components.yaml-editor.copy_to_clipboard"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
+              <slot name="extra-actions"></slot>
+            </div>
+          `
         : nothing}
     `;
   }

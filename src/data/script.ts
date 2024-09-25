@@ -20,6 +20,7 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
   Condition,
+  migrateAutomationTrigger,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
@@ -404,7 +405,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("action" in action) {
+  if ("action" in action || "service" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
@@ -478,6 +479,11 @@ export const migrateAutomationAction = (
     if (_action.else) {
       migrateAutomationAction(_action.else);
     }
+  }
+
+  if (actionType === "wait_for_trigger") {
+    const _action = action as WaitForTriggerAction;
+    migrateAutomationTrigger(_action.wait_for_trigger);
   }
 
   return action;

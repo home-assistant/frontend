@@ -31,8 +31,8 @@ export const mockDemoTrace = (
       ],
     },
     config: {
-      trigger: [],
-      action: [],
+      triggers: [],
+      actions: [],
     },
     context: {
       id: "abcd",

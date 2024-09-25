@@ -5,13 +5,13 @@ import { customElement, state } from "lit/decorators";
 import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import "./hui-badge-visibility-editor";
 
 const tabs = ["config", "visibility"] as const;
 
 @customElement("hui-badge-element-editor")
-export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig> {
+export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeConfig> {
   @state() private _currTab: (typeof tabs)[number] = tabs[0];
 
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
@@ -88,7 +88,7 @@ export class HuiBadgeElementEditor extends HuiElementEditor<LovelaceBadgeConfig>
 
   static get styles(): CSSResultGroup {
     return [
-      HuiElementEditor.styles,
+      HuiTypedElementEditor.styles,
       css`
         mwc-tab-bar {
           text-transform: uppercase;

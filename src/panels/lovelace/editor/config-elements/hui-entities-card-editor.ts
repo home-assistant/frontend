@@ -41,7 +41,7 @@ import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   EditorTarget,
-  EditSubElementEvent,
+  EditDetailElementEvent,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -401,7 +401,7 @@ export class HuiEntitiesCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 

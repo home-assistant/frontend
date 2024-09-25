@@ -498,5 +498,26 @@ export interface TileCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
+  icon_hold_action?: ActionConfig;
+  icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+}
+
+export interface HeadingEntityConfig {
+  entity: string;
+  state_content?: string | string[];
+  icon?: string;
+  show_state?: boolean;
+  show_icon?: boolean;
+  color?: string;
+  tap_action?: ActionConfig;
+  visibility?: Condition[];
+}
+
+export interface HeadingCardConfig extends LovelaceCardConfig {
+  heading_style?: "title" | "subtitle";
+  heading?: string;
+  icon?: string;
+  tap_action?: ActionConfig;
+  entities?: (string | HeadingEntityConfig)[];
 }

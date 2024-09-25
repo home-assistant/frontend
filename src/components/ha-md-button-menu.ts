@@ -6,8 +6,8 @@ import type { HaIconButton } from "./ha-icon-button";
 import "./ha-menu";
 import type { HaMenu } from "./ha-menu";
 
-@customElement("ha-button-menu-new")
-export class HaButtonMenuNew extends LitElement {
+@customElement("ha-md-button-menu")
+export class HaMdButtonMenu extends LitElement {
   protected readonly [FOCUS_TARGET];
 
   @property({ type: Boolean }) public disabled = false;
@@ -84,6 +84,6 @@ export class HaButtonMenuNew extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-button-menu-new": HaButtonMenuNew;
+    "ha-md-button-menu": HaMdButtonMenu;
   }
 }
