@@ -124,9 +124,12 @@ export class HaCodeEditor extends ReactiveElement {
     const transactions: TransactionSpec[] = [];
     if (changedProps.has("mode")) {
       transactions.push({
-        effects: this._loadedCodeMirror!.langCompartment!.reconfigure(
-          this._mode
-        ),
+        effects: [
+          this._loadedCodeMirror!.langCompartment!.reconfigure(this._mode),
+          this._loadedCodeMirror!.foldingCompartment.reconfigure(
+            this._getFoldingExtensions()
+          ),
+        ],
       });
     }
     if (changedProps.has("readOnly")) {
@@ -194,6 +197,9 @@ export class HaCodeEditor extends ReactiveElement {
         this.linewrap ? this._loadedCodeMirror.EditorView.lineWrapping : []
       ),
       this._loadedCodeMirror.EditorView.updateListener.of(this._onUpdate),
+      this._loadedCodeMirror.foldingCompartment.of(
+        this._getFoldingExtensions()
+      ),
     ];
 
     if (!this.readOnly) {
@@ -309,6 +315,17 @@ export class HaCodeEditor extends ReactiveElement {
     }
     this._value = update.state.doc.toString();
     fireEvent(this, "value-changed", { value: this._value });
+  };
+
+  private _getFoldingExtensions = (): Extension => {
+    if (this.mode === "yaml") {
+      return [
+        this._loadedCodeMirror!.foldGutter(),
+        this._loadedCodeMirror!.foldingOnIndent,
+      ];
+    }
+
+    return [];
   };
 
   static get styles(): CSSResultGroup {
