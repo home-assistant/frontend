@@ -44,6 +44,7 @@ import {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -66,11 +67,17 @@ import {
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext } from "../../../data/context";
 import {
+  DataTableFilters,
+  deserializeFilters,
+  serializeFilters,
+} from "../../../data/data_table_filters";
+import {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import {
   IntegrationManifest,
   domainToName,
@@ -101,12 +108,6 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import {
-  serializeFilters,
-  deserializeFilters,
-  DataTableFilters,
-} from "../../../data/data_table_filters";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 
 type HelperItem = {
   id: string;
@@ -496,7 +497,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-divider role="separator" tabindex="-1"></ha-divider>
       <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
@@ -531,7 +532,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${label.name}
           </ha-label>
         </ha-md-menu-item> `;
-      })}<md-divider role="separator" tabindex="-1"></md-divider>
+      })}<ha-divider role="separator" tabindex="-1"></ha-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}

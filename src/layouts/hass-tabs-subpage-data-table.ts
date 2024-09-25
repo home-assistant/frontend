@@ -1,7 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
-import "@material/web/divider/divider";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -37,6 +36,7 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-md-button-menu";
 import "../components/ha-dialog";
+import "../components/ha-divider";
 import { HaMenu } from "../components/ha-menu";
 import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
@@ -364,7 +364,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                       )}
                     </div>
                   </ha-md-menu-item>
-                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-divider role="separator" tabindex="-1"></ha-divider>
                   <ha-md-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
@@ -501,7 +501,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         >
           ${localize("ui.components.subpage-data-table.dont_group_by")}
         </ha-md-menu-item>
-        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-divider role="separator" tabindex="-1"></ha-divider>
         <ha-md-menu-item
           @click=${this._collapseAllGroups}
           .disabled=${this._groupColumn === undefined}
