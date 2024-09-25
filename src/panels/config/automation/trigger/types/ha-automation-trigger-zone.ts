@@ -25,7 +25,7 @@ export class HaZoneTrigger extends LitElement {
 
   public static get defaultConfig(): ZoneTrigger {
     return {
-      platform: "zone",
+      trigger: "zone",
       entity_id: "",
       zone: "",
       event: "enter" as ZoneTrigger["event"],

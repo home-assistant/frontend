@@ -38,7 +38,7 @@ export class HaWebhookTrigger extends LitElement {
 
   public static get defaultConfig(): WebhookTrigger {
     return {
-      platform: "webhook",
+      trigger: "webhook",
       allowed_methods: [...DEFAULT_METHODS],
       local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,

@@ -111,7 +111,7 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
     triggers: [
       { ...HaConversationTrigger.defaultConfig },
       {
-        platform: "conversation",
+        trigger: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],
       },
     ],
