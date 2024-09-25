@@ -465,9 +465,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         baseConfig = {
           ...baseConfig,
           mode: "single",
-          trigger: [],
-          condition: [],
-          action: [],
+          triggers: [],
+          conditions: [],
+          actions: [],
         };
       }
       this._config = {
