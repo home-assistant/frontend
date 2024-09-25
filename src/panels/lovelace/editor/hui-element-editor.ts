@@ -187,12 +187,10 @@ export abstract class HuiElementEditor<
     `;
   }
 
-  private async _subElementChanged(ev: CustomEvent): Promise<void> {
+  private _subElementChanged(ev: CustomEvent): void {
     ev.stopPropagation();
 
     const value = ev.detail.config;
-
-    await import("./hui-sub-element-editor");
 
     this._subElementEditorConfig = {
       ...this._subElementEditorConfig!,
@@ -214,7 +212,9 @@ export abstract class HuiElementEditor<
     this._subElementEditorConfig = undefined;
   }
 
-  private _editSubElement(ev: HASSDomEvent<EditSubElementEvent>): void {
+  private async _editSubElement(
+    ev: HASSDomEvent<EditSubElementEvent>
+  ): Promise<void> {
     if (!ev.detail.path) {
       return;
     }
@@ -224,6 +224,8 @@ export abstract class HuiElementEditor<
     if (!config) {
       throw new Error("Failed to edit config");
     }
+
+    await import("./hui-sub-element-editor");
 
     this._subElementEditorConfig = {
       type: ev.detail.type,
