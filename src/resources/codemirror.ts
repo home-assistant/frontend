@@ -25,6 +25,7 @@ export {
   lineNumbers,
   rectangularSelection,
 } from "@codemirror/view";
+export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
 
 export const langs = {
