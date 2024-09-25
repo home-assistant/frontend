@@ -48,7 +48,7 @@ const ACTIONS = [
   {
     wait_for_trigger: [
       {
-        platform: "state",
+        trigger: "state",
         entity_id: "input_boolean.toggle_1",
       },
     ],

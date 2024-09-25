@@ -20,7 +20,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   @state() private _inputMode?: boolean;
 
   public static get defaultConfig(): TimeTrigger {
-    return { platform: "time", at: "" };
+    return { trigger: "time", at: "" };
   }
 
   private _schema = memoizeOne(

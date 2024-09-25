@@ -20,6 +20,7 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
   Condition,
+  migrateAutomationTrigger,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
@@ -478,6 +479,11 @@ export const migrateAutomationAction = (
     if (_action.else) {
       migrateAutomationAction(_action.else);
     }
+  }
+
+  if (actionType === "wait_for_trigger") {
+    const _action = action as WaitForTriggerAction;
+    migrateAutomationTrigger(_action.wait_for_trigger);
   }
 
   return action;

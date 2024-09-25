@@ -75,14 +75,16 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
-  platform: string;
+  /** @deprecated Use `trigger` instead */
+  platform?: string;
+  trigger: string;
   id?: string;
   variables?: Record<string, unknown>;
   enabled?: boolean;
 }
 
 export interface StateTrigger extends BaseTrigger {
-  platform: "state";
+  trigger: "state";
   entity_id: string | string[];
   attribute?: string;
   from?: string | string[];
@@ -91,25 +93,25 @@ export interface StateTrigger extends BaseTrigger {
 }
 
 export interface MqttTrigger extends BaseTrigger {
-  platform: "mqtt";
+  trigger: "mqtt";
   topic: string;
   payload?: string;
 }
 
 export interface GeoLocationTrigger extends BaseTrigger {
-  platform: "geo_location";
+  trigger: "geo_location";
   source: string;
   zone: string;
   event: "enter" | "leave";
 }
 
 export interface HassTrigger extends BaseTrigger {
-  platform: "homeassistant";
+  trigger: "homeassistant";
   event: "start" | "shutdown";
 }
 
 export interface NumericStateTrigger extends BaseTrigger {
-  platform: "numeric_state";
+  trigger: "numeric_state";
   entity_id: string | string[];
   attribute?: string;
   above?: number;
@@ -119,69 +121,69 @@ export interface NumericStateTrigger extends BaseTrigger {
 }
 
 export interface ConversationTrigger extends BaseTrigger {
-  platform: "conversation";
+  trigger: "conversation";
   command: string | string[];
 }
 
 export interface SunTrigger extends BaseTrigger {
-  platform: "sun";
+  trigger: "sun";
   offset: number;
   event: "sunrise" | "sunset";
 }
 
 export interface TimePatternTrigger extends BaseTrigger {
-  platform: "time_pattern";
+  trigger: "time_pattern";
   hours?: number | string;
   minutes?: number | string;
   seconds?: number | string;
 }
 
 export interface WebhookTrigger extends BaseTrigger {
-  platform: "webhook";
+  trigger: "webhook";
   webhook_id: string;
   allowed_methods?: string[];
   local_only?: boolean;
 }
 
 export interface PersistentNotificationTrigger extends BaseTrigger {
-  platform: "persistent_notification";
+  trigger: "persistent_notification";
   notification_id?: string;
   update_type?: string[];
 }
 
 export interface ZoneTrigger extends BaseTrigger {
-  platform: "zone";
+  trigger: "zone";
   entity_id: string;
   zone: string;
   event: "enter" | "leave";
 }
 
 export interface TagTrigger extends BaseTrigger {
-  platform: "tag";
+  trigger: "tag";
   tag_id: string;
   device_id?: string;
 }
 
 export interface TimeTrigger extends BaseTrigger {
-  platform: "time";
+  trigger: "time";
   at: string;
 }
 
 export interface TemplateTrigger extends BaseTrigger {
-  platform: "template";
+  trigger: "template";
   value_template: string;
   for?: string | number | ForDict;
 }
 
 export interface EventTrigger extends BaseTrigger {
-  platform: "event";
+  trigger: "event";
   event_type: string;
   event_data?: any;
   context?: ContextConstraint;
 }
 
 export interface CalendarTrigger extends BaseTrigger {
-  platform: "calendar";
+  trigger: "calendar";
   event: "start" | "end";
   entity_id: string;
   offset: string;
@@ -379,10 +381,6 @@ export const normalizeAutomationConfig = <
     }
   }
 
-  if (config.actions) {
-    config.actions = migrateAutomationAction(config.actions);
-  }
-
   return config;
 };
 
@@ -409,7 +407,33 @@ export const migrateAutomationConfig = <
     }
     delete config.action;
   }
+
+  if (config.triggers) {
+    config.triggers = migrateAutomationTrigger(config.triggers);
+  }
+
+  if (config.actions) {
+    config.actions = migrateAutomationAction(config.actions);
+  }
+
   return config;
+};
+
+export const migrateAutomationTrigger = (
+  trigger: Trigger | Trigger[]
+): Trigger | Trigger[] => {
+  if (Array.isArray(trigger)) {
+    return trigger.map(migrateAutomationTrigger) as Trigger[];
+  }
+
+  if ("platform" in trigger) {
+    if (!("trigger" in trigger)) {
+      // @ts-ignore
+      trigger.trigger = trigger.platform;
+    }
+    delete trigger.platform;
+  }
+  return trigger;
 };
 
 export const flattenTriggers = (

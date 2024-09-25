@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { Trigger } from "../../data/automation";
+import memoizeOne from "memoize-one";
+import { migrateAutomationTrigger, Trigger } from "../../data/automation";
 import { TriggerSelector } from "../../data/selector";
 import "../../panels/config/automation/trigger/ha-automation-trigger";
 import { HomeAssistant } from "../../types";
@@ -17,12 +18,19 @@ export class HaTriggerSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  private _triggers = memoizeOne((trigger: Trigger | undefined) => {
+    if (!trigger) {
+      return [];
+    }
+    return migrateAutomationTrigger(trigger);
+  });
+
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-trigger
         .disabled=${this.disabled}
-        .triggers=${this.value || []}
+        .triggers=${this._triggers(this.value)}
         .hass=${this.hass}
         .path=${this.selector.trigger?.path}
       ></ha-automation-trigger>
