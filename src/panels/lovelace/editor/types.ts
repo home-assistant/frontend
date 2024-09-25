@@ -92,6 +92,7 @@ export interface BadgePickTarget extends EventTarget {
 
 export interface SubElementEditorConfig {
   index?: number;
+  path?: (string | number)[];
   elementConfig?:
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
@@ -102,5 +103,10 @@ export interface SubElementEditorConfig {
 }
 
 export interface EditSubElementEvent {
+  path: (string | number)[];
+  type: SubElementEditorConfig["type"];
+}
+
+export interface EditDetailElementEvent {
   subElementConfig: SubElementEditorConfig;
 }
