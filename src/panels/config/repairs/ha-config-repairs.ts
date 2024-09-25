@@ -18,7 +18,10 @@ import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import { StatisticsValidationResult } from "../../../data/recorder";
+import {
+  STATISTIC_TYPES,
+  StatisticsValidationResult,
+} from "../../../data/recorder";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -135,12 +138,7 @@ class HaConfigRepairs extends LitElement {
     } else if (
       issue.domain === "sensor" &&
       issue.translation_key &&
-      [
-        "entity_not_recorded",
-        "entity_no_longer_recorded",
-        "unsupported_state_class",
-        "units_changed",
-      ].includes(issue.translation_key)
+      STATISTIC_TYPES.includes(issue.translation_key as any)
     ) {
       const localize =
         await this.hass.loadFragmentTranslation("developer-tools");

@@ -23,11 +23,13 @@ export const fixStatisticsIssue = async (
     case "no_state":
       return showConfirmationDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.title",
-          { name: getStatisticLabel(hass, issue.data.statistic_id, undefined) }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.title"
         ),
         text: html`${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_1"
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_1",
+            {
+              name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+            }
           )}<br /><br />${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_2",
             { statistic_id: issue.data.statistic_id }
@@ -41,11 +43,13 @@ export const fixStatisticsIssue = async (
     case "entity_not_recorded":
       return showAlertDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.title",
-          { name: getStatisticLabel(hass, issue.data.statistic_id, undefined) }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.title"
         ),
         text: html`${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_1"
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_1",
+            {
+              name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+            }
           )}<br /><br />${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_2"
           )}<br /><br />
@@ -65,11 +69,13 @@ export const fixStatisticsIssue = async (
     case "entity_no_longer_recorded":
       return showConfirmationDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.title",
-          { name: getStatisticLabel(hass, issue.data.statistic_id, undefined) }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.title"
         ),
         text: html`${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_1"
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_1",
+            {
+              name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+            }
           )}
           ${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_2"
@@ -98,12 +104,14 @@ export const fixStatisticsIssue = async (
     case "unsupported_state_class":
       return showConfirmationDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title",
-          { name: getStatisticLabel(hass, issue.data.statistic_id, undefined) }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title"
         ),
         text: html`${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1",
-            { state_class: issue.data.state_class }
+            {
+              name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+              state_class: issue.data.state_class,
+            }
           )}<br /><br />
           ${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_2"
@@ -151,9 +159,7 @@ export const fixStatisticsIssue = async (
     default:
       return showAlertDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.no_support.title",
-          // @ts-ignore
-          { name: getStatisticLabel(hass, issue.data.statistic_id, undefined) }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.no_support.title"
         ),
         text: localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.no_support.info_text_1"

@@ -49,20 +49,18 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         escapeKeyAction
         @closed=${this._closeDialog}
         .heading=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title",
-          {
-            name: getStatisticLabel(
-              this.hass,
-              this._params.issue.data.statistic_id,
-              undefined
-            ),
-          }
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title"
         )}
       >
         <p>
           ${this.hass.localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
             {
+              name: getStatisticLabel(
+                this.hass,
+                this._params.issue.data.statistic_id,
+                undefined
+              ),
               current_unit: this._params.issue.data.state_unit,
               previous_unit: this._params.issue.data.metadata_unit,
             }
