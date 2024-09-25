@@ -12,10 +12,6 @@ import { cache } from "lit/directives/cache";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
-import {
-  findNestedObject,
-  updateNestedObject,
-} from "../../../common/util/nested-object";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-yaml-editor";
@@ -197,14 +193,7 @@ export abstract class HuiElementEditor<
       elementConfig: value,
     };
 
-    const config = updateNestedObject(
-      this._config,
-      this._subElementEditorConfig.path!,
-      value
-    );
-
-    this._config = config;
-    this._setConfig();
+    this._subElementEditorConfig.saveElementConfig?.(value);
   }
 
   private _goBack(ev): void {
@@ -215,22 +204,15 @@ export abstract class HuiElementEditor<
   private async _editSubElement(
     ev: HASSDomEvent<EditSubElementEvent>
   ): Promise<void> {
-    if (!ev.detail.path) {
-      return;
-    }
     ev.stopPropagation();
-    const config = findNestedObject(this._config, ev.detail.path);
-
-    if (!config) {
-      throw new Error("Failed to edit config");
-    }
 
     await import("./hui-sub-element-editor");
 
     this._subElementEditorConfig = {
       type: ev.detail.type,
-      path: ev.detail.path,
-      elementConfig: config,
+      elementConfig: ev.detail.config,
+      context: ev.detail.context,
+      saveElementConfig: ev.detail.saveConfig,
     };
   }
 
