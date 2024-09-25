@@ -12,11 +12,16 @@ import {
   fetchRepairsIssueData,
   type RepairsIssue,
 } from "../../../data/repairs";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import {
+  STATISTIC_TYPES,
+  StatisticsValidationResult,
+} from "../../../data/recorder";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -129,6 +134,31 @@ class HaConfigRepairs extends LitElement {
         showConfigFlowDialog(this, {
           continueFlowId: data.issue_data.flow_id as string,
         });
+      }
+    } else if (
+      issue.domain === "sensor" &&
+      issue.translation_key &&
+      STATISTIC_TYPES.includes(issue.translation_key as any)
+    ) {
+      const localize =
+        await this.hass.loadFragmentTranslation("developer-tools");
+      const data = await fetchRepairsIssueData(
+        this.hass.connection,
+        issue.domain,
+        issue.issue_id
+      );
+      if ("issue_type" in data.issue_data) {
+        await fixStatisticsIssue(
+          this,
+          this.hass,
+          localize || this.hass.localize,
+          {
+            type: data.issue_data
+              .issue_type as StatisticsValidationResult["type"],
+            data: data.issue_data as any,
+          }
+        );
+        this.hass.callWS({ type: "recorder/update_statistics_issues" });
       }
     } else {
       showRepairsIssueDialog(this, {
