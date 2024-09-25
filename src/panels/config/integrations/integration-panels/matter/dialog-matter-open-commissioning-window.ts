@@ -137,9 +137,21 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
               : html`
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.introduction"
+                      "ui.panel.config.matter.open_commissioning_window.description",
+                      {
+                        startCommissioning: html`<b
+                          >${this.hass.localize(
+                            "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                          )}</b
+                        >`,
+                      }
                     )}
                   </p>
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
+                    )}
+                  </ha-alert>
                   <mwc-button slot="primaryAction" @click=${this._start}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.start_commissioning"
