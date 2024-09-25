@@ -215,14 +215,16 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
-          <assist-pipeline-detail-wakeword
-            .hass=${this.hass}
-            .data=${this._data}
-            keys="wake_word_entity,wake_word_id"
-            @value-changed=${this._valueChanged}
-          ></assist-pipeline-detail-wakeword>
+          ${this._params.hideWakeWord
+            ? nothing
+            : html`<assist-pipeline-detail-wakeword
+                .hass=${this.hass}
+                .data=${this._data}
+                keys="wake_word_entity,wake_word_id"
+                @value-changed=${this._valueChanged}
+              ></assist-pipeline-detail-wakeword>`}
         </div>
-        ${this._params.pipeline?.id
+        ${this._params.pipeline?.id && this._params.deletePipeline
           ? html`
               <ha-button
                 slot="secondaryAction"
@@ -283,8 +285,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       };
       if (this._params!.pipeline?.id) {
         await this._params!.updatePipeline(values);
-      } else {
+      } else if (this._params!.createPipeline) {
         await this._params!.createPipeline(values);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No createPipeline function provided");
       }
       this.closeDialog();
     } catch (err: any) {
@@ -313,6 +318,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   private async _deletePipeline() {
+    if (!this._params?.deletePipeline) {
+      return;
+    }
     this._submitting = true;
     try {
       if (await this._params!.deletePipeline()) {

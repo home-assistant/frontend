@@ -699,7 +699,9 @@
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "color-picker": {
-        "default_color": "Default color (state)",
+        "default": "default",
+        "state": "State color",
+        "none": "No color",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
@@ -1796,11 +1798,13 @@
     },
     "errors": {
       "config": {
+        "visual_editor_not_supported": "Visual editor not supported",
+        "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
+        "edit_in_yaml_supported": "You can still edit your config using YAML.",
+        "configuration_error": "Configuration error",
+        "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
-        "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
-        "edit_in_yaml_supported": "You can still edit your config in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
@@ -4076,6 +4080,9 @@
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "confirm_rename_entity_will_rename": "The following entity IDs will be renamed",
+          "confirm_rename_entity_wont_rename": "The following entity IDs will not be renamed as they do not contain the current device name ({deviceSlug})",
+          "confirm_rename_entity_no_renamable_entity_ids": "No renamable entity IDs",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
@@ -6005,7 +6012,17 @@
               },
               "entities": "Entities",
               "entity_config": {
-                "content": "Content"
+                "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+                "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
+                "visibility": "Visibility",
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
+                "appearance": "Appearance",
+                "state_content": "State content",
+                "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
+                "displayed_elements_options": {
+                  "icon": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::icon%]",
+                  "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
+                }
               },
               "default_heading": "Kitchen"
             },
@@ -6091,6 +6108,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
+              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "interactions": "Interactions",
               "appearance": "Appearance",
@@ -6130,7 +6148,8 @@
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of your entity.",
-              "color": "Color",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
               "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
@@ -6379,6 +6398,7 @@
               "row": "Entity row editor",
               "feature": "Feature editor",
               "element": "Element editor",
+              "heading-entity": "Entity editor",
               "element_type": "{type} element editor"
             }
           }

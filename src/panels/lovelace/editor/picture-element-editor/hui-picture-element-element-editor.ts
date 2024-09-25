@@ -1,11 +1,11 @@
 import { customElement } from "lit/decorators";
 import { LovelaceElementConfig } from "../../elements/types";
 import type { LovelacePictureElementEditor } from "../../types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import { getPictureElementClass } from "../../create-element/create-picture-element";
 
 @customElement("hui-picture-element-element-editor")
-export class HuiPictureElementElementEditor extends HuiElementEditor<LovelaceElementConfig> {
+export class HuiPictureElementElementEditor extends HuiTypedElementEditor<LovelaceElementConfig> {
   protected get configElementType(): string | undefined {
     return this.value?.type === "action-button"
       ? "service-button"
