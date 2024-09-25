@@ -47,7 +47,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-divider";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
@@ -650,7 +650,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <ha-divider role="separator" tabindex="-1"></ha-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
@@ -689,7 +689,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-md-menu-item>`;
       })}
-      <ha-divider role="separator" tabindex="-1"></ha-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}

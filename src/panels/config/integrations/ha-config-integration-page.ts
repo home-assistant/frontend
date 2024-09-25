@@ -45,7 +45,7 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-divider";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-list";
@@ -533,10 +533,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       (item, index) =>
                         html`${this._renderConfigEntry(item)}
                         ${index < attentionEntries.length - 1
-                          ? html` <ha-divider
+                          ? html` <ha-md-divider
                               role="separator"
                               tabindex="-1"
-                            ></ha-divider>`
+                            ></ha-md-divider>`
                           : ""} `
                     )}
                   </ha-md-list>
@@ -573,10 +573,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   (item, index) =>
                     html`${this._renderConfigEntry(item)}
                     ${index < normalEntries.length - 1
-                      ? html` <ha-divider
+                      ? html` <ha-md-divider
                           role="separator"
                           tabindex="-1"
-                        ></ha-divider>`
+                        ></ha-md-divider>`
                       : ""} `
                 )}
               </ha-md-list>
@@ -882,7 +882,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           )}
         </ha-md-menu-item>
 
-        <ha-divider role="separator" tabindex="-1"></ha-divider>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
         ${this._diagnosticHandler && item.state === "loaded"
           ? html`

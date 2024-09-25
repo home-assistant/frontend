@@ -44,7 +44,7 @@ import {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
-import "../../../components/ha-divider";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -497,7 +497,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <ha-divider role="separator" tabindex="-1"></ha-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
@@ -532,7 +532,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ${label.name}
           </ha-label>
         </ha-md-menu-item> `;
-      })}<ha-divider role="separator" tabindex="-1"></ha-divider>
+      })}<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}

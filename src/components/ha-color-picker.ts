@@ -9,7 +9,7 @@ import { LocalizeKeys } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
-import "./ha-divider";
+import "./ha-md-divider";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {
@@ -95,7 +95,7 @@ export class HaColorPicker extends LitElement {
             `
           : nothing}
         ${this.includeState || this.includeNone
-          ? html`<ha-divider role="separator" tabindex="-1"></ha-divider>`
+          ? html`<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
           : nothing}
         ${Array.from(THEME_COLORS).map(
           (color) => html`

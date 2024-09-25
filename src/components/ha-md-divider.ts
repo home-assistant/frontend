@@ -2,8 +2,8 @@ import { MdDivider } from "@material/web/divider/divider";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-@customElement("ha-divider")
-export class HaDivider extends MdDivider {
+@customElement("ha-md-divider")
+export class HaMdDivider extends MdDivider {
   static override styles = [
     ...super.styles,
     css`
@@ -16,6 +16,6 @@ export class HaDivider extends MdDivider {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-divider": HaDivider;
+    "ha-md-divider": HaMdDivider;
   }
 }

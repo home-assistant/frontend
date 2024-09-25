@@ -23,7 +23,7 @@ import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
-import "../../../components/ha-divider";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
@@ -559,7 +559,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ></ha-svg-icon
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-md-list-item>
-                <ha-divider role="separator" tabindex="-1"></ha-divider>`
+                <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
             : ""}
           ${repeat(
             items,
