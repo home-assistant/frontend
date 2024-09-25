@@ -3713,6 +3713,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@replit/codemirror-indentation-markers@npm:6.5.3":
+  version: 6.5.3
+  resolution: "@replit/codemirror-indentation-markers@npm:6.5.3"
+  peerDependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+  checksum: 10/9292734a228038805bdf72ed2c6cdd70e7b7f87090d6d07bb64af4ac986ea277349409f4d52c2863128d4b481ea8a094c2486d7d677875d47336a52cb15fc4ed
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-babel@npm:6.0.4":
   version: 6.0.4
   resolution: "@rollup/plugin-babel@npm:6.0.4"
@@ -8958,6 +8969,7 @@ __metadata:
     "@polymer/paper-listbox": "npm:3.0.1"
     "@polymer/paper-tabs": "npm:3.1.0"
     "@polymer/polymer": "npm:3.5.1"
+    "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rollup/plugin-babel": "npm:6.0.4"
     "@rollup/plugin-commonjs": "npm:26.0.1"
     "@rollup/plugin-json": "npm:6.1.0"
