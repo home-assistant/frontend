@@ -92,21 +92,22 @@ export interface BadgePickTarget extends EventTarget {
 
 export interface SubElementEditorConfig {
   index?: number;
-  path?: (string | number)[];
   elementConfig?:
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
     | LovelaceCardFeatureConfig
     | LovelaceElementConfig
     | HeadingEntityConfig;
+  saveElementConfig?: (elementConfig: any) => void;
   context?: any;
   type: "header" | "footer" | "row" | "feature" | "element" | "heading-entity";
 }
 
-export interface EditSubElementEvent {
-  path: (string | number)[];
+export interface EditSubElementEvent<T = any, C = any> {
   type: SubElementEditorConfig["type"];
-  context?: any;
+  context?: C;
+  config: T;
+  saveConfig: (config: T) => void;
 }
 
 export interface EditDetailElementEvent {

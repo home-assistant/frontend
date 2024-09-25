@@ -30,6 +30,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-entities-editor";
+import { EditSubElementEvent } from "../types";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -176,9 +177,22 @@ export class HuiHeadingCardEditor
 
   private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
+    const index = ev.detail.index;
+    const config = this._config!.entities![index!];
+
     fireEvent(this, "edit-sub-element", {
-      path: ["entities", ev.detail.index],
+      config: config,
+      saveConfig: (newConfig) => this._updateEntity(index, newConfig),
       type: "heading-entity",
+    } as EditSubElementEvent<HeadingEntityConfig>);
+  }
+
+  private _updateEntity(index: number, entity: HeadingEntityConfig) {
+    const entities = this._config!.entities!.concat();
+    entities[index] = entity;
+    const config = { ...this._config!, entities };
+    fireEvent(this, "config-changed", {
+      config: config,
     });
   }
 

@@ -31,7 +31,7 @@ import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditDetailElementEvent } from "../types";
+import { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -246,12 +246,28 @@ export class HuiTileCardEditor
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    const index = ev.detail.subElementConfig.index;
+    const config = this._config!.features![index!];
+
     fireEvent(this, "edit-sub-element", {
-      path: ["features", ev.detail.subElementConfig.index!],
+      config: config,
+      saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
       context: {
         entity_id: this._config!.entity,
-      } as LovelaceCardFeatureContext,
+      },
       type: "feature",
+    } as EditSubElementEvent<
+      LovelaceCardFeatureConfig,
+      LovelaceCardFeatureContext
+    >);
+  }
+
+  private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
+    const features = this._config!.features!.concat();
+    features[index] = feature;
+    const config = { ...this._config!, features };
+    fireEvent(this, "config-changed", {
+      config: config,
     });
   }
 
