@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   CSSResultGroup,
@@ -13,6 +12,7 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { LocalizeFunc } from "../common/translations/localize";
+import "../components/ha-button";
 import { ConfigEntry, subscribeConfigEntries } from "../data/config_entries";
 import { subscribeConfigFlowInProgress } from "../data/config_flow";
 import { domainToName } from "../data/integration";
@@ -117,6 +117,30 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
     const foundIntegrations = domains.length;
 
+    // there is a possibility that the user has no integrations
+    if (foundIntegrations === 0) {
+      return html`
+        <div class="all-set-icon">🎉</div>
+        <h1>
+          ${this.onboardingLocalize(
+            "ui.panel.page-onboarding.integration.all_set"
+          )}
+        </h1>
+        <p>
+          ${this.onboardingLocalize(
+            "ui.panel.page-onboarding.integration.lets_start"
+          )}
+        </p>
+        <div class="footer">
+          <ha-button unelevated @click=${this._finish}>
+            ${this.onboardingLocalize(
+              "ui.panel.page-onboarding.integration.finish"
+            )}
+          </ha-button>
+        </div>
+      `;
+    }
+
     if (domains.length > 12) {
       domains = domains.slice(0, 11);
     }
@@ -149,11 +173,11 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <mwc-button unelevated @click=${this._finish}>
+        <ha-button unelevated @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -192,6 +216,10 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           justify-content: center;
           align-items: center;
           height: 100%;
+        }
+        .all-set-icon {
+          font-size: 64px;
+          text-align: center;
         }
       `,
     ];

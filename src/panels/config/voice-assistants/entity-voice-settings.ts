@@ -305,7 +305,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private _aliasesChanged(ev) {
+    const currentLength =
+      this._aliases?.length ?? this.entry?.aliases?.length ?? 0;
+
     this._aliases = ev.detail.value;
+
+    // if an entry was deleted, then save changes
+    if (currentLength > ev.detail.value.length) {
+      this._saveAliases();
+    }
   }
 
   private async _2faChanged(ev) {

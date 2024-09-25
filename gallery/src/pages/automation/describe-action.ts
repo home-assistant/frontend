@@ -48,7 +48,7 @@ const ACTIONS = [
   {
     wait_for_trigger: [
       {
-        platform: "state",
+        trigger: "state",
         entity_id: "input_boolean.toggle_1",
       },
     ],
@@ -121,7 +121,7 @@ const ACTIONS = [
 ];
 
 const initialAction: Action = {
-  service: "light.turn_on",
+  action: "light.turn_on",
   target: {
     entity_id: "light.kitchen",
   },

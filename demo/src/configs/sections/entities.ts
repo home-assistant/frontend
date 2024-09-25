@@ -111,9 +111,37 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         friendly_name: "Living room Temperature",
       },
     },
+    "sensor.outdoor_temperature": {
+      entity_id: "sensor.outdoor_temperature",
+      state: "10.5",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+        friendly_name: "Outdoor temperature",
+      },
+    },
+    "sensor.outdoor_humidity": {
+      entity_id: "sensor.outdoor_humidity",
+      state: "70.4",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "%",
+        device_class: "humidity",
+        friendly_name: "Outdoor humidity",
+      },
+    },
+    "device_tracker.car": {
+      entity_id: "sensor.outdoor_humidity",
+      state: "not_home",
+      attributes: {
+        friendly_name: "Car",
+        icon: "mdi:car",
+      },
+    },
     "media_player.living_room_nest_mini": {
       entity_id: "media_player.living_room_nest_mini",
-      state: "on",
+      state: "playing",
       attributes: {
         device_class: "speaker",
         volume_level: 0.18,

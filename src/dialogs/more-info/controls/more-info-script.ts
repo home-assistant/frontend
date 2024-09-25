@@ -21,12 +21,15 @@ import { isUnavailableState } from "../../../data/entity";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../components/ha-more-info-state-header";
+import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: ScriptEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
 
   @state() private _scriptData: Record<string, any> = {};
 
@@ -59,8 +62,9 @@ class MoreInfoScript extends LitElement {
     const stateObj = this.stateObj;
 
     const fields =
-      this.hass.services.script[computeObjectId(this.stateObj.entity_id)]
-        ?.fields;
+      this.hass.services.script[
+        this.entry?.unique_id || computeObjectId(this.stateObj.entity_id)
+      ]?.fields;
 
     const hasFields = fields && Object.keys(fields).length > 0;
 
@@ -138,17 +142,30 @@ class MoreInfoScript extends LitElement {
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    if (!changedProperties.has("stateObj")) {
-      return;
+    if (changedProperties.has("stateObj")) {
+      const oldState = changedProperties.get("stateObj") as
+        | HassEntity
+        | undefined;
+      const newState = this.stateObj;
+
+      if (
+        newState &&
+        (!oldState || oldState.entity_id !== newState.entity_id)
+      ) {
+        this._scriptData = {
+          action:
+            this.entry?.entity_id === newState.entity_id
+              ? `script.${this.entry.unique_id}`
+              : newState.entity_id,
+        };
+      }
     }
 
-    const oldState = changedProperties.get("stateObj") as
-      | HassEntity
-      | undefined;
-    const newState = this.stateObj;
-
-    if (newState && (!oldState || oldState.entity_id !== newState.entity_id)) {
-      this._scriptData = { action: newState.entity_id, data: {} };
+    if (this.entry?.unique_id && changedProperties.has("entry")) {
+      const action = `script.${this.entry?.unique_id}`;
+      if (this._scriptData?.action !== action) {
+        this._scriptData = { ...this._scriptData, action };
+      }
     }
   }
 
@@ -161,7 +178,7 @@ class MoreInfoScript extends LitElement {
     ev.stopPropagation();
     this.hass.callService(
       "script",
-      computeObjectId(this.stateObj!.entity_id),
+      this.entry?.unique_id || computeObjectId(this.stateObj!.entity_id),
       this._scriptData.data
     );
   }

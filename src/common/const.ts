@@ -234,7 +234,12 @@ export const SENSOR_ENTITIES = [
   "weather",
 ];
 
-export const ASSIST_ENTITIES = ["conversation", "stt", "tts"];
+export const ASSIST_ENTITIES = [
+  "assist_satellite",
+  "conversation",
+  "stt",
+  "tts",
+];
 
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally

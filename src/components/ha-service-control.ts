@@ -240,12 +240,24 @@ export class HaServiceControl extends LitElement {
         ...value,
         selector: value.selector as Selector | undefined,
       }));
+
+      const hasSelector: string[] = [];
+      fields.forEach((field) => {
+        if ((field as any).fields) {
+          Object.entries((field as any).fields).forEach(([key, subField]) => {
+            if ((subField as any).selector) {
+              hasSelector.push(key);
+            }
+          });
+        } else if (field.selector) {
+          hasSelector.push(field.key);
+        }
+      });
+
       return {
         ...serviceDomains[domain][serviceName],
         fields,
-        hasSelector: fields.length
-          ? fields.filter((field) => field.selector).map((field) => field.key)
-          : [],
+        hasSelector,
       };
     }
   );

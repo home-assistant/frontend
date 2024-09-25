@@ -51,6 +51,7 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fetchEntityRegistry } from "../../../data/entity_registry";
@@ -68,7 +69,6 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -464,9 +464,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         baseConfig = {
           ...baseConfig,
           mode: "single",
-          trigger: [],
-          condition: [],
-          action: [],
+          triggers: [],
+          conditions: [],
+          actions: [],
         };
       }
       this._config = {
@@ -520,9 +520,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      trigger: this._config.trigger,
-      condition: this._config.condition,
-      action: this._config.action,
+      triggers: this._config.triggers,
+      conditions: this._config.conditions,
+      actions: this._config.actions,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
@@ -530,7 +530,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       value.valid
         ? ""
         : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}s.name`
+              `ui.panel.config.automation.editor.${key}.name`
             )}:
             ${value.error}<br />`
     );
@@ -637,7 +637,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = { id: this._config?.id, ...ev.detail.value };
+    this._config = {
+      id: this._config?.id,
+      ...normalizeAutomationConfig(ev.detail.value),
+    };
     this._errors = undefined;
     this._dirty = true;
   }
