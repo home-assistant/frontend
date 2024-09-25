@@ -6954,7 +6954,7 @@
                 "info_text_1": "Fixing this issue is not supported yet."
               },
               "no_state": {
-                "title": " has no state",
+                "title": "Entity has no state",
                 "info_text_1": "{name} has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
                 "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
