@@ -10,26 +10,38 @@ class DialogRepairsIssueSubtitle extends LitElement {
 
   @property({ type: Object }) public issue!: RepairsIssue;
 
-  protected render() {
-    const domainName = domainToName(this.hass.localize, this.issue.domain);
-    const reportedBy = domainName
-      ? ` ⸱ ${this.hass.localize("ui.panel.config.repairs.reported_by", { integration: domainName })}`
-      : "";
+  protected firstUpdated() {
+    if (this.scrollWidth > this.offsetWidth) {
+      this.title = `${this._getSeverityText()}${this._getReportedByText()}`;
+    }
+  }
 
-    const severity = this.hass.localize(
-      `ui.panel.config.repairs.${this.issue.severity}`
-    );
+  protected render() {
+    const reportedBy = this._getReportedByText();
+    const severity = this._getSeverityText();
 
     return html`
-      <div class="secondary" .title=${`${severity}${reportedBy}`}>
-        <span class=${this.issue.severity}> ${severity} </span>
-        ${reportedBy}
-      </div>
+      <span class=${this.issue.severity}> ${severity} </span>
+      ${reportedBy}
     `;
   }
 
+  private _getSeverityText() {
+    return this.hass.localize(`ui.panel.config.repairs.${this.issue.severity}`);
+  }
+
+  private _getReportedByText() {
+    const domainName = domainToName(this.hass.localize, this.issue.domain);
+    return domainName
+      ? this.hass.localize("ui.panel.config.repairs.reported_by", {
+          integration: domainName,
+        })
+      : "";
+  }
+
   static styles = css`
-    .secondary {
+    :host {
+      display: block;
       font-size: 14px;
       margin-bottom: 8px;
       color: var(--secondary-text-color);

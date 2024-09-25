@@ -14,7 +14,6 @@ import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
-import { domainToName } from "../../../data/integration";
 
 @customElement("dialog-repairs-issue")
 class DialogRepairsIssue extends LitElement {
@@ -59,16 +58,6 @@ class DialogRepairsIssue extends LitElement {
         this._issue.translation_placeholders || {}
       ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
 
-    const severity = this.hass.localize(
-      `ui.panel.config.repairs.${this._issue.severity}`
-    );
-    const domainName = domainToName(this.hass.localize, this._issue.domain);
-    const reportedBy = domainName
-      ? ` ⸱ ${this.hass.localize(`ui.panel.config.repairs.reported_by`, {
-          integration: domainName,
-        })}`
-      : "";
-
     return html`
       <ha-md-dialog
         open
@@ -89,10 +78,11 @@ class DialogRepairsIssue extends LitElement {
             .title=${dialogTitle}
             >${dialogTitle}</span
           >
-          <span slot="subtitle" .title=${`${severity}${reportedBy}`}>
-            <span class=${this._issue.severity}> ${severity} </span>
-            ${reportedBy || nothing}
-          </span>
+          <dialog-repairs-issue-subtitle
+            slot="subtitle"
+            .hass=${this.hass}
+            .issue=${this._issue}
+          ></dialog-repairs-issue-subtitle>
         </ha-dialog-header>
         <div slot="content" class="dialog-content">
           ${this._issue.breaks_in_ha_version

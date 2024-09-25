@@ -1968,7 +1968,7 @@
           "integration_startup_time": "Integration startup time",
           "copy": "Copy",
           "reported_by": "Reported by {integration}",
-          "created_by": "{date} by {integration}",
+          "created_at_by": "{date} by {integration}",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",

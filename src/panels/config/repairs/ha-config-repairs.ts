@@ -46,7 +46,7 @@ class HaConfigRepairs extends LitElement {
 
           const createdBy =
             issue.created && domainName
-              ? this.hass.localize("ui.panel.config.repairs.created_by", {
+              ? this.hass.localize("ui.panel.config.repairs.created_at_by", {
                   date: capitalizeFirstLetter(
                     relativeTime(new Date(issue.created), this.hass.locale)
                   ),
@@ -62,29 +62,28 @@ class HaConfigRepairs extends LitElement {
               @click=${this._openShowMoreDialog}
               type="button"
             >
-              <div slot="start">
-                <img
-                  alt=${domainName}
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain: issue.issue_domain || issue.domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  .title=${domainName}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-              </div>
-              <div slot="headline">
+              <img
+                slot="start"
+                alt=${domainName}
+                loading="lazy"
+                src=${brandsUrl({
+                  domain: issue.issue_domain || issue.domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                .title=${domainName}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+              />
+              <span slot="headline">
                 ${this.hass.localize(
                   `component.${issue.domain}.issues.${issue.translation_key || issue.issue_id}.title`,
                   issue.translation_placeholders || {}
                 ) ||
                 `${issue.domain}: ${issue.translation_key || issue.issue_id}`}
-              </div>
-              <div slot="supporting-text">
+              </span>
+              <span slot="supporting-text">
                 ${issue.severity === "critical" || issue.severity === "error"
                   ? html`<span class="error"
                       >${this.hass.localize(
@@ -106,7 +105,7 @@ class HaConfigRepairs extends LitElement {
                       { version: issue.dismissed_version }
                     )}`
                   : ""}
-              </div>
+              </span>
               ${!this.narrow
                 ? html`<ha-icon-next slot="end"></ha-icon-next>`
                 : ""}
@@ -170,11 +169,11 @@ class HaConfigRepairs extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-md-list-item div[slot="start"] img {
+    ha-md-list-item img[slot="start"] {
       width: 40px;
       height: 40px;
     }
-    ha-md-list-item div[slot="supporting-text"] {
+    ha-md-list-item span[slot="supporting-text"] {
       white-space: nowrap;
     }
     .error {
