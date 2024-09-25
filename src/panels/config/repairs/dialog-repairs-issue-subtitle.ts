@@ -12,31 +12,29 @@ class DialogRepairsIssueSubtitle extends LitElement {
 
   protected firstUpdated() {
     if (this.scrollWidth > this.offsetWidth) {
-      this.title = `${this._getSeverityText()}${this._getReportedByText()}`;
+      this.title =
+        (this.shadowRoot?.firstElementChild as HTMLElement)?.innerText || "";
     }
   }
 
   protected render() {
-    const reportedBy = this._getReportedByText();
-    const severity = this._getSeverityText();
-
-    return html`
-      <span class=${this.issue.severity}> ${severity} </span>
-      ${reportedBy}
-    `;
-  }
-
-  private _getSeverityText() {
-    return this.hass.localize(`ui.panel.config.repairs.${this.issue.severity}`);
-  }
-
-  private _getReportedByText() {
     const domainName = domainToName(this.hass.localize, this.issue.domain);
-    return domainName
+    const reportedBy = domainName
       ? this.hass.localize("ui.panel.config.repairs.reported_by", {
           integration: domainName,
         })
       : "";
+
+    const severity = this.hass.localize(
+      `ui.panel.config.repairs.${this.issue.severity}`
+    );
+
+    return html`
+      <span>
+        <span class=${this.issue.severity}> ${severity} </span>
+        ${reportedBy}
+      </span>
+    `;
   }
 
   static styles = css`
