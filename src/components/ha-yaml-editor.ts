@@ -7,13 +7,14 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import "./ha-code-editor";
 import { showToast } from "../util/toast";
 import { copyToClipboard } from "../common/util/copy-clipboard";
+import type { HaCodeEditor } from "./ha-code-editor";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -53,6 +54,8 @@ export class HaYamlEditor extends LitElement {
 
   @state() private _yaml = "";
 
+  @query("ha-code-editor") _codeEditor?: HaCodeEditor;
+
   public setValue(value): void {
     try {
       this._yaml =
@@ -80,6 +83,12 @@ export class HaYamlEditor extends LitElement {
     super.willUpdate(changedProperties);
     if (this.autoUpdate && changedProperties.has("value")) {
       this.setValue(this.value);
+    }
+  }
+
+  public focus(): void {
+    if (this._codeEditor?.codemirror) {
+      this._codeEditor?.codemirror.focus();
     }
   }
 

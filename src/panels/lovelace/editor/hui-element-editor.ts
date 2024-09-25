@@ -13,8 +13,8 @@ import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-code-editor";
-import type { HaCodeEditor } from "../../../components/ha-code-editor";
+import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type {
@@ -71,7 +71,7 @@ export abstract class HuiElementEditor<
 
   @state() private _loading = false;
 
-  @query("ha-yaml-editor") _yamlEditor?: HaCodeEditor;
+  @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
 
   public get value(): T | undefined {
     return this._config;
@@ -142,10 +142,10 @@ export abstract class HuiElementEditor<
     if (this._configElement?.focusYamlEditor) {
       this._configElement.focusYamlEditor();
     }
-    if (!this._yamlEditor?.codemirror) {
+    if (!this._yamlEditor) {
       return;
     }
-    this._yamlEditor.codemirror.focus();
+    this._yamlEditor.focus();
   }
 
   protected async getConfigElement(): Promise<
