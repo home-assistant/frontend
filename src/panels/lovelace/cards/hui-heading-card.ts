@@ -21,6 +21,17 @@ import type {
 } from "../types";
 import type { HeadingCardConfig } from "./types";
 
+export const migrateHeadingCardConfig = (
+  config: HeadingCardConfig
+): HeadingCardConfig => {
+  const newConfig = { ...config };
+  if (newConfig.entities) {
+    newConfig.items = [...(newConfig.items || []), ...newConfig.entities];
+    delete newConfig.entities;
+  }
+  return newConfig;
+};
+
 @customElement("hui-heading-card")
 export class HuiHeadingCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -47,7 +58,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       tap_action: {
         action: "none",
       },
-      ...config,
+      ...migrateHeadingCardConfig(config),
     };
   }
 
@@ -66,8 +77,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _items = memoizeOne((entities: HeadingCardConfig["entities"]) =>
-    processEditorEntities(entities || [])
+  private _items = memoizeOne((items: HeadingCardConfig["items"]) =>
+    processEditorEntities(items || [])
   );
 
   protected render() {
@@ -79,7 +90,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
     const style = this._config.heading_style || "title";
 
-    const items = this._items(this._config.entities);
+    const items = this._items(this._config.items);
 
     return html`
       <ha-card>

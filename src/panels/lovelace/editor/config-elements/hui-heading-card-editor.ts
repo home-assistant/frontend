@@ -35,6 +35,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-heading-items-editor";
+import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -45,6 +46,8 @@ const cardConfigStruct = assign(
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
+    items: optional(array(any())),
+    // deprecated
     entities: optional(array(any())),
   })
 );
@@ -60,7 +63,7 @@ export class HuiHeadingCardEditor
 
   public setConfig(config: HeadingCardConfig): void {
     assert(config, cardConfigStruct);
-    this._config = config;
+    this._config = migrateHeadingCardConfig(config);
   }
 
   private _schema = memoizeOne(
@@ -108,8 +111,8 @@ export class HuiHeadingCardEditor
   );
 
   private _items = memoizeOne(
-    (entities: HeadingCardConfig["entities"]): LovelaceHeadingItemConfig[] =>
-      processEditorEntities(entities || [])
+    (items: HeadingCardConfig["items"]): LovelaceHeadingItemConfig[] =>
+      processEditorEntities(items || [])
   );
 
   protected render() {
@@ -145,7 +148,7 @@ export class HuiHeadingCardEditor
         <div class="content">
           <hui-heading-items-editor
             .hass=${this.hass}
-            .items=${this._items(this._config!.entities)}
+            .items=${this._items(this._config!.items)}
             @heading-items-changed=${this._itemsChanged}
             @edit-heading-item=${this._editItem}
           >
@@ -163,7 +166,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.items as LovelaceHeadingItemConfig[],
+      items: ev.detail.items as LovelaceHeadingItemConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -183,7 +186,7 @@ export class HuiHeadingCardEditor
   private _editItem(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
     const index = ev.detail.index;
-    const config = this._items(this._config!.entities)[index];
+    const config = this._items(this._config!.items)[index];
 
     fireEvent(this, "edit-sub-element", {
       config: config,
@@ -193,9 +196,9 @@ export class HuiHeadingCardEditor
   }
 
   private _updateEntity(index: number, entity: EntityHeadingItemConfig) {
-    const entities = this._config!.entities!.concat();
-    entities[index] = entity;
-    const config = { ...this._config!, entities };
+    const items = this._config!.items!.concat();
+    items[index] = entity;
+    const config = { ...this._config!, items };
     fireEvent(this, "config-changed", {
       config: config,
     });
