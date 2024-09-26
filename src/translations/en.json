@@ -5127,7 +5127,8 @@
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
-            "ping_complete": "Ping device complete."
+            "ping_complete": "Ping device complete.",
+            "no_ip_found": "The device ping failed. No IP addresses found for this device."
           },
           "open_commissioning_window": {
             "title": "Share device",
