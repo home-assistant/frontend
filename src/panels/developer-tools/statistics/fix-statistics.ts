@@ -109,9 +109,7 @@ export const fixStatisticsIssue = async (
           "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title"
         ),
         text: html`${localize(
-            issue.data.state_class
-              ? "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1"
-              : "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1_no_state_class",
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1",
             {
               name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
               statistic_id: issue.data.statistic_id,

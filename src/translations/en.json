@@ -6980,7 +6980,6 @@
               "unsupported_state_class": {
                 "title": "Unsupported state class",
                 "info_text_1": "The state class of ''{name}'' ({statistic_id}), ''{state_class}'', is not supported.",
-                "info_text_1_no_state_class": "''{name}'' ({statistic_id}), has no state class.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
                 "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
                 "info_text_4": "If you have set this state class yourself, please correct it.",
