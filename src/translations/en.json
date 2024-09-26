@@ -5131,7 +5131,7 @@
           },
           "open_commissioning_window": {
             "title": "Share device",
-            "description": "To continue, select {startCommissioning}. Home Assistant will then enable Commissioning mode on your device, allowing it to pair with another Matter controller.",
+            "description": "To continue, select {startCommissioning}. Home Assistant will then put your device in commissioning mode, allowing it to pair with another Matter controller.",
             "prevent_misuse_description": "Do not use the physical setup button on the device as this will reset it, effectively disconnecting it from all Matter controllers including Home Assistant.",
             "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
