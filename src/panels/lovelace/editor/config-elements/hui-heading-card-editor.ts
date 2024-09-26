@@ -22,6 +22,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
+import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import {
@@ -29,13 +30,11 @@ import {
   LovelaceHeadingItemConfig,
 } from "../../heading-items/types";
 import type { LovelaceCardEditor } from "../../types";
-import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-heading-items-editor";
-import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -112,7 +111,7 @@ export class HuiHeadingCardEditor
 
   private _items = memoizeOne(
     (items: HeadingCardConfig["items"]): LovelaceHeadingItemConfig[] =>
-      processEditorEntities(items || [])
+      items || []
   );
 
   protected render() {

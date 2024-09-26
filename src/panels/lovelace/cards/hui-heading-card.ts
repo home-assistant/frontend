@@ -1,7 +1,6 @@
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -12,7 +11,6 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { processEditorEntities } from "../editor/process-editor-entities";
 import "../heading-items/hui-heading-item";
 import type {
   LovelaceCard,
@@ -77,10 +75,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _items = memoizeOne((items: HeadingCardConfig["items"]) =>
-    processEditorEntities(items || [])
-  );
-
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -90,7 +84,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
     const style = this._config.heading_style || "title";
 
-    const items = this._items(this._config.items);
+    const items = this._config.items;
 
     return html`
       <ha-card>
@@ -110,7 +104,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
               : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${items.length
+          ${items?.length
             ? html`
                 <div class="items">
                   ${items.map(

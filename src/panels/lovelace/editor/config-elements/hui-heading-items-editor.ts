@@ -16,10 +16,6 @@ import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceHeadingItemConfig } from "../../heading-items/types";
 
-type EntityConfig = {
-  entity: string;
-};
-
 declare global {
   interface HASSDomEvents {
     "edit-heading-item": { index: number };
@@ -193,7 +189,10 @@ export class HuiHeadingItemsEditor extends LitElement {
     if (!ev.detail.value) {
       return;
     }
-    const newEntity: EntityConfig = { entity: ev.detail.value };
+    const newEntity: LovelaceHeadingItemConfig = {
+      type: "entity",
+      entity: ev.detail.value,
+    };
     const newItems = (this.items || []).concat(newEntity);
     fireEvent(this, "heading-items-changed", { items: newItems });
   }
