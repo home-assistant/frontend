@@ -16,6 +16,7 @@ import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceHeadingItemConfig } from "../heading-items/types";
 import {
   LovelaceBadge,
   LovelaceBadgeConstructor,
@@ -26,6 +27,8 @@ import {
   LovelaceElementConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
+  LovelaceHeadingItem,
+  LovelaceHeadingItemConstructor,
   LovelaceRowConstructor,
 } from "../types";
 
@@ -71,6 +74,11 @@ interface CreateElementConfigTypes {
     config: LovelaceSectionConfig;
     element: LovelaceSectionElement;
     constructor: unknown;
+  };
+  "heading-item": {
+    config: LovelaceHeadingItemConfig;
+    element: LovelaceHeadingItem;
+    constructor: LovelaceHeadingItemConstructor;
   };
 }
 

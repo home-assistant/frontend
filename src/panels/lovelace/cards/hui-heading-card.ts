@@ -1,6 +1,7 @@
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -11,12 +12,13 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import "../heading-items/hui-heading-item";
+import { EntityHeadingItemConfig } from "../heading-items/types";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import "./heading/hui-heading-entity";
 import type { HeadingCardConfig } from "./types";
 
 @customElement("hui-heading-card")
@@ -64,6 +66,16 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
+  private _items = memoizeOne(
+    (entities: NonNullable<HeadingCardConfig["entities"]>) =>
+      entities.map((entity) => {
+        if (typeof entity === "string") {
+          return { type: "entity", entity } as EntityHeadingItemConfig;
+        }
+        return entity;
+      })
+  );
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -94,14 +106,14 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
           ${this._config.entities?.length
             ? html`
                 <div class="entities">
-                  ${this._config.entities.map(
+                  ${this._items(this._config.entities).map(
                     (config) => html`
-                      <hui-heading-entity
+                      <hui-heading-item
                         .config=${config}
                         .hass=${this.hass}
                         .preview=${this.preview}
                       >
-                      </hui-heading-entity>
+                      </hui-heading-item>
                     `
                   )}
                 </div>

@@ -15,7 +15,7 @@ import type { HomeAssistant } from "../../../types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
-import "./heading-entity/hui-heading-entity-element-editor";
+import "./heading-item-editor/hui-heading-item-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
 import "./picture-element-editor/hui-picture-element-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
@@ -132,16 +132,16 @@ export class HuiSubElementEditor extends LitElement {
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-card-feature-element-editor>
         `;
-      case "heading-entity":
+      case "heading-item":
         return html`
-          <hui-heading-entity-element-editor
+          <hui-heading-item-element-editor
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
             .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
-          ></hui-heading-entity-element-editor>
+          ></hui-heading-item-element-editor>
         `;
       default:
         return nothing;

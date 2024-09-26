@@ -22,7 +22,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
+import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
@@ -31,6 +31,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-entities-editor";
 import { EditSubElementEvent } from "../types";
+import { EntityHeadingItemConfig } from "../../heading-items/types";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -158,7 +159,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.entities as HeadingEntityConfig[],
+      entities: ev.detail.entities as EntityHeadingItemConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -178,16 +179,16 @@ export class HuiHeadingCardEditor
   private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
     const index = ev.detail.index;
-    const config = this._config!.entities![index!];
+    const config = this._entities(this._config!.entities)[index];
 
     fireEvent(this, "edit-sub-element", {
       config: config,
       saveConfig: (newConfig) => this._updateEntity(index, newConfig),
-      type: "heading-entity",
-    } as EditSubElementEvent<HeadingEntityConfig>);
+      type: "heading-item",
+    } as EditSubElementEvent<EntityHeadingItemConfig>);
   }
 
-  private _updateEntity(index: number, entity: HeadingEntityConfig) {
+  private _updateEntity(index: number, entity: EntityHeadingItemConfig) {
     const entities = this._config!.entities!.concat();
     entities[index] = entity;
     const config = { ...this._config!, entities };

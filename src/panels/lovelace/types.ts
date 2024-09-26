@@ -13,6 +13,7 @@ import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceCardFeatureConfig } from "./card-features/types";
 import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
+import { LovelaceHeadingItemConfig } from "./heading-items/types";
 
 declare global {
   // eslint-disable-next-line
@@ -177,4 +178,28 @@ export interface LovelaceCardFeatureConstructor
 export interface LovelaceCardFeatureEditor
   extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardFeatureConfig): void;
+}
+
+export interface LovelaceHeadingItem extends HTMLElement {
+  hass?: HomeAssistant;
+  preview?: boolean;
+  setConfig(config: LovelaceHeadingItemConfig);
+}
+
+export interface LovelaceHeadingItemConstructor
+  extends Constructor<LovelaceHeadingItem> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    stateObj?: HassEntity
+  ) => LovelaceHeadingItemConfig;
+  getConfigElement?: () => LovelaceHeadingItemEditor;
+  getConfigForm?: () => {
+    schema: HaFormSchema[];
+    assertConfig?: (config: LovelaceCardConfig) => void;
+  };
+}
+
+export interface LovelaceHeadingItemEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceHeadingItemConfig): void;
 }
