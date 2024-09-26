@@ -6979,7 +6979,7 @@
               },
               "unsupported_state_class": {
                 "title": "Unsupported state class",
-                "info_text_1": "The state class of {name}, {state_class} is not supported.",
+                "info_text_1": "The state class of {name}, ''{state_class}'', is not supported.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
                 "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
                 "info_text_4": "If you have set this state class yourself, please correct it.",
@@ -6988,7 +6988,7 @@
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
-                "title": "The unit changed",
+                "title": "The unit has changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
                 "clear": "Delete all old statistic data for this entity",
                 "how_to_fix": "How do you want to fix this issue?",
