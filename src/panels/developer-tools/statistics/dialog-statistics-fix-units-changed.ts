@@ -61,6 +61,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
                 this._params.issue.data.statistic_id,
                 undefined
               ),
+              statistic_id: this._params.issue.data.statistic_id,
               current_unit: this._params.issue.data.state_unit,
               previous_unit: this._params.issue.data.metadata_unit,
             }
