@@ -5127,11 +5127,13 @@
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
-            "ping_complete": "Ping device complete."
+            "ping_complete": "Ping device complete.",
+            "no_ip_found": "The device ping failed. No IP addresses found for this device."
           },
           "open_commissioning_window": {
             "title": "Share device",
-            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "description": "To continue, select {startCommissioning}. Home Assistant will then put your device in commissioning mode, allowing it to pair with another Matter controller.",
+            "prevent_misuse_description": "Note: Do not press the physical setup button on the device as this will reset it.",
             "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
@@ -6960,25 +6962,25 @@
               },
               "no_state": {
                 "title": "Entity has no state",
-                "info_text_1": "{name} has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_1": "''{name}'' ({statistic_id}) has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
                 "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "entity_not_recorded": {
                 "title": "Entity is not recorded",
-                "info_text_1": "State changes of {name} are not recorded, therefore, we cannot track long term statistics for it.",
+                "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
                 "title": "Entity is no longer recorded",
-                "info_text_1": "We have generated statistics for {name} in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
               "unsupported_state_class": {
                 "title": "Unsupported state class",
-                "info_text_1": "The state class of {name}, {state_class} is not supported.",
+                "info_text_1": "The state class of ''{name}'' ({statistic_id}), ''{state_class}'', is not supported.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
                 "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
                 "info_text_4": "If you have set this state class yourself, please correct it.",
@@ -6987,11 +6989,11 @@
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
-                "title": "The unit changed",
+                "title": "The unit has changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
                 "clear": "Delete all old statistic data for this entity",
                 "how_to_fix": "How do you want to fix this issue?",
-                "info_text_1": "The unit of {name} changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
                 "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
                 "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
               },

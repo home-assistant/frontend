@@ -1,5 +1,5 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
+import { ERR_CONNECTION_LOST, HassService } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -8,16 +8,16 @@ import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
-import { extractSearchParam } from "../../../common/url/search-params";
-import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { showToast } from "../../../util/toast";
+import { extractSearchParam } from "../../../common/url/search-params";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import { showToast } from "../../../util/toast";
 
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-card";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
@@ -382,10 +382,24 @@ class HaPanelDevAction extends LitElement {
       }
       const target = "target" in serviceDomains[domain][service];
       const fields = serviceDomains[domain][service].fields;
-      const result = Object.keys(fields).map((field) => ({
-        key: field,
-        ...fields[field],
-      }));
+      const result: (HassService["fields"] & { key: string })[] = [];
+
+      // TODO: remplace any by proper type when updated in home-assistant-js-websocket
+      const getFields = (flds: any) => {
+        Object.keys(flds).forEach((field) => {
+          const fieldData = flds[field];
+          if (fieldData.fields) {
+            getFields(fieldData.fields);
+          } else {
+            result.push({
+              key: field,
+              ...fieldData,
+            });
+          }
+        });
+      };
+
+      getFields(fields);
 
       return {
         target,

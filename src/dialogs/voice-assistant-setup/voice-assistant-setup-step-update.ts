@@ -1,4 +1,4 @@
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
@@ -45,7 +45,11 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
   }
 
   protected override render() {
-    const stateObj = this.hass.states[this.updateEntityId!];
+    if (!this.updateEntityId || !(this.updateEntityId in this.hass.states)) {
+      return nothing;
+    }
+
+    const stateObj = this.hass.states[this.updateEntityId];
 
     const progressIsNumeric =
       typeof stateObj?.attributes.in_progress === "number";

@@ -90,7 +90,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
-        .path=${["trigger"]}
+        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -132,7 +132,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
-        .path=${["condition"]}
+        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -172,7 +172,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
-        .path=${["action"]}
+        .path=${["actions"]}
         @value-changed=${this._actionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
