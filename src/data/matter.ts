@@ -68,6 +68,7 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
           ).tlv,
           border_agent_id: preferredDataset.preferred_border_agent_id,
           mac_extended_address: preferredDataset.preferred_extended_address,
+          extended_pan_id: preferredDataset.extended_pan_id,
         },
       });
     }
