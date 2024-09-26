@@ -129,20 +129,21 @@ class DialogBox extends LitElement {
   }
 
   private _dismiss(): void {
-    this._cancel();
     this._closeState = "canceled";
     this._closeDialog();
+    this._cancel();
   }
 
   private _confirm(): void {
+    this._closeState = "confirmed";
+    this._closeDialog();
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
-    this._closeState = "confirmed";
-    this._closeDialog();
   }
 
   private _closeDialog() {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._dialog?.close();
   }
 
@@ -154,7 +155,6 @@ class DialogBox extends LitElement {
       return;
     }
     this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {
