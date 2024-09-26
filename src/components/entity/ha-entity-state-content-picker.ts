@@ -173,6 +173,7 @@ class HaEntityStatePicker extends LitElement {
               no-style
               @item-moved=${this._moveItem}
               .disabled=${this.disabled}
+              filter="button.trailing.action"
             >
               <ha-chip-set>
                 ${repeat(
