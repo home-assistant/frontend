@@ -29,6 +29,7 @@ export const fixStatisticsIssue = async (
             "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_1",
             {
               name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+              statistic_id: issue.data.statistic_id,
             }
           )}<br /><br />${localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_2",
@@ -75,6 +76,7 @@ export const fixStatisticsIssue = async (
             "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_1",
             {
               name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+              statistic_id: issue.data.statistic_id,
             }
           )}
           ${localize(
@@ -107,9 +109,12 @@ export const fixStatisticsIssue = async (
           "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title"
         ),
         text: html`${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1",
+            issue.data.state_class
+              ? "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1"
+              : "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1_no_state_class",
             {
               name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
+              statistic_id: issue.data.statistic_id,
               state_class: issue.data.state_class,
             }
           )}<br /><br />
