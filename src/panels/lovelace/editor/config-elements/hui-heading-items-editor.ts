@@ -14,6 +14,7 @@ import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
+import { LovelaceHeadingItemConfig } from "../../heading-items/types";
 
 type EntityConfig = {
   entity: string;
@@ -21,16 +22,17 @@ type EntityConfig = {
 
 declare global {
   interface HASSDomEvents {
-    "edit-entity": { index: number };
+    "edit-heading-item": { index: number };
+    "heading-items-changed": { items: LovelaceHeadingItemConfig[] };
   }
 }
 
-@customElement("hui-entities-editor")
-export class HuiEntitiesEditor extends LitElement {
+@customElement("hui-heading-items-editor")
+export class HuiHeadingItemsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public entities?: EntityConfig[];
+  public items?: LovelaceHeadingItemConfig[];
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
@@ -40,14 +42,30 @@ export class HuiEntitiesEditor extends LitElement {
 
   private _opened = false;
 
-  private _entitiesKeys = new WeakMap<EntityConfig, string>();
+  private _itemsKeys = new WeakMap<LovelaceHeadingItemConfig, string>();
 
-  private _getKey(entity: EntityConfig) {
-    if (!this._entitiesKeys.has(entity)) {
-      this._entitiesKeys.set(entity, Math.random().toString());
+  private _getKey(item: LovelaceHeadingItemConfig) {
+    if (!this._itemsKeys.has(item)) {
+      this._itemsKeys.set(item, Math.random().toString());
     }
 
-    return this._entitiesKeys.get(entity)!;
+    return this._itemsKeys.get(item)!;
+  }
+
+  private _renderItemLabel(item: LovelaceHeadingItemConfig) {
+    const type = item.type ?? "entity";
+
+    if (type === "entity") {
+      const entityId = "entity" in item ? (item.entity as string) : undefined;
+      const stateObj = entityId ? this.hass.states[entityId] : undefined;
+      return (
+        (stateObj && stateObj.attributes.friendly_name) ||
+        entityId ||
+        type ||
+        "Unknown item"
+      );
+    }
+    return type;
   }
 
   protected render() {
@@ -56,46 +74,35 @@ export class HuiEntitiesEditor extends LitElement {
     }
 
     return html`
-      ${this.entities
+      ${this.items
         ? html`
             <ha-sortable
               handle-selector=".handle"
-              @item-moved=${this._entityMoved}
+              @item-moved=${this._itemMoved}
             >
               <div class="entities">
                 ${repeat(
-                  this.entities,
-                  (entityConf) => this._getKey(entityConf),
-                  (entityConf, index) => {
-                    const editable = true;
-
-                    const entityId = entityConf.entity;
-                    const stateObj = this.hass.states[entityId];
-                    const name = stateObj
-                      ? stateObj.attributes.friendly_name
-                      : undefined;
+                  this.items,
+                  (itemConf) => this._getKey(itemConf),
+                  (itemConf, index) => {
+                    const label = this._renderItemLabel(itemConf);
                     return html`
-                      <div class="entity">
+                      <div class="item">
                         <div class="handle">
                           <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                         </div>
-                        <div class="entity-content">
-                          <span>${name || entityId}</span>
+                        <div class="item-content">
+                          <span>${label}</span>
                         </div>
-                        ${editable
-                          ? html`
-                              <ha-icon-button
-                                .label=${this.hass!.localize(
-                                  `ui.panel.lovelace.editor.entities.edit`
-                                )}
-                                .path=${mdiPencil}
-                                class="edit-icon"
-                                .index=${index}
-                                @click=${this._editEntity}
-                                .disabled=${!editable}
-                              ></ha-icon-button>
-                            `
-                          : nothing}
+                        <ha-icon-button
+                          .label=${this.hass!.localize(
+                            `ui.panel.lovelace.editor.entities.edit`
+                          )}
+                          .path=${mdiPencil}
+                          class="edit-icon"
+                          .index=${index}
+                          @click=${this._editItem}
+                        ></ha-icon-button>
                         <ha-icon-button
                           .label=${this.hass!.localize(
                             `ui.panel.lovelace.editor.entities.remove`
@@ -187,33 +194,33 @@ export class HuiEntitiesEditor extends LitElement {
       return;
     }
     const newEntity: EntityConfig = { entity: ev.detail.value };
-    const newEntities = (this.entities || []).concat(newEntity);
-    fireEvent(this, "entities-changed", { entities: newEntities });
+    const newItems = (this.items || []).concat(newEntity);
+    fireEvent(this, "heading-items-changed", { items: newItems });
   }
 
-  private _entityMoved(ev: CustomEvent): void {
+  private _itemMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const newEntities = (this.entities || []).concat();
+    const newItems = (this.items || []).concat();
 
-    newEntities.splice(newIndex, 0, newEntities.splice(oldIndex, 1)[0]);
+    newItems.splice(newIndex, 0, newItems.splice(oldIndex, 1)[0]);
 
-    fireEvent(this, "entities-changed", { entities: newEntities });
+    fireEvent(this, "heading-items-changed", { items: newItems });
   }
 
   private _removeEntity(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newEntities = (this.entities || []).concat();
+    const newItems = (this.items || []).concat();
 
-    newEntities.splice(index, 1);
+    newItems.splice(index, 1);
 
-    fireEvent(this, "entities-changed", { entities: newEntities });
+    fireEvent(this, "heading-items-changed", { items: newItems });
   }
 
-  private _editEntity(ev: CustomEvent): void {
+  private _editItem(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    fireEvent(this, "edit-entity", {
+    fireEvent(this, "edit-heading-item", {
       index,
     });
   }
@@ -227,11 +234,11 @@ export class HuiEntitiesEditor extends LitElement {
       ha-button {
         margin-top: 8px;
       }
-      .entity {
+      .item {
         display: flex;
         align-items: center;
       }
-      .entity .handle {
+      .item .handle {
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
         padding-right: 8px;
@@ -239,11 +246,11 @@ export class HuiEntitiesEditor extends LitElement {
         padding-inline-start: initial;
         direction: var(--direction);
       }
-      .entity .handle > * {
+      .item .handle > * {
         pointer-events: none;
       }
 
-      .entity-content {
+      .item-content {
         height: 60px;
         font-size: 16px;
         display: flex;
@@ -252,7 +259,7 @@ export class HuiEntitiesEditor extends LitElement {
         flex-grow: 1;
       }
 
-      .entity-content div {
+      .item-content div {
         display: flex;
         flex-direction: column;
       }
@@ -291,6 +298,6 @@ export class HuiEntitiesEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entities-editor": HuiEntitiesEditor;
+    "hui-heading-items-editor": HuiHeadingItemsEditor;
   }
 }

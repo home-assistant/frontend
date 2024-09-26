@@ -88,7 +88,7 @@ export class HuiEntityEditor extends LitElement {
       entity: value as string,
     });
     (ev.target as HaEntityPicker).value = "";
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
+    fireEvent(this, "entities-changed", { items: newConfigEntities });
   }
 
   private _entityMoved(ev: CustomEvent): void {
@@ -99,7 +99,7 @@ export class HuiEntityEditor extends LitElement {
 
     newEntities.splice(newIndex, 0, newEntities.splice(oldIndex, 1)[0]);
 
-    fireEvent(this, "entities-changed", { entities: newEntities });
+    fireEvent(this, "entities-changed", { items: newEntities });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -116,7 +116,7 @@ export class HuiEntityEditor extends LitElement {
       };
     }
 
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
+    fireEvent(this, "entities-changed", { items: newConfigEntities });
   }
 
   static get styles(): CSSResultGroup {

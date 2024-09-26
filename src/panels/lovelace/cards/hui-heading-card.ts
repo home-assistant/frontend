@@ -12,8 +12,8 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import { processEditorEntities } from "../editor/process-editor-entities";
 import "../heading-items/hui-heading-item";
-import { EntityHeadingItemConfig } from "../heading-items/types";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -66,14 +66,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _items = memoizeOne(
-    (entities: NonNullable<HeadingCardConfig["entities"]>) =>
-      entities.map((entity) => {
-        if (typeof entity === "string") {
-          return { type: "entity", entity } as EntityHeadingItemConfig;
-        }
-        return entity;
-      })
+  private _items = memoizeOne((entities: HeadingCardConfig["entities"]) =>
+    processEditorEntities(entities || [])
   );
 
   protected render() {
@@ -84,6 +78,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     const actionable = hasAction(this._config.tap_action);
 
     const style = this._config.heading_style || "title";
+
+    const items = this._items(this._config.entities);
 
     return html`
       <ha-card>
@@ -103,10 +99,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
               : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${this._config.entities?.length
+          ${items.length
             ? html`
-                <div class="entities">
-                  ${this._items(this._config.entities).map(
+                <div class="items">
+                  ${items.map(
                     (config) => html`
                       <hui-heading-item
                         .config=${config}
@@ -162,7 +158,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       .container .content:not(:has(p)) {
         min-width: fit-content;
       }
-      .container .entities {
+      .container .items {
         flex: 0 0;
       }
       .content {
@@ -198,7 +194,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         font-weight: 500;
         line-height: 20px;
       }
-      .entities {
+      .items {
         display: flex;
         flex-direction: row;
         align-items: center;

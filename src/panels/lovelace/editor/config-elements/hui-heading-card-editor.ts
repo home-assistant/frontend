@@ -24,14 +24,17 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
+import {
+  EntityHeadingItemConfig,
+  LovelaceHeadingItemConfig,
+} from "../../heading-items/types";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { configElementStyle } from "./config-elements-style";
-import "./hui-entities-editor";
 import { EditSubElementEvent } from "../types";
-import { EntityHeadingItemConfig } from "../../heading-items/types";
+import { configElementStyle } from "./config-elements-style";
+import "./hui-heading-items-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -104,8 +107,9 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
-    processEditorEntities(entities || [])
+  private _items = memoizeOne(
+    (entities: HeadingCardConfig["entities"]): LovelaceHeadingItemConfig[] =>
+      processEditorEntities(entities || [])
   );
 
   protected render() {
@@ -139,19 +143,19 @@ export class HuiHeadingCardEditor
           )}
         </h3>
         <div class="content">
-          <hui-entities-editor
+          <hui-heading-items-editor
             .hass=${this.hass}
-            .entities=${this._entities(this._config!.entities)}
-            @entities-changed=${this._entitiesChanged}
-            @edit-entity=${this._editEntity}
+            .items=${this._items(this._config!.entities)}
+            @heading-items-changed=${this._itemsChanged}
+            @edit-heading-item=${this._editItem}
           >
-          </hui-entities-editor>
+          </hui-heading-items-editor>
         </div>
       </ha-expansion-panel>
     `;
   }
 
-  private _entitiesChanged(ev: CustomEvent): void {
+  private _itemsChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -159,7 +163,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.entities as EntityHeadingItemConfig[],
+      entities: ev.detail.items as LovelaceHeadingItemConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -176,10 +180,10 @@ export class HuiHeadingCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
+  private _editItem(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
     const index = ev.detail.index;
-    const config = this._entities(this._config!.entities)[index];
+    const config = this._items(this._config!.entities)[index];
 
     fireEvent(this, "edit-sub-element", {
       config: config,
