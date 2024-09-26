@@ -147,11 +147,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                       }
                     )}
                   </p>
-                  <ha-alert alert-type="warning">
+                  <p class="note">
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
                     )}
-                  </ha-alert>
+                  </p>
                   <mwc-button slot="primaryAction" @click=${this._start}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.open_commissioning_window.start_commissioning"
@@ -258,6 +258,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
         .code {
           font-family: monospace;
+        }
+
+        .note {
+          color: var(--secondary-text-color);
+          font-size: 0.9em;
         }
       `,
     ];
