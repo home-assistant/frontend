@@ -7,11 +7,7 @@ import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 @customElement("hui-heading-item-element-editor")
 export class HuiHeadingEntityElementEditor extends HuiTypedElementEditor<EntityHeadingItemConfig> {
   protected get configElementType(): string | undefined {
-    if (!this.value?.type) {
-      return "entity";
-    }
-
-    return this.value?.type;
+    return this.value?.type || "entity";
   }
 
   protected async getConfigElement(): Promise<
