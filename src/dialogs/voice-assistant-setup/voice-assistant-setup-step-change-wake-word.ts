@@ -25,8 +25,8 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
         <img src="/static/icons/casita/smiling.png" />
         <h1>Change wake word</h1>
         <p class="secondary">
-          When you voice assistant knows where it is, it can better control the
-          devices around it.
+          Some wake words are better for [your language] and voice than others.
+          Please try them out.
         </p>
       </div>
       <ha-md-list>
@@ -72,6 +72,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
       ha-md-list {
         width: 100%;
         text-align: initial;
+        margin-bottom: 24px;
       }
     `,
   ];

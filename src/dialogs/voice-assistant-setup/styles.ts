@@ -8,7 +8,6 @@ export const AssistantSetupStyles = [
       align-items: center;
       text-align: center;
       min-height: 300px;
-      max-width: 500px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -21,16 +20,27 @@ export const AssistantSetupStyles = [
     }
     .content img {
       width: 120px;
-      margin-top: 68px;
-      margin-bottom: 68px;
+    }
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      .content img {
+        margin-top: 68px;
+        margin-bottom: 68px;
+      }
     }
     .footer {
-      width: 100%;
       display: flex;
+      width: 100%;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+    .footer.full-width {
       flex-direction: column;
     }
-    .footer ha-button {
+    .footer.full-width ha-button {
       width: 100%;
+    }
+    .footer.side-by-side {
+      justify-content: space-between;
     }
   `,
 ];
