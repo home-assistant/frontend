@@ -228,6 +228,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     fireEvent(this, "next-step", {
       step: STEP.WAKEWORD,
       nextStep: STEP.SUCCESS,
+      updateConfig: true,
     });
   }
 
