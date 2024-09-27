@@ -38,8 +38,8 @@ export class HaBadge extends LitElement {
         font-family: Roboto;
         font-size: 14px;
         font-style: normal;
-        font-weight: 500;
-        line-height: 20px; /* 142.857% */
+        font-weight: 400;
+        line-height: 20px;
         letter-spacing: 0.1px;
         --mdc-icon-size: 14px;
       }
