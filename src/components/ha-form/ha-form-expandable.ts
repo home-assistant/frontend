@@ -30,6 +30,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     options?: { path?: string[] }
   ) => string;
 
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
+  ) => string;
+
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
     return description ? html`<p>${description}</p>` : nothing;
@@ -86,6 +90,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
             .disabled=${this.disabled}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
+            .localizeValue=${this.localizeValue}
           ></ha-form>
         </div>
       </ha-expansion-panel>
