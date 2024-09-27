@@ -379,7 +379,19 @@ export class HuiDialogEditView extends LitElement {
     };
 
     if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
-      viewConf.sections = [{ type: "grid", cards: [] }];
+      viewConf.sections = [
+        {
+          type: "grid",
+          cards: [
+            {
+              type: "heading",
+              heading: this.hass!.localize(
+                "ui.panel.lovelace.editor.section.default_section_title"
+              ),
+            },
+          ],
+        },
+      ];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
     }
