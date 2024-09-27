@@ -22,6 +22,7 @@ import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
+import { isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -98,6 +99,20 @@ const tryDescribeTrigger = (
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
+  if (isTriggerList(trigger)) {
+    const triggers = ensureArray(trigger.triggers);
+
+    if (!triggers || triggers.length === 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.list.description.no_trigger`
+      );
+    }
+    const count = triggers.length;
+    return hass.localize(`${triggerTranslationBaseKey}.list.description.full`, {
+      count: count,
+    });
+  }
+
   if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
