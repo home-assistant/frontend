@@ -8,26 +8,19 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-select";
-import type {
-  AutomationConfig,
-  Trigger,
-  TriggerCondition,
+import {
+  flattenTriggers,
+  type AutomationConfig,
+  type Trigger,
+  type TriggerCondition,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 
 const getTriggersIds = (triggers: Trigger[]): string[] => {
-  const ids: Set<string> = new Set();
-  triggers.forEach((trigger) => {
-    if ("triggers" in trigger) {
-      const newIds = getTriggersIds(ensureArray(trigger.triggers));
-      for (const id of newIds) {
-        ids.add(id);
-      }
-    } else if (trigger.id) {
-      ids.add(trigger.id);
-    }
-  });
-  return Array.from(ids);
+  const triggerIds = flattenTriggers(triggers)
+    .map((t) => ("id" in t ? t.id : undefined))
+    .filter(Boolean) as string[];
+  return Array.from(new Set(triggerIds));
 };
 
 @customElement("ha-automation-condition-trigger")
