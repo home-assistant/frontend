@@ -1,13 +1,10 @@
-import { mdiEyeOff, mdiEye } from "@mdi/js";
-import { LitElement, html, css } from "lit";
+import { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
+import { mdiEye, mdiEyeOff } from "@mdi/js";
+import { LitElement, css, html } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
-import "./ha-textfield";
-import {
-  TextAreaCharCounter,
-  TextFieldInputMode,
-} from "@material/mwc-textfield/mwc-textfield-base";
-import "./ha-icon-button";
 import { HomeAssistant } from "../types";
+import "./ha-icon-button";
+import "./ha-textfield";
 
 @customElement("ha-password-field")
 export class HaPasswordField extends LitElement {
@@ -70,13 +67,7 @@ export class HaPasswordField extends LitElement {
   @property({ type: String }) name = "";
 
   @property({ type: String, attribute: "input-mode" })
-  // lit-analyzer requires specific string types, but TS does not compile since
-  // base class is unspecific "string". It also needs non-null coercion (!)
-  // since we don't want to provide a default value, but the base class is not
-  // typed to allow undefined.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  inputMode?: TextFieldInputMode;
+  inputMode!: string;
 
   @property({ type: Boolean }) readOnly = false;
 
