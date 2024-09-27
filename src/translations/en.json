@@ -5668,7 +5668,8 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
-            "create_section": "Create section"
+            "create_section": "Create section",
+            "default_section_title": "New section"
           },
           "delete_section": {
             "title": "Delete section",
