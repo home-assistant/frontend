@@ -3093,6 +3093,13 @@
                     "picker": "When someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
+                },
+                "list": {
+                  "label": "List",
+                  "description": {
+                    "no_trigger": "When any trigger matches",
+                    "full": "When any of {count} {count, plural,\n  one {trigger}\n other {triggers}\n} triggers"
+                  }
                 }
               }
             },

@@ -206,7 +206,8 @@ export type Trigger =
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger
-  | CalendarTrigger;
+  | CalendarTrigger
+  | TriggerList;
 
 interface BaseCondition {
   condition: string;

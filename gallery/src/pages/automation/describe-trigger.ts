@@ -58,6 +58,12 @@ const triggers = [
     command: ["Turn on the lights", "Turn the lights on"],
   },
   { trigger: "event", event_type: "homeassistant_started" },
+  {
+    triggers: [
+      { trigger: "state", entity_id: "light.kitchen", to: "on" },
+      { trigger: "state", entity_id: "light.kitchen", to: "off" },
+    ],
+  },
 ];
 
 const initialTrigger: Trigger = {
