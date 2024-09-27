@@ -197,9 +197,6 @@ export class CloudRegister extends LitElement {
     const emailField = this._emailField;
     const passwordField = this._passwordField;
 
-    const email = emailField.value;
-    const password = passwordField.value;
-
     if (!emailField.reportValidity()) {
       passwordField.reportValidity();
       emailField.focus();
@@ -210,6 +207,9 @@ export class CloudRegister extends LitElement {
       passwordField.focus();
       return;
     }
+
+    const email = emailField.value.toLowerCase();
+    const password = passwordField.value;
 
     this._requestInProgress = true;
 
@@ -229,22 +229,31 @@ export class CloudRegister extends LitElement {
   private async _handleResendVerifyEmail() {
     const emailField = this._emailField;
 
-    const email = emailField.value;
-
     if (!emailField.reportValidity()) {
       emailField.focus();
       return;
     }
 
-    try {
-      await cloudResendVerification(this.hass, email);
-      this._verificationEmailSent(email);
-    } catch (err: any) {
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
-    }
+    const email = emailField.value;
+
+    const doResend = async (username: string) => {
+      try {
+        await cloudResendVerification(this.hass, username);
+        this._verificationEmailSent(username);
+      } catch (err: any) {
+        const errCode = err && err.body && err.body.code;
+        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
+          await doResend(username.toLowerCase());
+        } else {
+          this._error =
+            err && err.body && err.body.message
+              ? err.body.message
+              : "Unknown error";
+        }
+      }
+    };
+
+    await doResend(email);
   }
 
   private _verificationEmailSent(email: string) {
