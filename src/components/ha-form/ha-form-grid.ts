@@ -35,6 +35,10 @@ export class HaFormGrid extends LitElement implements HaFormElement {
     schema: HaFormSchema
   ) => string;
 
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
+  ) => string;
+
   public async focus() {
     await this.updateComplete;
     this.renderRoot.querySelector("ha-form")?.focus();
@@ -65,6 +69,7 @@ export class HaFormGrid extends LitElement implements HaFormElement {
             .disabled=${this.disabled}
             .computeLabel=${this.computeLabel}
             .computeHelper=${this.computeHelper}
+            .localizeValue=${this.localizeValue}
           ></ha-form>
         `
       )}

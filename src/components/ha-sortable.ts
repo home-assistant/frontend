@@ -43,6 +43,13 @@ export class HaSortable extends LitElement {
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
 
+  /**
+   * Selectors that do not lead to dragging (String or Function)
+   * https://github.com/SortableJS/Sortable?tab=readme-ov-file#filter-option
+   * */
+  @property({ type: String, attribute: "filter" })
+  public filter?: string;
+
   @property({ type: String })
   public group?: string | SortableInstance.GroupOptions;
 
@@ -144,6 +151,9 @@ export class HaSortable extends LitElement {
     }
     if (this.group) {
       options.group = this.group;
+    }
+    if (this.filter) {
+      options.filter = this.filter;
     }
 
     this._sortable = new Sortable(container, options);

@@ -15,7 +15,7 @@ import type { HomeAssistant } from "../../../types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
-import "./heading-entity/hui-heading-entity-element-editor";
+import "./heading-badge-editor/hui-heading-badge-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
 import "./picture-element-editor/hui-picture-element-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
@@ -31,8 +31,6 @@ export class HuiSubElementEditor extends LitElement {
   public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
-
-  @property({ attribute: false }) public context?: any;
 
   @state() private _guiModeAvailable = true;
 
@@ -87,6 +85,7 @@ export class HuiSubElementEditor extends LitElement {
 
   private _renderEditor() {
     const type = this.config.type;
+
     switch (type) {
       case "row":
         return html`
@@ -94,7 +93,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-row-element-editor>
@@ -106,7 +105,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-headerfooter-element-editor>
@@ -117,7 +116,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-picture-element-element-editor>
@@ -128,21 +127,21 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-card-feature-element-editor>
         `;
-      case "heading-entity":
+      case "heading-badge":
         return html`
-          <hui-heading-entity-element-editor
+          <hui-heading-badge-element-editor
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
-            .context=${this.context}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
-          ></hui-heading-entity-element-editor>
+          ></hui-heading-badge-element-editor>
         `;
       default:
         return nothing;

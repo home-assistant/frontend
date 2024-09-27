@@ -78,7 +78,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!ensureArray(this.config.trigger)?.length
+      ${!ensureArray(this.config.triggers)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.description"
@@ -90,7 +90,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
-        .path=${["trigger"]}
+        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -132,7 +132,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
-        .path=${["condition"]}
+        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -172,7 +172,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
-        .path=${["action"]}
+        .path=${["actions"]}
         @value-changed=${this._actionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}

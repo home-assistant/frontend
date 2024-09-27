@@ -5,34 +5,28 @@ import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
-  clearStatistics,
   getStatisticIds,
   StatisticsMetaData,
   StatisticsValidationResult,
   validateStatistics,
 } from "../../../data/recorder";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
-import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
-import { documentationUrl } from "../../../util/documentation-url";
 
 const FIX_ISSUES_ORDER = {
   no_state: 0,
   entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
-  unsupported_state_class: 2,
+  state_class_removed: 2,
   units_changed: 3,
 };
 
@@ -264,162 +258,28 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _fixIssue = (ev) => {
+  private _fixIssue = async (ev) => {
     const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
     );
     const issue = issues[0];
-    switch (issue.type) {
-      case "no_state":
-        showConfirmationDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.title"
-          ),
-          text: html`${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_1"
-            )}<br /><br />${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.info_text_2",
-              { statistic_id: issue.data.statistic_id }
-            )}`,
-          confirmText: this.hass.localize("ui.common.delete"),
-          destructive: true,
-          confirm: async () => {
-            await clearStatistics(this.hass, [issue.data.statistic_id]);
-            this._deletedStatistics.add(issue.data.statistic_id);
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "entity_not_recorded":
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.title"
-          ),
-          text: html`${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_1"
-            )}<br /><br />${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_2"
-            )}<br /><br />
-            <a
-              href=${documentationUrl(
-                this.hass,
-                "/integrations/recorder/#configure-filter"
-              )}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_3_link"
-              )}</a
-            >`,
-        });
-        break;
-      case "entity_no_longer_recorded":
-        showConfirmationDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.title"
-          ),
-          text: html`${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_1"
-            )}
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_2"
-            )}
-            <a
-              href=${documentationUrl(
-                this.hass,
-                "/integrations/recorder/#configure-filter"
-              )}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
-              )}</a
-            ><br /><br />
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
-            )}`,
-          confirmText: this.hass.localize("ui.common.delete"),
-          destructive: true,
-          confirm: async () => {
-            await clearStatistics(this.hass, [issue.data.statistic_id]);
-            this._deletedStatistics.add(issue.data.statistic_id);
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "unsupported_state_class":
-        showConfirmationDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title"
-          ),
-          text: html`${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1",
-              { state_class: issue.data.state_class }
-            )}<br /><br />
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_2"
-            )}
-            <ul>
-              <li>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_3"
-                )}
-              </li>
-              <li>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_4"
-                )}
-                <a
-                  href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_4_link"
-                  )}</a
-                >
-              </li>
-              <li>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_5"
-                )}
-              </li>
-            </ul>
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_6",
-              { statistic_id: issue.data.statistic_id }
-            )}`,
-          confirmText: this.hass.localize("ui.common.delete"),
-          destructive: true,
-          confirm: async () => {
-            await clearStatistics(this.hass, [issue.data.statistic_id]);
-            this._deletedStatistics.add(issue.data.statistic_id);
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "units_changed":
-        showFixStatisticsUnitsChangedDialog(this, {
-          issue,
-          fixedCallback: () => {
-            this._validateStatistics();
-          },
-        });
-        break;
-      default:
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.no_support.title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.no_support.info_text_1"
-          ),
-        });
+    const result = await fixStatisticsIssue(
+      this,
+      this.hass,
+      this.hass.localize,
+      issue
+    );
+    if (
+      result &&
+      ["no_state", "entity_no_longer_recorded", "state_class_removed"].includes(
+        issue.type
+      )
+    ) {
+      this._deletedStatistics.add(issue.data.statistic_id);
     }
+    this._validateStatistics();
   };
 
   static get styles(): CSSResultGroup {
