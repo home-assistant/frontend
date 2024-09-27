@@ -46,8 +46,6 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
     badges: optional(array(any())),
-    // deprecated
-    entities: optional(array(any())),
   })
 );
 
@@ -61,8 +59,8 @@ export class HuiHeadingCardEditor
   @state() private _config?: HeadingCardConfig;
 
   public setConfig(config: HeadingCardConfig): void {
-    assert(config, cardConfigStruct);
     this._config = migrateHeadingCardConfig(config);
+    assert(this._config, cardConfigStruct);
   }
 
   private _schema = memoizeOne(
