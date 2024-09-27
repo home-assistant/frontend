@@ -260,6 +260,7 @@ export class CloudLogin extends LitElement {
         }
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doLogin(username.toLowerCase());
+          return;
         }
 
         this._password = "";
