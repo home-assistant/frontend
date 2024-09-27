@@ -6403,7 +6403,7 @@
               "row": "Entity row editor",
               "feature": "Feature editor",
               "element": "Element editor",
-              "heading-entity": "Entity editor",
+              "heading-badge": "Heading badge editor",
               "element_type": "{type} element editor"
             }
           }
