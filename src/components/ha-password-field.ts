@@ -1,10 +1,17 @@
 import { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-password-field")
 export class HaPasswordField extends LitElement {
@@ -75,6 +82,8 @@ export class HaPasswordField extends LitElement {
 
   @state() private _unmaskedPassword = false;
 
+  @query("ha-textfield") private _textField!: HaTextField;
+
   protected render() {
     return html`<ha-textfield
         .invalid=${this.invalid}
@@ -120,6 +129,22 @@ export class HaPasswordField extends LitElement {
         @click=${this._toggleUnmaskedPassword}
         .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>`;
+  }
+
+  public checkValidity(): boolean {
+    return this._textField.checkValidity();
+  }
+
+  public reportValidity(): boolean {
+    return this._textField.reportValidity();
+  }
+
+  public setCustomValidity(message: string): void {
+    return this._textField.setCustomValidity(message);
+  }
+
+  public layout(): Promise<void> {
+    return this._textField.layout();
   }
 
   private _toggleUnmaskedPassword(): void {
