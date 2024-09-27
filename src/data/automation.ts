@@ -427,6 +427,10 @@ export const migrateAutomationTrigger = (
     return trigger.map(migrateAutomationTrigger) as Trigger[];
   }
 
+  if ("triggers" in trigger && trigger.triggers) {
+    trigger.triggers = migrateAutomationTrigger(trigger.triggers);
+  }
+
   if ("platform" in trigger) {
     if (!("trigger" in trigger)) {
       // @ts-ignore
