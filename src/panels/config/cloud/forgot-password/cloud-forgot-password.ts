@@ -116,11 +116,12 @@ export class CloudForgotPassword extends LitElement {
         const errCode = err && err.body && err.body.code;
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doResetPassword(username.toLowerCase());
+        } else {
+          this._error =
+            err && err.body && err.body.message
+              ? err.body.message
+              : "Unknown error";
         }
-        this._error =
-          err && err.body && err.body.message
-            ? err.body.message
-            : "Unknown error";
       }
     };
     await doResetPassword(email);
