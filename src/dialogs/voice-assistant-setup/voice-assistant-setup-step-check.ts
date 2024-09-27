@@ -70,10 +70,6 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
     fireEvent(this, "next-step", { noPrevious: true });
   }
 
-  private _close() {
-    fireEvent(this, "closed");
-  }
-
   static styles = AssistantSetupStyles;
 }
 
