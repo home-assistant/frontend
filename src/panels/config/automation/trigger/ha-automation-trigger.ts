@@ -18,7 +18,11 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import { AutomationClipboard, Trigger } from "../../../../data/automation";
+import {
+  AutomationClipboard,
+  Trigger,
+  TriggerList,
+} from "../../../../data/automation";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -26,6 +30,7 @@ import {
 } from "../show-add-automation-element-dialog";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+import { isTriggerList } from "../../../../data/trigger";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -130,7 +135,11 @@ export default class HaAutomationTrigger extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "trigger",
       add: this._addTrigger,
-      clipboardItem: this._clipboard?.trigger?.trigger,
+      clipboardItem: !this._clipboard?.trigger
+        ? undefined
+        : isTriggerList(this._clipboard.trigger)
+          ? "list"
+          : this._clipboard?.trigger?.trigger,
     });
   }
 
@@ -139,7 +148,7 @@ export default class HaAutomationTrigger extends LitElement {
     if (value === PASTE_VALUE) {
       triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
     } else {
-      const trigger = value as Trigger["trigger"];
+      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
       const elClass = customElements.get(
         `ha-automation-trigger-${trigger}`
       ) as CustomElementConstructor & {
