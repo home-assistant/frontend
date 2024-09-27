@@ -11,6 +11,7 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
+import "../../../../components/ha-password-field";
 
 @customElement("cloud-register")
 export class CloudRegister extends LitElement {
@@ -145,14 +146,13 @@ export class CloudRegister extends LitElement {
                     "ui.panel.config.cloud.register.email_error_msg"
                   )}
                 ></ha-textfield>
-                <ha-textfield
+                <ha-password-field
                   id="password"
                   name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.register.password"
                   )}
                   .value=${this._password}
-                  type="password"
                   autocomplete="new-password"
                   minlength="8"
                   required
@@ -160,7 +160,7 @@ export class CloudRegister extends LitElement {
                   validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.register.password_error_msg"
                   )}
-                ></ha-textfield>
+                ></ha-password-field>
               </div>
               <div class="card-actions">
                 <ha-progress-button
