@@ -50,7 +50,7 @@ export interface StatisticsMetaData {
 export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
   "entity_not_recorded",
   "entity_no_longer_recorded",
-  "unsupported_state_class",
+  "state_class_removed",
   "units_changed",
   "no_state",
 ];
@@ -59,7 +59,7 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
-  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultStateClassRemoved
   | StatisticsValidationResultUnitsChanged;
 
 export interface StatisticsValidationResultNoState {
@@ -77,9 +77,9 @@ export interface StatisticsValidationResultEntityNotRecorded {
   data: { statistic_id: string };
 }
 
-export interface StatisticsValidationResultUnsupportedStateClass {
-  type: "unsupported_state_class";
-  data: { statistic_id: string; state_class: string };
+export interface StatisticsValidationResultStateClassRemoved {
+  type: "state_class_removed";
+  data: { statistic_id: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
