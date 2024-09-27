@@ -197,9 +197,6 @@ export class CloudRegister extends LitElement {
     const emailField = this._emailField;
     const passwordField = this._passwordField;
 
-    const email = emailField.value;
-    const password = passwordField.value;
-
     if (!emailField.reportValidity()) {
       passwordField.reportValidity();
       emailField.focus();
@@ -210,6 +207,9 @@ export class CloudRegister extends LitElement {
       passwordField.focus();
       return;
     }
+
+    const email = emailField.value.toLowerCase();
+    const password = passwordField.value;
 
     this._requestInProgress = true;
 
@@ -229,12 +229,12 @@ export class CloudRegister extends LitElement {
   private async _handleResendVerifyEmail() {
     const emailField = this._emailField;
 
-    const email = emailField.value;
-
     if (!emailField.reportValidity()) {
       emailField.focus();
       return;
     }
+
+    const email = emailField.value.toLowerCase();
 
     try {
       await cloudResendVerification(this.hass, email);
