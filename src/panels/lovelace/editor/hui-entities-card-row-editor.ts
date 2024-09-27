@@ -14,7 +14,7 @@ import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 declare global {
   interface HASSDomEvents {
     "entities-changed": {
-      items: LovelaceRowConfig[];
+      entities: LovelaceRowConfig[];
     };
   }
 }
@@ -128,7 +128,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       entity: value as string,
     });
     (ev.target as HaEntityPicker).value = "";
-    fireEvent(this, "entities-changed", { items: newConfigEntities });
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _rowMoved(ev: CustomEvent): void {
@@ -139,7 +139,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     newEntities.splice(newIndex, 0, newEntities.splice(oldIndex, 1)[0]);
 
-    fireEvent(this, "entities-changed", { items: newEntities });
+    fireEvent(this, "entities-changed", { entities: newEntities });
   }
 
   private _removeRow(ev: CustomEvent): void {
@@ -148,7 +148,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     newConfigEntities.splice(index, 1);
 
-    fireEvent(this, "entities-changed", { items: newConfigEntities });
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -165,7 +165,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       };
     }
 
-    fireEvent(this, "entities-changed", { items: newConfigEntities });
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _editRow(ev: CustomEvent): void {

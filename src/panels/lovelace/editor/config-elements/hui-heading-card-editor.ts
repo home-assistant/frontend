@@ -189,12 +189,12 @@ export class HuiHeadingCardEditor
 
     fireEvent(this, "edit-sub-element", {
       config: config,
-      saveConfig: (newConfig) => this._updateEntity(index, newConfig),
+      saveConfig: (newConfig) => this._updateBadge(index, newConfig),
       type: "heading-badge",
     } as EditSubElementEvent<EntityHeadingBadgeConfig>);
   }
 
-  private _updateEntity(index: number, entity: EntityHeadingBadgeConfig) {
+  private _updateBadge(index: number, entity: EntityHeadingBadgeConfig) {
     const badges = this._config!.badges!.concat();
     badges[index] = entity;
     const config = { ...this._config!, badges };
