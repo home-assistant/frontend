@@ -18,7 +18,7 @@ import type { HaCodeEditor } from "./ha-code-editor";
 import "./ha-button";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
-  if (typeof obj !== "object") {
+  if (typeof obj !== "object" || obj === null) {
     return false;
   }
   for (const key in obj) {
