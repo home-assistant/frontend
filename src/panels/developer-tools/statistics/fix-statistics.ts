@@ -103,31 +103,30 @@ export const fixStatisticsIssue = async (
           await clearStatistics(hass, [issue.data.statistic_id]);
         },
       });
-    case "unsupported_state_class":
+    case "state_class_removed":
       return showConfirmationDialog(element, {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.title"
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.title"
         ),
         text: html`${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_1",
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_1",
             {
               name: getStatisticLabel(hass, issue.data.statistic_id, undefined),
               statistic_id: issue.data.statistic_id,
-              state_class: issue.data.state_class,
             }
           )}<br /><br />
           ${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_2"
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_2"
           )}
           <ul>
             <li>
               ${localize(
-                "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_3"
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_3"
               )}
             </li>
             <li>
               ${localize(
-                "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_4"
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
               )}
               <a
                 href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
@@ -135,18 +134,18 @@ export const fixStatisticsIssue = async (
                 rel="noreferrer noopener"
               >
                 ${localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_4_link"
+                  "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4_link"
                 )}</a
               >
             </li>
             <li>
               ${localize(
-                "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_5"
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_5"
               )}
             </li>
           </ul>
           ${localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.unsupported_state_class.info_text_6",
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_6",
             { statistic_id: issue.data.statistic_id }
           )}`,
         confirmText: localize("ui.common.delete"),

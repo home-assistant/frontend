@@ -277,8 +277,17 @@ export const haSyntaxHighlighting = syntaxHighlighting(haHighlightStyle);
 // A folding service for indent-based languages such as YAML.
 export const foldingOnIndent = foldService.of((state, from, to) => {
   const line = state.doc.lineAt(from);
+
+  // empty lines continue their indentation from surrounding lines
+  if (!line.length || !line.text.trim().length) {
+    return null;
+  }
+
+  let onlyEmptyNext = true;
+
   const lineCount = state.doc.lines;
   const indent = line.text.search(/\S|$/); // Indent level of the first line
+
   let foldStart = from; // Start of the fold
   let foldEnd = to; // End of the fold
 
@@ -291,7 +300,15 @@ export const foldingOnIndent = foldService.of((state, from, to) => {
     const nextIndent = nextLine.text.search(/\S|$/); // Indent level of the next line
 
     // If the next line is on a deeper indent level, add it to the fold
-    if (nextIndent > indent) {
+    // empty lines continue their indentation from surrounding lines
+    if (
+      !nextLine.length ||
+      !nextLine.text.trim().length ||
+      nextIndent > indent
+    ) {
+      if (onlyEmptyNext) {
+        onlyEmptyNext = nextLine.text.trim().length === 0;
+      }
       // include this line in the fold and continue
       foldEnd = nextLine.to;
     } else {
@@ -301,7 +318,10 @@ export const foldingOnIndent = foldService.of((state, from, to) => {
   }
 
   // Don't create fold if it's a single line
-  if (state.doc.lineAt(foldStart).number === state.doc.lineAt(foldEnd).number) {
+  if (
+    onlyEmptyNext ||
+    state.doc.lineAt(foldStart).number === state.doc.lineAt(foldEnd).number
+  ) {
     return null;
   }
 

@@ -78,7 +78,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!ensureArray(this.config.trigger)?.length
+      ${!ensureArray(this.config.triggers)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.description"

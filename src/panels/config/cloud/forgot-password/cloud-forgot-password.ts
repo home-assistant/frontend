@@ -99,24 +99,32 @@ export class CloudForgotPassword extends LitElement {
 
     this._requestInProgress = true;
 
-    try {
-      await cloudForgotPassword(this.hass, email);
-      // @ts-ignore
-      fireEvent(this, "email-changed", { value: email });
-      this._requestInProgress = false;
-      // @ts-ignore
-      fireEvent(this, "cloud-done", {
-        flashMessage: this.hass.localize(
-          "ui.panel.config.cloud.forgot_password.check_your_email"
-        ),
-      });
-    } catch (err: any) {
-      this._requestInProgress = false;
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
-    }
+    const doResetPassword = async (username: string) => {
+      try {
+        await cloudForgotPassword(this.hass, username);
+        // @ts-ignore
+        fireEvent(this, "email-changed", { value: username });
+        this._requestInProgress = false;
+        // @ts-ignore
+        fireEvent(this, "cloud-done", {
+          flashMessage: this.hass.localize(
+            "ui.panel.config.cloud.forgot_password.check_your_email"
+          ),
+        });
+      } catch (err: any) {
+        this._requestInProgress = false;
+        const errCode = err && err.body && err.body.code;
+        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
+          await doResetPassword(username.toLowerCase());
+        } else {
+          this._error =
+            err && err.body && err.body.message
+              ? err.body.message
+              : "Unknown error";
+        }
+      }
+    };
+    await doResetPassword(email);
   }
 
   static get styles() {
