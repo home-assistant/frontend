@@ -1119,15 +1119,30 @@ export class HaConfigDevicePage extends LitElement {
       const matter = await import(
         "./device-detail/integration-elements/matter/device-actions"
       );
-      const actions = await matter.getMatterDeviceActions(
+      const defaultActions = matter.getMatterDeviceDefaultActions(
         this,
         this.hass,
         device
       );
-      deviceActions.push(...actions);
+      deviceActions.push(...defaultActions);
+      this._loadMatterDeviceActions(matter, device);
     }
 
     this._deviceActions = deviceActions;
+  }
+
+  // load matter device actions async to avoid an UI with 0 actions when the matter integration needs very long to get node diagnostics
+  private async _loadMatterDeviceActions(
+    matter: typeof import("/home/wendelin/nabucasa/home-assistant/frontend/src/panels/config/devices/device-detail/integration-elements/matter/device-actions"),
+    device: DeviceRegistryEntry
+  ): Promise<void> {
+    const actions = await matter.getMatterDeviceActions(
+      this,
+      this.hass,
+      device
+    );
+
+    this._deviceActions = [...actions, ...(this._deviceActions || [])];
   }
 
   private async _getDeviceAlerts() {
