@@ -234,17 +234,25 @@ export class CloudRegister extends LitElement {
       return;
     }
 
-    const email = emailField.value.toLowerCase();
+    const email = emailField.value;
 
-    try {
-      await cloudResendVerification(this.hass, email);
-      this._verificationEmailSent(email);
-    } catch (err: any) {
-      this._error =
-        err && err.body && err.body.message
-          ? err.body.message
-          : "Unknown error";
-    }
+    const doResend = async (username: string) => {
+      try {
+        await cloudResendVerification(this.hass, username);
+        this._verificationEmailSent(username);
+      } catch (err: any) {
+        const errCode = err && err.body && err.body.code;
+        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
+          await doResend(username.toLowerCase());
+        }
+        this._error =
+          err && err.body && err.body.message
+            ? err.body.message
+            : "Unknown error";
+      }
+    };
+
+    await doResend(email);
   }
 
   private _verificationEmailSent(email: string) {
