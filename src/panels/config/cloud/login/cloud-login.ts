@@ -22,6 +22,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
+import "../../../../components/ha-password-field";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -142,14 +143,13 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.email_error_msg"
                   )}
                 ></ha-textfield>
-                <ha-textfield
+                <ha-password-field
                   id="password"
                   name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.password"
                   )}
                   .value=${this._password || ""}
-                  type="password"
                   autocomplete="current-password"
                   required
                   minlength="8"
@@ -158,7 +158,7 @@ export class CloudLogin extends LitElement {
                   .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.login.password_error_msg"
                   )}
-                ></ha-textfield>
+                ></ha-password-field>
               </div>
               <div class="card-actions">
                 <ha-progress-button
