@@ -1,9 +1,9 @@
+import { mdiCog, mdiMicrophone, mdiPlay } from "@mdi/js";
 import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import "../../components/ha-md-list-item";
+import "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
 import {
   AssistPipeline,
@@ -56,58 +56,78 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     }
   }
 
-  private _activeWakeWord = memoizeOne(
-    (config: AssistSatelliteConfiguration | undefined) => {
-      if (!config) {
-        return "";
-      }
-      const activeId = config.active_wake_words[0];
-      return config.available_wake_words.find((ww) => ww.id === activeId)
-        ?.wake_word;
-    }
-  );
-
   protected override render() {
+    const pipelineEntity = this.assistConfiguration
+      ? this.hass.states[this.assistConfiguration.pipeline_entity_id]
+      : undefined;
+
     return html`<div class="content">
         <img src="/static/icons/casita/loving.png" />
         <h1>Ready to assist!</h1>
         <p class="secondary">
-          Make your assistant more personal by customizing shizzle to the
-          manizzle
+          Your device is all ready to go! If you want to tweak some more
+          settings, you can change that below.
         </p>
-        <ha-md-list-item
-          interactive
-          type="button"
-          @click=${this._changeWakeWord}
-        >
-          Change wake word
-          <span slot="supporting-text"
-            >${this._activeWakeWord(this.assistConfiguration)}</span
-          >
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <hui-select-entity-row
-          .hass=${this.hass}
-          ._config=${{
-            entity: this.assistConfiguration?.pipeline_entity_id,
-          }}
-        ></hui-select-entity-row>
-        ${this._ttsSettings
-          ? html`<ha-tts-voice-picker
-              .hass=${this.hass}
-              required
-              .engineId=${this._ttsSettings.engine}
-              .language=${this._ttsSettings.language}
-              .value=${this._ttsSettings.voice}
-              @value-changed=${this._voicePicked}
+        <div class="rows">
+          <div class="row">
+            <ha-select
+              .label=${"Wake word"}
               @closed=${stopPropagation}
-            ></ha-tts-voice-picker>`
-          : nothing}
+              fixedMenuPosition
+              naturalMenuWidth
+              .value=${this.assistConfiguration?.active_wake_words[0]}
+            >
+              ${this.assistConfiguration?.available_wake_words.map(
+                (wakeword) =>
+                  html`<ha-list-item .value=${wakeword.id}>
+                    ${wakeword.wake_word}
+                  </ha-list-item>`
+              )}
+            </ha-select>
+            <ha-button @click=${this._testWakeWord}>
+              <ha-svg-icon slot="icon" .path=${mdiMicrophone}></ha-svg-icon>
+              Test
+            </ha-button>
+          </div>
+          <div class="row">
+            <ha-select
+              .label=${"Assistant"}
+              @closed=${stopPropagation}
+              .value=${pipelineEntity?.state}
+              fixedMenuPosition
+              naturalMenuWidth
+            >
+              ${pipelineEntity?.attributes.options.map(
+                (pipeline) =>
+                  html`<ha-list-item .value=${pipeline}>
+                    ${this.hass.formatEntityState(pipelineEntity, pipeline)}
+                  </ha-list-item>`
+              )}
+            </ha-select>
+            <ha-button @click=${this._openPipeline}>
+              <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+              Edit
+            </ha-button>
+          </div>
+          ${this._ttsSettings
+            ? html`<div class="row">
+                <ha-tts-voice-picker
+                  .hass=${this.hass}
+                  .engineId=${this._ttsSettings.engine}
+                  .language=${this._ttsSettings.language}
+                  .value=${this._ttsSettings.voice}
+                  @value-changed=${this._voicePicked}
+                  @closed=${stopPropagation}
+                ></ha-tts-voice-picker>
+                <ha-button @click=${this._testTts}>
+                  <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+                  Try
+                </ha-button>
+              </div>`
+            : nothing}
+        </div>
       </div>
       <div class="footer">
-        <ha-button @click=${this._openPipeline}
-          >Change assistant settings</ha-button
-        >
         <ha-button @click=${this._close} unelevated>Done</ha-button>
       </div>`;
   }
@@ -160,6 +180,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       ...pipeline,
       tts_voice: ev.detail.value,
     });
+  }
+
+  private _testTts() {
     this._announce("Hello, how can I help you?");
   }
 
@@ -170,8 +193,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     await assistSatelliteAnnounce(this.hass, this.assistEntityId, message);
   }
 
-  private _changeWakeWord() {
-    fireEvent(this, "next-step", { step: STEP.CHANGE_WAKEWORD });
+  private _testWakeWord() {
+    fireEvent(this, "next-step", {
+      step: STEP.WAKEWORD,
+      nextStep: STEP.SUCCESS,
+    });
   }
 
   private async _openPipeline() {
@@ -209,11 +235,27 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         text-align: initial;
       }
       ha-tts-voice-picker {
-        margin-top: 16px;
         display: block;
       }
       .footer {
         margin-top: 24px;
+      }
+      .rows {
+        gap: 16px;
+        display: flex;
+        flex-direction: column;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .row > *:first-child {
+        flex: 1;
+        margin-right: 4px;
+      }
+      .row ha-button {
+        width: 82px;
       }
     `,
   ];
