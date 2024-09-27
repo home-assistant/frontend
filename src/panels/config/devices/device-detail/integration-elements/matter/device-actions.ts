@@ -17,6 +17,30 @@ import type { DeviceAction } from "../../../ha-config-device-page";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
 import { navigate } from "../../../../../../common/navigate";
 
+export const getMatterDeviceDefaultActions = (
+  el: HTMLElement,
+  hass: HomeAssistant,
+  device: DeviceRegistryEntry
+): DeviceAction[] => {
+  if (device.via_device_id !== null) {
+    // only show device actions for top level nodes (so not bridged)
+    return [];
+  }
+
+  const actions: DeviceAction[] = [];
+
+  actions.push({
+    label: hass.localize("ui.panel.config.matter.device_actions.ping_device"),
+    icon: mdiChatQuestion,
+    action: () =>
+      showMatterPingNodeDialog(el, {
+        device_id: device.id,
+      }),
+  });
+
+  return actions;
+};
+
 export const getMatterDeviceActions = async (
   el: HTMLElement,
   hass: HomeAssistant,
@@ -74,15 +98,6 @@ export const getMatterDeviceActions = async (
       action: () => navigate("/config/thread"),
     });
   }
-
-  actions.push({
-    label: hass.localize("ui.panel.config.matter.device_actions.ping_device"),
-    icon: mdiChatQuestion,
-    action: () =>
-      showMatterPingNodeDialog(el, {
-        device_id: device.id,
-      }),
-  });
 
   return actions;
 };
