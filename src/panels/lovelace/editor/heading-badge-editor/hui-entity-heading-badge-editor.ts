@@ -21,19 +21,21 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingEntityConfig } from "../../cards/types";
 import { Condition } from "../../common/validate-condition";
+import { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
 
-export const DEFAULT_CONFIG: Partial<HeadingEntityConfig> = {
+export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
+  type: "entity",
   show_state: true,
   show_icon: true,
 };
 
 const entityConfigStruct = object({
+  type: optional(string()),
   entity: string(),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
@@ -44,7 +46,7 @@ const entityConfigStruct = object({
   visibility: optional(array(any())),
 });
 
-type FormData = HeadingEntityConfig & {
+type FormData = EntityHeadingBadgeConfig & {
   displayed_elements?: string[];
 };
 
@@ -57,9 +59,9 @@ export class HuiHeadingEntityEditor
 
   @property({ type: Boolean }) public preview = false;
 
-  @state() private _config?: HeadingEntityConfig;
+  @state() private _config?: EntityHeadingBadgeConfig;
 
-  public setConfig(config: HeadingEntityConfig): void {
+  public setConfig(config: EntityHeadingBadgeConfig): void {
     assert(config, entityConfigStruct);
     this._config = {
       ...DEFAULT_CONFIG,
@@ -150,12 +152,14 @@ export class HuiHeadingEntityEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _displayedElements = memoizeOne((config: HeadingEntityConfig) => {
-    const elements: string[] = [];
-    if (config.show_state) elements.push("state");
-    if (config.show_icon) elements.push("icon");
-    return elements;
-  });
+  private _displayedElements = memoizeOne(
+    (config: EntityHeadingBadgeConfig) => {
+      const elements: string[] = [];
+      if (config.show_state) elements.push("state");
+      if (config.show_icon) elements.push("icon");
+      return elements;
+    }
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -228,7 +232,7 @@ export class HuiHeadingEntityEditor
 
     const conditions = ev.detail.value as Condition[];
 
-    const newConfig: HeadingEntityConfig = {
+    const newConfig: EntityHeadingBadgeConfig = {
       ...this._config,
       visibility: conditions,
     };
