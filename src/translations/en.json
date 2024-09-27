@@ -6949,7 +6949,7 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "state_class_removed": "This entity no longer has a state class",
               "entity_not_recorded": "This entity is excluded from being recorded.",
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
@@ -6978,14 +6978,14 @@
                 "info_text_3_link": "See the recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
-              "unsupported_state_class": {
-                "title": "Unsupported state class",
-                "info_text_1": "The state class of ''{name}'' ({statistic_id}), ''{state_class}'', is not supported.",
+              "state_class_removed": {
+                "title": "The entity no longer has a state class",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but it no longer has a state class, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
-                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
-                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_3": "If the state class was previously provided by an integration, this might be a bug. Please report an issue.",
+                "info_text_4": "If you previously set the state class yourself, please correct it.",
                 "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
-                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_5": "If the state class has permanently been removed, you may want to delete the long term statistics of it from your database.",
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
