@@ -22,15 +22,19 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
+import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
+import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
+import {
+  EntityHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../../heading-badges/types";
 import type { LovelaceCardEditor } from "../../types";
-import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { configElementStyle } from "./config-elements-style";
-import "./hui-entities-editor";
 import { EditSubElementEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
+import "./hui-heading-badges-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -41,7 +45,7 @@ const cardConfigStruct = assign(
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
-    entities: optional(array(any())),
+    badges: optional(array(any())),
   })
 );
 
@@ -55,8 +59,8 @@ export class HuiHeadingCardEditor
   @state() private _config?: HeadingCardConfig;
 
   public setConfig(config: HeadingCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
+    this._config = migrateHeadingCardConfig(config);
+    assert(this._config, cardConfigStruct);
   }
 
   private _schema = memoizeOne(
@@ -103,8 +107,9 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
-    processEditorEntities(entities || [])
+  private _badges = memoizeOne(
+    (badges: HeadingCardConfig["badges"]): LovelaceHeadingBadgeConfig[] =>
+      badges || []
   );
 
   protected render() {
@@ -138,19 +143,19 @@ export class HuiHeadingCardEditor
           )}
         </h3>
         <div class="content">
-          <hui-entities-editor
+          <hui-heading-badges-editor
             .hass=${this.hass}
-            .entities=${this._entities(this._config!.entities)}
-            @entities-changed=${this._entitiesChanged}
-            @edit-entity=${this._editEntity}
+            .badges=${this._badges(this._config!.badges)}
+            @heading-badges-changed=${this._badgesChanged}
+            @edit-heading-badge=${this._editBadge}
           >
-          </hui-entities-editor>
+          </hui-heading-badges-editor>
         </div>
       </ha-expansion-panel>
     `;
   }
 
-  private _entitiesChanged(ev: CustomEvent): void {
+  private _badgesChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -158,7 +163,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.entities as HeadingEntityConfig[],
+      badges: ev.detail.badges as LovelaceHeadingBadgeConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -175,22 +180,22 @@ export class HuiHeadingCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
+  private _editBadge(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
     const index = ev.detail.index;
-    const config = this._config!.entities![index!];
+    const config = this._badges(this._config!.badges)[index];
 
     fireEvent(this, "edit-sub-element", {
       config: config,
-      saveConfig: (newConfig) => this._updateEntity(index, newConfig),
-      type: "heading-entity",
-    } as EditSubElementEvent<HeadingEntityConfig>);
+      saveConfig: (newConfig) => this._updateBadge(index, newConfig),
+      type: "heading-badge",
+    } as EditSubElementEvent<EntityHeadingBadgeConfig>);
   }
 
-  private _updateEntity(index: number, entity: HeadingEntityConfig) {
-    const entities = this._config!.entities!.concat();
-    entities[index] = entity;
-    const config = { ...this._config!, entities };
+  private _updateBadge(index: number, entity: EntityHeadingBadgeConfig) {
+    const badges = this._config!.badges!.concat();
+    badges[index] = entity;
+    const config = { ...this._config!, badges };
     fireEvent(this, "config-changed", {
       config: config,
     });

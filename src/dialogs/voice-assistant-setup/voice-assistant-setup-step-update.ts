@@ -17,6 +17,11 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
+    if (!this.updateEntityId) {
+      this._nextStep();
+      return;
+    }
+
     if (changedProperties.has("hass") && this.updateEntityId) {
       const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
       if (oldHass) {
@@ -32,16 +37,9 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       }
     }
 
-    if (!changedProperties.has("updateEntityId")) {
-      return;
+    if (changedProperties.has("updateEntityId")) {
+      this._tryUpdate();
     }
-
-    if (!this.updateEntityId) {
-      this._nextStep();
-      return;
-    }
-
-    this._tryUpdate();
   }
 
   protected override render() {

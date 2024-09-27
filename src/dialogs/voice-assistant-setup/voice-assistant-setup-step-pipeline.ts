@@ -92,7 +92,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           )}
           rel="noreferrer noopenner"
           target="_blank"
-          @click=${this._close}
+          @click=${this._skip}
         >
           Use external system
           <span slot="supporting-text"
@@ -221,12 +221,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     fireEvent(this, "next-step", { step: STEP.ADDONS });
   }
 
-  private _nextStep(step?: STEP) {
-    fireEvent(this, "next-step", { step });
+  private _skip() {
+    this._nextStep(STEP.SUCCESS);
   }
 
-  private _close() {
-    fireEvent(this, "closed");
+  private _nextStep(step?: STEP) {
+    fireEvent(this, "next-step", { step });
   }
 
   static styles = [

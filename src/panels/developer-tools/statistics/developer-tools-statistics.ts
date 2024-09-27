@@ -26,7 +26,7 @@ const FIX_ISSUES_ORDER = {
   no_state: 0,
   entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
-  unsupported_state_class: 2,
+  state_class_removed: 2,
   units_changed: 3,
 };
 
@@ -273,11 +273,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     );
     if (
       result &&
-      [
-        "no_state",
-        "entity_no_longer_recorded",
-        "unsupported_state_class",
-      ].includes(issue.type)
+      ["no_state", "entity_no_longer_recorded", "state_class_removed"].includes(
+        issue.type
+      )
     ) {
       this._deletedStatistics.add(issue.data.statistic_id);
     }

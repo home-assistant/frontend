@@ -249,7 +249,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       cards: [
         {
           type: "heading",
-          heading: "New Section",
+          heading: this.hass!.localize(
+            "ui.panel.lovelace.editor.section.default_section_title"
+          ),
         },
       ],
     });

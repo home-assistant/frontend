@@ -206,7 +206,8 @@ export type Trigger =
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger
-  | CalendarTrigger;
+  | CalendarTrigger
+  | TriggerList;
 
 interface BaseCondition {
   condition: string;
@@ -426,6 +427,10 @@ export const migrateAutomationTrigger = (
     return trigger.map(migrateAutomationTrigger) as Trigger[];
   }
 
+  if ("triggers" in trigger && trigger.triggers) {
+    trigger.triggers = migrateAutomationTrigger(trigger.triggers);
+  }
+
   if ("platform" in trigger) {
     if (!("trigger" in trigger)) {
       // @ts-ignore
@@ -437,7 +442,7 @@ export const migrateAutomationTrigger = (
 };
 
 export const flattenTriggers = (
-  triggers: undefined | Trigger | (Trigger | TriggerList)[]
+  triggers: undefined | Trigger | Trigger[]
 ): Trigger[] => {
   if (!triggers) {
     return [];
@@ -448,7 +453,7 @@ export const flattenTriggers = (
   ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {
       if (t.triggers) {
-        flatTriggers.push(...ensureArray(t.triggers));
+        flatTriggers.push(...flattenTriggers(t.triggers));
       }
     } else {
       flatTriggers.push(t);
