@@ -14,21 +14,21 @@ import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
-import { LovelaceHeadingItemConfig } from "../../heading-items/types";
+import { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
 
 declare global {
   interface HASSDomEvents {
-    "edit-heading-item": { index: number };
-    "heading-items-changed": { items: LovelaceHeadingItemConfig[] };
+    "edit-heading-badge": { index: number };
+    "heading-badges-changed": { badges: LovelaceHeadingBadgeConfig[] };
   }
 }
 
-@customElement("hui-heading-items-editor")
-export class HuiHeadingItemsEditor extends LitElement {
+@customElement("hui-heading-badges-editor")
+export class HuiHeadingBadgesEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public items?: LovelaceHeadingItemConfig[];
+  public badges?: LovelaceHeadingBadgeConfig[];
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
@@ -38,27 +38,27 @@ export class HuiHeadingItemsEditor extends LitElement {
 
   private _opened = false;
 
-  private _itemsKeys = new WeakMap<LovelaceHeadingItemConfig, string>();
+  private _badgesKeys = new WeakMap<LovelaceHeadingBadgeConfig, string>();
 
-  private _getKey(item: LovelaceHeadingItemConfig) {
-    if (!this._itemsKeys.has(item)) {
-      this._itemsKeys.set(item, Math.random().toString());
+  private _getKey(badge: LovelaceHeadingBadgeConfig) {
+    if (!this._badgesKeys.has(badge)) {
+      this._badgesKeys.set(badge, Math.random().toString());
     }
 
-    return this._itemsKeys.get(item)!;
+    return this._badgesKeys.get(badge)!;
   }
 
-  private _renderItemLabel(item: LovelaceHeadingItemConfig) {
-    const type = item.type ?? "entity";
+  private _computeBadgeLabel(badge: LovelaceHeadingBadgeConfig) {
+    const type = badge.type ?? "entity";
 
     if (type === "entity") {
-      const entityId = "entity" in item ? (item.entity as string) : undefined;
+      const entityId = "entity" in badge ? (badge.entity as string) : undefined;
       const stateObj = entityId ? this.hass.states[entityId] : undefined;
       return (
         (stateObj && stateObj.attributes.friendly_name) ||
         entityId ||
         type ||
-        "Unknown item"
+        "Unknown badge"
       );
     }
     return type;
@@ -70,24 +70,24 @@ export class HuiHeadingItemsEditor extends LitElement {
     }
 
     return html`
-      ${this.items
+      ${this.badges
         ? html`
             <ha-sortable
               handle-selector=".handle"
-              @item-moved=${this._itemMoved}
+              @item-moved=${this._badgeMoved}
             >
               <div class="entities">
                 ${repeat(
-                  this.items,
-                  (itemConf) => this._getKey(itemConf),
-                  (itemConf, index) => {
-                    const label = this._renderItemLabel(itemConf);
+                  this.badges,
+                  (badge) => this._getKey(badge),
+                  (badge, index) => {
+                    const label = this._computeBadgeLabel(badge);
                     return html`
-                      <div class="item">
+                      <div class="badge">
                         <div class="handle">
                           <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                         </div>
-                        <div class="item-content">
+                        <div class="badge-content">
                           <span>${label}</span>
                         </div>
                         <ha-icon-button
@@ -97,7 +97,7 @@ export class HuiHeadingItemsEditor extends LitElement {
                           .path=${mdiPencil}
                           class="edit-icon"
                           .index=${index}
-                          @click=${this._editItem}
+                          @click=${this._editBadge}
                         ></ha-icon-button>
                         <ha-icon-button
                           .label=${this.hass!.localize(
@@ -189,37 +189,37 @@ export class HuiHeadingItemsEditor extends LitElement {
     if (!ev.detail.value) {
       return;
     }
-    const newEntity: LovelaceHeadingItemConfig = {
+    const newEntity: LovelaceHeadingBadgeConfig = {
       type: "entity",
       entity: ev.detail.value,
     };
-    const newItems = (this.items || []).concat(newEntity);
-    fireEvent(this, "heading-items-changed", { items: newItems });
+    const newBadges = (this.badges || []).concat(newEntity);
+    fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
-  private _itemMoved(ev: CustomEvent): void {
+  private _badgeMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const newItems = (this.items || []).concat();
+    const newBadges = (this.badges || []).concat();
 
-    newItems.splice(newIndex, 0, newItems.splice(oldIndex, 1)[0]);
+    newBadges.splice(newIndex, 0, newBadges.splice(oldIndex, 1)[0]);
 
-    fireEvent(this, "heading-items-changed", { items: newItems });
+    fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
   private _removeEntity(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newItems = (this.items || []).concat();
+    const newBadges = (this.badges || []).concat();
 
-    newItems.splice(index, 1);
+    newBadges.splice(index, 1);
 
-    fireEvent(this, "heading-items-changed", { items: newItems });
+    fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
-  private _editItem(ev: CustomEvent): void {
+  private _editBadge(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    fireEvent(this, "edit-heading-item", {
+    fireEvent(this, "edit-heading-badge", {
       index,
     });
   }
@@ -233,11 +233,11 @@ export class HuiHeadingItemsEditor extends LitElement {
       ha-button {
         margin-top: 8px;
       }
-      .item {
+      .badge {
         display: flex;
         align-items: center;
       }
-      .item .handle {
+      .badge .handle {
         cursor: move; /* fallback if grab cursor is unsupported */
         cursor: grab;
         padding-right: 8px;
@@ -245,11 +245,11 @@ export class HuiHeadingItemsEditor extends LitElement {
         padding-inline-start: initial;
         direction: var(--direction);
       }
-      .item .handle > * {
+      .badge .handle > * {
         pointer-events: none;
       }
 
-      .item-content {
+      .badge-content {
         height: 60px;
         font-size: 16px;
         display: flex;
@@ -258,7 +258,7 @@ export class HuiHeadingItemsEditor extends LitElement {
         flex-grow: 1;
       }
 
-      .item-content div {
+      .badge-content div {
         display: flex;
         flex-direction: column;
       }
@@ -297,6 +297,6 @@ export class HuiHeadingItemsEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-heading-items-editor": HuiHeadingItemsEditor;
+    "hui-heading-badges-editor": HuiHeadingBadgesEditor;
   }
 }

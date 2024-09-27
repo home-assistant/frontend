@@ -16,7 +16,7 @@ import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceHeadingItemConfig } from "../heading-items/types";
+import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import {
   LovelaceBadge,
   LovelaceBadgeConstructor,
@@ -27,8 +27,8 @@ import {
   LovelaceElementConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
-  LovelaceHeadingItem,
-  LovelaceHeadingItemConstructor,
+  LovelaceHeadingBadge,
+  LovelaceHeadingBadgeConstructor,
   LovelaceRowConstructor,
 } from "../types";
 
@@ -75,10 +75,10 @@ interface CreateElementConfigTypes {
     element: LovelaceSectionElement;
     constructor: unknown;
   };
-  "heading-item": {
-    config: LovelaceHeadingItemConfig;
-    element: LovelaceHeadingItem;
-    constructor: LovelaceHeadingItemConstructor;
+  "heading-badge": {
+    config: LovelaceHeadingBadgeConfig;
+    element: LovelaceHeadingBadge;
+    constructor: LovelaceHeadingBadgeConstructor;
   };
 }
 
@@ -110,6 +110,20 @@ export const createErrorBadgeElement = (config: ErrorCardConfig) => {
   return el;
 };
 
+export const createErrorHeadingBadgeElement = (config: ErrorCardConfig) => {
+  const el = document.createElement("hui-error-heading-badge");
+  if (customElements.get("hui-error-heading-badge")) {
+    el.setConfig(config);
+  } else {
+    import("../heading-badges/hui-error-heading-badge");
+    customElements.whenDefined("hui-error-heading-badge").then(() => {
+      customElements.upgrade(el);
+      el.setConfig(config);
+    });
+  }
+  return el;
+};
+
 export const createErrorCardConfig = (error, origConfig) => ({
   type: "error",
   error,
@@ -117,6 +131,12 @@ export const createErrorCardConfig = (error, origConfig) => ({
 });
 
 export const createErrorBadgeConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
+export const createErrorHeadingBadgeConfig = (error, origConfig) => ({
   type: "error",
   error,
   origConfig,
@@ -141,6 +161,11 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
 ): CreateElementConfigTypes[T]["element"] => {
   if (tagSuffix === "badge") {
     return createErrorBadgeElement(createErrorBadgeConfig(error, config));
+  }
+  if (tagSuffix === "heading-badge") {
+    return createErrorHeadingBadgeElement(
+      createErrorHeadingBadgeConfig(error, config)
+    );
   }
   return createErrorCardElement(createErrorCardConfig(error, config));
 };

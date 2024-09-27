@@ -11,7 +11,7 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../heading-items/hui-heading-item";
+import "../heading-badges/hui-heading-badge";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -24,7 +24,7 @@ export const migrateHeadingCardConfig = (
 ): HeadingCardConfig => {
   const newConfig = { ...config };
   if (newConfig.entities) {
-    newConfig.items = [...(newConfig.items || []), ...newConfig.entities];
+    newConfig.badges = [...(newConfig.badges || []), ...newConfig.entities];
     delete newConfig.entities;
   }
   return newConfig;
@@ -84,7 +84,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
     const style = this._config.heading_style || "title";
 
-    const items = this._config.items;
+    const badges = this._config.badges;
 
     return html`
       <ha-card>
@@ -104,17 +104,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
               : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${items?.length
+          ${badges?.length
             ? html`
-                <div class="items">
-                  ${items.map(
+                <div class="badges">
+                  ${badges.map(
                     (config) => html`
-                      <hui-heading-item
+                      <hui-heading-badge
                         .config=${config}
                         .hass=${this.hass}
                         .preview=${this.preview}
                       >
-                      </hui-heading-item>
+                      </hui-heading-badge>
                     `
                   )}
                 </div>
@@ -163,7 +163,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       .container .content:not(:has(p)) {
         min-width: fit-content;
       }
-      .container .items {
+      .container .badges {
         flex: 0 0;
       }
       .content {
@@ -199,7 +199,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         font-weight: 500;
         line-height: 20px;
       }
-      .items {
+      .badges {
         display: flex;
         flex-direction: row;
         align-items: center;

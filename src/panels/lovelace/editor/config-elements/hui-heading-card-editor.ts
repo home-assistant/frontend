@@ -26,15 +26,15 @@ import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
 import {
-  EntityHeadingItemConfig,
-  LovelaceHeadingItemConfig,
-} from "../../heading-items/types";
+  EntityHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../../heading-badges/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-heading-items-editor";
+import "./hui-heading-badges-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -45,7 +45,7 @@ const cardConfigStruct = assign(
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
-    items: optional(array(any())),
+    badges: optional(array(any())),
     // deprecated
     entities: optional(array(any())),
   })
@@ -109,9 +109,9 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _items = memoizeOne(
-    (items: HeadingCardConfig["items"]): LovelaceHeadingItemConfig[] =>
-      items || []
+  private _badges = memoizeOne(
+    (badges: HeadingCardConfig["badges"]): LovelaceHeadingBadgeConfig[] =>
+      badges || []
   );
 
   protected render() {
@@ -145,19 +145,19 @@ export class HuiHeadingCardEditor
           )}
         </h3>
         <div class="content">
-          <hui-heading-items-editor
+          <hui-heading-badges-editor
             .hass=${this.hass}
-            .items=${this._items(this._config!.items)}
-            @heading-items-changed=${this._itemsChanged}
-            @edit-heading-item=${this._editItem}
+            .badges=${this._badges(this._config!.badges)}
+            @heading-badges-changed=${this._badgesChanged}
+            @edit-heading-badge=${this._editBadge}
           >
-          </hui-heading-items-editor>
+          </hui-heading-badges-editor>
         </div>
       </ha-expansion-panel>
     `;
   }
 
-  private _itemsChanged(ev: CustomEvent): void {
+  private _badgesChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -165,7 +165,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      items: ev.detail.items as LovelaceHeadingItemConfig[],
+      badges: ev.detail.badges as LovelaceHeadingBadgeConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -182,22 +182,22 @@ export class HuiHeadingCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _editItem(ev: HASSDomEvent<{ index: number }>): void {
+  private _editBadge(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
     const index = ev.detail.index;
-    const config = this._items(this._config!.items)[index];
+    const config = this._badges(this._config!.badges)[index];
 
     fireEvent(this, "edit-sub-element", {
       config: config,
       saveConfig: (newConfig) => this._updateEntity(index, newConfig),
-      type: "heading-item",
-    } as EditSubElementEvent<EntityHeadingItemConfig>);
+      type: "heading-badge",
+    } as EditSubElementEvent<EntityHeadingBadgeConfig>);
   }
 
-  private _updateEntity(index: number, entity: EntityHeadingItemConfig) {
-    const items = this._config!.items!.concat();
-    items[index] = entity;
-    const config = { ...this._config!, items };
+  private _updateEntity(index: number, entity: EntityHeadingBadgeConfig) {
+    const badges = this._config!.badges!.concat();
+    badges[index] = entity;
+    const config = { ...this._config!, badges };
     fireEvent(this, "config-changed", {
       config: config,
     });

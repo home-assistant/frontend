@@ -8,35 +8,35 @@ import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
 } from "../common/validate-condition";
-import { createHeadingItemElement } from "../create-element/create-heading-element";
-import type { LovelaceHeadingItem } from "../types";
-import { LovelaceHeadingItemConfig } from "./types";
+import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
+import type { LovelaceHeadingBadge } from "../types";
+import { LovelaceHeadingBadgeConfig } from "./types";
 
 declare global {
   interface HASSDomEvents {
-    "heading-item-visibility-changed": { value: boolean };
-    "heading-item-updated": undefined;
+    "heading-badge-visibility-changed": { value: boolean };
+    "heading-badge-updated": undefined;
   }
 }
 
-@customElement("hui-heading-item")
-export class HuiHeadingItem extends ReactiveElement {
+@customElement("hui-heading-badge")
+export class HuiHeadingBadge extends ReactiveElement {
   @property({ type: Boolean }) public preview = false;
 
-  @property({ attribute: false }) public config?: LovelaceHeadingItemConfig;
+  @property({ attribute: false }) public config?: LovelaceHeadingBadgeConfig;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  private _elementConfig?: LovelaceHeadingItemConfig;
+  private _elementConfig?: LovelaceHeadingBadgeConfig;
 
   public load() {
     if (!this.config) {
-      throw new Error("Cannot build heading item without config");
+      throw new Error("Cannot build heading badge without config");
     }
     this._loadElement(this.config);
   }
 
-  private _element?: LovelaceHeadingItem;
+  private _element?: LovelaceHeadingBadge;
 
   private _listeners: MediaQueriesListener[] = [];
 
@@ -55,17 +55,17 @@ export class HuiHeadingItem extends ReactiveElement {
     this._updateVisibility();
   }
 
-  private _updateElement(config: LovelaceHeadingItemConfig) {
+  private _updateElement(config: LovelaceHeadingBadgeConfig) {
     if (!this._element) {
       return;
     }
     this._element.setConfig(config);
     this._elementConfig = config;
-    fireEvent(this, "heading-item-updated");
+    fireEvent(this, "heading-badge-updated");
   }
 
-  private _loadElement(config: LovelaceHeadingItemConfig) {
-    this._element = createHeadingItemElement(config);
+  private _loadElement(config: LovelaceHeadingBadgeConfig) {
+    this._element = createHeadingBadgeElement(config);
     this._elementConfig = config;
     if (this.hass) {
       this._element.hass = this.hass;
@@ -77,7 +77,7 @@ export class HuiHeadingItem extends ReactiveElement {
         if (this.hass) {
           this._element!.hass = this.hass;
         }
-        fireEvent(this, "heading-item-updated");
+        fireEvent(this, "heading-badge-updated");
       },
       { once: true }
     );
@@ -86,7 +86,7 @@ export class HuiHeadingItem extends ReactiveElement {
       (ev: Event) => {
         ev.stopPropagation();
         this._loadElement(config);
-        fireEvent(this, "heading-item-updated");
+        fireEvent(this, "heading-badge-updated");
       },
       { once: true }
     );
@@ -184,7 +184,7 @@ export class HuiHeadingItem extends ReactiveElement {
     if (this.hidden !== !visible) {
       this.style.setProperty("display", visible ? "" : "none");
       this.toggleAttribute("hidden", !visible);
-      fireEvent(this, "heading-item-visibility-changed", { value: visible });
+      fireEvent(this, "heading-badge-visibility-changed", { value: visible });
     }
 
     if (!visible && this._element.parentElement) {
@@ -197,6 +197,6 @@ export class HuiHeadingItem extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-heading-item": HuiHeadingItem;
+    "hui-heading-badge": HuiHeadingBadge;
   }
 }

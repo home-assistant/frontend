@@ -1,7 +1,7 @@
+import { mdiAlertCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -9,9 +9,7 @@ import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-next";
+import "../../../components/ha-heading-badge";
 import "../../../components/ha-state-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
@@ -19,23 +17,25 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { DEFAULT_CONFIG } from "../editor/heading-item-editor/hui-heading-entity-editor";
-import { LovelaceHeadingItem, LovelaceHeadingItemEditor } from "../types";
-import { EntityHeadingItemConfig } from "./types";
+import { DEFAULT_CONFIG } from "../editor/heading-badge-editor/hui-entity-heading-badge-editor";
+import { LovelaceHeadingBadge, LovelaceHeadingBadgeEditor } from "../types";
+import { EntityHeadingBadgeConfig } from "./types";
 
-@customElement("hui-entity-heading-item")
-export class HuiEntityHeadingItem
+@customElement("hui-entity-heading-badge")
+export class HuiEntityHeadingBadge
   extends LitElement
-  implements LovelaceHeadingItem
+  implements LovelaceHeadingBadge
 {
-  public static async getConfigElement(): Promise<LovelaceHeadingItemEditor> {
-    await import("../editor/heading-item-editor/hui-heading-entity-editor");
+  public static async getConfigElement(): Promise<LovelaceHeadingBadgeEditor> {
+    await import(
+      "../editor/heading-badge-editor/hui-entity-heading-badge-editor"
+    );
     return document.createElement("hui-heading-entity-editor");
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EntityHeadingItemConfig;
+  @state() private _config?: EntityHeadingBadgeConfig;
 
   @property({ type: Boolean }) public preview = false;
 
@@ -50,7 +50,7 @@ export class HuiEntityHeadingItem
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    const config: EntityHeadingItemConfig = {
+    const config: EntityHeadingBadgeConfig = {
       tap_action: {
         action: "none",
       },
@@ -103,32 +103,39 @@ export class HuiEntityHeadingItem
 
     const config = this._config;
 
-    const stateObj = this.hass!.states[config.entity];
+    const entityId = config.entity;
+    const stateObj = this.hass!.states[entityId];
 
     if (!stateObj) {
-      return nothing;
+      return html`
+        <ha-heading-badge class="error" .title=${entityId}>
+          <ha-svg-icon
+            slot="icon"
+            .hass=${this.hass}
+            .path=${mdiAlertCircle}
+          ></ha-svg-icon>
+          -
+        </ha-heading-badge>
+      `;
     }
 
     const color = this._computeStateColor(stateObj, config.color);
 
-    const actionable = hasAction(config.tap_action);
-
     const style = {
-      "--color": color,
+      "--icon-color": color,
     };
 
     return html`
-      <div
-        class="entity"
+      <ha-heading-badge
+        .type=${hasAction(config.tap_action) ? "button" : "text"}
         @action=${this._handleAction}
         .actionHandler=${actionHandler()}
-        role=${ifDefined(actionable ? "button" : undefined)}
-        tabindex=${ifDefined(actionable ? "0" : undefined)}
         style=${styleMap(style)}
       >
         ${config.show_icon
           ? html`
               <ha-state-icon
+                slot="icon"
                 .hass=${this.hass}
                 .icon=${config.icon}
                 .stateObj=${stateObj}
@@ -144,7 +151,7 @@ export class HuiEntityHeadingItem
               ></state-display>
             `
           : nothing}
-      </div>
+      </ha-heading-badge>
     `;
   }
 
@@ -153,25 +160,11 @@ export class HuiEntityHeadingItem
       [role="button"] {
         cursor: pointer;
       }
-      .entity {
-        display: flex;
-        flex-direction: row;
-        white-space: nowrap;
-        align-items: center;
-        gap: 3px;
-        color: var(--secondary-text-color);
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 20px; /* 142.857% */
-        letter-spacing: 0.1px;
-        --mdc-icon-size: 14px;
+      ha-heading-badge {
         --state-inactive-color: initial;
       }
-      .entity ha-state-icon {
-        --ha-icon-display: block;
-        color: var(--color);
+      ha-heading-badge.error {
+        --icon-color: var(--red-color);
       }
     `;
   }
@@ -179,6 +172,6 @@ export class HuiEntityHeadingItem
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entity-heading-item": HuiEntityHeadingItem;
+    "hui-entity-heading-badge": HuiEntityHeadingBadge;
   }
 }
