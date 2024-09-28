@@ -142,7 +142,7 @@ export class DemoAutomationDescribeAction extends LitElement {
         <div class="action">
           <span>
             ${this._action
-              ? describeAction(this.hass, [], [], [], this._action)
+              ? describeAction(this.hass, [], [], this._action)
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -155,7 +155,7 @@ export class DemoAutomationDescribeAction extends LitElement {
         ${ACTIONS.map(
           (conf) => html`
             <div class="action">
-              <span>${describeAction(this.hass, [], [], [], conf as any)}</span>
+              <span>${describeAction(this.hass, [], [], conf as any)}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `
