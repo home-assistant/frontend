@@ -20,7 +20,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): EventTrigger {
-    return { platform: "event", event_type: "" };
+    return { trigger: "event", event_type: "" };
   }
 
   protected render() {

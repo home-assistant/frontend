@@ -57,6 +57,12 @@ interface EMOutgoingMessageBarCodeNotify extends EMMessage {
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
+  payload?: {
+    mac_extended_address: string | null;
+    extended_pan_id: string | null;
+    border_agent_id: string | null;
+    active_operational_dataset: string | null;
+  };
 }
 
 interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
@@ -136,7 +142,7 @@ interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   type: "thread/store_in_platform_keychain";
   payload: {
     mac_extended_address: string;
-    border_agent_id: string | null;
+    border_agent_id: string;
     active_operational_dataset: string;
   };
 }

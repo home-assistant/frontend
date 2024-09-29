@@ -6,16 +6,29 @@ export const loadFixUnitsDialog = () =>
 
 export interface DialogStatisticsUnitsChangedParams {
   issue: StatisticsValidationResultUnitsChanged;
-  fixedCallback: () => void;
+  fixedCallback?: () => void;
+  cancelCallback?: () => void;
 }
 
 export const showFixStatisticsUnitsChangedDialog = (
   element: HTMLElement,
   detailParams: DialogStatisticsUnitsChangedParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-statistics-fix-units-changed",
-    dialogImport: loadFixUnitsDialog,
-    dialogParams: detailParams,
+) =>
+  new Promise((resolve) => {
+    const origCallback = detailParams.fixedCallback;
+
+    fireEvent(element, "show-dialog", {
+      dialogTag: "dialog-statistics-fix-units-changed",
+      dialogImport: loadFixUnitsDialog,
+      dialogParams: {
+        ...detailParams,
+        cancelCallback: () => {
+          resolve(false);
+        },
+        fixedCallback: () => {
+          resolve(true);
+          origCallback?.();
+        },
+      },
+    });
   });
-};

@@ -153,8 +153,9 @@ class DialogZWaveJSAddNode extends LitElement {
                       .label=${html`<b>Secure if possible</b>
                         <div class="secondary">
                           Requires user interaction during inclusion. Fast and
-                          secure with S2 when supported. Fallback to legacy S0
-                          or no encryption when necessary.
+                          secure with S2 when supported. Allows manually
+                          selecting which security keys to grant. Fallback to
+                          legacy S0 or no encryption when necessary.
                         </div>`}
                     >
                       <ha-radio

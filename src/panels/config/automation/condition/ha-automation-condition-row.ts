@@ -431,7 +431,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     try {
       const validateResult = await validateConfig(this.hass, {
-        condition,
+        conditions: condition,
       });
 
       // Abort if condition changed.
@@ -440,12 +440,12 @@ export default class HaAutomationConditionRow extends LitElement {
         return;
       }
 
-      if (!validateResult.condition.valid) {
+      if (!validateResult.conditions.valid) {
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.automation.editor.conditions.invalid_condition"
           ),
-          text: validateResult.condition.error,
+          text: validateResult.conditions.error,
         });
         this._testing = false;
         return;

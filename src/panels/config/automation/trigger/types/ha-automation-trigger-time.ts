@@ -26,7 +26,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     | typeof MODE_ENTITY;
 
   public static get defaultConfig(): TimeTrigger {
-    return { platform: "time", at: "" };
+    return { trigger: "time", at: "" };
   }
 
   private _schema = memoizeOne(

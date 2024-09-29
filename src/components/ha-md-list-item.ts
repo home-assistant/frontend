@@ -2,8 +2,8 @@ import { MdListItem } from "@material/web/list/list-item";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-@customElement("ha-list-item-new")
-export class HaListItemNew extends MdListItem {
+@customElement("ha-md-list-item")
+export class HaMdListItem extends MdListItem {
   static override styles = [
     ...super.styles,
     css`
@@ -21,6 +21,6 @@ export class HaListItemNew extends MdListItem {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-list-item-new": HaListItemNew;
+    "ha-md-list-item": HaMdListItem;
   }
 }

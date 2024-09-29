@@ -71,7 +71,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   public static get defaultConfig(): CalendarTrigger {
     return {
-      platform: "calendar",
+      trigger: "calendar",
       entity_id: "",
       event: "start" as CalendarTrigger["event"],
       offset: "0",
