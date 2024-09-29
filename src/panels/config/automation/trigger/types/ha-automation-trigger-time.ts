@@ -158,7 +158,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
     fireEvent(this, "value-changed", {
       value: {
-        platform: "time",
+        ...this.trigger,
         at: newValue.offset
           ? {
               entity_id: newValue.entity,
