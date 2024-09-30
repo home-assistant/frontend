@@ -72,7 +72,7 @@ export const timerTimeRemaining = (
 
   if (stateObj.state === "active") {
     const now = new Date().getTime();
-    const finishes = new Date(stateObj.attributes.finishes_at);
+    const finishes = new Date(stateObj.attributes.finishes_at).getTime();
     timeRemaining = Math.max((finishes - now) / 1000, 0);
   }
 
