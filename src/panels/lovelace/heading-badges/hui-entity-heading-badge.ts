@@ -152,6 +152,7 @@ export class HuiEntityHeadingBadge
                 .stateObj=${stateObj}
                 .content=${config.state_content}
                 .name=${config.name}
+                dash-unavailable
               ></state-display>
             `
           : nothing}
