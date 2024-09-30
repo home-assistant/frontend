@@ -37,6 +37,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 const entityConfigStruct = object({
   type: optional(string()),
   entity: string(),
+  name: optional(string()),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
@@ -87,6 +88,12 @@ export class HuiHeadingEntityEditor
               type: "grid",
               schema: [
                 {
+                  name: "name",
+                  selector: {
+                    text: {},
+                  },
+                },
+                {
                   name: "icon",
                   selector: { icon: {} },
                   context: { icon_entity: "entity" },
@@ -128,7 +135,7 @@ export class HuiHeadingEntityEditor
             },
             {
               name: "state_content",
-              selector: { ui_state_content: {} },
+              selector: { ui_state_content: { allow_name: true } },
               context: { filter_entity: "entity" },
             },
           ],
@@ -268,6 +275,10 @@ export class HuiHeadingEntityEditor
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}_helper`
+        );
+      case "name":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.heading.entity_config.name_helper`
         );
       default:
         return undefined;
