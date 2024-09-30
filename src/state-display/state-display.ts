@@ -77,7 +77,7 @@ class StateDisplay extends LitElement {
 
     if (content === "state") {
       if (this.dashUnavailable && isUnavailableState(stateObj.state)) {
-        return "-";
+        return "—";
       }
       if (
         (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
