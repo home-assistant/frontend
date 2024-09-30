@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiRefresh, mdiDownload } from "@mdi/js";
+import { mdiDownload } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
@@ -22,9 +22,11 @@ import { getSignedPath } from "../../../data/auth";
 
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import { getHassioLogDownloadUrl } from "../../../data/hassio/supervisor";
+import {
+  fetchHassioLogsFollow,
+  getHassioLogDownloadUrl,
+} from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
-import { debounce } from "../../../common/util/debounce";
 import { fileDownload } from "../../../util/file_download";
 
 @customElement("error-log-card")
@@ -39,11 +41,11 @@ class ErrorLogCard extends LitElement {
 
   @property({ type: Boolean, attribute: true }) public show = false;
 
-  @state() private _isLogLoaded = false;
+  @query(".error-log") private _logElement?: HTMLElement;
 
   @state() private _logChunks?: string[];
 
-  @state() private _logHTML?: TemplateResult[] | TemplateResult | string;
+  @state() private _log?: string;
 
   @state() private _error?: string;
 
@@ -55,7 +57,7 @@ class ErrorLogCard extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
-        ${this._logHTML
+        ${this._log
           ? html`
               <ha-card outlined>
                 <div class="header">
@@ -65,11 +67,6 @@ class ErrorLogCard extends LitElement {
                   </h1>
                   <div>
                     <ha-icon-button
-                      .path=${mdiRefresh}
-                      @click=${this._refresh}
-                      .label=${this.hass.localize("ui.common.refresh")}
-                    ></ha-icon-button>
-                    <ha-icon-button
                       .path=${mdiDownload}
                       @click=${this._downloadFullLog}
                       .label=${this.hass.localize(
@@ -78,30 +75,24 @@ class ErrorLogCard extends LitElement {
                     ></ha-icon-button>
                   </div>
                 </div>
-                <div class="card-content error-log">${this._logHTML}</div>
+                <div class="card-content error-log">
+                  <ha-ansi-to-html .content=${this._log}> </ha-ansi-to-html>
+                  <span id="scroll-anchor"></span>
+                </div>
               </ha-card>
             `
           : ""}
-        ${!this._logHTML
+        ${!this._log
           ? html`
               <mwc-button outlined @click=${this._downloadFullLog}>
                 <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.logs.download_full_log")}
-              </mwc-button>
-              <mwc-button raised @click=${this._refreshLogs}>
-                ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
           : ""}
       </div>
     `;
   }
-
-  private _debounceSearch = debounce(
-    () => (this._isLogLoaded ? this._refreshLogs() : this._debounceSearch()),
-    150,
-    false
-  );
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -116,22 +107,14 @@ class ErrorLogCard extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("provider")) {
-      this._logHTML = undefined;
+      this._log = undefined;
     }
 
     if (
       (changedProps.has("show") && this.show) ||
       (changedProps.has("provider") && this.show)
     ) {
-      if (changedProps.has("provider") && this._logStreamAborter) {
-        this._logStreamAborter.abort();
-      }
       this._refreshLogs();
-      return;
-    }
-
-    if (changedProps.has("filter")) {
-      this._debounceSearch();
     }
   }
 
@@ -141,14 +124,6 @@ class ErrorLogCard extends LitElement {
     if (this._logStreamAborter) {
       this._logStreamAborter.abort();
     }
-  }
-
-  private async _refresh(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    await this._refreshLogs();
-    button.progress = false;
   }
 
   private async _downloadFullLog(): Promise<void> {
@@ -165,71 +140,55 @@ class ErrorLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
-  private _readChunks(reader) {
-    return {
-      async *[Symbol.asyncIterator]() {
-        let readResult = await reader.read();
-        while (!readResult.done) {
-          yield readResult.value;
-          // eslint-disable-next-line no-await-in-loop
-          readResult = await reader.read();
-        }
-      },
-    };
-  }
-
   private async _refreshLogs(): Promise<void> {
-    this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
-    // let log: string;
+    this._log = this.hass.localize("ui.panel.config.logs.loading_log");
 
     if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
       try {
-        // log = await fetchHassioLogs(this.hass, this.provider);
-        // if (this.filter) {
-        //   log = log
-        //     .split("\n")
-        //     .filter((entry) =>
-        //       entry.toLowerCase().includes(this.filter.toLowerCase())
-        //     )
-        //     .join("\n");
-        // }
-        // if (!log) {
-        //   this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
-        //   return;
-        // }
-        // this._logHTML = html`<ha-ansi-to-html .content=${log}>
-        // </ha-ansi-to-html>`;
-        // this._isLogLoaded = true;
-        // return;
+        if (this._logStreamAborter) {
+          this._logStreamAborter.abort();
+        }
 
         this._logStreamAborter = new AbortController();
 
-        this._logChunks = [];
-
-        const response = await fetch(
-          `/api/hassio/${this.provider.includes("_") ? `addons/${this.provider}` : this.provider}/logs/follow`,
-          {
-            headers: {
-              authorization: `Bearer ${this.hass.auth.accessToken}`,
-            },
-            signal: this._logStreamAborter.signal,
-          }
+        const body = await fetchHassioLogsFollow(
+          this.hass,
+          this.provider,
+          this._logStreamAborter.signal
         );
 
-        const reader = response.body?.getReader();
+        this._logChunks = [];
 
-        if (!reader) {
-          throw new Error("No stream reader found");
+        if (!body) {
+          throw new Error("No stream body found");
         }
 
-        for await (const chunk of this._readChunks(reader)) {
+        this._log = this.hass.localize("ui.panel.config.logs.no_errors");
+
+        for await (const chunk of body) {
+          let scrolledToBottom = true;
+          if (this._logElement) {
+            scrolledToBottom =
+              this._logElement.scrollHeight - this._logElement.scrollTop ===
+              this._logElement.clientHeight;
+          }
+
           const value = new TextDecoder().decode(chunk);
           this._logChunks.push(value);
-          this._logHTML = html`<ha-ansi-to-html
-            .content=${this._logChunks.join("")}
-          ></ha-ansi-to-html>`;
+          this._log = this._logChunks.join("");
+
+          if (scrolledToBottom && this._logElement) {
+            window.requestAnimationFrame(() => {
+              this._logElement!.scrollTo(0, 999999);
+            });
+          } else {
+            // TODO show an indicator that there are new logs
+          }
         }
       } catch (err: any) {
+        if (err.name === "AbortError") {
+          return;
+        }
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
           { provider: this.provider, error: extractApiErrorMessage(err) }
@@ -238,37 +197,6 @@ class ErrorLogCard extends LitElement {
     } else {
       // log = await fetchErrorLog(this.hass!);
     }
-
-    // this._isLogLoaded = true;
-
-    // const split = log && log.split("\n");
-
-    // this._logHTML = split
-    //   ? (this.filter
-    //       ? split.filter((entry) => {
-    //           if (this.filter) {
-    //             return entry.toLowerCase().includes(this.filter.toLowerCase());
-    //           }
-    //           return entry;
-    //         })
-    //       : split
-    //     ).map((entry) => {
-    //       if (entry.includes("INFO"))
-    //         return html`<div class="info">${entry}</div>`;
-
-    //       if (entry.includes("WARNING"))
-    //         return html`<div class="warning">${entry}</div>`;
-
-    //       if (
-    //         entry.includes("ERROR") ||
-    //         entry.includes("FATAL") ||
-    //         entry.includes("CRITICAL")
-    //       )
-    //         return html`<div class="error">${entry}</div>`;
-
-    //       return html`<div>${entry}</div>`;
-    //     })
-    //   : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 
   static styles: CSSResultGroup = css`
@@ -319,8 +247,6 @@ class ErrorLogCard extends LitElement {
       max-height: calc(100vh - 240px);
       overflow: auto;
 
-      scroll-snap-type: y proximity;
-      align-content: end;
       border-top: 1px solid var(--divider-color);
     }
 
@@ -329,12 +255,6 @@ class ErrorLogCard extends LitElement {
         min-height: calc(100vh - 190px);
         max-height: calc(100vh - 190px);
       }
-    }
-
-    .error-log::after {
-      display: block;
-      content: "";
-      scroll-snap-align: end;
     }
 
     .error-log > div {
