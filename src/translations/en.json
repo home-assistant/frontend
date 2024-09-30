@@ -6026,6 +6026,8 @@
               "entity_config": {
                 "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
                 "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
+                "name": "[%key:ui::panel::lovelace::editor::card::generic::name%]",
+                "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
                 "appearance": "Appearance",
