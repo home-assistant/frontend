@@ -43,7 +43,7 @@ export class HuiEntityHeadingBadge
     this._config = {
       ...DEFAULT_CONFIG,
       tap_action: {
-        action: "none",
+        action: "more-info",
       },
       ...config,
     };
@@ -52,7 +52,7 @@ export class HuiEntityHeadingBadge
   private _handleAction(ev: ActionHandlerEvent) {
     const config: EntityHeadingBadgeConfig = {
       tap_action: {
-        action: "none",
+        action: "more-info",
       },
       ...this._config!,
     };

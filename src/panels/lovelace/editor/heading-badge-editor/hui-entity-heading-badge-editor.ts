@@ -143,7 +143,7 @@ export class HuiHeadingEntityEditor
               name: "tap_action",
               selector: {
                 ui_action: {
-                  default_action: "none",
+                  default_action: "more-info",
                 },
               },
             },
