@@ -125,12 +125,15 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
+    const name = config.name || stateObj.attributes.friendly_name;
+
     return html`
       <ha-heading-badge
         .type=${hasAction(config.tap_action) ? "button" : "text"}
         @action=${this._handleAction}
         .actionHandler=${actionHandler()}
         style=${styleMap(style)}
+        .title=${name}
       >
         ${config.show_icon
           ? html`
@@ -148,6 +151,7 @@ export class HuiEntityHeadingBadge
                 .hass=${this.hass}
                 .stateObj=${stateObj}
                 .content=${config.state_content}
+                .name=${config.name}
               ></state-display>
             `
           : nothing}

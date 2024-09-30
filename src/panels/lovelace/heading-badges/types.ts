@@ -16,6 +16,7 @@ export interface ErrorBadgeConfig extends LovelaceHeadingBadgeConfig {
 export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   type?: "entity";
   entity: string;
+  name?: string;
   state_content?: string | string[];
   icon?: string;
   show_state?: boolean;
