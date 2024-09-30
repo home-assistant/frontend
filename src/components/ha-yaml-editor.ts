@@ -18,7 +18,7 @@ import type { HaCodeEditor } from "./ha-code-editor";
 import "./ha-button";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
-  if (typeof obj !== "object") {
+  if (typeof obj !== "object" || obj === null) {
     return false;
   }
   for (const key in obj) {
@@ -59,14 +59,13 @@ export class HaYamlEditor extends LitElement {
 
   public setValue(value): void {
     try {
-      this._yaml =
-        value && !isEmpty(value)
-          ? dump(value, {
-              schema: this.yamlSchema,
-              quotingType: '"',
-              noRefs: true,
-            })
-          : "";
+      this._yaml = !isEmpty(value)
+        ? dump(value, {
+            schema: this.yamlSchema,
+            quotingType: '"',
+            noRefs: true,
+          })
+        : "";
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err, value);
@@ -75,7 +74,7 @@ export class HaYamlEditor extends LitElement {
   }
 
   protected firstUpdated(): void {
-    if (this.defaultValue) {
+    if (this.defaultValue !== undefined) {
       this.setValue(this.defaultValue);
     }
   }

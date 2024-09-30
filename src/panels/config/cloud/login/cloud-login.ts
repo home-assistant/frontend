@@ -1,8 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
+import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/buttons/ha-progress-button";
@@ -10,8 +10,11 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
-import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-password-field";
+import type { HaPasswordField } from "../../../../components/ha-password-field";
 import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { cloudLogin, removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -21,8 +24,6 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
-import "../../../../components/ha-password-field";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -44,7 +45,7 @@ export class CloudLogin extends LitElement {
 
   @query("#email", true) private _emailField!: HaTextField;
 
-  @query("#password", true) private _passwordField!: HaTextField;
+  @query("#password", true) private _passwordField!: HaPasswordField;
 
   protected render(): TemplateResult {
     return html`
