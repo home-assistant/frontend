@@ -20,8 +20,8 @@ export const fixStatisticsIssue = async (
   issue: StatisticsValidationResult
 ) => {
   switch (issue.type) {
-    case "no_state":
-      return showConfirmationDialog(element, {
+    case "no_state": {
+      const result = await showConfirmationDialog(element, {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.no_state.title"
         ),
@@ -37,10 +37,22 @@ export const fixStatisticsIssue = async (
           )}`,
         confirmText: localize("ui.common.delete"),
         destructive: true,
-        confirm: async () => {
-          await clearStatistics(hass, [issue.data.statistic_id]);
-        },
       });
+      if (result) {
+        try {
+          await clearStatistics(hass, [issue.data.statistic_id]);
+        } catch (err: any) {
+          showAlertDialog(element, {
+            title: "Failed to clear statistics",
+            text:
+              err.type === "timeout"
+                ? "The deletion of the statistics took longer than expected, it might take longer for the issue to disappear."
+                : err.message,
+          });
+        }
+      }
+      return result;
+    }
     case "entity_not_recorded":
       return showAlertDialog(element, {
         title: localize(
@@ -67,8 +79,8 @@ export const fixStatisticsIssue = async (
             )}</a
           >`,
       });
-    case "entity_no_longer_recorded":
-      return showConfirmationDialog(element, {
+    case "entity_no_longer_recorded": {
+      const result = await showConfirmationDialog(element, {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.title"
         ),
@@ -99,12 +111,24 @@ export const fixStatisticsIssue = async (
           )}`,
         confirmText: localize("ui.common.delete"),
         destructive: true,
-        confirm: async () => {
-          await clearStatistics(hass, [issue.data.statistic_id]);
-        },
       });
-    case "state_class_removed":
-      return showConfirmationDialog(element, {
+      if (result) {
+        try {
+          await clearStatistics(hass, [issue.data.statistic_id]);
+        } catch (err: any) {
+          showAlertDialog(element, {
+            title: "Failed to clear statistics",
+            text:
+              err.type === "timeout"
+                ? "The deletion of the statistics took longer than expected, it might take longer for the issue to disappear."
+                : err.message,
+          });
+        }
+      }
+      return result;
+    }
+    case "state_class_removed": {
+      const result = await showConfirmationDialog(element, {
         title: localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.state_class_removed.title"
         ),
@@ -150,10 +174,22 @@ export const fixStatisticsIssue = async (
           )}`,
         confirmText: localize("ui.common.delete"),
         destructive: true,
-        confirm: async () => {
-          await clearStatistics(hass, [issue.data.statistic_id]);
-        },
       });
+      if (result) {
+        try {
+          await clearStatistics(hass, [issue.data.statistic_id]);
+        } catch (err: any) {
+          showAlertDialog(element, {
+            title: "Failed to clear statistics",
+            text:
+              err.type === "timeout"
+                ? "The deletion of the statistics took longer than expected, it might take longer for the issue to disappear."
+                : err.message,
+          });
+        }
+      }
+      return result;
+    }
     case "units_changed":
       return showFixStatisticsUnitsChangedDialog(element, {
         issue,
