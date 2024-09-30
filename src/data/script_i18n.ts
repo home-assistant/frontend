@@ -14,7 +14,6 @@ import {
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
-import { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
 import { LabelRegistryEntry } from "./label_registry";
 import {
@@ -44,7 +43,6 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -54,7 +52,6 @@ export const describeAction = <T extends ActionType>(
       hass,
       entityRegistry,
       labelRegistry,
-      floorRegistry,
       action,
       actionType,
       ignoreAlias
@@ -78,7 +75,6 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -168,9 +164,7 @@ const tryDescribeAction = <T extends ActionType>(
               );
             }
           } else if (key === "floor_id") {
-            const floor = floorRegistry.find(
-              (flr) => flr.floor_id === targetThing
-            );
+            const floor = hass.floors[targetThing] ?? undefined;
             if (floor?.name) {
               targets.push(floor.name);
             } else {
