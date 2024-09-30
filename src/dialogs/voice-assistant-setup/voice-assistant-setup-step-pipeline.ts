@@ -144,7 +144,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           { option: "preferred" },
           { entity_id: this.assistConfiguration?.pipeline_entity_id }
         );
-        this._nextStep(STEP.SUCCESS);
+        fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
         return;
       }
     }
@@ -210,15 +210,15 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       { option: cloudPipeline.name },
       { entity_id: this.assistConfiguration?.pipeline_entity_id }
     );
-    this._nextStep(STEP.SUCCESS);
+    fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
   }
 
   private async _setupCloud() {
-    fireEvent(this, "next-step", { step: STEP.CLOUD });
+    this._nextStep(STEP.CLOUD);
   }
 
   private async _thisSystem() {
-    fireEvent(this, "next-step", { step: STEP.ADDONS });
+    this._nextStep(STEP.ADDONS);
   }
 
   private _skip() {

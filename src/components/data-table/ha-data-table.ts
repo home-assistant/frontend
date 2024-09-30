@@ -1011,6 +1011,7 @@ export class HaDataTable extends LitElement {
           /* @noflip */
           padding-inline-end: initial;
           width: 60px;
+          min-width: 60px;
         }
 
         .mdc-data-table__table {

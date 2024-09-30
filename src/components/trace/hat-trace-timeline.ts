@@ -22,13 +22,8 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
 import { EntityRegistryEntry } from "../../data/entity_registry";
-import { FloorRegistryEntry } from "../../data/floor_registry";
 import { LabelRegistryEntry } from "../../data/label_registry";
 import { LogbookEntry } from "../../data/logbook";
 import {
@@ -206,7 +201,6 @@ class ActionRenderer {
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
     private labelReg: LabelRegistryEntry[],
-    private floorReg: FloorRegistryEntry[],
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -325,7 +319,6 @@ class ActionRenderer {
         this.hass,
         this.entityReg,
         this.labelReg,
-        this.floorReg,
         data,
         actionType
       ),
@@ -493,13 +486,7 @@ class ActionRenderer {
 
     const name =
       repeatConfig.alias ||
-      describeAction(
-        this.hass,
-        this.entityReg,
-        this.labelReg,
-        this.floorReg,
-        repeatConfig
-      );
+      describeAction(this.hass, this.entityReg, this.labelReg, repeatConfig);
 
     this._renderEntry(repeatPath, name, undefined, disabled);
 
@@ -597,7 +584,6 @@ class ActionRenderer {
           this.hass,
           this.entityReg,
           this.labelReg,
-          this.floorReg,
           sequenceConfig,
           "sequence"
         ),
@@ -694,10 +680,6 @@ export class HaAutomationTracer extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
 
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
-
   protected render() {
     if (!this.trace) {
       return nothing;
@@ -715,7 +697,6 @@ export class HaAutomationTracer extends LitElement {
       this.hass,
       this._entityReg,
       this._labelReg,
-      this._floorReg,
       entries,
       this.trace,
       logbookRenderer,

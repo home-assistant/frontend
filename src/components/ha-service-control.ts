@@ -805,7 +805,8 @@ export class HaServiceControl extends LitElement {
     const value = ev.detail.value;
     if (
       this._value?.data?.[key] === value ||
-      (!this._value?.data?.[key] && (value === "" || value === undefined))
+      ((!this._value?.data || !(key in this._value.data)) &&
+        (value === "" || value === undefined))
     ) {
       return;
     }
