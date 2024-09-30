@@ -43,13 +43,8 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { FloorRegistryEntry } from "../../../../data/floor_registry";
 import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
   Action,
@@ -159,10 +154,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
 
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
-
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -231,7 +222,6 @@ export default class HaAutomationActionRow extends LitElement {
                 this.hass,
                 this._entityReg,
                 this._labelReg,
-                this._floorReg,
                 this.action
               )
             )}
@@ -603,7 +593,6 @@ export default class HaAutomationActionRow extends LitElement {
           this.hass,
           this._entityReg,
           this._labelReg,
-          this._floorReg,
           this.action,
           undefined,
           true
