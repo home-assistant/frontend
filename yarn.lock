@@ -4041,10 +4041,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/color-name@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@types/color-name@npm:1.1.4"
-  checksum: 10/be275af06d32e6f09c8f1b8c15d35d2b8194736af980569b2fa572720339a19b3d5ccb63ce5950105d859d5c6226c98b8d8ecd613d626e757667037a90b9b47f
+"@types/color-name@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@types/color-name@npm:1.1.5"
+  checksum: 10/47600afcd1dbd7c668103ccaed912acd97760336dbb9fb08bdb34be004daa1f06a336183b51d44852e4460fe8b336347c7f5af330160c755f6a8fb4fa19e6bc0
   languageName: node
   linkType: hard
 
@@ -8978,7 +8978,7 @@ __metadata:
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.17"
     "@types/chromecast-caf-sender": "npm:1.0.10"
-    "@types/color-name": "npm:1.1.4"
+    "@types/color-name": "npm:1.1.5"
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
