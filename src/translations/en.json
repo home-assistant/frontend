@@ -2469,6 +2469,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "load_logs": "Load full logs",
+          "nr_of_lines": "Number of lines",
           "loading_log": "Loading full log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",

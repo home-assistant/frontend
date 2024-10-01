@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import {
@@ -8,10 +7,10 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state, query } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
@@ -30,6 +29,8 @@ import {
 } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+
+const NUMBER_OF_LINES_OPTIONS = ["100", "500", "1000", "5000", "10000"];
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -55,17 +56,29 @@ class ErrorLogCard extends LitElement {
 
   @state() private _newLogsIndicator?: boolean;
 
+  @state() private _numberOfLines = "100";
+
   @state() private _error?: string;
 
   @state() private _logStreamAborter?: AbortController;
 
   protected render(): TemplateResult {
+    let filteredLog = this._log;
+
+    if (this._log && this.filter) {
+      const filter = this.filter.toLowerCase();
+      filteredLog = this._log
+        .split("\n")
+        .filter((line) => line.toLowerCase().includes(filter))
+        .join("\n");
+    }
+
     return html`
       <div class="error-log-intro">
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
-        ${this._log
+        ${filteredLog !== undefined
           ? html`
               <ha-card outlined>
                 <div class="header">
@@ -73,7 +86,22 @@ class ErrorLogCard extends LitElement {
                     ${this.header ||
                     this.hass.localize("ui.panel.config.logs.show_full_logs")}
                   </h1>
-                  <div>
+                  <div class="action-buttons">
+                    <ha-select
+                      .label=${this.hass.localize(
+                        "ui.panel.config.logs.nr_of_lines"
+                      )}
+                      @selected=${this._setNumberOfLines}
+                      .value=${this._numberOfLines}
+                    >
+                      ${NUMBER_OF_LINES_OPTIONS.map(
+                        (number) => html`
+                          <mwc-list-item .value=${number}>
+                            ${number}
+                          </mwc-list-item>
+                        `
+                      )}
+                    </ha-select>
                     <ha-icon-button
                       .path=${mdiDownload}
                       @click=${this._downloadFullLog}
@@ -84,7 +112,19 @@ class ErrorLogCard extends LitElement {
                   </div>
                 </div>
                 <div class="card-content error-log">
-                  <ha-ansi-to-html .content=${this._log}> </ha-ansi-to-html>
+                  <ha-ansi-to-html .content=${filteredLog}> </ha-ansi-to-html>
+                  ${!filteredLog
+                    ? html`
+                        <div>
+                          ${this.hass.localize(
+                            this.filter
+                              ? "ui.panel.config.logs.no_issues_search"
+                              : "ui.panel.config.logs.no_errors",
+                            { term: this.filter }
+                          )}
+                        </div>
+                      `
+                    : nothing}
                   <div id="scroll-marker"></div>
                 </div>
                 <ha-button
@@ -107,12 +147,15 @@ class ErrorLogCard extends LitElement {
                 </ha-button>
               </ha-card>
             `
-          : ""}
+          : nothing}
         ${!this._log
           ? html`
-              <mwc-button outlined @click=${this._downloadFullLog}>
+              <ha-button outlined @click=${this._downloadFullLog}>
                 <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.logs.download_full_log")}
+              </ha-button>
+              <mwc-button raised @click=${this._loadLogs}>
+                ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
           : ""}
@@ -185,56 +228,61 @@ class ErrorLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
+  private _setNumberOfLines(ev: any): void {
+    if (ev?.target?.value && ev.target.value !== this._numberOfLines) {
+      this._numberOfLines = ev.target.value;
+      this._loadLogs();
+    }
+  }
+
   private async _loadLogs(): Promise<void> {
+    this._error = undefined;
     this._log = this.hass.localize("ui.panel.config.logs.loading_log");
 
-    if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
-      try {
-        if (this._logStreamAborter) {
-          this._logStreamAborter.abort();
-        }
-
-        this._logStreamAborter = new AbortController();
-
-        const body = await fetchHassioLogsFollow(
-          this.hass,
-          this.provider,
-          this._logStreamAborter.signal
-        );
-
-        const logChunks: string[] = [];
-
-        if (!body) {
-          throw new Error("No stream body found");
-        }
-
-        this._log = this.hass.localize("ui.panel.config.logs.no_errors");
-
-        for await (const chunk of body) {
-          const value = new TextDecoder().decode(chunk);
-          logChunks.push(value);
-          this._log = logChunks.join("");
-
-          if (
-            (this._scrolledToBottom || this._newLogsIndicator === undefined) &&
-            this._logElement
-          ) {
-            this._scrollToBottom();
-          } else {
-            this._newLogsIndicator = true;
-          }
-        }
-      } catch (err: any) {
-        if (err.name === "AbortError") {
-          return;
-        }
-        this._error = this.hass.localize(
-          "ui.panel.config.logs.failed_get_logs",
-          { provider: this.provider, error: extractApiErrorMessage(err) }
-        );
+    try {
+      if (this._logStreamAborter) {
+        this._logStreamAborter.abort();
       }
-    } else {
-      // log = await fetchErrorLog(this.hass!);
+
+      this._logStreamAborter = new AbortController();
+
+      const body = await fetchHassioLogsFollow(
+        this.hass,
+        this.provider,
+        this._logStreamAborter.signal,
+        Number(this._numberOfLines)
+      );
+
+      const logChunks: string[] = [];
+
+      if (!body) {
+        throw new Error("No stream body found");
+      }
+
+      this._log = this.hass.localize("ui.panel.config.logs.no_errors");
+
+      for await (const chunk of body) {
+        const value = new TextDecoder().decode(chunk);
+        logChunks.push(value);
+        this._log = logChunks.join("");
+
+        if (
+          (this._scrolledToBottom || this._newLogsIndicator === undefined) &&
+          this._logElement
+        ) {
+          this._scrollToBottom();
+        } else {
+          this._newLogsIndicator = true;
+        }
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") {
+        return;
+      }
+      this._error = this.hass.localize("ui.panel.config.logs.failed_get_logs", {
+        provider: this.provider,
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -271,12 +319,6 @@ class ErrorLogCard extends LitElement {
       display: block;
       margin-block-start: 0px;
       font-weight: normal;
-    }
-
-    ha-select {
-      display: block;
-      max-width: 500px;
-      width: 100%;
     }
 
     ha-icon-button {
@@ -346,10 +388,6 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
-    }
-
-    mwc-button {
-      direction: var(--direction);
     }
   `;
 }
