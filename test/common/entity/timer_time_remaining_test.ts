@@ -42,8 +42,8 @@ describe("timerTimeRemaining", () => {
           state: "active",
           attributes: {
             remaining: "0:01:05",
+            finishes_at: "2018-01-17T16:16:17+00:00",
           },
-          last_changed: "2018-01-17T16:15:12Z",
         } as any),
         47
       );
