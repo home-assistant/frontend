@@ -220,7 +220,7 @@ export class HuiHeadingEntityEditor
       return;
     }
 
-    const config = ev.detail.value as FormData;
+    const config = { ...ev.detail.value } as FormData;
 
     if (config.displayed_elements) {
       config.show_state = config.displayed_elements.includes("state");
