@@ -162,8 +162,12 @@ export class HuiHeadingEntityEditor
   private _displayedElements = memoizeOne(
     (config: EntityHeadingBadgeConfig) => {
       const elements: string[] = [];
-      if (config.show_state) elements.push("state");
-      if (config.show_icon) elements.push("icon");
+      if (config.show_state) {
+        elements.push("state");
+      }
+      if (config.show_icon) {
+        elements.push("icon");
+      }
       return elements;
     }
   );
@@ -220,7 +224,7 @@ export class HuiHeadingEntityEditor
       return;
     }
 
-    const config = ev.detail.value as FormData;
+    const config = { ...ev.detail.value } as FormData;
 
     if (config.displayed_elements) {
       config.show_state = config.displayed_elements.includes("state");
