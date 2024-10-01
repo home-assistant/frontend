@@ -1425,7 +1425,7 @@ export class HaConfigDevicePage extends LitElement {
                 <span slot="header"
                   >${this.hass.localize(
                     "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                    { deviceSlug: oldDeviceSlug }
+                    { deviceSlug: oldDeviceSlug, count: dialogNoRenames.length }
                   )}</span
                 >
                 ${dialogNoRenames}
