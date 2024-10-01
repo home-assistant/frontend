@@ -9,6 +9,7 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 
 @customElement("dialog-statistics-fix")
 export class DialogStatisticsFix extends LitElement {
@@ -165,13 +166,22 @@ export class DialogStatisticsFix extends LitElement {
     try {
       await clearStatistics(this.hass, [this._params!.issue.data.statistic_id]);
     } catch (err: any) {
-      alert(
-        `Failed to clear statistics: ${
-          err.type === "timeout"
-            ? "The deletion of the statistics took longer than expected, it might take longer for the issue to disappear."
-            : err.message
-        }`
-      );
+      await showAlertDialog(this, {
+        title:
+          err.code === "timeout"
+            ? this.hass.localize(
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.clearing_timeout_title"
+              )
+            : this.hass.localize(
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.clearing_failed"
+              ),
+        text:
+          err.code === "timeout"
+            ? this.hass.localize(
+                "ui.panel.developer-tools.tabs.statistics.fix_issue.clearing_timeout_text"
+              )
+            : err.message,
+      });
     } finally {
       this._clearing = false;
       this._params?.fixedCallback!();
