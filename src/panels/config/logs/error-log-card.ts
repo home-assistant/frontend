@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDownload } from "@mdi/js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -9,11 +9,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
@@ -43,9 +45,15 @@ class ErrorLogCard extends LitElement {
 
   @query(".error-log") private _logElement?: HTMLElement;
 
-  @state() private _logChunks?: string[];
+  @query("#scroll-marker") private _scrollMarkerElement?: HTMLElement;
 
   @state() private _log?: string;
+
+  @state() private _scrolledToBottom?: boolean;
+
+  @state() private _scrolledToBottomObserver?: IntersectionObserver;
+
+  @state() private _newLogsIndicator?: boolean;
 
   @state() private _error?: string;
 
@@ -77,8 +85,26 @@ class ErrorLogCard extends LitElement {
                 </div>
                 <div class="card-content error-log">
                   <ha-ansi-to-html .content=${this._log}> </ha-ansi-to-html>
-                  <span id="scroll-anchor"></span>
+                  <div id="scroll-marker"></div>
                 </div>
+                <ha-button
+                  class="new-logs-indicator ${classMap({
+                    visible: this._newLogsIndicator || false,
+                  })}"
+                  @click=${this._scrollToBottom}
+                >
+                  <ha-svg-icon
+                    .path=${mdiArrowCollapseDown}
+                    slot="icon"
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.scroll_down_button"
+                  )}
+                  <ha-svg-icon
+                    .path=${mdiArrowCollapseDown}
+                    slot="trailingIcon"
+                  ></ha-svg-icon>
+                </ha-button>
               </ha-card>
             `
           : ""}
@@ -99,7 +125,7 @@ class ErrorLogCard extends LitElement {
 
     if (this.hass?.config.recovery_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
-      this._refreshLogs();
+      this._loadLogs();
     }
   }
 
@@ -114,7 +140,22 @@ class ErrorLogCard extends LitElement {
       (changedProps.has("show") && this.show) ||
       (changedProps.has("provider") && this.show)
     ) {
-      this._refreshLogs();
+      this._loadLogs();
+    }
+
+    if (
+      this._scrollMarkerElement &&
+      this._scrolledToBottomObserver === undefined
+    ) {
+      this._scrolledToBottomObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          this._scrolledToBottom = entry.isIntersecting;
+        });
+      });
+      this._scrolledToBottomObserver.observe(this._scrollMarkerElement);
+    } else if (!this._scrollMarkerElement && this._scrolledToBottomObserver) {
+      this._scrolledToBottomObserver.disconnect();
+      this._scrolledToBottomObserver = undefined;
     }
   }
 
@@ -123,6 +164,10 @@ class ErrorLogCard extends LitElement {
 
     if (this._logStreamAborter) {
       this._logStreamAborter.abort();
+    }
+
+    if (this._scrolledToBottomObserver) {
+      this._scrolledToBottomObserver.disconnect();
     }
   }
 
@@ -140,7 +185,7 @@ class ErrorLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
-  private async _refreshLogs(): Promise<void> {
+  private async _loadLogs(): Promise<void> {
     this._log = this.hass.localize("ui.panel.config.logs.loading_log");
 
     if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
@@ -157,7 +202,7 @@ class ErrorLogCard extends LitElement {
           this._logStreamAborter.signal
         );
 
-        this._logChunks = [];
+        const logChunks: string[] = [];
 
         if (!body) {
           throw new Error("No stream body found");
@@ -166,23 +211,17 @@ class ErrorLogCard extends LitElement {
         this._log = this.hass.localize("ui.panel.config.logs.no_errors");
 
         for await (const chunk of body) {
-          let scrolledToBottom = true;
-          if (this._logElement) {
-            scrolledToBottom =
-              this._logElement.scrollHeight - this._logElement.scrollTop ===
-              this._logElement.clientHeight;
-          }
-
           const value = new TextDecoder().decode(chunk);
-          this._logChunks.push(value);
-          this._log = this._logChunks.join("");
+          logChunks.push(value);
+          this._log = logChunks.join("");
 
-          if (scrolledToBottom && this._logElement) {
-            window.requestAnimationFrame(() => {
-              this._logElement!.scrollTo(0, 999999);
-            });
+          if (
+            (this._scrolledToBottom || this._newLogsIndicator === undefined) &&
+            this._logElement
+          ) {
+            this._scrollToBottom();
           } else {
-            // TODO show an indicator that there are new logs
+            this._newLogsIndicator = true;
           }
         }
       } catch (err: any) {
@@ -199,6 +238,13 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  private _scrollToBottom(): void {
+    if (this._logElement) {
+      this._logElement.scrollTo(0, 999999);
+      this._newLogsIndicator = false;
+    }
+  }
+
   static styles: CSSResultGroup = css`
     .error-log-intro {
       text-align: center;
@@ -207,6 +253,7 @@ class ErrorLogCard extends LitElement {
 
     ha-card {
       padding-top: 16px;
+      position: relative;
     }
 
     .header {
@@ -237,6 +284,7 @@ class ErrorLogCard extends LitElement {
     }
 
     .error-log {
+      position: relative;
       font-family: var(--code-font-family, monospace);
       clear: both;
       text-align: left;
@@ -245,7 +293,7 @@ class ErrorLogCard extends LitElement {
 
       min-height: calc(100vh - 240px);
       max-height: calc(100vh - 240px);
-      overflow: auto;
+      overflow-y: scroll;
 
       border-top: 1px solid var(--divider-color);
     }
@@ -264,6 +312,32 @@ class ErrorLogCard extends LitElement {
 
     .error-log > div:hover {
       background-color: var(--secondary-background-color);
+    }
+
+    .error-log #scroll-marker {
+      height: 1px; /* Small height to act as a scroll marker */
+    }
+
+    .new-logs-indicator {
+      --mdc-theme-primary: var(--text-primary-color);
+
+      overflow: hidden;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 0;
+      background-color: var(--primary-color);
+      border-radius: 8px;
+
+      transition: height 0.4s ease-out;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .new-logs-indicator.visible {
+      height: 24px;
     }
 
     .error {
