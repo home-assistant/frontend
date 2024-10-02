@@ -6966,6 +6966,12 @@
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
             },
+            "clear_selected": "Clear selected statistics",
+            "multi_clear": {
+              "title": "Clear selected statistics",
+              "info_text_1": "Do you want to permanently delete {statistic_count} long term statistics from your database?",
+              "info_text_2": "The following statistics will be deleted:"
+            },
             "fix_issue": {
               "fix": "Fix issue",
               "clearing_failed": "Clearing the statistics failed",
@@ -6973,13 +6979,6 @@
               "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
               "fix_all": "Fix all",
               "info": "Info",
-              "fix_selected": "Fix selected issues",
-              "auto_fix": {
-                "title": "Fix selected issues",
-                "info_text_1": "You may delete long term statistics of all entities that either are unrecorded, have an unsupported state class, or have no state.",
-                "info_text_2": "Do you want to permanently delete {statistic_count} long term statistics from your database?",
-                "info_text_3": "The following statistics will be deleted:"
-              },
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."

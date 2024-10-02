@@ -28,10 +28,10 @@ import type {
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
-import "../../../components/ha-button-menu-new";
+import "../../../components/ha-md-button-menu";
 import "../../../components/ha-dialog";
 import { HaMenu } from "../../../components/ha-menu";
-import "../../../components/ha-menu-item";
+import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
@@ -61,11 +61,6 @@ const FIXABLE_ISSUES = [
   "entity_no_longer_recorded",
   "unsupported_state_class",
   "units_changed",
-];
-const SELECTABLE_ISSUES = [
-  "no_state",
-  "entity_no_longer_recorded",
-  "unsupported_state_class",
 ];
 
 type StatisticData = StatisticsMetaData & {
@@ -260,7 +255,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     const searchBar = html`<search-input-outlined
       .hass=${this.hass}
       .filter=${this.filter}
-      s
+      @value-changed=${this._handleSearchChange}
     >
     </search-input-outlined>`;
 
@@ -320,7 +315,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-button-menu-new positioning="absolute">
+                <ha-md-button-menu positioning="absolute">
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -336,20 +331,26 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                  <ha-md-menu-item
+                    .value=${undefined}
+                    @click=${this._selectAll}
+                  >
                     <div slot="headline">
                       ${localize("ui.components.subpage-data-table.select_all")}
                     </div>
-                  </ha-menu-item>
-                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                  </ha-md-menu-item>
+                  <ha-md-menu-item
+                    .value=${undefined}
+                    @click=${this._selectNone}
+                  >
                     <div slot="headline">
                       ${localize(
                         "ui.components.subpage-data-table.select_none"
                       )}
                     </div>
-                  </ha-menu-item>
+                  </ha-md-menu-item>
                   <md-divider role="separator" tabindex="-1"></md-divider>
-                  <ha-menu-item
+                  <ha-md-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
                   >
@@ -358,8 +359,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                         "ui.components.subpage-data-table.close_select_mode"
                       )}
                     </div>
-                  </ha-menu-item>
-                </ha-button-menu-new>
+                  </ha-md-menu-item>
+                </ha-md-button-menu>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
                     selected: this._selected?.length || "0",
@@ -371,9 +372,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               </div>
               <ha-assist-chip
                 .label=${localize(
-                  "ui.panel.developer-tools.tabs.statistics.fix_issue.fix_selected"
+                  "ui.panel.developer-tools.tabs.statistics.clear_selected"
                 )}
-                @click=${this._fixSelectedIssues}
+                @click=${this._clearSelected}
               >
               </ha-assist-chip>
             </div>`
@@ -431,27 +432,27 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         ${Object.entries(columns).map(([id, column]) =>
           column.groupable
             ? html`
-                <ha-menu-item
+                <ha-md-menu-item
                   .value=${id}
                   @click=${this._handleGroupBy}
                   .selected=${id === this._groupColumn}
                   class=${classMap({ selected: id === this._groupColumn })}
                 >
                   ${column.title || column.label}
-                </ha-menu-item>
+                </ha-md-menu-item>
               `
             : nothing
         )}
-        <ha-menu-item
+        <ha-md-menu-item
           .value=${undefined}
           @click=${this._handleGroupBy}
           .selected=${this._groupColumn === undefined}
           class=${classMap({ selected: this._groupColumn === undefined })}
         >
           ${localize("ui.components.subpage-data-table.dont_group_by")}
-        </ha-menu-item>
+        </ha-md-menu-item>
         <md-divider role="separator" tabindex="-1"></md-divider>
-        <ha-menu-item
+        <ha-md-menu-item
           @click=${this._collapseAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
@@ -460,8 +461,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
             .path=${mdiUnfoldLessHorizontal}
           ></ha-svg-icon>
           ${localize("ui.components.subpage-data-table.collapse_all_groups")}
-        </ha-menu-item>
-        <ha-menu-item
+        </ha-md-menu-item>
+        <ha-md-menu-item
           @click=${this._expandAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
@@ -470,13 +471,13 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
             .path=${mdiUnfoldMoreHorizontal}
           ></ha-svg-icon>
           ${localize("ui.components.subpage-data-table.expand_all_groups")}
-        </ha-menu-item>
+        </ha-md-menu-item>
       </ha-menu>
       <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
         ${Object.entries(columns).map(([id, column]) =>
           column.sortable
             ? html`
-                <ha-menu-item
+                <ha-md-menu-item
                   .value=${id}
                   @click=${this._handleSortBy}
                   keep-open
@@ -494,12 +495,19 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                       `
                     : nothing}
                   ${column.title || column.label}
-                </ha-menu-item>
+                </ha-md-menu-item>
               `
             : nothing
         )}
       </ha-menu>
     `;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    if (this.filter === ev.detail.value) {
+      return;
+    }
+    this.filter = ev.detail.value;
   }
 
   private _handleSelectionChanged(
@@ -620,10 +628,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           ...statistic,
           state: this.hass.states[statistic.statistic_id],
           issues: issues[statistic.statistic_id],
-          selectable:
-            issues[statistic.statistic_id]?.some((issue) =>
-              SELECTABLE_ISSUES.includes(issue.type)
-            ) || false,
         };
       });
 
@@ -638,10 +642,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
-          selectable:
-            issues[statisticId]?.some((issue) =>
-              SELECTABLE_ISSUES.includes(issue.type)
-            ) || false,
           has_mean: false,
           has_sum: false,
           unit_class: null,
@@ -650,7 +650,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _fixSelectedIssues = async () => {
+  private _clearSelected = async () => {
     if (!this._selected?.length) {
       return;
     }
@@ -659,15 +659,13 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
     await showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.title"
+        "ui.panel.developer-tools.tabs.statistics.multi_clear.title"
       ),
       text: html`${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_1"
-        )}<br /><br />${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_2",
+          "ui.panel.developer-tools.tabs.statistics.multi_clear.info_text_1",
           { statistic_count: deletableIds.length }
         )}<br /><br />${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.auto_fix.info_text_3"
+          "ui.panel.developer-tools.tabs.statistics.multi_clear.info_text_2"
         )}<br /><br />
         ${deletableIds.map((i) => i).join(", ")}`,
       confirmText: this.hass.localize("ui.common.delete"),
@@ -680,7 +678,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     });
   };
 
-  private async _fixIssue = (ev) => {
+  private _fixIssue = async (ev) => {
     const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
