@@ -8,6 +8,7 @@ import { Context, HomeAssistant } from "../types";
 import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES, migrateAutomationAction } from "./script";
+import { createSearchParam } from "../common/url/search-params";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -462,9 +463,13 @@ export const flattenTriggers = (
   return flatTriggers;
 };
 
-export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
+export const showAutomationEditor = (
+  data?: Partial<AutomationConfig>,
+  expanded?: boolean
+) => {
   initialAutomationEditorData = data;
-  navigate("/config/automation/edit/new");
+  const params = expanded ? `?${createSearchParam({ expanded: "1" })}` : "";
+  navigate(`/config/automation/edit/new${params}`);
 };
 
 export const duplicateAutomation = (config: AutomationConfig) => {
