@@ -18,7 +18,7 @@ export interface ThreadDataSet {
   channel: number | null;
   created: string;
   dataset_id: string;
-  extended_pan_id: string | null;
+  extended_pan_id: string;
   network_name: string;
   pan_id: string | null;
   preferred_border_agent_id: string | null;

@@ -37,6 +37,7 @@ import {
   ThreadDataSet,
   ThreadRouter,
   addThreadDataSet,
+  getThreadDataSetTLV,
   listThreadDataSets,
   removeThreadDataSet,
   setPreferredBorderAgent,
@@ -168,8 +169,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
         ));
     const canImportKeychain =
-      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
-      otbrForNetwork;
+      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
     return html`<ha-card>
       <div class="card-header">
@@ -208,8 +208,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             ${network.routers.map((router) => {
               const otbr =
                 this._otbrInfo && this._otbrInfo[router.extended_address];
-              const showOverflow =
-                ("dataset" in network && router.border_agent_id) || otbr;
+              const showDefaultRouter = !!network.dataset;
+              const isDefaultRouter =
+                showDefaultRouter &&
+                router.extended_address ===
+                  network.dataset!.preferred_extended_address;
+              const showOverflow = showDefaultRouter || otbr;
               return html`<ha-list-item
                 class="router"
                 twoline
@@ -235,9 +239,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 ""}
                 <span slot="secondary">${router.server}</span>
                 ${showOverflow
-                  ? html`${network.dataset &&
-                      router.extended_address ===
-                        network.dataset.preferred_extended_address
+                  ? html`${isDefaultRouter
                         ? html`<ha-svg-icon
                             .path=${mdiCellphoneKey}
                             .title=${this.hass.localize(
@@ -259,13 +261,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                           .path=${mdiDotsVertical}
                           slot="trigger"
                         ></ha-icon-button>
-                        ${network.dataset && router.border_agent_id
-                          ? html`<ha-list-item
-                              .disabled=${router.border_agent_id ===
-                              network.dataset.preferred_border_agent_id}
-                            >
-                              ${router.border_agent_id ===
-                              network.dataset.preferred_border_agent_id
+                        ${showDefaultRouter
+                          ? html`<ha-list-item .disabled=${isDefaultRouter}>
+                              ${isDefaultRouter
                                 ? this.hass.localize(
                                     "ui.panel.config.thread.default_router"
                                   )
@@ -321,9 +319,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             >
           </div>`
         : ""}
-      ${canImportKeychain
+      ${canImportKeychain &&
+      network.dataset?.preferred &&
+      network.routers?.length
         ? html`<div class="card-actions">
-            <mwc-button .otbr=${otbrForNetwork} @click=${this._sendCredentials}
+            <mwc-button
+              .networkDataset=${network.dataset}
+              @click=${this._sendCredentials}
               >Send credentials to phone</mwc-button
             >
           </div>`
@@ -331,17 +333,30 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     </ha-card>`;
   }
 
-  private _sendCredentials(ev) {
-    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    if (!otbr) {
+  private async _sendCredentials(ev) {
+    const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
+    if (!dataset) {
+      return;
+    }
+    if (
+      !dataset.preferred_extended_address &&
+      !dataset.preferred_border_agent_id
+    ) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: this.hass.localize("ui.panel.config.thread.no_preferred_router"),
+      });
       return;
     }
     this.hass.auth.external!.fireMessage({
       type: "thread/store_in_platform_keychain",
       payload: {
-        mac_extended_address: otbr.extended_address,
-        border_agent_id: otbr.border_agent_id,
-        active_operational_dataset: otbr.active_dataset_tlvs,
+        mac_extended_address: dataset.preferred_extended_address,
+        border_agent_id: dataset.preferred_border_agent_id,
+        active_operational_dataset: (
+          await getThreadDataSetTLV(this.hass, dataset.dataset_id)
+        ).tlv,
+        extended_pan_id: dataset.extended_pan_id,
       },
     });
   }
@@ -467,10 +482,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    const index =
-      network.dataset && router.border_agent_id
-        ? Number(ev.detail.index)
-        : Number(ev.detail.index) + 1;
+    const index = Number(ev.detail.index);
     switch (index) {
       case 0:
         this._setPreferredBorderAgent(network.dataset!, router);
