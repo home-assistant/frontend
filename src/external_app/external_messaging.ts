@@ -141,9 +141,10 @@ interface EMOutgoingMessageImprovScan extends EMMessage {
 interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   type: "thread/store_in_platform_keychain";
   payload: {
-    mac_extended_address: string;
-    border_agent_id: string;
+    mac_extended_address: string | null;
+    border_agent_id: string | null;
     active_operational_dataset: string;
+    extended_pan_id: string;
   };
 }
 
