@@ -4039,17 +4039,27 @@
             "unknown_automation": "Unknown automation",
             "create": "Create automation with {type}",
             "create_disable": "Can't create automation with disabled {type}",
+            "new": {
+              "title": "New automation",
+              "description": "Start with an empty automation from scratch"
+            },
             "triggers": {
+              "title": "Automation using the device as a trigger",
+              "description": "When something happens to this device.",
               "caption": "Do something when…",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
+              "title": "Automation using the device as a condition",
+              "description": "Only if a condition is met for this device.",
               "caption": "Only do something if…",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
+              "title": "Automation using the device as a condition",
+              "description": "Do something on this device.",
               "caption": "When something is triggered…",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
@@ -4061,7 +4071,15 @@
             "scripts": "scripts",
             "no_scripts": "No scripts",
             "create": "Create script with {type}",
-            "create_disable": "Can't create script with disabled {type}"
+            "create_disable": "Can't create script with disabled {type}",
+            "new": {
+              "title": "New script",
+              "description": "Start with an empty script from scratch"
+            },
+            "actions": {
+              "title": "Script using the device as a condition",
+              "description": "Do something on this device."
+            }
           },
           "scene": {
             "scenes_heading": "Scenes",
