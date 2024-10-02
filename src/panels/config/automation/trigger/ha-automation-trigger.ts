@@ -179,6 +179,15 @@ export default class HaAutomationTrigger extends LitElement {
     }
   }
 
+  public expandAll() {
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationTriggerRow>(
+      "ha-automation-trigger-row"
+    )!;
+    rows.forEach((row) => {
+      row.expand();
+    });
+  }
+
   private _getKey(action: Trigger) {
     if (!this._triggerKeys.has(action)) {
       this._triggerKeys.set(action, Math.random().toString());

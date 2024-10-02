@@ -106,6 +106,15 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
+  public expandAll() {
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
+      "ha-automation-condition-row"
+    )!;
+    rows.forEach((row) => {
+      row.expand();
+    });
+  }
+
   private get nested() {
     return this.path !== undefined;
   }
