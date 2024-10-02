@@ -35,7 +35,6 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-expansion-panel";
 import { getSignedPath } from "../../../data/auth";
 import {
