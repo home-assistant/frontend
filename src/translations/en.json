@@ -6879,7 +6879,8 @@
             "stop_listening": "Stop listening",
             "clear_events": "Clear events",
             "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successfully fired!"
+            "notification_event_fired": "Event {type} successfully fired!",
+            "subscribe_failed": "Failed to subscribe to event: {error}"
           },
           "actions": {
             "title": "Actions",

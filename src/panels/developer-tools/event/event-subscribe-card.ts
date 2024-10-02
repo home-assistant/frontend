@@ -22,6 +22,8 @@ class EventSubscribeCard extends LitElement {
     event: HassEvent;
   }> = [];
 
+  @state() private _error: string | null = null;
+
   private _eventCount = 0;
 
   public disconnectedCallback() {
@@ -52,6 +54,9 @@ class EventSubscribeCard extends LitElement {
             .value=${this._eventType}
             @input=${this._valueChanged}
           ></ha-textfield>
+          ${this._error
+            ? html`<div class="error-message">${this._error}</div>`
+            : ""}
         </div>
         <div class="card-actions">
           <ha-button
@@ -110,33 +115,43 @@ class EventSubscribeCard extends LitElement {
 
   private _valueChanged(ev): void {
     this._eventType = ev.target.value;
+    this._error = null; // Reset error on input change
   }
 
   private async _startOrStopListening(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
       this._subscribed = undefined;
+      this._error = null; // Clear any existing errors
     } else {
-      this._subscribed = await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => {
-          const tail =
-            this._events.length > 30 ? this._events.slice(0, 29) : this._events;
-          this._events = [
-            {
-              event,
-              id: this._eventCount++,
-            },
-            ...tail,
-          ];
-        },
-        this._eventType
-      );
+      try {
+        this._subscribed =
+          await this.hass!.connection.subscribeEvents<HassEvent>((event) => {
+            const tail =
+              this._events.length > 30
+                ? this._events.slice(0, 29)
+                : this._events;
+            this._events = [
+              {
+                event,
+                id: this._eventCount++,
+              },
+              ...tail,
+            ];
+          }, this._eventType);
+      } catch (error: any) {
+        this._error = this.hass!.localize(
+          "ui.panel.developer-tools.tabs.events.subscribe_failed",
+          { error: error.message || "Unknown error" }
+        );
+      }
     }
   }
 
   private _clearEvents(): void {
     this._events = [];
     this._eventCount = 0;
+    this._error = null;
   }
 
   static get styles(): CSSResultGroup {
@@ -144,6 +159,10 @@ class EventSubscribeCard extends LitElement {
       ha-textfield {
         display: block;
         margin-bottom: 16px;
+      }
+      .error-message {
+        color: var(--error-color);
+        margin-top: 8px;
       }
       .event {
         border-top: 1px solid var(--divider-color);
