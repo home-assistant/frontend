@@ -36,6 +36,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
         ) {
           // Device is rebooted, let's move on
           this._tryUpdate(false);
+          return;
         }
       }
     }
