@@ -332,3 +332,6 @@ export const getDisplayUnit = (
 
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
+
+export const updateStatisticsIssues = (hass: HomeAssistant) =>
+  hass.callWS({ type: "recorder/update_statistics_issues" });

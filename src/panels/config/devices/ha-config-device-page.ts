@@ -35,6 +35,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-expansion-panel";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -1354,16 +1355,14 @@ export class HaConfigDevicePage extends LitElement {
             .filter((entity) => entity.newId)
             .map(
               (entity) =>
-                html`<li style="white-space: nowrap;">
-                  ${entity.oldId} -> ${entity.newId}
-                </li>`
+                html`<tr>
+                  <td>${entity.oldId}</td>
+                  <td>${entity.newId}</td>
+                </tr>`
             );
           const dialogNoRenames = entityIdRenames
             .filter((entity) => !entity.newId)
-            .map(
-              (entity) =>
-                html`<li style="white-space: nowrap;">${entity.oldId}</li>`
-            );
+            .map((entity) => html`<li>${entity.oldId}</li>`);
 
           if (dialogRenames.length) {
             renameEntityid = await showConfirmationDialog(this, {
@@ -1372,17 +1371,46 @@ export class HaConfigDevicePage extends LitElement {
               ),
               text: html`${this.hass.localize(
                   "ui.panel.config.devices.confirm_rename_entity_ids_warning"
-                )} <br /><br />${this.hass.localize(
-                  "ui.panel.config.devices.confirm_rename_entity_will_rename"
-                )}:
-                ${dialogRenames}
+                )} <br /><br />
+                <ha-expansion-panel outlined>
+                  <span slot="header"
+                    >${this.hass.localize(
+                      "ui.panel.config.devices.confirm_rename_entity_will_rename",
+                      { count: dialogRenames.length }
+                    )}</span
+                  >
+                  <div style="overflow: auto;">
+                    <table style="width: 100%; text-align: var(--float-start);">
+                      <tr>
+                        <th>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.confirm_rename_old"
+                          )}
+                        </th>
+                        <th>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.confirm_rename_new"
+                          )}
+                        </th>
+                      </tr>
+                      ${dialogRenames}
+                    </table>
+                  </div>
+                </ha-expansion-panel>
                 ${dialogNoRenames.length
-                  ? html`<br /><br />${this.hass.localize(
-                        "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                        { deviceSlug: oldDeviceSlug }
-                      )}:
-                      ${dialogNoRenames}`
-                  : nothing}`,
+                  ? html`<ha-expansion-panel outlined>
+                      <span slot="header"
+                        >${this.hass.localize(
+                          "ui.panel.config.devices.confirm_rename_entity_wont_rename",
+                          {
+                            count: dialogNoRenames.length,
+                            deviceSlug: oldDeviceSlug,
+                          }
+                        )}</span
+                      >
+                      ${dialogNoRenames}</ha-expansion-panel
+                    >`
+                  : nothing} `,
               confirmText: this.hass.localize("ui.common.rename"),
               dismissText: this.hass.localize("ui.common.no"),
               warning: true,
@@ -1392,11 +1420,15 @@ export class HaConfigDevicePage extends LitElement {
               title: this.hass.localize(
                 "ui.panel.config.devices.confirm_rename_entity_no_renamable_entity_ids"
               ),
-              text: html`${this.hass.localize(
-                "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                { deviceSlug: oldDeviceSlug }
-              )}:
-              ${dialogNoRenames}`,
+              text: html`<ha-expansion-panel outlined>
+                <span slot="header"
+                  >${this.hass.localize(
+                    "ui.panel.config.devices.confirm_rename_entity_wont_rename",
+                    { deviceSlug: oldDeviceSlug, count: dialogNoRenames.length }
+                  )}</span
+                >
+                ${dialogNoRenames}
+              </ha-expansion-panel>`,
             });
           }
         }
