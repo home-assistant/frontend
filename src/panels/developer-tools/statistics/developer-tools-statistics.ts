@@ -673,7 +673,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       confirm: async () => {
         await clearStatistics(this.hass, deletableIds);
         this._validateStatistics();
-        this._selected = [];
+        this._dataTable.clearSelection();
       },
     });
   };
