@@ -156,11 +156,13 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
-  public expand() {
-    const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
-      "ha-automation-action-row:last-of-type"
+  public expandAll() {
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
+      "ha-automation-action-row"
     )!;
-    row.expand();
+    rows.forEach((row) => {
+      row.expand();
+    });
   }
 
   private _addActionDialog() {

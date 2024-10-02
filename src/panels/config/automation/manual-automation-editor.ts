@@ -51,7 +51,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -61,7 +62,7 @@ export class HaManualAutomationEditor extends LitElement {
 
       items.forEach((el) => {
         el.updateComplete.then(() => {
-          el.expand();
+          el.expandAll();
         });
       });
     }

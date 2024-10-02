@@ -179,11 +179,13 @@ export default class HaAutomationTrigger extends LitElement {
     }
   }
 
-  public expand() {
-    const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
-      "ha-automation-trigger-row:last-of-type"
+  public expandAll() {
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationTriggerRow>(
+      "ha-automation-trigger-row"
     )!;
-    row.expand();
+    rows.forEach((row) => {
+      row.expand();
+    });
   }
 
   private _getKey(action: Trigger) {

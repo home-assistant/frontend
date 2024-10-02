@@ -1,6 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -64,7 +71,8 @@ export class HaManualScriptEditor extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
       this._clearParam("expanded");
@@ -74,7 +82,7 @@ export class HaManualScriptEditor extends LitElement {
 
       items.forEach((el) => {
         el.updateComplete.then(() => {
-          el.expand();
+          el.expandAll();
         });
       });
     }
