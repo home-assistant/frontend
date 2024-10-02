@@ -507,12 +507,6 @@ export class HuiDialogEditView extends LitElement {
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[indeterminate] {
-          display: block;
-        }
         .selected_menu_item {
           color: var(--primary-color);
         }
