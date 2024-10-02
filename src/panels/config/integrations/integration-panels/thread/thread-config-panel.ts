@@ -211,11 +211,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               const showDefaultRouter = !!network.dataset;
               const isDefaultRouter =
                 showDefaultRouter &&
-                ((network.dataset!.preferred_border_agent_id &&
-                  router.border_agent_id ===
-                    network.dataset!.preferred_border_agent_id) ||
-                  router.extended_address ===
-                    network.dataset!.preferred_extended_address);
+                router.extended_address ===
+                  network.dataset!.preferred_extended_address;
               const showOverflow = showDefaultRouter || otbr;
               return html`<ha-list-item
                 class="router"
@@ -242,9 +239,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 ""}
                 <span slot="secondary">${router.server}</span>
                 ${showOverflow
-                  ? html`${network.dataset &&
-                      router.extended_address ===
-                        network.dataset.preferred_extended_address
+                  ? html`${isDefaultRouter
                         ? html`<ha-svg-icon
                             .path=${mdiCellphoneKey}
                             .title=${this.hass.localize(
