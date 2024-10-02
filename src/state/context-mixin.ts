@@ -5,6 +5,7 @@ import {
   connectionContext,
   devicesContext,
   entitiesContext,
+  floorsContext,
   localeContext,
   localizeContext,
   panelsContext,
@@ -86,6 +87,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       panels: new ContextProvider(this, {
         context: panelsContext,
         initialValue: this.hass ? this.hass.panels : this._pendingHass.panels,
+      }),
+      floors: new ContextProvider(this, {
+        context: floorsContext,
+        initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
       }),
     };
 

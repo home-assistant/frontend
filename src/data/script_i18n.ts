@@ -44,7 +44,7 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -78,7 +78,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -168,9 +168,7 @@ const tryDescribeAction = <T extends ActionType>(
               );
             }
           } else if (key === "floor_id") {
-            const floor = floorRegistry.find(
-              (flr) => flr.floor_id === targetThing
-            );
+            const floor = floorRegistry[targetThing] ?? undefined;
             if (floor?.name) {
               targets.push(floor.name);
             } else {

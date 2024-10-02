@@ -161,7 +161,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
+  _floorReg!: { [id: string]: FloorRegistryEntry };
 
   @state() private _warnings?: string[];
 

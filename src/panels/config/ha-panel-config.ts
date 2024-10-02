@@ -35,11 +35,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
@@ -50,7 +46,6 @@ import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../types";
-import { subscribeFloorRegistry } from "../../data/ws-floor_registry";
 
 declare global {
   // for fire event
@@ -390,11 +385,6 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     initialValue: [],
   });
 
-  private _floorsContext = new ContextProvider(this, {
-    context: floorsContext,
-    initialValue: [],
-  });
-
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
@@ -402,9 +392,6 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       }),
       subscribeLabelRegistry(this.hass.connection!, (labels) => {
         this._labelsContext.setValue(labels);
-      }),
-      subscribeFloorRegistry(this.hass.connection!, (floors) => {
-        this._floorsContext.setValue(floors);
       }),
     ];
   }

@@ -206,7 +206,7 @@ class ActionRenderer {
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
     private labelReg: LabelRegistryEntry[],
-    private floorReg: FloorRegistryEntry[],
+    private floorReg: { [id: string]: FloorRegistryEntry },
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -696,7 +696,7 @@ export class HaAutomationTracer extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
+  _floorReg!: { [id: string]: FloorRegistryEntry };
 
   protected render() {
     if (!this.trace) {
