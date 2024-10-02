@@ -156,6 +156,13 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
+  public expand() {
+    const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
+      "ha-automation-action-row:last-of-type"
+    )!;
+    row.expand();
+  }
+
   private _addActionDialog() {
     showAddAutomationElementDialog(this, {
       type: "action",

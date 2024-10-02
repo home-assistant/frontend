@@ -28,6 +28,7 @@ import {
 } from "./automation";
 import { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { createSearchParam } from "../common/url/search-params";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -347,9 +348,13 @@ export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
     entity_id,
   });
 
-export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
+export const showScriptEditor = (
+  data?: Partial<ScriptConfig>,
+  expanded?: boolean
+) => {
   inititialScriptEditorData = data;
-  navigate("/config/script/edit/new");
+  const params = expanded ? `?${createSearchParam({ expanded: "1" })}` : "";
+  navigate(`/config/script/edit/new${params}`);
 };
 
 export const getScriptEditorInitData = () => {

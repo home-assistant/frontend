@@ -99,7 +99,7 @@ export class DialogDeviceAutomation extends LitElement {
       if (type === "action") {
         newScript.sequence = [this._actions[0]];
       }
-      showScriptEditor(newScript);
+      showScriptEditor(newScript, true);
     } else {
       const newAutomation = {} as AutomationConfig;
       if (type === "trigger") {
@@ -111,7 +111,7 @@ export class DialogDeviceAutomation extends LitElement {
       if (type === "action") {
         newAutomation.actions = [this._actions[0]];
       }
-      showAutomationEditor(newAutomation);
+      showAutomationEditor(newAutomation, true);
     }
   };
 

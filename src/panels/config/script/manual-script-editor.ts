@@ -3,6 +3,11 @@ import { mdiHelpCircle } from "@mdi/js";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -12,6 +17,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
+import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
@@ -56,6 +62,30 @@ export class HaManualScriptEditor extends LitElement {
         this._scriptFields?.focusLastField()
       );
     }
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    const expanded = extractSearchParam("expanded");
+    if (expanded === "1") {
+      this._clearParam("expanded");
+      const items = this.shadowRoot!.querySelectorAll<HaAutomationAction>(
+        "ha-automation-action"
+      );
+
+      items.forEach((el) => {
+        el.updateComplete.then(() => {
+          el.expand();
+        });
+      });
+    }
+  }
+
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
   }
 
   protected render() {

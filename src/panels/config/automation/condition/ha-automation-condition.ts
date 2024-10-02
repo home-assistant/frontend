@@ -106,6 +106,13 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
+  public expand() {
+    const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
+      "ha-automation-condition-row:last-of-type"
+    )!;
+    row.expand();
+  }
+
   private get nested() {
     return this.path !== undefined;
   }
