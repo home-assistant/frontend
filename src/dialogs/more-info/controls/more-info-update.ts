@@ -210,7 +210,7 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleSkip(): void {
-    if (!this.stateObj!.attributes.auto_update) {
+    if (this.stateObj!.attributes.auto_update) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.dialogs.more_info_control.update.auto_update_enabled_title"
