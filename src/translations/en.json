@@ -1191,7 +1191,9 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
-          "create_backup": "Create backup before updating"
+          "create_backup": "Create backup before updating",
+          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
         "updater": {
           "title": "Update instructions"
@@ -4039,18 +4041,25 @@
             "unknown_automation": "Unknown automation",
             "create": "Create automation with {type}",
             "create_disable": "Can't create automation with disabled {type}",
+            "new": {
+              "title": "Create new automation",
+              "description": "Start with an empty automation from scratch"
+            },
             "triggers": {
-              "caption": "Do something when…",
+              "title": "Use device as trigger",
+              "description": "When something happens to the device",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if…",
+              "title": "Use device as condition",
+              "description": "Only if a condition is met for the device",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered…",
+              "title": "Use device as action",
+              "description": "Do something on the device",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
@@ -4061,7 +4070,15 @@
             "scripts": "scripts",
             "no_scripts": "No scripts",
             "create": "Create script with {type}",
-            "create_disable": "Can't create script with disabled {type}"
+            "create_disable": "Can't create script with disabled {type}",
+            "new": {
+              "title": "Create new script",
+              "description": "Start with an empty script from scratch"
+            },
+            "actions": {
+              "title": "Use device as action",
+              "description": "Do something on this device."
+            }
           },
           "scene": {
             "scenes_heading": "Scenes",
@@ -4590,6 +4607,7 @@
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
+          "no_preferred_router": "No preferred border router defined",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
           "operational_dataset": "Operational dataset",
@@ -6881,7 +6899,8 @@
             "stop_listening": "Stop listening",
             "clear_events": "Clear events",
             "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successfully fired!"
+            "notification_event_fired": "Event {type} successfully fired!",
+            "subscribe_failed": "Failed to subscribe to event: {error}"
           },
           "actions": {
             "title": "Actions",

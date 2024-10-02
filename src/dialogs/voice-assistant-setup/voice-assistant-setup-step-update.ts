@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
-import { OFF, ON, UNAVAILABLE } from "../../data/entity";
+import { OFF, ON, UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
@@ -32,10 +32,11 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
         if (
           (oldState?.state === UNAVAILABLE &&
             newState?.state !== UNAVAILABLE) ||
-          (oldState?.state === OFF && newState?.state === ON)
+          (oldState?.state !== ON && newState?.state === ON)
         ) {
           // Device is rebooted, let's move on
           this._tryUpdate(false);
+          return;
         }
       }
     }
@@ -58,7 +59,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     return html`<div class="content">
       <img src="/static/icons/casita/loading.png" />
       <h1>
-        ${stateObj.state === OFF
+        ${stateObj.state === OFF || stateObj.state === UNKNOWN
           ? "Checking for updates"
           : "Updating your voice assistant"}
       </h1>
@@ -88,10 +89,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       return;
     }
     const updateEntity = this.hass.states[this.updateEntityId];
-    if (
-      updateEntity &&
-      this.hass.states[updateEntity.entity_id].state === "on"
-    ) {
+    if (updateEntity && this.hass.states[updateEntity.entity_id].state === ON) {
       this._updated = true;
       await this.hass.callService(
         "update",
