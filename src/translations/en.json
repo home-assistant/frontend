@@ -6968,6 +6968,9 @@
             },
             "fix_issue": {
               "fix": "Fix issue",
+              "clearing_failed": "Clearing the statistics failed",
+              "clearing_timeout_title": "Clearing not done yet",
+              "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."
