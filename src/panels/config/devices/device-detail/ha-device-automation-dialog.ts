@@ -144,26 +144,6 @@ export class DialogDeviceAutomation extends LitElement {
           rootTabbable
           dialogInitialFocus
         >
-          <ha-list-item
-            hasmeta
-            twoline
-            graphic="icon"
-            @request-selected=${this._handleRowClick}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
-            ${this.hass.localize(`ui.panel.config.devices.${mode}.new.title`)}
-            <span slot="secondary">
-              ${this.hass.localize(
-                `ui.panel.config.devices.${mode}.new.description`
-              )}
-            </span>
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-          ${this._triggers.length ||
-          this._conditions.length ||
-          this._actions.length
-            ? html`<li divider role="separator"></li>`
-            : nothing}
           ${this._triggers.length
             ? html`
                 <ha-list-item
@@ -239,6 +219,26 @@ export class DialogDeviceAutomation extends LitElement {
                 </ha-list-item>
               `
             : nothing}
+          ${this._triggers.length ||
+          this._conditions.length ||
+          this._actions.length
+            ? html`<li divider role="separator"></li>`
+            : nothing}
+          <ha-list-item
+            hasmeta
+            twoline
+            graphic="icon"
+            @request-selected=${this._handleRowClick}
+          >
+            <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
+            ${this.hass.localize(`ui.panel.config.devices.${mode}.new.title`)}
+            <span slot="secondary">
+              ${this.hass.localize(
+                `ui.panel.config.devices.${mode}.new.description`
+              )}
+            </span>
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
         </mwc-list>
       </ha-dialog>
     `;
