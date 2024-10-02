@@ -4045,21 +4045,21 @@
             },
             "triggers": {
               "title": "Automation using the device as a trigger",
-              "description": "When something happens to this device.",
+              "description": "When something happens to the device",
               "caption": "Do something when…",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
               "title": "Automation using the device as a condition",
-              "description": "Only if a condition is met for this device.",
+              "description": "Only if a condition is met for the device",
               "caption": "Only do something if…",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
               "title": "Automation using the device as a condition",
-              "description": "Do something on this device.",
+              "description": "Do something on the device",
               "caption": "When something is triggered…",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
