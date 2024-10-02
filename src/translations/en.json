@@ -1191,7 +1191,9 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
-          "create_backup": "Create backup before updating"
+          "create_backup": "Create backup before updating",
+          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
         "updater": {
           "title": "Update instructions"
@@ -7036,6 +7038,7 @@
             },
             "adjust_sum": "Adjust sum",
             "data_table": {
+              "select_all_issues": "Select all with issues",
               "name": "Name",
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",

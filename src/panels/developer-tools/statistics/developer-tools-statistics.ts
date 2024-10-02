@@ -341,6 +341,16 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                   </ha-md-menu-item>
                   <ha-md-menu-item
                     .value=${undefined}
+                    @click=${this._selectAllIssues}
+                  >
+                    <div slot="headline">
+                      ${localize(
+                        "ui.panel.developer-tools.tabs.statistics.data_table.select_all_issues"
+                      )}
+                    </div>
+                  </ha-md-menu-item>
+                  <ha-md-menu-item
+                    .value=${undefined}
                     @click=${this._selectNone}
                   >
                     <div slot="headline">
@@ -576,6 +586,15 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
   private _selectNone() {
     this._dataTable.clearSelection();
+  }
+
+  private _selectAllIssues() {
+    this._dataTable.select(
+      this._data
+        .filter((statistic) => statistic.issues)
+        .map((statistic) => statistic.statistic_id),
+      true
+    );
   }
 
   private _showStatisticsAdjustSumDialog(ev) {
