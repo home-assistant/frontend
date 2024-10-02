@@ -317,6 +317,7 @@ export abstract class HuiElementEditor<
 
   private _handleUIConfigChanged(ev: UIConfigChangedEvent<T>) {
     ev.stopPropagation();
+    if (!this.GUImode) return;
     const config = ev.detail.config;
     Object.keys(config).forEach((key) => {
       if (config[key] === undefined) {

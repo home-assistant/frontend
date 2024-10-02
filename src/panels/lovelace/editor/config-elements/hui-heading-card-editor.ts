@@ -70,7 +70,7 @@ export class HuiHeadingCardEditor
           name: "heading_style",
           selector: {
             select: {
-              mode: "dropdown",
+              mode: "list",
               options: ["title", "subtitle"].map((value) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.heading.heading_style_options.${value}`
