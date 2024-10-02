@@ -23,7 +23,7 @@ class EventSubscribeCard extends LitElement {
     event: HassEvent;
   }> = [];
 
-  @state() private _error: string | null = null;
+  @state() private _error?: string;
 
   private _eventCount = 0;
 
@@ -116,14 +116,14 @@ class EventSubscribeCard extends LitElement {
 
   private _valueChanged(ev): void {
     this._eventType = ev.target.value;
-    this._error = null; // Reset error on input change
+    this._error = undefined;
   }
 
   private async _startOrStopListening(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
       this._subscribed = undefined;
-      this._error = null; // Clear any existing errors
+      this._error = undefined;
     } else {
       try {
         this._subscribed =
@@ -152,7 +152,7 @@ class EventSubscribeCard extends LitElement {
   private _clearEvents(): void {
     this._events = [];
     this._eventCount = 0;
-    this._error = null;
+    this._error = undefined;
   }
 
   static get styles(): CSSResultGroup {
