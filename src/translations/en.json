@@ -6966,11 +6966,18 @@
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
             },
+            "delete_selected": "Delete selected statistics",
+            "multi_delete": {
+              "title": "Delete selected statistics",
+              "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
+            },
             "fix_issue": {
               "fix": "Fix issue",
               "clearing_failed": "Clearing the statistics failed",
               "clearing_timeout_title": "Clearing not done yet",
               "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
+              "fix_all": "Fix all",
+              "info": "Info",
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."
@@ -7029,6 +7036,7 @@
             },
             "adjust_sum": "Adjust sum",
             "data_table": {
+              "select_all_issues": "Select all with issues",
               "name": "Name",
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",
