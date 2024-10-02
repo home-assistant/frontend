@@ -21,6 +21,7 @@ export const handleFetchPromise = async <T>(
 
   const contentType = response.headers.get("content-type");
   const transferEncoding = response.headers.get("transfer-encoding");
+  const contentEncoding = response.headers.get("content-encoding");
 
   if (contentType && contentType.includes("application/json")) {
     try {
@@ -33,7 +34,7 @@ export const handleFetchPromise = async <T>(
         body: null,
       };
     }
-  } else if (transferEncoding === "chunked") {
+  } else if (transferEncoding === "chunked" && !contentEncoding) {
     try {
       body = response.body;
     } catch (err: any) {

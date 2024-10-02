@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
+import { mdiArrowCollapseDown, mdiDownload, mdiMenuDown } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -10,14 +10,19 @@ import {
   nothing,
 } from "lit";
 import { classMap } from "lit/directives/class-map";
+
+// eslint-disable-next-line import/extensions
+import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { customElement, property, state, query } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-select";
 import "../../../components/ha-svg-icon";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-menu";
+import "../../../components/ha-md-menu-item";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -29,8 +34,9 @@ import {
 } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import type { HaMenu } from "../../../components/ha-menu";
 
-const NUMBER_OF_LINES_OPTIONS = ["100", "500", "1000", "5000", "10000"];
+const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -48,29 +54,36 @@ class ErrorLogCard extends LitElement {
 
   @query("#scroll-marker") private _scrollMarkerElement?: HTMLElement;
 
-  @state() private _log?: string;
+  @query("#nr-of-lines-menu") private _nrOfLinesMenuElement?: HaMenu;
 
-  @state() private _scrolledToBottom?: boolean;
+  @state() private _logs: string[] = [];
 
-  @state() private _scrolledToBottomObserver?: IntersectionObserver;
+  @state() private _logHTML?: string | TemplateResult[];
+
+  @state() private _scrolledToBottomController =
+    new IntersectionController<boolean>(this, {
+      callback(this: IntersectionController<boolean>, entries) {
+        return entries[0].isIntersecting;
+      },
+    });
 
   @state() private _newLogsIndicator?: boolean;
 
-  @state() private _numberOfLines = "100";
+  @state() private _numberOfLines = NUMBER_OF_LINES_OPTIONS[0];
 
   @state() private _error?: string;
 
   @state() private _logStreamAborter?: AbortController;
 
   protected render(): TemplateResult {
-    let filteredLog = this._log;
+    let filteredLines = this._logHTML;
 
-    if (this._log && this.filter) {
-      const filter = this.filter.toLowerCase();
-      filteredLog = this._log
-        .split("\n")
-        .filter((line) => line.toLowerCase().includes(filter))
-        .join("\n");
+    if (Array.isArray(this._logHTML) && this._logHTML.length && this.filter) {
+      filteredLines = this._logHTML.filter((line, key) =>
+        this._logs[key]
+          .toLocaleLowerCase()
+          .includes(this.filter.toLocaleLowerCase())
+      );
     }
 
     return html`
@@ -78,77 +91,89 @@ class ErrorLogCard extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
-        ${filteredLog !== undefined
-          ? html`
-              <ha-card outlined>
-                <div class="header">
-                  <h1 class="card-header">
-                    ${this.header ||
-                    this.hass.localize("ui.panel.config.logs.show_full_logs")}
-                  </h1>
-                  <div class="action-buttons">
-                    <ha-select
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.nr_of_lines"
-                      )}
-                      @selected=${this._setNumberOfLines}
-                      .value=${this._numberOfLines}
+        <ha-card
+          outlined
+          class=${classMap({ hidden: this._logHTML === undefined })}
+        >
+          <div class="header">
+            <h1 class="card-header">
+              ${this.header ||
+              this.hass.localize("ui.panel.config.logs.show_full_logs")}
+            </h1>
+            <div class="action-buttons">
+              <ha-assist-chip
+                .label=${this.hass.localize("ui.panel.config.logs.nr_of_lines")}
+                id="nr-of-lines-anchor"
+                @click=${this._toggleNumberOfLinesMenu}
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiMenuDown}
+                ></ha-svg-icon
+              ></ha-assist-chip>
+              <ha-menu
+                anchor="nr-of-lines-anchor"
+                id="nr-of-lines-menu"
+                positioning="fixed"
+              >
+                ${NUMBER_OF_LINES_OPTIONS.map(
+                  (number) => html`
+                    <ha-md-menu-item
+                      .value=${number}
+                      .selected=${number === this._numberOfLines}
+                      @click=${this._setNumberOfLines}
                     >
-                      ${NUMBER_OF_LINES_OPTIONS.map(
-                        (number) => html`
-                          <mwc-list-item .value=${number}>
-                            ${number}
-                          </mwc-list-item>
-                        `
-                      )}
-                    </ha-select>
-                    <ha-icon-button
-                      .path=${mdiDownload}
-                      @click=${this._downloadFullLog}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.download_full_log"
-                      )}
-                    ></ha-icon-button>
+                      ${number}
+                    </ha-md-menu-item>
+                  `
+                )}
+              </ha-menu>
+              <ha-icon-button
+                .path=${mdiDownload}
+                @click=${this._downloadFullLog}
+                .label=${this.hass.localize(
+                  "ui.panel.config.logs.download_full_log"
+                )}
+              ></ha-icon-button>
+            </div>
+          </div>
+          <div class="card-content error-log">
+            ${filteredLines}
+            ${!filteredLines
+              ? html`
+                  <div>
+                    ${this.hass.localize(
+                      this.filter
+                        ? "ui.panel.config.logs.no_issues_search"
+                        : "ui.panel.config.logs.no_errors",
+                      { term: this.filter }
+                    )}
                   </div>
-                </div>
-                <div class="card-content error-log">
-                  <ha-ansi-to-html .content=${filteredLog}> </ha-ansi-to-html>
-                  ${!filteredLog
-                    ? html`
-                        <div>
-                          ${this.hass.localize(
-                            this.filter
-                              ? "ui.panel.config.logs.no_issues_search"
-                              : "ui.panel.config.logs.no_errors",
-                            { term: this.filter }
-                          )}
-                        </div>
-                      `
-                    : nothing}
-                  <div id="scroll-marker"></div>
-                </div>
-                <ha-button
-                  class="new-logs-indicator ${classMap({
-                    visible: this._newLogsIndicator || false,
-                  })}"
-                  @click=${this._scrollToBottom}
-                >
-                  <ha-svg-icon
-                    .path=${mdiArrowCollapseDown}
-                    slot="icon"
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.scroll_down_button"
-                  )}
-                  <ha-svg-icon
-                    .path=${mdiArrowCollapseDown}
-                    slot="trailingIcon"
-                  ></ha-svg-icon>
-                </ha-button>
-              </ha-card>
-            `
-          : nothing}
-        ${!this._log
+                `
+              : nothing}
+            <div id="scroll-marker"></div>
+          </div>
+          <ha-button
+            class="new-logs-indicator ${classMap({
+              visible:
+                (this._newLogsIndicator &&
+                  !this._scrolledToBottomController.value) ||
+                false,
+            })}"
+            @click=${this._scrollToBottom}
+          >
+            <ha-svg-icon
+              .path=${mdiArrowCollapseDown}
+              slot="icon"
+            ></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.logs.scroll_down_button")}
+            <ha-svg-icon
+              .path=${mdiArrowCollapseDown}
+              slot="trailingIcon"
+            ></ha-svg-icon>
+          </ha-button>
+        </ha-card>
+        ${!filteredLines
           ? html`
               <ha-button outlined @click=${this._downloadFullLog}>
                 <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
@@ -166,6 +191,8 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
+    this._scrolledToBottomController.observe(this._scrollMarkerElement!);
+
     if (this.hass?.config.recovery_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
       this._loadLogs();
@@ -176,7 +203,7 @@ class ErrorLogCard extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("provider")) {
-      this._log = undefined;
+      this._logHTML = undefined;
     }
 
     if (
@@ -186,19 +213,8 @@ class ErrorLogCard extends LitElement {
       this._loadLogs();
     }
 
-    if (
-      this._scrollMarkerElement &&
-      this._scrolledToBottomObserver === undefined
-    ) {
-      this._scrolledToBottomObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          this._scrolledToBottom = entry.isIntersecting;
-        });
-      });
-      this._scrolledToBottomObserver.observe(this._scrollMarkerElement);
-    } else if (!this._scrollMarkerElement && this._scrolledToBottomObserver) {
-      this._scrolledToBottomObserver.disconnect();
-      this._scrolledToBottomObserver = undefined;
+    if (this._newLogsIndicator && this._scrolledToBottomController.value) {
+      this._newLogsIndicator = false;
     }
   }
 
@@ -207,10 +223,6 @@ class ErrorLogCard extends LitElement {
 
     if (this._logStreamAborter) {
       this._logStreamAborter.abort();
-    }
-
-    if (this._scrolledToBottomObserver) {
-      this._scrolledToBottomObserver.disconnect();
     }
   }
 
@@ -237,7 +249,7 @@ class ErrorLogCard extends LitElement {
 
   private async _loadLogs(): Promise<void> {
     this._error = undefined;
-    this._log = this.hass.localize("ui.panel.config.logs.loading_log");
+    this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
 
     try {
       if (this._logStreamAborter) {
@@ -250,26 +262,33 @@ class ErrorLogCard extends LitElement {
         this.hass,
         this.provider,
         this._logStreamAborter.signal,
-        Number(this._numberOfLines)
+        this._numberOfLines
       );
-
-      const logChunks: string[] = [];
 
       if (!body) {
         throw new Error("No stream body found");
       }
 
-      this._log = this.hass.localize("ui.panel.config.logs.no_errors");
+      this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
+      this._logs = [];
 
       for await (const chunk of body) {
         const value = new TextDecoder().decode(chunk);
-        logChunks.push(value);
-        this._log = logChunks.join("");
+        if (!Array.isArray(this._logHTML)) {
+          this._logHTML = [];
+        }
+        const scrolledToBottom = this._scrolledToBottomController.value;
+        const lines = value.split("\n");
+        this._logs.push(...lines);
 
-        if (
-          (this._scrolledToBottom || this._newLogsIndicator === undefined) &&
-          this._logElement
-        ) {
+        this._logHTML = [
+          ...this._logHTML,
+          ...lines.map(
+            (line) => html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
+          ),
+        ];
+
+        if (scrolledToBottom && this._logElement) {
           this._scrollToBottom();
         } else {
           this._newLogsIndicator = true;
@@ -288,8 +307,16 @@ class ErrorLogCard extends LitElement {
 
   private _scrollToBottom(): void {
     if (this._logElement) {
-      this._logElement.scrollTo(0, 999999);
+      window.requestAnimationFrame(() => {
+        this._logElement!.scrollTo(0, 999999);
+      });
       this._newLogsIndicator = false;
+    }
+  }
+
+  private _toggleNumberOfLinesMenu() {
+    if (this._nrOfLinesMenuElement) {
+      this._nrOfLinesMenuElement.open = !this._nrOfLinesMenuElement.open;
     }
   }
 
@@ -302,6 +329,16 @@ class ErrorLogCard extends LitElement {
     ha-card {
       padding-top: 16px;
       position: relative;
+    }
+
+    ha-card.hidden {
+      display: none;
+    }
+
+    ha-card .action-buttons {
+      display: flex;
+      align-items: center;
+      height: 100%;
     }
 
     .header {

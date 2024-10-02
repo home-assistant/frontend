@@ -24,6 +24,7 @@ class HaAnsiToHtml extends LitElement {
         overflow-x: auto;
         white-space: pre-wrap;
         overflow-wrap: break-word;
+        margin: 0;
       }
       .bold {
         font-weight: bold;
