@@ -55,7 +55,7 @@ class EventSubscribeCard extends LitElement {
             @input=${this._valueChanged}
           ></ha-textfield>
           ${this._error
-            ? html`<div class="error-message">${this._error}</div>`
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
         </div>
         <div class="card-actions">
@@ -161,7 +161,6 @@ class EventSubscribeCard extends LitElement {
         margin-bottom: 16px;
       }
       .error-message {
-        color: var(--error-color);
         margin-top: 8px;
       }
       .event {
