@@ -58,7 +58,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
 
     const entityState = this.hass.states[this.assistEntityId];
 
-    if (entityState.state !== "listening_wake_word") {
+    if (entityState.state !== "idle") {
       return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
     }
 
@@ -80,7 +80,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
                 To make sure the wake word works for you.
               </p>`}
       </div>
-      <div class="footer">
+      <div class="footer full-width">
         <ha-button @click=${this._changeWakeWord}>Change wake word</ha-button>
       </div>`;
   }

@@ -1,7 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -21,6 +28,14 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
+import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
+import type HaAutomationAction from "./action/ha-automation-action";
+import type HaAutomationCondition from "./condition/ha-automation-condition";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -35,6 +50,31 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    const expanded = extractSearchParam("expanded");
+    if (expanded === "1") {
+      this._clearParam("expanded");
+      const items = this.shadowRoot!.querySelectorAll<
+        HaAutomationTrigger | HaAutomationCondition | HaAutomationAction
+      >("ha-automation-trigger, ha-automation-condition, ha-automation-action");
+
+      items.forEach((el) => {
+        el.updateComplete.then(() => {
+          el.expandAll();
+        });
+      });
+    }
+  }
+
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
 
   protected render() {
     return html`
@@ -78,7 +118,7 @@ export class HaManualAutomationEditor extends LitElement {
           ></ha-icon-button>
         </a>
       </div>
-      ${!ensureArray(this.config.trigger)?.length
+      ${!ensureArray(this.config.triggers)?.length
         ? html`<p>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.description"
@@ -90,7 +130,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
-        .path=${["trigger"]}
+        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -132,7 +172,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
-        .path=${["condition"]}
+        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}
@@ -172,7 +212,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
-        .path=${["action"]}
+        .path=${["actions"]}
         @value-changed=${this._actionChanged}
         @item-moved=${this._itemMoved}
         .hass=${this.hass}

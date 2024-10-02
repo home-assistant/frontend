@@ -72,7 +72,7 @@ export class HaPersistentNotificationTrigger
 
   public static get defaultConfig(): PersistentNotificationTrigger {
     return {
-      platform: "persistent_notification",
+      trigger: "persistent_notification",
       update_type: [...DEFAULT_UPDATE_TYPES],
       notification_id: DEFAULT_NOTIFICATION_ID,
     };

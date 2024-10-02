@@ -46,12 +46,12 @@ import {
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
   getAutomationStateConfig,
-  migrateAutomationConfig,
   normalizeAutomationConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fetchEntityRegistry } from "../../../data/entity_registry";
@@ -69,7 +69,6 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -640,7 +639,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
     this._config = {
       id: this._config?.id,
-      ...migrateAutomationConfig(ev.detail.value),
+      ...normalizeAutomationConfig(ev.detail.value),
     };
     this._errors = undefined;
     this._dirty = true;

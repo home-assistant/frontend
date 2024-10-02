@@ -28,7 +28,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         ></ha-area-picker>
       </div>
       <div class="footer">
-        <ha-button @click=${this._setArea}>Next</ha-button>
+        <ha-button @click=${this._setArea} unelevated>Next</ha-button>
       </div>`;
   }
 

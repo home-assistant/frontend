@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiChevronLeft } from "@mdi/js";
+import { mdiChevronLeft, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -49,6 +49,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   @state() private _assistConfiguration?: AssistSatelliteConfiguration;
 
   private _previousSteps: STEP[] = [];
+
+  private _nextStep?: STEP;
 
   public async showDialog(
     params: VoiceAssistantSetupDialogParams
@@ -113,19 +115,38 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         @closed=${this._dialogClosed}
         .heading=${"Voice Satellite setup"}
         hideActions
+        escapeKeyAction
+        scrimClickAction
       >
         <ha-dialog-header slot="heading">
           ${this._previousSteps.length
             ? html`<ha-icon-button
                 slot="navigationIcon"
-                .label=${this.hass.localize("ui.dialogs.generic.close") ??
-                "Close"}
+                .label=${this.hass.localize("ui.common.back") ?? "Back"}
                 .path=${mdiChevronLeft}
                 @click=${this._goToPreviousStep}
               ></ha-icon-button>`
+            : this._step !== STEP.UPDATE
+              ? html`<ha-icon-button
+                  slot="navigationIcon"
+                  .label=${this.hass.localize("ui.dialogs.generic.close") ??
+                  "Close"}
+                  .path=${mdiClose}
+                  @click=${this.closeDialog}
+                ></ha-icon-button>`
+              : nothing}
+          ${this._step === STEP.WAKEWORD ||
+          this._step === STEP.AREA ||
+          this._step === STEP.PIPELINE
+            ? html`<ha-button
+                @click=${this._goToNextStep}
+                class="skip-btn"
+                slot="actionItems"
+                >Skip</ha-button
+              >`
             : nothing}
         </ha-dialog-header>
-        <div class="content" @next-step=${this._nextStep}>
+        <div class="content" @next-step=${this._goToNextStep}>
           ${this._step === STEP.UPDATE
             ? html`<ha-voice-assistant-setup-step-update
                 .hass=${this.hass}
@@ -229,15 +250,21 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._step = this._previousSteps.pop()!;
   }
 
-  private _nextStep(ev) {
+  private _goToNextStep(ev) {
     if (ev.detail?.updateConfig) {
       this._fetchAssistConfiguration();
+    }
+    if (ev.detail?.nextStep) {
+      this._nextStep = ev.detail.nextStep;
     }
     if (!ev.detail?.noPrevious) {
       this._previousSteps.push(this._step);
     }
     if (ev.detail?.step) {
       this._step = ev.detail.step;
+    } else if (this._nextStep) {
+      this._step = this._nextStep;
+      this._nextStep = undefined;
     } else {
       this._step += 1;
     }
@@ -250,6 +277,14 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
+        @media all and (min-width: 450px) and (min-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 560px;
+            --mdc-dialog-max-width: 560px;
+            --mdc-dialog-min-width: min(560px, 95vw);
+            --mdc-dialog-max-width: min(560px, 95vw);
+          }
+        }
         ha-dialog-header {
           height: 56px;
         }
@@ -257,6 +292,9 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           .content {
             height: calc(100vh - 56px);
           }
+        }
+        .skip-btn {
+          margin-top: 6px;
         }
       `,
     ];
@@ -270,7 +308,12 @@ declare global {
 
   interface HASSDomEvents {
     "next-step":
-      | { step?: STEP; updateConfig?: boolean; noPrevious?: boolean }
+      | {
+          step?: STEP;
+          updateConfig?: boolean;
+          noPrevious?: boolean;
+          nextStep?: STEP;
+        }
       | undefined;
   }
 }

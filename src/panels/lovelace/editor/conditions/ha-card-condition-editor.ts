@@ -93,134 +93,120 @@ export class HaCardConditionEditor extends LitElement {
     if (!condition) return nothing;
 
     return html`
-      <ha-card outlined>
+      <div class="container">
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"
               .path=${ICON_CONDITION[condition.condition]}
             ></ha-svg-icon>
-            ${
-              this.hass.localize(
-                `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
-              ) || condition.condition
-            }
+            ${this.hass.localize(
+              `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
+            ) || condition.condition}
           </h3>
-            <ha-button-menu
-              slot="icons"
-              @action=${this._handleAction}
-              @click=${preventDefault}
-              @closed=${stopPropagation}
-              fixed
-              .corner=${"BOTTOM_END"}
-              .menuCorner=${"END"}
+          <ha-button-menu
+            slot="icons"
+            @action=${this._handleAction}
+            @click=${preventDefault}
+            @closed=${stopPropagation}
+            fixed
+            .corner=${"BOTTOM_END"}
+            .menuCorner=${"END"}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
             >
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              >
-              </ha-icon-button>
+            </ha-icon-button>
 
-              <ha-list-item graphic="icon">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.test"
-                )}
-                <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
-              </ha-list-item>
+            <ha-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.condition-editor.test"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
+            </ha-list-item>
 
-              <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.edit_ui"
-                )}
-                ${
-                  !this._yamlMode
-                    ? html`
-                        <ha-svg-icon
-                          class="selected_menu_item"
-                          slot="graphic"
-                          .path=${mdiCheck}
-                        ></ha-svg-icon>
-                      `
-                    : ``
-                }
-              </ha-list-item>
-
-              <ha-list-item graphic="icon">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.edit_yaml"
-                )}
-                ${
-                  this._yamlMode
-                    ? html`
-                        <ha-svg-icon
-                          class="selected_menu_item"
-                          slot="graphic"
-                          .path=${mdiCheck}
-                        ></ha-svg-icon>
-                      `
-                    : ``
-                }
-              </ha-list-item>
-
-              <li divider role="separator"></li>
-
-              <ha-list-item class="warning" graphic="icon">
-                ${this.hass!.localize("ui.common.delete")}
-                <ha-svg-icon
-                  class="warning"
-                  slot="graphic"
-                  .path=${mdiDelete}
-                ></ha-svg-icon>
-              </ha-list-item>
-            </ha-button-menu>
-          </div>
-          ${
-            !this._uiAvailable
-              ? html`
-                  <ha-alert
-                    alert-type="warning"
-                    .title=${this.hass.localize(
-                      "ui.errors.config.editor_not_supported"
-                    )}
-                  >
-                    ${this._uiWarnings!.length > 0 &&
-                    this._uiWarnings![0] !== undefined
-                      ? html`
-                          <ul>
-                            ${this._uiWarnings!.map(
-                              (warning) => html`<li>${warning}</li>`
-                            )}
-                          </ul>
-                        `
-                      : nothing}
-                    ${this.hass.localize(
-                      "ui.errors.config.edit_in_yaml_supported"
-                    )}
-                  </ha-alert>
-                `
-              : nothing
-          }
-          <div class="content">
-            ${
-              this._yamlMode
+            <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.edit_ui"
+              )}
+              ${!this._yamlMode
                 ? html`
-                    <ha-yaml-editor
-                      .hass=${this.hass}
-                      .defaultValue=${this.condition}
-                      @value-changed=${this._onYamlChange}
-                    ></ha-yaml-editor>
+                    <ha-svg-icon
+                      class="selected_menu_item"
+                      slot="graphic"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>
                   `
-                : html`
-                    ${dynamicElement(
-                      `ha-card-condition-${condition.condition}`,
-                      {
-                        hass: this.hass,
-                        condition: condition,
-                      }
-                    )}
+                : ``}
+            </ha-list-item>
+
+            <ha-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.edit_yaml"
+              )}
+              ${this._yamlMode
+                ? html`
+                    <ha-svg-icon
+                      class="selected_menu_item"
+                      slot="graphic"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>
                   `
-            }
+                : ``}
+            </ha-list-item>
+
+            <li divider role="separator"></li>
+
+            <ha-list-item class="warning" graphic="icon">
+              ${this.hass!.localize("ui.common.delete")}
+              <ha-svg-icon
+                class="warning"
+                slot="graphic"
+                .path=${mdiDelete}
+              ></ha-svg-icon>
+            </ha-list-item>
+          </ha-button-menu>
+          ${!this._uiAvailable
+            ? html`
+                <ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.editor_not_supported"
+                  )}
+                >
+                  ${this._uiWarnings!.length > 0 &&
+                  this._uiWarnings![0] !== undefined
+                    ? html`
+                        <ul>
+                          ${this._uiWarnings!.map(
+                            (warning) => html`<li>${warning}</li>`
+                          )}
+                        </ul>
+                      `
+                    : nothing}
+                  ${this.hass.localize(
+                    "ui.errors.config.edit_in_yaml_supported"
+                  )}
+                </ha-alert>
+              `
+            : nothing}
+          <div class="content">
+            ${this._yamlMode
+              ? html`
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .defaultValue=${this.condition}
+                    @value-changed=${this._onYamlChange}
+                  ></ha-yaml-editor>
+                `
+              : html`
+                  ${dynamicElement(`ha-card-condition-${condition.condition}`, {
+                    hass: this.hass,
+                    condition: condition,
+                  })}
+                `}
           </div>
         </ha-expansion-panel>
         <div
@@ -230,19 +216,17 @@ export class HaCardConditionEditor extends LitElement {
             error: this._testingResult === false,
           })}"
         >
-          ${
-            this._testingResult
+          ${this._testingResult
+            ? this.hass.localize(
+                "ui.panel.lovelace.editor.condition-editor.testing_pass"
+              )
+            : this._testingResult === false
               ? this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_pass"
+                  "ui.panel.lovelace.editor.condition-editor.testing_error"
                 )
-              : this._testingResult === false
-                ? this.hass.localize(
-                    "ui.panel.lovelace.editor.condition-editor.testing_error"
-                  )
-                : nothing
-          }
+              : nothing}
         </div>
-      </ha-card>
+      </div>
     `;
   }
 
@@ -313,7 +297,6 @@ export class HaCardConditionEditor extends LitElement {
       ha-button-menu {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
-
       ha-expansion-panel {
         --expansion-panel-summary-padding: 0 0 0 8px;
         --expansion-panel-content-padding: 0;
@@ -371,6 +354,11 @@ export class HaCardConditionEditor extends LitElement {
       }
       .testing.pass {
         background-color: var(--success-color);
+      }
+      .container {
+        position: relative;
+        border-radius: var(--ha-card-border-radius, 12px);
+        border: 1px solid var(--divider-color);
       }
     `,
   ];

@@ -1191,7 +1191,9 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
-          "create_backup": "Create backup before updating"
+          "create_backup": "Create backup before updating",
+          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
         "updater": {
           "title": "Update instructions"
@@ -1972,6 +1974,8 @@
           "system_information": "System information",
           "integration_startup_time": "Integration startup time",
           "copy": "Copy",
+          "reported_by": "Reported by {integration}",
+          "created_at_by": "{date} by {integration}",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",
@@ -3093,6 +3097,13 @@
                     "picker": "When someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
+                },
+                "list": {
+                  "label": "List",
+                  "description": {
+                    "no_trigger": "When any trigger matches",
+                    "full": "When any of {count} {count, plural,\n  one {trigger}\n other {triggers}\n} triggers"
+                  }
                 }
               }
             },
@@ -4032,18 +4043,25 @@
             "unknown_automation": "Unknown automation",
             "create": "Create automation with {type}",
             "create_disable": "Can't create automation with disabled {type}",
+            "new": {
+              "title": "Create new automation",
+              "description": "Start with an empty automation from scratch"
+            },
             "triggers": {
-              "caption": "Do something when…",
+              "title": "Use device as trigger",
+              "description": "When something happens to the device",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if…",
+              "title": "Use device as condition",
+              "description": "Only if a condition is met for the device",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered…",
+              "title": "Use device as action",
+              "description": "Do something on the device",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
@@ -4054,7 +4072,15 @@
             "scripts": "scripts",
             "no_scripts": "No scripts",
             "create": "Create script with {type}",
-            "create_disable": "Can't create script with disabled {type}"
+            "create_disable": "Can't create script with disabled {type}",
+            "new": {
+              "title": "Create new script",
+              "description": "Start with an empty script from scratch"
+            },
+            "actions": {
+              "title": "Use device as action",
+              "description": "Do something on this device."
+            }
           },
           "scene": {
             "scenes_heading": "Scenes",
@@ -4082,8 +4108,10 @@
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
-          "confirm_rename_entity_will_rename": "The following entity IDs will be renamed",
-          "confirm_rename_entity_wont_rename": "The following entity IDs will not be renamed as they do not contain the current device name ({deviceSlug})",
+          "confirm_rename_entity_will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
+          "confirm_rename_new": "New",
+          "confirm_rename_old": "Old",
+          "confirm_rename_entity_wont_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not be renamed as they do not contain the current device name ({deviceSlug})",
           "confirm_rename_entity_no_renamable_entity_ids": "No renamable entity IDs",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "update_device_error": "Updating the device failed",
@@ -4581,6 +4609,7 @@
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
+          "no_preferred_router": "No preferred border router defined",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
           "operational_dataset": "Operational dataset",
@@ -5127,11 +5156,13 @@
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
-            "ping_complete": "Ping device complete."
+            "ping_complete": "Ping device complete.",
+            "no_ip_found": "The device ping failed. No IP addresses found for this device."
           },
           "open_commissioning_window": {
             "title": "Share device",
-            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "description": "To continue, select {startCommissioning}. Home Assistant will then put your device in commissioning mode, allowing it to pair with another Matter controller.",
+            "prevent_misuse_description": "Note: Do not press the physical setup button on the device as this will reset it.",
             "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
@@ -5667,7 +5698,8 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
-            "create_section": "Create section"
+            "create_section": "Create section",
+            "default_section_title": "New section"
           },
           "delete_section": {
             "title": "Delete section",
@@ -6016,6 +6048,8 @@
               "entity_config": {
                 "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
                 "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
+                "name": "[%key:ui::panel::lovelace::editor::card::generic::name%]",
+                "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
                 "appearance": "Appearance",
@@ -6400,7 +6434,7 @@
               "row": "Entity row editor",
               "feature": "Feature editor",
               "element": "Element editor",
-              "heading-entity": "Entity editor",
+              "heading-badge": "Heading badge editor",
               "element_type": "{type} element editor"
             }
           }
@@ -6947,51 +6981,61 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "state_class_removed": "This entity no longer has a state class",
               "entity_not_recorded": "This entity is excluded from being recorded.",
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
             },
+            "delete_selected": "Delete selected statistics",
+            "multi_delete": {
+              "title": "Delete selected statistics",
+              "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
+            },
             "fix_issue": {
               "fix": "Fix issue",
+              "clearing_failed": "Clearing the statistics failed",
+              "clearing_timeout_title": "Clearing not done yet",
+              "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
+              "fix_all": "Fix all",
+              "info": "Info",
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."
               },
               "no_state": {
                 "title": "Entity has no state",
-                "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_1": "''{name}'' ({statistic_id}) has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
                 "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "entity_not_recorded": {
-                "title": "Entity not recorded",
-                "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
+                "title": "Entity is not recorded",
+                "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
-                "title": "Entity no longer recorded",
-                "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "title": "Entity is no longer recorded",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
-              "unsupported_state_class": {
-                "title": "Unsupported state class",
-                "info_text_1": "The state class of this entity, {state_class} is not supported.",
+              "state_class_removed": {
+                "title": "The entity no longer has a state class",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but it no longer has a state class, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
-                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
-                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_3": "If the state class was previously provided by an integration, this might be a bug. Please report an issue.",
+                "info_text_4": "If you previously set the state class yourself, please correct it.",
                 "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
-                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_5": "If the state class has permanently been removed, you may want to delete the long term statistics of it from your database.",
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
-                "title": "The unit of this entity changed",
+                "title": "The unit has changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
                 "clear": "Delete all old statistic data for this entity",
                 "how_to_fix": "How do you want to fix this issue?",
-                "info_text_1": "The unit of this entity changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
                 "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
                 "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
               },
@@ -7012,6 +7056,7 @@
             },
             "adjust_sum": "Adjust sum",
             "data_table": {
+              "select_all_issues": "Select all with issues",
               "name": "Name",
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",
