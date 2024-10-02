@@ -372,8 +372,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               </div>
               <ha-assist-chip
                 .label=${localize(
-                  "ui.panel.developer-tools.tabs.statistics.clear_selected"
+                  "ui.panel.developer-tools.tabs.statistics.delete_selected"
                 )}
+                .disabled=${!this._selected?.length}
                 @click=${this._clearSelected}
               >
               </ha-assist-chip>
@@ -659,15 +660,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
     await showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.developer-tools.tabs.statistics.multi_clear.title"
+        "ui.panel.developer-tools.tabs.statistics.multi_delete.title"
       ),
       text: html`${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.multi_clear.info_text_1",
-          { statistic_count: deletableIds.length }
-        )}<br /><br />${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.multi_clear.info_text_2"
-        )}<br /><br />
-        ${deletableIds.map((i) => i).join(", ")}`,
+        "ui.panel.developer-tools.tabs.statistics.multi_delete.info_text",
+        { statistic_count: deletableIds.length }
+      )}`,
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
       confirm: async () => {

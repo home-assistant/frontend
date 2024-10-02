@@ -6966,11 +6966,10 @@
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
             },
-            "clear_selected": "Clear selected statistics",
-            "multi_clear": {
-              "title": "Clear selected statistics",
-              "info_text_1": "Do you want to permanently delete {statistic_count} long term statistics from your database?",
-              "info_text_2": "The following statistics will be deleted:"
+            "delete_selected": "Delete selected statistics",
+            "multi_delete": {
+              "title": "Delete selected statistics",
+              "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
             },
             "fix_issue": {
               "fix": "Fix issue",
