@@ -84,7 +84,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
   @state() private filter = "";
 
-  @state() private _selected?;
+  @state() private _selected: string[] = [];
 
   @state() private groupOrder?: string[];
 
@@ -373,7 +373,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                 </ha-md-button-menu>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this._selected?.length || "0",
+                    selected: this._selected.length,
                   })}
                 </p>
               </div>
@@ -384,7 +384,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                 .label=${localize(
                   "ui.panel.developer-tools.tabs.statistics.delete_selected"
                 )}
-                .disabled=${!this._selected?.length}
+                .disabled=${!this._selected.length}
                 @click=${this._clearSelected}
               >
               </ha-assist-chip>
@@ -671,7 +671,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   }
 
   private _clearSelected = async () => {
-    if (!this._selected?.length) {
+    if (!this._selected.length) {
       return;
     }
 
