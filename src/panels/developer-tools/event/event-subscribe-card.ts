@@ -7,6 +7,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-textfield";
 import "../../../components/ha-yaml-editor";
 import "../../../components/ha-button";
+import "../../../components/ha-alert";
 import { HomeAssistant } from "../../../types";
 
 @customElement("event-subscribe-card")
