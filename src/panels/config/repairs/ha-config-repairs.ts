@@ -18,6 +18,7 @@ import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 import {
   STATISTIC_TYPES,
   StatisticsValidationResult,
+  updateStatisticsIssues,
 } from "../../../data/recorder";
 
 @customElement("ha-config-repairs")
@@ -144,25 +145,19 @@ class HaConfigRepairs extends LitElement {
       issue.translation_key &&
       STATISTIC_TYPES.includes(issue.translation_key as any)
     ) {
-      const localize =
-        await this.hass.loadFragmentTranslation("developer-tools");
+      this.hass.loadFragmentTranslation("developer-tools");
       const data = await fetchRepairsIssueData(
         this.hass.connection,
         issue.domain,
         issue.issue_id
       );
       if ("issue_type" in data.issue_data) {
-        await fixStatisticsIssue(
-          this,
-          this.hass,
-          localize || this.hass.localize,
-          {
-            type: data.issue_data
-              .issue_type as StatisticsValidationResult["type"],
-            data: data.issue_data as any,
-          }
-        );
-        this.hass.callWS({ type: "recorder/update_statistics_issues" });
+        await fixStatisticsIssue(this, {
+          type: data.issue_data
+            .issue_type as StatisticsValidationResult["type"],
+          data: data.issue_data as any,
+        });
+        updateStatisticsIssues(this.hass);
       }
     } else {
       showRepairsIssueDialog(this, {
