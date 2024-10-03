@@ -186,7 +186,6 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
     this._peerConnection = peerConnection;
-    console.timeEnd("WebRTC");
   }
 
   private _cleanUp() {
@@ -207,6 +206,8 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _loadedData() {
+    console.timeLog("WebRTC", "loadedData");
+    console.timeEnd("WebRTC");
     // @ts-ignore
     fireEvent(this, "load");
   }
