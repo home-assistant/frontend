@@ -33,12 +33,12 @@ export class HaColorPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-select") private _select!: HaSelect;
+  @query("ha-select") private _select?: HaSelect;
 
   connectedCallback(): void {
     super.connectedCallback();
     // Refresh layout options when the field is connected to the DOM to ensure current value displayed
-    this._select.layoutOptions();
+    this._select?.layoutOptions();
   }
 
   private _valueSelected(ev) {
