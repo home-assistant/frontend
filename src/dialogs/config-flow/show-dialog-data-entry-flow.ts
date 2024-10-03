@@ -17,7 +17,7 @@ import type { HomeAssistant } from "../../types";
 export interface FlowConfig {
   flowType: FlowType;
 
-  loadDevicesAndAreas: boolean;
+  showDevices: boolean;
 
   createFlow(hass: HomeAssistant, handler: string): Promise<DataEntryFlowStep>;
 
