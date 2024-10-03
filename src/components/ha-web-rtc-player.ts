@@ -45,8 +45,7 @@ class HaWebRtcPlayer extends LitElement {
 
   @state() private _error?: string;
 
-  // don't cache this, as we remove it on disconnects
-  @query("#remote-stream") private _videoEl!: HTMLVideoElement;
+  @query("#remote-stream", true) private _videoEl!: HTMLVideoElement;
 
   private _peerConnection?: RTCPeerConnection;
 
@@ -72,7 +71,7 @@ class HaWebRtcPlayer extends LitElement {
   public override connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._WebRTC();
+      this._startWebRtc();
     }
   }
 
@@ -85,13 +84,10 @@ class HaWebRtcPlayer extends LitElement {
     if (!changedProperties.has("entityid")) {
       return;
     }
-    if (!this._videoEl) {
-      return;
-    }
-    this._WebRTC();
+    this._startWebRtc();
   }
 
-  private async _WebRTC(): Promise<void> {
+  private async _startWebRtc(): Promise<void> {
     console.time("WebRTC");
 
     this._error = undefined;
