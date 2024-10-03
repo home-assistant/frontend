@@ -54,7 +54,7 @@ declare global {
 
 @customElement("dialog-data-entry-flow")
 class DataEntryFlowDialog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DataEntryFlowDialogParams;
 
