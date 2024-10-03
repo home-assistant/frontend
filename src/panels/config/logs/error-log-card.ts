@@ -214,8 +214,11 @@ class ErrorLogCard extends LitElement {
     super.connectedCallback();
 
     if (this._streamSupported === undefined) {
-      this._streamSupported =
-        atLeastVersion(this.hass.config.version, 2024, 11) && false;
+      this._streamSupported = atLeastVersion(
+        this.hass.config.version,
+        2024,
+        11
+      );
     }
   }
 
