@@ -79,7 +79,7 @@ class ErrorLogCard extends LitElement {
     let filteredLines = this._logHTML;
 
     if (Array.isArray(this._logHTML) && this._logHTML.length && this.filter) {
-      filteredLines = this._logHTML.filter((line, key) =>
+      filteredLines = this._logHTML.filter((_line, key) =>
         this._logs[key]
           .toLocaleLowerCase()
           .includes(this.filter.toLocaleLowerCase())
