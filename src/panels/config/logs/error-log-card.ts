@@ -96,6 +96,9 @@ class ErrorLogCard extends LitElement {
           .toLocaleLowerCase()
           .includes(this.filter.toLocaleLowerCase())
       );
+      this._highlightSearch();
+    } else {
+      this._clearSearchHighlight();
     }
 
     return html`
@@ -392,6 +395,63 @@ class ErrorLogCard extends LitElement {
     }
   };
 
+  private async _highlightSearch() {
+    if (CSS.highlights) {
+      await this.updateComplete;
+      if (this.filter && Array.isArray(this._logHTML) && this._logHTML.length) {
+        const ansiToHtmlElements =
+          this.shadowRoot?.querySelectorAll("ha-ansi-to-html");
+        const allSpans: HTMLSpanElement[] = [];
+        if (ansiToHtmlElements) {
+          for (const haAnsiToHtmlElement of ansiToHtmlElements) {
+            const spanElement =
+              haAnsiToHtmlElement.shadowRoot?.querySelector("span");
+            if (spanElement) {
+              allSpans.push(spanElement);
+            }
+          }
+          const filter = this.filter.toLowerCase();
+
+          const ranges = allSpans
+            .map((el) => ({ el, text: el.textContent?.toLowerCase() || "" }))
+            .map(({ text, el }) => {
+              if (el.firstChild === null) {
+                return null;
+              }
+              const indices: number[] = [];
+              let startPos = 0;
+              while (startPos < text.length) {
+                const index = text.indexOf(filter, startPos);
+                if (index === -1) break;
+                indices.push(index);
+                startPos = index + filter.length;
+              }
+
+              return indices.map((index) => {
+                const range = new Range();
+                range.setStart(el.firstChild!, index);
+                range.setEnd(el.firstChild!, index + filter.length);
+                return range;
+              });
+            })
+            .flat()
+            .filter((range) => range !== null);
+
+          const searchResultsHighlight = new Highlight(...ranges);
+          window.requestAnimationFrame(() => {
+            CSS.highlights.set("search-results", searchResultsHighlight);
+          });
+        }
+      }
+    }
+  }
+
+  private _clearSearchHighlight() {
+    if (CSS.highlights) {
+      CSS.highlights.delete("search-results");
+    }
+  }
+
   static styles: CSSResultGroup = css`
     .error-log-intro {
       text-align: center;
@@ -500,6 +560,12 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
+    }
+
+    ::highlight(search-results) {
+      background-color: var(--primary-color);
+      border-radius: 4px;
+      color: var(--text-primary-color);
     }
   `;
 }
