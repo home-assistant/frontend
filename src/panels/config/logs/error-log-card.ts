@@ -31,7 +31,7 @@ import "../../../components/ha-md-menu-item";
 
 import { getSignedPath } from "../../../data/auth";
 
-import { getErrorLogDownloadUrl } from "../../../data/error_log";
+import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchHassioLogs,
@@ -44,6 +44,7 @@ import type { HaMenu } from "../../../components/ha-menu";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
 
@@ -269,11 +270,11 @@ class ErrorLogCard extends LitElement {
   private async _downloadFullLog(): Promise<void> {
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const downloadUrl =
-      this.provider !== "core"
+      this.provider && this.provider !== "core"
         ? getHassioLogDownloadUrl(this.provider)
         : getErrorLogDownloadUrl;
     const logFileName =
-      this.provider !== "core"
+      this.provider && this.provider !== "core"
         ? `${this.provider}_${timeString}.log`
         : `home-assistant_${timeString}.log`;
     const signedUrl = await getSignedPath(this.hass, downloadUrl);
@@ -298,7 +299,11 @@ class ErrorLogCard extends LitElement {
 
       this._logStreamAborter = new AbortController();
 
-      if (this._streamSupported) {
+      if (
+        this._streamSupported &&
+        isComponentLoaded(this.hass, "hassio") &&
+        this.provider
+      ) {
         const body = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
@@ -338,7 +343,14 @@ class ErrorLogCard extends LitElement {
         }
       } else {
         // fallback to old method
-        const logs = await fetchHassioLogs(this.hass, this.provider);
+        this._streamSupported = false;
+        let logs = "";
+        if (isComponentLoaded(this.hass, "hassio") && this.provider) {
+          logs = await fetchHassioLogs(this.hass, this.provider);
+        } else {
+          logs = await fetchErrorLog(this.hass);
+        }
+
         this._logs = logs.split("\n");
         this._logHTML = this._logs.map(
           (line) => html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
