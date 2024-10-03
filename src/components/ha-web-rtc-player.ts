@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   css,
   CSSResultGroup,
@@ -6,12 +7,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import {
+  fetchWebRtcClientConfiguration,
   handleWebRtcOffer,
   WebRtcAnswer,
-  fetchWebRtcClientConfiguration,
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
@@ -39,7 +41,7 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
 
-  @property() public posterUrl!: string;
+  @property({ attribute: "poster-url" }) public posterUrl?: string;
 
   @state() private _error?: string;
 
@@ -61,7 +63,7 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        .poster=${this.posterUrl}
+        poster=${ifDefined(this.posterUrl)}
         @loadeddata=${this._loadedData}
       ></video>
     `;
@@ -70,7 +72,7 @@ class HaWebRtcPlayer extends LitElement {
   public override connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._startWebRtc();
+      this._WebRTC();
     }
   }
 
@@ -86,16 +88,22 @@ class HaWebRtcPlayer extends LitElement {
     if (!this._videoEl) {
       return;
     }
-    this._startWebRtc();
+    this._WebRTC();
   }
 
-  private async _startWebRtc(): Promise<void> {
+  private async _WebRTC(): Promise<void> {
+    console.time("WebRTC");
+
     this._error = undefined;
+
+    console.timeLog("WebRTC", "start clientConfig");
 
     const clientConfig = await fetchWebRtcClientConfiguration(
       this.hass,
       this.entityid
     );
+
+    console.timeLog("WebRTC", "end clientConfig", clientConfig);
 
     const peerConnection = new RTCPeerConnection(clientConfig.configuration);
 
@@ -111,9 +119,21 @@ class HaWebRtcPlayer extends LitElement {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
+
+    console.timeLog("WebRTC", "start createOffer", offerOptions);
+
     const offer: RTCSessionDescriptionInit =
       await peerConnection.createOffer(offerOptions);
+
+    console.timeLog("WebRTC", "end createOffer", offer);
+
+    console.timeLog("WebRTC", "start setLocalDescription");
+
     await peerConnection.setLocalDescription(offer);
+
+    console.timeLog("WebRTC", "end setLocalDescription");
+
+    console.timeLog("WebRTC", "start iceResolver");
 
     let candidates = ""; // Build an Offer SDP string with ice candidates
     const iceResolver = new Promise<void>((resolve) => {
@@ -126,15 +146,20 @@ class HaWebRtcPlayer extends LitElement {
       });
     });
     await iceResolver;
+
+    console.timeLog("WebRTC", "end iceResolver", candidates);
+
     const offer_sdp = offer.sdp! + candidates;
 
     let webRtcAnswer: WebRtcAnswer;
     try {
+      console.timeLog("WebRTC", "start WebRTCOffer", offer_sdp);
       webRtcAnswer = await handleWebRtcOffer(
         this.hass,
         this.entityid,
         offer_sdp
       );
+      console.timeLog("WebRTC", "end webRtcOffer", webRtcAnswer);
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
       peerConnection.close();
@@ -144,6 +169,7 @@ class HaWebRtcPlayer extends LitElement {
     // Setup callbacks to render remote stream once media tracks are discovered.
     const remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
+      console.timeLog("WebRTC", "track", event);
       remoteStream.addTrack(event.track);
       this._videoEl.srcObject = remoteStream;
     });
@@ -155,13 +181,16 @@ class HaWebRtcPlayer extends LitElement {
       sdp: webRtcAnswer.answer,
     });
     try {
+      console.timeLog("WebRTC", "start setRemoteDescription", remoteDesc);
       await peerConnection.setRemoteDescription(remoteDesc);
+      console.timeLog("WebRTC", "end setRemoteDescription");
     } catch (err: any) {
       this._error = "Failed to connect WebRTC stream: " + err.message;
       peerConnection.close();
       return;
     }
     this._peerConnection = peerConnection;
+    console.timeEnd("WebRTC");
   }
 
   private _cleanUp() {
