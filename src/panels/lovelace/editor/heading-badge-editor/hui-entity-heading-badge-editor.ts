@@ -36,7 +36,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 
 const entityConfigStruct = object({
   type: optional(string()),
-  entity: string(),
+  entity: optional(string()),
   name: optional(string()),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
