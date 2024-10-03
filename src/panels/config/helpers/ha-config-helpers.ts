@@ -10,6 +10,7 @@ import {
   mdiPencilOff,
   mdiPlus,
   mdiTag,
+  mdiTrashCan,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -62,6 +63,8 @@ import {
 } from "../../../data/category_registry";
 import {
   ConfigEntry,
+  ERROR_STATES,
+  deleteConfigEntry,
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
@@ -359,6 +362,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             narrow
             .items=${[
+              ...(helper.configEntry &&
+              ERROR_STATES.includes(helper.configEntry.state)
+                ? [
+                    {
+                      path: mdiAlertCircle,
+                      label: this.hass.localize(
+                        "ui.panel.config.helpers.picker.error_information"
+                      ),
+                      warning: true,
+                      action: () => this._showError(helper),
+                    },
+                  ]
+                : []),
               {
                 path: mdiCog,
                 label: this.hass.localize(
@@ -373,6 +389,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 ),
                 action: () => this._editCategory(helper),
               },
+              ...(helper.configEntry &&
+              helper.editable &&
+              ERROR_STATES.includes(helper.configEntry.state) &&
+              helper.entity === undefined
+                ? [
+                    {
+                      path: mdiTrashCan,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteEntry(helper),
+                    },
+                  ]
+                : []),
             ]}
           >
           </ha-icon-overflow-menu>
@@ -1086,6 +1115,34 @@ ${rejected
     } else {
       showOptionsFlowDialog(this, this._configEntries![id]);
     }
+  }
+
+  private _showError(helper: HelperItem) {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.errors.config.configuration_error"),
+      text: helper.configEntry!.reason || "",
+      warning: true,
+    });
+  }
+
+  private async _deleteEntry(helper: HelperItem) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
+        { title: helper.configEntry!.title }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    deleteConfigEntry(this.hass, helper.id);
   }
 
   private _openSettings(helper: HelperItem) {
