@@ -1,4 +1,3 @@
-/* eslint-disable lit/prefer-static-styles */
 import {
   css,
   CSSResultGroup,
@@ -163,6 +162,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   localize: this.hass?.localize,
                   computeLabel: this.computeLabel,
                   computeHelper: this.computeHelper,
+                  localizeValue: this.localizeValue,
                   context: this._generateContext(item),
                   ...this.getFormProperties(),
                 })}

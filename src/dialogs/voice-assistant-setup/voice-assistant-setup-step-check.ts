@@ -22,7 +22,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
     if (
       this._status === "success" &&
       changedProperties.has("hass") &&
-      this.hass.states[this.assistEntityId!]?.state === "listening_wake_word"
+      this.hass.states[this.assistEntityId!]?.state === "idle"
     ) {
       this._nextStep();
     }
@@ -38,16 +38,13 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
             </p>`
         : this._status === "timeout"
           ? html`<img src="/static/icons/casita/sad.png" />
-              <h1>Error</h1>
+              <h1>Voice assistant can not connect to Home Assistant</h1>
               <p class="secondary">
-                Your device was unable to reach Home Assistant. Make sure you
-                have setup your
-                <a href="/config/network" @click=${this._close}
-                  >Home Assistant URL's</a
-                >
-                correctly.
+                A good explanation what is happening and what action you should
+                take.
               </p>
               <div class="footer">
+                <a href="#"><ha-button>Help me</ha-button></a>
                 <ha-button @click=${this._testConnection}>Retry</ha-button>
               </div>`
           : html`<img src="/static/icons/casita/loading.png" />
@@ -71,10 +68,6 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
 
   private _nextStep() {
     fireEvent(this, "next-step", { noPrevious: true });
-  }
-
-  private _close() {
-    fireEvent(this, "closed");
   }
 
   static styles = AssistantSetupStyles;

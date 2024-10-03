@@ -1,6 +1,6 @@
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
@@ -8,7 +8,9 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { LocalizeKeys } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
+import "./ha-md-divider";
 import "./ha-select";
+import type { HaSelect } from "./ha-select";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {
@@ -31,7 +33,17 @@ export class HaColorPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  _valueSelected(ev) {
+  @query("ha-select") private _select?: HaSelect;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    // Refresh layout options when the field is connected to the DOM to ensure current value displayed
+    this._select?.layoutOptions();
+  }
+
+  private _valueSelected(ev) {
+    ev.stopPropagation();
+    if (!this.isConnected) return;
     const value = ev.target.value;
     this.value = value === this.defaultColor ? undefined : value;
     fireEvent(this, "value-changed", {
@@ -40,7 +52,13 @@ export class HaColorPicker extends LitElement {
   }
 
   render() {
-    const value = this.value || this.defaultColor;
+    const value = this.value || this.defaultColor || "";
+
+    const isCustom = !(
+      THEME_COLORS.has(value) ||
+      value === "none" ||
+      value === "state"
+    );
 
     return html`
       <ha-select
@@ -93,6 +111,9 @@ export class HaColorPicker extends LitElement {
               </ha-list-item>
             `
           : nothing}
+        ${this.includeState || this.includeNone
+          ? html`<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
+          : nothing}
         ${Array.from(THEME_COLORS).map(
           (color) => html`
             <ha-list-item .value=${color} graphic="icon">
@@ -106,6 +127,14 @@ export class HaColorPicker extends LitElement {
             </ha-list-item>
           `
         )}
+        ${isCustom
+          ? html`
+              <ha-list-item .value=${value} graphic="icon">
+                ${value}
+                <span slot="graphic">${this.renderColorCircle(value)}</span>
+              </ha-list-item>
+            `
+          : nothing}
       </ha-select>
     `;
   }

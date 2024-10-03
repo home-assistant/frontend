@@ -1,7 +1,7 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
-import { BaseTrigger } from "./automation";
+import { BaseTrigger, migrateAutomationTrigger } from "./automation";
 import {
   computeEntityRegistryName,
   entityRegistryByEntityId,
@@ -31,7 +31,7 @@ export interface DeviceCondition extends DeviceAutomation {
 
 export type DeviceTrigger = DeviceAutomation &
   BaseTrigger & {
-    platform: "device";
+    trigger: "device";
   };
 
 export interface DeviceCapabilities {
@@ -51,10 +51,12 @@ export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
   });
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
-  hass.callWS<DeviceTrigger[]>({
-    type: "device_automation/trigger/list",
-    device_id: deviceId,
-  });
+  hass
+    .callWS<DeviceTrigger[]>({
+      type: "device_automation/trigger/list",
+      device_id: deviceId,
+    })
+    .then((triggers) => migrateAutomationTrigger(triggers) as DeviceTrigger[]);
 
 export const fetchDeviceActionCapabilities = (
   hass: HomeAssistant,
@@ -91,7 +93,7 @@ const deviceAutomationIdentifiers = [
   "subtype",
   "event",
   "condition",
-  "platform",
+  "trigger",
 ];
 
 export const deviceAutomationsEqual = (

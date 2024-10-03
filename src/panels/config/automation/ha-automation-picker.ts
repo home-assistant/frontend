@@ -1,7 +1,6 @@
 import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/web/divider/divider";
 import {
   mdiChevronRight,
   mdiCog,
@@ -56,6 +55,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -65,10 +65,10 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-menu";
-import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
 import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
+import "../../../components/ha-menu";
+import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
@@ -87,6 +87,11 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
+import {
+  DataTableFilters,
+  deserializeFilters,
+  serializeFilters,
+} from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   EntityRegistryEntry,
@@ -115,11 +120,6 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import {
-  DataTableFilters,
-  deserializeFilters,
-  serializeFilters,
-} from "../../../data/data_table_filters";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -420,7 +420,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
@@ -457,7 +457,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-md-menu-item>`;
       })}
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
@@ -486,7 +486,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           )}
         </div>
       </ha-md-menu-item>
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
@@ -867,7 +867,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )}
           </div>
         </ha-md-menu-item>
-        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
         <ha-md-menu-item .clickAction=${this._duplicate}>
           <ha-svg-icon .path=${mdiContentDuplicate} slot="start"></ha-svg-icon>
           <div slot="headline">

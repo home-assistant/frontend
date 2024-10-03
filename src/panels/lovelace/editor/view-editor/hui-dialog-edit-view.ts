@@ -379,7 +379,19 @@ export class HuiDialogEditView extends LitElement {
     };
 
     if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
-      viewConf.sections = [{ type: "grid", cards: [] }];
+      viewConf.sections = [
+        {
+          type: "grid",
+          cards: [
+            {
+              type: "heading",
+              heading: this.hass!.localize(
+                "ui.panel.lovelace.editor.section.default_section_title"
+              ),
+            },
+          ],
+        },
+      ];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
     }
@@ -494,12 +506,6 @@ export class HuiDialogEditView extends LitElement {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;
-        }
-        ha-circular-progress {
-          display: none;
-        }
-        ha-circular-progress[indeterminate] {
-          display: block;
         }
         .selected_menu_item {
           color: var(--primary-color);

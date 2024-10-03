@@ -18,6 +18,7 @@ import {
   updateReleaseNotes,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
+import { showAlertDialog } from "../../generic/show-dialog-box";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -127,29 +128,27 @@ class MoreInfoUpdate extends LitElement {
             </ha-formfield> `
         : ""}
       <div class="actions">
-        ${this.stateObj.attributes.auto_update
-          ? ""
-          : this.stateObj.state === BINARY_STATE_OFF &&
-              this.stateObj.attributes.skipped_version
-            ? html`
-                <mwc-button @click=${this._handleClearSkipped}>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.clear_skipped"
-                  )}
-                </mwc-button>
-              `
-            : html`
-                <mwc-button
-                  @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
-                  this.stateObj.state === BINARY_STATE_OFF ||
-                  updateIsInstalling(this.stateObj)}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.skip"
-                  )}
-                </mwc-button>
-              `}
+        ${this.stateObj.state === BINARY_STATE_OFF &&
+        this.stateObj.attributes.skipped_version
+          ? html`
+              <mwc-button @click=${this._handleClearSkipped}>
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.clear_skipped"
+                )}
+              </mwc-button>
+            `
+          : html`
+              <mwc-button
+                @click=${this._handleSkip}
+                .disabled=${skippedVersion ||
+                this.stateObj.state === BINARY_STATE_OFF ||
+                updateIsInstalling(this.stateObj)}
+              >
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.skip"
+                )}
+              </mwc-button>
+            `}
         ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
           ? html`
               <mwc-button
@@ -211,6 +210,17 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleSkip(): void {
+    if (this.stateObj!.attributes.auto_update) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.update.auto_update_enabled_title"
+        ),
+        text: this.hass.localize(
+          "ui.dialogs.more_info_control.update.auto_update_enabled_text"
+        ),
+      });
+      return;
+    }
     this.hass.callService("update", "skip", {
       entity_id: this.stateObj!.entity_id,
     });

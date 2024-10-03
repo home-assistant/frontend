@@ -7,10 +7,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { handleWebRtcOffer, WebRtcAnswer } from "../data/camera";
-import { fetchWebRtcSettings } from "../data/rtsp_to_webrtc";
+import {
+  handleWebRtcOffer,
+  WebRtcAnswer,
+  fetchWebRtcClientConfiguration,
+} from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 
@@ -90,11 +92,18 @@ class HaWebRtcPlayer extends LitElement {
   private async _startWebRtc(): Promise<void> {
     this._error = undefined;
 
-    const configuration = await this._fetchPeerConfiguration();
-    const peerConnection = new RTCPeerConnection(configuration);
-    // Some cameras (such as nest) require a data channel to establish a stream
-    // however, not used by any integrations.
-    peerConnection.createDataChannel("dataSendChannel");
+    const clientConfig = await fetchWebRtcClientConfiguration(
+      this.hass,
+      this.entityid
+    );
+
+    const peerConnection = new RTCPeerConnection(clientConfig.configuration);
+
+    if (clientConfig.dataChannel) {
+      // Some cameras (such as nest) require a data channel to establish a stream
+      // however, not used by any integrations.
+      peerConnection.createDataChannel(clientConfig.dataChannel);
+    }
     peerConnection.addTransceiver("audio", { direction: "recvonly" });
     peerConnection.addTransceiver("video", { direction: "recvonly" });
 
@@ -153,23 +162,6 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
     this._peerConnection = peerConnection;
-  }
-
-  private async _fetchPeerConfiguration(): Promise<RTCConfiguration> {
-    if (!isComponentLoaded(this.hass!, "rtsp_to_webrtc")) {
-      return {};
-    }
-    const settings = await fetchWebRtcSettings(this.hass!);
-    if (!settings || !settings.stun_server) {
-      return {};
-    }
-    return {
-      iceServers: [
-        {
-          urls: [`stun:${settings.stun_server!}`],
-        },
-      ],
-    };
   }
 
   private _cleanUp() {

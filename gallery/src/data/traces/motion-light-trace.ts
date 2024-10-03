@@ -135,7 +135,7 @@ export const motionLightTrace: DemoTrace = {
       max_exceeded: "silent",
       triggers: [
         {
-          platform: "state",
+          trigger: "state",
           entity_id: "binary_sensor.pauluss_macbook_pro_camera_in_use",
           from: "off",
           to: "on",

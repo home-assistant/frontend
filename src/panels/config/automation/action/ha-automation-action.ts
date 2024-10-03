@@ -19,7 +19,7 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
-import { Action, migrateAutomationAction } from "../../../../data/script";
+import { Action } from "../../../../data/script";
 import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -156,6 +156,15 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
+  public expandAll() {
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
+      "ha-automation-action-row"
+    )!;
+    rows.forEach((row) => {
+      row.expand();
+    });
+  }
+
   private _addActionDialog() {
     showAddAutomationElementDialog(this, {
       type: "action",
@@ -243,10 +252,7 @@ export default class HaAutomationAction extends LitElement {
   private _actionChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const actions = [...this.actions];
-    const newValue =
-      ev.detail.value === null
-        ? ev.detail.value
-        : (migrateAutomationAction(ev.detail.value) as Action);
+    const newValue = ev.detail.value;
     const index = (ev.target as any).index;
 
     if (newValue === null) {
