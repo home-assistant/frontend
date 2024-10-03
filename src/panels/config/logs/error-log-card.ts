@@ -35,6 +35,8 @@ import {
 import { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { HaMenu } from "../../../components/ha-menu";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { ConnectionStatus } from "../../../data/connection-status";
 
 const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
 
@@ -193,9 +195,10 @@ class ErrorLogCard extends LitElement {
 
     this._scrolledToBottomController.observe(this._scrollMarkerElement!);
 
+    window.addEventListener("connection-status", this._handleConnectionStatus);
+
     if (this.hass?.config.recovery_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
-      this._loadLogs();
     }
   }
 
@@ -224,6 +227,11 @@ class ErrorLogCard extends LitElement {
     if (this._logStreamAborter) {
       this._logStreamAborter.abort();
     }
+
+    window.removeEventListener(
+      "connection-status",
+      this._handleConnectionStatus
+    );
   }
 
   private async _downloadFullLog(): Promise<void> {
@@ -320,6 +328,15 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
+    if (ev.detail === "disconnected" && this._logStreamAborter) {
+      this._logStreamAborter.abort();
+    }
+    if (ev.detail === "connected" && this.show) {
+      this._loadLogs();
+    }
+  };
+
   static styles: CSSResultGroup = css`
     .error-log-intro {
       text-align: center;
@@ -327,7 +344,7 @@ class ErrorLogCard extends LitElement {
     }
 
     ha-card {
-      padding-top: 16px;
+      padding-top: 8px;
       position: relative;
     }
 
@@ -356,6 +373,10 @@ class ErrorLogCard extends LitElement {
       display: block;
       margin-block-start: 0px;
       font-weight: normal;
+      white-space: nowrap;
+      max-width: calc(100% - 150px);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     ha-icon-button {
@@ -369,18 +390,17 @@ class ErrorLogCard extends LitElement {
       text-align: left;
       padding-top: 12px;
       padding-bottom: 12px;
-
-      min-height: calc(100vh - 240px);
-      max-height: calc(100vh - 240px);
       overflow-y: scroll;
+      min-height: var(--error-log-card-height, calc(100vh - 240px));
+      max-height: var(--error-log-card-height, calc(100vh - 240px));
 
       border-top: 1px solid var(--divider-color);
     }
 
     @media all and (max-width: 870px) {
       .error-log {
-        min-height: calc(100vh - 190px);
-        max-height: calc(100vh - 190px);
+        min-height: var(--error-log-card-height, calc(100vh - 190px));
+        max-height: var(--error-log-card-height, calc(100vh - 190px));
       }
     }
 
