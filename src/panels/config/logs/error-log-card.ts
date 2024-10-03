@@ -1,5 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowCollapseDown, mdiDownload, mdiMenuDown } from "@mdi/js";
+import {
+  mdiArrowCollapseDown,
+  mdiDownload,
+  mdiMenuDown,
+  mdiRefresh,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -29,6 +34,7 @@ import { getSignedPath } from "../../../data/auth";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
+  fetchHassioLogs,
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -37,6 +43,7 @@ import { fileDownload } from "../../../util/file_download";
 import type { HaMenu } from "../../../components/ha-menu";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ConnectionStatus } from "../../../data/connection-status";
+import { atLeastVersion } from "../../../common/config/version";
 
 const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
 
@@ -77,6 +84,8 @@ class ErrorLogCard extends LitElement {
 
   @state() private _logStreamAborter?: AbortController;
 
+  @state() private _streamSupported?: boolean;
+
   protected render(): TemplateResult {
     let filteredLines = this._logHTML;
 
@@ -103,16 +112,20 @@ class ErrorLogCard extends LitElement {
               this.hass.localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              <ha-assist-chip
-                .label=${this.hass.localize("ui.panel.config.logs.nr_of_lines")}
-                id="nr-of-lines-anchor"
-                @click=${this._toggleNumberOfLinesMenu}
-              >
-                <ha-svg-icon
-                  slot="trailing-icon"
-                  .path=${mdiMenuDown}
-                ></ha-svg-icon
-              ></ha-assist-chip>
+              ${this._streamSupported
+                ? html`<ha-assist-chip
+                    .label=${this.hass.localize(
+                      "ui.panel.config.logs.nr_of_lines"
+                    )}
+                    id="nr-of-lines-anchor"
+                    @click=${this._toggleNumberOfLinesMenu}
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon
+                  ></ha-assist-chip>`
+                : nothing}
               <ha-menu
                 anchor="nr-of-lines-anchor"
                 id="nr-of-lines-menu"
@@ -137,6 +150,13 @@ class ErrorLogCard extends LitElement {
                   "ui.panel.config.logs.download_full_log"
                 )}
               ></ha-icon-button>
+              ${!this._streamSupported || this._error
+                ? html`<ha-icon-button
+                    .path=${mdiRefresh}
+                    @click=${this._loadLogs}
+                    .label=${this.hass.localize("ui.common.refresh")}
+                  ></ha-icon-button>`
+                : nothing}
             </div>
           </div>
           <div class="card-content error-log">
@@ -188,6 +208,15 @@ class ErrorLogCard extends LitElement {
           : ""}
       </div>
     `;
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+
+    if (this._streamSupported === undefined) {
+      this._streamSupported =
+        atLeastVersion(this.hass.config.version, 2024, 11) && false;
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -266,41 +295,52 @@ class ErrorLogCard extends LitElement {
 
       this._logStreamAborter = new AbortController();
 
-      const body = await fetchHassioLogsFollow(
-        this.hass,
-        this.provider,
-        this._logStreamAborter.signal,
-        this._numberOfLines
-      );
+      if (this._streamSupported) {
+        const body = await fetchHassioLogsFollow(
+          this.hass,
+          this.provider,
+          this._logStreamAborter.signal,
+          this._numberOfLines
+        );
 
-      if (!body) {
-        throw new Error("No stream body found");
-      }
-
-      this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
-      this._logs = [];
-
-      for await (const chunk of body) {
-        const value = new TextDecoder().decode(chunk);
-        if (!Array.isArray(this._logHTML)) {
-          this._logHTML = [];
+        if (!body) {
+          throw new Error("No stream body found");
         }
-        const scrolledToBottom = this._scrolledToBottomController.value;
-        const lines = value.split("\n");
-        this._logs.push(...lines);
 
-        this._logHTML = [
-          ...this._logHTML,
-          ...lines.map(
-            (line) => html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
-          ),
-        ];
+        this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
+        this._logs = [];
 
-        if (scrolledToBottom && this._logElement) {
-          this._scrollToBottom();
-        } else {
-          this._newLogsIndicator = true;
+        for await (const chunk of body) {
+          const value = new TextDecoder().decode(chunk);
+          if (!Array.isArray(this._logHTML)) {
+            this._logHTML = [];
+          }
+          const scrolledToBottom = this._scrolledToBottomController.value;
+          const lines = value.split("\n");
+          this._logs.push(...lines);
+
+          this._logHTML = [
+            ...this._logHTML,
+            ...lines.map(
+              (line) =>
+                html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
+            ),
+          ];
+
+          if (scrolledToBottom && this._logElement) {
+            this._scrollToBottom();
+          } else {
+            this._newLogsIndicator = true;
+          }
         }
+      } else {
+        // fallback to old method
+        const logs = await fetchHassioLogs(this.hass, this.provider);
+        this._logs = logs.split("\n");
+        this._logHTML = this._logs.map(
+          (line) => html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
+        );
+        this._scrollToBottom();
       }
     } catch (err: any) {
       if (err.name === "AbortError") {
