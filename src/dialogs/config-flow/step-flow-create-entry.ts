@@ -4,7 +4,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-area-picker";
+import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import {
@@ -14,11 +16,9 @@ import {
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
-import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
