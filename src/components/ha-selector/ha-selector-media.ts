@@ -124,19 +124,23 @@ export class HaMediaSelector extends LitElement {
             >
               ${this.value?.metadata?.thumbnail
                 ? html`
-                    <div
+                    <img
+                      loading="lazy"
+                      alt=${!this.value?.media_content_id
+                        ? this.hass.localize(
+                            "ui.components.selectors.media.pick_media"
+                          )
+                        : this.value.metadata?.title ||
+                          this.value.media_content_id}
                       class="${classMap({
                         "centered-image":
                           !!this.value.metadata.media_class &&
                           ["app", "directory"].includes(
                             this.value.metadata.media_class
                           ),
-                      })}
-                        image"
-                      style=${this._thumbnailUrl
-                        ? `background-image: url(${this._thumbnailUrl});`
-                        : ""}
-                    ></div>
+                      })} image"
+                      src=${this._thumbnailUrl ?? ""}
+                    />
                   `
                 : html`
                     <div class="icon-holder image">

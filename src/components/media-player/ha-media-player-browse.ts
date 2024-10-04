@@ -344,10 +344,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       : MediaClassBrowserSettings.directory;
 
     const backgroundImage = currentItem.thumbnail
-      ? this._getThumbnailURLorBase64(currentItem.thumbnail).then(
-          (value) => `url(${value})`
-        )
-      : "none";
+      ? this._getThumbnailURLorBase64(currentItem.thumbnail)
+      : undefined;
 
     return html`
               ${
@@ -363,13 +361,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <div class="header-content">
                           ${currentItem.thumbnail
                             ? html`
-                                <div
-                                  class="img"
-                                  style="background-image: ${until(
-                                    backgroundImage,
-                                    ""
-                                  )}"
-                                >
+                                <div class="img">
+                                  <img
+                                    loading="lazy"
+                                    alt=${currentItem.title ??
+                                    currentItem.media_content_id}
+                                    src=${until(backgroundImage, "")}
+                                  />
+
                                   ${this.narrow && currentItem?.can_play
                                     ? html`
                                         <ha-fab
@@ -558,10 +557,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
     const backgroundImage = child.thumbnail
-      ? this._getThumbnailURLorBase64(child.thumbnail).then(
-          (value) => `url(${value})`
-        )
-      : "none";
+      ? this._getThumbnailURLorBase64(child.thumbnail)
+      : undefined;
 
     return html`
       <div class="child" .item=${child} @click=${this._childClicked}>
@@ -624,10 +621,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     const backgroundImage =
       mediaClass.show_list_images && child.thumbnail
-        ? this._getThumbnailURLorBase64(child.thumbnail).then(
-            (value) => `url(${value})`
-          )
-        : "none";
+        ? this._getThumbnailURLorBase64(child.thumbnail)
+        : undefined;
 
     return html`
       <mwc-list-item
@@ -635,7 +630,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .item=${child}
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
       >
-        ${backgroundImage === "none" && !child.can_play
+        ${backgroundImage === undefined && !child.can_play
           ? html`<ha-svg-icon
               .path=${MediaClassBrowserSettings[
                 child.media_class === "directory"
