@@ -3,12 +3,13 @@ import {
   css,
   CSSResultGroup,
   html,
+  nothing,
   LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
+import { mdiMicrophone, mdiMicrophoneOff } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   fetchWebRtcClientConfiguration,
@@ -51,21 +52,48 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
+  private _localReturnAudioTrack?: MediaStreamTrack;
+
+  public toggleMic() {
+    this._localReturnAudioTrack!.enabled =
+      !this._localReturnAudioTrack!.enabled;
+    this.requestUpdate();
+  }
+
   protected override render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
-    return html`
-      <video
-        id="remote-stream"
-        ?autoplay=${this.autoPlay}
-        .muted=${this.muted}
-        ?playsinline=${this.playsInline}
-        ?controls=${this.controls}
-        poster=${ifDefined(this.posterUrl)}
-        @loadeddata=${this._loadedData}
-      ></video>
-    `;
+    const controls =
+      this._localReturnAudioTrack === undefined ? this.controls : false;
+    // const controls = true;
+
+    const video_html = html` <video
+      id="remote-stream"
+      ?autoplay=${this.autoPlay}
+      .muted=${this.muted}
+      ?playsinline=${this.playsInline}
+      ?controls=${controls}
+      .poster=${this.posterUrl}
+      @loadeddata=${this._loadedData}
+    ></video>`;
+    const mic_html = !this._localReturnAudioTrack
+      ? nothing
+      : html`
+          <div class="video-controls">
+            <mwc-button @click=${this.toggleMic} halign id="toggle_mic">
+              <ha-svg-icon
+                .path=${this._localReturnAudioTrack!.enabled
+                  ? mdiMicrophone
+                  : mdiMicrophoneOff}
+              ></ha-svg-icon>
+              ${this._localReturnAudioTrack!.enabled
+                ? "Turn off mic"
+                : "Turn on mic"}
+            </mwc-button>
+          </div>
+        `;
+    return html` <div class="video-container">${video_html}${mic_html}</div> `;
   }
 
   public override connectedCallback() {
@@ -108,7 +136,24 @@ class HaWebRtcPlayer extends LitElement {
       // however, not used by any integrations.
       peerConnection.createDataChannel(clientConfig.dataChannel);
     }
-    peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    // If the stream supports two way audio and the client is configured to allow it
+    // N.B. connections must be secure for microphone access.
+    if (clientConfig.audio_direction === "sendrecv" && navigator.mediaDevices) {
+      const tracks = await this.getMediaTracks("user", {
+        video: false,
+        audio: true,
+      });
+      if (tracks && tracks.length > 0) {
+        this._localReturnAudioTrack = tracks[0];
+        // Start with mic off
+        this._localReturnAudioTrack.enabled = false;
+      }
+      peerConnection.addTransceiver(this._localReturnAudioTrack!, {
+        direction: "sendrecv",
+      });
+    } else {
+      peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    }
     peerConnection.addTransceiver("video", { direction: "recvonly" });
 
     const offerOptions: RTCOfferOptions = {
@@ -189,12 +234,29 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection = peerConnection;
   }
 
-  private _cleanUp() {
+  private async getMediaTracks(media, constraints) {
+    try {
+      const stream =
+        media === "user"
+          ? await navigator.mediaDevices.getUserMedia(constraints)
+          : await navigator.mediaDevices.getDisplayMedia(constraints);
+      return stream.getTracks();
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      this._error = "Failed to get media tracks: " + err.message;
+      return [];
+    }
+  }
+
+  private async _cleanUp() {
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
       });
       this._remoteStream = undefined;
+    }
+    if (this._localReturnAudioTrack) {
+      this._localReturnAudioTrack.stop();
     }
     if (this._videoEl) {
       this._videoEl.removeAttribute("src");
@@ -223,6 +285,18 @@ class HaWebRtcPlayer extends LitElement {
       video {
         width: 100%;
         max-height: var(--video-max-height, calc(100vh - 97px));
+      }
+
+      .video-controls {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 10;
+      }
+
+      mwc-button {
+        --mdc-theme-primary: white;
       }
     `;
   }
