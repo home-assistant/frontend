@@ -1600,10 +1600,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.11.1":
-  version: 9.11.1
-  resolution: "@eslint/js@npm:9.11.1"
-  checksum: 10/77b9c744bdf24e2ca1f99f671139767d6c31cb10d732cf22a85ef28f1f95f2a621cf204f572fd9fee67da6193ff2597a5d236cef3b557b07624230b622612339
+"@eslint/js@npm:9.12.0":
+  version: 9.12.0
+  resolution: "@eslint/js@npm:9.12.0"
+  checksum: 10/c4ec9f7ff664f778324002bccdfd63e4a563018e4d7efc838d8149898f9df8649fbc51a379c3d7deea40da4fba9e8e62f39f2df3ff2b9616e2241bbfc10456b0
   languageName: node
   linkType: hard
 
@@ -1874,10 +1874,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/retry@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@humanwhocodes/retry@npm:0.3.0"
-  checksum: 10/e574bab58680867414e225c9002e9a97eb396f85871c180fbb1a9bcdf9ded4b4de0b327f7d0c43b775873362b7c92956d4b322e8bc4b90be56077524341f04b2
+"@humanwhocodes/retry@npm:^0.3.0, @humanwhocodes/retry@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@humanwhocodes/retry@npm:0.3.1"
+  checksum: 10/eb457f699529de7f07649679ec9e0353055eebe443c2efe71c6dd950258892475a038e13c6a8c5e13ed1fb538cdd0a8794faa96b24b6ffc4c87fb1fc9f70ad7f
   languageName: node
   linkType: hard
 
@@ -7705,20 +7705,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-eslint@eslint/eslint:
-  version: 9.11.1
-  resolution: "eslint@https://github.com/eslint/eslint.git#commit=5a6a05321ca34480c780be8c2cb7946e4c299001"
+"eslint@npm:9.12.0":
+  version: 9.12.0
+  resolution: "eslint@npm:9.12.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.2.0"
     "@eslint-community/regexpp": "npm:^4.11.0"
     "@eslint/config-array": "npm:^0.18.0"
     "@eslint/core": "npm:^0.6.0"
     "@eslint/eslintrc": "npm:^3.1.0"
-    "@eslint/js": "npm:9.11.1"
+    "@eslint/js": "npm:9.12.0"
     "@eslint/plugin-kit": "npm:^0.2.0"
     "@humanfs/node": "npm:^0.16.5"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
-    "@humanwhocodes/retry": "npm:^0.3.0"
+    "@humanwhocodes/retry": "npm:^0.3.1"
     "@types/estree": "npm:^1.0.6"
     "@types/json-schema": "npm:^7.0.15"
     ajv: "npm:^6.12.4"
@@ -7743,7 +7743,6 @@ eslint@eslint/eslint:
     minimatch: "npm:^3.1.2"
     natural-compare: "npm:^1.4.0"
     optionator: "npm:^0.9.3"
-    strip-ansi: "npm:^6.0.1"
     text-table: "npm:^0.2.0"
   peerDependencies:
     jiti: "*"
@@ -7751,8 +7750,8 @@ eslint@eslint/eslint:
     jiti:
       optional: true
   bin:
-    eslint: ./bin/eslint.js
-  checksum: 10/fd3a3b13bd97b9ff18d9dea4b7f04bc7b8d5cb62ec2cca65a4feba3b9ba4ec03d56b78b28a027025f5c52f2ef589053982391eab7d48524bea3e53cc92a90d0c
+    eslint: bin/eslint.js
+  checksum: 10/c3f10d1ca3798bf1d0f71e43846e254d4bf0ea9ffbb0e61f9686a98e412aa762a454c5e5ef4e74fd71956b1500c04817c9f08dbf7a0cec47317160e28f585e4f
   languageName: node
   linkType: hard
 
@@ -9049,7 +9048,7 @@ eslint@eslint/eslint:
     del: "npm:7.1.0"
     dialog-polyfill: "npm:0.5.6"
     element-internals-polyfill: "npm:1.3.11"
-    eslint: eslint/eslint
+    eslint: "npm:9.12.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
     eslint-config-prettier: "npm:9.1.0"
