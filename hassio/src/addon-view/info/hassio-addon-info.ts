@@ -37,6 +37,7 @@ import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
+import type { HaSwitch } from "../../../../src/components/ha-switch";
 import {
   AddonCapability,
   HassioAddonDetails,
@@ -1118,12 +1119,28 @@ class HassioAddonInfo extends LitElement {
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
+    let removeData = false;
+    const _removeDataToggled = (e: Event) => {
+      removeData = (e.target as HaSwitch).checked;
+    };
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.supervisor.localize("dialog.uninstall_addon.title", {
         name: this.addon.name,
       }),
-      text: this.supervisor.localize("dialog.uninstall_addon.text"),
+      text: html`
+        <ha-formfield
+          .label=${html`<p>
+            ${this.supervisor.localize("dialog.uninstall_addon.remove_data")}
+          </p>`}
+        >
+          <ha-switch
+            @change=${_removeDataToggled}
+            .checked=${removeData}
+            haptic
+          ></ha-switch>
+        </ha-formfield>
+      `,
       confirmText: this.supervisor.localize("dialog.uninstall_addon.uninstall"),
       dismissText: this.supervisor.localize("common.cancel"),
       destructive: true,
@@ -1136,7 +1153,7 @@ class HassioAddonInfo extends LitElement {
 
     this._error = undefined;
     try {
-      await uninstallHassioAddon(this.hass, this.addon.slug);
+      await uninstallHassioAddon(this.hass, this.addon.slug, removeData);
       const eventdata = {
         success: true,
         response: undefined,

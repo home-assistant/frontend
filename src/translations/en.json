@@ -7739,7 +7739,7 @@
       },
       "uninstall_addon": {
         "title": "Uninstall {name}?",
-        "text": "Its configuration will be permanently deleted.",
+        "remove_data": "Also permanently delete this addon's data",
         "uninstall": "Uninstall"
       },
       "hardware": {
