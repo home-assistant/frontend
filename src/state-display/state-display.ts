@@ -128,6 +128,24 @@ class StateDisplay extends LitElement {
         ></ha-relative-time>
       `;
     }
+    if (content === "start_time") {
+      return html`
+        <ha-relative-time
+          .hass=${this.hass}
+          .datetime=${stateObj.attributes.start_time}
+          capitalize
+        ></ha-relative-time>
+      `;
+    }
+    if (content === "end_time") {
+      return html`
+        <ha-relative-time
+          .hass=${this.hass}
+          .datetime=${stateObj.attributes.end_time}
+          capitalize
+        ></ha-relative-time>
+      `;
+    }
 
     const specialContent = (STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain] ??
       []) as string[];
