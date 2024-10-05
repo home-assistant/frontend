@@ -1303,8 +1303,8 @@ ${rejected
   private _removeSelected() {
     const removeableHelpers = this._selected.filter(
       (entity) =>
-        this._manifests.find(
-          (m) => m.domain === this._entitySources[entity]?.domain
+        this._manifests?.find(
+          (m) => m.domain === this._entitySources?.[entity]?.domain
         )?.integration_type === "helper"
     );
     const removeableEntities = this._selected.filter((entity) => {
@@ -1336,7 +1336,7 @@ ${rejected
         removeableHelpers.forEach((entity) => {
           const configEntryId = this._entities.find(
             (e) => e.entity_id === entity
-          ).config_entry_id;
+          )?.config_entry_id;
           if (configEntryId) {
             deleteConfigEntry(this.hass, configEntryId);
           } else {
