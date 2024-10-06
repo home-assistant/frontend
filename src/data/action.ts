@@ -11,7 +11,6 @@ import {
   mdiFormatListNumbered,
   mdiGestureDoubleTap,
   mdiHandBackRight,
-  mdiPalette,
   mdiPlay,
   mdiRefresh,
   mdiRoomService,
