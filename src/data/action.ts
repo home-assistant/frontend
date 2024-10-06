@@ -27,7 +27,6 @@ export const ACTION_ICONS = {
   delay: mdiTimerOutline,
   event: mdiGestureDoubleTap,
   play_media: mdiPlay,
-  activate_scene: mdiPalette,
   service: mdiRoomService,
   wait_template: mdiCodeBraces,
   wait_for_trigger: mdiTrafficLight,

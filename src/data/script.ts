@@ -72,16 +72,6 @@ const playMediaActionStruct: Describe<PlayMediaAction> = assign(
   })
 );
 
-const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
-  baseActionStruct,
-  object({
-    action: literal("scene.turn_on"),
-    target: optional(object({ entity_id: optional(string()) })),
-    entity_id: optional(string()),
-    metadata: object(),
-  })
-);
-
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     last_triggered: string;
@@ -160,17 +150,6 @@ export interface DelayActionParts extends BaseAction {
 export interface DelayAction extends BaseAction {
   delay: number | Partial<DelayActionParts> | string;
 }
-
-export interface ServiceSceneAction extends BaseAction {
-  action: "scene.turn_on";
-  target?: { entity_id?: string };
-  entity_id?: string;
-  metadata: Record<string, unknown>;
-}
-export interface LegacySceneAction extends BaseAction {
-  scene: string;
-}
-export type SceneAction = ServiceSceneAction | LegacySceneAction;
 
 export interface WaitAction extends BaseAction {
   wait_template: string;
@@ -271,7 +250,6 @@ export type NonConditionAction =
   | DeviceAction
   | ServiceAction
   | DelayAction
-  | SceneAction
   | WaitAction
   | WaitForTriggerAction
   | RepeatAction
@@ -297,7 +275,6 @@ export interface ActionTypes {
   check_condition: Condition;
   fire_event: EventAction;
   device_action: DeviceAction;
-  activate_scene: SceneAction;
   repeat: RepeatAction;
   choose: ChooseAction;
   if: IfAction;
@@ -380,9 +357,6 @@ export const getActionType = (action: Action): ActionType => {
   if ("device_id" in action) {
     return "device_action";
   }
-  if ("scene" in action) {
-    return "activate_scene";
-  }
   if ("repeat" in action) {
     return "repeat";
   }
@@ -412,9 +386,6 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("action" in action || "service" in action) {
     if ("metadata" in action) {
-      if (is(action, activateSceneActionStruct)) {
-        return "activate_scene";
-      }
       if (is(action, playMediaActionStruct)) {
         return "play_media";
       }
