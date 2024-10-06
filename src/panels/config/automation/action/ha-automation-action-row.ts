@@ -62,7 +62,6 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -84,7 +83,7 @@ export const getType = (action: Action | undefined) => {
     return undefined;
   }
   if ("action" in action || "scene" in action) {
-    return getActionType(action) as "activate_scene" | "action" | "play_media";
+    return getActionType(action) as "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
