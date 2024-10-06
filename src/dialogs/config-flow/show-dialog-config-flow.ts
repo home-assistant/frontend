@@ -20,7 +20,7 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     flowType: "config_flow",
-    loadDevicesAndAreas: true,
+    showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
         createConfigFlow(hass, handler, dialogParams.entryId),

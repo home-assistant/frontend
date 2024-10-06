@@ -4,6 +4,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -34,7 +35,16 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
-  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
+  private _devices = memoizeOne(
+    (
+      showDevices: boolean,
+      devices: DeviceRegistryEntry[],
+      entry_id?: string
+    ) =>
+      showDevices && entry_id
+        ? devices.filter((device) => device.config_entries.includes(entry_id))
+        : []
+  );
 
   private _deviceEntities = memoizeOne(
     (
@@ -50,35 +60,48 @@ class StepFlowCreateEntry extends LitElement {
   );
 
   protected willUpdate(changedProps: PropertyValues) {
+    if (!changedProps.has("devices") && !changedProps.has("hass")) {
+      return;
+    }
+
+    const devices = this._devices(
+      this.flowConfig.showDevices,
+      Object.values(this.hass.devices),
+      this.step.result?.entry_id
+    );
+
     if (
-      (changedProps.has("devices") || changedProps.has("hass")) &&
-      this.devices.length === 1
+      devices.length !== 1 ||
+      devices[0].primary_config_entry !== this.step.result?.entry_id
     ) {
-      // integration_type === "device"
-      const assistSatellites = this._deviceEntities(
-        this.devices[0].id,
-        Object.values(this.hass.entities),
-        "assist_satellite"
-      );
-      if (
-        assistSatellites.length &&
-        assistSatellites.some((satellite) =>
-          assistSatelliteSupportsSetupFlow(
-            this.hass.states[satellite.entity_id]
-          )
-        )
-      ) {
-        this._flowDone();
-        showVoiceAssistantSetupDialog(this, {
-          deviceId: this.devices[0].id,
-        });
-      }
+      return;
+    }
+
+    const assistSatellites = this._deviceEntities(
+      devices[0].id,
+      Object.values(this.hass.entities),
+      "assist_satellite"
+    );
+    if (
+      assistSatellites.length &&
+      assistSatellites.some((satellite) =>
+        assistSatelliteSupportsSetupFlow(this.hass.states[satellite.entity_id])
+      )
+    ) {
+      this._flowDone();
+      showVoiceAssistantSetupDialog(this, {
+        deviceId: devices[0].id,
+      });
     }
   }
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
-
+    const devices = this._devices(
+      this.flowConfig.showDevices,
+      Object.values(this.hass.devices),
+      this.step.result?.entry_id
+    );
     return html`
       <h2>${localize("ui.panel.config.integrations.config_flow.success")}!</h2>
       <div class="content">
@@ -89,9 +112,9 @@ class StepFlowCreateEntry extends LitElement {
                 "ui.panel.config.integrations.config_flow.not_loaded"
               )}</span
             >`
-          : ""}
-        ${this.devices.length === 0
-          ? ""
+          : nothing}
+        ${devices.length === 0
+          ? nothing
           : html`
               <p>
                 ${localize(
@@ -99,7 +122,7 @@ class StepFlowCreateEntry extends LitElement {
                 )}:
               </p>
               <div class="devices">
-                ${this.devices.map(
+                ${devices.map(
                   (device) => html`
                     <div class="device">
                       <div>
