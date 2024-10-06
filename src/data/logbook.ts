@@ -206,114 +206,32 @@ export const localizeStateMessage = (
       const isOff = state === BINARY_STATE_OFF;
       const device_class = stateObj.attributes.device_class;
 
-      switch (device_class) {
-        case "battery":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_low`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_normal`);
-          }
-          break;
-
-        case "connectivity":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_connected`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_disconnected`);
-          }
-          break;
-
-        case "door":
-        case "garage_door":
-        case "opening":
-        case "window":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
-          }
-          break;
-
-        case "lock":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
-          }
-          break;
-
-        case "plug":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_plugged_in`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unplugged`);
-          }
-          break;
-
-        case "presence":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
-          }
-          break;
-
-        case "safety":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unsafe`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_safe`);
-          }
-          break;
-
-        case "cold":
-        case "gas":
-        case "heat":
-        case "moisture":
-        case "motion":
-        case "occupancy":
-        case "power":
-        case "problem":
-        case "smoke":
-        case "sound":
-        case "vibration":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
+      if (device_class && (isOn || isOff)) {
+        return (
+          localize(
+            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_classes" : "cleared_device_classes"}.${device_class}`,
+            {
               device_class: autoCaseNoun(
                 localize(
                   `component.binary_sensor.entity_component.${device_class}.name`
-                ),
+                ) || device_class,
                 hass.language
               ),
-            });
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
+            }
+          ) ||
+          // If there's no key for a specific device class, fallback to generic string
+          localize(
+            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_class" : "cleared_device_class"}`,
+            {
               device_class: autoCaseNoun(
                 localize(
                   `component.binary_sensor.entity_component.${device_class}.name`
-                ),
+                ) || device_class,
                 hass.language
               ),
-            });
-          }
-          break;
-
-        case "tamper":
-          if (isOn) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_tampering`);
-          }
-          if (isOff) {
-            return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_tampering`);
-          }
-          break;
+            }
+          )
+        );
       }
 
       break;
