@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { Action, migrateAutomationAction } from "../../data/script";
 import { ActionSelector } from "../../data/selector";
 import "../../panels/config/automation/action/ha-automation-action";
@@ -18,12 +17,12 @@ export class HaActionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  private _actions = memoizeOne((action: Action | undefined) => {
+  private _actions = (action: Action | undefined) => {
     if (!action) {
       return [];
     }
     return migrateAutomationAction(action);
-  });
+  };
 
   protected render() {
     return html`
