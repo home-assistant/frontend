@@ -204,6 +204,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           grid-column: span min(var(--column-size, 1), var(--grid-column-count));
         }
 
+        .container.edit-mode .card {
+          min-height: calc((var(--row-height) - var(--row-gap)) / 2);
+        }
+
         .card.fit-rows {
           height: calc(
             (var(--row-size, 1) * (var(--row-height) + var(--row-gap))) - var(
