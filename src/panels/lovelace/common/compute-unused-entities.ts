@@ -64,11 +64,16 @@ const addEntities = (entities: Set<string>, obj) => {
   if (obj.badges && Array.isArray(obj.badges)) {
     obj.badges.forEach((badge) => addEntityId(entities, badge));
   }
+  if (obj.sections && Array.isArray(obj.sections)) {
+    obj.sections.forEach((section) => addEntities(entities, section));
+  }
 };
 
 export const computeUsedEntities = (config: LovelaceConfig): Set<string> => {
   const entities = new Set<string>();
-  config.views.forEach((view) => addEntities(entities, view));
+  config.views.forEach((view) => {
+    addEntities(entities, view);
+  });
   return entities;
 };
 
