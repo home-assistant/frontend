@@ -8,6 +8,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-sortable";
@@ -124,7 +125,7 @@ export class HuiViewBadges extends LitElement {
               .options=${BADGE_SORTABLE_OPTIONS}
               invert-swap
             >
-              <div class="badges">
+              <div class="badges ${classMap({ "edit-mode": editMode })}">
                 ${repeat(
                   badges,
                   (badge) => this._getBadgeKey(badge),
@@ -185,6 +186,8 @@ export class HuiViewBadges extends LitElement {
       hui-badge-edit-mode {
         display: block;
         position: relative;
+        min-width: 36px;
+        min-height: 36px;
       }
 
       .add {
