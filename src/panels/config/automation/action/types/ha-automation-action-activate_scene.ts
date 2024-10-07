@@ -55,12 +55,12 @@ export class HaSceneAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
-        service: "scene.turn_on",
+        action: "scene.turn_on",
         target: {
           entity_id: ev.detail.value,
         },
         metadata: {},
-      },
+      } as SceneAction,
     });
   }
 }
