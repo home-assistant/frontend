@@ -8,8 +8,16 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import "./ha-circular-progress";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiMicrophone, mdiMicrophoneOff } from "@mdi/js";
+import {
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiVolumeHigh,
+  mdiVolumeOff,
+  mdiPlay,
+  mdiPause,
+} from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   fetchWebRtcClientConfiguration,
@@ -54,9 +62,51 @@ class HaWebRtcPlayer extends LitElement {
 
   private _localReturnAudioTrack?: MediaStreamTrack;
 
+  private _paused: boolean = false;
+
+  private _twoWayAudio: boolean = false;
+
   public toggleMic() {
     this._localReturnAudioTrack!.enabled =
       !this._localReturnAudioTrack!.enabled;
+    this.requestUpdate();
+  }
+
+  public toggleMute() {
+    this._videoEl.muted = !this._videoEl.muted;
+    this.requestUpdate();
+  }
+
+  public togglePause() {
+    const pause = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._paused = true;
+      }
+    };
+
+    const resume = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._paused = false;
+      }
+    };
+
+    if (this._paused) {
+      resume();
+    } else {
+      pause();
+    }
     this.requestUpdate();
   }
 
@@ -64,36 +114,72 @@ class HaWebRtcPlayer extends LitElement {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
-    const controls =
-      this._localReturnAudioTrack === undefined ? this.controls : false;
-    // const controls = true;
+    // The standard controls will still be disabled until the remoteStream is
+    // created so they don't appear and disappear once twoWayAudio is requested
+    // and enabled.
+    const standardControls = this._twoWayAudio ? false : this.controls;
 
-    const video_html = html` <video
+    const videoHtml = html` <video
       id="remote-stream"
       ?autoplay=${this.autoPlay}
       .muted=${this.muted}
       ?playsinline=${this.playsInline}
-      ?controls=${controls}
+      ?controls=${standardControls && this._remoteStream !== undefined}
       .poster=${this.posterUrl}
       @loadeddata=${this._loadedData}
     ></video>`;
-    const mic_html = !this._localReturnAudioTrack
+    const progressHtml =
+      this._remoteStream !== undefined
+        ? nothing
+        : html`
+            <div class="video-progress">
+              <ha-circular-progress
+                class="render-spinner"
+                indeterminate
+                size="medium"
+              ></ha-circular-progress>
+            </div>
+          `;
+    // Custom controls are required for two way audio to allow muting/unmuting
+    // the microphone
+    const customControls = standardControls
       ? nothing
       : html`
           <div class="video-controls">
-            <mwc-button @click=${this.toggleMic} halign id="toggle_mic">
+            <mwc-button @click=${this.togglePause} halign id="toggle_pause">
+              <ha-svg-icon
+                .path=${this._paused ? mdiPlay : mdiPause}
+              ></ha-svg-icon>
+            </mwc-button>
+            <mwc-button
+              @click=${this.toggleMute}
+              halign
+              id="toggle_mute"
+              class="video-controls-right"
+            >
+              <ha-svg-icon
+                .path=${this._videoEl.muted ? mdiVolumeOff : mdiVolumeHigh}
+              ></ha-svg-icon>
+            </mwc-button>
+            <mwc-button
+              @click=${this.toggleMic}
+              halign
+              id="toggle_mic"
+              class="video-controls-right"
+            >
               <ha-svg-icon
                 .path=${this._localReturnAudioTrack!.enabled
                   ? mdiMicrophone
                   : mdiMicrophoneOff}
               ></ha-svg-icon>
-              ${this._localReturnAudioTrack!.enabled
-                ? "Turn off mic"
-                : "Turn on mic"}
             </mwc-button>
           </div>
         `;
-    return html` <div class="video-container">${video_html}${mic_html}</div> `;
+    return html`
+      <div class="video-container">
+        ${videoHtml}${progressHtml}${customControls}
+      </div>
+    `;
   }
 
   public override connectedCallback() {
@@ -129,6 +215,11 @@ class HaWebRtcPlayer extends LitElement {
 
     console.timeLog("WebRTC", "end clientConfig", clientConfig);
 
+    // On most platforms mediaDevices will be undefined if not running in a secure context
+    this._twoWayAudio =
+      clientConfig.audioDirection === "sendrecv" &&
+      navigator.mediaDevices !== undefined;
+
     const peerConnection = new RTCPeerConnection(clientConfig.configuration);
 
     if (clientConfig.dataChannel) {
@@ -136,9 +227,7 @@ class HaWebRtcPlayer extends LitElement {
       // however, not used by any integrations.
       peerConnection.createDataChannel(clientConfig.dataChannel);
     }
-    // If the stream supports two way audio and the client is configured to allow it
-    // N.B. connections must be secure for microphone access.
-    if (clientConfig.audio_direction === "sendrecv" && navigator.mediaDevices) {
+    if (this._twoWayAudio) {
       const tracks = await this.getMediaTracks("user", {
         video: false,
         audio: true,
@@ -242,7 +331,6 @@ class HaWebRtcPlayer extends LitElement {
           : await navigator.mediaDevices.getDisplayMedia(constraints);
       return stream.getTracks();
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       this._error = "Failed to get media tracks: " + err.message;
       return [];
     }
@@ -273,6 +361,7 @@ class HaWebRtcPlayer extends LitElement {
     console.timeEnd("WebRTC");
     // @ts-ignore
     fireEvent(this, "load");
+    this.requestUpdate();
   }
 
   static get styles(): CSSResultGroup {
@@ -289,10 +378,22 @@ class HaWebRtcPlayer extends LitElement {
 
       .video-controls {
         width: 100%;
+        background: rgba(0, 0, 0, 0.35);
         position: absolute;
         bottom: 0;
         left: 0;
         z-index: 10;
+      }
+
+      .video-progress {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 10;
+      }
+
+      .video-controls-right {
+        float: right;
       }
 
       mwc-button {
