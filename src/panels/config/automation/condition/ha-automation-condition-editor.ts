@@ -9,6 +9,8 @@ import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ItemPath } from "../../../../types";
 import "./types/ha-automation-condition-and";
+import "./types/ha-automation-condition-date";
+import "./types/ha-automation-condition-datetime";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-not";
 import "./types/ha-automation-condition-numeric_state";

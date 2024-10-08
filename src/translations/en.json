@@ -3228,6 +3228,29 @@
                     "full": "Test if template renders a value equal to true"
                   }
                 },
+                "date": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::date::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::date::type_input%]",
+                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::date::label%]",
+                  "after": "After",
+                  "before": "Before",
+                  "weekday": "Weekdays",
+                  "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::date::after%]",
+                  "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::date::before%]",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  },
+                  "description": {
+                    "picker": "If the current date is before or after a specified date.",
+                    "full": "Confirm the {hasDate, select, \n after {date is after {time_after}}\n before {date is before {date_before}}\n after_before {date is after {time_after} and before {date_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                  }
+                },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
                   "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
@@ -3248,6 +3271,29 @@
                   },
                   "description": {
                     "picker": "If the current time is before or after a specified time.",
+                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                  }
+                },
+                "datetime": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::type_input%]",
+                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::label%]",
+                  "after": "After",
+                  "before": "Before",
+                  "weekday": "Weekdays",
+                  "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::datetime::after%]",
+                  "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::datetime::before%]",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  },
+                  "description": {
+                    "picker": "If the current datetime is before or after a specified datetime.",
                     "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
