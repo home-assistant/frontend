@@ -4,7 +4,7 @@ import memoizeOne from "memoize-one";
 import { Action, migrateAutomationAction } from "../../data/script";
 import { ActionSelector } from "../../data/selector";
 import "../../panels/config/automation/action/ha-automation-action";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ItemPath } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends LitElement {
@@ -18,19 +18,22 @@ export class HaActionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  private _actions = memoizeOne((action: Action | undefined) => {
-    if (!action) {
-      return [];
+  // Add path here to ignore memoize if the path changes
+  private _actions = memoizeOne(
+    (action: Action | undefined, _path?: ItemPath) => {
+      if (!action) {
+        return [];
+      }
+      return migrateAutomationAction(action);
     }
-    return migrateAutomationAction(action);
-  });
+  );
 
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-action
         .disabled=${this.disabled}
-        .actions=${this._actions(this.value)}
+        .actions=${this._actions(this.value, this.selector.action?.path)}
         .hass=${this.hass}
         .path=${this.selector.action?.path}
       ></ha-automation-action>
