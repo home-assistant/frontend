@@ -20,6 +20,13 @@ function findNestedItem(
   }, obj);
 }
 
+function updateNestedItem(obj: any, path: ItemPath): any {
+  const lastKey = path.pop()!;
+  const parent = findNestedItem(obj, path);
+  parent[lastKey] = [...parent[lastKey]];
+  return obj;
+}
+
 export function nestedArrayMove<A>(
   obj: A,
   oldIndex: number,
@@ -27,7 +34,15 @@ export function nestedArrayMove<A>(
   oldPath?: ItemPath,
   newPath?: ItemPath
 ): A {
-  const newObj = (Array.isArray(obj) ? [...obj] : { ...obj }) as A;
+  let newObj = (Array.isArray(obj) ? [...obj] : { ...obj }) as A;
+
+  if (oldPath) {
+    newObj = updateNestedItem(newObj, [...oldPath]);
+  }
+  if (newPath) {
+    newObj = updateNestedItem(newObj, [...newPath]);
+  }
+
   const from = oldPath ? findNestedItem(newObj, oldPath) : newObj;
   const to = newPath ? findNestedItem(newObj, newPath, true) : newObj;
 
