@@ -52,7 +52,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
-        service: "media_player.play_media",
+        action: "media_player.play_media",
         target: { entity_id: ev.detail.value.entity_id },
         data: {
           media_content_id: ev.detail.value.media_content_id,
