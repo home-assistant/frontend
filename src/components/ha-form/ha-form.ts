@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
@@ -110,6 +111,16 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
+  private _schemaKeys = new WeakMap<HaFormSchema, string>();
+
+  private _getSchemaKey(schema: HaFormSchema) {
+    if (!this._schemaKeys.has(schema)) {
+      this._schemaKeys.set(schema, Math.random().toString());
+    }
+
+    return this._schemaKeys.get(schema)!;
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="root" part="root">
@@ -120,55 +131,58 @@ export class HaForm extends LitElement implements HaFormElement {
               </ha-alert>
             `
           : ""}
-        ${this.schema.map((item) => {
-          const error = getError(this.error, item);
-          const warning = getWarning(this.warning, item);
-
-          return html`
-            ${error
-              ? html`
-                  <ha-alert own-margin alert-type="error">
-                    ${this._computeError(error, item)}
-                  </ha-alert>
-                `
-              : warning
+        ${repeat(
+          this.schema,
+          (item) => this._getSchemaKey(item),
+          (item) => {
+            const error = getError(this.error, item);
+            const warning = getWarning(this.warning, item);
+            return html`
+              ${error
                 ? html`
-                    <ha-alert own-margin alert-type="warning">
-                      ${this._computeWarning(warning, item)}
+                    <ha-alert own-margin alert-type="error">
+                      ${this._computeError(error, item)}
                     </ha-alert>
                   `
-                : ""}
-            ${"selector" in item
-              ? html`<ha-selector
-                  .schema=${item}
-                  .hass=${this.hass}
-                  .name=${item.name}
-                  .selector=${item.selector}
-                  .value=${getValue(this.data, item)}
-                  .label=${this._computeLabel(item, this.data)}
-                  .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? "" : item.default}
-                  .helper=${this._computeHelper(item)}
-                  .localizeValue=${this.localizeValue}
-                  .required=${item.required || false}
-                  .context=${this._generateContext(item)}
-                ></ha-selector>`
-              : dynamicElement(this.fieldElementName(item.type), {
-                  schema: item,
-                  data: getValue(this.data, item),
-                  label: this._computeLabel(item, this.data),
-                  helper: this._computeHelper(item),
-                  disabled: this.disabled || item.disabled || false,
-                  hass: this.hass,
-                  localize: this.hass?.localize,
-                  computeLabel: this.computeLabel,
-                  computeHelper: this.computeHelper,
-                  localizeValue: this.localizeValue,
-                  context: this._generateContext(item),
-                  ...this.getFormProperties(),
-                })}
-          `;
-        })}
+                : warning
+                  ? html`
+                      <ha-alert own-margin alert-type="warning">
+                        ${this._computeWarning(warning, item)}
+                      </ha-alert>
+                    `
+                  : ""}
+              ${"selector" in item
+                ? html`<ha-selector
+                    .schema=${item}
+                    .hass=${this.hass}
+                    .name=${item.name}
+                    .selector=${item.selector}
+                    .value=${getValue(this.data, item)}
+                    .label=${this._computeLabel(item, this.data)}
+                    .disabled=${item.disabled || this.disabled || false}
+                    .placeholder=${item.required ? "" : item.default}
+                    .helper=${this._computeHelper(item)}
+                    .localizeValue=${this.localizeValue}
+                    .required=${item.required || false}
+                    .context=${this._generateContext(item)}
+                  ></ha-selector>`
+                : dynamicElement(this.fieldElementName(item.type), {
+                    schema: item,
+                    data: getValue(this.data, item),
+                    label: this._computeLabel(item, this.data),
+                    helper: this._computeHelper(item),
+                    disabled: this.disabled || item.disabled || false,
+                    hass: this.hass,
+                    localize: this.hass?.localize,
+                    computeLabel: this.computeLabel,
+                    computeHelper: this.computeHelper,
+                    localizeValue: this.localizeValue,
+                    context: this._generateContext(item),
+                    ...this.getFormProperties(),
+                  })}
+            `;
+          }
+        )}
       </div>
     `;
   }
