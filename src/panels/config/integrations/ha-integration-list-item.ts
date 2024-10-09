@@ -3,7 +3,12 @@ import {
   ListItemBase,
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
+import {
+  mdiCloudOutline,
+  mdiFolderAlert,
+  mdiOpenInNew,
+  mdiPackageVariant,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -88,6 +93,16 @@ export class HaIntegrationListItem extends ListItemBase {
                 this.integration.overwrites_built_in
                   ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                   : "ui.panel.config.integrations.config_entry.custom_integration"
+              )}</simple-tooltip
+            ></span
+          >`
+        : ""}
+      ${this.integration.overwrites_built_in
+        ? html`<span
+            ><ha-svg-icon .path=${mdiFolderAlert}></ha-svg-icon
+            ><simple-tooltip animation-delay="0" position="left"
+              >${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.custom_overwrites_core"
               )}</simple-tooltip
             ></span
           >`
