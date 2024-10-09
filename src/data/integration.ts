@@ -22,6 +22,7 @@ export type IntegrationType =
 
 export interface IntegrationManifest {
   is_built_in: boolean;
+  overwrites_built_in: boolean;
   domain: string;
   name: string;
   config_flow: boolean;
