@@ -84,10 +84,10 @@ export const getZHADeviceActions = async (
       action: async () => {
         const confirmed = await showConfirmationDialog(el, {
           title: hass.localize(
-            "ui.dialogs.zha_device_info.confirmations.remove.title"
+            "ui.dialogs.zha_device_info.confirmations.remove_title"
           ),
           text: hass.localize(
-            "ui.dialogs.zha_device_info.confirmations.remove.text"
+            "ui.dialogs.zha_device_info.confirmations.remove_text"
           ),
           confirmText: hass.localize("ui.common.remove"),
           dismissText: hass.localize("ui.common.cancel"),
