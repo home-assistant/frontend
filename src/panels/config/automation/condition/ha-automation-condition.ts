@@ -134,7 +134,6 @@ export default class HaAutomationCondition extends LitElement {
             (cond, idx) => html`
               <ha-automation-condition-row
                 .sortableData=${cond}
-                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.conditions.length - 1}

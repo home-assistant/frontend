@@ -88,7 +88,6 @@ export default class HaAutomationTrigger extends LitElement {
             (trg, idx) => html`
               <ha-automation-trigger-row
                 .sortableData=${trg}
-                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.triggers.length - 1}
