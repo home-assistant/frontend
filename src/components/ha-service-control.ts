@@ -257,9 +257,11 @@ export class HaServiceControl extends LitElement {
               hasSelector.push(key);
             }
           });
-        } else if (field.selector) {
+        } else {
           flatFields.push(field);
-          hasSelector.push(field.key);
+          if (field.selector) {
+            hasSelector.push(field.key);
+          }
         }
       });
 
