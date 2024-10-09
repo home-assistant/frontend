@@ -31,6 +31,23 @@ export interface CalendarEventData {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
+  attendees?: [
+    {
+      uri: string;
+      common_name?: string;
+      user_type?: string;
+      delegator?: string;
+      delegate?: string;
+      directory_entry?: string;
+      member?: string;
+      status?: string;
+      role?: string;
+      rsvp?: string;
+      sent_by?: string;
+      language?: string;
+    },
+  ];
 }
 
 export interface CalendarEventMutableParams {
@@ -39,6 +56,23 @@ export interface CalendarEventMutableParams {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
+  attendees?: [
+    {
+      uri: string;
+      common_name?: string;
+      user_type?: string;
+      delegator?: string;
+      delegate?: string;
+      directory_entry?: string;
+      member?: string;
+      status?: string;
+      role?: string;
+      rsvp?: string;
+      sent_by?: string;
+      language?: string;
+    },
+  ];
 }
 
 // The scope of a delete/update for a recurring event
@@ -96,6 +130,8 @@ export const fetchCalendarEvents = async (
         uid: ev.uid,
         summary: ev.summary,
         description: ev.description,
+        location: ev.location,
+        attendees: ev.attendees,
         dtstart: eventStart,
         dtend: eventEnd,
         recurrence_id: ev.recurrence_id,
