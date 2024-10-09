@@ -13,7 +13,6 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -23,7 +22,7 @@ import {
   Trigger,
   TriggerList,
 } from "../../../../data/automation";
-import { HomeAssistant, ItemPath } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -39,8 +38,6 @@ export default class HaAutomationTrigger extends LitElement {
   @property({ attribute: false }) public triggers!: Trigger[];
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @state() private _showReorder: boolean = false;
 
@@ -71,20 +68,18 @@ export default class HaAutomationTrigger extends LitElement {
     this._unsubMql = undefined;
   }
 
-  private get nested() {
-    return this.path !== undefined;
-  }
-
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-trigger-row"
         .disabled=${!this._showReorder || this.disabled}
-        @item-moved=${this._triggerMoved}
         group="triggers"
         .path=${this.path}
         invert-swap
+        @item-moved=${this._triggerMoved}
+        @item-added=${this._triggerAdded}
+        @item-removed=${this._triggerRemoved}
       >
         <div class="triggers">
           ${repeat(
@@ -92,6 +87,7 @@ export default class HaAutomationTrigger extends LitElement {
             (trigger) => this._getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
+                .sortableData=${trg}
                 .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .first=${idx === 0}
@@ -210,28 +206,43 @@ export default class HaAutomationTrigger extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(
-    oldIndex: number,
-    newIndex: number,
-    oldPath?: ItemPath,
-    newPath?: ItemPath
-  ) {
-    const triggers = nestedArrayMove(
-      this.triggers,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-
+  private _move(oldIndex: number, newIndex: number) {
+    const triggers = this.triggers.concat();
+    const item = triggers.splice(oldIndex, 1)[0];
+    triggers.splice(newIndex, 0, item);
+    this.triggers = triggers;
     fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerMoved(ev: CustomEvent): void {
-    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    this._move(oldIndex, newIndex, oldPath, newPath);
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
+  }
+
+  private _triggerAdded(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const triggers = [
+      ...this.triggers.slice(0, index),
+      data,
+      ...this.triggers.slice(index),
+    ];
+    this.triggers = triggers;
+    fireEvent(this, "value-changed", { value: triggers });
+  }
+
+  private async _triggerRemoved(ev: CustomEvent): Promise<void> {
+    ev.stopPropagation();
+    const { index } = ev.detail;
+    const trigger = this.triggers[index];
+    // Set the updated trigger to avoid UI jump
+    this.triggers = this.triggers.filter((item) => item !== trigger);
+    // Wait for the DOM to update.
+    await this.updateComplete;
+    // Remove the trigger from the updated listed (by trigger added event)
+    const triggers = this.triggers.filter((item) => item !== trigger);
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {
