@@ -39,6 +39,7 @@ import {
   StatisticsValidationResult,
   clearStatistics,
   getStatisticIds,
+  updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -635,6 +636,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       getStatisticIds(this.hass),
       validateStatistics(this.hass),
     ]);
+
+    updateStatisticsIssues(this.hass);
 
     const statsIds = new Set();
 

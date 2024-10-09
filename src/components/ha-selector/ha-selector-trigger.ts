@@ -4,7 +4,7 @@ import memoizeOne from "memoize-one";
 import { migrateAutomationTrigger, Trigger } from "../../data/automation";
 import { TriggerSelector } from "../../data/selector";
 import "../../panels/config/automation/trigger/ha-automation-trigger";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, ItemPath } from "../../types";
 
 @customElement("ha-selector-trigger")
 export class HaTriggerSelector extends LitElement {
@@ -18,19 +18,22 @@ export class HaTriggerSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  private _triggers = memoizeOne((trigger: Trigger | undefined) => {
-    if (!trigger) {
-      return [];
+  // Add path here to ignore memoize if the path changes
+  private _triggers = memoizeOne(
+    (trigger: Trigger | undefined, _path?: ItemPath) => {
+      if (!trigger) {
+        return [];
+      }
+      return migrateAutomationTrigger(trigger);
     }
-    return migrateAutomationTrigger(trigger);
-  });
+  );
 
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-automation-trigger
         .disabled=${this.disabled}
-        .triggers=${this._triggers(this.value)}
+        .triggers=${this._triggers(this.value, this.selector.trigger?.path)}
         .hass=${this.hass}
         .path=${this.selector.trigger?.path}
       ></ha-automation-trigger>
