@@ -44,7 +44,7 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant, ItemPath } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const preventDefault = (ev) => ev.preventDefault();
@@ -54,8 +54,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ attribute: false }) public path?: ItemPath;
 
   @property({ attribute: false }) public action!: ChooseAction;
 
@@ -126,7 +124,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
         draggable-selector=".option"
         .disabled=${!this._showReorder || this.disabled}
         group="choose-options"
-        .path=${[...(this.path ?? []), "choose"]}
         invert-swap
       >
         <div class="options">
@@ -242,12 +239,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-condition
-                        .path=${[
-                          ...(this.path ?? []),
-                          "choose",
-                          idx,
-                          "conditions",
-                        ]}
                         .conditions=${ensureArray<string | Condition>(
                           option.conditions
                         )}
@@ -262,12 +253,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
                         )}:
                       </h4>
                       <ha-automation-action
-                        .path=${[
-                          ...(this.path ?? []),
-                          "choose",
-                          idx,
-                          "sequence",
-                        ]}
                         .actions=${ensureArray(option.sequence) || []}
                         .disabled=${this.disabled}
                         .hass=${this.hass}
@@ -303,7 +288,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
-              .path=${[...(this.path ?? []), "default"]}
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}

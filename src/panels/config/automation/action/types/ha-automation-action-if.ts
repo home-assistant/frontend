@@ -4,7 +4,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import { Action, IfAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
@@ -14,8 +14,6 @@ export class HaIfAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ attribute: false }) public path?: ItemPath;
 
   @property({ attribute: false }) public action!: IfAction;
 
@@ -38,7 +36,6 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-condition
-        .path=${[...(this.path ?? []), "if"]}
         .conditions=${action.if}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
@@ -51,7 +48,6 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-action
-        .path=${[...(this.path ?? []), "then"]}
         .actions=${action.then}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
@@ -65,7 +61,6 @@ export class HaIfAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-action
-              .path=${[...(this.path ?? []), "else"]}
               .actions=${action.else || []}
               .disabled=${this.disabled}
               @value-changed=${this._elseChanged}

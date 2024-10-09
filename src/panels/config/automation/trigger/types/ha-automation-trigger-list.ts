@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import type { TriggerList } from "../../../../../data/automation";
-import type { HomeAssistant, ItemPath } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-trigger";
 import {
   handleChangeEvent,
@@ -14,8 +14,6 @@ export class HaTriggerList extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: TriggerList;
-
-  @property({ attribute: false }) public path?: ItemPath;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -30,7 +28,6 @@ export class HaTriggerList extends LitElement implements TriggerElement {
 
     return html`
       <ha-automation-trigger
-        .path=${[...(this.path ?? []), "triggers"]}
         .triggers=${triggers}
         .hass=${this.hass}
         .disabled=${this.disabled}

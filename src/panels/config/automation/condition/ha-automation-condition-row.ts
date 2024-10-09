@@ -41,7 +41,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, ItemPath } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 
 export interface ConditionElement extends LitElement {
@@ -82,8 +82,6 @@ export default class HaAutomationConditionRow extends LitElement {
   @property({ attribute: false }) public condition!: Condition;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -302,7 +300,6 @@ export default class HaAutomationConditionRow extends LitElement {
               .disabled=${this.disabled}
               .hass=${this.hass}
               .condition=${this.condition}
-              .path=${this.path}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>

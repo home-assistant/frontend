@@ -65,7 +65,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -136,8 +136,6 @@ export default class HaAutomationActionRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -432,7 +430,6 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}
