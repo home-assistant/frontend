@@ -39,8 +39,35 @@ export interface Stream {
   url: string;
 }
 
+export type WebRtcOfferEvent =
+  | WebRtcId
+  | WebRtcAnswer
+  | WebRtcCandidate
+  | WebRtcError;
+
+export interface WebRtcId {
+  type: "session_id";
+  session_id: string;
+}
+
 export interface WebRtcAnswer {
+  type: "answer";
   answer: string;
+}
+
+export interface WebRtcCandidate {
+  type: "candidate";
+  candidate: string;
+}
+
+export interface WebRtcError {
+  type: "error";
+  code: string;
+  message: string;
+}
+
+export interface WebRtcOfferResponse {
+  id: string;
 }
 
 export const cameraUrlWithWidthHeight = (
@@ -94,15 +121,29 @@ export const fetchStreamUrl = async (
   return stream;
 };
 
-export const handleWebRtcOffer = (
+export const webRtcOffer = (
   hass: HomeAssistant,
-  entityId: string,
-  offer: string
+  entity_id: string,
+  offer: string,
+  callback: (event: WebRtcOfferEvent) => void
 ) =>
-  hass.callWS<WebRtcAnswer>({
-    type: "camera/web_rtc_offer",
-    entity_id: entityId,
-    offer: offer,
+  hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
+    type: "camera/webrtc/offer",
+    entity_id,
+    offer,
+  });
+
+export const addWebRtcCandidate = (
+  hass: HomeAssistant,
+  entity_id: string,
+  session_id: string,
+  candidate: string
+) =>
+  hass.callWS({
+    type: "camera/webrtc/candidate",
+    entity_id,
+    session_id,
+    candidate,
   });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
@@ -137,6 +178,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;
   dataChannel?: string;
+  get_all_candidates_upfront: boolean;
 }
 
 export const fetchWebRtcClientConfiguration = async (
