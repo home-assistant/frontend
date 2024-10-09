@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { Action } from "../../script";
 
 export interface ToggleActionConfig extends BaseActionConfig {
   action: "toggle";
@@ -29,6 +30,11 @@ export interface UrlActionConfig extends BaseActionConfig {
 export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
   entity_id?: string;
+}
+
+export interface SequenceActionConfig extends BaseActionConfig {
+  action: "sequence";
+  actions?: Action[];
 }
 
 export interface AssistActionConfig extends BaseActionConfig {
@@ -67,4 +73,5 @@ export type ActionConfig =
   | MoreInfoActionConfig
   | AssistActionConfig
   | NoActionConfig
-  | CustomActionConfig;
+  | CustomActionConfig
+  | SequenceActionConfig;

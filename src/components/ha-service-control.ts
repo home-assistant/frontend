@@ -174,6 +174,7 @@ export class HaServiceControl extends LitElement {
       if (this._value && serviceData) {
         const loadDefaults = this.value && !("data" in this.value);
         // Set mandatory bools without a default value to false
+        this._value = { ...this._value };
         if (!this._value.data) {
           this._value.data = {};
         }

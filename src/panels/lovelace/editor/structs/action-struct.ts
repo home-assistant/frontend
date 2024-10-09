@@ -48,6 +48,12 @@ const actionConfigStructService = object({
   confirmation: optional(actionConfigStructConfirmation),
 });
 
+const actionConfigStructSequence = object({
+  action: literal("sequence"),
+  actions: optional(array(object())),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
 const actionConfigStructNavigate = object({
   action: literal("navigate"),
   navigation_path: string(),
@@ -100,6 +106,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
       }
       case "more-info": {
         return actionConfigStructMoreInfo;
+      }
+      case "sequence": {
+        return actionConfigStructSequence;
       }
     }
   }

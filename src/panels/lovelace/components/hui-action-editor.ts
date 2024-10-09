@@ -34,6 +34,7 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "navigate",
   "url",
   "perform-action",
+  "sequence",
   "assist",
   "none",
 ];
@@ -67,6 +68,15 @@ const ASSIST_SCHEMA = [
         },
       },
     ],
+  },
+] as const satisfies readonly HaFormSchema[];
+
+const SEQUENCE_SCHEMA = [
+  {
+    name: "actions",
+    selector: {
+      action: {},
+    },
   },
 ] as const satisfies readonly HaFormSchema[];
 
@@ -118,6 +128,10 @@ export class HuiActionEditor extends LitElement {
         this._select.layoutOptions();
       }
     }
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    this.hass!.loadFragmentTranslation("config");
   }
 
   protected render() {
@@ -218,6 +232,17 @@ export class HuiActionEditor extends LitElement {
             </ha-form>
           `
         : nothing}
+      ${this.config?.action === "sequence"
+        ? html`
+            <ha-form
+              .hass=${this.hass}
+              .schema=${SEQUENCE_SCHEMA}
+              .data=${this.config}
+              .computeLabel=${this._computeFormLabel}
+              @value-changed=${this._formValueChanged}
+            ></ha-form>
+          `
+        : nothing}
     `;
   }
 
@@ -289,7 +314,15 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  private _computeFormLabel(schema: SchemaUnion<typeof ASSIST_SCHEMA>) {
+  private _computeFormLabel(
+    schema:
+      | SchemaUnion<typeof ASSIST_SCHEMA>
+      | SchemaUnion<typeof NAVIGATE_SCHEMA>
+      | SchemaUnion<typeof SEQUENCE_SCHEMA>
+  ) {
+    if (schema.name === "actions") {
+      return "";
+    }
     return this.hass?.localize(
       `ui.panel.lovelace.editor.action-editor.${schema.name}`
     );

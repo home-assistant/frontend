@@ -3,6 +3,7 @@ import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
 import { ActionConfig } from "../../../data/lovelace/config/action";
+import { callExecuteScript } from "../../../data/service";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { HomeAssistant } from "../../../types";
@@ -175,6 +176,13 @@ export const handleAction = async (
         start_listening: actionConfig.start_listening ?? false,
         pipeline_id: actionConfig.pipeline_id ?? "last_used",
       });
+      break;
+    }
+    case "sequence": {
+      if (!actionConfig.actions) {
+        return;
+      }
+      callExecuteScript(hass, actionConfig.actions);
       break;
     }
     case "fire-dom-event": {
