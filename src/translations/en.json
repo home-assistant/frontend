@@ -3229,26 +3229,26 @@
                   }
                 },
                 "date": {
-                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::date::type_value%]",
-                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::date::type_input%]",
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::date::label%]",
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
+                  "label": "Date",
                   "after": "After",
                   "before": "Before",
                   "weekday": "Weekdays",
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::date::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::date::before%]",
                   "weekdays": {
-                    "mon": "Monday",
-                    "tue": "Tuesday",
-                    "wed": "Wednesday",
-                    "thu": "Thursday",
-                    "fri": "Friday",
-                    "sat": "Saturday",
-                    "sun": "Sunday"
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
                     "picker": "If the current date is before or after a specified date.",
-                    "full": "Confirm the {hasDate, select, \n after {date is after {time_after}}\n before {date is before {date_before}}\n after_before {date is after {time_after} and before {date_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                    "full": "Confirm the {hasTime, select, \n after {date is after {time_after}}\n before {date is before {date_before}}\n after_before {date is after {time_after} and before {date_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "time": {
@@ -3261,13 +3261,13 @@
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
-                    "mon": "Monday",
-                    "tue": "Tuesday",
-                    "wed": "Wednesday",
-                    "thu": "Thursday",
-                    "fri": "Friday",
-                    "sat": "Saturday",
-                    "sun": "Sunday"
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
                     "picker": "If the current time is before or after a specified time.",
@@ -3275,22 +3275,22 @@
                   }
                 },
                 "datetime": {
-                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::type_value%]",
-                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::type_input%]",
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::datetime::label%]",
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
+                  "label": "Date and time",
                   "after": "After",
                   "before": "Before",
                   "weekday": "Weekdays",
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::datetime::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::datetime::before%]",
                   "weekdays": {
-                    "mon": "Monday",
-                    "tue": "Tuesday",
-                    "wed": "Wednesday",
-                    "thu": "Thursday",
-                    "fri": "Friday",
-                    "sat": "Saturday",
-                    "sun": "Sunday"
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
                     "picker": "If the current datetime is before or after a specified datetime.",
