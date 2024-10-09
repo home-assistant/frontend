@@ -3,6 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { fullEntitiesContext } from "../../data/context";
 import {
   DeviceAutomation,
@@ -103,6 +104,7 @@ export abstract class HaDeviceAutomationPicker<
         .label=${this.label}
         .value=${value}
         @selected=${this._automationChanged}
+        @closed=${stopPropagation}
         .disabled=${this._automations.length === 0}
       >
         ${value === NO_AUTOMATION_KEY

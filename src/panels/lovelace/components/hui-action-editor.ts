@@ -1,3 +1,5 @@
+import { ContextProvider } from "@lit-labs/context";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -14,7 +16,10 @@ import "../../../components/ha-assist-pipeline-picker";
 import { HaFormSchema, SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
+import { HaSelect } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
+import { fullEntitiesContext } from "../../../data/context";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -22,9 +27,9 @@ import {
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
 import { ServiceAction } from "../../../data/script";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -81,7 +86,7 @@ const SEQUENCE_SCHEMA = [
 ] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-action-editor")
-export class HuiActionEditor extends LitElement {
+export class HuiActionEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public config?: ActionConfig;
 
   @property() public label?: string;
@@ -95,6 +100,19 @@ export class HuiActionEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @query("ha-select") private _select!: HaSelect;
+
+  private _entitiesContext = new ContextProvider(this, {
+    context: fullEntitiesContext,
+    initialValue: [],
+  });
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass!.connection!, (entities) => {
+        this._entitiesContext.setValue(entities);
+      }),
+    ];
+  }
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
@@ -132,6 +150,7 @@ export class HuiActionEditor extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this.hass!.loadFragmentTranslation("config");
+    this.hass!.loadBackendTranslation("device_automation");
   }
 
   protected render() {
