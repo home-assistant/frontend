@@ -157,15 +157,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     border: boolean
   ) {
     const selector = value?.selector ?? { text: undefined };
-    const type = Object.keys(selector)[0];
-    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
-      ? {
-          [type]: {
-            ...selector[type],
-            path: [key],
-          },
-        }
-      : selector;
     return html`<ha-settings-row
       .narrow=${this.narrow}
       class=${border ? "border" : ""}
@@ -179,7 +170,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       ></ha-markdown>
       ${html`<ha-selector
         .hass=${this.hass}
-        .selector=${enhancedSelector}
+        .selector=${selector}
         .key=${key}
         .disabled=${this.disabled}
         .required=${value?.default === undefined}
