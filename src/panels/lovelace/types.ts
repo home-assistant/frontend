@@ -16,7 +16,6 @@ import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
 
 declare global {
-  // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
     "ll-upgrade": Record<string, unknown>;

@@ -1,4 +1,3 @@
-/* eslint-disable lit/prefer-static-styles */
 import {
   css,
   CSSResultGroup,
