@@ -94,12 +94,13 @@ export const handleAction = async (
 
   switch (actionConfig.action) {
     case "more-info": {
-      if (config.entity || config.camera_image || config.image_entity) {
-        fireEvent(node, "hass-more-info", {
-          entityId: (config.entity ||
-            config.camera_image ||
-            config.image_entity)!,
-        });
+      const entityId =
+        actionConfig.entity_id ||
+        config.entity ||
+        config.camera_image ||
+        config.image_entity;
+      if (entityId) {
+        fireEvent(node, "hass-more-info", { entityId });
       } else {
         showToast(node, {
           message: hass.localize(
