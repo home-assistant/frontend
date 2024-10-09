@@ -13,6 +13,7 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -256,7 +257,7 @@ export default class HaAutomationCondition extends LitElement {
     this._move(oldIndex, newIndex);
   }
 
-  private _conditionAdded(ev: CustomEvent): void {
+  private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const conditions = [
@@ -265,20 +266,18 @@ export default class HaAutomationCondition extends LitElement {
       ...this.conditions.slice(index),
     ];
     this.conditions = conditions;
-    fireEvent(this, "value-changed", { value: conditions });
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.conditions });
   }
 
   private async _conditionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const condition = this.conditions[index];
-    // Set the updated condition to avoid UI jump
-    this.conditions = this.conditions.filter((item) => item !== condition);
-    // Wait for the DOM to update.
-    await this.updateComplete;
-    // Remove the condition from the updated listed (by condition added event)
-    const conditions = this.conditions.filter((item) => item !== condition);
-    fireEvent(this, "value-changed", { value: conditions });
+    const conditions = this.conditions.concat();
+    conditions.splice(index, 1);
+    this.conditions = conditions;
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.conditions });
   }
 
   private _conditionChanged(ev: CustomEvent) {

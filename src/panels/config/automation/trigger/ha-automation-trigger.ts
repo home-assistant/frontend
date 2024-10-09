@@ -13,6 +13,7 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -22,6 +23,7 @@ import {
   Trigger,
   TriggerList,
 } from "../../../../data/automation";
+import { isTriggerList } from "../../../../data/trigger";
 import { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -29,7 +31,6 @@ import {
 } from "../show-add-automation-element-dialog";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import { isTriggerList } from "../../../../data/trigger";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -75,7 +76,6 @@ export default class HaAutomationTrigger extends LitElement {
         draggable-selector="ha-automation-trigger-row"
         .disabled=${!this._showReorder || this.disabled}
         group="triggers"
-        .path=${this.path}
         invert-swap
         @item-moved=${this._triggerMoved}
         @item-added=${this._triggerAdded}
@@ -219,7 +219,7 @@ export default class HaAutomationTrigger extends LitElement {
     this._move(oldIndex, newIndex);
   }
 
-  private _triggerAdded(ev: CustomEvent): void {
+  private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const triggers = [
@@ -228,20 +228,18 @@ export default class HaAutomationTrigger extends LitElement {
       ...this.triggers.slice(index),
     ];
     this.triggers = triggers;
-    fireEvent(this, "value-changed", { value: triggers });
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.triggers });
   }
 
   private async _triggerRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const trigger = this.triggers[index];
-    // Set the updated trigger to avoid UI jump
-    this.triggers = this.triggers.filter((item) => item !== trigger);
-    // Wait for the DOM to update.
-    await this.updateComplete;
-    // Remove the trigger from the updated listed (by trigger added event)
-    const triggers = this.triggers.filter((item) => item !== trigger);
-    fireEvent(this, "value-changed", { value: triggers });
+    const triggers = this.triggers.concat();
+    triggers.splice(index, 1);
+    this.triggers = triggers;
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.triggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {

@@ -13,6 +13,7 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -233,7 +234,7 @@ export default class HaAutomationAction extends LitElement {
     this._move(oldIndex, newIndex);
   }
 
-  private _actionAdded(ev: CustomEvent): void {
+  private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const actions = [
@@ -242,20 +243,18 @@ export default class HaAutomationAction extends LitElement {
       ...this.actions.slice(index),
     ];
     this.actions = actions;
-    fireEvent(this, "value-changed", { value: actions });
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.actions });
   }
 
   private async _actionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const action = this.actions[index];
-    // Set the updated action to avoid UI jump
-    this.actions = this.actions.filter((item) => item !== action);
-    // Wait for the DOM to update.
-    await this.updateComplete;
-    // Remove the action from the updated listed (by action added event)
-    const actions = this.actions.filter((item) => item !== action);
-    fireEvent(this, "value-changed", { value: actions });
+    const actions = this.actions.concat();
+    actions.splice(index, 1);
+    this.actions = actions;
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.actions });
   }
 
   private _actionChanged(ev: CustomEvent) {
