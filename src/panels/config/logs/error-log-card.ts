@@ -21,6 +21,7 @@ import { IntersectionController } from "@lit-labs/observers/intersection-control
 import { customElement, property, state, query } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
+import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -45,6 +46,7 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { debounce } from "../../../common/util/debounce";
 
 const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
 
@@ -66,9 +68,7 @@ class ErrorLogCard extends LitElement {
 
   @query("#nr-of-lines-menu") private _nrOfLinesMenuElement?: HaMenu;
 
-  @state() private _logs: string[] = [];
-
-  @state() private _logHTML?: string | TemplateResult[];
+  @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
   @state() private _scrolledToBottomController =
     new IntersectionController<boolean>(this, {
@@ -87,29 +87,17 @@ class ErrorLogCard extends LitElement {
 
   @state() private _streamSupported?: boolean;
 
+  @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
+
+  @state() private _noSearchResults: boolean = false;
+
   protected render(): TemplateResult {
-    let filteredLines = this._logHTML;
-
-    if (Array.isArray(this._logHTML) && this._logHTML.length && this.filter) {
-      filteredLines = this._logHTML.filter((_line, key) =>
-        this._logs[key]
-          .toLocaleLowerCase()
-          .includes(this.filter.toLocaleLowerCase())
-      );
-      this._highlightSearch();
-    } else {
-      this._clearSearchHighlight();
-    }
-
     return html`
       <div class="error-log-intro">
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
-        <ha-card
-          outlined
-          class=${classMap({ hidden: this._logHTML === undefined })}
-        >
+        <ha-card outlined class=${classMap({ hidden: this.show === false })}>
           <div class="header">
             <h1 class="card-header">
               ${this.header ||
@@ -164,19 +152,26 @@ class ErrorLogCard extends LitElement {
             </div>
           </div>
           <div class="card-content error-log">
-            ${filteredLines}
-            ${!filteredLines
-              ? html`
-                  <div>
-                    ${this.hass.localize(
-                      this.filter
-                        ? "ui.panel.config.logs.no_issues_search"
-                        : "ui.panel.config.logs.no_errors",
-                      { term: this.filter }
-                    )}
-                  </div>
-                `
+            ${this._loadingState === "loading"
+              ? html`<div>
+                  ${this.hass.localize("ui.panel.config.logs.loading_log")}
+                </div>`
+              : this._loadingState === "empty"
+                ? html`<div>
+                    ${this.hass.localize("ui.panel.config.logs.no_errors")}
+                  </div>`
+                : nothing}
+            ${this._loadingState === "loaded" &&
+            this.filter &&
+            this._noSearchResults
+              ? html`<div>
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.no_issues_search",
+                    { term: this.filter }
+                  )}
+                </div>`
               : nothing}
+            <ha-ansi-to-html></ha-ansi-to-html>
             <div id="scroll-marker"></div>
           </div>
           <ha-button
@@ -199,13 +194,13 @@ class ErrorLogCard extends LitElement {
             ></ha-svg-icon>
           </ha-button>
         </ha-card>
-        ${!filteredLines
+        ${this.show === false
           ? html`
               <ha-button outlined @click=${this._downloadFullLog}>
                 <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.logs.download_full_log")}
               </ha-button>
-              <mwc-button raised @click=${this._loadLogs}>
+              <mwc-button raised @click=${this._showLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
@@ -242,7 +237,7 @@ class ErrorLogCard extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("provider")) {
-      this._logHTML = undefined;
+      this._ansiToHtmlElement?.clear();
     }
 
     if (
@@ -254,6 +249,10 @@ class ErrorLogCard extends LitElement {
 
     if (this._newLogsIndicator && this._scrolledToBottomController.value) {
       this._newLogsIndicator = false;
+    }
+
+    if (changedProps.has("filter")) {
+      this._debounceSearch();
     }
   }
 
@@ -291,9 +290,13 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  private _showLogs(): void {
+    this.show = true;
+  }
+
   private async _loadLogs(): Promise<void> {
     this._error = undefined;
-    this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
+    this._loadingState = "loading";
 
     try {
       if (this._logStreamAborter) {
@@ -318,25 +321,30 @@ class ErrorLogCard extends LitElement {
           throw new Error("No stream body found");
         }
 
-        this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
-        this._logs = [];
+        this._loadingState = "empty";
+
+        let tempLogLine = "";
+        this._ansiToHtmlElement?.clear();
 
         for await (const chunk of body) {
           const value = new TextDecoder().decode(chunk);
-          if (!Array.isArray(this._logHTML)) {
-            this._logHTML = [];
-          }
-          const scrolledToBottom = this._scrolledToBottomController.value;
-          const lines = value.split("\n");
-          this._logs.push(...lines);
 
-          this._logHTML = [
-            ...this._logHTML,
-            ...lines.map(
-              (line) =>
-                html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
-            ),
-          ];
+          const scrolledToBottom = this._scrolledToBottomController.value;
+          const lines = `${tempLogLine}${value}`
+            .split("\n")
+            .filter((line) => line.trim() !== "");
+
+          // handle edge case where the last line is not complete
+          if (value.endsWith("\n")) {
+            tempLogLine = "";
+          } else {
+            tempLogLine = lines.splice(-1, 1)[0];
+          }
+
+          if (lines.length) {
+            this._loadingState = "loaded";
+            this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
+          }
 
           if (scrolledToBottom && this._logElement) {
             this._scrollToBottom();
@@ -354,11 +362,11 @@ class ErrorLogCard extends LitElement {
           logs = await fetchErrorLog(this.hass);
         }
 
-        this._logs = logs.split("\n");
-        this._logHTML = this._logs.map(
-          (line) => html`<ha-ansi-to-html .content=${line}></ha-ansi-to-html>`
-        );
-        this._scrollToBottom();
+        if (logs) {
+          this._ansiToHtmlElement?.parseTextToColoredPre(logs);
+          this._loadingState = "loaded";
+          this._scrollToBottom();
+        }
       }
     } catch (err: any) {
       if (err.name === "AbortError") {
@@ -371,10 +379,15 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  private _debounceSearch = debounce(() => {
+    this._noSearchResults =
+      this._ansiToHtmlElement?.filterLines(this.filter) ?? false;
+  }, 150);
+
   private _scrollToBottom(): void {
     if (this._logElement) {
       window.requestAnimationFrame(() => {
-        this._logElement!.scrollTo(0, 999999);
+        this._logElement!.scrollTo(0, this._logElement!.scrollHeight);
       });
       this._newLogsIndicator = false;
     }
@@ -394,63 +407,6 @@ class ErrorLogCard extends LitElement {
       this._loadLogs();
     }
   };
-
-  private async _highlightSearch() {
-    if (CSS.highlights) {
-      await this.updateComplete;
-      if (this.filter && Array.isArray(this._logHTML) && this._logHTML.length) {
-        const ansiToHtmlElements =
-          this.shadowRoot?.querySelectorAll("ha-ansi-to-html");
-        const allSpans: HTMLSpanElement[] = [];
-        if (ansiToHtmlElements) {
-          for (const haAnsiToHtmlElement of ansiToHtmlElements) {
-            const spanElement =
-              haAnsiToHtmlElement.shadowRoot?.querySelector("span");
-            if (spanElement) {
-              allSpans.push(spanElement);
-            }
-          }
-          const filter = this.filter.toLowerCase();
-
-          const ranges = allSpans
-            .map((el) => ({ el, text: el.textContent?.toLowerCase() || "" }))
-            .map(({ text, el }) => {
-              if (el.firstChild === null) {
-                return null;
-              }
-              const indices: number[] = [];
-              let startPos = 0;
-              while (startPos < text.length) {
-                const index = text.indexOf(filter, startPos);
-                if (index === -1) break;
-                indices.push(index);
-                startPos = index + filter.length;
-              }
-
-              return indices.map((index) => {
-                const range = new Range();
-                range.setStart(el.firstChild!, index);
-                range.setEnd(el.firstChild!, index + filter.length);
-                return range;
-              });
-            })
-            .flat()
-            .filter((range) => range !== null);
-
-          const searchResultsHighlight = new Highlight(...ranges);
-          window.requestAnimationFrame(() => {
-            CSS.highlights.set("search-results", searchResultsHighlight);
-          });
-        }
-      }
-    }
-  }
-
-  private _clearSearchHighlight() {
-    if (CSS.highlights) {
-      CSS.highlights.delete("search-results");
-    }
-  }
 
   static styles: CSSResultGroup = css`
     .error-log-intro {
@@ -560,12 +516,6 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
-    }
-
-    ::highlight(search-results) {
-      background-color: var(--primary-color);
-      border-radius: 4px;
-      color: var(--text-primary-color);
     }
   `;
 }

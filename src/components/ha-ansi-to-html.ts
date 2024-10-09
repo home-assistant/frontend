@@ -1,5 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 
 interface State {
   bold: boolean;
@@ -11,11 +18,22 @@ interface State {
 }
 
 @customElement("ha-ansi-to-html")
-class HaAnsiToHtml extends LitElement {
+export class HaAnsiToHtml extends LitElement {
   @property() public content!: string;
 
+  @query("pre") private _pre!: HTMLPreElement;
+
   protected render(): TemplateResult | void {
-    return html`${this._parseTextToColoredPre(this.content)}`;
+    return html`<pre></pre>`;
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+
+    // handle initial content
+    if (this.content) {
+      this.parseTextToColoredPre(this.content);
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -86,11 +104,22 @@ class HaAnsiToHtml extends LitElement {
       .bg-white {
         background-color: rgb(204, 204, 204);
       }
+
+      ::highlight(search-results) {
+        background-color: var(--primary-color);
+        border-radius: 4px;
+        color: var(--text-primary-color);
+      }
     `;
   }
 
-  private _parseTextToColoredPre(text) {
-    const pre = document.createElement("pre");
+  public parseLinesToColoredPre(lines: string[]) {
+    for (const line of lines) {
+      this.parseLineToColoredPre(line);
+    }
+  }
+
+  public parseLineToColoredPre(line) {
     // eslint-disable-next-line no-control-regex
     const re = /\x1b(?:\[(.*?)[@-~]|\].*?(?:\x07|\x1b\\))/g;
     let i = 0;
@@ -104,36 +133,36 @@ class HaAnsiToHtml extends LitElement {
       backgroundColor: null,
     };
 
-    const addSpan = (content) => {
-      const span = document.createElement("span");
+    const addLine = (content) => {
+      const div = document.createElement("div");
       if (state.bold) {
-        span.classList.add("bold");
+        div.classList.add("bold");
       }
       if (state.italic) {
-        span.classList.add("italic");
+        div.classList.add("italic");
       }
       if (state.underline) {
-        span.classList.add("underline");
+        div.classList.add("underline");
       }
       if (state.strikethrough) {
-        span.classList.add("strikethrough");
+        div.classList.add("strikethrough");
       }
       if (state.foregroundColor !== null) {
-        span.classList.add(`fg-${state.foregroundColor}`);
+        div.classList.add(`fg-${state.foregroundColor}`);
       }
       if (state.backgroundColor !== null) {
-        span.classList.add(`bg-${state.backgroundColor}`);
+        div.classList.add(`bg-${state.backgroundColor}`);
       }
-      span.appendChild(document.createTextNode(content));
-      pre.appendChild(span);
+      div.appendChild(document.createTextNode(content));
+      this._pre.appendChild(div);
     };
 
     /* eslint-disable no-cond-assign */
     let match;
     // eslint-disable-next-line
-    while ((match = re.exec(text)) !== null) {
+    while ((match = re.exec(line)) !== null) {
       const j = match!.index;
-      addSpan(text.substring(i, j));
+      addLine(line.substring(i, j));
       i = j + match[0].length;
 
       if (match[1] === undefined) {
@@ -235,9 +264,70 @@ class HaAnsiToHtml extends LitElement {
         }
       });
     }
-    addSpan(text.substring(i));
+    addLine(line.substring(i));
+  }
 
-    return pre;
+  public parseTextToColoredPre(text) {
+    const lines = text.split("\n");
+
+    for (const line of lines) {
+      this.parseLineToColoredPre(`${line}\n`);
+    }
+  }
+
+  /**
+   * Filter lines based on a search string, lines and search string will be converted to lowercase
+   * @param filter the search string
+   * @returns true if there are lines to display
+   */
+  filterLines(filter: string): boolean {
+    const lines = this.shadowRoot?.querySelectorAll("div") || [];
+    if (!filter) {
+      lines.forEach((line) => {
+        line.style.display = "";
+      });
+      if (CSS.highlights) {
+        CSS.highlights.delete("search-results");
+      }
+    } else {
+      const highlightRanges: Range[] = [];
+      lines.forEach((line) => {
+        if (
+          !line.textContent?.toLowerCase().includes(filter.toLocaleLowerCase())
+        ) {
+          line.style.display = "none";
+        } else {
+          line.style.display = "";
+          if (CSS.highlights && line.firstChild !== null && line.textContent) {
+            const text = line.textContent.toLowerCase();
+            const indices: number[] = [];
+            let startPos = 0;
+            while (startPos < text.length) {
+              const index = text.indexOf(filter, startPos);
+              if (index === -1) break;
+              indices.push(index);
+              startPos = index + filter.length;
+            }
+
+            indices.forEach((index) => {
+              const range = new Range();
+              range.setStart(line.firstChild!, index);
+              range.setEnd(line.firstChild!, index + filter.length);
+              highlightRanges.push(range);
+            });
+          }
+        }
+      });
+      if (CSS.highlights) {
+        CSS.highlights.set("search-results", new Highlight(...highlightRanges));
+      }
+    }
+
+    return !!lines.length;
+  }
+
+  public clear() {
+    this._pre.innerHTML = "";
   }
 }
 
