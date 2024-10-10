@@ -97,6 +97,10 @@ export class HaLocationsEditor extends LitElement {
     this.map.fitBounds(boundingbox, options);
   }
 
+  public getCenter(): { lat: number; lng: number } | undefined {
+    return this.map?.leafletMap?.getCenter();
+  }
+
   public async fitMarker(
     id: string,
     options?: { zoom?: number }
