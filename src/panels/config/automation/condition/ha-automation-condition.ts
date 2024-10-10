@@ -273,11 +273,12 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const conditions = this.conditions.concat();
-    conditions.splice(index, 1);
-    this.conditions = conditions;
+    const condition = this.conditions[index];
+    this.conditions = this.conditions.filter((c) => c !== condition);
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.conditions });
+    // Ensure condition is removed even after update
+    const conditions = this.conditions.filter((c) => c !== condition);
+    fireEvent(this, "value-changed", { value: conditions });
   }
 
   private _conditionChanged(ev: CustomEvent) {

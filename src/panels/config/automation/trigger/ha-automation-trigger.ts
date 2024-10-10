@@ -235,11 +235,12 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const triggers = this.triggers.concat();
-    triggers.splice(index, 1);
-    this.triggers = triggers;
+    const trigger = this.triggers[index];
+    this.triggers = this.triggers.filter((t) => t !== trigger);
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.triggers });
+    // Ensure trigger is removed even after update
+    const triggers = this.triggers.filter((t) => t !== trigger);
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {

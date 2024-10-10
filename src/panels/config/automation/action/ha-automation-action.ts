@@ -250,11 +250,12 @@ export default class HaAutomationAction extends LitElement {
   private async _actionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const actions = this.actions.concat();
-    actions.splice(index, 1);
-    this.actions = actions;
+    const action = this.actions[index];
+    this.actions = this.actions.filter((a) => a !== action);
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.actions });
+    // Ensure action is removed even after update
+    const actions = this.actions.filter((a) => a !== action);
+    fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionChanged(ev: CustomEvent) {
