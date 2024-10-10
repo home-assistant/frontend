@@ -9,12 +9,13 @@ import {
 import {
   CSSResultGroup,
   LitElement,
+  PropertyValues,
   TemplateResult,
   css,
   html,
   nothing,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { formatListWithAnds } from "../../../common/string/format-list";
@@ -63,9 +64,11 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state() private _areas: AreaRegistryEntry[] = [];
+
   private _processAreas = memoizeOne(
     (
-      areas: HomeAssistant["areas"],
+      areas: AreaRegistryEntry[],
       devices: HomeAssistant["devices"],
       entities: HomeAssistant["entities"],
       floors: HomeAssistant["floors"]
@@ -99,8 +102,8 @@ export class HaConfigAreasDashboard extends LitElement {
         };
       };
 
-      const floorAreaLookup = getFloorAreaLookup(Object.values(areas));
-      const unassisgnedAreas = Object.values(areas).filter(
+      const floorAreaLookup = getFloorAreaLookup(areas);
+      const unassignedAreas = areas.filter(
         (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
       );
       return {
@@ -108,10 +111,20 @@ export class HaConfigAreasDashboard extends LitElement {
           ...floor,
           areas: (floorAreaLookup[floor.floor_id] || []).map(processArea),
         })),
-        unassisgnedAreas: unassisgnedAreas.map(processArea),
+        unassignedAreas: unassignedAreas.map(processArea),
       };
     }
   );
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass");
+      if (this.hass.areas !== oldHass?.areas) {
+        this._areas = Object.values(this.hass.areas);
+      }
+    }
+  }
 
   protected render(): TemplateResult {
     const areasAndFloors =
@@ -121,7 +134,7 @@ export class HaConfigAreasDashboard extends LitElement {
       !this.hass.floors
         ? undefined
         : this._processAreas(
-            this.hass.areas,
+            this._areas,
             this.hass.devices,
             this.hass.entities,
             this.hass.floors
@@ -194,7 +207,7 @@ export class HaConfigAreasDashboard extends LitElement {
                 </ha-sortable>
               </div>`
           )}
-          ${areasAndFloors?.unassisgnedAreas.length
+          ${areasAndFloors?.unassignedAreas.length
             ? html`<div class="floor">
                 <div class="header">
                   <h2>
@@ -212,7 +225,7 @@ export class HaConfigAreasDashboard extends LitElement {
                   .floor=${UNASSIGNED_FLOOR}
                 >
                   <div class="areas">
-                    ${areasAndFloors?.unassisgnedAreas.map((area) =>
+                    ${areasAndFloors?.unassignedAreas.map((area) =>
                       this._renderArea(area)
                     )}
                   </div>
@@ -314,12 +327,21 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private async _areaAdded(ev) {
     ev.stopPropagation();
-    const floor_id = ev.currentTarget.floor;
+    const { floor } = ev.currentTarget;
+
+    const newFloorId = floor === UNASSIGNED_FLOOR ? null : floor;
 
     const { data: area } = ev.detail;
 
+    this._areas = this._areas.map<AreaRegistryEntry>((a) => {
+      if (a.area_id === area.area_id) {
+        return { ...a, floor_id: newFloorId };
+      }
+      return a;
+    });
+
     await updateAreaRegistryEntry(this.hass, area.area_id, {
-      floor_id: floor_id === UNASSIGNED_FLOOR ? null : floor_id,
+      floor_id: newFloorId,
     });
   }
 
