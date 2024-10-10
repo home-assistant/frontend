@@ -1,16 +1,34 @@
 import { HomeAssistant } from "../types";
 
-export interface BackupContent {
+interface BackupSyncAgent {
+  id: string;
+}
+
+interface BaseBackupContent {
   slug: string;
   date: string;
   name: string;
   size: number;
-  path: string;
+  agents?: string[];
+}
+
+export interface BackupContent extends BaseBackupContent {
+  path?: string;
+}
+
+export interface BackupSyncedContent extends BaseBackupContent {
+  id: string;
+  agent_id: string;
 }
 
 export interface BackupData {
   backing_up: boolean;
   backups: BackupContent[];
+}
+
+export interface BackupAgentsInfo {
+  agents: BackupSyncAgent[];
+  syncing: boolean;
 }
 
 export const getBackupDownloadUrl = (slug: string) =>
@@ -19,6 +37,29 @@ export const getBackupDownloadUrl = (slug: string) =>
 export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupData> =>
   hass.callWS({
     type: "backup/info",
+  });
+
+export const fetchBackupDetails = (
+  hass: HomeAssistant,
+  slug: string
+): Promise<BackupContent> =>
+  hass.callWS({
+    type: "backup/details",
+    slug,
+  });
+
+export const fetchBackupAgentsInfo = (
+  hass: HomeAssistant
+): Promise<BackupAgentsInfo> =>
+  hass.callWS({
+    type: "backup/agents/info",
+  });
+
+export const fetchBackupAgentsSynced = (
+  hass: HomeAssistant
+): Promise<BackupSyncedContent[]> =>
+  hass.callWS({
+    type: "backup/agents/synced",
   });
 
 export const removeBackup = (
