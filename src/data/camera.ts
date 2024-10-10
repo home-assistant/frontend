@@ -178,7 +178,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;
   dataChannel?: string;
-  get_all_candidates_upfront: boolean;
+  getCandidatesUpfront: boolean;
 }
 
 export const fetchWebRtcClientConfiguration = async (
