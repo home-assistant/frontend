@@ -16,7 +16,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
