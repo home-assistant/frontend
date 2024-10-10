@@ -49,7 +49,7 @@ import {
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
 
-const UNASSIGNED_PATH = ["__unassigned__"];
+const UNASSIGNED_FLOOR = "__unassigned__";
 
 const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
@@ -183,10 +183,10 @@ export class HaConfigAreasDashboard extends LitElement {
                 <ha-sortable
                   handle-selector="a"
                   draggable-selector="a"
-                  @item-moved=${this._areaMoved}
+                  @item-added=${this._areaAdded}
                   group="floor"
                   .options=${SORT_OPTIONS}
-                  .path=${[floor.floor_id]}
+                  .floor=${floor.floor_id}
                 >
                   <div class="areas">
                     ${floor.areas.map((area) => this._renderArea(area))}
@@ -206,10 +206,10 @@ export class HaConfigAreasDashboard extends LitElement {
                 <ha-sortable
                   handle-selector="a"
                   draggable-selector="a"
-                  @item-moved=${this._areaMoved}
+                  @item-added=${this._areaAdded}
                   group="floor"
                   .options=${SORT_OPTIONS}
-                  .path=${UNASSIGNED_PATH}
+                  .floor=${UNASSIGNED_FLOOR}
                 >
                   <div class="areas">
                     ${areasAndFloors?.unassisgnedAreas.map((area) =>
@@ -246,7 +246,10 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   private _renderArea(area) {
-    return html`<a href=${`/config/areas/area/${area.area_id}`}>
+    return html`<a
+      href=${`/config/areas/area/${area.area_id}`}
+      .sortableData=${area}
+    >
       <ha-card outlined>
         <div
           style=${styleMap({
@@ -309,26 +312,14 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  private async _areaMoved(ev) {
-    const areasAndFloors = this._processAreas(
-      this.hass.areas,
-      this.hass.devices,
-      this.hass.entities,
-      this.hass.floors
-    );
-    let area: AreaRegistryEntry;
-    if (ev.detail.oldPath === UNASSIGNED_PATH) {
-      area = areasAndFloors.unassisgnedAreas[ev.detail.oldIndex];
-    } else {
-      const oldFloor = areasAndFloors.floors!.find(
-        (floor) => floor.floor_id === ev.detail.oldPath[0]
-      );
-      area = oldFloor!.areas[ev.detail.oldIndex];
-    }
+  private async _areaAdded(ev) {
+    ev.stopPropagation();
+    const floor_id = ev.currentTarget.floor;
+
+    const { data: area } = ev.detail;
 
     await updateAreaRegistryEntry(this.hass, area.area_id, {
-      floor_id:
-        ev.detail.newPath === UNASSIGNED_PATH ? null : ev.detail.newPath[0],
+      floor_id: floor_id === UNASSIGNED_FLOOR ? null : floor_id,
     });
   }
 
