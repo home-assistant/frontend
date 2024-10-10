@@ -11,14 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
-import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-select";
-import "../../../../../components/ha-settings-row";
-import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-switch";
-import "../../../../../components/ha-textfield";
 import { computeDeviceName } from "../../../../../data/device_registry";
 import {
   ZWaveJSNodeCapabilities,
@@ -28,11 +21,10 @@ import {
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { configTabs } from "./zwave_js-config-router";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
 
 const CAPABILITY_CONTROLS = {
@@ -87,11 +79,10 @@ class ZWaveJSNodeInstaller extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configTabs}
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -117,30 +108,40 @@ class ZWaveJSNodeInstaller extends LitElement {
               "ui.panel.config.zwave_js.node_installer.introduction"
             )}
           </div>
-          ${Object.entries(this._capabilities).map(([endpoint, capabilities]) =>
-            capabilities.map(
-              (capability) =>
-                html`Endpoint: ${endpoint}<br />Command Class:
-                  ${capability.name}<br />
-                  ${capability.id in CAPABILITY_CONTROLS
-                    ? dynamicElement(
-                        `zwave_js-capability-control-${CAPABILITY_CONTROLS[capability.id]}`,
-                        {
-                          hass: this.hass,
-                          device: device,
-                          endpoint: endpoint,
-                          command_class: capability.id,
-                          version: capability.version,
-                          is_secure: capability.is_secure,
-                        }
-                      )
-                    : nothing}
-                  <hr />
-                  <br />`
-            )
+          ${Object.entries(this._capabilities).map(
+            ([endpoint, capabilities]) => html`
+              <h3>Endpoint: ${endpoint}</h3>
+              <ha-card>
+                ${capabilities.map(
+                  (capability) => html`
+                    ${capability.id in CAPABILITY_CONTROLS
+                      ? html` <div class="capability">
+                          <h4>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.node_installer.command_class"
+                            )}:
+                            ${capability.name}
+                          </h4>
+                          ${dynamicElement(
+                            `zwave_js-capability-control-${CAPABILITY_CONTROLS[capability.id]}`,
+                            {
+                              hass: this.hass,
+                              device: device,
+                              endpoint: endpoint,
+                              command_class: capability.id,
+                              version: capability.version,
+                              is_secure: capability.is_secure,
+                            }
+                          )}
+                        </div>`
+                      : nothing}
+                  `
+                )}
+              </ha-card>
+            `
           )}
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -162,7 +163,22 @@ class ZWaveJSNodeInstaller extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, css``];
+    return [
+      haStyle,
+      css`
+        ha-card {
+          margin-bottom: 40px;
+          margin-top: 0;
+        }
+        .capability {
+          border-bottom: 1px solid var(--divider-color);
+          padding: 4px 16px;
+        }
+        .capability:last-child {
+          border-bottom: none;
+        }
+      `,
+    ];
   }
 }
 

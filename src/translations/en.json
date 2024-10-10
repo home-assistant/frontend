@@ -5056,6 +5056,11 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "node_installer": {
+            "header": "Installer Settings",
+            "introduction": "Configure your device installer settings.",
+            "command_class": "Command Class"
           }
         },
         "matter": {
