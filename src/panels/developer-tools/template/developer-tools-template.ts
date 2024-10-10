@@ -281,6 +281,11 @@ class HaPanelDevTemplate extends LitElement {
             max(16px, env(safe-area-inset-left));
         }
 
+        .content.horizontal {
+          --code-mirror-max-height: calc(100vh - 410px);
+          max-height: calc(var(--code-mirror-max-height) + 150px);
+        }
+
         ha-card {
           margin-bottom: 16px;
         }
@@ -293,8 +298,9 @@ class HaPanelDevTemplate extends LitElement {
           color: var(--primary-color);
         }
 
-        .horizontal .edit-pane {
-          max-width: 50%;
+        .content.horizontal > * {
+          width: 50%;
+          margin-bottom: 0px;
         }
 
         .render-spinner {
@@ -317,12 +323,17 @@ class HaPanelDevTemplate extends LitElement {
           background-color: var(--secondary-background-color);
           padding: 8px;
           direction: ltr;
+          overflow: auto;
+          max-height: calc(var(--code-mirror-max-height) - 30px);
         }
 
         .all_listeners {
           color: var(--warning-color);
         }
 
+        .content.horizontal .render-pane {
+          overflow-y: auto;
+        }
         @media all and (max-width: 870px) {
           .render-pane {
             max-width: 100%;
