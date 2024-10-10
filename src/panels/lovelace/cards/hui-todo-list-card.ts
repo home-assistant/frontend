@@ -275,7 +275,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                   )}
                 </p>`}
-            ${checkedItems.length
+            ${this._config.hide_completed !== true && checkedItems.length
               ? html`
                   <div role="separator">
                     <div class="divider"></div>
