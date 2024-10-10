@@ -3,7 +3,10 @@ import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import type { NetworkInterface } from "../../../data/hassio/network";
+import {
+  cidrToNetmask,
+  type NetworkInterface,
+} from "../../../data/hassio/network";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { IPDetailDialogParams } from "./show-ip-detail-dialog";
@@ -54,11 +57,27 @@ class DialogIPDetail extends LitElement {
                 </h3>
                 ${ipv4.address
                   ? html`<div>
-                      ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.ip_address",
-                        { address: ipv4.address?.join(", ") }
-                      )}
-                    </div>`
+                        ${this.hass.localize(
+                          "ui.dialogs.dialog-ip-detail.ip_address",
+                          {
+                            address: ipv4.address
+                              ?.map((address) => address.split("/")[0])
+                              .join(", "),
+                          }
+                        )}
+                      </div>
+                      <div>
+                        ${this.hass.localize(
+                          "ui.dialogs.dialog-ip-detail.netmask",
+                          {
+                            netmask: ipv4.address
+                              ?.map((address) =>
+                                cidrToNetmask(address.split("/")[1])
+                              )
+                              .join(", "),
+                          }
+                        )}
+                      </div>`
                   : ""}
                 ${ipv4.gateway
                   ? html`<div>

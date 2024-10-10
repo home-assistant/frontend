@@ -114,3 +114,25 @@ export const accesspointScan = async (
     )
   );
 };
+
+// Helper functions
+export const cidrToNetmask = (cidr: string): string => {
+  /* eslint-disable no-bitwise */
+  const mask = ~(2 ** (32 - parseInt(cidr, 10)) - 1);
+  return [
+    (mask >>> 24) & 255,
+    (mask >>> 16) & 255,
+    (mask >>> 8) & 255,
+    mask & 255,
+  ].join(".");
+  /* eslint-enable no-bitwise */
+};
+
+export const netmaskToCidr = (netmask: string): number =>
+  netmask
+    .split(".")
+    .reduce(
+      (count, octet) =>
+        count + (parseInt(octet, 10).toString(2).match(/1/g) || []).length,
+      0
+    );

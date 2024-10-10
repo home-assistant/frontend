@@ -23,7 +23,9 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   AccessPoints,
   accesspointScan,
+  cidrToNetmask,
   fetchNetworkInfo,
+  netmaskToCidr,
   NetworkInterface,
   updateNetworkInterface,
   WifiConfiguration,
@@ -350,10 +352,28 @@ export class HassioNetwork extends LitElement {
               <ha-textfield
                 id="address"
                 .label=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.ip_netmask"
+                  "ui.panel.config.network.supervisor.ip"
                 )}
                 .version=${version}
-                .value=${this._toString(this._interface![version].address)}
+                .value=${this._toString(
+                  this._interface![version].address.map(
+                    (address) => address.split("/")[0]
+                  )
+                )}
+                @change=${this._handleInputValueChanged}
+              >
+              </ha-textfield>
+              <ha-textfield
+                id="netmask"
+                .label=${this.hass.localize(
+                  "ui.panel.config.network.supervisor.netmask"
+                )}
+                .version=${version}
+                .value=${this._toString(
+                  this._interface![version].address.map((address) =>
+                    cidrToNetmask(address.split("/")[1])
+                  )
+                )}
                 @change=${this._handleInputValueChanged}
               >
               </ha-textfield>
@@ -524,7 +544,23 @@ export class HassioNetwork extends LitElement {
     }
 
     this._dirty = true;
-    this._interface[version]![id] = value;
+    if (id === "address") {
+      this._interface[version]!.address = value
+        .split(",")
+        .map(
+          (address, index) =>
+            `${address.trim()}/${this._interface![version]!.address?.[index]?.split("/")[1] || "24"}`
+        );
+    } else if (id === "netmask") {
+      this._interface[version]!.address = value
+        .split(",")
+        .map(
+          (netmask, index) =>
+            `${this._interface![version]!.address?.[index]?.split("/")[0] || "0.0.0.0"}/${netmaskToCidr(netmask.trim())}`
+        );
+    } else {
+      this._interface[version]![id] = value;
+    }
   }
 
   private _handleInputValueChangedWifi(ev: Event): void {
