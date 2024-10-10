@@ -12,7 +12,6 @@ import {
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -132,7 +131,6 @@ export class HaManualAutomationEditor extends LitElement {
         .triggers=${this.config.triggers || []}
         .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-trigger>
@@ -174,7 +172,6 @@ export class HaManualAutomationEditor extends LitElement {
         .conditions=${this.config.conditions || []}
         .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-condition>
@@ -214,7 +211,6 @@ export class HaManualAutomationEditor extends LitElement {
         .actions=${this.config.actions || []}
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -243,21 +239,6 @@ export class HaManualAutomationEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, actions: ev.detail.value as Action[] },
-    });
-  }
-
-  private _itemMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    const updatedConfig = nestedArrayMove(
-      this.config,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-    fireEvent(this, "value-changed", {
-      value: updatedConfig,
     });
   }
 

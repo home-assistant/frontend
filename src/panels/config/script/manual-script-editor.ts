@@ -15,7 +15,6 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -163,7 +162,6 @@ export class HaManualScriptEditor extends LitElement {
         .actions=${this.config.sequence || []}
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -182,21 +180,6 @@ export class HaManualScriptEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
-    });
-  }
-
-  private _itemMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    const updatedConfig = nestedArrayMove(
-      this.config,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-    fireEvent(this, "value-changed", {
-      value: updatedConfig,
     });
   }
 

@@ -224,13 +224,14 @@ export interface ForEachRepeat extends BaseRepeat {
   for_each: string | any[];
 }
 
-export interface ChooseActionChoice extends BaseAction {
+export interface Option {
+  alias?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
 
 export interface ChooseAction extends BaseAction {
-  choose: ChooseActionChoice | ChooseActionChoice[] | null;
+  choose: Option | Option[] | null;
   default?: Action | Action[];
 }
 
