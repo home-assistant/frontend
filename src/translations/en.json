@@ -5752,10 +5752,12 @@
               "more-info": "More info",
               "toggle": "Toggle",
               "navigate": "Navigate",
+              "sequence": "Sequence",
               "assist": "Assist",
               "url": "URL",
               "none": "Nothing"
-            }
+            },
+            "sequence_actions": "Actions"
           },
           "condition-editor": {
             "explanation": "The card will be shown when ALL conditions below are fulfilled.",
