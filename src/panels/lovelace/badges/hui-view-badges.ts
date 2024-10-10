@@ -83,11 +83,11 @@ export class HuiViewBadges extends LitElement {
 
   private _badgeMoved(ev) {
     ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const { oldIndex, newIndex } = ev.detail;
     const newConfig = moveBadge(
       this.lovelace!.config,
-      [...oldPath, oldIndex] as [number, number, number],
-      [...newPath, newIndex] as [number, number, number]
+      [this.viewIndex!, oldIndex],
+      [this.viewIndex!, newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
@@ -121,7 +121,6 @@ export class HuiViewBadges extends LitElement {
               @drag-end=${this._dragEnd}
               group="badge"
               draggable-selector="[data-sortable]"
-              .path=${[this.viewIndex]}
               .rollback=${false}
               .options=${BADGE_SORTABLE_OPTIONS}
               invert-swap

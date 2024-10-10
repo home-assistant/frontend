@@ -4,15 +4,12 @@ import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
-import { ItemPath } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
-      oldPath?: ItemPath;
-      newPath?: ItemPath;
     };
     "item-added": {
       index: number;
@@ -28,7 +25,7 @@ declare global {
 
 export type HaSortableOptions = Omit<
   SortableInstance.SortableOptions,
-  "onStart" | "onChoose" | "onEnd"
+  "onStart" | "onChoose" | "onEnd" | "onUpdate" | "onAdd" | "onRemove"
 >;
 
 @customElement("ha-sortable")
@@ -37,9 +34,6 @@ export class HaSortable extends LitElement {
 
   @property({ type: Boolean })
   public disabled = false;
-
-  @property({ type: Array })
-  public path?: ItemPath;
 
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
@@ -170,7 +164,6 @@ export class HaSortable extends LitElement {
   }
 
   private _handleUpdate = (evt) => {
-    if (this.path) return;
     fireEvent(this, "item-moved", {
       newIndex: evt.newIndex,
       oldIndex: evt.oldIndex,
@@ -178,7 +171,6 @@ export class HaSortable extends LitElement {
   };
 
   private _handleAdd = (evt) => {
-    if (this.path) return;
     fireEvent(this, "item-added", {
       index: evt.newIndex,
       data: evt.item.sortableData,
@@ -186,7 +178,6 @@ export class HaSortable extends LitElement {
   };
 
   private _handleRemove = (evt) => {
-    if (this.path) return;
     fireEvent(this, "item-removed", { index: evt.oldIndex });
   };
 
@@ -197,28 +188,6 @@ export class HaSortable extends LitElement {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
-
-    if (!this.path) return;
-
-    const oldIndex = evt.oldIndex;
-    const oldPath = (evt.from.parentElement as HaSortable).path;
-    const newIndex = evt.newIndex;
-    const newPath = (evt.to.parentElement as HaSortable).path;
-
-    if (
-      oldIndex === undefined ||
-      newIndex === undefined ||
-      (oldIndex === newIndex && oldPath?.join(".") === newPath?.join("."))
-    ) {
-      return;
-    }
-
-    fireEvent(this, "item-moved", {
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath,
-    });
   };
 
   private _handleStart = () => {
