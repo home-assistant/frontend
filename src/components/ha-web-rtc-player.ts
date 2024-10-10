@@ -284,7 +284,7 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _handleIceCandidate = (event: RTCPeerConnectionIceEvent) => {
-    if (!this.entityid) {
+    if (!this.entityid || !event.candidate?.candidate) {
       return;
     }
 
@@ -299,10 +299,10 @@ class HaWebRtcPlayer extends LitElement {
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate?.candidate || ""
+        event.candidate?.candidate
       );
     } else {
-      this._candidatesList.push(event.candidate?.candidate || "");
+      this._candidatesList.push(event.candidate?.candidate);
     }
   };
 
@@ -318,6 +318,13 @@ class HaWebRtcPlayer extends LitElement {
   };
 
   private async _handleAnswer(event: WebRtcAnswer) {
+    if (
+      !this._peerConnection?.signalingState ||
+      ["stable", "closed"].includes(this._peerConnection.signalingState)
+    ) {
+      return;
+    }
+
     // Initiate the stream with the remote device
     const remoteDesc = new RTCSessionDescription({
       type: "answer",
@@ -325,7 +332,7 @@ class HaWebRtcPlayer extends LitElement {
     });
     try {
       console.timeLog("WebRTC", "start setRemoteDescription", remoteDesc);
-      await this._peerConnection?.setRemoteDescription(remoteDesc);
+      await this._peerConnection.setRemoteDescription(remoteDesc);
     } catch (err: any) {
       this._error = "Failed to connect WebRTC stream: " + err.message;
       this._cleanUp();
