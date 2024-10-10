@@ -83,8 +83,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _config?: ScriptConfig;
 
-  @state() private _idError = false;
-
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -414,6 +412,18 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._loadConfig();
     }
 
+    if (
+      (changedProps.has("scriptId") || changedProps.has("entityRegistry")) &&
+      this.scriptId &&
+      this.entityRegistry
+    ) {
+      // find entity for when script entity id changed
+      const entity = this.entityRegistry.find(
+        (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
+      );
+      this._entityId = entity?.entity_id;
+    }
+
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
@@ -445,15 +455,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._entityId = this.entityId;
       this._dirty = false;
       this._readOnly = true;
-    }
-  }
-
-  private _setEntityId(id?: string) {
-    this._entityId = id;
-    if (this.hass.states[`script.${this._entityId}`]) {
-      this._idError = true;
-    } else {
-      this._idError = false;
     }
   }
 
@@ -766,28 +767,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _saveScript(): Promise<void> {
-    if (this._idError) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.script.editor.id_already_exists_save_error"
-        ),
-        dismissable: false,
-        duration: -1,
-        action: {
-          action: () => {},
-          text: this.hass.localize("ui.dialogs.generic.ok"),
-        },
-      });
-      return;
-    }
-
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
       if (!saved) {
         return;
       }
-      const entityId = this._computeEntityIdFromAlias(this._config!.alias);
-      this._setEntityId(entityId);
+      this._entityId = this._computeEntityIdFromAlias(this._config!.alias);
     }
     const id = this.scriptId || this._entityId || Date.now();
 
