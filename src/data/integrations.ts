@@ -11,6 +11,7 @@ export interface Integration {
   iot_class?: string;
   supported_by?: string;
   is_built_in?: boolean;
+  overwrites_built_in?: boolean;
   single_config_entry?: boolean;
 }
 
@@ -23,6 +24,7 @@ export interface Brand {
   integrations?: Integrations;
   iot_standards?: IotStandards[];
   is_built_in?: boolean;
+  overwrites_built_in?: boolean;
 }
 
 export interface Brands {
