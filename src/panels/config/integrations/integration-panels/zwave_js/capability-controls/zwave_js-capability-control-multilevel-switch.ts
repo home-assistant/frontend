@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../../../../components/ha-button";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { HomeAssistant } from "../../../../../../types";
-import { invokeZwaveCCApi } from "../../../../../../data/zwave_js";
+import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 
 @customElement("zwave_js-capability-control-multilevel_switch")
 class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
@@ -48,7 +48,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
       (this.shadowRoot!.getElementById("start_level") as any).value
     );
 
-    await invokeZwaveCCApi(
+    await invokeZWaveCCApi(
       this.hass,
       this.device.id,
       this.command_class,
@@ -71,7 +71,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
       (this.shadowRoot!.getElementById("start_level") as any).value
     );
 
-    await invokeZwaveCCApi(
+    await invokeZWaveCCApi(
       this.hass,
       this.device.id,
       this.command_class,
