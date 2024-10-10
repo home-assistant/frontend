@@ -26,9 +26,11 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
+import "./capability-controls/zwave_js-capability-control-thermostat-setback";
 
 const CAPABILITY_CONTROLS = {
   38: "multilevel_switch",
+  71: "thermostat_setback",
 };
 
 @customElement("zwave_js-node-installer")
@@ -78,6 +80,15 @@ class ZWaveJSNodeInstaller extends LitElement {
 
     const device = this.hass.devices[this.deviceId];
 
+    const endpoints = Object.entries(this._capabilities).filter(
+      ([_endpoint, capabilities]) => {
+        const filteredCapabilities = capabilities.filter(
+          (capability) => capability.id in CAPABILITY_CONTROLS
+        );
+        return filteredCapabilities.length > 0;
+      }
+    );
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -108,38 +119,49 @@ class ZWaveJSNodeInstaller extends LitElement {
               "ui.panel.config.zwave_js.node_installer.introduction"
             )}
           </div>
-          ${Object.entries(this._capabilities).map(
-            ([endpoint, capabilities]) => html`
-              <h3>Endpoint: ${endpoint}</h3>
-              <ha-card>
-                ${capabilities.map(
-                  (capability) => html`
-                    ${capability.id in CAPABILITY_CONTROLS
-                      ? html` <div class="capability">
-                          <h4>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.node_installer.command_class"
-                            )}:
-                            ${capability.name}
-                          </h4>
-                          ${dynamicElement(
-                            `zwave_js-capability-control-${CAPABILITY_CONTROLS[capability.id]}`,
-                            {
-                              hass: this.hass,
-                              device: device,
-                              endpoint: endpoint,
-                              command_class: capability.id,
-                              version: capability.version,
-                              is_secure: capability.is_secure,
-                            }
-                          )}
-                        </div>`
-                      : nothing}
-                  `
-                )}
-              </ha-card>
-            `
-          )}
+          ${endpoints.length
+            ? endpoints.map(
+                ([endpoint, capabilities]) => html`
+                  <h3>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.node_installer.endpoint"
+                    )}:
+                    ${endpoint}
+                  </h3>
+                  <ha-card>
+                    ${capabilities.map(
+                      (capability) => html`
+                        ${capability.id in CAPABILITY_CONTROLS
+                          ? html` <div class="capability">
+                              <h4>
+                                ${this.hass.localize(
+                                  "ui.panel.config.zwave_js.node_installer.command_class"
+                                )}:
+                                ${capability.name}
+                              </h4>
+                              ${dynamicElement(
+                                `zwave_js-capability-control-${CAPABILITY_CONTROLS[capability.id]}`,
+                                {
+                                  hass: this.hass,
+                                  device: device,
+                                  endpoint: endpoint,
+                                  command_class: capability.id,
+                                  version: capability.version,
+                                  is_secure: capability.is_secure,
+                                }
+                              )}
+                            </div>`
+                          : nothing}
+                      `
+                    )}
+                  </ha-card>
+                `
+              )
+            : html`<ha-card class="empty"
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_installer.no_settings"
+                )}</ha-card
+              >`}
         </ha-config-section>
       </hass-subpage>
     `;
@@ -176,6 +198,10 @@ class ZWaveJSNodeInstaller extends LitElement {
         }
         .capability:last-child {
           border-bottom: none;
+        }
+        .empty {
+          margin-top: 32px;
+          padding: 24px 16px;
         }
       `,
     ];

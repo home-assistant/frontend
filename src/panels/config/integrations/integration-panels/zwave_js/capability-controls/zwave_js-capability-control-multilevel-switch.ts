@@ -1,9 +1,17 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../../../components/ha-button";
+import { customElement, property, state } from "lit/decorators";
+import "../../../../../../components/buttons/ha-progress-button";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { HomeAssistant } from "../../../../../../types";
 import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
+import "../../../../../../components/ha-textfield";
+import "../../../../../../components/ha-select";
+import "../../../../../../components/ha-list-item";
+import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
+import type { HaSelect } from "../../../../../../components/ha-select";
+import type { HaTextField } from "../../../../../../components/ha-textfield";
+import type { HaSwitch } from "../../../../../../components/ha-switch";
+import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 
 @customElement("zwave_js-capability-control-multilevel_switch")
 class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
@@ -17,69 +25,107 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
 
   @property({ type: Number }) public version!: number;
 
+  @state() private _error?: string;
+
   protected render() {
-    return html`<h3>Transition</h3>
-      <ha-select label="Direction" id="direction">
-        <mwc-list-item .value=${"up"} selected>Up</mwc-list-item>
-        <mwc-list-item .value=${"down"}>Down</mwc-list-item>
+    return html`
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.title"
+        )}
+      </h3>
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : ""}
+      <ha-select
+        .label=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.direction"
+        )}
+        id="direction"
+      >
+        <ha-list-item .value=${"up"} selected
+          >${this.hass.localize(
+            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.up"
+          )}</ha-list-item
+        >
+        <ha-list-item .value=${"down"}
+          >${this.hass.localize(
+            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.down"
+          )}</ha-list-item
+        >
       </ha-select>
-      <ha-formfield label="Ignore start level">
+      <ha-formfield
+        .label=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.ignore_start_level"
+        )}
+      >
         <ha-switch id="ignore_start_level"></ha-switch>
       </ha-formfield>
       <ha-textfield
         type="number"
         id="start_level"
         value="0"
-        label="Start level"
+        .label=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.start_level"
+        )}
       ></ha-textfield>
-      <ha-button @click=${this._startTransition}>Start transition</ha-button>
-      <ha-button @click=${this._stopTransition}>Stop transition</ha-button>`;
+      <div class="actions">
+        <ha-progress-button
+          .control=${"startLevelChange"}
+          @click=${this._controlTransition}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.start_transition"
+          )}
+        </ha-progress-button>
+        <ha-progress-button
+          .control=${"stopLevelChange"}
+          @click=${this._controlTransition}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.stop_transition"
+          )}
+        </ha-progress-button>
+      </div>
+    `;
   }
 
-  private async _startTransition() {
-    const direction = (this.shadowRoot!.getElementById("direction") as any)
+  private async _controlTransition(ev: any) {
+    const control = ev.currentTarget!.control;
+    const button = ev.currentTarget as HaProgressButton;
+    button.progress = true;
+
+    const direction = (this.shadowRoot!.getElementById("direction") as HaSelect)
       .value;
 
     const ignoreStartLevel = (
-      this.shadowRoot!.getElementById("ignore_start_level") as any
+      this.shadowRoot!.getElementById("ignore_start_level") as HaSwitch
     ).checked;
 
     const startLevel = Number(
-      (this.shadowRoot!.getElementById("start_level") as any).value
+      (this.shadowRoot!.getElementById("start_level") as HaTextField).value
     );
 
-    await invokeZWaveCCApi(
-      this.hass,
-      this.device.id,
-      this.command_class,
-      this.endpoint,
-      "startLevelChange",
-      [{ direction, ignoreStartLevel, startLevel }],
-      true
-    );
-  }
+    try {
+      button.actionSuccess();
+      await invokeZWaveCCApi(
+        this.hass,
+        this.device.id,
+        this.command_class,
+        this.endpoint,
+        control,
+        [{ direction, ignoreStartLevel, startLevel }],
+        true
+      );
+    } catch (err) {
+      button.actionError();
+      this._error = this.hass.localize(
+        "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.control_failed",
+        { error: extractApiErrorMessage(err) }
+      );
+    }
 
-  private async _stopTransition() {
-    const direction = (this.shadowRoot!.getElementById("direction") as any)
-      .value;
-
-    const ignoreStartLevel = (
-      this.shadowRoot!.getElementById("ignore_start_level") as any
-    ).checked;
-
-    const startLevel = Number(
-      (this.shadowRoot!.getElementById("start_level") as any).value
-    );
-
-    await invokeZWaveCCApi(
-      this.hass,
-      this.device.id,
-      this.command_class,
-      this.endpoint,
-      "stopLevelChange",
-      [{ direction, ignoreStartLevel, startLevel }],
-      true
-    );
+    button.progress = false;
   }
 
   static styles = css`
@@ -88,6 +134,10 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     ha-textfield {
       display: block;
       margin-bottom: 8px;
+    }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
     }
   `;
 }

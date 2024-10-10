@@ -5060,7 +5060,40 @@
           "node_installer": {
             "header": "Installer Settings",
             "introduction": "Configure your device installer settings.",
-            "command_class": "Command Class"
+            "endpoint": "Endpoint",
+            "no_settings": "This device does not have any installer settings.",
+            "command_class": "Command Class",
+            "capability_controls": {
+              "thermostat_setback": {
+                "title": "Thermostat Setback",
+                "setback_state_label": "Setback in 1/10 degrees (Kelvin)",
+                "setback_state_helper": "Min: -12.8, max: 12.0",
+                "setback_special_state": {
+                  "label": "Setback special state",
+                  "frost_protection": "Frost protection",
+                  "energy_saving": "Energy saving",
+                  "unused": "Unused"
+                },
+                "setback_type": {
+                  "label": "Setback Type",
+                  "none": "None",
+                  "temporary": "Temporary",
+                  "permanent": "Permanent"
+                },
+                "save_setback_failed": "Failed to save setback state. {error}"
+              },
+              "multilevel_switch": {
+                "title": "Transition",
+                "direction": "Direction",
+                "up": "Up",
+                "down": "Down",
+                "ignore_start_level": "Ignore start level",
+                "start_level": "Start level",
+                "start_transition": "Start transition",
+                "stop_transition": "Stop transition",
+                "control_failed": "Failed to control transition. {error}"
+              }
+            }
           }
         },
         "matter": {
