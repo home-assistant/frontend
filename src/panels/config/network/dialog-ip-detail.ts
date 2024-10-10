@@ -116,11 +116,27 @@ class DialogIPDetail extends LitElement {
                 </h3>
                 ${ipv6.address
                   ? html`<div>
-                      ${this.hass.localize(
-                        "ui.dialogs.dialog-ip-detail.ip_address",
-                        { address: ipv6.address?.join(", ") }
-                      )}
-                    </div>`
+                        ${this.hass.localize(
+                          "ui.dialogs.dialog-ip-detail.ip_address",
+                          {
+                            address: ipv6.address
+                              ?.map((address) => address.split("/")[0])
+                              .join(", "),
+                          }
+                        )}
+                      </div>
+                      <div>
+                        ${this.hass.localize(
+                          "ui.dialogs.dialog-ip-detail.netmask",
+                          {
+                            netmask: ipv6.address
+                              ?.map((address) =>
+                                cidrToNetmask(address.split("/")[1], true)
+                              )
+                              .join(", "),
+                          }
+                        )}
+                      </div>`
                   : ""}
                 ${ipv6.gateway
                   ? html`<div>

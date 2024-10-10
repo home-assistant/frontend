@@ -7727,7 +7727,7 @@
         "static": "Static",
         "auto": "Automatic",
         "disabled": "Disabled",
-        "ip": "IP address",
+        "ip_netmask": "IP address/netmask",
         "netmask": "Netmask",
         "gateway": "Gateway address",
         "dns_servers": "DNS servers",
