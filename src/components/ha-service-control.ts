@@ -499,8 +499,23 @@ export class HaServiceControl extends LitElement {
           .defaultValue=${this._value?.data}
           @value-changed=${this._dataChanged}
         ></ha-yaml-editor>`
-      : serviceData?.fields.map((dataField) =>
-          dataField.fields
+      : serviceData?.fields.map((dataField) => {
+          if (!dataField.fields) {
+            return this._renderField(
+              dataField,
+              hasOptional,
+              domain,
+              serviceName,
+              targetEntities
+            );
+          }
+
+          const fields = Object.entries(dataField.fields).map(
+            ([key, field]) => ({ key, ...field })
+          );
+
+          return fields.length &&
+            this._hasFilteredFields(fields, targetEntities)
             ? html`<ha-expansion-panel
                 leftChevron
                 .expanded=${!dataField.collapsed}
@@ -531,14 +546,8 @@ export class HaServiceControl extends LitElement {
                   )
                 )}
               </ha-expansion-panel>`
-            : this._renderField(
-                dataField,
-                hasOptional,
-                domain,
-                serviceName,
-                targetEntities
-              )
-        )} `;
+            : nothing;
+        })} `;
   }
 
   private _getSectionDescription(
@@ -548,6 +557,16 @@ export class HaServiceControl extends LitElement {
   ) {
     return this.hass!.localize(
       `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+    );
+  }
+
+  private _hasFilteredFields(
+    dataFields: ExtHassService["fields"],
+    targetEntities: string[]
+  ) {
+    return dataFields.some(
+      (dataField) =>
+        !dataField.filter || this._filterField(dataField.filter, targetEntities)
     );
   }
 
