@@ -204,11 +204,13 @@ export default class HaAutomationOption extends LitElement {
   private async _optionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const options = this.options.concat();
-    options.splice(index, 1);
-    this.options = options;
+    const option = this.options[index];
+    // Remove option locally to avoid UI jump
+    this.options = this.options.filter((o) => o !== option);
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.options });
+    // Ensure option is removed even after update
+    const options = this.options.filter((o) => o !== option);
+    fireEvent(this, "value-changed", { value: options });
   }
 
   private _optionChanged(ev: CustomEvent) {

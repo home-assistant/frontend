@@ -274,6 +274,7 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const { index } = ev.detail;
     const condition = this.conditions[index];
+    // Remove condition locally to avoid UI jump
     this.conditions = this.conditions.filter((c) => c !== condition);
     await nextRender();
     // Ensure condition is removed even after update

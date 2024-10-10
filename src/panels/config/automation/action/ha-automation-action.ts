@@ -251,6 +251,7 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const { index } = ev.detail;
     const action = this.actions[index];
+    // Remove action locally to avoid UI jump
     this.actions = this.actions.filter((a) => a !== action);
     await nextRender();
     // Ensure action is removed even after update

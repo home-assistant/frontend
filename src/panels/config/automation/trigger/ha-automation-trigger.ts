@@ -236,6 +236,7 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const { index } = ev.detail;
     const trigger = this.triggers[index];
+    // Remove trigger locally to avoid UI jump
     this.triggers = this.triggers.filter((t) => t !== trigger);
     await nextRender();
     // Ensure trigger is removed even after update
