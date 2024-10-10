@@ -414,7 +414,7 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const invokeZwaveCCApi = (
+export const invokeZWaveCCApi = (
   hass: HomeAssistant,
   device_id: string,
   command_class: number,
