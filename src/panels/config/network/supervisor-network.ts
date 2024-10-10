@@ -371,7 +371,7 @@ export class HassioNetwork extends LitElement {
                 .version=${version}
                 .value=${this._toString(
                   this._interface![version].address.map((address) =>
-                    cidrToNetmask(address.split("/")[1])
+                    cidrToNetmask(address.split("/")[1], version === "ipv6")
                   )
                 )}
                 @change=${this._handleInputValueChanged}
@@ -556,7 +556,7 @@ export class HassioNetwork extends LitElement {
         .split(",")
         .map(
           (netmask, index) =>
-            `${this._interface![version]!.address?.[index]?.split("/")[0] || "0.0.0.0"}/${netmaskToCidr(netmask.trim())}`
+            `${this._interface![version]!.address?.[index]?.split("/")[0] || (version === "ipv4" ? "0.0.0.0" : "::")}/${netmaskToCidr(netmask.trim())}`
         );
     } else {
       this._interface[version]![id] = value;
