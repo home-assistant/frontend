@@ -551,6 +551,7 @@ export class HassioNetwork extends LitElement {
           (address, index) =>
             `${address.trim()}/${this._interface![version]!.address?.[index]?.split("/")[1] || "24"}`
         );
+      this.requestUpdate("_interface");
     } else if (id === "netmask") {
       this._interface[version]!.address = value
         .split(",")
@@ -558,6 +559,7 @@ export class HassioNetwork extends LitElement {
           (netmask, index) =>
             `${this._interface![version]!.address?.[index]?.split("/")[0] || (version === "ipv4" ? "0.0.0.0" : "::")}/${netmaskToCidr(netmask.trim())}`
         );
+      this.requestUpdate("_interface");
     } else {
       this._interface[version]![id] = value;
     }
