@@ -35,12 +35,19 @@ class HaConfigBackup extends HassRouterPage {
     },
   };
 
-  protected updatePageEl(pageEl, _: PropertyValues) {
+  protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
+
+    if (
+      (!changedProps || changedProps.has("route")) &&
+      this._currentPage === "details"
+    ) {
+      pageEl.backupSlug = this.routeTail.path.substr(1);
+    }
   }
 }
 

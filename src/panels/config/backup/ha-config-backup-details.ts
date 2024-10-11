@@ -14,6 +14,8 @@ class HaConfigBackupDetails extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: "backup-slug" }) public backupSlug!: string;
+
   @state() private _backup?: BackupContent | null;
 
   @state() private _error?: string;
@@ -48,9 +50,8 @@ class HaConfigBackupDetails extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchBackup() {
-    const slug = "5f7437d2";
     try {
-      this._backup = await fetchBackupDetails(this.hass, slug);
+      this._backup = await fetchBackupDetails(this.hass, this.backupSlug);
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
     }
