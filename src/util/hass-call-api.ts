@@ -2,12 +2,16 @@ import { Auth } from "home-assistant-js-websocket";
 import { fetchWithAuth } from "./fetch-with-auth";
 
 export const handleFetchPromise = async <T>(
-  fetchPromise: Promise<Response>
+  fetchPromise: Promise<Response>,
+  returnResponse?: boolean
 ): Promise<T> => {
   let response;
 
   try {
     response = await fetchPromise;
+    if (returnResponse) {
+      return response as unknown as T;
+    }
   } catch (err: any) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw {
@@ -20,8 +24,6 @@ export const handleFetchPromise = async <T>(
   let body = null;
 
   const contentType = response.headers.get("content-type");
-  const transferEncoding = response.headers.get("transfer-encoding");
-  const contentEncoding = response.headers.get("content-encoding");
 
   if (contentType && contentType.includes("application/json")) {
     try {
@@ -30,17 +32,6 @@ export const handleFetchPromise = async <T>(
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         error: "Unable to parse JSON response",
-        status_code: err.status,
-        body: null,
-      };
-    }
-  } else if (transferEncoding === "chunked" && !contentEncoding) {
-    try {
-      body = response.body;
-    } catch (err: any) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        error: "Unable to get chunked response reader",
         status_code: err.status,
         body: null,
       };
@@ -67,7 +58,8 @@ export default async function hassCallApi<T>(
   path: string,
   parameters?: Record<string, unknown>,
   headers?: Record<string, string>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  returnResponse?: boolean
 ) {
   const url = `${auth.data.hassUrl}/api/${path}`;
 
@@ -83,5 +75,5 @@ export default async function hassCallApi<T>(
     init.body = JSON.stringify(parameters);
   }
 
-  return handleFetchPromise<T>(fetchWithAuth(auth, url, init));
+  return handleFetchPromise<T>(fetchWithAuth(auth, url, init), returnResponse);
 }

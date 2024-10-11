@@ -6,7 +6,12 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  state as litState,
+} from "lit/decorators";
 
 interface State {
   bold: boolean;
@@ -21,7 +26,9 @@ interface State {
 export class HaAnsiToHtml extends LitElement {
   @property() public content!: string;
 
-  @query("pre") private _pre!: HTMLPreElement;
+  @query("pre") private _pre?: HTMLPreElement;
+
+  @litState() private _filter = "";
 
   protected render(): TemplateResult | void {
     return html`<pre></pre>`;
@@ -107,19 +114,28 @@ export class HaAnsiToHtml extends LitElement {
 
       ::highlight(search-results) {
         background-color: var(--primary-color);
-        border-radius: 4px;
         color: var(--text-primary-color);
       }
     `;
   }
 
-  public parseLinesToColoredPre(lines: string[]) {
+  /**
+   * add new lines to the log
+   * @param lines log lines
+   * @param top should the new lines be added to the top of the log
+   */
+  public parseLinesToColoredPre(lines: string[], top = false) {
     for (const line of lines) {
-      this.parseLineToColoredPre(line);
+      this.parseLineToColoredPre(line, top);
     }
   }
 
-  public parseLineToColoredPre(line) {
+  /**
+   * Add a single line to the log
+   * @param line log line
+   * @param top should the new line be added to the top of the log
+   */
+  public parseLineToColoredPre(line, top = false) {
     // eslint-disable-next-line no-control-regex
     const re = /\x1b(?:\[(.*?)[@-~]|\].*?(?:\x07|\x1b\\))/g;
     let i = 0;
@@ -154,7 +170,13 @@ export class HaAnsiToHtml extends LitElement {
         div.classList.add(`bg-${state.backgroundColor}`);
       }
       div.appendChild(document.createTextNode(content));
-      this._pre.appendChild(div);
+
+      if (top) {
+        this._pre?.prepend(div);
+        div.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
+      } else {
+        this._pre?.appendChild(div);
+      }
     };
 
     /* eslint-disable no-cond-assign */
@@ -265,13 +287,18 @@ export class HaAnsiToHtml extends LitElement {
       });
     }
     addLine(line.substring(i));
+
+    // filter new lines if a filter is set
+    if (this._filter) {
+      this.filterLines(this._filter);
+    }
   }
 
   public parseTextToColoredPre(text) {
     const lines = text.split("\n");
 
     for (const line of lines) {
-      this.parseLineToColoredPre(`${line}\n`);
+      this.parseLineToColoredPre(line);
     }
   }
 
@@ -281,29 +308,31 @@ export class HaAnsiToHtml extends LitElement {
    * @returns true if there are lines to display
    */
   filterLines(filter: string): boolean {
+    this._filter = filter;
     const lines = this.shadowRoot?.querySelectorAll("div") || [];
+    let numberOfFoundLines = 0;
     if (!filter) {
       lines.forEach((line) => {
         line.style.display = "";
       });
+      numberOfFoundLines = lines.length;
       if (CSS.highlights) {
         CSS.highlights.delete("search-results");
       }
     } else {
       const highlightRanges: Range[] = [];
       lines.forEach((line) => {
-        if (
-          !line.textContent?.toLowerCase().includes(filter.toLocaleLowerCase())
-        ) {
+        if (!line.textContent?.toLowerCase().includes(filter.toLowerCase())) {
           line.style.display = "none";
         } else {
           line.style.display = "";
+          numberOfFoundLines++;
           if (CSS.highlights && line.firstChild !== null && line.textContent) {
             const text = line.textContent.toLowerCase();
             const indices: number[] = [];
             let startPos = 0;
             while (startPos < text.length) {
-              const index = text.indexOf(filter, startPos);
+              const index = text.indexOf(filter.toLowerCase(), startPos);
               if (index === -1) break;
               indices.push(index);
               startPos = index + filter.length;
@@ -323,11 +352,13 @@ export class HaAnsiToHtml extends LitElement {
       }
     }
 
-    return !!lines.length;
+    return !!numberOfFoundLines;
   }
 
   public clear() {
-    this._pre.innerHTML = "";
+    if (this._pre) {
+      this._pre.innerHTML = "";
+    }
   }
 }
 

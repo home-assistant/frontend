@@ -254,7 +254,8 @@ export interface HomeAssistant {
     path: string,
     parameters?: Record<string, any>,
     headers?: Record<string, string>,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    returnResponse?: boolean
   ): Promise<T>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;

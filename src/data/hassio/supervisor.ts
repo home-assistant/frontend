@@ -177,10 +177,22 @@ export const fetchHassioInfo = async (
   );
 };
 
-export const fetchHassioLogs = async (hass: HomeAssistant, provider: string) =>
-  hass.callApi<string>(
+export const fetchHassioLogs = async (
+  hass: HomeAssistant,
+  provider: string,
+  range?: string
+) =>
+  hass.callApi<Response>(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`,
+    undefined,
+    range
+      ? {
+          Range: range,
+        }
+      : undefined,
+    undefined,
+    true
   );
 
 export const fetchHassioLogsFollow = async (
@@ -189,12 +201,13 @@ export const fetchHassioLogsFollow = async (
   signal: AbortSignal,
   lines = 100
 ) =>
-  hass.callApi<AsyncIterable<Uint8Array>>(
+  hass.callApi<Response>(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/follow?lines=${lines}`,
     undefined,
     undefined,
-    signal
+    signal,
+    true
   );
 
 export const getHassioLogDownloadUrl = (provider: string) =>

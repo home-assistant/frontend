@@ -1,10 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  mdiArrowCollapseDown,
-  mdiDownload,
-  mdiMenuDown,
-  mdiRefresh,
-} from "@mdi/js";
+import { mdiArrowCollapseDown, mdiDownload, mdiRefresh } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -26,9 +21,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-menu";
-import "../../../components/ha-md-menu-item";
+import "../../../components/ha-circular-progress";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -41,14 +34,13 @@ import {
 } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { HaMenu } from "../../../components/ha-menu";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 
-const NUMBER_OF_LINES_OPTIONS = [100, 500, 1000, 5000, 10000];
+const NUMBER_OF_LINES = 100;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -64,11 +56,14 @@ class ErrorLogCard extends LitElement {
 
   @query(".error-log") private _logElement?: HTMLElement;
 
-  @query("#scroll-marker") private _scrollMarkerElement?: HTMLElement;
+  @query("#scroll-top-marker") private _scrollTopMarkerElement?: HTMLElement;
 
-  @query("#nr-of-lines-menu") private _nrOfLinesMenuElement?: HaMenu;
+  @query("#scroll-bottom-marker")
+  private _scrollBottomMarkerElement?: HTMLElement;
 
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
+
+  @state() private _firstCursor?: string;
 
   @state() private _scrolledToBottomController =
     new IntersectionController<boolean>(this, {
@@ -77,9 +72,10 @@ class ErrorLogCard extends LitElement {
       },
     });
 
-  @state() private _newLogsIndicator?: boolean;
+  @state() private _scrolledToTopController =
+    new IntersectionController<boolean>(this, {});
 
-  @state() private _numberOfLines = NUMBER_OF_LINES_OPTIONS[0];
+  @state() private _newLogsIndicator?: boolean;
 
   @state() private _error?: string;
 
@@ -89,7 +85,11 @@ class ErrorLogCard extends LitElement {
 
   @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
 
+  @state() private _loadingPrevState?: "loading" | "end" | "loaded";
+
   @state() private _noSearchResults: boolean = false;
+
+  @state() private _numberOfLines?: number;
 
   protected render(): TemplateResult {
     return html`
@@ -104,37 +104,7 @@ class ErrorLogCard extends LitElement {
               this.hass.localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              ${this._streamSupported
-                ? html`<ha-assist-chip
-                    .label=${this.hass.localize(
-                      "ui.panel.config.logs.nr_of_lines"
-                    )}
-                    id="nr-of-lines-anchor"
-                    @click=${this._toggleNumberOfLinesMenu}
-                  >
-                    <ha-svg-icon
-                      slot="trailing-icon"
-                      .path=${mdiMenuDown}
-                    ></ha-svg-icon
-                  ></ha-assist-chip>`
-                : nothing}
-              <ha-menu
-                anchor="nr-of-lines-anchor"
-                id="nr-of-lines-menu"
-                positioning="fixed"
-              >
-                ${NUMBER_OF_LINES_OPTIONS.map(
-                  (number) => html`
-                    <ha-md-menu-item
-                      .value=${number}
-                      .selected=${number === this._numberOfLines}
-                      @click=${this._setNumberOfLines}
-                    >
-                      ${number}
-                    </ha-md-menu-item>
-                  `
-                )}
-              </ha-menu>
+              ${this._numberOfLines}
               <ha-icon-button
                 .path=${mdiDownload}
                 @click=${this._downloadFullLog}
@@ -152,6 +122,14 @@ class ErrorLogCard extends LitElement {
             </div>
           </div>
           <div class="card-content error-log">
+            <div id="scroll-top-marker"></div>
+            ${this._loadingPrevState === "loading"
+              ? html`<div class="loading-old">
+                  <ha-circular-progress
+                    .indeterminate=${this._loadingPrevState === "loading"}
+                  ></ha-circular-progress>
+                </div>`
+              : nothing}
             ${this._loadingState === "loading"
               ? html`<div>
                   ${this.hass.localize("ui.panel.config.logs.loading_log")}
@@ -172,7 +150,7 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             <ha-ansi-to-html></ha-ansi-to-html>
-            <div id="scroll-marker"></div>
+            <div id="scroll-bottom-marker"></div>
           </div>
           <ha-button
             class="new-logs-indicator ${classMap({
@@ -224,7 +202,10 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    this._scrolledToBottomController.observe(this._scrollMarkerElement!);
+    this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
+
+    this._scrolledToTopController.callback = this._handleTopScroll;
+    this._scrolledToTopController.observe(this._scrollTopMarkerElement!);
 
     window.addEventListener("connection-status", this._handleConnectionStatus);
 
@@ -253,6 +234,16 @@ class ErrorLogCard extends LitElement {
 
     if (changedProps.has("filter")) {
       this._debounceSearch();
+    }
+
+    if (
+      changedProps.has("_loadingState") &&
+      this._loadingState === "loaded" &&
+      this._scrolledToTopController.value &&
+      this._firstCursor &&
+      !this._loadingPrevState
+    ) {
+      this._loadMoreLogs();
     }
   }
 
@@ -283,13 +274,6 @@ class ErrorLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
-  private _setNumberOfLines(ev: any): void {
-    if (ev?.target?.value && ev.target.value !== this._numberOfLines) {
-      this._numberOfLines = ev.target.value;
-      this._loadLogs();
-    }
-  }
-
   private _showLogs(): void {
     this.show = true;
   }
@@ -297,6 +281,9 @@ class ErrorLogCard extends LitElement {
   private async _loadLogs(): Promise<void> {
     this._error = undefined;
     this._loadingState = "loading";
+    this._loadingPrevState = undefined;
+    this._firstCursor = undefined;
+    this._numberOfLines = 0;
 
     try {
       if (this._logStreamAborter) {
@@ -310,14 +297,18 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const body = await fetchHassioLogsFollow(
+        const response = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
-          this._numberOfLines
+          NUMBER_OF_LINES
         );
 
-        if (!body) {
+        if (response.headers.has("X-First-Cursor")) {
+          this._firstCursor = response.headers.get("X-First-Cursor")!;
+        }
+
+        if (!response.body) {
           throw new Error("No stream body found");
         }
 
@@ -326,30 +317,40 @@ class ErrorLogCard extends LitElement {
         let tempLogLine = "";
         this._ansiToHtmlElement?.clear();
 
-        for await (const chunk of body) {
-          const value = new TextDecoder().decode(chunk);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
 
-          const scrolledToBottom = this._scrolledToBottomController.value;
-          const lines = `${tempLogLine}${value}`
-            .split("\n")
-            .filter((line) => line.trim() !== "");
+        while (!done) {
+          // eslint-disable-next-line no-await-in-loop
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
 
-          // handle edge case where the last line is not complete
-          if (value.endsWith("\n")) {
-            tempLogLine = "";
-          } else {
-            tempLogLine = lines.splice(-1, 1)[0];
-          }
+          if (value) {
+            const chunk = decoder.decode(value, { stream: !done });
+            const scrolledToBottom = this._scrolledToBottomController.value;
+            const lines = `${tempLogLine}${chunk}`
+              .split("\n")
+              .filter((line) => line.trim() !== "");
 
-          if (lines.length) {
-            this._loadingState = "loaded";
-            this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
-          }
+            // handle edge case where the last line is not complete
+            if (chunk.endsWith("\n")) {
+              tempLogLine = "";
+            } else {
+              tempLogLine = lines.splice(-1, 1)[0];
+            }
 
-          if (scrolledToBottom && this._logElement) {
-            this._scrollToBottom();
-          } else {
-            this._newLogsIndicator = true;
+            if (lines.length) {
+              this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
+              this._numberOfLines += lines.length;
+              this._loadingState = "loaded";
+            }
+
+            if (scrolledToBottom && this._logElement) {
+              this._scrollToBottom();
+            } else {
+              this._newLogsIndicator = true;
+            }
           }
         }
       } else {
@@ -357,7 +358,8 @@ class ErrorLogCard extends LitElement {
         this._streamSupported = false;
         let logs = "";
         if (isComponentLoaded(this.hass, "hassio") && this.provider) {
-          logs = await fetchHassioLogs(this.hass, this.provider);
+          const repsonse = await fetchHassioLogs(this.hass, this.provider);
+          logs = await repsonse.text();
         } else {
           logs = await fetchErrorLog(this.hass);
         }
@@ -380,8 +382,11 @@ class ErrorLogCard extends LitElement {
   }
 
   private _debounceSearch = debounce(() => {
-    this._noSearchResults =
-      this._ansiToHtmlElement?.filterLines(this.filter) ?? false;
+    this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);
+
+    if (!this.filter) {
+      this._scrollToBottom();
+    }
   }, 150);
 
   private _scrollToBottom(): void {
@@ -393,12 +398,6 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _toggleNumberOfLinesMenu() {
-    if (this._nrOfLinesMenuElement) {
-      this._nrOfLinesMenuElement.open = !this._nrOfLinesMenuElement.open;
-    }
-  }
-
   private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
     if (ev.detail === "disconnected" && this._logStreamAborter) {
       this._logStreamAborter.abort();
@@ -406,6 +405,73 @@ class ErrorLogCard extends LitElement {
     if (ev.detail === "connected" && this.show) {
       this._loadLogs();
     }
+  };
+
+  private async _loadMoreLogs() {
+    await this.updateComplete;
+    if (
+      this._firstCursor &&
+      this._loadingPrevState !== "loading" &&
+      this._loadingState === "loaded" &&
+      this._logElement &&
+      this._scrolledToTopController.value
+    ) {
+      const scrolledToBottom = this._scrolledToBottomController.value;
+      const scrollPositionFromBottom =
+        this._logElement.scrollHeight - this._logElement.scrollTop;
+      this._loadingPrevState = "loading";
+      const response = await fetchHassioLogs(
+        this.hass,
+        this.provider,
+        `entries=${this._firstCursor}:-100:100`
+      );
+
+      if (response.headers.has("X-First-Cursor")) {
+        if (this._firstCursor === response.headers.get("X-First-Cursor")!) {
+          this._loadingPrevState = "end";
+          return;
+        }
+        this._firstCursor = response.headers.get("X-First-Cursor")!;
+      }
+
+      const body = await response.text();
+
+      if (body) {
+        const lines = body
+          .split("\n")
+          .filter((line) => line.trim() !== "")
+          .reverse();
+
+        this._ansiToHtmlElement?.parseLinesToColoredPre(lines, true);
+        this._numberOfLines! += lines.length;
+        this._loadingPrevState = "loaded";
+      } else {
+        this._loadingPrevState = "end";
+      }
+
+      if (scrolledToBottom) {
+        this._scrollToBottom();
+      } else if (this._loadingPrevState !== "end" && this._logElement) {
+        window.requestAnimationFrame(() => {
+          this._logElement!.scrollTop =
+            this._logElement!.scrollHeight - scrollPositionFromBottom;
+        });
+      }
+    }
+  }
+
+  private _handleTopScroll = (entries) => {
+    const isVisible = entries[0].isIntersecting;
+    if (
+      this._firstCursor &&
+      isVisible &&
+      this._loadingState === "loaded" &&
+      (!this._loadingPrevState || this._loadingPrevState === "loaded") &&
+      !this.filter
+    ) {
+      this._loadMoreLogs();
+    }
+    return isVisible;
   };
 
   static styles: CSSResultGroup = css`
@@ -484,10 +550,6 @@ class ErrorLogCard extends LitElement {
       background-color: var(--secondary-background-color);
     }
 
-    .error-log #scroll-marker {
-      height: 1px; /* Small height to act as a scroll marker */
-    }
-
     .new-logs-indicator {
       --mdc-theme-primary: var(--text-primary-color);
 
@@ -516,6 +578,13 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
+    }
+
+    .loading-old {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      padding: 16px;
     }
   `;
 }
