@@ -3684,9 +3684,6 @@
           "editor": {
             "alias": "Name",
             "icon": "Icon",
-            "id": "Entity ID",
-            "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
-            "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
