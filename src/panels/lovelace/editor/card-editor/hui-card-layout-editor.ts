@@ -26,6 +26,7 @@ import { HuiCard } from "../../cards/hui-card";
 import {
   CardGridSize,
   computeCardGridSize,
+  GRID_COLUMN_MULTIPLIER,
 } from "../../common/compute-card-grid-size";
 import { LovelaceLayoutOptions } from "../../types";
 
@@ -57,11 +58,24 @@ export class HuiCardLayoutEditor extends LitElement {
     })
   );
 
-  private _computeCardGridSize = memoizeOne(computeCardGridSize);
+  private _computeCardGridSize = memoizeOne(
+    (options: LovelaceLayoutOptions) => {
+      const size = computeCardGridSize(options);
+      if (!options.grid_precision_mode) {
+        size.columns =
+          typeof size.columns === "number"
+            ? Math.round(size.columns / GRID_COLUMN_MULTIPLIER)
+            : size.columns;
+      }
+      return size;
+    }
+  );
 
   private _isDefault = memoizeOne(
     (options?: LovelaceLayoutOptions) =>
-      options?.grid_columns === undefined && options?.grid_rows === undefined
+      options?.grid_columns === undefined &&
+      options?.grid_rows === undefined &&
+      options?.grid_precision_mode === undefined
   );
 
   render() {
@@ -73,6 +87,8 @@ export class HuiCardLayoutEditor extends LitElement {
     const value = this._computeCardGridSize(options);
 
     const totalColumns = (this.sectionConfig.column_span ?? 1) * 4;
+
+    const precisionMode = options.grid_precision_mode ?? false;
 
     return html`
       <div class="header">
@@ -135,20 +151,39 @@ export class HuiCardLayoutEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <ha-grid-size-picker
-              style=${styleMap({
-                "max-width": `${totalColumns * 45 + 50}px`,
-              })}
-              .columns=${totalColumns}
-              .hass=${this.hass}
-              .value=${value}
-              .isDefault=${this._isDefault(this.config.layout_options)}
-              @value-changed=${this._gridSizeChanged}
-              .rowMin=${options.grid_min_rows}
-              .rowMax=${options.grid_max_rows}
-              .columnMin=${options.grid_min_columns}
-              .columnMax=${options.grid_max_columns}
-            ></ha-grid-size-picker>
+            ${precisionMode
+              ? html`
+                  <ha-grid-size-picker
+                    style=${styleMap({
+                      "max-width": `${totalColumns * 50 + 50}px`,
+                    })}
+                    .columns=${totalColumns * GRID_COLUMN_MULTIPLIER}
+                    .hass=${this.hass}
+                    .value=${value}
+                    .isDefault=${this._isDefault(this.config.layout_options)}
+                    @grid-reset=${this._reset}
+                    @value-changed=${this._gridSizeChanged}
+                    .rowMin=${options.grid_min_rows}
+                    .rowMax=${options.grid_max_rows}
+                  ></ha-grid-size-picker>
+                `
+              : html`
+                  <ha-grid-size-picker
+                    style=${styleMap({
+                      "max-width": `${totalColumns * 50 + 50}px`,
+                    })}
+                    .columns=${totalColumns}
+                    .hass=${this.hass}
+                    .value=${value}
+                    .isDefault=${this._isDefault(this.config.layout_options)}
+                    @grid-reset=${this._reset}
+                    @value-changed=${this._gridSizeChanged}
+                    .rowMin=${options.grid_min_rows}
+                    .rowMax=${options.grid_max_rows}
+                    .columnMin=${options.grid_min_columns}
+                    .columnMax=${options.grid_max_columns}
+                  ></ha-grid-size-picker>
+                `}
             <ha-settings-row>
               <span slot="heading" data-for="full-width">
                 ${this.hass.localize(
@@ -164,6 +199,24 @@ export class HuiCardLayoutEditor extends LitElement {
                 @change=${this._fullWidthChanged}
                 .checked=${value.columns === "full"}
                 name="full-width"
+              >
+              </ha-switch>
+            </ha-settings-row>
+            <ha-settings-row>
+              <span slot="heading" data-for="full-width">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precision_mode"
+                )}
+              </span>
+              <span slot="description" data-for="full-width">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precision_mode_helper"
+                )}
+              </span>
+              <ha-switch
+                @change=${this._precisionModeChanged}
+                .checked=${precisionMode}
+                name="full-precision_mode"
               >
               </ha-switch>
             </ha-settings-row>
@@ -210,9 +263,6 @@ export class HuiCardLayoutEditor extends LitElement {
         break;
       case 1:
         this._yamlMode = true;
-        break;
-      case 2:
-        this._reset();
         break;
     }
   }
@@ -272,6 +322,34 @@ export class HuiCardLayoutEditor extends LitElement {
           : (this._defaultLayoutOptions?.grid_min_columns ?? 1),
       },
     };
+    fireEvent(this, "value-changed", { value: newConfig });
+  }
+
+  private _precisionModeChanged(ev): void {
+    ev.stopPropagation();
+    const value = ev.target.checked;
+
+    const preciseMode = value;
+    const gridColumns = this.config.layout_options?.grid_columns;
+
+    const newGridColumns =
+      typeof gridColumns === "number"
+        ? preciseMode
+          ? gridColumns * GRID_COLUMN_MULTIPLIER
+          : Math.round(gridColumns / GRID_COLUMN_MULTIPLIER)
+        : gridColumns;
+
+    const newConfig: LovelaceCardConfig = {
+      ...this.config,
+      layout_options: {
+        ...this.config.layout_options,
+        grid_columns: newGridColumns,
+        grid_precision_mode: preciseMode || undefined,
+      },
+    };
+    if (Object.keys(newConfig.layout_options!).length === 0) {
+      delete newConfig.layout_options;
+    }
     fireEvent(this, "value-changed", { value: newConfig });
   }
 

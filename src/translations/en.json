@@ -5645,7 +5645,9 @@
             },
             "layout": {
               "full_width": "Full width card",
-              "full_width_helper": "Take up the full width of the section whatever its size"
+              "full_width_helper": "Take up the full width of the section whatever its size",
+              "precision_mode": "Precision mode",
+              "precision_mode_helper": "Change the card width with precision without limits"
             }
           },
           "edit_badge": {
