@@ -3681,21 +3681,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/polymer@npm:3.5.1":
-  version: 3.5.1
-  resolution: "@polymer/polymer@npm:3.5.1"
+"@polymer/polymer@npm:3.5.2":
+  version: 3.5.2
+  resolution: "@polymer/polymer@npm:3.5.2"
   dependencies:
     "@webcomponents/shadycss": "npm:^1.9.1"
-  checksum: 10/d076d0e39705053ae4b0931142f1a5741988b72b38a6f3ca54131490c2ea76064a4daff3dc6c8649bb81ce8ab2be8670ec51d4d500058ee3c8a9f23529cf4cfb
+  checksum: 10/fdacd436c64e8e122090480f99fb94396c3f351b99f6919e579197a2880a357bc3e8e7a2922e32a3ed0c0a363f0b096242faee93a23800768ed27784d49664ad
   languageName: node
   linkType: hard
 
-"@polymer/polymer@patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 3.5.1
-  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.5.1&hash=0f00db&locator=home-assistant-frontend%40workspace%3A."
+"@polymer/polymer@patch:@polymer/polymer@3.5.2#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 3.5.2
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.5.2#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.5.2&hash=0f00db&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@webcomponents/shadycss": "npm:^1.9.1"
-  checksum: 10/31cc3b40866b302c305684e8070aae2428af4949f56c716a5d8bdbd685d9d1f309b308981264a317cb242ae53038f373cf3fb25b96f9e0cb02dc505082605a52
+  checksum: 10/5f610f979eed3b42f3d8d09c60797872b5418846baff1bc48f93d7cc13889fe78d85b0f24bcf9d7fcd9007910d144015162496295685533afe06f494d9c7cf74
   languageName: node
   linkType: hard
 
@@ -8941,7 +8941,7 @@ __metadata:
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
     "@polymer/paper-tabs": "npm:3.1.0"
-    "@polymer/polymer": "npm:3.5.1"
+    "@polymer/polymer": "npm:3.5.2"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rollup/plugin-babel": "npm:6.0.4"
     "@rollup/plugin-commonjs": "npm:26.0.1"
