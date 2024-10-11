@@ -1,5 +1,4 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCloud, mdiDatabase, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -7,7 +6,6 @@ import {
   TemplateResult,
   css,
   html,
-  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
@@ -32,6 +30,9 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { brandsUrl } from "../../../util/brands-url";
+
+const localAgent = "backup.local";
 
 @customElement("ha-config-backup-list")
 class HaConfigBackup extends LitElement {
@@ -51,22 +52,6 @@ class HaConfigBackup extends LitElement {
       _language,
       localize: LocalizeFunc
     ): DataTableColumnContainer<BackupContent> => ({
-      local: {
-        title: "",
-        type: "icon",
-        template: (backup) =>
-          backup.path
-            ? html`<ha-svg-icon .path=${mdiDatabase}></ha-svg-icon>`
-            : nothing,
-      },
-      synced: {
-        title: "",
-        type: "icon",
-        template: (backup) =>
-          backup.agents && backup.agents.length > 0
-            ? html`<ha-svg-icon .path=${mdiCloud}></ha-svg-icon>`
-            : nothing,
-      },
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
@@ -97,6 +82,30 @@ class HaConfigBackup extends LitElement {
         sortable: true,
         template: (backup) =>
           relativeTime(new Date(backup.date), this.hass.locale),
+      },
+      locations: {
+        title: "Locations",
+        template: (backup) =>
+          html`${[
+            ...(backup.path ? [localAgent] : []),
+            ...(backup.agents || []).sort(),
+          ].map((agent) => {
+            const [domain, name] = agent.split(".");
+            return html`<img
+              title=${name}
+              .src=${brandsUrl({
+                domain,
+                type: "icon",
+                useFallback: true,
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+              height="24"
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              alt=${name}
+              slot="graphic"
+            />`;
+          })}`,
       },
     })
   );
