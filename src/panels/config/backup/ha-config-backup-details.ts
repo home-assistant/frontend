@@ -4,12 +4,11 @@ import "../../../layouts/hass-subpage";
 
 import "../../../components/ha-alert";
 
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { BackupContent, fetchBackupDetails } from "../../../data/backup";
 
 @customElement("ha-config-backup-details")
-class HaConfigBackupDetails extends SubscribeMixin(LitElement) {
+class HaConfigBackupDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
