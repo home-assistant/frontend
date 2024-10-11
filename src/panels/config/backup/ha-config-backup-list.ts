@@ -58,15 +58,16 @@ class HaConfigBackup extends LitElement {
         sortable: true,
         filterable: true,
         flex: 2,
-        template: narrow
-          ? undefined
-          : (backup) =>
-              html`${backup.name}
+        template: (backup) =>
+          narrow || !backup.path
+            ? backup.name
+            : html`${backup.name}
                 <div class="secondary">${backup.path}</div>`,
       },
       path: {
         title: localize("ui.panel.config.backup.path"),
         hidden: !narrow,
+        template: (backup) => backup.path || "-",
       },
 
       size: {
