@@ -51,6 +51,7 @@ export type LovelaceLayoutOptions = {
   grid_min_columns?: number;
   grid_min_rows?: number;
   grid_max_rows?: number;
+  grid_precision_mode?: boolean;
 };
 
 export interface LovelaceCard extends HTMLElement {

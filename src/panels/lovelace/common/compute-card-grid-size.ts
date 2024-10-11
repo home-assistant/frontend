@@ -11,6 +11,8 @@ export type CardGridSize = {
   columns: number | "full";
 };
 
+export const GRID_COLUMN_MULTIPLIER = 3;
+
 export const computeCardGridSize = (
   options: LovelaceLayoutOptions
 ): CardGridSize => {
@@ -20,14 +22,16 @@ export const computeCardGridSize = (
   const maxRows = options.grid_max_rows;
   const minColumns = options.grid_min_columns;
   const maxColumns = options.grid_max_columns;
+  const precisionMode = options.grid_precision_mode;
 
   const clampedRows =
     typeof rows === "string" ? rows : conditionalClamp(rows, minRows, maxRows);
 
   const clampedColumns =
-    typeof columns === "string"
+    typeof columns === "string" || precisionMode
       ? columns
-      : conditionalClamp(columns, minColumns, maxColumns);
+      : conditionalClamp(columns, minColumns, maxColumns) *
+        GRID_COLUMN_MULTIPLIER;
 
   return {
     rows: clampedRows,
