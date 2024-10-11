@@ -1635,7 +1635,8 @@
           "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
-          "remove": "Are you sure that you want to remove the device?"
+          "remove_title": "Remove device",
+          "remove_text": "This device will be permanently removed from the Zigbee network."
         },
         "quirk": "Quirk",
         "last_seen": "Last seen",
