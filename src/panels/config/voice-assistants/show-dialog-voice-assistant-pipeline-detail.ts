@@ -7,12 +7,9 @@ import {
 export interface VoiceAssistantPipelineDetailsDialogParams {
   cloudActiveSubscription?: boolean;
   pipeline?: AssistPipeline;
-  preferred?: boolean;
   hideWakeWord?: boolean;
   updatePipeline: (updates: AssistPipelineMutableParams) => Promise<unknown>;
-  setPipelinePreferred: () => Promise<unknown>;
   createPipeline?: (values: AssistPipelineMutableParams) => Promise<unknown>;
-  deletePipeline?: () => Promise<boolean>;
 }
 
 export const loadVoiceAssistantPipelineDetailDialog = () =>

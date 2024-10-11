@@ -1,13 +1,23 @@
 import "@material/mwc-list/mwc-list";
-import { mdiHelpCircle, mdiPlus, mdiStar } from "@mdi/js";
+import {
+  mdiBug,
+  mdiCog,
+  mdiCommentProcessingOutline,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiPlus,
+  mdiStar,
+  mdiTrashCan,
+} from "@mdi/js";
 import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatLanguageCode } from "../../../common/language/format_language";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
@@ -23,11 +33,15 @@ import {
 } from "../../../data/assist_pipeline";
 import { CloudStatus } from "../../../data/cloud";
 import { ExposeEntitySettings } from "../../../data/expose";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
+import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -97,24 +111,75 @@ export class AssistPref extends LitElement {
         <mwc-list>
           ${this._pipelines.map(
             (pipeline) => html`
-              <ha-list-item
-                twoline
-                hasMeta
-                role="button"
-                @click=${this._editPipeline}
-                .id=${pipeline.id}
-              >
-                ${pipeline.name}
+              <ha-list-item twoline hasMeta>
+                <span>
+                  ${pipeline.name}
+                  ${this._preferred === pipeline.id
+                    ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
+                    : ""}
+                </span>
                 <span slot="secondary">
                   ${formatLanguageCode(pipeline.language, this.hass.locale)}
                 </span>
-                ${this._preferred === pipeline.id
-                  ? html`<ha-svg-icon
-                      slot="meta"
-                      .path=${mdiStar}
-                    ></ha-svg-icon>`
-                  : ""}
-                <ha-icon-next slot="meta"></ha-icon-next>
+                <ha-icon-button
+                  slot="meta"
+                  .path=${mdiCog}
+                  .id=${pipeline.id}
+                  @click=${this._editPipeline}
+                ></ha-icon-button>
+                <ha-button-menu fixed slot="meta">
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.menu.open"
+                    )}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
+                  <ha-list-item
+                    graphic="icon"
+                    .id=${pipeline.id}
+                    @request-selected=${this._talkWithPipeline}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.start_conversation"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiCommentProcessingOutline}
+                    ></ha-svg-icon>
+                  </ha-list-item>
+                  <ha-list-item
+                    graphic="icon"
+                    .disabled=${this._preferred === pipeline.id}
+                    .id=${pipeline.id}
+                    @request-selected=${this._setPreferredPipeline}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.set_as_preferred"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiStar}></ha-svg-icon>
+                  </ha-list-item>
+                  <a href=${`/config/voice-assistants/debug/${pipeline.id}`}>
+                    <ha-list-item graphic="icon">
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
+                      )}
+                      <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
+                    </ha-list-item>
+                  </a>
+                  <ha-list-item
+                    class="danger"
+                    graphic="icon"
+                    .id=${pipeline.id}
+                    @request-selected=${this._deletePipeline}
+                  >
+                    ${this.hass.localize("ui.common.delete")}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiTrashCan}
+                    ></ha-svg-icon>
+                  </ha-list-item>
+                </ha-button-menu>
               </ha-list-item>
             `
           )}
@@ -157,6 +222,49 @@ export class AssistPref extends LitElement {
     `;
   }
 
+  private _talkWithPipeline(ev) {
+    const id = ev.currentTarget.id as string;
+    showVoiceCommandDialog(this, this.hass, { pipeline_id: id });
+  }
+
+  private async _setPreferredPipeline(ev) {
+    const id = ev.currentTarget.id as string;
+    await setAssistPipelinePreferred(this.hass!, id);
+    this._preferred = id;
+  }
+
+  private async _deletePipeline(ev) {
+    const id = ev.currentTarget.id as string;
+    if (this._preferred === id) {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.delete.error_preferred"
+        ),
+      });
+      return;
+    }
+    const pipeline = this._pipelines.find((res) => res.id === id);
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_title",
+          { name: pipeline!.name }
+        ),
+        text: this.hass!.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_text",
+          { name: pipeline!.name }
+        ),
+        confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+
+    await deleteAssistPipeline(this.hass!, pipeline!.id);
+    this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
+  }
+
   private _editPipeline(ev) {
     const id = ev.currentTarget.id as string;
 
@@ -173,7 +281,6 @@ export class AssistPref extends LitElement {
       cloudActiveSubscription:
         this.cloudStatus?.logged_in && this.cloudStatus.active_subscription,
       pipeline,
-      preferred: pipeline?.id === this._preferred,
       createPipeline: async (values) => {
         const created = await createAssistPipeline(this.hass!, values);
         this._pipelines = this._pipelines!.concat(created);
@@ -187,32 +294,6 @@ export class AssistPref extends LitElement {
         this._pipelines = this._pipelines!.map((res) =>
           res === pipeline ? updated : res
         );
-      },
-      setPipelinePreferred: async () => {
-        await setAssistPipelinePreferred(this.hass!, pipeline!.id);
-        this._preferred = pipeline!.id;
-      },
-      deletePipeline: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass!.localize(
-              "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_title",
-              { name: pipeline!.name }
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_text",
-              { name: pipeline!.name }
-            ),
-            confirmText: this.hass!.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
-          return false;
-        }
-
-        await deleteAssistPipeline(this.hass!, pipeline!.id);
-        this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
-        return true;
       },
     });
   }
@@ -242,11 +323,23 @@ export class AssistPref extends LitElement {
       ha-list-item {
         --mdc-list-item-meta-size: auto;
         --mdc-list-item-meta-display: flex;
+        --mdc-list-side-padding-right: 8px;
       }
-      ha-svg-icon,
-      ha-icon-next {
-        width: 24px;
+
+      ha-list-item.danger {
+        color: var(--error-color);
+        border-top: 1px solid var(--divider-color);
       }
+
+      ha-button-menu a {
+        text-decoration: none;
+      }
+
+      ha-svg-icon {
+        color: currentColor;
+        width: 16px;
+      }
+
       .add {
         margin: 0 16px 16px;
       }

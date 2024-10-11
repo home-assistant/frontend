@@ -2616,8 +2616,10 @@
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
-                "confirm_text": "{name} will be permanently deleted."
+                "confirm_text": "{name} will be permanently deleted.",
+                "error_preferred": "You cannot delete the preferred assistant"
               },
+              "start_conversation": "Start conversation",
               "devices": {
                 "title": "Assist devices",
                 "device": "Device",
