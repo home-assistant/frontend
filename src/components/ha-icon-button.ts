@@ -1,5 +1,5 @@
-import "@material/mwc-icon-button";
-import type { IconButton } from "@material/mwc-icon-button";
+import "@material/web/iconbutton/icon-button";
+import type { MdIconButton } from "@material/web/iconbutton/icon-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -18,11 +18,11 @@ export class HaIconButton extends LitElement {
   // These should always be set as properties, not attributes,
   // so that only the <button> element gets the attribute
   @property({ type: String, attribute: "aria-haspopup" })
-  override ariaHasPopup!: IconButton["ariaHasPopup"];
+  override ariaHasPopup!: MdIconButton["ariaHasPopup"];
 
   @property({ type: Boolean }) hideTitle = false;
 
-  @query("mwc-icon-button", true) private _button?: IconButton;
+  @query("mwc-icon-button", true) private _button?: MdIconButton;
 
   public override focus() {
     this._button?.focus();
@@ -35,7 +35,7 @@ export class HaIconButton extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button
+      <md-icon-button
         aria-label=${ifDefined(this.label)}
         title=${ifDefined(this.hideTitle ? undefined : this.label)}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
@@ -44,7 +44,7 @@ export class HaIconButton extends LitElement {
         ${this.path
           ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
           : html`<slot></slot>`}
-      </mwc-icon-button>
+      </md-icon-button>
     `;
   }
 
@@ -56,10 +56,6 @@ export class HaIconButton extends LitElement {
       }
       :host([disabled]) {
         pointer-events: none;
-      }
-      mwc-icon-button {
-        --mdc-theme-on-primary: currentColor;
-        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
       }
     `;
   }
