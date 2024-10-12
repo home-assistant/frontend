@@ -1,4 +1,4 @@
-import "@material/mwc-button";
+import "../../components/buttons/ha-text-button";
 import {
   css,
   CSSResultGroup,
@@ -147,10 +147,10 @@ class StepFlowCreateEntry extends LitElement {
             `}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-text-button @click=${this._flowDone}
           >${localize(
             "ui.panel.config.integrations.config_flow.finish"
-          )}</mwc-button
+          )}</ha-text-button
         >
       </div>
     `;

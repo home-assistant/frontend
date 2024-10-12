@@ -1,4 +1,4 @@
-import "@material/mwc-list/mwc-list-item";
+import "@material/web/list/list-item";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
@@ -46,10 +46,10 @@ class StepFlowMenu extends LitElement {
       <div class="options">
         ${options.map(
           (option) => html`
-            <mwc-list-item hasMeta .step=${option} @click=${this._handleStep}>
+            <md-list-item .step=${option} @click=${this._handleStep}>
               <span>${translations[option]}</span>
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </mwc-list-item>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </md-list-item>
           `
         )}
       </div>
@@ -82,8 +82,8 @@ class StepFlowMenu extends LitElement {
       .content + .options {
         margin-top: 8px;
       }
-      mwc-list-item {
-        --mdc-list-side-padding: 24px;
+      md-list-item {
+        --md-list-item-trailing-space: 24px;
       }
     `,
   ];
