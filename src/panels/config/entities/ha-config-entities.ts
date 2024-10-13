@@ -33,6 +33,10 @@ import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import {
+  isDeletableEntity,
+  deleteEntity,
+} from "../../../common/entity/delete_entity";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -65,11 +69,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import {
-  ConfigEntry,
-  getConfigEntries,
-  deleteConfigEntry,
-} from "../../../data/config_entries";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import {
   DataTableFiltersItems,
@@ -80,7 +80,6 @@ import {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
   computeEntityRegistryName,
-  removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
@@ -1300,32 +1299,37 @@ ${rejected
     });
   }
 
-  private _removeSelected() {
-    const removeableHelpers = this._selected.filter(
-      (entity) =>
-        this._manifests?.find(
-          (m) => m.domain === this._entitySources?.[entity]?.domain
-        )?.integration_type === "helper"
+  private async _removeSelected() {
+    if (!this._entries) {
+      await this._loadConfigEntries();
+    }
+    if (!this._manifests || !this._entities || !this.hass || !this._entries) {
+      return;
+    }
+    // FIXME - need to fetch the UI originated helpers from helpers_crud to determine if one of those domain was created from yaml or UI
+    // same as getItem from entity-settings-helpers-tab
+    const removeableEntities = this._selected.filter((entity_id) =>
+      isDeletableEntity(
+        this.hass,
+        entity_id,
+        this._manifests!,
+        this._entities,
+        this._entries!
+      )
     );
-    const removeableEntities = this._selected.filter((entity) => {
-      const stateObj = this.hass.states[entity];
-      return stateObj?.attributes.restored;
-    });
-    const removeableCount =
-      removeableHelpers.length + removeableEntities.length;
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.entities.picker.delete_selected.confirm_title`
       ),
       text:
-        removeableCount === this._selected.length
+        removeableEntities.length === this._selected.length
           ? this.hass.localize(
               "ui.panel.config.entities.picker.delete_selected.confirm_text"
             )
           : this.hass.localize(
               "ui.panel.config.entities.picker.delete_selected.confirm_partly_text",
               {
-                deletable: removeableCount,
+                deletable: removeableEntities.length,
                 selected: this._selected.length,
               }
             ),
@@ -1333,18 +1337,14 @@ ${rejected
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       confirm: () => {
-        removeableHelpers.forEach((entity) => {
-          const configEntryId = this._entities.find(
-            (e) => e.entity_id === entity
-          )?.config_entry_id;
-          if (configEntryId) {
-            deleteConfigEntry(this.hass, configEntryId);
-          } else {
-            removeEntityRegistryEntry(this.hass, entity);
-          }
-        });
-        removeableEntities.forEach((entity) =>
-          removeEntityRegistryEntry(this.hass, entity)
+        removeableEntities.forEach((entity_id) =>
+          deleteEntity(
+            this.hass,
+            entity_id,
+            this._manifests!,
+            this._entities,
+            this._entries!
+          )
         );
         this._clearSelection();
       },
