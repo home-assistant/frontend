@@ -29,6 +29,9 @@ import {
 } from "../../common/compute-card-grid-size";
 import { LovelaceGridOptions } from "../../types";
 
+const computePreciseMode = (columns?: number | string) =>
+  typeof columns === "number" && columns % 3 !== 0;
+
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,6 +45,8 @@ export class HuiCardLayoutEditor extends LitElement {
   @state() private _yamlMode = false;
 
   @state() private _uiAvailable = true;
+
+  @state() private _preciseMode = false;
 
   private _cardElement?: HuiCard;
 
@@ -173,6 +178,24 @@ export class HuiCardLayoutEditor extends LitElement {
               >
               </ha-switch>
             </ha-settings-row>
+            <ha-settings-row>
+              <span slot="heading" data-for="precise-mode">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precise_mode"
+                )}
+              </span>
+              <span slot="description" data-for="precise-mode">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precise_mode_helper"
+                )}
+              </span>
+              <ha-switch
+                @change=${this._preciseModeChanged}
+                .checked=${this._preciseMode}
+                name="precise-mode"
+              >
+              </ha-switch>
+            </ha-settings-row>
           `}
     `;
   }
@@ -212,6 +235,23 @@ export class HuiCardLayoutEditor extends LitElement {
       }
       if (changedProps.has("config")) {
         this._cardElement.config = this.config;
+      }
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("config")) {
+      const columns = this.config.grid_options?.columns;
+      const preciseMode = computePreciseMode(columns);
+      // Force precise mode if columns count is not a multiple of 3
+      if (!this._preciseMode && preciseMode) {
+        this._preciseMode = preciseMode;
+      }
+      // Reset precise mode when grid options config is reset
+      if (columns === undefined) {
+        const defaultColumns = this._defaultGridOptions?.columns;
+        this._preciseMode = computePreciseMode(defaultColumns);
       }
     }
   }
@@ -280,6 +320,11 @@ export class HuiCardLayoutEditor extends LitElement {
       },
     };
     this._updateValue(newConfig);
+  }
+
+  private _preciseModeChanged(ev): void {
+    ev.stopPropagation();
+    this._preciseMode = ev.target.checked;
   }
 
   static styles = [
