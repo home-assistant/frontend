@@ -37,6 +37,8 @@ import {
   isDeletableEntity,
   deleteEntity,
 } from "../../../common/entity/delete_entity";
+import { Helper, isHelperDomain } from "../helpers/const";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -1300,12 +1302,28 @@ ${rejected
   }
 
   private async _removeSelected() {
-    if (!this._entries) {
-      await this._loadConfigEntries();
-    }
-    if (!this._manifests || !this._entities || !this.hass || !this._entries) {
+    if (!this._manifests || !this._entities || !this.hass) {
       return;
     }
+    const helperDomains = [
+      ...new Set(this._selected.map((s) => computeDomain(s))),
+    ].filter((d) => isHelperDomain(d));
+
+    const configEntriesProm = this._entries
+      ? undefined
+      : this._loadConfigEntries();
+    const domainProms = helperDomains.map((d) =>
+      HELPERS_CRUD[d].fetch(this.hass)
+    );
+    const helpersResult = await Promise.all(domainProms);
+    let uiHelpers: Helper[] = [];
+    helpersResult.forEach((r) => {
+      uiHelpers = uiHelpers.concat(r);
+    });
+    if (configEntriesProm) {
+      await configEntriesProm;
+    }
+
     // FIXME - need to fetch the UI originated helpers from helpers_crud to determine if one of those domain was created from yaml or UI
     // same as getItem from entity-settings-helpers-tab
     const removeableEntities = this._selected.filter((entity_id) =>
@@ -1314,7 +1332,8 @@ ${rejected
         entity_id,
         this._manifests!,
         this._entities,
-        this._entries!
+        this._entries!,
+        uiHelpers
       )
     );
     showConfirmationDialog(this, {
