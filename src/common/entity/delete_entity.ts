@@ -1,6 +1,5 @@
 import { HomeAssistant } from "../../types";
 import { IntegrationManifest } from "../../data/integration";
-// import { EntitySources } from "../../data/entity_sources";
 import { computeDomain } from "./compute_domain";
 import { HELPERS_CRUD } from "../../data/helpers_crud";
 import { Helper, isHelperDomain } from "../../panels/config/helpers/const";
