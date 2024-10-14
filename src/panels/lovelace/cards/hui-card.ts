@@ -89,10 +89,10 @@ export class HuiCard extends ReactiveElement {
       console.warn(
         `This card (${this.config?.type}) is using "getLayoutOptions" and it is deprecated, contact the developer to suggest to use "getGridOptions" instead`
       );
-      const config = migrateLayoutToGridOptions(
+      const options = migrateLayoutToGridOptions(
         this._element.getLayoutOptions()
       );
-      return config;
+      return options;
     }
     return {};
   }

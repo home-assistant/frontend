@@ -37,11 +37,11 @@ export class HuiCardLayoutEditor extends LitElement {
 
   @property({ attribute: false }) public sectionConfig!: LovelaceSectionConfig;
 
-  @state() _defaultGridOptions?: LovelaceGridOptions;
+  @state() private _defaultGridOptions?: LovelaceGridOptions;
 
-  @state() public _yamlMode = false;
+  @state() private _yamlMode = false;
 
-  @state() public _uiAvailable = true;
+  @state() private _uiAvailable = true;
 
   private _cardElement?: HuiCard;
 
@@ -173,19 +173,6 @@ export class HuiCardLayoutEditor extends LitElement {
               >
               </ha-switch>
             </ha-settings-row>
-            <ha-settings-row>
-              <span slot="heading" data-for="full-width">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.layout.precision_mode"
-                )}
-              </span>
-              <span slot="description" data-for="full-width">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_card.layout.precision_mode_helper"
-                )}
-              </span>
-              <ha-switch name="full-precision_mode"> </ha-switch>
-            </ha-settings-row>
           `}
     `;
   }
@@ -199,14 +186,22 @@ export class HuiCardLayoutEditor extends LitElement {
       this._cardElement.config = this.config;
       this._cardElement.addEventListener("card-updated", (ev: Event) => {
         ev.stopPropagation();
-        this._defaultGridOptions = this._cardElement?.getElementGridOptions();
+        this._updateDefaultGridOptions();
       });
       this._cardElement.load();
-      this._defaultGridOptions = this._cardElement.getElementGridOptions();
+      this._updateDefaultGridOptions();
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
     }
+  }
+
+  private _updateDefaultGridOptions() {
+    if (!this._cardElement) {
+      this._defaultGridOptions = undefined;
+      return;
+    }
+    this._defaultGridOptions = this._cardElement.getElementGridOptions();
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
