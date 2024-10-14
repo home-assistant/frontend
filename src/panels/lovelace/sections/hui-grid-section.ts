@@ -85,9 +85,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (_cardConfig, idx) => {
               const card = this.cards![idx];
               card.layout = "grid";
-              const layoutOptions = card.getLayoutOptions();
+              const gridOptions = card.getGridOptions();
 
-              const { rows, columns } = computeCardGridSize(layoutOptions);
+              const { rows, columns } = computeCardGridSize(gridOptions);
 
               return html`
                 <div
@@ -97,7 +97,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "--row-size": typeof rows === "number" ? rows : undefined,
                   })}
                   class="card ${classMap({
-                    "fit-rows": typeof layoutOptions?.grid_rows === "number",
+                    "fit-rows": typeof rows === "number",
                     "full-width": columns === "full",
                   })}"
                 >

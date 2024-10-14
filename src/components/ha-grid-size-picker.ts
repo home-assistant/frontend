@@ -14,12 +14,6 @@ import {
 } from "../panels/lovelace/common/compute-card-grid-size";
 import { HomeAssistant } from "../types";
 
-declare global {
-  interface HASSDomEvents {
-    "grid-reset": undefined;
-  }
-}
-
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -190,7 +184,12 @@ export class HaGridSizeEditor extends LitElement {
 
   private _reset(ev) {
     ev.stopPropagation();
-    fireEvent(this, "grid-reset");
+    fireEvent(this, "value-changed", {
+      value: {
+        rows: undefined,
+        columns: undefined,
+      },
+    });
   }
 
   private _sliderMoved(ev) {

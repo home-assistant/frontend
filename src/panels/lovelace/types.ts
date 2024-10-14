@@ -51,7 +51,15 @@ export type LovelaceLayoutOptions = {
   grid_min_columns?: number;
   grid_min_rows?: number;
   grid_max_rows?: number;
-  grid_precision_mode?: boolean;
+};
+
+export type LovelaceGridOptions = {
+  columns?: number | "full";
+  rows?: number | "auto";
+  max_columns?: number;
+  min_columns?: number;
+  min_rows?: number;
+  max_rows?: number;
 };
 
 export interface LovelaceCard extends HTMLElement {
@@ -59,7 +67,9 @@ export interface LovelaceCard extends HTMLElement {
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
+  /** @deprecated Use `getGridOptions` instead */
   getLayoutOptions?(): LovelaceLayoutOptions;
+  getGridOptions?(): LovelaceGridOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 
