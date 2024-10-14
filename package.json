@@ -151,11 +151,11 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "7.25.7",
+    "@babel/core": "7.25.8",
     "@babel/helper-define-polyfill-provider": "0.6.2",
     "@babel/plugin-proposal-decorators": "7.25.7",
     "@babel/plugin-transform-runtime": "7.25.7",
-    "@babel/preset-env": "7.25.7",
+    "@babel/preset-env": "7.25.8",
     "@babel/preset-typescript": "7.25.7",
     "@bundle-stats/plugin-webpack-filter": "4.15.1",
     "@koa/cors": "5.0.0",
@@ -222,7 +222,7 @@
     "lit-analyzer": "2.0.3",
     "lodash.merge": "4.6.2",
     "lodash.template": "4.5.0",
-    "magic-string": "0.30.11",
+    "magic-string": "0.30.12",
     "map-stream": "0.0.7",
     "mocha": "10.5.0",
     "object-hash": "3.0.0",
