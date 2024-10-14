@@ -52,6 +52,7 @@ export const deleteEntity = (
   entityRegistry: EntityRegistryEntry[],
   configEntries: ConfigEntry[]
 ) => {
+  // This function assumes the entity_id already was validated by isDeletableEntity and does not repeat all those checks.
   const domain = computeDomain(entity_id);
   const entityRegEntry = entityRegistry.find((e) => e.entity_id === entity_id);
   if (isHelperDomain(domain)) {

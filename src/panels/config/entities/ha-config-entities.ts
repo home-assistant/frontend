@@ -1012,9 +1012,6 @@ ${
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    fetchIntegrationManifests(this.hass).then((manifests) => {
-      this._manifests = manifests;
-    });
     this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
@@ -1302,9 +1299,13 @@ ${rejected
   }
 
   private async _removeSelected() {
-    if (!this._manifests || !this._entities || !this.hass) {
+    if (!this._entities || !this.hass) {
       return;
     }
+
+    const manifestsProm = this._manifests
+      ? undefined
+      : fetchIntegrationManifests(this.hass);
     const helperDomains = [
       ...new Set(this._selected.map((s) => computeDomain(s))),
     ].filter((d) => isHelperDomain(d));
@@ -1320,12 +1321,13 @@ ${rejected
     helpersResult.forEach((r) => {
       uiHelpers = uiHelpers.concat(r);
     });
+    if (manifestsProm) {
+      this._manifests = await manifestsProm;
+    }
     if (configEntriesProm) {
       await configEntriesProm;
     }
 
-    // FIXME - need to fetch the UI originated helpers from helpers_crud to determine if one of those domain was created from yaml or UI
-    // same as getItem from entity-settings-helpers-tab
     const removeableEntities = this._selected.filter((entity_id) =>
       isDeletableEntity(
         this.hass,
