@@ -217,10 +217,6 @@ class ErrorLogCard extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
 
-    if (changedProps.has("provider")) {
-      this._ansiToHtmlElement?.clear();
-    }
-
     if (
       (changedProps.has("show") && this.show) ||
       (changedProps.has("provider") && this.show)
@@ -292,6 +288,7 @@ class ErrorLogCard extends LitElement {
     this._loadingPrevState = undefined;
     this._firstCursor = undefined;
     this._numberOfLines = 0;
+    this._ansiToHtmlElement?.clear();
 
     try {
       if (this._logStreamAborter) {
@@ -323,7 +320,6 @@ class ErrorLogCard extends LitElement {
         this._loadingState = "empty";
 
         let tempLogLine = "";
-        this._ansiToHtmlElement?.clear();
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
