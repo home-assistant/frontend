@@ -1,12 +1,17 @@
 import { conditionalClamp } from "../../../common/number/clamp";
 import { LovelaceGridOptions, LovelaceLayoutOptions } from "../types";
 
-const GRID_COLUMN_MULTIPLIER = 3;
+export const GRID_COLUMN_MULTIPLIER = 3;
 
-const multiplyBy = <T extends number | string | undefined>(
+export const multiplyBy = <T extends number | string | undefined>(
   value: T,
   multiplier: number
 ): T => (typeof value === "number" ? ((value * multiplier) as T) : value);
+
+export const divideBy = <T extends number | string | undefined>(
+  value: T,
+  divider: number
+): T => (typeof value === "number" ? (Math.ceil(value / divider) as T) : value);
 
 export const migrateLayoutToGridOptions = (
   options: LovelaceLayoutOptions
