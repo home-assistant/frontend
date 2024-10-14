@@ -136,6 +136,8 @@ export class HaAnsiToHtml extends LitElement {
    * @param top should the new line be added to the top of the log
    */
   public parseLineToColoredPre(line, top = false) {
+    const lineDiv = document.createElement("div");
+
     // eslint-disable-next-line no-control-regex
     const re = /\x1b(?:\[(.*?)[@-~]|\].*?(?:\x07|\x1b\\))/g;
     let i = 0;
@@ -149,34 +151,28 @@ export class HaAnsiToHtml extends LitElement {
       backgroundColor: null,
     };
 
-    const addLine = (content) => {
-      const div = document.createElement("div");
+    const addPart = (content) => {
+      const span = document.createElement("span");
       if (state.bold) {
-        div.classList.add("bold");
+        span.classList.add("bold");
       }
       if (state.italic) {
-        div.classList.add("italic");
+        span.classList.add("italic");
       }
       if (state.underline) {
-        div.classList.add("underline");
+        span.classList.add("underline");
       }
       if (state.strikethrough) {
-        div.classList.add("strikethrough");
+        span.classList.add("strikethrough");
       }
       if (state.foregroundColor !== null) {
-        div.classList.add(`fg-${state.foregroundColor}`);
+        span.classList.add(`fg-${state.foregroundColor}`);
       }
       if (state.backgroundColor !== null) {
-        div.classList.add(`bg-${state.backgroundColor}`);
+        span.classList.add(`bg-${state.backgroundColor}`);
       }
-      div.appendChild(document.createTextNode(content));
-
-      if (top) {
-        this._pre?.prepend(div);
-        div.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
-      } else {
-        this._pre?.appendChild(div);
-      }
+      span.appendChild(document.createTextNode(content));
+      lineDiv.appendChild(span);
     };
 
     /* eslint-disable no-cond-assign */
@@ -184,7 +180,7 @@ export class HaAnsiToHtml extends LitElement {
     // eslint-disable-next-line
     while ((match = re.exec(line)) !== null) {
       const j = match!.index;
-      addLine(line.substring(i, j));
+      addPart(line.substring(i, j));
       i = j + match[0].length;
 
       if (match[1] === undefined) {
@@ -286,7 +282,14 @@ export class HaAnsiToHtml extends LitElement {
         }
       });
     }
-    addLine(line.substring(i));
+    addPart(line.substring(i));
+
+    if (top) {
+      this._pre?.prepend(lineDiv);
+      lineDiv.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
+    } else {
+      this._pre?.appendChild(lineDiv);
+    }
 
     // filter new lines if a filter is set
     if (this._filter) {
