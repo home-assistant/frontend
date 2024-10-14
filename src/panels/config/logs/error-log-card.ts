@@ -104,7 +104,6 @@ class ErrorLogCard extends LitElement {
               this.hass.localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              ${this._numberOfLines}
               <ha-icon-button
                 .path=${mdiDownload}
                 @click=${this._downloadFullLog}
@@ -196,6 +195,7 @@ class ErrorLogCard extends LitElement {
         2024,
         11
       );
+      this._streamSupported = false;
     }
   }
 
@@ -343,7 +343,13 @@ class ErrorLogCard extends LitElement {
             if (lines.length) {
               this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
               this._numberOfLines += lines.length;
-              this._loadingState = "loaded";
+
+              if (this._loadingState === "empty") {
+                // delay to avoid loading older logs immediately
+                setTimeout(() => {
+                  this._loadingState = "loaded";
+                }, 100);
+              }
             }
 
             if (scrolledToBottom && this._logElement) {
@@ -391,9 +397,7 @@ class ErrorLogCard extends LitElement {
 
   private _scrollToBottom(): void {
     if (this._logElement) {
-      window.requestAnimationFrame(() => {
-        this._logElement!.scrollTo(0, this._logElement!.scrollHeight);
-      });
+      this._logElement!.scrollTo(0, this._logElement!.scrollHeight);
       this._newLogsIndicator = false;
     }
   }
@@ -408,13 +412,11 @@ class ErrorLogCard extends LitElement {
   };
 
   private async _loadMoreLogs() {
-    await this.updateComplete;
     if (
       this._firstCursor &&
       this._loadingPrevState !== "loading" &&
       this._loadingState === "loaded" &&
-      this._logElement &&
-      this._scrolledToTopController.value
+      this._logElement
     ) {
       const scrolledToBottom = this._scrolledToBottomController.value;
       const scrollPositionFromBottom =
