@@ -4941,7 +4941,13 @@
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
             "bitmask": "Bitmask",
-            "default": "Default"
+            "size": "Size",
+            "value": "Value",
+            "format": "Format",
+            "default": "Default",
+            "custom_config": "Custom configuration",
+            "get_value": "Get value",
+            "set_value": "Set value"
           },
           "network_status": {
             "connected": "Connected",
