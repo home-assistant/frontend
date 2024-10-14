@@ -3,12 +3,7 @@ import {
   ListItemBase,
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import {
-  mdiCloudOutline,
-  mdiFolderAlert,
-  mdiOpenInNew,
-  mdiPackageVariant,
-} from "@mdi/js";
+import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
 import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
