@@ -39,6 +39,7 @@ import { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
+import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
 
@@ -195,7 +196,6 @@ class ErrorLogCard extends LitElement {
         2024,
         11
       );
-      this._streamSupported = false;
     }
   }
 
@@ -261,17 +261,25 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _downloadFullLog(): Promise<void> {
-    const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl =
-      this.provider && this.provider !== "core"
-        ? getHassioLogDownloadUrl(this.provider)
-        : getErrorLogDownloadUrl;
-    const logFileName =
-      this.provider && this.provider !== "core"
-        ? `${this.provider}_${timeString}.log`
-        : `home-assistant_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, downloadUrl);
-    fileDownload(signedUrl.path, logFileName);
+    if (this._streamSupported) {
+      showDownloadLogsDialog(this, {
+        header: this.header,
+        provider: this.provider,
+        numberOfLines: this._numberOfLines,
+      });
+    } else {
+      const timeString = new Date().toISOString().replace(/:/g, "-");
+      const downloadUrl =
+        this.provider && this.provider !== "core"
+          ? getHassioLogDownloadUrl(this.provider)
+          : getErrorLogDownloadUrl;
+      const logFileName =
+        this.provider && this.provider !== "core"
+          ? `${this.provider}_${timeString}.log`
+          : `home-assistant_${timeString}.log`;
+      const signedUrl = await getSignedPath(this.hass, downloadUrl);
+      fileDownload(signedUrl.path, logFileName);
+    }
   }
 
   private _showLogs(): void {

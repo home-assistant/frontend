@@ -2492,6 +2492,8 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show full logs",
+          "select_number_of_lines": "Select number of lines to download",
+          "lines": "Lines",
           "download_full_log": "Download full log",
           "scroll_down_button": "Scroll down to see new logs",
           "provider_not_found": "Log provider not found",
