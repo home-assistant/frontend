@@ -180,7 +180,10 @@ export class HaAnsiToHtml extends LitElement {
     // eslint-disable-next-line
     while ((match = re.exec(line)) !== null) {
       const j = match!.index;
-      addPart(line.substring(i, j));
+      const substring = line.substring(i, j);
+      if (substring) {
+        addPart(substring);
+      }
       i = j + match[0].length;
 
       if (match[1] === undefined) {
@@ -282,7 +285,11 @@ export class HaAnsiToHtml extends LitElement {
         }
       });
     }
-    addPart(line.substring(i));
+
+    const substring = line.substring(i);
+    if (substring) {
+      addPart(substring);
+    }
 
     if (top) {
       this._pre?.prepend(lineDiv);
@@ -312,7 +319,7 @@ export class HaAnsiToHtml extends LitElement {
    */
   filterLines(filter: string): boolean {
     this._filter = filter;
-    const lines = this.shadowRoot?.querySelectorAll("div") || [];
+    const lines = this.shadowRoot?.querySelectorAll("span") || [];
     let numberOfFoundLines = 0;
     if (!filter) {
       lines.forEach((line) => {
