@@ -234,7 +234,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}
                 />
-                ${router.model_name ||
+                ${router.instance_name ||
+                router.model_name ||
                 router.server?.replace(".local.", "") ||
                 ""}
                 <span slot="secondary">${router.server}</span>
