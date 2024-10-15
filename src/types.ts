@@ -253,10 +253,15 @@ export interface HomeAssistant {
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     parameters?: Record<string, any>,
-    headers?: Record<string, string>,
-    signal?: AbortSignal,
-    returnResponse?: boolean
+    headers?: Record<string, string>
   ): Promise<T>;
+  callApiRaw(
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>,
+    signal?: AbortSignal
+  ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;

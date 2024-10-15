@@ -27,11 +27,11 @@ import {
 } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
+import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
-import hassCallApi from "../util/hass-call-api";
+import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import { HassBaseEl } from "./hass-base-mixin";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
@@ -158,23 +158,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             throw err;
           }
         },
-        callApi: async (
-          method,
-          path,
-          parameters,
-          headers,
-          signal,
-          returnResponse
-        ) =>
-          hassCallApi(
-            auth,
-            method,
-            path,
-            parameters,
-            headers,
-            signal,
-            returnResponse
-          ),
+        callApi: async (method, path, parameters, headers) =>
+          hassCallApi(auth, method, path, parameters, headers),
+        callApiRaw: async (method, path, parameters, headers, signal) =>
+          hassCallApiRaw(auth, method, path, parameters, headers, signal),
         fetchWithAuth: (
           path: string,
           init: Parameters<typeof fetchWithAuth>[2]

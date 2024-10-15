@@ -2,16 +2,12 @@ import { Auth } from "home-assistant-js-websocket";
 import { fetchWithAuth } from "./fetch-with-auth";
 
 export const handleFetchPromise = async <T>(
-  fetchPromise: Promise<Response>,
-  returnResponse?: boolean
+  fetchPromise: Promise<Response>
 ): Promise<T> => {
   let response;
 
   try {
     response = await fetchPromise;
-    if (returnResponse) {
-      return response as unknown as T;
-    }
   } catch (err: any) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw {
@@ -57,9 +53,31 @@ export default async function hassCallApi<T>(
   method: string,
   path: string,
   parameters?: Record<string, unknown>,
+  headers?: Record<string, string>
+) {
+  const url = `${auth.data.hassUrl}/api/${path}`;
+
+  const init: RequestInit = {
+    method,
+    headers: headers || {},
+  };
+
+  if (parameters) {
+    // @ts-ignore
+    init.headers["Content-Type"] = "application/json;charset=UTF-8";
+    init.body = JSON.stringify(parameters);
+  }
+
+  return handleFetchPromise<T>(fetchWithAuth(auth, url, init));
+}
+
+export async function hassCallApiRaw(
+  auth: Auth,
+  method: string,
+  path: string,
+  parameters?: Record<string, unknown>,
   headers?: Record<string, string>,
-  signal?: AbortSignal,
-  returnResponse?: boolean
+  signal?: AbortSignal
 ) {
   const url = `${auth.data.hassUrl}/api/${path}`;
 
@@ -75,5 +93,5 @@ export default async function hassCallApi<T>(
     init.body = JSON.stringify(parameters);
   }
 
-  return handleFetchPromise<T>(fetchWithAuth(auth, url, init), returnResponse);
+  return fetchWithAuth(auth, url, init);
 }

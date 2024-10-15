@@ -261,7 +261,7 @@ class ErrorLogCard extends LitElement {
       showDownloadLogsDialog(this, {
         header: this.header,
         provider: this.provider,
-        numberOfLines: this._numberOfLines,
+        defaultLineCount: this._numberOfLines,
       });
     } else {
       const timeString = new Date().toISOString().replace(/:/g, "-");

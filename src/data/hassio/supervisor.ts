@@ -182,7 +182,7 @@ export const fetchHassioLogs = async (
   provider: string,
   range?: string
 ) =>
-  hass.callApi<Response>(
+  hass.callApiRaw(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`,
     undefined,
@@ -190,9 +190,7 @@ export const fetchHassioLogs = async (
       ? {
           Range: range,
         }
-      : undefined,
-    undefined,
-    true
+      : undefined
   );
 
 export const fetchHassioLogsFollow = async (
@@ -201,13 +199,12 @@ export const fetchHassioLogsFollow = async (
   signal: AbortSignal,
   lines = 100
 ) =>
-  hass.callApi<Response>(
+  hass.callApiRaw(
     "GET",
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/follow?lines=${lines}`,
     undefined,
     undefined,
-    signal,
-    true
+    signal
   );
 
 export const getHassioLogDownloadUrl = (provider: string) =>
