@@ -28,6 +28,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
+import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -116,7 +117,10 @@ export class HaIntegrationCard extends LitElement {
       <div class="card-actions">
         ${devices.length > 0
           ? html`<a
-              href=${devices.length === 1
+              href=${devices.length === 1 &&
+              // Always link to device page for protocol integrations to show Add Device button
+              // @ts-expect-error
+              !PROTOCOL_INTEGRATIONS.includes(this.domain)
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
