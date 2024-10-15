@@ -219,17 +219,14 @@ class ConfigUrlForm extends LitElement {
               `}
           ${this._shouldShowInternalUrlResolved
             ? html`
-                <div class="row">
-                  <div class="flex"></div>
-                  <ha-alert alert-type="info">
-                    ${this.hass.localize(
-                      "ui.panel.config.url.internal_url_automatic_description",
-                      {
-                        url: this._internal_url_resolved,
-                      }
-                    )}
-                  </ha-alert>
-                </div>
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.url.internal_url_automatic_description",
+                    {
+                      url: this._internal_url_resolved,
+                    }
+                  )}
+                </ha-alert>
               `
             : ""}
           ${
