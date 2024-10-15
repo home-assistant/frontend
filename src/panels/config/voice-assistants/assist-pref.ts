@@ -1,7 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
-  mdiCog,
   mdiCommentProcessingOutline,
   mdiDotsVertical,
   mdiHelpCircle,
@@ -42,6 +41,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -111,7 +111,13 @@ export class AssistPref extends LitElement {
         <mwc-list>
           ${this._pipelines.map(
             (pipeline) => html`
-              <ha-list-item twoline hasMeta>
+              <ha-list-item
+                twoline
+                hasMeta
+                role="button"
+                .id=${pipeline.id}
+                @click=${this._editPipeline}
+              >
                 <span>
                   ${pipeline.name}
                   ${this._preferred === pipeline.id
@@ -121,13 +127,7 @@ export class AssistPref extends LitElement {
                 <span slot="secondary">
                   ${formatLanguageCode(pipeline.language, this.hass.locale)}
                 </span>
-                <ha-icon-button
-                  slot="meta"
-                  .path=${mdiCog}
-                  .id=${pipeline.id}
-                  @click=${this._editPipeline}
-                ></ha-icon-button>
-                <ha-button-menu fixed slot="meta">
+                <ha-button-menu fixed slot="meta" @click=${stopPropagation}>
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.hass!.localize(
