@@ -12,11 +12,12 @@ import type {
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
-  DEFAULT_VIEW_LAYOUT,
+  MASONRY_VIEW_LAYOUT,
   SECTION_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
+import { getViewType } from "../../views/get-view-type";
 
 declare global {
   interface HASSDomEvents {
@@ -60,10 +61,10 @@ export class HuiViewEditor extends LitElement {
             select: {
               options: (
                 [
-                  DEFAULT_VIEW_LAYOUT,
+                  SECTION_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
-                  SECTION_VIEW_LAYOUT,
+                  MASONRY_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,
@@ -111,12 +112,7 @@ export class HuiViewEditor extends LitElement {
   }
 
   get _type(): string {
-    if (!this._config) {
-      return DEFAULT_VIEW_LAYOUT;
-    }
-    return this._config.panel
-      ? PANEL_VIEW_LAYOUT
-      : this._config.type || DEFAULT_VIEW_LAYOUT;
+    return getViewType(this._config);
   }
 
   protected render() {
@@ -150,12 +146,9 @@ export class HuiViewEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value as LovelaceViewConfig;
 
-    if (config.type === DEFAULT_VIEW_LAYOUT) {
-      delete config.type;
-    }
-
     if (config.type !== SECTION_VIEW_LAYOUT) {
       delete config.max_columns;
+      delete config.dense_section_placement;
     }
 
     if (

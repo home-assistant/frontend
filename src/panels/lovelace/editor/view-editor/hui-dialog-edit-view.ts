@@ -33,7 +33,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../components/hui-entity-editor";
 import {
-  DEFAULT_VIEW_LAYOUT,
+  MASONRY_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SECTION_VIEW_LAYOUT,
 } from "../../views/const";
@@ -68,11 +68,11 @@ export class HuiDialogEditView extends LitElement {
 
   get _type(): string {
     if (!this._config) {
-      return DEFAULT_VIEW_LAYOUT;
+      return MASONRY_VIEW_LAYOUT;
     }
     return this._config.panel
       ? PANEL_VIEW_LAYOUT
-      : this._config.type || DEFAULT_VIEW_LAYOUT;
+      : this._config.type || MASONRY_VIEW_LAYOUT;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -88,7 +88,9 @@ export class HuiDialogEditView extends LitElement {
     this._params = params;
 
     if (this._params.viewIndex === undefined) {
-      this._config = {};
+      this._config = {
+        type: SECTION_VIEW_LAYOUT,
+      };
       this._dirty = false;
       return;
     }
