@@ -23,13 +23,13 @@ class DownloadLogsDialog extends LitElement {
 
   @state() private _dialogParams?: DownloadLogsDialogParams;
 
-  @state() private _selectedNumberOfLines = 100;
+  @state() private _lineCount = 100;
 
   @query("ha-md-dialog") private _dialogElement!: HaMdDialog;
 
   public showDialog(dialogParams: DownloadLogsDialogParams) {
     this._dialogParams = dialogParams;
-    this._selectedNumberOfLines = this._dialogParams?.numberOfLines ?? 100;
+    this._lineCount = this._dialogParams?.defaultLineCount ?? 100;
   }
 
   public closeDialog() {
@@ -38,7 +38,7 @@ class DownloadLogsDialog extends LitElement {
 
   private _dialogClosed() {
     this._dialogParams = undefined;
-    this._selectedNumberOfLines = 100;
+    this._lineCount = 100;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -48,8 +48,8 @@ class DownloadLogsDialog extends LitElement {
     }
 
     const numberOfLinesOptions = [100, 500, 1000, 5000, 10000];
-    if (!numberOfLinesOptions.includes(this._selectedNumberOfLines)) {
-      numberOfLinesOptions.push(this._selectedNumberOfLines);
+    if (!numberOfLinesOptions.includes(this._lineCount)) {
+      numberOfLinesOptions.push(this._lineCount);
       numberOfLinesOptions.sort((a, b) => a - b);
     }
 
@@ -79,7 +79,7 @@ class DownloadLogsDialog extends LitElement {
             fixedMenuPosition
             naturalMenuWidth
             @closed=${stopPropagation}
-            .value=${String(this._selectedNumberOfLines)}
+            .value=${String(this._lineCount)}
           >
             ${numberOfLinesOptions.map(
               (option) => html`
@@ -106,10 +106,7 @@ class DownloadLogsDialog extends LitElement {
     const provider = this._dialogParams!.provider;
 
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = getHassioLogDownloadLinesUrl(
-      provider,
-      this._selectedNumberOfLines
-    );
+    const downloadUrl = getHassioLogDownloadLinesUrl(provider, this._lineCount);
     const logFileName =
       provider !== "core"
         ? `${provider}_${timeString}.log`
@@ -120,7 +117,7 @@ class DownloadLogsDialog extends LitElement {
   }
 
   private _setNumberOfLogs(ev) {
-    this._selectedNumberOfLines = Number(ev.target.value);
+    this._lineCount = Number(ev.target.value);
   }
 
   static get styles(): CSSResultGroup {

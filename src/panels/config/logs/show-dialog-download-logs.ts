@@ -3,7 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export interface DownloadLogsDialogParams {
   header?: string;
   provider: string;
-  numberOfLines?: number;
+  defaultLineCount?: number;
 }
 
 export const showDownloadLogsDialog = (
