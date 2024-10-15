@@ -118,6 +118,7 @@ export class HaPasswordField extends LitElement {
         .type=${this._unmaskedPassword ? "text" : "password"}
         .suffix=${html`<div style="width: 24px"></div>`}
         @input=${this._handleInputChange}
+        @change=${this._reDispatchEvent}
       ></ha-textfield>
       <ha-icon-button
         toggles
@@ -154,6 +155,12 @@ export class HaPasswordField extends LitElement {
   @eventOptions({ passive: true })
   private _handleInputChange(ev) {
     this.value = ev.target.value;
+  }
+
+  @eventOptions({ passive: true })
+  private _reDispatchEvent(oldEvent: Event) {
+    const newEvent = new Event(oldEvent.type, oldEvent);
+    this.dispatchEvent(newEvent);
   }
 
   static styles = css`
