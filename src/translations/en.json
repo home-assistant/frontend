@@ -5080,6 +5080,7 @@
                   "temporary": "Temporary",
                   "permanent": "Permanent"
                 },
+                "get_setback_failed": "Failed to get setback state. {error}",
                 "save_setback_failed": "Failed to save setback state. {error}"
               },
               "multilevel_switch": {
