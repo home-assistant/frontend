@@ -5107,7 +5107,7 @@
             "unknown": "Unknown"
           },
           "node_type": {
-            "end_device": "End-device",
+            "end_device": "End device",
             "sleepy_end_device": "Sleepy end device",
             "routing_end_device": "Routing end device",
             "bridge": "Bridge",
