@@ -49,7 +49,7 @@ import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
-const FIX_ISSUES_ORDER = {
+const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
   entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
@@ -57,10 +57,10 @@ const FIX_ISSUES_ORDER = {
   units_changed: 3,
 };
 
-const FIXABLE_ISSUES = [
+const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
   "no_state",
   "entity_no_longer_recorded",
-  "unsupported_state_class",
+  "state_class_removed",
   "units_changed",
 ];
 
