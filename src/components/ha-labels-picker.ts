@@ -216,6 +216,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     ha-input-chip {
       --md-input-chip-selected-container-color: var(--color, var(--grey-color));
       --ha-input-chip-selected-container-opacity: 0.5;
+      --_selected-outline-width: 1px;
     }
   `;
 }
