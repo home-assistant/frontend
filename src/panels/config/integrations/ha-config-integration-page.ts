@@ -484,9 +484,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             unelevated
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.integrations.configure"
-                            )}
+                            .label=${this.hass.localize("ui.common.add")}
                           ></ha-button>
                         </ha-md-list-item>`
                     )}
