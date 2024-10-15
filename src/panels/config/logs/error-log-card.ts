@@ -399,10 +399,18 @@ class ErrorLogCard extends LitElement {
     }
   }, 150);
 
+  private _debounceScrollToBottom = debounce(() => {
+    this._logElement!.scrollTop = this._logElement!.scrollHeight;
+  }, 300);
+
   private _scrollToBottom(): void {
     if (this._logElement) {
-      this._logElement!.scrollTo(0, this._logElement!.scrollHeight);
       this._newLogsIndicator = false;
+      if (this.provider !== "core") {
+        this._logElement!.scrollTo(0, this._logElement!.scrollHeight);
+      } else {
+        this._debounceScrollToBottom();
+      }
     }
   }
 
