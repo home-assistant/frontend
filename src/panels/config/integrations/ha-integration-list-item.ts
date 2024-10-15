@@ -81,7 +81,10 @@ export class HaIntegrationListItem extends ListItemBase {
           >`
         : ""}
       ${!this.integration.is_built_in
-        ? html`<span class="custom"
+        ? html`<span
+            class=${this.integration.overwrites_built_in
+              ? "overwrites"
+              : "custom"}
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
@@ -173,6 +176,9 @@ export class HaIntegrationListItem extends ListItemBase {
         }
         .custom {
           color: var(--warning-color);
+        }
+        .overwrites {
+          color: var(--error-color);
         }
       `,
     ];
