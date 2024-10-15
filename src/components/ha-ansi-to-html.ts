@@ -319,7 +319,7 @@ export class HaAnsiToHtml extends LitElement {
    */
   filterLines(filter: string): boolean {
     this._filter = filter;
-    const lines = this.shadowRoot?.querySelectorAll("span") || [];
+    const lines = this.shadowRoot?.querySelectorAll("div") || [];
     let numberOfFoundLines = 0;
     if (!filter) {
       lines.forEach((line) => {
@@ -338,21 +338,24 @@ export class HaAnsiToHtml extends LitElement {
           line.style.display = "";
           numberOfFoundLines++;
           if (CSS.highlights && line.firstChild !== null && line.textContent) {
-            const text = line.textContent.toLowerCase();
-            const indices: number[] = [];
-            let startPos = 0;
-            while (startPos < text.length) {
-              const index = text.indexOf(filter.toLowerCase(), startPos);
-              if (index === -1) break;
-              indices.push(index);
-              startPos = index + filter.length;
-            }
+            const spansOfLine = line.querySelectorAll("span");
+            spansOfLine.forEach((span) => {
+              const text = span.textContent.toLowerCase();
+              const indices: number[] = [];
+              let startPos = 0;
+              while (startPos < text.length) {
+                const index = text.indexOf(filter.toLowerCase(), startPos);
+                if (index === -1) break;
+                indices.push(index);
+                startPos = index + filter.length;
+              }
 
-            indices.forEach((index) => {
-              const range = new Range();
-              range.setStart(line.firstChild!, index);
-              range.setEnd(line.firstChild!, index + filter.length);
-              highlightRanges.push(range);
+              indices.forEach((index) => {
+                const range = new Range();
+                range.setStart(span.firstChild!, index);
+                range.setEnd(span.firstChild!, index + filter.length);
+                highlightRanges.push(range);
+              });
             });
           }
         }
