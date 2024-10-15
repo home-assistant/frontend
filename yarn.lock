@@ -8853,7 +8853,7 @@ __metadata:
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.6"
     idb-keyval: "npm:6.2.1"
-    instant-mocha: "npm:1.5.2"
+    instant-mocha: "npm:1.5.3"
     intl-messageformat: "npm:10.6.0"
     js-yaml: "npm:4.1.0"
     jszip: "npm:3.10.1"
@@ -9262,9 +9262,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"instant-mocha@npm:1.5.2":
-  version: 1.5.2
-  resolution: "instant-mocha@npm:1.5.2"
+"instant-mocha@npm:1.5.3":
+  version: 1.5.3
+  resolution: "instant-mocha@npm:1.5.3"
   dependencies:
     "@cspotcode/source-map-support": "npm:^0.8.1"
     fs-require: "npm:^1.6.0"
@@ -9275,7 +9275,7 @@ __metadata:
     webpack: 4 || 5
   bin:
     instant-mocha: dist/cli.js
-  checksum: 10/e7b045aba1c16e32af6a1e401cd34323cdefc0f2d00dc0ed45c7b96f2ed29ab179987deb43614acf99bae59e69c222adb8a4eac67eae823b357495cd4113f8a7
+  checksum: 10/c3ba6728c0bd1cf876c9c2fe1fecbe1df370cebb1709d0fd1addf001369f435c8091d4a704ec9dd5ee15b919ceb63624cec5d46760db2d1c2d6a6952c72f9e16
   languageName: node
   linkType: hard
 
