@@ -18,6 +18,7 @@ import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
+import { getUrl } from "../../../data/network";
 import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 
 @customElement("ha-config-url-form")
@@ -31,6 +32,8 @@ class ConfigUrlForm extends LitElement {
   @state() private _external_url?: string;
 
   @state() private _internal_url?: string;
+
+  @state() private _internal_url_resolved?: string;
 
   @state() private _cloudStatus?: CloudStatus | null;
 
@@ -214,6 +217,21 @@ class ConfigUrlForm extends LitElement {
                   </ha-textfield>
                 </div>
               `}
+          ${this._shouldShowInternalUrlResolved
+            ? html`
+                <div class="row">
+                  <div class="flex"></div>
+                  <ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.url.internal_url_automatic_description",
+                      {
+                        url: this._internal_url_resolved,
+                      }
+                    )}
+                  </ha-alert>
+                </div>
+              `
+            : ""}
           ${
             // If the user has configured a cert, show an error if
             httpUseHttps && // there is no internal url configured
@@ -268,6 +286,7 @@ class ConfigUrlForm extends LitElement {
       this._cloudStatus = null;
       this._showCustomExternalUrl = true;
     }
+    this._fetchResolvedInternalUrl();
   }
 
   private get _internalUrlValue() {
@@ -280,6 +299,14 @@ class ConfigUrlForm extends LitElement {
     return this._external_url !== undefined
       ? this._external_url
       : this.hass.config.external_url;
+  }
+
+  private get _shouldShowInternalUrlResolved() {
+    return (
+      this._internal_url_resolved &&
+      !this._showCustomInternalUrl &&
+      this._internal_url_resolved !== this.hass.config.internal_url
+    );
   }
 
   private _toggleCloud(ev) {
@@ -307,11 +334,16 @@ class ConfigUrlForm extends LitElement {
           ? this._internal_url || null
           : null,
       });
+      await this._fetchResolvedInternalUrl();
     } catch (err: any) {
       this._error = err.message || err;
     } finally {
       this._working = false;
     }
+  }
+
+  private async _fetchResolvedInternalUrl() {
+    this._internal_url_resolved = await getUrl(this.hass, "internal");
   }
 
   static get styles(): CSSResultGroup {

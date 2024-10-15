@@ -41,3 +41,12 @@ export const setNetworkConfig = (
       configured_adapters: configured_adapters,
     },
   });
+
+export const getUrl = (
+  hass: HomeAssistant,
+  url_type: "internal" | "external" | "cloud"
+) =>
+  hass.callWS<string>({
+    type: "network/url",
+    url_type: url_type,
+  });
