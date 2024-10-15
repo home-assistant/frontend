@@ -157,7 +157,7 @@
     "@babel/plugin-transform-runtime": "7.25.7",
     "@babel/preset-env": "7.25.8",
     "@babel/preset-typescript": "7.25.7",
-    "@bundle-stats/plugin-webpack-filter": "4.15.1",
+    "@bundle-stats/plugin-webpack-filter": "4.16.0",
     "@koa/cors": "5.0.0",
     "@lokalise/node-api": "12.7.0",
     "@octokit/auth-oauth-device": "7.1.1",
