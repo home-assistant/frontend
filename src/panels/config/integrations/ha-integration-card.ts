@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCloud, mdiFileCodeOutline, mdiPackageVariant } from "@mdi/js";
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -181,7 +181,7 @@ export class HaIntegrationCard extends LitElement {
             : nothing}
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
-                <ha-svg-icon .path=${mdiCloud}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
                 <simple-tooltip
                   animation-delay="0"
                   .position=${computeRTL(this.hass) ? "right" : "left"}
@@ -354,28 +354,21 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
         }
         .icon {
-          border-radius: 50%;
-          color: var(--text-primary-color);
+          color: var(--label-badge-grey);
           padding: 4px;
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
         }
-        .icon.cloud {
-          background: var(--info-color);
-        }
         .icon.custom {
-          background: var(--warning-color);
+          color: var(--warning-color);
         }
         .icon.overwrites {
-          background: var(--error-color);
-        }
-        .icon.yaml {
-          background: var(--label-badge-grey);
+          color: var(--error-color);
         }
         .icon ha-svg-icon {
-          width: 16px;
-          height: 16px;
+          width: 24px;
+          height: 24px;
           display: block;
         }
         simple-tooltip {
