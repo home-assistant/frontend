@@ -10,7 +10,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import { navigate } from "../../../common/navigate";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
@@ -29,7 +34,6 @@ import {
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
 import { brandsUrl } from "../../../util/brands-url";
 
 const localAgent = "backup.local";
@@ -139,7 +143,9 @@ class HaConfigBackup extends LitElement {
         .narrow=${this.narrow}
         back-path="/config/backup/dashboard"
         clickable
+        id="slug"
         .route=${this.route}
+        @row-click=${this._showBackupDetails}
         .columns=${this._columns(
           this.narrow,
           this.hass.language,
@@ -216,6 +222,11 @@ class HaConfigBackup extends LitElement {
       .catch((err) => showAlertDialog(this, { text: (err as Error).message }));
 
     await this._getBackups();
+  }
+
+  private _showBackupDetails(ev: CustomEvent): void {
+    const slug = (ev.detail as RowClickedEvent).id;
+    navigate(`/config/backup/details/${slug}`);
   }
 
   static get styles(): CSSResultGroup {

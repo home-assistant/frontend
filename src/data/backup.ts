@@ -42,7 +42,7 @@ export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupData> =>
 export const fetchBackupDetails = (
   hass: HomeAssistant,
   slug: string
-): Promise<BackupContent> =>
+): Promise<{ backup: BackupContent }> =>
   hass.callWS({
     type: "backup/details",
     slug,

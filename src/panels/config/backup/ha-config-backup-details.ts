@@ -21,7 +21,12 @@ class HaConfigBackupDetails extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._fetchBackup();
+
+    if (this.backupSlug) {
+      this._fetchBackup();
+    } else {
+      this._error = "Backup slug not defined";
+    }
   }
 
   protected render(): TemplateResult {
@@ -39,7 +44,9 @@ class HaConfigBackupDetails extends LitElement {
           ${this._error &&
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
           ${this._backup === null
-            ? html`<p>No backup found</p>`
+            ? html`<ha-alert alert-type="warning" title="Not found">
+                Backup matching ${this.backupSlug} not found
+              </ha-alert>`
             : this._backup
               ? html`<p>${this._backup.slug}</p>`
               : html`<ha-circular-progress active></ha-circular-progress>`}
@@ -50,7 +57,8 @@ class HaConfigBackupDetails extends LitElement {
 
   private async _fetchBackup() {
     try {
-      this._backup = await fetchBackupDetails(this.hass, this.backupSlug);
+      const response = await fetchBackupDetails(this.hass, this.backupSlug);
+      this._backup = response.backup;
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
     }
