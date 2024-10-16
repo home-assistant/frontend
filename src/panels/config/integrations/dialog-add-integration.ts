@@ -69,6 +69,7 @@ export interface IntegrationListItem {
   supported_by?: string;
   cloud?: boolean;
   is_built_in?: boolean;
+  overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
 }
@@ -211,6 +212,7 @@ class AddIntegrationDialog extends LitElement {
             iot_standards: supportedIntegration.iot_standards,
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
             single_config_entry: integration.single_config_entry,
           });
@@ -232,6 +234,7 @@ class AddIntegrationDialog extends LitElement {
               ? Object.keys(integration.integrations)
               : undefined,
             is_built_in: integration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
           });
         } else if (filter && "integration_type" in integration) {
           // Integration without a config flow
@@ -240,6 +243,7 @@ class AddIntegrationDialog extends LitElement {
             name: integration.name || domainToName(localize, domain),
             config_flow: integration.config_flow,
             is_built_in: integration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
             cloud: integration.iot_class?.startsWith("cloud_"),
           });
         }

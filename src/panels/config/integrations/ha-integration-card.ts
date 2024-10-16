@@ -161,14 +161,20 @@ export class HaIntegrationCard extends LitElement {
               : html`<div class="spacer"></div>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
-            ? html`<span class="icon custom">
+            ? html`<span
+                class="icon ${this.manifest.overwrites_built_in
+                  ? "overwrites"
+                  : "custom"}"
+              >
                 <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
                 <simple-tooltip
                   animation-delay="0"
                   .position=${computeRTL(this.hass) ? "right" : "left"}
                   offset="4"
                   >${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.custom_integration"
+                    this.manifest.overwrites_built_in
+                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                      : "ui.panel.config.integrations.config_entry.custom_integration"
                   )}</simple-tooltip
                 >
               </span>`
@@ -360,6 +366,9 @@ export class HaIntegrationCard extends LitElement {
         }
         .icon.custom {
           background: var(--warning-color);
+        }
+        .icon.overwrites {
+          background: var(--error-color);
         }
         .icon.yaml {
           background: var(--label-badge-grey);
