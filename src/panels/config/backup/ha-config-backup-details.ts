@@ -2,14 +2,23 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 
+import "../../../components/ha-relative-time";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-settings-row";
 
 import type { HomeAssistant } from "../../../types";
-import { BackupContent, fetchBackupDetails } from "../../../data/backup";
+import {
+  BackupAgentsInfo,
+  BackupContent,
+  fetchBackupDetails,
+} from "../../../data/backup";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public backupAgentsInfo?: BackupAgentsInfo;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -49,7 +58,42 @@ class HaConfigBackupDetails extends LitElement {
               </ha-alert>`
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
-              : html`<p>${this._backup.slug}</p>`}
+              : html`
+                  <ha-card header="Backup">
+                    <div class="card-content">
+                      <ha-settings-row>
+                        <span slot="heading">
+                          ${this._backup.type || "partial"}
+                        </span>
+                        <span slot="description">Type</span>
+                      </ha-settings-row>
+                      ${this._backup.homeassistant?.version &&
+                      html`<ha-settings-row>
+                        <span slot="heading">
+                          ${this._backup.homeassistant.version}
+                        </span>
+                        <span slot="description">Home Assistant Version</span>
+                      </ha-settings-row>`}
+
+                      <ha-settings-row>
+                        <span slot="heading">
+                          ${Math.ceil(this._backup.size * 10) / 10 + " MB"}
+                        </span>
+                        <span slot="description">Size</span>
+                      </ha-settings-row>
+                      <ha-settings-row>
+                        <ha-relative-time
+                          .hass=${this.hass}
+                          .datetime=${this._backup.date}
+                          slot="heading"
+                          capitalize
+                        >
+                        </ha-relative-time>
+                        <span slot="description">Created</span>
+                      </ha-settings-row>
+                    </div>
+                  </ha-card>
+                `}
         </div>
       </hass-subpage>
     `;
