@@ -29,6 +29,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -52,6 +53,7 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -65,6 +67,10 @@ import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
+import {
+  DataTableFiltersItems,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   EntityRegistryEntry,
@@ -98,11 +104,6 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  DataTableFiltersValues,
-  DataTableFiltersItems,
-} from "../../../data/data_table_filters";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -720,7 +721,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-md-menu-item>`;
       })}
-      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
       <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
@@ -830,7 +831,7 @@ ${
             </ha-md-menu-item>
             <ha-menu slot="menu">${labelItems}</ha-menu>
           </ha-sub-menu>
-          <md-divider role="separator" tabindex="-1"></md-divider>`
+          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing
   }
 
@@ -853,7 +854,7 @@ ${
       )}
     </div>
   </ha-md-menu-item>
-  <md-divider role="separator" tabindex="-1"></md-divider>
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item @click=${this._unhideSelected}>
     <ha-svg-icon
@@ -877,7 +878,7 @@ ${
       )}
     </div>
   </ha-md-menu-item>
-  <md-divider role="separator" tabindex="-1"></md-divider>
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item @click=${this._removeSelected} class="warning">
     <ha-svg-icon

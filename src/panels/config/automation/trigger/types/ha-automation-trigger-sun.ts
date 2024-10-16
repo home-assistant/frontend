@@ -45,7 +45,7 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
 
   public static get defaultConfig(): SunTrigger {
     return {
-      platform: "sun",
+      trigger: "sun",
       event: "sunrise" as SunTrigger["event"],
       offset: 0,
     };

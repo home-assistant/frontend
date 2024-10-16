@@ -117,6 +117,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .value=${this._action}
         .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
+        .hidePicker=${!!this._action.metadata}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response

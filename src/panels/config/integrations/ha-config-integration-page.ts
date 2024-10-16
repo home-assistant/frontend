@@ -1,6 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
-import "@material/web/divider/divider";
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -45,11 +44,12 @@ import { isDevVersion } from "../../../common/config/version";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-md-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-list-item";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-md-menu-item";
 import {
   deleteApplicationCredential,
@@ -79,6 +79,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import {
   IntegrationLogInfo,
@@ -109,7 +110,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 
 @customElement("ha-config-integration-page")
 class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
@@ -484,9 +484,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             unelevated
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.integrations.configure"
-                            )}
+                            .label=${this.hass.localize("ui.common.add")}
                           ></ha-button>
                         </ha-md-list-item>`
                     )}
@@ -533,10 +531,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       (item, index) =>
                         html`${this._renderConfigEntry(item)}
                         ${index < attentionEntries.length - 1
-                          ? html` <md-divider
+                          ? html` <ha-md-divider
                               role="separator"
                               tabindex="-1"
-                            ></md-divider>`
+                            ></ha-md-divider>`
                           : ""} `
                     )}
                   </ha-md-list>
@@ -573,10 +571,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   (item, index) =>
                     html`${this._renderConfigEntry(item)}
                     ${index < normalEntries.length - 1
-                      ? html` <md-divider
+                      ? html` <ha-md-divider
                           role="separator"
                           tabindex="-1"
-                        ></md-divider>`
+                        ></ha-md-divider>`
                       : ""} `
                 )}
               </ha-md-list>
@@ -882,7 +880,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           )}
         </ha-md-menu-item>
 
-        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
         ${this._diagnosticHandler && item.state === "loaded"
           ? html`

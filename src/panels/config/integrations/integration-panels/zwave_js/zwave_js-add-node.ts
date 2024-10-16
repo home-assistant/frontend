@@ -1,3 +1,4 @@
+/* eslint-disable lit/lifecycle-super */
 import { customElement } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import { HomeAssistant } from "../../../../../types";

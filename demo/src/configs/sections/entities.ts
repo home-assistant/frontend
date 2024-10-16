@@ -111,9 +111,47 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         friendly_name: "Living room Temperature",
       },
     },
+    "sensor.living_room_humidity": {
+      entity_id: "sensor.living_room_humidity",
+      state: "57",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "%",
+        device_class: "humidity",
+        friendly_name: "Living room Humidity",
+      },
+    },
+    "sensor.outdoor_temperature": {
+      entity_id: "sensor.outdoor_temperature",
+      state: "10.5",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+        friendly_name: "Outdoor temperature",
+      },
+    },
+    "sensor.outdoor_humidity": {
+      entity_id: "sensor.outdoor_humidity",
+      state: "70.4",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "%",
+        device_class: "humidity",
+        friendly_name: "Outdoor humidity",
+      },
+    },
+    "device_tracker.car": {
+      entity_id: "sensor.outdoor_humidity",
+      state: "not_home",
+      attributes: {
+        friendly_name: "Car",
+        icon: "mdi:car",
+      },
+    },
     "media_player.living_room_nest_mini": {
       entity_id: "media_player.living_room_nest_mini",
-      state: "on",
+      state: "playing",
       attributes: {
         device_class: "speaker",
         volume_level: 0.18,
@@ -159,6 +197,14 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         icon: "mdi:ceiling-light-multiple",
         friendly_name: "Kitchen spotlights ",
         supported_features: 32,
+      },
+    },
+    "binary_sensor.kitchen_motion": {
+      entity_id: "light.kitchen_motion",
+      state: "on",
+      attributes: {
+        device_class: "motion",
+        friendly_name: "Kitchen motion",
       },
     },
     "light.worktop_spotlights": {
@@ -393,6 +439,14 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         ),
         entity_picture: "/assets/sections/images/media_player_family_room.jpg",
         supported_features: 64063,
+      },
+    },
+    "switch.in_meeting": {
+      entity_id: "switch.in_meeting",
+      state: "on",
+      attributes: {
+        icon: "mdi:laptop-account",
+        friendly_name: "In a meeting",
       },
     },
     "sensor.standing_desk_height": {

@@ -699,7 +699,9 @@
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
       },
       "color-picker": {
-        "default_color": "Default color (state)",
+        "default": "default",
+        "state": "State color",
+        "none": "No color",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
@@ -1189,7 +1191,9 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
-          "create_backup": "Create backup before updating"
+          "create_backup": "Create backup before updating",
+          "auto_update_enabled_title": "Can not skip version",
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
         "updater": {
           "title": "Update instructions"
@@ -1631,7 +1635,8 @@
           "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
-          "remove": "Are you sure that you want to remove the device?"
+          "remove_title": "Remove device",
+          "remove_text": "This device will be permanently removed from the Zigbee network."
         },
         "quirk": "Quirk",
         "last_seen": "Last seen",
@@ -1796,11 +1801,13 @@
     },
     "errors": {
       "config": {
+        "visual_editor_not_supported": "Visual editor not supported",
+        "visual_editor_not_supported_reason_type": "The visual editor is not available for this type of element.",
+        "edit_in_yaml_supported": "You can still edit your config using YAML.",
+        "configuration_error": "Configuration error",
+        "configuration_error_reason": "The configuration is not valid. Check the logs for more information.",
         "no_type_provided": "No type provided.",
-        "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
-        "edit_in_yaml_supported": "You can still edit your config in YAML.",
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
@@ -1852,6 +1859,7 @@
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
         "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
+        "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
         "download_app": "Click here to download the app",
         "faq_link": "My Home Assistant FAQ",
@@ -1967,6 +1975,8 @@
           "system_information": "System information",
           "integration_startup_time": "Integration startup time",
           "copy": "Copy",
+          "reported_by": "Reported by {integration}",
+          "created_at_by": "{date} by {integration}",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",
@@ -2606,8 +2616,10 @@
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
-                "confirm_text": "{name} will be permanently deleted."
+                "confirm_text": "{name} will be permanently deleted.",
+                "error_preferred": "You cannot delete the preferred assistant"
               },
+              "start_conversation": "Start conversation",
               "devices": {
                 "title": "Assist devices",
                 "device": "Device",
@@ -2801,7 +2813,7 @@
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
-            "confirm_take_control": "Your are viewing a preview of the automation config, do you want to take control?",
+            "confirm_take_control": "You are viewing a preview of the automation config, do you want to take control?",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -3044,6 +3056,9 @@
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
+                  "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
+                  "entity": "Entity with timestamp",
+                  "offset_by": "offset by {offset}",
                   "mode": "Mode",
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
@@ -3085,6 +3100,13 @@
                   "description": {
                     "picker": "When someone (or something) enters or leaves a zone.",
                     "full": "When {entity} {event, select, \n enter {enters}\n leave {leaves} other {} \n} {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                  }
+                },
+                "list": {
+                  "label": "List",
+                  "description": {
+                    "no_trigger": "When any trigger matches",
+                    "full": "When any of {count} {count, plural,\n  one {trigger}\n other {triggers}\n} triggers"
                   }
                 }
               }
@@ -3169,9 +3191,9 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above}",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is below {below}",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} is above {above} and below {below}"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
                   }
                 },
                 "or": {
@@ -3668,16 +3690,13 @@
           "editor": {
             "alias": "Name",
             "icon": "Icon",
-            "id": "Entity ID",
-            "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
-            "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
-            "confirm_take_control": "Your are viewing a preview of the script config, do you want to take control?",
+            "confirm_take_control": "You are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
@@ -4025,18 +4044,25 @@
             "unknown_automation": "Unknown automation",
             "create": "Create automation with {type}",
             "create_disable": "Can't create automation with disabled {type}",
+            "new": {
+              "title": "Create new automation",
+              "description": "Start with an empty automation from scratch"
+            },
             "triggers": {
-              "caption": "Do something when…",
+              "title": "Use device as trigger",
+              "description": "When something happens to the device",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if…",
+              "title": "Use device as condition",
+              "description": "Only if a condition is met for the device",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered…",
+              "title": "Use device as action",
+              "description": "Do something on the device",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
@@ -4047,7 +4073,15 @@
             "scripts": "scripts",
             "no_scripts": "No scripts",
             "create": "Create script with {type}",
-            "create_disable": "Can't create script with disabled {type}"
+            "create_disable": "Can't create script with disabled {type}",
+            "new": {
+              "title": "Create new script",
+              "description": "Start with an empty script from scratch"
+            },
+            "actions": {
+              "title": "Use device as action",
+              "description": "Do something on this device."
+            }
           },
           "scene": {
             "scenes_heading": "Scenes",
@@ -4075,6 +4109,11 @@
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "confirm_rename_entity_will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
+          "confirm_rename_new": "New",
+          "confirm_rename_old": "Old",
+          "confirm_rename_entity_wont_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not be renamed as they do not contain the current device name ({deviceSlug})",
+          "confirm_rename_entity_no_renamable_entity_ids": "No renamable entity IDs",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
@@ -4365,8 +4404,9 @@
               }
             },
             "custom_integration": "Custom integration",
-            "depends_on_cloud": "Depends on the cloud",
-            "yaml_only": "Needs manual configuration",
+            "custom_overwrites_core": "Custom integration that replaces a core component",
+            "depends_on_cloud": "Depends on Internet connection",
+            "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
@@ -4571,6 +4611,7 @@
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
+          "no_preferred_router": "No preferred border router defined",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
           "operational_dataset": "Operational dataset",
@@ -4903,7 +4944,8 @@
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
-            "bitmask": "Bitmask"
+            "bitmask": "Bitmask",
+            "default": "Default"
           },
           "network_status": {
             "connected": "Connected",
@@ -5068,7 +5110,7 @@
             "unknown": "Unknown"
           },
           "node_type": {
-            "end_device": "End-device",
+            "end_device": "End device",
             "sleepy_end_device": "Sleepy end device",
             "routing_end_device": "Routing end device",
             "bridge": "Bridge",
@@ -5116,11 +5158,13 @@
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
-            "ping_complete": "Ping device complete."
+            "ping_complete": "Ping device complete.",
+            "no_ip_found": "The device ping failed. No IP addresses found for this device."
           },
           "open_commissioning_window": {
             "title": "Share device",
-            "introduction": "Enable commissioning mode on the device to pair it to another Matter controller.",
+            "description": "To continue, select {startCommissioning}. Home Assistant will then put your device in commissioning mode, allowing it to pair with another Matter controller.",
+            "prevent_misuse_description": "Note: Do not press the physical setup button on the device as this will reset it.",
             "start_commissioning": "Share device",
             "in_progress": "We're communicating with the device. This may take some time.",
             "failed": "The command failed. Additional information may be available in the logs.",
@@ -5447,6 +5491,9 @@
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
+          },
+          "heading": {
+            "default_heading": "Kitchen"
           }
         },
         "unused_entities": {
@@ -5651,17 +5698,14 @@
             "strategy_type": "strategy"
           },
           "section": {
-            "unnamed_section": "Unnamed section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
-            "create_section": "Create section"
+            "create_section": "Create section",
+            "default_section_title": "New section"
           },
           "delete_section": {
             "title": "Delete section",
-            "text_named_section_only": "''{name}'' section will be deleted.",
-            "text_unnamed_section_only": "This section will be deleted.",
-            "text_named_section_cards": "''{name}'' section and all its cards will be deleted.",
-            "text_unnamed_section_cards": "This section and all its cards will be deleted."
+            "text": "This section and all its cards will be deleted."
           },
           "edit_section": {
             "header": "Edit section",
@@ -5979,6 +6023,7 @@
               "show_name": "Show name",
               "show_state": "Show state",
               "tap_action": "Tap behavior",
+              "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
@@ -5991,6 +6036,33 @@
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
               "features": "Features"
+            },
+            "heading": {
+              "name": "Heading",
+              "description": "The heading card structures your dashboard by providing title, icon and navigation.",
+              "heading": "Heading",
+              "heading_style": "Heading style",
+              "heading_style_options": {
+                "title": "Title",
+                "subtitle": "Subtitle"
+              },
+              "entities": "Entities",
+              "entity_config": {
+                "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+                "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
+                "name": "[%key:ui::panel::lovelace::editor::card::generic::name%]",
+                "name_helper": "Visible if selected in state content",
+                "visibility": "Visibility",
+                "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
+                "appearance": "Appearance",
+                "state_content": "State content",
+                "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
+                "displayed_elements_options": {
+                  "icon": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::icon%]",
+                  "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
+                }
+              },
+              "default_heading": "Kitchen"
             },
             "map": {
               "name": "Map",
@@ -6063,7 +6135,8 @@
             "todo-list": {
               "name": "To-do list",
               "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
-              "integration_not_loaded": "This card requires the `todo` integration to be set up."
+              "integration_not_loaded": "This card requires the `todo` integration to be set up.",
+              "hide_completed": "Hide completed items"
             },
             "thermostat": {
               "name": "Thermostat",
@@ -6074,6 +6147,7 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
+              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "interactions": "Interactions",
               "appearance": "Appearance",
@@ -6113,7 +6187,8 @@
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of your entity.",
-              "color": "Color",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
               "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
@@ -6134,6 +6209,13 @@
               "other_badges": "Other badges",
               "custom_badges": "Custom badges"
             }
+          },
+          "entities": {
+            "name": "Entities",
+            "add": "Add entity",
+            "edit": "Edit entity",
+            "remove": "Remove entity",
+            "form-label": "Edit entity"
           },
           "features": {
             "name": "Features",
@@ -6355,6 +6437,7 @@
               "row": "Entity row editor",
               "feature": "Feature editor",
               "element": "Element editor",
+              "heading-badge": "Heading badge editor",
               "element_type": "{type} element editor"
             }
           }
@@ -6821,7 +6904,8 @@
             "stop_listening": "Stop listening",
             "clear_events": "Clear events",
             "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successfully fired!"
+            "notification_event_fired": "Event {type} successfully fired!",
+            "subscribe_failed": "Failed to subscribe to event: {error}"
           },
           "actions": {
             "title": "Actions",
@@ -6901,51 +6985,61 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "state_class_removed": "This entity no longer has a state class",
               "entity_not_recorded": "This entity is excluded from being recorded.",
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
               "no_state": "There is no state available for this entity."
             },
+            "delete_selected": "Delete selected statistics",
+            "multi_delete": {
+              "title": "Delete selected statistics",
+              "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
+            },
             "fix_issue": {
               "fix": "Fix issue",
+              "clearing_failed": "Clearing the statistics failed",
+              "clearing_timeout_title": "Clearing not done yet",
+              "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
+              "fix_all": "Fix all",
+              "info": "Info",
               "no_support": {
                 "title": "Fix issue",
                 "info_text_1": "Fixing this issue is not supported yet."
               },
               "no_state": {
                 "title": "Entity has no state",
-                "info_text_1": "This entity has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                "info_text_1": "''{name}'' ({statistic_id}) has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
                 "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "entity_not_recorded": {
-                "title": "Entity not recorded",
-                "info_text_1": "State changes of this entity are not recorded, therefore, we cannot track long term statistics for it.",
+                "title": "Entity is not recorded",
+                "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information."
               },
               "entity_no_longer_recorded": {
-                "title": "Entity no longer recorded",
-                "info_text_1": "We have generated statistics for this entity in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                "title": "Entity is no longer recorded",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "You probably excluded this entity, or have just included some entities.",
                 "info_text_3_link": "See the recorder documentation for more information.",
                 "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
               },
-              "unsupported_state_class": {
-                "title": "Unsupported state class",
-                "info_text_1": "The state class of this entity, {state_class} is not supported.",
+              "state_class_removed": {
+                "title": "The entity no longer has a state class",
+                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but it no longer has a state class, therefore, we cannot track long term statistics for it anymore.",
                 "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
-                "info_text_3": "If this state class was provided by an integration, this is a bug. Please report an issue.",
-                "info_text_4": "If you have set this state class yourself, please correct it.",
+                "info_text_3": "If the state class was previously provided by an integration, this might be a bug. Please report an issue.",
+                "info_text_4": "If you previously set the state class yourself, please correct it.",
                 "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
-                "info_text_5": "If the state class has permanently changed, you may want to delete the long term statistics of it from your database.",
+                "info_text_5": "If the state class has permanently been removed, you may want to delete the long term statistics of it from your database.",
                 "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "units_changed": {
-                "title": "The unit of this entity changed",
+                "title": "The unit has changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
                 "clear": "Delete all old statistic data for this entity",
                 "how_to_fix": "How do you want to fix this issue?",
-                "info_text_1": "The unit of this entity changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
                 "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
                 "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
               },
@@ -6966,6 +7060,7 @@
             },
             "adjust_sum": "Adjust sum",
             "data_table": {
+              "select_all_issues": "Select all with issues",
               "name": "Name",
               "statistic_id": "Statistic id",
               "statistics_unit": "Statistics unit",

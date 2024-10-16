@@ -29,6 +29,7 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
+import "../../../components/ha-password-field";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -87,6 +88,7 @@ export class DialogAddUser extends LitElement {
     if (!this._params) {
       return nothing;
     }
+
     return html`
       <ha-dialog
         open
@@ -130,34 +132,32 @@ export class DialogAddUser extends LitElement {
             dialogInitialFocus
           ></ha-textfield>
 
-          <ha-textfield
+          <ha-password-field
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
-            type="password"
             name="password"
             .value=${this._password}
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-          ></ha-textfield>
+          ></ha-password-field>
 
-          <ha-textfield
-            label=${this.hass.localize(
+          <ha-password-field
+            .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
             )}
             name="passwordConfirm"
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
-            type="password"
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .validationMessage=${this.hass.localize(
+            .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-          ></ha-textfield>
+          ></ha-password-field>
           <ha-settings-row>
             <span slot="heading">
               ${this.hass.localize(
@@ -311,7 +311,8 @@ export class DialogAddUser extends LitElement {
           display: flex;
           padding: 8px 0;
         }
-        ha-textfield {
+        ha-textfield,
+        ha-password-field {
           display: block;
           margin-bottom: 8px;
         }

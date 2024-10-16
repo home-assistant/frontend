@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { mdiCloud, mdiFileCodeOutline, mdiPackageVariant } from "@mdi/js";
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import {
   CSSResultGroup,
   LitElement,
@@ -28,6 +28,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
+import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -116,7 +117,10 @@ export class HaIntegrationCard extends LitElement {
       <div class="card-actions">
         ${devices.length > 0
           ? html`<a
-              href=${devices.length === 1
+              href=${devices.length === 1 &&
+              // Always link to device page for protocol integrations to show Add Device button
+              // @ts-expect-error
+              !PROTOCOL_INTEGRATIONS.includes(this.domain)
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
@@ -157,21 +161,27 @@ export class HaIntegrationCard extends LitElement {
               : html`<div class="spacer"></div>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
-            ? html`<span class="icon custom">
+            ? html`<span
+                class="icon ${this.manifest.overwrites_built_in
+                  ? "overwrites"
+                  : "custom"}"
+              >
                 <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
                 <simple-tooltip
                   animation-delay="0"
                   .position=${computeRTL(this.hass) ? "right" : "left"}
                   offset="4"
                   >${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.custom_integration"
+                    this.manifest.overwrites_built_in
+                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                      : "ui.panel.config.integrations.config_entry.custom_integration"
                   )}</simple-tooltip
                 >
               </span>`
             : nothing}
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
-                <ha-svg-icon .path=${mdiCloud}></ha-svg-icon>
+                <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
                 <simple-tooltip
                   animation-delay="0"
                   .position=${computeRTL(this.hass) ? "right" : "left"}
@@ -344,25 +354,21 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
         }
         .icon {
-          border-radius: 50%;
-          color: var(--text-primary-color);
+          color: var(--label-badge-grey);
           padding: 4px;
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
         }
-        .icon.cloud {
-          background: var(--info-color);
-        }
         .icon.custom {
-          background: var(--warning-color);
+          color: var(--warning-color);
         }
-        .icon.yaml {
-          background: var(--label-badge-grey);
+        .icon.overwrites {
+          color: var(--error-color);
         }
         .icon ha-svg-icon {
-          width: 16px;
-          height: 16px;
+          width: 24px;
+          height: 24px;
           display: block;
         }
         simple-tooltip {

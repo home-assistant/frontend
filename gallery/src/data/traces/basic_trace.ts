@@ -217,20 +217,20 @@ export const basicTrace: DemoTrace = {
       id: "1615419646544",
       alias: "Ensure Party mode",
       description: "",
-      trigger: [
+      triggers: [
         {
-          platform: "state",
+          trigger: "state",
           entity_id: "input_boolean.toggle_1",
         },
       ],
-      condition: [
+      conditions: [
         {
           condition: "template",
           alias: "Test if Paulus is home",
           value_template: "{{ true }}",
         },
       ],
-      action: [
+      actions: [
         {
           action: "input_boolean.toggle",
           target: {

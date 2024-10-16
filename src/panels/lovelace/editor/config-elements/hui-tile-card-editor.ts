@@ -1,7 +1,6 @@
 import { mdiGestureTap, mdiListBox, mdiPalette } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -30,10 +29,9 @@ import {
 import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditSubElementEvent, SubElementEditorConfig } from "../types";
+import { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -62,8 +60,6 @@ export class HuiTileCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
-
-  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: TileCardConfig): void {
     assert(config, cardConfigStruct);
@@ -95,7 +91,10 @@ export class HuiTileCardEditor
                 {
                   name: "color",
                   selector: {
-                    ui_color: { default_color: true },
+                    ui_color: {
+                      default_color: "state",
+                      include_state: true,
+                    },
                   },
                 },
                 {
@@ -162,36 +161,11 @@ export class HuiTileCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _context = memoizeOne(
-    (entity_id?: string): LovelaceCardFeatureContext => ({ entity_id })
-  );
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    return cache(
-      this._subElementEditorConfig
-        ? this._renderFeatureForm()
-        : this._renderForm()
-    );
-  }
-
-  private _renderFeatureForm() {
-    return html`
-      <hui-sub-element-editor
-        .hass=${this.hass}
-        .config=${this._subElementEditorConfig}
-        .context=${this._context(this._config!.entity)}
-        @go-back=${this._goBack}
-        @config-changed=${this.subElementChanged}
-      >
-      </hui-sub-element-editor>
-    `;
-  }
-
-  private _renderForm() {
     const entityId = this._config!.entity;
     const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
@@ -205,6 +179,7 @@ export class HuiTileCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
@@ -270,41 +245,30 @@ export class HuiTileCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private subElementChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    const index = ev.detail.subElementConfig.index;
+    const config = this._config!.features![index!];
 
-    const value = ev.detail.config;
-
-    const newConfigFeatures = this._config!.features
-      ? [...this._config!.features]
-      : [];
-
-    if (!value) {
-      newConfigFeatures.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigFeatures[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._config = { ...this._config!, features: newConfigFeatures };
-
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "edit-sub-element", {
+      config: config,
+      saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
+      context: {
+        entity_id: this._config!.entity,
+      },
+      type: "feature",
+    } as EditSubElementEvent<
+      LovelaceCardFeatureConfig,
+      LovelaceCardFeatureContext
+    >);
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
-    this._subElementEditorConfig = ev.detail.subElementConfig;
-  }
-
-  private _goBack(): void {
-    this._subElementEditorConfig = undefined;
+  private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
+    const features = this._config!.features!.concat();
+    features[index] = feature;
+    const config = { ...this._config!, features };
+    fireEvent(this, "config-changed", {
+      config: config,
+    });
   }
 
   private _computeLabelCallback = (
@@ -326,6 +290,19 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
+        );
+      default:
+        return undefined;
     }
   };
 

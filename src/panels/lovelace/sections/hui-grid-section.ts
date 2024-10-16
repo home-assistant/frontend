@@ -157,7 +157,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   }
 
   private _addCard() {
-    fireEvent(this, "ll-create-card", { suggested: ["tile"] });
+    fireEvent(this, "ll-create-card", { suggested: ["tile", "heading"] });
   }
 
   static get styles(): CSSResultGroup {
@@ -182,7 +182,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             var(--grid-column-count),
             minmax(0, 1fr)
           );
-          grid-auto-rows: minmax(var(--row-height), auto);
+          grid-auto-rows: auto;
           row-gap: var(--row-gap);
           column-gap: var(--column-gap);
           padding: 0;
@@ -202,6 +202,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           position: relative;
           grid-row: span var(--row-size, 1);
           grid-column: span min(var(--column-size, 1), var(--grid-column-count));
+        }
+
+        .container.edit-mode .card {
+          min-height: calc((var(--row-height) - var(--row-gap)) / 2);
         }
 
         .card.fit-rows {

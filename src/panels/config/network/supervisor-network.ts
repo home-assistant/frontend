@@ -14,6 +14,11 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-password-field";
+import "../../../components/ha-radio";
+import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   AccessPoints,
@@ -29,10 +34,6 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { showIPDetailDialog } from "./show-ip-detail-dialog";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
-import "../../../components/ha-radio";
-import type { HaRadio } from "../../../components/ha-radio";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -214,8 +215,7 @@ export class HassioNetwork extends LitElement {
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <ha-textfield
-                              type="password"
+                            <ha-password-field
                               id="psk"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
@@ -223,7 +223,7 @@ export class HassioNetwork extends LitElement {
                               .version=${"wifi"}
                               @change=${this._handleInputValueChangedWifi}
                             >
-                            </ha-textfield>
+                            </ha-password-field>
                           `
                         : ""}
                     `

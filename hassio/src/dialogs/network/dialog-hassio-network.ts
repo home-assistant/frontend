@@ -13,10 +13,12 @@ import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
-import "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-textfield";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   AccessPoints,
@@ -34,7 +36,6 @@ import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioNetworkDialogParams } from "./show-dialog-network";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -246,9 +247,8 @@ export class DialogHassioNetwork
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <ha-textfield
+                            <ha-password-field
                               class="flex-auto"
-                              type="password"
                               id="psk"
                               .label=${this.supervisor.localize(
                                 "dialog.network.wifi_password"
@@ -256,7 +256,7 @@ export class DialogHassioNetwork
                               version="wifi"
                               @change=${this._handleInputValueChangedWifi}
                             >
-                            </ha-textfield>
+                            </ha-password-field>
                           `
                         : ""}
                     `

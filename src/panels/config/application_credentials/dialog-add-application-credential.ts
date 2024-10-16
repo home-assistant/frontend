@@ -5,12 +5,13 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
+import "../../../components/ha-password-field";
 import "../../../components/ha-textfield";
-import "../../../components/ha-button";
 import {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -208,11 +209,10 @@ export class DialogAddApplicationCredential extends LitElement {
             )}
             helperPersistent
           ></ha-textfield>
-          <ha-textfield
+          <ha-password-field
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.client_secret"
             )}
-            type="password"
             name="clientSecret"
             .value=${this._clientSecret}
             required
@@ -222,7 +222,7 @@ export class DialogAddApplicationCredential extends LitElement {
               "ui.panel.config.application_credentials.editor.client_secret_helper"
             )}
             helperPersistent
-          ></ha-textfield>
+          ></ha-password-field>
         </div>
         ${this._loading
           ? html`
