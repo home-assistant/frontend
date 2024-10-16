@@ -28,7 +28,10 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
-import { isStrategyView } from "../../../data/lovelace/config/view";
+import {
+  isStrategyView,
+  LovelaceViewConfig,
+} from "../../../data/lovelace/config/view";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -40,12 +43,14 @@ import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
   addCard,
+  addSection,
   deleteCard,
   moveCardToContainer,
   moveCardToIndex,
 } from "../editor/config-util";
 import {
   LovelaceCardPath,
+  LovelaceContainerPath,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
@@ -353,34 +358,49 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        const view = selectedDashConfig.views[viewIndex];
+        let view = selectedDashConfig.views[viewIndex];
+        let newConfig = selectedDashConfig;
 
-        if (!isStrategyView(view) && view.type === SECTIONS_VIEW_LAYOUT) {
+        if (isStrategyView(view)) {
           showAlertDialog(this, {
             title: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error_title"
             ),
             text: this.hass!.localize(
-              "ui.panel.lovelace.editor.move_card.error_text_section"
+              "ui.panel.lovelace.editor.move_card.error_text_strategy"
             ),
             warning: true,
           });
           return;
         }
 
+        const isSectionsView = view.type === SECTIONS_VIEW_LAYOUT;
+
+        // If the view is a section view and has no sections, add a default section.
+        if (isSectionsView && !view.sections?.length) {
+          const newSection = { type: "grid", cards: [] };
+          newConfig = addSection(selectedDashConfig, viewIndex, newSection);
+          view = newConfig.views[viewIndex] as LovelaceViewConfig;
+        }
+
+        const toPath: LovelaceContainerPath = isSectionsView
+          ? [viewIndex, view.sections!.length - 1]
+          : [viewIndex];
+
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(
-            moveCardToContainer(this.lovelace!.config, this.path!, [viewIndex])
+            moveCardToContainer(newConfig, this.path!, toPath)
           );
           showSaveSuccessToast(this, this.hass!);
           return;
         }
         try {
           const { cardIndex } = parseLovelaceCardPath(this.path!);
+          const card = this._cards[cardIndex];
           await saveConfig(
             this.hass!,
             urlPath,
-            addCard(selectedDashConfig, [viewIndex], this._cards[cardIndex])
+            addCard(newConfig, toPath, card)
           );
           this.lovelace!.saveConfig(
             deleteCard(this.lovelace!.config, this.path!)
