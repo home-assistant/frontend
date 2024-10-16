@@ -86,7 +86,7 @@
     "@polymer/paper-item": "3.0.1",
     "@polymer/paper-listbox": "3.0.1",
     "@polymer/paper-tabs": "3.1.0",
-    "@polymer/polymer": "3.5.1",
+    "@polymer/polymer": "3.5.2",
     "@replit/codemirror-indentation-markers": "6.5.3",
     "@thomasloven/round-slider": "0.6.0",
     "@vaadin/combo-box": "24.4.11",
@@ -251,7 +251,7 @@
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
-    "@polymer/polymer": "patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
+    "@polymer/polymer": "patch:@polymer/polymer@3.5.2#./.yarn/patches/@polymer/polymer/pr-5569.patch",
     "@material/mwc-button@^0.25.3": "^0.27.0",
     "lit": "2.8.0",
     "clean-css": "5.3.3",
