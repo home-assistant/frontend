@@ -95,16 +95,6 @@ export class HaIntegrationListItem extends ListItemBase {
             ></span
           >`
         : ""}
-      ${this.integration.overwrites_built_in
-        ? html`<span
-            ><ha-svg-icon .path=${mdiFolderAlert}></ha-svg-icon
-            ><simple-tooltip animation-delay="0" position="left"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-              )}</simple-tooltip
-            ></span
-          >`
-        : ""}
       ${!this.integration.config_flow &&
       !this.integration.integrations &&
       !this.integration.iot_standards
