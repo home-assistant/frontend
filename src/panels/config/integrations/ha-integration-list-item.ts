@@ -3,7 +3,7 @@ import {
   ListItemBase,
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -72,7 +72,7 @@ export class HaIntegrationListItem extends ListItemBase {
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud
         ? html`<span
-            ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
+            ><ha-svg-icon .path=${mdiWeb}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -82,6 +82,9 @@ export class HaIntegrationListItem extends ListItemBase {
         : ""}
       ${!this.integration.is_built_in
         ? html`<span
+            class=${this.integration.overwrites_built_in
+              ? "overwrites"
+              : "custom"}
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
@@ -101,7 +104,7 @@ export class HaIntegrationListItem extends ListItemBase {
                 "ui.panel.config.integrations.config_entry.yaml_only"
               )}</simple-tooltip
             ><ha-svg-icon
-              .path=${mdiOpenInNew}
+              .path=${mdiFileCodeOutline}
               class="open-in-new"
             ></ha-svg-icon
           ></span>`
@@ -160,6 +163,12 @@ export class HaIntegrationListItem extends ListItemBase {
         .open-in-new {
           --mdc-icon-size: 22px;
           padding: 1px;
+        }
+        .custom {
+          color: var(--warning-color);
+        }
+        .overwrites {
+          color: var(--error-color);
         }
       `,
     ];
