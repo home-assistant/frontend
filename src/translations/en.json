@@ -4404,6 +4404,7 @@
               }
             },
             "custom_integration": "Custom integration",
+            "custom_overwrites_core": "Custom integration that replaces a core component",
             "depends_on_cloud": "Depends on the cloud",
             "yaml_only": "Needs manual configuration",
             "no_config_flow": "This integration was not set up from the UI",
