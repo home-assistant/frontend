@@ -1,6 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { relativeTime } from "../common/datetime/relative_time";
+import { relativeTime, TimeVerbosity } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import type { HomeAssistant } from "../types";
 
@@ -9,6 +9,8 @@ class HaRelativeTime extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public datetime?: string | Date;
+
+  @property({ attribute: false }) public timeVerbosity?: TimeVerbosity;
 
   @property({ type: Boolean }) public capitalize = false;
 
@@ -58,7 +60,13 @@ class HaRelativeTime extends ReactiveElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      const relTime = relativeTime(new Date(this.datetime), this.hass.locale);
+      const relTime = relativeTime(
+        new Date(this.datetime),
+        this.hass.locale,
+        undefined,
+        undefined,
+        this.timeVerbosity
+      );
       this.innerHTML = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;
