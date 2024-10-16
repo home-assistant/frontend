@@ -47,9 +47,9 @@ class HaConfigBackupDetails extends LitElement {
             ? html`<ha-alert alert-type="warning" title="Not found">
                 Backup matching ${this.backupSlug} not found
               </ha-alert>`
-            : this._backup
-              ? html`<p>${this._backup.slug}</p>`
-              : html`<ha-circular-progress active></ha-circular-progress>`}
+            : !this._backup
+              ? html`<ha-circular-progress active></ha-circular-progress>`
+              : html`<p>${this._backup.slug}</p>`}
         </div>
       </hass-subpage>
     `;
