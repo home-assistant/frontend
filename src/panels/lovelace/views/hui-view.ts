@@ -37,6 +37,7 @@ import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
 import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
+import { confDeleteBadge } from "../editor/delete-badge";
 
 declare global {
   // for fire event
@@ -46,7 +47,7 @@ declare global {
     "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
     "ll-create-badge": undefined;
     "ll-edit-badge": { path: LovelaceCardPath };
-    "ll-delete-badge": { path: LovelaceCardPath };
+    "ll-delete-badge": { path: LovelaceCardPath; confirm: boolean };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -348,8 +349,12 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-badge", (ev) => {
-      const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
-      this.lovelace.saveConfig(newLovelace);
+      if (ev.detail.confirm) {
+        confDeleteBadge(this, this.hass!, this.lovelace!, ev.detail.path);
+      } else {
+        const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
+        this.lovelace.saveConfig(newLovelace);
+      }
     });
   }
 

@@ -372,13 +372,13 @@ export const deleteBadge = (
   config: LovelaceConfig,
   path: LovelaceCardPath
 ): LovelaceConfig => {
-  const { cardIndex } = parseLovelaceCardPath(path);
+  const { cardIndex: badgeIndex } = parseLovelaceCardPath(path);
   const containerPath = getLovelaceContainerPath(path);
 
   const badges = findLovelaceItems("badges", config, containerPath);
 
   const newBadges = (badges ?? []).filter(
-    (_origConf, ind) => ind !== cardIndex
+    (_origConf, ind) => ind !== badgeIndex
   );
 
   const newConfig = updateLovelaceItems(
