@@ -23,16 +23,15 @@ import { fetchResources } from "../../data/lovelace/resource";
 import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
+import { ShowToastParams } from "../../managers/notification-manager";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
-import { loadLovelaceResources } from "./common/load-resources";
 import { checkLovelaceConfig } from "./common/check-lovelace-config";
+import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
-import { fireEvent } from "../../common/dom/fire_event";
-import { ShowToastParams } from "../../managers/notification-manager";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -436,9 +435,7 @@ export class LovelacePanel extends LitElement {
           throw err;
         }
       },
-      showToast: (params: ShowToastParams) => {
-        fireEvent(this, "hass-notification", params);
-      },
+      showToast: (params: ShowToastParams) => showToast(this, params),
     };
   }
 
