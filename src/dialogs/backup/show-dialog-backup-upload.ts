@@ -1,7 +1,9 @@
 import { fireEvent } from "../../common/dom/fire_event";
 import "./dialog-backup-upload";
 
-export interface BackupUploadDialogParams {}
+export interface BackupUploadDialogParams {
+  onUploadComplete: () => void;
+}
 
 export const showBackupUploadDialog = (
   element: HTMLElement,

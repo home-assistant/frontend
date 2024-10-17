@@ -2,6 +2,7 @@ import { mdiClose, mdiFolderUpload } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-alert";
 import "../../components/ha-file-upload";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
@@ -24,6 +25,8 @@ export class DialogBackupUpload
   @state() private _dialogParams?: BackupUploadDialogParams;
 
   @state() private _uploading = false;
+
+  @state() private _error?: string;
 
   public async showDialog(
     dialogParams: BackupUploadDialogParams
@@ -72,11 +75,15 @@ export class DialogBackupUpload
           supports="Supports .tar files"
           @file-picked=${this._uploadFile}
         ></ha-file-upload>
+        ${this._error
+          ? html`<ha-alert alertType="error">${this._error}</ha-alert>`
+          : nothing}
       </ha-dialog>
     `;
   }
 
   private async _uploadFile(ev: CustomEvent<{ files: File[] }>): Promise<void> {
+    this._error = undefined;
     const file = ev.detail.files[0];
 
     if (file.type !== SUPPORTED_FORMAT) {
@@ -90,14 +97,10 @@ export class DialogBackupUpload
     this._uploading = true;
     try {
       await uploadBackup(this.hass!, file);
-      fireEvent(this, "backup-file-uploaded");
+      this._dialogParams!.onUploadComplete();
       this.closeDialog();
     } catch (err: any) {
-      showAlertDialog(this, {
-        title: "Upload failed",
-        text: err.message,
-        confirmText: "ok",
-      });
+      this._error = err.message;
     } finally {
       this._uploading = false;
     }
