@@ -5360,7 +5360,7 @@
           }
         },
         "cards": {
-          "confirm_delete": "Are you sure you want to delete this card?",
+          "confirm_delete": "Delete card?",
           "show_more_info": "Show more information",
           "actions": {
             "action_confirmation": "Are you sure you want to run action ''{action}''?",
@@ -5495,6 +5495,9 @@
           "heading": {
             "default_heading": "Kitchen"
           }
+        },
+        "badges": {
+          "confirm_delete": "Delete badge?"
         },
         "unused_entities": {
           "title": "Unused entities",

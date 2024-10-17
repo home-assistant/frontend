@@ -180,14 +180,14 @@ export class HuiBadgeEditMode extends LitElement {
         this._cutBadge();
         break;
       case 3:
-        this._deleteBadge();
+        this._deleteBadge(true);
         break;
     }
   }
 
   private _cutBadge(): void {
     this._copyBadge();
-    this._deleteBadge();
+    this._deleteBadge(false);
   }
 
   private _copyBadge(): void {
@@ -220,8 +220,8 @@ export class HuiBadgeEditMode extends LitElement {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
-  private _deleteBadge(): void {
-    fireEvent(this, "ll-delete-badge", { path: this.path! });
+  private _deleteBadge(confirm: boolean): void {
+    fireEvent(this, "ll-delete-badge", { path: this.path!, confirm });
   }
 
   static get styles(): CSSResultGroup {
