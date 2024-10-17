@@ -2,7 +2,8 @@ import "@material/mwc-button";
 import {
   mdiCheckCircle,
   mdiChip,
-  mdiCircle,
+  mdiPlayCircle,
+  mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
   mdiExclamationThick,
@@ -198,7 +199,7 @@ class HassioAddonInfo extends LitElement {
                               "dashboard.addon_running"
                             )}
                             class="running"
-                            .path=${mdiCircle}
+                            .path=${mdiPlayCircle}
                           ></ha-svg-icon>
                         `
                       : html`
@@ -207,7 +208,7 @@ class HassioAddonInfo extends LitElement {
                               "dashboard.addon_stopped"
                             )}
                             class="stopped"
-                            .path=${mdiCircle}
+                            .path=${mdiCircleOffOutline}
                           ></ha-svg-icon>
                         `}
                   `
