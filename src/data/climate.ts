@@ -61,6 +61,8 @@ export type ClimateEntity = HassEntityBase & {
     preset_modes?: string[];
     swing_mode?: string;
     swing_modes?: string[];
+    swing_horizontal_mode?: string;
+    swing_horizontal_modes?: string[];
     aux_heat?: "on" | "off";
   };
 };
@@ -75,6 +77,7 @@ export const enum ClimateEntityFeature {
   AUX_HEAT = 64,
   TURN_OFF = 128,
   TURN_ON = 256,
+  SWING_HORIZONTAL_MODE = 512,
 }
 
 const hvacModeOrdering = HVAC_MODES.reduce(
