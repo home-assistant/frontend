@@ -1,6 +1,5 @@
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
-import { showDeletedToastWithUndo } from "../../../util/toast-deleted-success";
 import { Lovelace } from "../types";
 import { deleteCard } from "./config-util";
 import { LovelaceCardPath } from "./lovelace-path";
@@ -18,7 +17,11 @@ export async function deleteCardWithUndo(
       await lovelace.saveConfig(oldConfig);
     };
     await lovelace.saveConfig(newConfig);
-    showDeletedToastWithUndo(element, hass, action);
+    lovelace.showToast({
+      message: hass.localize("ui.common.successfully_deleted"),
+      duration: 8000,
+      action: { action, text: hass.localize("ui.common.undo") },
+    });
   } catch (err: any) {
     showAlertDialog(element, {
       text: `Deleting failed: ${err.message}`,
