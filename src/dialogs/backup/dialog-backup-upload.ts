@@ -131,7 +131,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "dialog-backup-upload": DialogBackupUpload;
   }
-  interface HASSDomEvents {
-    "backup-file-uploaded": undefined;
-  }
 }
