@@ -2529,7 +2529,7 @@
                 },
                 "iframe": {
                   "title": "Webpage",
-                  "description": "Integrate a webpage as a dashboard."
+                  "description": "Integrate a webpage as a dashboard"
                 }
               }
             },
@@ -4221,7 +4221,7 @@
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked User",
-            "device_tracker_intro": "Select the devices that belong to this person.",
+            "device_tracker_intro": "Select the devices that belong to this person",
             "no_device_tracker_available_intro": "When you have devices that indicate the presence of a person, you will be able to assign them to a person here. You can add your first device by adding a presence-detection integration from the integrations page.",
             "link_presence_detection_integrations": "Presence Detection Integrations",
             "link_integrations_page": "Integrations page",
