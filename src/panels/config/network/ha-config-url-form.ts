@@ -321,10 +321,7 @@ class ConfigUrlForm extends LitElement {
     if (this._internal_url && this._showCustomInternalUrl) {
       return this._internal_url;
     }
-    if (this._urls?.internal) {
-      return this._urls.internal;
-    }
-    return "";
+    return this._urls?.internal ?? "";
   }
 
   private get _externalUrlValue() {
@@ -332,12 +329,9 @@ class ConfigUrlForm extends LitElement {
       return this._external_url;
     }
     if (this._cloudChecked) {
-      return this._urls?.cloud;
+      return this._urls?.cloud ?? "";
     }
-    if (this._urls?.external) {
-      return this._urls.external;
-    }
-    return "";
+    return this._urls?.external ?? "";
   }
 
   private _toggleCloud(ev) {
