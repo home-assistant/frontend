@@ -153,7 +153,7 @@ export class CloudRemotePref extends LitElement {
                 class="toggle-unmasked-url"
                 toggles
                 .label=${this.hass.localize(
-                  `ui.panel.config.cloud.account.remote.${this._unmaskedUrl ? "hide" : "show"}_url`
+                  `ui.panel.config.common.${this._unmaskedUrl ? "hide" : "show"}_url`
                 )}
                 @click=${this._toggleUnmaskedUrl}
                 .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
@@ -165,9 +165,7 @@ export class CloudRemotePref extends LitElement {
               unelevated
             >
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.copy_link"
-              )}
+              ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
 
