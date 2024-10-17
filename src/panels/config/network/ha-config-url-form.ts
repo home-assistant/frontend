@@ -148,15 +148,19 @@ class ConfigUrlForm extends LitElement {
                   html`<div style="width: 24px"></div>`
                 }
               ></ha-textfield>
-              <ha-icon-button
-                class="toggle-unmasked-url"
-                toggles
-                .label=${this.hass.localize(
-                  `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
-                )}
-                @click=${this._toggleUnmaskedExternalUrl}
-                .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
-              ></ha-icon-button>
+              ${!this._showCustomExternalUrl || !canEdit
+                ? html`
+                    <ha-icon-button
+                      class="toggle-unmasked-url"
+                      toggles
+                      .label=${this.hass.localize(
+                        `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
+                      )}
+                      @click=${this._toggleUnmaskedExternalUrl}
+                      .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
+                    ></ha-icon-button>
+                  `
+                : ""}
             </div>
             <ha-button .url=${externalUrl} @click=${this._copyURL} unelevated>
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
@@ -239,15 +243,19 @@ class ConfigUrlForm extends LitElement {
                   html`<div style="width: 24px"></div>`
                 }
               ></ha-textfield>
-              <ha-icon-button
-                class="toggle-unmasked-url"
-                toggles
-                .label=${this.hass.localize(
-                  `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
-                )}
-                @click=${this._toggleUnmaskedInternalUrl}
-                .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
-              ></ha-icon-button>
+              ${!this._showCustomInternalUrl || !canEdit
+                ? html`
+                    <ha-icon-button
+                      class="toggle-unmasked-url"
+                      toggles
+                      .label=${this.hass.localize(
+                        `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
+                      )}
+                      @click=${this._toggleUnmaskedInternalUrl}
+                      .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
+                    ></ha-icon-button>
+                  `
+                : ""}
             </div>
             <ha-button .url=${internalUrl} @click=${this._copyURL} unelevated>
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
