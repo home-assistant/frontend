@@ -1,11 +1,11 @@
-import { html, LitElement, nothing } from "lit";
-import { property, state, query } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
+import { property, query, state } from "lit/decorators";
 import { computeRTL } from "../common/util/compute_rtl";
+import "../components/ha-button";
 import "../components/ha-toast";
 import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
-import "../components/ha-button";
 
 export interface ShowToastParams {
   message: string;
@@ -27,12 +27,10 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
-    if (this._parameters && this._parameters.message !== parameters.message) {
-      this._parameters = undefined;
-      await this.updateComplete;
-    }
+    this._toast?.close();
 
     if (!parameters || parameters.duration === 0) {
+      this._parameters = undefined;
       return;
     }
 
@@ -44,10 +42,9 @@ class NotificationManager extends LitElement {
     ) {
       this._parameters.duration = 4000;
     }
-  }
 
-  public shouldUpdate(changedProperties) {
-    return !this._toast || changedProperties.has("_parameters");
+    await this.updateComplete;
+    this._toast?.show();
   }
 
   private _toastClosed() {
@@ -61,7 +58,6 @@ class NotificationManager extends LitElement {
     return html`
       <ha-toast
         leading
-        open
         dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
         .labelText=${this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
@@ -77,12 +73,14 @@ class NotificationManager extends LitElement {
             `
           : nothing}
         ${this._parameters?.dismissable
-          ? html`<ha-icon-button
-              .label=${this.hass.localize("ui.common.close")}
-              .path=${mdiClose}
-              dialogAction="close"
-              slot="dismiss"
-            ></ha-icon-button>`
+          ? html`
+              <ha-icon-button
+                .label=${this.hass.localize("ui.common.close")}
+                .path=${mdiClose}
+                dialogAction="close"
+                slot="dismiss"
+              ></ha-icon-button>
+            `
           : nothing}
       </ha-toast>
     `;

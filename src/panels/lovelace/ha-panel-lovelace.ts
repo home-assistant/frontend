@@ -31,6 +31,8 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
+import { fireEvent } from "../../common/dom/fire_event";
+import { ShowToastParams } from "../../managers/notification-manager";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -433,6 +435,9 @@ export class LovelacePanel extends LitElement {
           });
           throw err;
         }
+      },
+      showToast: (params: ShowToastParams) => {
+        fireEvent(this, "hass-notification", params);
       },
     };
   }
