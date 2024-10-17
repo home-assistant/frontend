@@ -16,6 +16,7 @@ import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-ripple";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -234,6 +235,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     "ui.panel.lovelace.editor.section.create_section"
                   )}
                 >
+                  <ha-ripple></ha-ripple>
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
                 </button>
               `
@@ -382,6 +384,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
         padding: 8px;
         box-sizing: border-box;
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
       }
 
       .create-section:focus {

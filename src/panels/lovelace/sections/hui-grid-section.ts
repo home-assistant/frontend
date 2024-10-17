@@ -4,6 +4,7 @@ import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import "../../../components/ha-ripple";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import { LovelaceSectionElement } from "../../../data/lovelace";
@@ -12,10 +13,10 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { HuiCard } from "../cards/hui-card";
+import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
-import { computeCardGridSize } from "../common/compute-card-grid-size";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -128,6 +129,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "ui.panel.lovelace.editor.section.add_card"
                   )}
                 >
+                  <ha-ripple></ha-ripple>
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                 </button>
               `
@@ -229,6 +231,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         }
 
         .add {
+          position: relative;
           outline: none;
           grid-row: span var(--row-size, 1);
           grid-column: span var(--column-size, 2);
@@ -238,6 +241,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           border: 2px dashed var(--primary-color);
           height: var(--row-height);
           order: 1;
+          --ha-ripple-color: var(--primary-color);
+          --ha-ripple-hover-opacity: 0.04;
+          --ha-ripple-pressed-opacity: 0.12;
         }
         .add:focus {
           border-style: solid;
