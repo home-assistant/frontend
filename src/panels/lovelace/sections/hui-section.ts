@@ -21,7 +21,7 @@ import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
+import { deleteCardWithUndo } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
@@ -258,7 +258,12 @@ export class HuiSection extends ReactiveElement {
       ev.stopPropagation();
       if (!this.lovelace) return;
       if (ev.detail.confirm) {
-        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+        deleteCardWithUndo(
+          this._layoutElement!,
+          this.hass!,
+          this.lovelace,
+          ev.detail.path
+        );
       } else {
         const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
         this.lovelace.saveConfig(newLovelace);

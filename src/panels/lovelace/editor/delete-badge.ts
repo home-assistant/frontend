@@ -2,10 +2,10 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showDeletedToastWithUndo } from "../../../util/toast-deleted-success";
 import { Lovelace } from "../types";
-import { deleteCard } from "./config-util";
+import { deleteBadge } from "./config-util";
 import { LovelaceCardPath } from "./lovelace-path";
 
-export async function deleteCardWithUndo(
+export async function deleteBadgeWithUndo(
   element: HTMLElement,
   hass: HomeAssistant,
   lovelace: Lovelace,
@@ -13,9 +13,9 @@ export async function deleteCardWithUndo(
 ): Promise<void> {
   try {
     const oldConfig = lovelace.config;
-    const newConfig = deleteCard(oldConfig, path);
+    const newConfig = deleteBadge(oldConfig, path);
     const action = async () => {
-      await lovelace.saveConfig(oldConfig);
+      lovelace.saveConfig(oldConfig);
     };
     await lovelace.saveConfig(newConfig);
     showDeletedToastWithUndo(element, hass, action);

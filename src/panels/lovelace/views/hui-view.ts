@@ -25,7 +25,7 @@ import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dial
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { deleteBadge, deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
+import { deleteCardWithUndo } from "../editor/delete-card";
 import {
   LovelaceCardPath,
   parseLovelaceCardPath,
@@ -37,6 +37,7 @@ import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
 import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
+import { deleteBadgeWithUndo } from "../editor/delete-badge";
 
 declare global {
   // for fire event
@@ -46,7 +47,7 @@ declare global {
     "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
     "ll-create-badge": undefined;
     "ll-edit-badge": { path: LovelaceCardPath };
-    "ll-delete-badge": { path: LovelaceCardPath };
+    "ll-delete-badge": { path: LovelaceCardPath; confirm: boolean };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -324,8 +325,14 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
+      if (!this.lovelace) return;
       if (ev.detail.confirm) {
-        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+        deleteCardWithUndo(
+          this._layoutElement!,
+          this.hass!,
+          this.lovelace!,
+          ev.detail.path
+        );
       } else {
         const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
         this.lovelace.saveConfig(newLovelace);
@@ -348,8 +355,18 @@ export class HUIView extends ReactiveElement {
       });
     });
     this._layoutElement.addEventListener("ll-delete-badge", (ev) => {
-      const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
-      this.lovelace.saveConfig(newLovelace);
+      if (!this.lovelace) return;
+      if (ev.detail.confirm) {
+        deleteBadgeWithUndo(
+          this._layoutElement!,
+          this.hass!,
+          this.lovelace!,
+          ev.detail.path
+        );
+      } else {
+        const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
+        this.lovelace.saveConfig(newLovelace);
+      }
     });
   }
 
