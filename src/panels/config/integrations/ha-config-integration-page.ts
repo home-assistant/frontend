@@ -776,7 +776,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             ${this.hass.localize("ui.common.enable")}
           </mwc-button>`
         : configPanel &&
-            (item.domain !== "matter" || isDevVersion(this.hass.config.version))
+            (item.domain !== "matter" ||
+              isDevVersion(this.hass.config.version)) &&
+            !stateText
           ? html`<a
               slot="end"
               href=${`/${configPanel}?config_entry=${item.entry_id}`}
@@ -786,7 +788,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 )}
               </mwc-button></a
             >`
-          : item.supports_options && !stateText
+          : item.supports_options
             ? html`
                 <mwc-button slot="end" @click=${this._showOptions}>
                   ${this.hass.localize(
@@ -801,14 +803,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        ${item.supports_options && stateText
-          ? html`<ha-md-menu-item @click=${this._showOptions}>
-              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.configure"
-              )}
-            </ha-md-menu-item>`
-          : ""}
         ${item.disabled_by && devices.length
           ? html`
               <ha-md-menu-item
