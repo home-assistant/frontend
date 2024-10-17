@@ -26,7 +26,7 @@ export interface NetworkConfig {
   configured_adapters: string[];
 }
 
-export interface NetworkUrs {
+export interface NetworkUrls {
   internal: string;
   external: string;
   cloud: string;
@@ -49,6 +49,6 @@ export const setNetworkConfig = (
   });
 
 export const getNetworkUrls = (hass: HomeAssistant) =>
-  hass.callWS<NetworkUrs>({
+  hass.callWS<NetworkUrls>({
     type: "network/url",
   });
