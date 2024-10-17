@@ -2,10 +2,10 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
@@ -17,6 +17,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -28,7 +29,6 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { Lovelace } from "../types";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -111,8 +111,8 @@ export class HuiBadgeEditMode extends LitElement {
       <div class="badge-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
-          @click=${this._editBadge}
-          @keydown=${this._editBadge}
+          @click=${this._handleOverlayClick}
+          @keydown=${this._handleOverlayClick}
           tabindex="0"
         >
           <div class="edit-overlay"></div>
@@ -130,9 +130,13 @@ export class HuiBadgeEditMode extends LitElement {
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
           <ha-list-item graphic="icon">
+            <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit")}
+          </ha-list-item>
+          <ha-list-item graphic="icon">
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
@@ -168,18 +172,33 @@ export class HuiBadgeEditMode extends LitElement {
     this._menuOpened = false;
   }
 
+  private _handleOverlayClick(ev): void {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    this._editBadge();
+  }
+
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._duplicateBadge();
+        this._editBadge();
         break;
       case 1:
-        this._copyBadge();
+        this._duplicateBadge();
         break;
       case 2:
-        this._cutBadge();
+        this._copyBadge();
         break;
       case 3:
+        this._cutBadge();
+        break;
+      case 4:
         this._deleteBadge();
         break;
     }
@@ -208,15 +227,7 @@ export class HuiBadgeEditMode extends LitElement {
     });
   }
 
-  private _editBadge(ev): void {
-    if (ev.defaultPrevented) {
-      return;
-    }
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
-    ev.preventDefault();
-    ev.stopPropagation();
+  private _editBadge(): void {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 

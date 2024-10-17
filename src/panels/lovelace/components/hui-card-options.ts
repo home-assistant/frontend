@@ -3,12 +3,12 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFileMoveOutline,
   mdiMinus,
   mdiPlus,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -158,7 +158,7 @@ export class HuiCardOptions extends LitElement {
               <ha-list-item graphic="icon">
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiContentDuplicate}
+                  .path=${mdiPlusCircleMultipleOutline}
                 ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
