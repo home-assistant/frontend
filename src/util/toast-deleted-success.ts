@@ -2,13 +2,14 @@ import { ShowToastParams } from "../managers/notification-manager";
 import { HomeAssistant } from "../types";
 import { showToast } from "./toast";
 
-export const showDeleteSuccessToast = (
+export const showDeletedToastWithUndo = (
   el: HTMLElement,
   hass: HomeAssistant,
   action?: () => void
 ) => {
   const toastParams: ShowToastParams = {
     message: hass!.localize("ui.common.successfully_deleted"),
+    duration: 8000,
   };
 
   if (action) {
