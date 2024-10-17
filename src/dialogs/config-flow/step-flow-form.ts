@@ -1,5 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-button";
+import "../../components/buttons/ha-text-button";
 import {
   css,
   CSSResultGroup,
@@ -97,12 +97,12 @@ class StepFlowForm extends LitElement {
             `
           : html`
               <div>
-                <mwc-button @click=${this._submitStep}>
+                <ha-text-button @click=${this._submitStep}>
                   ${this.flowConfig.renderShowFormStepSubmitButton(
                     this.hass,
                     this.step
                   )}
-                </mwc-button>
+                </ha-text-button>
               </div>
             `}
       </div>
