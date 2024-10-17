@@ -45,6 +45,7 @@ class HcLovelace extends LitElement {
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
+      showToast: () => undefined,
     };
     return html`
       <hui-view
