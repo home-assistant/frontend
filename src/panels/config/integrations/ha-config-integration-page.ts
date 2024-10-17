@@ -772,9 +772,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           : ""}
       </div>
       ${item.disabled_by === "user"
-        ? html`<mwc-button unelevated slot="end" @click=${this._handleEnable}>
+        ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
-          </mwc-button>`
+          </ha-button>`
         : configPanel &&
             (item.domain !== "matter" ||
               isDevVersion(this.hass.config.version)) &&
@@ -782,19 +782,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           ? html`<a
               slot="end"
               href=${`/${configPanel}?config_entry=${item.entry_id}`}
-              ><mwc-button>
+              ><ha-button>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.configure"
                 )}
-              </mwc-button></a
+              </ha-button></a
             >`
           : item.supports_options
             ? html`
-                <mwc-button slot="end" @click=${this._showOptions}>
+                <ha-button slot="end" @click=${this._showOptions}>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.configure"
                   )}
-                </mwc-button>
+                </ha-button>
               `
             : ""}
       <ha-md-button-menu positioning="popover" slot="end">
