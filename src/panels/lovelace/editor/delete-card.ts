@@ -1,30 +1,37 @@
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { Lovelace } from "../types";
 import { deleteCard } from "./config-util";
 import { LovelaceCardPath } from "./lovelace-path";
 
-export async function deleteCardWithUndo(
-  element: HTMLElement,
+export type DeleteCardParams = { path: LovelaceCardPath; silent: boolean };
+
+export async function performDeleteCard(
   hass: HomeAssistant,
   lovelace: Lovelace,
-  path: LovelaceCardPath
+  params: DeleteCardParams
 ): Promise<void> {
   try {
+    const { path, silent } = params;
     const oldConfig = lovelace.config;
     const newConfig = deleteCard(oldConfig, path);
-    const action = async () => {
-      await lovelace.saveConfig(oldConfig);
-    };
     await lovelace.saveConfig(newConfig);
+
+    if (silent) {
+      return;
+    }
+
+    const action = async () => {
+      lovelace.saveConfig(oldConfig);
+    };
+
     lovelace.showToast({
       message: hass.localize("ui.common.successfully_deleted"),
       duration: 8000,
       action: { action, text: hass.localize("ui.common.undo") },
     });
   } catch (err: any) {
-    showAlertDialog(element, {
-      text: `Deleting failed: ${err.message}`,
+    lovelace.showToast({
+      message: `Deleting failed: ${err.message}`,
     });
   }
 }

@@ -25,9 +25,8 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { deleteBadge, deleteCard } from "../editor/config-util";
-import { deleteBadgeWithUndo } from "../editor/delete-badge";
-import { deleteCardWithUndo } from "../editor/delete-card";
+import { DeleteBadgeParams, performDeleteBadge } from "../editor/delete-badge";
+import { DeleteCardParams, performDeleteCard } from "../editor/delete-card";
 import {
   LovelaceCardPath,
   parseLovelaceCardPath,
@@ -44,10 +43,10 @@ declare global {
   interface HASSDomEvents {
     "ll-create-card": { suggested?: string[] } | undefined;
     "ll-edit-card": { path: LovelaceCardPath };
-    "ll-delete-card": { path: LovelaceCardPath; confirm: boolean };
+    "ll-delete-card": DeleteCardParams;
     "ll-create-badge": undefined;
     "ll-edit-badge": { path: LovelaceCardPath };
-    "ll-delete-badge": { path: LovelaceCardPath; confirm: boolean };
+    "ll-delete-badge": DeleteBadgeParams;
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -324,17 +323,7 @@ export class HUIView extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       if (!this.lovelace) return;
-      if (ev.detail.confirm) {
-        deleteCardWithUndo(
-          this._layoutElement!,
-          this.hass!,
-          this.lovelace!,
-          ev.detail.path
-        );
-      } else {
-        const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
-        this.lovelace.saveConfig(newLovelace);
-      }
+      performDeleteCard(this.hass, this.lovelace, ev.detail);
     });
     this._layoutElement.addEventListener("ll-create-badge", async () => {
       showCreateBadgeDialog(this, {
@@ -352,19 +341,9 @@ export class HUIView extends ReactiveElement {
         badgeIndex: cardIndex,
       });
     });
-    this._layoutElement.addEventListener("ll-delete-badge", (ev) => {
+    this._layoutElement.addEventListener("ll-delete-badge", async (ev) => {
       if (!this.lovelace) return;
-      if (ev.detail.confirm) {
-        deleteBadgeWithUndo(
-          this._layoutElement!,
-          this.hass!,
-          this.lovelace!,
-          ev.detail.path
-        );
-      } else {
-        const newLovelace = deleteBadge(this.lovelace!.config, ev.detail.path);
-        this.lovelace.saveConfig(newLovelace);
-      }
+      performDeleteBadge(this.hass, this.lovelace, ev.detail);
     });
   }
 
