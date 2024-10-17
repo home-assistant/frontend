@@ -331,7 +331,7 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         @media all and (max-width: 870px) {
-          .render-pane {
+          .content ha-card {
             max-width: 100%;
           }
         }
