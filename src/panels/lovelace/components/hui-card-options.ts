@@ -52,7 +52,7 @@ import {
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import { Lovelace, LovelaceCard } from "../types";
-import { SECTION_VIEW_LAYOUT } from "../views/const";
+import { SECTIONS_VIEW_LAYOUT } from "../views/const";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -355,7 +355,7 @@ export class HuiCardOptions extends LitElement {
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
         const view = selectedDashConfig.views[viewIndex];
 
-        if (!isStrategyView(view) && view.type === SECTION_VIEW_LAYOUT) {
+        if (!isStrategyView(view) && view.type === SECTIONS_VIEW_LAYOUT) {
           showAlertDialog(this, {
             title: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error_title"
