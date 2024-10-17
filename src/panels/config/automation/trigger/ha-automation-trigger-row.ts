@@ -58,7 +58,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -111,8 +111,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public trigger!: Trigger;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -383,7 +381,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                       hass: this.hass,
                       trigger: this.trigger,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}
