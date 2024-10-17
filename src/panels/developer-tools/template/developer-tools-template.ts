@@ -330,9 +330,6 @@ class HaPanelDevTemplate extends LitElement {
           color: var(--warning-color);
         }
 
-        .content.horizontal .render-pane {
-          overflow-y: auto;
-        }
         @media all and (max-width: 870px) {
           .render-pane {
             max-width: 100%;
