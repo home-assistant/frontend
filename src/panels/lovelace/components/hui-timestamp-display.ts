@@ -4,7 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
-import { relativeTime } from "../../../common/datetime/relative_time";
+import {
+  relativeTime,
+  TimeVerbosity,
+} from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
@@ -28,6 +31,8 @@ class HuiTimestampDisplay extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public ts?: Date;
+
+  @property({ attribute: false }) public timeVerbosity?: TimeVerbosity;
 
   @property() public format?: TimestampRenderingFormat;
 
@@ -113,8 +118,20 @@ class HuiTimestampDisplay extends LitElement {
     if (this.ts && this.hass?.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.hass!.locale)
-          : relativeTime(new Date(), this.hass!.locale, this.ts, false);
+          ? relativeTime(
+              this.ts,
+              this.hass!.locale,
+              undefined,
+              undefined,
+              this.timeVerbosity
+            )
+          : relativeTime(
+              new Date(),
+              this.hass!.locale,
+              this.ts,
+              false,
+              this.timeVerbosity
+            );
 
       this._relative = this.capitalize
         ? capitalizeFirstLetter(this._relative)

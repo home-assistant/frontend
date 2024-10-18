@@ -254,6 +254,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .hass=${this.hass}
             .content=${this._config.state_content}
             .name=${this._config.name}
+            .timeVerbosity=${this._config.time_verbosity}
           >
           </state-display>
         `;
