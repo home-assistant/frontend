@@ -7787,15 +7787,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-url-parser@npm:1.1.3":
-  version: 1.1.3
-  resolution: "fast-url-parser@npm:1.1.3"
-  dependencies:
-    punycode: "npm:^1.3.2"
-  checksum: 10/6d33f46ce9776f7f3017576926207a950ca39bc5eb78fc794404f2288fe494720f9a119084b75569bd9eb09d2b46678bfaf39c191fb2c808ef3c833dc8982752
-  languageName: node
-  linkType: hard
-
 "fastest-levenshtein@npm:^1.0.12, fastest-levenshtein@npm:^1.0.7":
   version: 1.0.16
   resolution: "fastest-levenshtein@npm:1.0.16"
@@ -8873,7 +8864,7 @@ __metadata:
     rollup-plugin-terser: "npm:7.0.2"
     rollup-plugin-visualizer: "npm:5.12.0"
     rrule: "npm:2.8.1"
-    serve-handler: "npm:6.1.5"
+    serve-handler: "npm:6.1.6"
     sinon: "npm:19.0.2"
     sortablejs: "patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
@@ -11709,10 +11700,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:2.2.1":
-  version: 2.2.1
-  resolution: "path-to-regexp@npm:2.2.1"
-  checksum: 10/1a7125f8c1b5904d556a29722333219df4aa779039e903efe2fbfe0cc3ae9246672846fc8ad285664020b70e434347e0bc9af691fd7d61df8eaa7b018dcd56fb
+"path-to-regexp@npm:3.3.0":
+  version: 3.3.0
+  resolution: "path-to-regexp@npm:3.3.0"
+  checksum: 10/8d256383af8db66233ee9027cfcbf8f5a68155efbb4f55e784279d3ab206dcaee554ddb72ff0dae97dd2882af9f7fa802634bb7cffa2e796927977e31b829259
   languageName: node
   linkType: hard
 
@@ -11993,7 +11984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^1.3.2, punycode@npm:^1.4.1":
+"punycode@npm:^1.4.1":
   version: 1.4.1
   resolution: "punycode@npm:1.4.1"
   checksum: 10/af2700dde1a116791ff8301348ff344c47d6c224e875057237d1b5112035655fb07a6175cfdb8bf0e3a8cdfd2dc82b3a622e0aefd605566c0e949a6d0d1256a4
@@ -12729,19 +12720,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serve-handler@npm:6.1.5":
-  version: 6.1.5
-  resolution: "serve-handler@npm:6.1.5"
+"serve-handler@npm:6.1.6":
+  version: 6.1.6
+  resolution: "serve-handler@npm:6.1.6"
   dependencies:
     bytes: "npm:3.0.0"
     content-disposition: "npm:0.5.2"
-    fast-url-parser: "npm:1.1.3"
     mime-types: "npm:2.1.18"
     minimatch: "npm:3.1.2"
     path-is-inside: "npm:1.0.2"
-    path-to-regexp: "npm:2.2.1"
+    path-to-regexp: "npm:3.3.0"
     range-parser: "npm:1.2.0"
-  checksum: 10/cab6f381d380ae77ae6da017b5c7b1c25d8f0bed00cf509a18bc768c1830a0043ce53668390ad8a84366e47b353b3f1f7c9d10c7167886179f2e89cb95243a90
+  checksum: 10/7e7d93eb7e69fcd9f9c5afc2ef2b46cb0072b4af13cbabef9bca725afb350ddae6857d8c8be2c256f7ce1f7677c20347801399c11caa5805c0090339f894e8f2
   languageName: node
   linkType: hard
 

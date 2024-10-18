@@ -233,7 +233,7 @@
     "rollup-plugin-string": "3.0.0",
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-visualizer": "5.12.0",
-    "serve-handler": "6.1.5",
+    "serve-handler": "6.1.6",
     "sinon": "19.0.2",
     "systemjs": "6.15.1",
     "tar": "7.4.3",
