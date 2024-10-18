@@ -98,35 +98,7 @@ class MoreInfoUpdate extends LitElement {
             </div>
           </div>`
         : ""}
-      ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
-      !this._error
-        ? this._releaseNotes === undefined
-          ? html`<div class="flex center">
-              <ha-circular-progress indeterminate></ha-circular-progress>
-            </div>`
-          : html`<hr />
-              <ha-faded>
-                <ha-markdown .content=${this._releaseNotes}></ha-markdown>
-              </ha-faded> `
-        : this.stateObj.attributes.release_summary
-          ? html`<hr />
-              <ha-markdown
-                .content=${this.stateObj.attributes.release_summary}
-              ></ha-markdown>`
-          : ""}
-      ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-        ? html`<hr />
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.update.create_backup"
-              )}
-            >
-              <ha-checkbox
-                checked
-                .disabled=${updateIsInstalling(this.stateObj)}
-              ></ha-checkbox>
-            </ha-formfield> `
-        : ""}
+
       <div class="actions">
         ${this.stateObj.state === BINARY_STATE_OFF &&
         this.stateObj.attributes.skipped_version
@@ -164,6 +136,36 @@ class MoreInfoUpdate extends LitElement {
             `
           : ""}
       </div>
+
+      ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
+      !this._error
+        ? this._releaseNotes === undefined
+          ? html`<div class="flex center">
+              <ha-circular-progress indeterminate></ha-circular-progress>
+            </div>`
+          : html`<hr />
+              <ha-faded>
+                <ha-markdown .content=${this._releaseNotes}></ha-markdown>
+              </ha-faded> `
+        : this.stateObj.attributes.release_summary
+          ? html`<hr />
+              <ha-markdown
+                .content=${this.stateObj.attributes.release_summary}
+              ></ha-markdown>`
+          : ""}
+      ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
+        ? html`<hr />
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.more_info_control.update.create_backup"
+              )}
+            >
+              <ha-checkbox
+                checked
+                .disabled=${updateIsInstalling(this.stateObj)}
+              ></ha-checkbox>
+            </ha-formfield> `
+        : ""}
     `;
   }
 
