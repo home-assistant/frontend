@@ -371,7 +371,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                   >
                     <div slot="headline">
                       ${localize(
-                        "ui.components.subpage-data-table.close_select_mode"
+                        "ui.components.subpage-data-table.exit_selection_mode"
                       )}
                     </div>
                   </ha-md-menu-item>

@@ -538,7 +538,6 @@
         "expand_all_groups": "Expand all",
         "select": "Select",
         "selected": "Selected {selected}",
-        "close_select_mode": "Close selection mode",
         "select_all": "Select all",
         "select_none": "Select none",
         "settings": "Customize table"
