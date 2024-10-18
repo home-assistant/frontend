@@ -11,7 +11,7 @@ import {
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -33,7 +33,6 @@ import "../../../components/ha-dialog";
 import { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   StatisticsMetaData,
   StatisticsValidationResult,
@@ -42,7 +41,6 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
@@ -76,7 +74,7 @@ type DisplayedStatisticData = StatisticData & {
 };
 
 @customElement("developer-tools-statistics")
-class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
+class HaPanelDevStatistics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -106,8 +104,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   @query("#group-by-menu") private _groupByMenu!: HaMenu;
 
   @query("#sort-by-menu") private _sortByMenu!: HaMenu;
-
-  private _disabledEntities = new Set<string>();
 
   private _toggleGroupBy() {
     this._groupByMenu.open = !this._groupByMenu.open;
@@ -612,25 +608,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     }
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        const disabledEntities = new Set<string>();
-        for (const confEnt of entities) {
-          if (!confEnt.disabled_by) {
-            continue;
-          }
-          disabledEntities.add(confEnt.entity_id);
-        }
-        // If the disabled entities changed, re-validate the statistics
-        if (disabledEntities !== this._disabledEntities) {
-          this._disabledEntities = disabledEntities;
-          this._validateStatistics();
-        }
-      }),
-    ];
-  }
-
   private async _validateStatistics() {
     const [statisticIds, issues] = await Promise.all([
       getStatisticIds(this.hass),
@@ -641,24 +618,17 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
     const statsIds = new Set();
 
-    this._data = statisticIds
-      .filter(
-        (statistic) => !this._disabledEntities.has(statistic.statistic_id)
-      )
-      .map((statistic) => {
-        statsIds.add(statistic.statistic_id);
-        return {
-          ...statistic,
-          state: this.hass.states[statistic.statistic_id],
-          issues: issues[statistic.statistic_id],
-        };
-      });
+    this._data = statisticIds.map((statistic) => {
+      statsIds.add(statistic.statistic_id);
+      return {
+        ...statistic,
+        state: this.hass.states[statistic.statistic_id],
+        issues: issues[statistic.statistic_id],
+      };
+    });
 
     Object.keys(issues).forEach((statisticId) => {
-      if (
-        !statsIds.has(statisticId) &&
-        !this._disabledEntities.has(statisticId)
-      ) {
+      if (!statsIds.has(statisticId)) {
         this._data.push({
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
