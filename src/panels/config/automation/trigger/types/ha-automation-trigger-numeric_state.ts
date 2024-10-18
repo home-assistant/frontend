@@ -224,6 +224,19 @@ export class HaNumericStateTrigger extends LitElement {
   );
 
   public willUpdate(changedProperties: PropertyValues) {
+    this._inputAboveIsEntity =
+      this._inputAboveIsEntity ??
+      (typeof this.trigger.above === "string" &&
+        ((this.trigger.above as string).startsWith("input_number.") ||
+          (this.trigger.above as string).startsWith("number.") ||
+          (this.trigger.above as string).startsWith("sensor.")));
+    this._inputBelowIsEntity =
+      this._inputBelowIsEntity ??
+      (typeof this.trigger.below === "string" &&
+        ((this.trigger.below as string).startsWith("input_number.") ||
+          (this.trigger.below as string).startsWith("number.") ||
+          (this.trigger.below as string).startsWith("sensor.")));
+
     if (!changedProperties.has("trigger")) {
       return;
     }
@@ -244,36 +257,33 @@ export class HaNumericStateTrigger extends LitElement {
     };
   }
 
+  private _data = memoizeOne(
+    (
+      inputAboveIsEntity: boolean,
+      inputBelowIsEntity: boolean,
+      trigger: NumericStateTrigger
+    ) => ({
+      mode_above: inputAboveIsEntity ? "input" : "value",
+      mode_below: inputBelowIsEntity ? "input" : "value",
+      ...trigger,
+      entity_id: ensureArray(trigger.entity_id),
+      for: createDurationData(trigger.for),
+    })
+  );
+
   public render() {
-    const trgFor = createDurationData(this.trigger.for);
-
-    const inputAboveIsEntity =
-      this._inputAboveIsEntity ??
-      (typeof this.trigger.above === "string" &&
-        ((this.trigger.above as string).startsWith("input_number.") ||
-          (this.trigger.above as string).startsWith("number.") ||
-          (this.trigger.above as string).startsWith("sensor.")));
-    const inputBelowIsEntity =
-      this._inputBelowIsEntity ??
-      (typeof this.trigger.below === "string" &&
-        ((this.trigger.below as string).startsWith("input_number.") ||
-          (this.trigger.below as string).startsWith("number.") ||
-          (this.trigger.below as string).startsWith("sensor.")));
-
     const schema = this._schema(
       this.hass.localize,
       this.trigger.entity_id,
-      inputAboveIsEntity,
-      inputBelowIsEntity
+      this._inputAboveIsEntity,
+      this._inputBelowIsEntity
     );
 
-    const data = {
-      mode_above: inputAboveIsEntity ? "input" : "value",
-      mode_below: inputBelowIsEntity ? "input" : "value",
-      ...this.trigger,
-      entity_id: ensureArray(this.trigger.entity_id),
-      for: trgFor,
-    };
+    const data = this._data(
+      this._inputAboveIsEntity!,
+      this._inputBelowIsEntity!,
+      this.trigger
+    );
 
     return html`
       <ha-form
@@ -289,7 +299,7 @@ export class HaNumericStateTrigger extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    const newTrigger = { ...ev.detail.value };
 
     this._inputAboveIsEntity = newTrigger.mode_above === "input";
     this._inputBelowIsEntity = newTrigger.mode_below === "input";
