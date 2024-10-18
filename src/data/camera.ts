@@ -137,6 +137,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;
   dataChannel?: string;
+  audioDirection: string;
 }
 
 export const fetchWebRtcClientConfiguration = async (
