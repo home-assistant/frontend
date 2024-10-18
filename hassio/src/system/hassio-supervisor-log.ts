@@ -120,10 +120,12 @@ class HassioSupervisorLog extends LitElement {
     this._error = undefined;
 
     try {
-      this._content = await fetchHassioLogs(
+      const response = await fetchHassioLogs(
         this.hass,
         this._selectedLogProvider
       );
+
+      this._content = await response.text();
     } catch (err: any) {
       this._error = this.supervisor.localize("system.log.get_logs", {
         provider: this._selectedLogProvider,
