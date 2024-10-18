@@ -44,8 +44,7 @@ class MoreInfoUpdate extends LitElement {
       this.stateObj.attributes.skipped_version ===
         this.stateObj.attributes.latest_version;
 
-    return html`
-      ${this.stateObj.attributes.in_progress
+    return html` ${this.stateObj.attributes.in_progress
         ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
           typeof this.stateObj.attributes.in_progress === "number"
           ? html`<mwc-linear-progress
@@ -140,9 +139,10 @@ class MoreInfoUpdate extends LitElement {
       ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
       !this._error
         ? this._releaseNotes === undefined
-          ? html`<div class="flex center">
-              <ha-circular-progress indeterminate></ha-circular-progress>
-            </div>`
+          ? html`<hr />
+              <div class="flex center">
+                <ha-circular-progress indeterminate></ha-circular-progress>
+              </div>`
           : html`<hr />
               <ha-faded>
                 <ha-markdown .content=${this._releaseNotes}></ha-markdown>
@@ -166,7 +166,7 @@ class MoreInfoUpdate extends LitElement {
               ></ha-checkbox>
             </ha-formfield> `
         : ""}
-    `;
+      <hr />`;
   }
 
   protected firstUpdated(): void {
