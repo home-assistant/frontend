@@ -400,7 +400,7 @@ class HaLogbookRenderer extends LitElement {
     // Service call
     if (item.context_event_type === "call_service") {
       return html`${this.hass.localize(
-        "ui.components.logbook.triggered_by_service"
+        "ui.components.logbook.triggered_by_action"
       )}
       ${item.context_domain && item.context_service
         ? `${domainToName(this.hass.localize, item.context_domain)}:
