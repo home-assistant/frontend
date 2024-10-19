@@ -1708,16 +1708,6 @@
         "message_placeholder": "Enter a sentence to speak.",
         "play": "Play"
       },
-      "dialog-ip-detail": {
-        "ip_information": "[%key:ui::panel::config::network::ip_information%]",
-        "ipv4": "IPv4",
-        "ipv6": "IPv6",
-        "ip_address": "IP Address: {address}",
-        "netmask": "Netmask: {netmask}",
-        "gateway": "Gateway: {gateway}",
-        "method": "Method: {method}",
-        "nameservers": "Name Servers: {nameservers}"
-      },
       "update_backup": {
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
