@@ -4,7 +4,7 @@ import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 interface IpConfiguration {
   address: string[];
-  gateway: string;
+  gateway: string | null;
   method: "disabled" | "static" | "auto";
   nameservers: string[];
 }
@@ -114,6 +114,14 @@ export const accesspointScan = async (
     )
   );
 };
+
+export const parseAddress = (address: string) => {
+  const [ip, cidr] = address.split("/");
+  return { ip, mask: cidrToNetmask(cidr, address.includes(":")) };
+};
+
+export const formatAddress = (ip: string, mask: string) =>
+  `${ip}/${netmaskToCidr(mask)}`;
 
 // Helper functions
 export const cidrToNetmask = (

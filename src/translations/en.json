@@ -5243,8 +5243,11 @@
             "disabled": "Disabled",
             "ip": "IP address",
             "netmask": "Netmask",
+            "add_address": "Add address",
             "gateway": "Gateway address",
-            "dns_servers": "DNS Servers",
+            "dns_server": "DNS Server",
+            "add_dns_server": "Add DNS Server",
+            "custom_dns": "Custom",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
             "hostname": {

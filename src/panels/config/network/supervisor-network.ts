@@ -3,7 +3,12 @@ import { ActionDetail } from "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { mdiDotsVertical } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiDeleteOutline,
+  mdiPlus,
+  mdiMenuDown,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -23,10 +28,10 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   AccessPoints,
   accesspointScan,
-  cidrToNetmask,
   fetchNetworkInfo,
-  netmaskToCidr,
+  formatAddress,
   NetworkInterface,
+  parseAddress,
   updateNetworkInterface,
   WifiConfiguration,
 } from "../../../data/hassio/network";
@@ -38,6 +43,23 @@ import type { HomeAssistant } from "../../../types";
 import { showIPDetailDialog } from "./show-ip-detail-dialog";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
+
+const PREDEFINED_DNS = {
+  ipv4: {
+    Cloudflare: ["1.1.1.1", "1.0.0.1"],
+    Google: ["8.8.8.8", "8.8.4.4"],
+    Quad9: ["9.9.9.9", "149.112.112.112"],
+    NextDNS: ["45.90.28.0", "45.90.30.0"],
+    AdGuard: ["94.140.14.140", "94.140.14.141"],
+  },
+  ipv6: {
+    Cloudflare: ["2606:4700:4700::1111", "2606:4700:4700::1001"],
+    Google: ["2001:4860:4860::8888", "2001:4860:4860::8844"],
+    Quad9: ["2620:fe::fe", "2620:fe::9"],
+    NextDNS: ["2a05:d014:a000::", "2a05:d014:a001::"],
+    AdGuard: ["94.140.14.140", "94.140.14.141"],
+  },
+};
 
 @customElement("supervisor-network")
 export class HassioNetwork extends LitElement {
@@ -58,6 +80,8 @@ export class HassioNetwork extends LitElement {
   @state() private _scanning = false;
 
   @state() private _wifiConfiguration?: WifiConfiguration;
+
+  @state() private _dnsMenuOpen = false;
 
   protected firstUpdated() {
     this._fetchNetworkInfo();
@@ -297,6 +321,11 @@ export class HassioNetwork extends LitElement {
   }
 
   private _renderIPConfiguration(version: string) {
+    const nameservers = this._interface![version]?.nameservers || [];
+    if (nameservers.length === 0) {
+      nameservers.push(""); // always show input
+    }
+    const disableInputs = this._interface![version]?.method === "auto";
     return html`
       <ha-expansion-panel
         .header=${`IPv${version.charAt(version.length - 1)}`}
@@ -347,85 +376,144 @@ export class HassioNetwork extends LitElement {
             </ha-radio>
           </ha-formfield>
         </div>
-        ${this._interface![version].method === "static"
+        ${["static", "auto"].includes(this._interface![version].method)
           ? html`
-              <ha-textfield
-                id="address"
-                .label=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.ip"
-                )}
-                .version=${version}
-                .value=${this._toString(
-                  this._interface![version].address.map(
-                    (address) => address.split("/")[0]
-                  )
-                )}
-                @change=${this._handleInputValueChanged}
-              >
-              </ha-textfield>
-              <ha-textfield
-                id="netmask"
-                .label=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.netmask"
-                )}
-                .version=${version}
-                .value=${this._toString(
-                  this._interface![version].address.map((address) =>
-                    cidrToNetmask(address.split("/")[1], version === "ipv6")
-                  )
-                )}
-                @change=${this._handleInputValueChanged}
-              >
-              </ha-textfield>
+              ${this._interface![version].address.map(
+                (address: string, index: number) => {
+                  const { ip, mask } = parseAddress(address);
+                  return html`
+                    <div class="address-row">
+                      <ha-textfield
+                        id="address"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.network.supervisor.ip"
+                        )}
+                        .version=${version}
+                        .value=${ip}
+                        .index=${index}
+                        @change=${this._handleInputValueChanged}
+                        .disabled=${disableInputs}
+                      >
+                      </ha-textfield>
+                      <ha-textfield
+                        id="netmask"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.network.supervisor.netmask"
+                        )}
+                        .version=${version}
+                        .value=${mask}
+                        .index=${index}
+                        @change=${this._handleInputValueChanged}
+                        .disabled=${disableInputs}
+                      >
+                      </ha-textfield>
+                      ${this._interface![version].address.length > 1 &&
+                      !disableInputs
+                        ? html`
+                            <ha-icon-button
+                              .label=${this.hass.localize("ui.common.delete")}
+                              .path=${mdiDeleteOutline}
+                              .version=${version}
+                              .index=${index}
+                              @click=${this._removeAddress}
+                            ></ha-icon-button>
+                          `
+                        : ""}
+                    </div>
+                  `;
+                }
+              )}
+              ${!disableInputs
+                ? html`
+                    <ha-button
+                      @click=${this._addAddress}
+                      .version=${version}
+                      class="add-address"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.network.supervisor.add_address"
+                      )}
+                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    </ha-button>
+                  `
+                : ""}
               <ha-textfield
                 id="gateway"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.gateway"
                 )}
                 .version=${version}
-                .value=${this._interface![version].gateway}
+                .value=${this._interface![version].gateway || ""}
                 @change=${this._handleInputValueChanged}
+                .disabled=${disableInputs}
               >
               </ha-textfield>
-              <ha-textfield
-                id="nameservers"
-                .label=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.dns_servers"
+              <div class="nameservers">
+                ${nameservers.map(
+                  (nameserver: string, index: number) => html`
+                    <div class="address-row">
+                      <ha-textfield
+                        id="nameserver"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.network.supervisor.dns_server"
+                        )}
+                        .version=${version}
+                        .value=${nameserver}
+                        .index=${index}
+                        @change=${this._handleInputValueChanged}
+                      >
+                      </ha-textfield>
+                      ${this._interface![version].nameservers?.length > 1
+                        ? html`
+                            <ha-icon-button
+                              .label=${this.hass.localize("ui.common.delete")}
+                              .path=${mdiDeleteOutline}
+                              .version=${version}
+                              .index=${index}
+                              @click=${this._removeNameserver}
+                            ></ha-icon-button>
+                          `
+                        : ""}
+                    </div>
+                  `
                 )}
+              </div>
+              <ha-button-menu
+                @opened=${this._handleDNSMenuOpened}
+                @closed=${this._handleDNSMenuClosed}
                 .version=${version}
-                .value=${this._toString(this._interface![version].nameservers)}
-                @change=${this._handleInputValueChanged}
+                class="add-nameserver"
               >
-              </ha-textfield>
+                <ha-button slot="trigger">
+                  ${this.hass.localize(
+                    "ui.panel.config.network.supervisor.add_dns_server"
+                  )}
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${this._dnsMenuOpen ? mdiMenuDown : mdiPlus}
+                  ></ha-svg-icon>
+                </ha-button>
+                ${Object.entries(PREDEFINED_DNS[version]).map(
+                  ([name, addresses]) => html`
+                    <mwc-list-item
+                      @click=${this._addPredefinedDNS}
+                      .version=${version}
+                      .addresses=${addresses}
+                    >
+                      ${name}
+                    </mwc-list-item>
+                  `
+                )}
+                <mwc-list-item @click=${this._addCustomDNS} .version=${version}>
+                  ${this.hass.localize(
+                    "ui.panel.config.network.supervisor.custom_dns"
+                  )}
+                </mwc-list-item>
+              </ha-button-menu>
             `
           : ""}
       </ha-expansion-panel>
     `;
-  }
-
-  _toArray(data: string | string[]): string[] {
-    if (Array.isArray(data)) {
-      if (data && typeof data[0] === "string") {
-        data = data[0];
-      }
-    }
-    if (!data) {
-      return [];
-    }
-    if (typeof data === "string") {
-      return data.replace(/ /g, "").split(",");
-    }
-    return data;
-  }
-
-  _toString(data: string | string[]): string {
-    if (!data) {
-      return "";
-    }
-    if (Array.isArray(data)) {
-      return data.join(", ");
-    }
-    return data;
   }
 
   private async _updateNetwork() {
@@ -439,9 +527,13 @@ export class HassioNetwork extends LitElement {
       if (this._interface![version]?.method === "static") {
         interfaceOptions[version] = {
           ...interfaceOptions[version],
-          address: this._toArray(this._interface![version]?.address),
+          address: this._interface![version]?.address?.filter(
+            (address: string) => address.trim()
+          ),
           gateway: this._interface![version]?.gateway,
-          nameservers: this._toArray(this._interface![version]?.nameservers),
+          nameservers: this._interface![version]?.nameservers?.filter(
+            (ns: string) => ns.trim()
+          ),
         };
       }
     });
@@ -535,30 +627,24 @@ export class HassioNetwork extends LitElement {
     const version = (ev.target as any).version as "ipv4" | "ipv6";
     const id = source.id;
 
-    if (
-      !value ||
-      !this._interface ||
-      this._toString(this._interface[version]![id]) === this._toString(value)
-    ) {
+    if (!value || !this._interface?.[version]) {
       return;
     }
 
     this._dirty = true;
     if (id === "address") {
-      this._interface[version]!.address = value
-        .split(",")
-        .map(
-          (address, index) =>
-            `${address.trim()}/${this._interface![version]!.address?.[index]?.split("/")[1] || "24"}`
-        );
+      const index = (ev.target as any).index as number;
+      const { mask } = parseAddress(value);
+      this._interface[version]!.address![index] = formatAddress(value, mask);
       this.requestUpdate("_interface");
     } else if (id === "netmask") {
-      this._interface[version]!.address = value
-        .split(",")
-        .map(
-          (netmask, index) =>
-            `${this._interface![version]!.address?.[index]?.split("/")[0] || (version === "ipv4" ? "0.0.0.0" : "::")}/${netmaskToCidr(netmask.trim())}`
-        );
+      const index = (ev.target as any).index as number;
+      const { ip } = parseAddress(this._interface![version]!.address![index]);
+      this._interface[version]!.address![index] = formatAddress(ip, value);
+      this.requestUpdate("_interface");
+    } else if (id === "nameserver") {
+      const index = (ev.target as any).index as number;
+      this._interface[version]!.nameservers![index] = value;
       this.requestUpdate("_interface");
     } else {
       this._interface[version]![id] = value;
@@ -579,6 +665,64 @@ export class HassioNetwork extends LitElement {
     }
     this._dirty = true;
     this._wifiConfiguration![id] = value;
+  }
+
+  private _addAddress(ev: Event): void {
+    const version = (ev.target as any).version as "ipv4" | "ipv6";
+    this._interface![version]!.address!.push(
+      version === "ipv4" ? "0.0.0.0/24" : "::/64"
+    );
+    this._dirty = true;
+    this.requestUpdate("_interface");
+  }
+
+  private _removeAddress(ev: Event): void {
+    const source = ev.target as any;
+    const index = source.index as number;
+    const version = source.version as "ipv4" | "ipv6";
+    this._interface![version]!.address!.splice(index, 1);
+    this._dirty = true;
+    this.requestUpdate("_interface");
+  }
+
+  private _handleDNSMenuOpened() {
+    this._dnsMenuOpen = true;
+  }
+
+  private _handleDNSMenuClosed() {
+    this._dnsMenuOpen = false;
+  }
+
+  private _addPredefinedDNS(ev: Event) {
+    const source = ev.target as any;
+    const version = source.version as "ipv4" | "ipv6";
+    const addresses = source.addresses as string[];
+    if (!this._interface![version]!.nameservers) {
+      this._interface![version]!.nameservers = [];
+    }
+    this._interface![version]!.nameservers!.push(...addresses);
+    this._dirty = true;
+    this.requestUpdate("_interface");
+  }
+
+  private _addCustomDNS(ev: Event) {
+    const source = ev.target as any;
+    const version = source.version as "ipv4" | "ipv6";
+    if (!this._interface![version]!.nameservers) {
+      this._interface![version]!.nameservers = [];
+    }
+    this._interface![version]!.nameservers!.push("");
+    this._dirty = true;
+    this.requestUpdate("_interface");
+  }
+
+  private _removeNameserver(ev: Event): void {
+    const source = ev.target as any;
+    const index = source.index as number;
+    const version = source.version as "ipv4" | "ipv6";
+    this._interface![version]!.nameservers!.splice(index, 1);
+    this._dirty = true;
+    this.requestUpdate("_interface");
   }
 
   static get styles(): CSSResultGroup {
@@ -612,8 +756,22 @@ export class HassioNetwork extends LitElement {
           display: block;
           margin-top: 16px;
         }
-        ha-expansion-panel ha-textfield:last-child {
-          margin-bottom: 16px;
+        .address-row {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+        }
+        .address-row ha-textfield {
+          flex: 1;
+        }
+        .address-row ha-icon-button {
+          --mdc-icon-button-size: 36px;
+          margin-top: 16px;
+        }
+        .add-address,
+        .add-nameserver {
+          margin-top: 16px;
         }
         mwc-list-item {
           --mdc-list-side-padding: 10px;
@@ -623,6 +781,9 @@ export class HassioNetwork extends LitElement {
           flex-direction: row-reverse;
           justify-content: space-between;
           align-items: center;
+        }
+        ha-expansion-panel > :last-child {
+          margin-bottom: 16px;
         }
       `,
     ];
