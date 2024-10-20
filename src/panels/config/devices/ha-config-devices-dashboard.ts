@@ -223,8 +223,9 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry) {
+    if (!domain && !configEntry && !label) {
       return;
     }
 
@@ -247,10 +248,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
-
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
-    }
+    this._filterLabel();
   }
 
   private _filterLabel() {
