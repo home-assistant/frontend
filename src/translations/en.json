@@ -2495,7 +2495,7 @@
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
           "download_full_log": "Download full log",
-          "scroll_down_button": "Scroll down to see new logs",
+          "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
           "detail": {
