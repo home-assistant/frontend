@@ -8,6 +8,8 @@ import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
+  // Unique ID for the toast. If a new toast is shown with the same ID as the previous toast, it will be replaced to avoid flickering.
+  id?: string;
   message: string;
   action?: ToastActionParams;
   duration?: number;
@@ -27,7 +29,9 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
-    this._toast?.close();
+    if (!parameters.id || this._parameters?.id !== parameters.id) {
+      this._toast?.close();
+    }
 
     if (!parameters || parameters.duration === 0) {
       this._parameters = undefined;

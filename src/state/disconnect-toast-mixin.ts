@@ -143,6 +143,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       )[0][0];
 
       showToast(this, {
+        id: "integration_starting",
         message:
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),
