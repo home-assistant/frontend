@@ -142,6 +142,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        style=${styleMap({
+          "--max-column-count": maxColumnCount,
+        })}
       ></hui-view-badges>
       <ha-sortable
         .disabled=${!editMode}
@@ -324,6 +327,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
       }
 
+      @media (max-width: 600px) {
+        :host {
+          --column-gap: var(--row-gap);
+        }
+      }
+
       .container > * {
         position: relative;
         width: 100%;
@@ -362,12 +371,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         grid-auto-flow: row dense;
       }
 
-      @media (max-width: 600px) {
-        .container {
-          --column-gap: var(--row-gap);
-        }
-      }
-
       .handle {
         cursor: grab;
         padding: 8px;
@@ -399,8 +402,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       hui-view-badges {
         display: block;
-        margin: 16px 8px;
         text-align: center;
+        padding: 0 var(--column-gap);
+        padding-top: var(--row-gap);
+        margin: auto;
+        max-width: calc(
+          var(--max-column-count) * var(--column-max-width) +
+            (var(--max-column-count) - 1) * var(--column-gap)
+        );
       }
 
       .section-header {
