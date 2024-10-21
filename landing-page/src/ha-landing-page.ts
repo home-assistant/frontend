@@ -1,11 +1,9 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import "@material/mwc-top-app-bar-fixed";
 import { PropertyValues, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-import "../../src/onboarding/onboarding-welcome";
+import "./components/landing-page-prepare";
 import "../../src/onboarding/onboarding-welcome-links";
 import { litLocalizeLiteMixin } from "../../src/mixins/lit-localize-lite-mixin";
 import { HassElement } from "../../src/state/hass-element";
@@ -20,14 +18,13 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
 
   render() {
-    return html`<mwc-linear-progress indeterminate></mwc-linear-progress>
+    return html`
       <ha-card>
         <div class="card-content">
-          <onboarding-welcome
+          <landing-page-prepare
             .localize=${this.localize}
             .language=${this.language}
-            supervisor
-          ></onboarding-welcome>
+          ></landing-page-prepare>
         </div>
       </ha-card>
       <onboarding-welcome-links
@@ -47,7 +44,8 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
           rel="noreferrer noopener"
           >${this.localize("ui.panel.page-onboarding.help")}</a
         >
-      </div> `;
+      </div>
+    `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -80,13 +78,6 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
   static styles = [
     haStyle,
     css`
-      mwc-linear-progress {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 10;
-      }
       .footer {
         padding-top: 8px;
         display: flex;
