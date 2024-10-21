@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiDeleteOutline, mdiPlus, mdiMenuDown } from "@mdi/js";
@@ -15,6 +14,7 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
+import "../../../components/ha-list-item";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
@@ -161,7 +161,7 @@ export class HassioNetwork extends LitElement {
                           .filter((ap) => ap.ssid)
                           .map(
                             (ap) => html`
-                              <mwc-list-item
+                              <ha-list-item
                                 twoline
                                 @click=${this._selectAP}
                                 .activated=${ap.ssid ===
@@ -176,7 +176,7 @@ export class HassioNetwork extends LitElement {
                                   )}:
                                   ${ap.signal}
                                 </span>
-                              </mwc-list-item>
+                              </ha-list-item>
                             `
                           )}
                       </mwc-list>
@@ -409,7 +409,7 @@ export class HassioNetwork extends LitElement {
                       <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
                     </ha-button>
                   `
-                : ""}
+                : nothing}
               <ha-textfield
                 id="gateway"
                 .label=${this.hass.localize(
@@ -446,7 +446,7 @@ export class HassioNetwork extends LitElement {
                               @click=${this._removeNameserver}
                             ></ha-icon-button>
                           `
-                        : ""}
+                        : nothing}
                     </div>
                   `
                 )}
@@ -468,20 +468,20 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${Object.entries(PREDEFINED_DNS[version]).map(
                   ([name, addresses]) => html`
-                    <mwc-list-item
+                    <ha-list-item
                       @click=${this._addPredefinedDNS}
                       .version=${version}
                       .addresses=${addresses}
                     >
                       ${name}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
-                <mwc-list-item @click=${this._addCustomDNS} .version=${version}>
+                <ha-list-item @click=${this._addCustomDNS} .version=${version}>
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.custom_dns"
                   )}
-                </mwc-list-item>
+                </ha-list-item>
               </ha-button-menu>
             `
           : ""}
@@ -746,7 +746,7 @@ export class HassioNetwork extends LitElement {
         .add-nameserver {
           margin-top: 16px;
         }
-        mwc-list-item {
+        ha-list-item {
           --mdc-list-side-padding: 10px;
         }
         .card-actions {
