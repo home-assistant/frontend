@@ -16,6 +16,7 @@ import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-ripple";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -141,6 +142,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        style=${styleMap({
+          "--max-column-count": maxColumnCount,
+        })}
       ></hui-view-badges>
       <ha-sortable
         .disabled=${!editMode}
@@ -234,6 +238,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     "ui.panel.lovelace.editor.section.create_section"
                   )}
                 >
+                  <ha-ripple></ha-ripple>
                   <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
                 </button>
               `
@@ -249,7 +254,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       cards: [
         {
           type: "heading",
-          heading: "New Section",
+          heading: this.hass!.localize(
+            "ui.panel.lovelace.editor.section.default_section_title"
+          ),
         },
       ],
     });
@@ -320,6 +327,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         display: block;
       }
 
+      @media (max-width: 600px) {
+        :host {
+          --column-gap: var(--row-gap);
+        }
+      }
+
       .container > * {
         position: relative;
         width: 100%;
@@ -358,12 +371,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         grid-auto-flow: row dense;
       }
 
-      @media (max-width: 600px) {
-        .container {
-          --column-gap: var(--row-gap);
-        }
-      }
-
       .handle {
         cursor: grab;
         padding: 8px;
@@ -380,6 +387,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
         padding: 8px;
         box-sizing: border-box;
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
       }
 
       .create-section:focus {
@@ -392,8 +402,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       hui-view-badges {
         display: block;
-        margin: 16px 8px;
         text-align: center;
+        padding: 0 var(--column-gap);
+        padding-top: var(--row-gap);
+        margin: auto;
+        max-width: calc(
+          var(--max-column-count) * var(--column-max-width) +
+            (var(--max-column-count) - 1) * var(--column-gap)
+        );
       }
 
       .section-header {

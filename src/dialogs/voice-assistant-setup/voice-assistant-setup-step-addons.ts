@@ -42,24 +42,7 @@ export class HaVoiceAssistantSetupStepAddons extends LitElement {
           powerful device to run. If you device is not powerful enough, Home
           Assistant cloud might be a better option.
         </p>
-        <h3>Home Assistant Cloud:</h3>
-        <div class="messages-container cloud">
-          <div class="message user ${this._showFirst ? "show" : ""}">
-            ${!this._showFirst ? "…" : "Turn on the lights in the bedroom"}
-          </div>
-          ${this._showFirst
-            ? html`<div class="timing user">0.2 seconds</div>`
-            : nothing}
-          ${this._showFirst
-            ? html` <div class="message hass ${this._showSecond ? "show" : ""}">
-                ${!this._showSecond ? "…" : "Turned on the lights"}
-              </div>`
-            : nothing}
-          ${this._showSecond
-            ? html`<div class="timing hass">0.4 seconds</div>`
-            : nothing}
-        </div>
-        <h3>Raspberry Pi 4:</h3>
+        <h3>Raspberry Pi 4</h3>
         <div class="messages-container rpi">
           <div class="message user ${this._showThird ? "show" : ""}">
             ${!this._showThird ? "…" : "Turn on the lights in the bedroom"}
@@ -76,8 +59,28 @@ export class HaVoiceAssistantSetupStepAddons extends LitElement {
             ? html`<div class="timing hass">5 seconds</div>`
             : nothing}
         </div>
+        <h3>Home Assistant Cloud</h3>
+        <div class="messages-container cloud">
+          <div class="message user ${this._showFirst ? "show" : ""}">
+            ${!this._showFirst ? "…" : "Turn on the lights in the bedroom"}
+          </div>
+          ${this._showFirst
+            ? html`<div class="timing user">0.2 seconds</div>`
+            : nothing}
+          ${this._showFirst
+            ? html` <div class="message hass ${this._showSecond ? "show" : ""}">
+                ${!this._showSecond ? "…" : "Turned on the lights"}
+              </div>`
+            : nothing}
+          ${this._showSecond
+            ? html`<div class="timing hass">0.4 seconds</div>`
+            : nothing}
+        </div>
       </div>
-      <div class="footer">
+      <div class="footer side-by-side">
+        <ha-button @click=${this._goToCloud}
+          >Try Home Assistant Cloud</ha-button
+        >
         <a
           href=${documentationUrl(
             this.hass,
@@ -85,19 +88,14 @@ export class HaVoiceAssistantSetupStepAddons extends LitElement {
           )}
           target="_blank"
           rel="noreferrer noopenner"
-          @click=${this._close}
-          ><ha-button unelevated
-            >Learn how to setup local assistant</ha-button
-          ></a
         >
-        <ha-button @click=${this._skip}
-          >I already have a local assistant</ha-button
-        >
+          <ha-button @click=${this._skip} unelevated>Learn more</ha-button>
+        </a>
       </div>`;
   }
 
-  private _close() {
-    fireEvent(this, "closed");
+  private _goToCloud() {
+    fireEvent(this, "next-step", { step: STEP.CLOUD });
   }
 
   private _skip() {

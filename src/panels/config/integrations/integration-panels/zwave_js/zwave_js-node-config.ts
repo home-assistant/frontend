@@ -271,7 +271,7 @@ class ZWaveJSNodeConfig extends LitElement {
             .propertyKey=${item.property_key}
             .value=${item.value === 1}
             .key=${id}
-            @change=${this._switchToggled}
+            @value-changed=${this._switchToggled}
             .disabled=${!item.metadata.writeable}
             .helper=${defaultLabel}
           ></ha-selector-boolean>
@@ -354,7 +354,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
   private _switchToggled(ev) {
     this.setResult(ev.target.key, undefined);
-    this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
+    this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
   private _dropdownSelected(ev) {

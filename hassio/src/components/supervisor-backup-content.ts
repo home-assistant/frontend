@@ -15,6 +15,7 @@ import { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-textfield";
+import "../../../src/components/ha-password-field";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
 import {
@@ -261,23 +262,21 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupHasPassword
         ? html`
-            <ha-textfield
+            <ha-password-field
               .label=${this._localize("password")}
-              type="password"
               name="backupPassword"
               .value=${this.backupPassword}
               @change=${this._handleTextValueChanged}
             >
-            </ha-textfield>
+            </ha-password-field>
             ${!this.backup
-              ? html`<ha-textfield
+              ? html`<ha-password-field
                   .label=${this._localize("confirm_password")}
-                  type="password"
                   name="confirmBackupPassword"
                   .value=${this.confirmBackupPassword}
                   @change=${this._handleTextValueChanged}
                 >
-                </ha-textfield>`
+                </ha-password-field>`
               : ""}
           `
         : ""}

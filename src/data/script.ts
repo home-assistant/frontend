@@ -20,6 +20,7 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
   Condition,
+  migrateAutomationTrigger,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
@@ -27,6 +28,7 @@ import {
 } from "./automation";
 import { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { createSearchParam } from "../common/url/search-params";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -346,9 +348,13 @@ export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
     entity_id,
   });
 
-export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
+export const showScriptEditor = (
+  data?: Partial<ScriptConfig>,
+  expanded?: boolean
+) => {
   inititialScriptEditorData = data;
-  navigate("/config/script/edit/new");
+  const params = expanded ? `?${createSearchParam({ expanded: "1" })}` : "";
+  navigate(`/config/script/edit/new${params}`);
 };
 
 export const getScriptEditorInitData = () => {
@@ -478,6 +484,11 @@ export const migrateAutomationAction = (
     if (_action.else) {
       migrateAutomationAction(_action.else);
     }
+  }
+
+  if (actionType === "wait_for_trigger") {
+    const _action = action as WaitForTriggerAction;
+    migrateAutomationTrigger(_action.wait_for_trigger);
   }
 
   return action;

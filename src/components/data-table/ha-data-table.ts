@@ -204,6 +204,29 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
+  public select(ids: string[], clear?: boolean): void {
+    if (clear) {
+      this._checkedRows = [];
+    }
+    ids.forEach((id) => {
+      const row = this._filteredData.find((data) => data[this.id] === id);
+      if (row?.selectable !== false && !this._checkedRows.includes(id)) {
+        this._checkedRows.push(id);
+      }
+    });
+    this._checkedRowsChanged();
+  }
+
+  public unselect(ids: string[]): void {
+    ids.forEach((id) => {
+      const index = this._checkedRows.indexOf(id);
+      if (index > -1) {
+        this._checkedRows.splice(index, 1);
+      }
+    });
+    this._checkedRowsChanged();
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     if (this._filteredData.length) {
@@ -1011,6 +1034,7 @@ export class HaDataTable extends LitElement {
           /* @noflip */
           padding-inline-end: initial;
           width: 60px;
+          min-width: 60px;
         }
 
         .mdc-data-table__table {
@@ -1176,6 +1200,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          background-color: var(--primary-background-color);
         }
 
         .group-header ha-icon-button {

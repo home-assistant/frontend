@@ -109,7 +109,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       :host([ispanel]) #root {
         --ha-card-border-radius: var(--restore-card-border-radius);
         --ha-card-border-width: var(--restore-card-border-width);
-        --ha-card-box-shadow: var(--restore-card-border-shadow);
+        --ha-card-box-shadow: var(--restore-card-box-shadow);
       }
     `;
   }

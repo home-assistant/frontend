@@ -8,6 +8,9 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { mockConfig } from "../../../../demo/src/stubs/config";
+import { mockTags } from "../../../../demo/src/stubs/tags";
+import { mockAuth } from "../../../../demo/src/stubs/auth";
 import type { Trigger } from "../../../../src/data/automation";
 import { HaGeolocationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-geo_location";
 import { HaEventTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-event";
@@ -26,6 +29,7 @@ import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger
 import { HaMQTTTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-mqtt";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
 import { HaConversationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-conversation";
+import { HaTriggerList } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-list";
 
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
@@ -111,10 +115,14 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
     triggers: [
       { ...HaConversationTrigger.defaultConfig },
       {
-        platform: "conversation",
+        trigger: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],
       },
     ],
+  },
+  {
+    name: "Trigger list",
+    triggers: [{ ...HaTriggerList.defaultConfig }],
   },
 ];
 
@@ -135,6 +143,9 @@ export class DemoAutomationEditorTrigger extends LitElement {
     mockDeviceRegistry(hass);
     mockAreaRegistry(hass);
     mockHassioSupervisor(hass);
+    mockConfig(hass);
+    mockTags(hass);
+    mockAuth(hass);
   }
 
   protected render(): TemplateResult {

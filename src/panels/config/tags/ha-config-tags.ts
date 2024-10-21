@@ -213,7 +213,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       alias: this.hass.localize("ui.panel.config.tag.automation_title", {
         name: tag.name || tag.id,
       }),
-      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
+      trigger: [{ trigger: "tag", tag_id: tag.id } as TagTrigger],
     };
     showAutomationEditor(data);
   };

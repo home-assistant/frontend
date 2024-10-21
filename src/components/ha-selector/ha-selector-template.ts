@@ -7,12 +7,7 @@ import "../ha-code-editor";
 import "../ha-input-helper-text";
 import "../ha-alert";
 
-const WARNING_STRINGS = [
-  "template:",
-  "sensor:",
-  "state:",
-  "platform: template",
-];
+const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {

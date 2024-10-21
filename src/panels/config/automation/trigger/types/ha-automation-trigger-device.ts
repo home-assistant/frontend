@@ -40,7 +40,7 @@ export class HaDeviceTrigger extends LitElement {
 
   public static get defaultConfig(): DeviceTrigger {
     return {
-      platform: "device",
+      trigger: "device",
       device_id: "",
       domain: "",
       entity_id: "",
@@ -155,7 +155,7 @@ export class HaDeviceTrigger extends LitElement {
     this._deviceId = ev.target.value;
     if (this._deviceId === undefined) {
       fireEvent(this, "value-changed", {
-        value: { ...HaDeviceTrigger.defaultConfig, platform: "device" },
+        value: { ...HaDeviceTrigger.defaultConfig, trigger: "device" },
       });
     }
   }

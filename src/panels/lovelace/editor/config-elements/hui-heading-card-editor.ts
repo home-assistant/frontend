@@ -1,7 +1,6 @@
 import { mdiGestureTap, mdiListBox } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import {
   any,
@@ -23,16 +22,19 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig, HeadingEntityConfig } from "../../cards/types";
+import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
+import type { HeadingCardConfig } from "../../cards/types";
 import { UiAction } from "../../components/hui-action-editor";
+import {
+  EntityHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../../heading-badges/types";
 import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
-import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { SubElementEditorConfig } from "../types";
+import { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-entities-editor";
+import "./hui-heading-badges-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
@@ -43,7 +45,7 @@ const cardConfigStruct = assign(
     heading: optional(string()),
     icon: optional(string()),
     tap_action: optional(actionConfigStruct),
-    entities: optional(array(any())),
+    badges: optional(array(any())),
   })
 );
 
@@ -56,12 +58,9 @@ export class HuiHeadingCardEditor
 
   @state() private _config?: HeadingCardConfig;
 
-  @state()
-  private _subElementEditorConfig?: SubElementEditorConfig;
-
   public setConfig(config: HeadingCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
+    this._config = migrateHeadingCardConfig(config);
+    assert(this._config, cardConfigStruct);
   }
 
   private _schema = memoizeOne(
@@ -71,7 +70,7 @@ export class HuiHeadingCardEditor
           name: "heading_style",
           selector: {
             select: {
-              mode: "dropdown",
+              mode: "list",
               options: ["title", "subtitle"].map((value) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.heading.heading_style_options.${value}`
@@ -108,35 +107,16 @@ export class HuiHeadingCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _badges = memoizeOne(
+    (badges: HeadingCardConfig["badges"]): LovelaceHeadingBadgeConfig[] =>
+      badges || []
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    return cache(
-      this._subElementEditorConfig
-        ? this._renderEntityForm()
-        : this._renderForm()
-    );
-  }
-
-  private _renderEntityForm() {
-    return html`
-      <hui-sub-element-editor
-        .hass=${this.hass}
-        .config=${this._subElementEditorConfig}
-        @go-back=${this._goBack}
-        @config-changed=${this._subElementChanged}
-      >
-      </hui-sub-element-editor>
-    `;
-  }
-
-  private _entities = memoizeOne((entities: HeadingCardConfig["entities"]) =>
-    processEditorEntities(entities || [])
-  );
-
-  private _renderForm() {
     const data = {
       ...this._config!,
     };
@@ -163,19 +143,19 @@ export class HuiHeadingCardEditor
           )}
         </h3>
         <div class="content">
-          <hui-entities-editor
+          <hui-heading-badges-editor
             .hass=${this.hass}
-            .entities=${this._entities(this._config!.entities)}
-            @entities-changed=${this._entitiesChanged}
-            @edit-entity=${this._editEntity}
+            .badges=${this._badges(this._config!.badges)}
+            @heading-badges-changed=${this._badgesChanged}
+            @edit-heading-badge=${this._editBadge}
           >
-          </hui-entities-editor>
+          </hui-heading-badges-editor>
         </div>
       </ha-expansion-panel>
     `;
   }
 
-  private _entitiesChanged(ev: CustomEvent): void {
+  private _badgesChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -183,7 +163,7 @@ export class HuiHeadingCardEditor
 
     const config = {
       ...this._config,
-      entities: ev.detail.entities as HeadingEntityConfig[],
+      badges: ev.detail.badges as LovelaceHeadingBadgeConfig[],
     };
 
     fireEvent(this, "config-changed", { config });
@@ -200,46 +180,25 @@ export class HuiHeadingCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _subElementChanged(ev: CustomEvent): void {
+  private _editBadge(ev: HASSDomEvent<{ index: number }>): void {
     ev.stopPropagation();
-    if (!this._config || !this.hass) {
-      return;
-    }
+    const index = ev.detail.index;
+    const config = this._badges(this._config!.badges)[index];
 
-    const value = ev.detail.config;
-
-    const newConfigEntities = this._config!.entities
-      ? [...this._config!.entities]
-      : [];
-
-    if (!value) {
-      newConfigEntities.splice(this._subElementEditorConfig!.index!, 1);
-      this._goBack();
-    } else {
-      newConfigEntities[this._subElementEditorConfig!.index!] = value;
-    }
-
-    this._config = { ...this._config!, entities: newConfigEntities };
-
-    this._subElementEditorConfig = {
-      ...this._subElementEditorConfig!,
-      elementConfig: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "edit-sub-element", {
+      config: config,
+      saveConfig: (newConfig) => this._updateBadge(index, newConfig),
+      type: "heading-badge",
+    } as EditSubElementEvent<EntityHeadingBadgeConfig>);
   }
 
-  private _editEntity(ev: HASSDomEvent<{ index: number }>): void {
-    const entities = this._entities(this._config!.entities);
-    this._subElementEditorConfig = {
-      elementConfig: entities[ev.detail.index],
-      index: ev.detail.index,
-      type: "heading-entity",
-    };
-  }
-
-  private _goBack(): void {
-    this._subElementEditorConfig = undefined;
+  private _updateBadge(index: number, entity: EntityHeadingBadgeConfig) {
+    const badges = this._config!.badges!.concat();
+    badges[index] = entity;
+    const config = { ...this._config!, badges };
+    fireEvent(this, "config-changed", {
+      config: config,
+    });
   }
 
   private _computeLabelCallback = (

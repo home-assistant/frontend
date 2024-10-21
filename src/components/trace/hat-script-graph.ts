@@ -94,7 +94,7 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(config, path)}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
-        .notEnabled=${config.enabled === false}
+        .notEnabled=${"enabled" in config && config.enabled === false}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>

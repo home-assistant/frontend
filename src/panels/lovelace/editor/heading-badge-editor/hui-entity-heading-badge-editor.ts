@@ -21,20 +21,23 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingEntityConfig } from "../../cards/types";
 import { Condition } from "../../common/validate-condition";
+import { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
 
-export const DEFAULT_CONFIG: Partial<HeadingEntityConfig> = {
+export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
+  type: "entity",
   show_state: true,
   show_icon: true,
 };
 
 const entityConfigStruct = object({
-  entity: string(),
+  type: optional(string()),
+  entity: optional(string()),
+  name: optional(string()),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
@@ -44,7 +47,7 @@ const entityConfigStruct = object({
   visibility: optional(array(any())),
 });
 
-type FormData = HeadingEntityConfig & {
+type FormData = EntityHeadingBadgeConfig & {
   displayed_elements?: string[];
 };
 
@@ -57,9 +60,9 @@ export class HuiHeadingEntityEditor
 
   @property({ type: Boolean }) public preview = false;
 
-  @state() private _config?: HeadingEntityConfig;
+  @state() private _config?: EntityHeadingBadgeConfig;
 
-  public setConfig(config: HeadingEntityConfig): void {
+  public setConfig(config: EntityHeadingBadgeConfig): void {
     assert(config, entityConfigStruct);
     this._config = {
       ...DEFAULT_CONFIG,
@@ -84,6 +87,12 @@ export class HuiHeadingEntityEditor
               name: "",
               type: "grid",
               schema: [
+                {
+                  name: "name",
+                  selector: {
+                    text: {},
+                  },
+                },
                 {
                   name: "icon",
                   selector: { icon: {} },
@@ -126,7 +135,7 @@ export class HuiHeadingEntityEditor
             },
             {
               name: "state_content",
-              selector: { ui_state_content: {} },
+              selector: { ui_state_content: { allow_name: true } },
               context: { filter_entity: "entity" },
             },
           ],
@@ -150,12 +159,14 @@ export class HuiHeadingEntityEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _displayedElements = memoizeOne((config: HeadingEntityConfig) => {
-    const elements: string[] = [];
-    if (config.show_state) elements.push("state");
-    if (config.show_icon) elements.push("icon");
-    return elements;
-  });
+  private _displayedElements = memoizeOne(
+    (config: EntityHeadingBadgeConfig) => {
+      const elements: string[] = [];
+      if (config.show_state) elements.push("state");
+      if (config.show_icon) elements.push("icon");
+      return elements;
+    }
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -209,7 +220,7 @@ export class HuiHeadingEntityEditor
       return;
     }
 
-    const config = ev.detail.value as FormData;
+    const config = { ...ev.detail.value } as FormData;
 
     if (config.displayed_elements) {
       config.show_state = config.displayed_elements.includes("state");
@@ -228,7 +239,7 @@ export class HuiHeadingEntityEditor
 
     const conditions = ev.detail.value as Condition[];
 
-    const newConfig: HeadingEntityConfig = {
+    const newConfig: EntityHeadingBadgeConfig = {
       ...this._config,
       visibility: conditions,
     };
@@ -264,6 +275,10 @@ export class HuiHeadingEntityEditor
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}_helper`
+        );
+      case "name":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.heading.entity_config.name_helper`
         );
       default:
         return undefined;

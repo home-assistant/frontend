@@ -1,4 +1,3 @@
-import "@material/web/divider/divider";
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
 import Fuse, { IFuseOptions } from "fuse.js";
 import {
@@ -24,12 +23,13 @@ import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/search-input";
 import {
@@ -208,6 +208,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       const options: IFuseOptions<ListItem> = {
         keys: ["key", "name", "description"],
         isCaseSensitive: false,
+        ignoreLocation: true,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         getFn: getStripDiacriticsFn,
@@ -559,7 +560,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
                   ></ha-svg-icon
                   ><ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
                 </ha-md-list-item>
-                <md-divider role="separator" tabindex="-1"></md-divider>`
+                <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
             : ""}
           ${repeat(
             items,
