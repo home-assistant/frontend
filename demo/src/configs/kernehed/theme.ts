@@ -4,7 +4,6 @@ export const demoThemeKernehed = () => ({
   "paper-item-icon-color": "var(--primary-text-color)",
   "primary-color": "#2980b9",
   "label-badge-red": "var(--accent-color)",
-  "paper-tabs-selection-bar-color": "green",
   "primary-text-color": "#FFFFFF",
   "light-primary-color": "var(--accent-color)",
   "primary-background-color": "#222222",
