@@ -68,7 +68,7 @@ export class HaGridSizeEditor extends LitElement {
           .min=${columnMin}
           .max=${columnMax}
           .range=${this.columns}
-          .value=${fullWidth ? this.columns : columnValue}
+          .value=${fullWidth ? this.columns : this.value?.columns}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
@@ -83,7 +83,7 @@ export class HaGridSizeEditor extends LitElement {
           .max=${rowMax}
           .range=${this.rows}
           vertical
-          .value=${rowValue}
+          .value=${autoHeight ? rowMin : this.value?.rows}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
