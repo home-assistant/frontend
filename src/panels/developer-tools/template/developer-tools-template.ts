@@ -282,7 +282,7 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .content.horizontal {
-          --code-mirror-max-height: calc(100vh - 410px);
+          --code-mirror-max-height: calc(100vh - 400px);
         }
 
         ha-card {
