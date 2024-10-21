@@ -80,6 +80,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _lowSecurity = false;
 
+  @state() private _lowSecurityReason?: number;
+
   @state() private _supportsSmartStart?: boolean;
 
   private _addNodeTimeoutHandle?: number;
@@ -406,6 +408,26 @@ class DialogZWaveJSAddNode extends LitElement {
                                         )}</b
                                       >
                                     </p>
+                                    ${this._lowSecurity
+                                      ? html`<ha-alert
+                                          alert-type="warning"
+                                          title=${this.hass.localize(
+                                            "ui.panel.config.zwave_js.add_node.adding_insecurely"
+                                          )}
+                                        >
+                                          ${this.hass.localize(
+                                            "ui.panel.config.zwave_js.add_node.added_insecurely_text"
+                                          )}
+                                          ${typeof this._lowSecurityReason !==
+                                          "undefined"
+                                            ? html`<p>
+                                                ${this.hass.localize(
+                                                  `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
+                                                )}
+                                              </p>`
+                                            : ""}
+                                        </ha-alert>`
+                                      : ""}
                                     ${this._stages
                                       ? html` <div class="stages">
                                           ${this._stages.map(
@@ -489,12 +511,22 @@ class DialogZWaveJSAddNode extends LitElement {
                                         ${this._lowSecurity
                                           ? html`<ha-alert
                                               alert-type="warning"
-                                              title="The device was added insecurely"
+                                              title=${this.hass.localize(
+                                                "ui.panel.config.zwave_js.add_node.added_insecurely"
+                                              )}
                                             >
-                                              There was an error during secure
-                                              inclusion. You can try again by
-                                              excluding the device and adding it
-                                              again.
+                                              ${this.hass.localize(
+                                                "ui.panel.config.zwave_js.add_node.added_insecurely_text"
+                                              )}
+                                              ${typeof this
+                                                ._lowSecurityReason !==
+                                              "undefined"
+                                                ? html`<p>
+                                                    ${this.hass.localize(
+                                                      `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
+                                                    )}
+                                                  </p>`
+                                                : ""}
                                             </ha-alert>`
                                           : ""}
                                         <a
@@ -790,6 +822,7 @@ class DialogZWaveJSAddNode extends LitElement {
         if (message.event === "node added") {
           this._status = "interviewing";
           this._lowSecurity = message.node.low_security;
+          this._lowSecurityReason = message.node.low_security_reason;
         }
 
         if (message.event === "interview completed") {
@@ -953,6 +986,10 @@ class DialogZWaveJSAddNode extends LitElement {
           margin-right: 20px;
           margin-inline-end: 20px;
           margin-inline-start: initial;
+        }
+
+        .status {
+          flex: 1;
         }
       `,
     ];
