@@ -5,6 +5,8 @@ import { customElement, property } from "lit/decorators";
 export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ type: Boolean, reflect: true }) public slim = false; // remove padding and min-height
+
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
 
@@ -108,6 +110,18 @@ export class HaSettingsRow extends LitElement {
       :host([narrow]) .prefix-wrap {
         display: flex;
         align-items: center;
+      }
+      :host([slim]) {
+        padding: 0;
+      }
+      :host([slim]) .body {
+        min-height: 0;
+      }
+      :host([slim]) .content {
+        padding: 0;
+      }
+      :host([slim]) ::slotted(ha-switch) {
+        padding: 0;
       }
     `;
   }

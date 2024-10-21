@@ -111,24 +111,23 @@ class ConfigUrlForm extends LitElement {
 
           ${hasCloud
             ? html`
-                <div class="row">
-                  <div class="flex">
+                <h4>
+                  ${this.hass.localize(
+                    "ui.panel.config.url.external_url_label"
+                  )}
+                </h4>
+                <ha-settings-row slim>
+                  <span slot="heading">
                     ${this.hass.localize(
-                      "ui.panel.config.url.external_url_label"
-                    )}
-                  </div>
-                  <ha-formfield
-                    .label=${this.hass.localize(
                       "ui.panel.config.url.external_use_ha_cloud"
                     )}
-                  >
-                    <ha-switch
-                      .disabled=${disabled}
-                      .checked=${this._cloudChecked}
-                      @change=${this._toggleCloud}
-                    ></ha-switch>
-                  </ha-formfield>
-                </div>
+                  </span>
+                  <ha-switch
+                    .disabled=${disabled}
+                    .checked=${this._cloudChecked}
+                    @change=${this._toggleCloud}
+                  ></ha-switch>
+                </ha-settings-row>
               `
             : ""}
           <div class="url-container">
@@ -162,7 +161,7 @@ class ConfigUrlForm extends LitElement {
                   `
                 : ""}
             </div>
-            <ha-button .url=${externalUrl} @click=${this._copyURL} unelevated>
+            <ha-button .url=${externalUrl} @click=${this._copyURL}>
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
@@ -209,22 +208,26 @@ class ConfigUrlForm extends LitElement {
               `
             : ""}
 
-          <div class="row">
-            <div class="flex">
-              ${this.hass.localize("ui.panel.config.url.internal_url_label")}
-            </div>
-
-            <ha-formfield
-              .label=${this.hass.localize(
+          <h4>
+            ${this.hass.localize("ui.panel.config.url.internal_url_label")}
+          </h4>
+          <ha-settings-row slim>
+            <span slot="heading">
+              ${this.hass.localize(
                 "ui.panel.config.url.internal_url_automatic"
               )}
-            >
-              <ha-switch
-                .checked=${!this._showCustomInternalUrl}
-                @change=${this._toggleInternalAutomatic}
-              ></ha-switch>
-            </ha-formfield>
-          </div>
+            </span>
+            <span slot="description">
+              ${this.hass.localize(
+                "ui.panel.config.url.internal_url_automatic_description"
+              )}
+            </span>
+            <ha-switch
+              .disabled=${disabled}
+              .checked=${this._cloudChecked}
+              @change=${this._toggleCloud}
+            ></ha-switch>
+          </ha-settings-row>
 
           <div class="url-container">
             <div class="textfield-container">
@@ -257,7 +260,7 @@ class ConfigUrlForm extends LitElement {
                   `
                 : ""}
             </div>
-            <ha-button .url=${internalUrl} @click=${this._copyURL} unelevated>
+            <ha-button .url=${internalUrl} @click=${this._copyURL}>
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
@@ -352,8 +355,8 @@ class ConfigUrlForm extends LitElement {
   }
 
   private _obfuscateUrl(url: string) {
-    // hide any words that look like they might be a hostname, IP address, or port
-    return url.replace(/(?<=:\/\/)[\w-]+|(?<=\.)[\w-]+|(?<=:)\d+/g, (match) =>
+    // hide any words that look like they might be a hostname or IP address
+    return url.replace(/(?<=:\/\/)[\w-]+|(?<=\.)[\w-]+/g, (match) =>
       "•".repeat(match.length)
     );
   }
