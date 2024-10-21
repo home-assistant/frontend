@@ -14,6 +14,7 @@ import {
   createDemoConfig,
   createGalleryConfig,
   createHassioConfig,
+  createLandingPageConfig,
 } from "../webpack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
@@ -194,6 +195,26 @@ gulp.task("webpack-dev-server-gallery", () =>
 gulp.task("webpack-prod-gallery", () =>
   prodBuild(
     createGalleryConfig({
+      isProdBuild: true,
+      latestBuild: true,
+    })
+  )
+);
+
+gulp.task("webpack-dev-server-landing-page", () =>
+  runDevServer({
+    compiler: webpack(
+      createLandingPageConfig({ isProdBuild: false, latestBuild: true })
+    ),
+    contentBase: paths.landingPage_output_root,
+    port: 8110,
+    listenHost: "0.0.0.0",
+  })
+);
+
+gulp.task("webpack-prod-landing-page", () =>
+  prodBuild(
+    createLandingPageConfig({
       isProdBuild: true,
       latestBuild: true,
     })

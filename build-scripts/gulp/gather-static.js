@@ -199,3 +199,19 @@ gulp.task("copy-static-gallery", async () => {
   copyLocaleData(paths.gallery_output_static);
   copyMdiIcons(paths.gallery_output_static);
 });
+
+gulp.task("copy-static-landing-page", async () => {
+  // Copy app static files
+  fs.copySync(polyPath("public/static"), paths.gallery_output_static);
+  // Copy gallery static files
+  fs.copySync(
+    path.resolve(paths.landingPage_dir, "public"),
+    paths.landingPage_output_root
+  );
+
+  copyMapPanel(paths.landingPage_output_static);
+  copyFonts(paths.landingPage_output_static);
+  copyTranslations(paths.landingPage_output_static);
+  copyLocaleData(paths.landingPage_output_static);
+  copyMdiIcons(paths.landingPage_output_static);
+});

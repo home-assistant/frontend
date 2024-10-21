@@ -327,4 +327,20 @@ module.exports.config = {
       },
     };
   },
+
+  landingPage({ isProdBuild, latestBuild }) {
+    return {
+      name: "landing-page" + nameSuffix(latestBuild),
+      entry: {
+        entrypoint: path.resolve(paths.landingPage_dir, "src/entrypoint.js"),
+      },
+      outputPath: outputPath(paths.landingPage_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      isProdBuild,
+      latestBuild,
+      defineOverlay: {
+        __DEMO__: true,
+      },
+    };
+  },
 };
