@@ -187,7 +187,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       }
       .content p {
         margin: 0;
-        font-family: Roboto;
         font-style: normal;
         white-space: nowrap;
         overflow: hidden;

@@ -234,7 +234,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}
                 />
-                ${router.model_name ||
+                ${router.instance_name ||
+                router.model_name ||
                 router.server?.replace(".local.", "") ||
                 ""}
                 <span slot="secondary">${router.server}</span>
@@ -482,7 +483,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    const index = Number(ev.detail.index);
+    const index = network.dataset
+      ? Number(ev.detail.index)
+      : Number(ev.detail.index) + 1;
     switch (index) {
       case 0:
         this._setPreferredBorderAgent(network.dataset!, router);

@@ -208,6 +208,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       const options: IFuseOptions<ListItem> = {
         keys: ["key", "name", "description"],
         isCaseSensitive: false,
+        ignoreLocation: true,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         getFn: getStripDiacriticsFn,

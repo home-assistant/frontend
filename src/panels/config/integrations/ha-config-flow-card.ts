@@ -44,9 +44,9 @@ export class HaConfigFlowCard extends LitElement {
           unelevated
           @click=${this._continueFlow}
           .label=${this.hass.localize(
-            `ui.panel.config.integrations.${
-              attention ? "reconfigure" : "configure"
-            }`
+            attention
+              ? "ui.panel.config.integrations.reconfigure"
+              : "ui.common.add"
           )}
         ></ha-button>
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&

@@ -348,6 +348,8 @@ export class HaConfigDevicePage extends LitElement {
               })}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
+              @error=${this._onImageError}
+              @load=${this._onImageLoad}
             />
 
             ${domainToName(this.hass.localize, integration.domain)}

@@ -51,6 +51,7 @@ export class HuiPersistentNotificationItem extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .time {
+        position: relative;
         display: flex;
         justify-content: flex-end;
         margin-top: 6px;

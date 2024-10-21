@@ -8,8 +8,10 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -124,7 +126,7 @@ export class HuiViewBadges extends LitElement {
               .options=${BADGE_SORTABLE_OPTIONS}
               invert-swap
             >
-              <div class="badges">
+              <div class="badges ${classMap({ "edit-mode": editMode })}">
                 ${repeat(
                   badges,
                   (badge) => this._getBadgeKey(badge),
@@ -156,6 +158,7 @@ export class HuiViewBadges extends LitElement {
                           "ui.panel.lovelace.editor.section.add_badge"
                         )}
                       >
+                        <ha-ripple></ha-ripple>
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                       </button>
                     `
@@ -185,6 +188,8 @@ export class HuiViewBadges extends LitElement {
       hui-badge-edit-mode {
         display: block;
         position: relative;
+        min-width: 36px;
+        min-height: 36px;
       }
 
       .add {
@@ -205,6 +210,9 @@ export class HuiViewBadges extends LitElement {
         --mdc-icon-size: 18px;
         cursor: pointer;
         color: var(--primary-text-color);
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
       }
       .add:focus {
         border-style: solid;

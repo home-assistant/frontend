@@ -538,7 +538,6 @@
         "expand_all_groups": "Expand all",
         "select": "Select",
         "selected": "Selected {selected}",
-        "close_select_mode": "Close selection mode",
         "select_all": "Select all",
         "select_none": "Select none",
         "settings": "Customize table"
@@ -1635,7 +1634,8 @@
           "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
-          "remove": "Are you sure that you want to remove the device?"
+          "remove_title": "Remove device",
+          "remove_text": "This device will be permanently removed from the Zigbee network."
         },
         "quirk": "Quirk",
         "last_seen": "Last seen",
@@ -1707,15 +1707,6 @@
         "message_example": "Hello. How can I assist?",
         "message_placeholder": "Enter a sentence to speak.",
         "play": "Play"
-      },
-      "dialog-ip-detail": {
-        "ip_information": "[%key:ui::panel::config::network::ip_information%]",
-        "ipv4": "IPv4",
-        "ipv6": "IPv6",
-        "ip_address": "IP Address: {address}",
-        "gateway": "Gateway: {gateway}",
-        "method": "Method: {method}",
-        "nameservers": "Name Servers: {nameservers}"
       },
       "update_backup": {
         "title": "Create backup?",
@@ -2528,7 +2519,7 @@
                 },
                 "iframe": {
                   "title": "Webpage",
-                  "description": "Integrate a webpage as a dashboard."
+                  "description": "Integrate a webpage as a dashboard"
                 }
               }
             },
@@ -2615,8 +2606,10 @@
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
               "delete": {
                 "confirm_title": "Delete {name}?",
-                "confirm_text": "{name} will be permanently deleted."
+                "confirm_text": "{name} will be permanently deleted.",
+                "error_preferred": "You cannot delete the preferred assistant"
               },
+              "start_conversation": "Start conversation",
               "devices": {
                 "title": "Assist devices",
                 "device": "Device",
@@ -2810,7 +2803,7 @@
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
-            "confirm_take_control": "Your are viewing a preview of the automation config, do you want to take control?",
+            "confirm_take_control": "You are viewing a preview of the automation config, do you want to take control?",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -3053,6 +3046,9 @@
                   "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
+                  "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
+                  "entity": "Entity with timestamp",
+                  "offset_by": "offset by {offset}",
                   "mode": "Mode",
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
@@ -3676,16 +3672,13 @@
           "editor": {
             "alias": "Name",
             "icon": "Icon",
-            "id": "Entity ID",
-            "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
-            "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "change_mode": "[%key:ui::panel::config::automation::editor::change_mode%]",
             "take_control": "[%key:ui::panel::config::automation::editor::take_control%]",
-            "confirm_take_control": "Your are viewing a preview of the script config, do you want to take control?",
+            "confirm_take_control": "You are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
             "migrate": "Migrate",
@@ -4210,7 +4203,7 @@
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked User",
-            "device_tracker_intro": "Select the devices that belong to this person.",
+            "device_tracker_intro": "Select the devices that belong to this person",
             "no_device_tracker_available_intro": "When you have devices that indicate the presence of a person, you will be able to assign them to a person here. You can add your first device by adding a presence-detection integration from the integrations page.",
             "link_presence_detection_integrations": "Presence Detection Integrations",
             "link_integrations_page": "Integrations page",
@@ -4393,8 +4386,9 @@
               }
             },
             "custom_integration": "Custom integration",
-            "depends_on_cloud": "Depends on the cloud",
-            "yaml_only": "Needs manual configuration",
+            "custom_overwrites_core": "Custom integration that replaces a core component",
+            "depends_on_cloud": "Depends on Internet connection",
+            "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
@@ -4419,8 +4413,8 @@
             "next": "Next",
             "preview": "Preview",
             "found_following_devices": "We found the following devices",
-            "yaml_only_title": "This device cannot be added from the UI",
-            "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
+            "yaml_only_title": "This integration cannot be added from the UI",
+            "yaml_only": "You can add this integration by adding it to your ''configuration.yaml''. See the documentation for more information.",
             "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
@@ -4955,7 +4949,21 @@
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
             "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "waiting_for_device": "Communicating with the device. Please wait."
+            "waiting_for_device": "Communicating with the device. Please wait.",
+            "adding_insecurely": "The device is being added insecurely",
+            "added_insecurely": "The device was added insecurely",
+            "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
+            "low_security_reason": {
+              "0": "Security bootstrapping was canceled by the user.",
+              "1": "The required security keys were not configured in the driver.",
+              "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
+              "3": "An expected message was not received within the corresponding timeout.",
+              "4": "There was no possible match in encryption parameters between the controller and the node.",
+              "5": "Security bootstrapping was canceled by the included node.",
+              "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
+              "7": "There was a mismatch in security keys between the controller and the node.",
+              "8": "Unknown error occurred."
+            }
           },
           "provisioned": {
             "dsk": "DSK",
@@ -5098,7 +5106,7 @@
             "unknown": "Unknown"
           },
           "node_type": {
-            "end_device": "End-device",
+            "end_device": "End device",
             "sleepy_end_device": "Sleepy end device",
             "routing_end_device": "Routing end device",
             "bridge": "Bridge",
@@ -5215,9 +5223,13 @@
             "static": "Static",
             "auto": "Automatic",
             "disabled": "Disabled",
-            "ip_netmask": "IP address/Netmask",
+            "ip": "IP address",
+            "netmask": "Netmask",
+            "add_address": "Add address",
             "gateway": "Gateway address",
-            "dns_servers": "DNS Servers",
+            "dns_server": "DNS Server",
+            "add_dns_server": "Add DNS Server",
+            "custom_dns": "Custom",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
             "hostname": {
@@ -6123,7 +6135,8 @@
             "todo-list": {
               "name": "To-do list",
               "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
-              "integration_not_loaded": "This card requires the `todo` integration to be set up."
+              "integration_not_loaded": "This card requires the `todo` integration to be set up.",
+              "hide_completed": "Hide completed items"
             },
             "thermostat": {
               "name": "Thermostat",
@@ -7700,6 +7713,7 @@
         "auto": "Automatic",
         "disabled": "Disabled",
         "ip_netmask": "IP address/netmask",
+        "netmask": "Netmask",
         "gateway": "Gateway address",
         "dns_servers": "DNS servers",
         "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",

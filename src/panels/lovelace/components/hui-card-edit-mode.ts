@@ -3,10 +3,10 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
@@ -111,8 +111,8 @@ export class HuiCardEditMode extends LitElement {
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
-          @click=${this._editCard}
-          @keydown=${this._editCard}
+          @click=${this._handleOverlayClick}
+          @keydown=${this._handleOverlayClick}
           tabindex="0"
         >
           <div class="edit-overlay"></div>
@@ -130,9 +130,13 @@ export class HuiCardEditMode extends LitElement {
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
           <ha-list-item graphic="icon">
+            <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit")}
+          </ha-list-item>
+          <ha-list-item graphic="icon">
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
@@ -168,18 +172,33 @@ export class HuiCardEditMode extends LitElement {
     this._menuOpened = false;
   }
 
+  private _handleOverlayClick(ev): void {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    this._editCard();
+  }
+
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._duplicateCard();
+        this._editCard();
         break;
       case 1:
-        this._copyCard();
+        this._duplicateCard();
         break;
       case 2:
-        this._cutCard();
+        this._copyCard();
         break;
       case 3:
+        this._cutCard();
+        break;
+      case 4:
         this._deleteCard(true);
         break;
     }
@@ -197,15 +216,7 @@ export class HuiCardEditMode extends LitElement {
     });
   }
 
-  private _editCard(ev): void {
-    if (ev.defaultPrevented) {
-      return;
-    }
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
-    ev.preventDefault();
-    ev.stopPropagation();
+  private _editCard(): void {
     fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 

@@ -68,6 +68,16 @@ class HaPanelDevAction extends LitElement {
 
   @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  protected willUpdate() {
+    if (
+      !this.hasUpdated &&
+      this._serviceData?.action &&
+      typeof this._serviceData.action !== "string"
+    ) {
+      this._serviceData.action = "";
+    }
+  }
+
   protected firstUpdated(params) {
     super.firstUpdated(params);
     this.hass.loadBackendTranslation("services");

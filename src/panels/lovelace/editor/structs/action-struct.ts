@@ -61,6 +61,11 @@ const actionConfigStructAssist = type({
   start_listening: optional(boolean()),
 });
 
+const actionConfigStructMoreInfo = type({
+  action: literal("more-info"),
+  entity_id: optional(string()),
+});
+
 export const actionConfigStructType = object({
   action: enums([
     "none",
@@ -92,6 +97,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
       }
       case "assist": {
         return actionConfigStructAssist;
+      }
+      case "more-info": {
+        return actionConfigStructMoreInfo;
       }
     }
   }

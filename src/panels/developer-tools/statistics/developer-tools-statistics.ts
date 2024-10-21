@@ -39,6 +39,7 @@ import {
   StatisticsValidationResult,
   clearStatistics,
   getStatisticIds,
+  updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -48,7 +49,7 @@ import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
-const FIX_ISSUES_ORDER = {
+const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
   entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
@@ -56,10 +57,10 @@ const FIX_ISSUES_ORDER = {
   units_changed: 3,
 };
 
-const FIXABLE_ISSUES = [
+const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
   "no_state",
   "entity_no_longer_recorded",
-  "unsupported_state_class",
+  "state_class_removed",
   "units_changed",
 ];
 
@@ -366,7 +367,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                   >
                     <div slot="headline">
                       ${localize(
-                        "ui.components.subpage-data-table.close_select_mode"
+                        "ui.components.subpage-data-table.exit_selection_mode"
                       )}
                     </div>
                   </ha-md-menu-item>
@@ -635,6 +636,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       getStatisticIds(this.hass),
       validateStatistics(this.hass),
     ]);
+
+    updateStatisticsIssues(this.hass);
 
     const statsIds = new Set();
 

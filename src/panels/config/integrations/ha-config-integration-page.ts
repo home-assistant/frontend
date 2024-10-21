@@ -484,9 +484,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             unelevated
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.integrations.configure"
-                            )}
+                            .label=${this.hass.localize("ui.common.add")}
                           ></ha-button>
                         </ha-md-list-item>`
                     )}
@@ -774,27 +772,29 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           : ""}
       </div>
       ${item.disabled_by === "user"
-        ? html`<mwc-button unelevated slot="end" @click=${this._handleEnable}>
+        ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
             ${this.hass.localize("ui.common.enable")}
-          </mwc-button>`
+          </ha-button>`
         : configPanel &&
-            (item.domain !== "matter" || isDevVersion(this.hass.config.version))
+            (item.domain !== "matter" ||
+              isDevVersion(this.hass.config.version)) &&
+            !stateText
           ? html`<a
               slot="end"
               href=${`/${configPanel}?config_entry=${item.entry_id}`}
-              ><mwc-button>
+              ><ha-button>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.configure"
                 )}
-              </mwc-button></a
+              </ha-button></a
             >`
-          : item.supports_options && !stateText
+          : item.supports_options
             ? html`
-                <mwc-button slot="end" @click=${this._showOptions}>
+                <ha-button slot="end" @click=${this._showOptions}>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.configure"
                   )}
-                </mwc-button>
+                </ha-button>
               `
             : ""}
       <ha-md-button-menu positioning="popover" slot="end">
@@ -803,14 +803,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        ${item.supports_options && stateText
-          ? html`<ha-md-menu-item @click=${this._showOptions}>
-              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.configure"
-              )}
-            </ha-md-menu-item>`
-          : ""}
         ${item.disabled_by && devices.length
           ? html`
               <ha-md-menu-item
