@@ -216,7 +216,7 @@ class HaWebRtcPlayer extends LitElement {
     while (this._candidatesList.length) {
       const candidate = this._candidatesList.pop();
       if (candidate) {
-        candidates += `a=${this._candidatesList.pop()}\r\n`;
+        candidates += `a=${candidate}\r\n`;
       }
     }
 
