@@ -3,9 +3,6 @@ const path = require("path");
 const paths = require("./paths.cjs");
 
 module.exports = {
-  useRollup() {
-    return process.env.ROLLUP === "1";
-  },
   useWDS() {
     return process.env.WDS === "1";
   },

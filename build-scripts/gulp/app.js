@@ -6,7 +6,6 @@ import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./locale-data.js";
-import "./rollup.js";
 import "./service-worker.js";
 import "./translations.js";
 import "./wds.js";
@@ -27,11 +26,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
-    env.useWDS()
-      ? "wds-watch-app"
-      : env.useRollup()
-        ? "rollup-watch-app"
-        : "webpack-watch-app"
+    env.useWDS() ? "wds-watch-app" : "webpack-watch-app"
   )
 );
 
@@ -44,7 +39,7 @@ gulp.task(
     "clean",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-app",
-    env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
+    "webpack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
     ...(env.isTestBuild() ? [] : ["compress-app"])
