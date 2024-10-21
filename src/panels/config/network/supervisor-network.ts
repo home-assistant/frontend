@@ -391,7 +391,7 @@ export class HassioNetwork extends LitElement {
                               @click=${this._removeAddress}
                             ></ha-icon-button>
                           `
-                        : ""}
+                        : nothing}
                     </div>
                   `;
                 }
