@@ -1708,15 +1708,6 @@
         "message_placeholder": "Enter a sentence to speak.",
         "play": "Play"
       },
-      "dialog-ip-detail": {
-        "ip_information": "[%key:ui::panel::config::network::ip_information%]",
-        "ipv4": "IPv4",
-        "ipv6": "IPv6",
-        "ip_address": "IP Address: {address}",
-        "gateway": "Gateway: {gateway}",
-        "method": "Method: {method}",
-        "nameservers": "Name Servers: {nameservers}"
-      },
       "update_backup": {
         "title": "Create backup?",
         "text": "This will create a backup before installing.",
@@ -5240,9 +5231,13 @@
             "static": "Static",
             "auto": "Automatic",
             "disabled": "Disabled",
-            "ip_netmask": "IP address/Netmask",
+            "ip": "IP address",
+            "netmask": "Netmask",
+            "add_address": "Add address",
             "gateway": "Gateway address",
-            "dns_servers": "DNS Servers",
+            "dns_server": "DNS Server",
+            "add_dns_server": "Add DNS Server",
+            "custom_dns": "Custom",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
             "hostname": {
@@ -7726,6 +7721,7 @@
         "auto": "Automatic",
         "disabled": "Disabled",
         "ip_netmask": "IP address/netmask",
+        "netmask": "Netmask",
         "gateway": "Gateway address",
         "dns_servers": "DNS servers",
         "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
