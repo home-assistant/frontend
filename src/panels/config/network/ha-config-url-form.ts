@@ -224,8 +224,8 @@ class ConfigUrlForm extends LitElement {
             </span>
             <ha-switch
               .disabled=${disabled}
-              .checked=${this._cloudChecked}
-              @change=${this._toggleCloud}
+              .checked=${!this._showCustomInternalUrl}
+              @change=${this._toggleInternalAutomatic}
             ></ha-switch>
           </ha-settings-row>
 
