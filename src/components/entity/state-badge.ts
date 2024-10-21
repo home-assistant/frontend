@@ -13,6 +13,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { isBrandUrl, convertDarkBrandUrl } from "../../util/brands-url";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -135,6 +136,13 @@ export class StateBadge extends LitElement {
         const domain = computeDomain(stateObj.entity_id);
         if (domain === "camera") {
           imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
+        }
+        if (
+          domain === "update" &&
+          this.hass?.themes?.darkMode &&
+          isBrandUrl(imageUrl)
+        ) {
+          imageUrl = convertDarkBrandUrl(imageUrl);
         }
         backgroundImage = `url(${imageUrl})`;
         this.icon = false;
