@@ -518,9 +518,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                               ${this.hass.localize(
                                                 "ui.panel.config.zwave_js.add_node.added_insecurely_text"
                                               )}
-                                              ${typeof this
-                                                ._lowSecurityReason !==
-                                              "undefined"
+                                              ${!isNaN(this._lowSecurityReason)
                                                 ? html`<p>
                                                     ${this.hass.localize(
                                                       `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
