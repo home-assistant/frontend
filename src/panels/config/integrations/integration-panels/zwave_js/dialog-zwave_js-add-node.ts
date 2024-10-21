@@ -524,7 +524,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                                       `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
                                                     )}
                                                   </p>`
-                                                : ""}
+                                                : nothing}
                                             </ha-alert>`
                                           : ""}
                                         <a
