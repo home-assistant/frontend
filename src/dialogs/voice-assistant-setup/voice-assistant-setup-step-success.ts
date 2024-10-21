@@ -8,7 +8,6 @@ import "../../components/ha-tts-voice-picker";
 import {
   AssistPipeline,
   listAssistPipelines,
-  setAssistPipelinePreferred,
   updateAssistPipeline,
 } from "../../data/assist_pipeline";
 import {
@@ -17,13 +16,13 @@ import {
   setWakeWords,
 } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
+import { InputSelectEntity } from "../../data/input_select";
+import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
 import "../../panels/lovelace/entity-rows/hui-select-entity-row";
 import { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { setSelectOption } from "../../data/select";
-import { InputSelectEntity } from "../../data/input_select";
 
 @customElement("ha-voice-assistant-setup-step-success")
 export class HaVoiceAssistantSetupStepSuccess extends LitElement {
@@ -233,7 +232,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   }
 
   private async _openPipeline() {
-    const [pipeline, preferred_pipeline] = await this._getPipeline();
+    const [pipeline] = await this._getPipeline();
 
     if (!pipeline) {
       return;
@@ -245,12 +244,8 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       cloudActiveSubscription:
         cloudStatus.logged_in && cloudStatus.active_subscription,
       pipeline,
-      preferred: pipeline.id === preferred_pipeline,
       updatePipeline: async (values) => {
         await updateAssistPipeline(this.hass!, pipeline!.id, values);
-      },
-      setPipelinePreferred: async () => {
-        await setAssistPipelinePreferred(this.hass!, pipeline!.id);
       },
       hideWakeWord: true,
     });

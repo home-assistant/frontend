@@ -1200,6 +1200,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          background-color: var(--primary-background-color);
         }
 
         .group-header ha-icon-button {
