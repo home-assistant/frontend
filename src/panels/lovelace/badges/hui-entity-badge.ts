@@ -184,6 +184,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         .hass=${this.hass}
         .content=${this._config.state_content}
         .name=${this._config.name}
+        .timeVerbosity=${this._config.time_verbosity}
       >
       </state-display>
     `;

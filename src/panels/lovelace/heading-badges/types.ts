@@ -1,3 +1,4 @@
+import { TimeVerbosity } from "../../../common/datetime/relative_time";
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { Condition } from "../common/validate-condition";
 
@@ -23,4 +24,5 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   show_icon?: boolean;
   color?: string;
   tap_action?: ActionConfig;
+  time_verbosity?: TimeVerbosity;
 }
