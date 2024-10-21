@@ -21,6 +21,7 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { createViewElement } from "../create-element/create-view-element";
+import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -35,8 +36,7 @@ import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
-import { DEFAULT_VIEW_LAYOUT, PANEL_VIEW_LAYOUT } from "./const";
-import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-dialog";
+import { getViewType } from "./get-view-type";
 
 declare global {
   // for fire event
@@ -267,9 +267,7 @@ export class HUIView extends ReactiveElement {
 
     viewConfig = {
       ...viewConfig,
-      type: viewConfig.panel
-        ? PANEL_VIEW_LAYOUT
-        : viewConfig.type || DEFAULT_VIEW_LAYOUT,
+      type: getViewType(viewConfig),
     };
 
     // Create a new layout element if necessary.
