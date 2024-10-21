@@ -7337,6 +7337,12 @@
         "next": "Next",
         "finish": "Finish",
         "help": "Help",
+        "prepare": {
+          "header": "Preparing Home Assistant",
+          "subheader": "This may take 20 minutes or more",
+          "show_details": "Show details",
+          "hide_details": "Hide details"
+        },
         "welcome": {
           "header": "Welcome!",
           "start": "Create my smart home",
