@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -11,7 +10,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import {
