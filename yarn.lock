@@ -4144,21 +4144,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*":
+"@types/leaflet@npm:*, @types/leaflet@npm:1.9.13":
   version: 1.9.13
   resolution: "@types/leaflet@npm:1.9.13"
   dependencies:
     "@types/geojson": "npm:*"
   checksum: 10/67ca1bf3da0db15e9efe4aebc72f66a3960a8375859f15d41676c61b8c2b934be72cba689c584bb2ef7d40de5aafaf9f82bf4530c56191a09a61b24395531d84
-  languageName: node
-  linkType: hard
-
-"@types/leaflet@npm:1.9.12":
-  version: 1.9.12
-  resolution: "@types/leaflet@npm:1.9.12"
-  dependencies:
-    "@types/geojson": "npm:*"
-  checksum: 10/ff6dce2f613b97bdc3ceb929e6eeaaa8bef8bbafdf9758935b1d679cbaf76360e366080d77e42da58e41aac146434c5d18c70ec919d37e01e0592f0a4f2e967e
   languageName: node
   linkType: hard
 
@@ -8804,7 +8795,7 @@ __metadata:
     "@types/glob": "npm:8.1.0"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
-    "@types/leaflet": "npm:1.9.12"
+    "@types/leaflet": "npm:1.9.13"
     "@types/leaflet-draw": "npm:1.0.11"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.4.2"
