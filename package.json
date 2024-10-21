@@ -258,5 +258,5 @@
     "@lit/reactive-element": "1.6.3",
     "@fullcalendar/daygrid": "6.1.15"
   },
-  "packageManager": "yarn@4.5.0"
+  "packageManager": "yarn@4.5.1"
 }
