@@ -57,6 +57,9 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public name?: string;
 
+  @property({ type: Boolean, attribute: "dash-unavailable" })
+  public dashUnavailable?: boolean;
+
   protected createRenderRoot() {
     return this;
   }
@@ -73,6 +76,9 @@ class StateDisplay extends LitElement {
     const domain = computeStateDomain(stateObj);
 
     if (content === "state") {
+      if (this.dashUnavailable && isUnavailableState(stateObj.state)) {
+        return "—";
+      }
       if (
         (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
           TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
@@ -93,31 +99,38 @@ class StateDisplay extends LitElement {
     if (content === "name") {
       return html`${this.name || stateObj.attributes.friendly_name}`;
     }
+
+    let relativeDateTime: string | undefined;
+
     // Check last-changed for backwards compatibility
     if (content === "last_changed" || content === "last-changed") {
-      return html`
-        <ha-relative-time
-          .hass=${this.hass}
-          .datetime=${stateObj.last_changed}
-          capitalize
-        ></ha-relative-time>
-      `;
+      relativeDateTime = stateObj.last_changed;
     }
     // Check last_updated for backwards compatibility
     if (content === "last_updated" || content === "last-updated") {
-      return html`
-        <ha-relative-time
-          .hass=${this.hass}
-          .datetime=${stateObj.last_updated}
-          capitalize
-        ></ha-relative-time>
-      `;
+      relativeDateTime = stateObj.last_updated;
     }
-    if (content === "last_triggered") {
+
+    if (
+      content === "last_triggered" ||
+      (domain === "calendar" &&
+        (content === "start_time" || content === "end_time")) ||
+      (domain === "sun" &&
+        (content === "next_dawn" ||
+          content === "next_dusk" ||
+          content === "next_midnight" ||
+          content === "next_noon" ||
+          content === "next_rising" ||
+          content === "next_setting"))
+    ) {
+      relativeDateTime = stateObj.attributes[content];
+    }
+
+    if (relativeDateTime) {
       return html`
         <ha-relative-time
           .hass=${this.hass}
-          .datetime=${stateObj.attributes.last_triggered}
+          .datetime=${relativeDateTime}
           capitalize
         ></ha-relative-time>
       `;

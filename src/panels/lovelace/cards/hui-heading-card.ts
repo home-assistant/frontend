@@ -11,12 +11,24 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import "../heading-badges/hui-heading-badge";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import type { HeadingCardConfig, HeadingCardEntityConfig } from "./types";
+import type { HeadingCardConfig } from "./types";
+
+export const migrateHeadingCardConfig = (
+  config: HeadingCardConfig
+): HeadingCardConfig => {
+  const newConfig = { ...config };
+  if (newConfig.entities) {
+    newConfig.badges = [...(newConfig.badges || []), ...newConfig.entities];
+    delete newConfig.entities;
+  }
+  return newConfig;
+};
 
 @customElement("hui-heading-card")
 export class HuiHeadingCard extends LitElement implements LovelaceCard {
@@ -35,6 +47,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public preview = false;
+
   @state() private _config?: HeadingCardConfig;
 
   public setConfig(config: HeadingCardConfig): void {
@@ -42,7 +56,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       tap_action: {
         action: "none",
       },
-      ...config,
+      ...migrateHeadingCardConfig(config),
     };
   }
 
@@ -70,6 +84,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
 
     const style = this._config.heading_style || "title";
 
+    const badges = this._config.badges;
+
     return html`
       <ha-card>
         <div class="container">
@@ -88,11 +104,18 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
               : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${this._config.entities?.length
+          ${badges?.length
             ? html`
-                <div class="entities">
-                  ${this._config.entities.map((config) =>
-                    this._renderEntity(config)
+                <div class="badges">
+                  ${badges.map(
+                    (config) => html`
+                      <hui-heading-badge
+                        .config=${config}
+                        .hass=${this.hass}
+                        .preview=${this.preview}
+                      >
+                      </hui-heading-badge>
+                    `
                   )}
                 </div>
               `
@@ -102,58 +125,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleEntityAction(ev: ActionHandlerEvent) {
-    const config = {
-      tap_action: {
-        action: "none",
-      },
-      ...(ev.currentTarget as any).config,
-    };
-
-    handleAction(this, this.hass!, config, ev.detail.action!);
-  }
-
-  _renderEntity(entityConfig: string | HeadingCardEntityConfig) {
-    const config =
-      typeof entityConfig === "string"
-        ? { entity: entityConfig }
-        : entityConfig;
-
-    const stateObj = this.hass!.states[config.entity];
-
-    if (!stateObj) {
-      return nothing;
-    }
-
-    const actionable = hasAction(config.tap_action || { action: "none" });
-
-    return html`
-      <div
-        .config=${config}
-        class="entity"
-        @action=${this._handleEntityAction}
-        .actionHandler=${actionHandler()}
-        role=${ifDefined(actionable ? "button" : undefined)}
-        tabindex=${ifDefined(actionable ? "0" : undefined)}
-      >
-        <ha-state-icon
-          .hass=${this.hass}
-          .icon=${config.icon}
-          .stateObj=${stateObj}
-        ></ha-state-icon>
-        <state-display
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .content=${config.content || "state"}
-        ></state-display>
-      </div>
-    `;
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
         background: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         border: none;
         box-shadow: none;
         padding: 0;
@@ -188,7 +165,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       .container .content:not(:has(p)) {
         min-width: fit-content;
       }
-      .container .entities {
+      .container .badges {
         flex: 0 0;
       }
       .content {
@@ -196,12 +173,12 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         flex-direction: row;
         align-items: center;
         gap: 8px;
-        color: var(--primary-text-color);
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 24px;
+        color: var(--ha-heading-card-title-color, var(--primary-text-color));
+        font-size: var(--ha-heading-card-title-font-size, 16px);
+        font-weight: var(--ha-heading-card-title-font-weight, 400);
+        line-height: var(--ha-heading-card-title-line-height, 24px);
         letter-spacing: 0.1px;
-        --mdc-icon-size: 16px;
+        --mdc-icon-size: 18px;
       }
       .content ha-icon,
       .content ha-icon-next {
@@ -210,7 +187,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       }
       .content p {
         margin: 0;
-        font-family: Roboto;
         font-style: normal;
         white-space: nowrap;
         overflow: hidden;
@@ -219,35 +195,20 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         min-width: 0;
       }
       .content.subtitle {
-        color: var(--secondary-text-color);
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
+        color: var(
+          --ha-heading-card-subtitle-color,
+          var(--secondary-text-color)
+        );
+        font-size: var(--ha-heading-card-subtitle-font-size, 14px);
+        font-weight: var(--ha-heading-card-subtitle-font-weight, 500);
+        line-height: var(--ha-heading-card-subtitle-line-height, 20px);
       }
-      .entities {
+      .badges {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-end;
         gap: 4px 10px;
-      }
-      .entities .entity {
-        display: flex;
-        flex-direction: row;
-        white-space: nowrap;
-        align-items: center;
-        gap: 3px;
-        color: var(--secondary-text-color);
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 20px; /* 142.857% */
-        letter-spacing: 0.1px;
-        --mdc-icon-size: 14px;
-      }
-      .entities .entity ha-state-icon {
-        --ha-icon-display: block;
       }
     `;
   }

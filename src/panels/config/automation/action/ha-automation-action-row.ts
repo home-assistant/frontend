@@ -43,18 +43,14 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../../data/context";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { FloorRegistryEntry } from "../../../../data/floor_registry";
 import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
   Action,
   NonConditionAction,
   getActionType,
+  migrateAutomationAction,
 } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -73,10 +69,10 @@ import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
-import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
@@ -158,10 +154,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
 
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
-
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -230,7 +222,6 @@ export default class HaAutomationActionRow extends LitElement {
                 this.hass,
                 this._entityReg,
                 this._labelReg,
-                this._floorReg,
                 this.action
               )
             )}
@@ -510,15 +501,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private async _runAction() {
     const validated = await validateConfig(this.hass, {
-      action: this.action,
+      actions: this.action,
     });
 
-    if (!validated.action.valid) {
+    if (!validated.actions.valid) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
-        text: validated.action.error,
+        text: validated.actions.error,
       });
       return;
     }
@@ -564,7 +555,9 @@ export default class HaAutomationActionRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    fireEvent(this, "value-changed", {
+      value: migrateAutomationAction(ev.detail.value),
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {
@@ -600,7 +593,6 @@ export default class HaAutomationActionRow extends LitElement {
           this.hass,
           this._entityReg,
           this._labelReg,
-          this._floorReg,
           this.action,
           undefined,
           true

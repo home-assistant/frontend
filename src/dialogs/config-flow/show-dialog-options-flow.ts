@@ -29,7 +29,7 @@ export const showOptionsFlowDialog = (
     },
     {
       flowType: "options_flow",
-      loadDevicesAndAreas: false,
+      showDevices: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),

@@ -1,16 +1,7 @@
-import {
-  mdiBug,
-  mdiClose,
-  mdiDotsVertical,
-  mdiStar,
-  mdiStarOutline,
-} from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-form/ha-form";
@@ -38,8 +29,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _data?: Partial<AssistPipeline>;
 
-  @state() private _preferred?: boolean;
-
   @state() private _cloudActive?: boolean;
 
   @state() private _error?: Record<string, string>;
@@ -54,7 +43,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._cloudActive = this._params.cloudActiveSubscription;
     if (this._params.pipeline) {
       this._data = this._params.pipeline;
-      this._preferred = this._params.preferred;
       return;
     }
 
@@ -129,39 +117,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
-          ${this._params.pipeline?.id
-            ? html`
-                <ha-icon-button
-                  slot="actionItems"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.set_as_preferred"
-                  )}
-                  .path=${this._preferred ? mdiStar : mdiStarOutline}
-                  @click=${this._setPreferred}
-                  .disabled=${Boolean(this._preferred)}
-                ></ha-icon-button>
-
-                <ha-button-menu
-                  corner="BOTTOM_END"
-                  menuCorner="END"
-                  slot="actionItems"
-                  @closed=${stopPropagation}
-                  fixed
-                >
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this.hass.localize("ui.common.menu")}
-                    .path=${mdiDotsVertical}
-                  ></ha-icon-button>
-                  <ha-list-item graphic="icon" @request-selected=${this._debug}>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
-                    )}
-                    <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
-                  </ha-list-item>
-                </ha-button-menu>
-              `
-            : nothing}
         </ha-dialog-header>
         <div class="content">
           ${this._error
@@ -173,7 +128,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .supportedLanguages=${this._supportedLanguages}
             keys="name,language"
             @value-changed=${this._valueChanged}
-            dialogInitialFocus
+            ?dialogInitialFocus=${!this._params.pipeline?.id}
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
@@ -215,25 +170,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
-          <assist-pipeline-detail-wakeword
-            .hass=${this.hass}
-            .data=${this._data}
-            keys="wake_word_entity,wake_word_id"
-            @value-changed=${this._valueChanged}
-          ></assist-pipeline-detail-wakeword>
+          ${this._params.hideWakeWord
+            ? nothing
+            : html`<assist-pipeline-detail-wakeword
+                .hass=${this.hass}
+                .data=${this._data}
+                keys="wake_word_entity,wake_word_id"
+                @value-changed=${this._valueChanged}
+              ></assist-pipeline-detail-wakeword>`}
         </div>
-        ${this._params.pipeline?.id
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                class="warning"
-                .disabled=${this._preferred || this._submitting}
-                @click=${this._deletePipeline}
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>
-            `
-          : nothing}
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
@@ -283,41 +228,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       };
       if (this._params!.pipeline?.id) {
         await this._params!.updatePipeline(values);
-      } else {
+      } else if (this._params!.createPipeline) {
         await this._params!.createPipeline(values);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No createPipeline function provided");
       }
       this.closeDialog();
-    } catch (err: any) {
-      this._error = err?.message || "Unknown error";
-    } finally {
-      this._submitting = false;
-    }
-  }
-
-  private async _setPreferred() {
-    this._submitting = true;
-    try {
-      await this._params!.setPipelinePreferred();
-      this._preferred = true;
-    } catch (err: any) {
-      this._error = err?.message || "Unknown error";
-    } finally {
-      this._submitting = false;
-    }
-  }
-
-  private _debug(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) return;
-    navigate(`/config/voice-assistants/debug/${this._params!.pipeline!.id}`);
-    this.closeDialog();
-  }
-
-  private async _deletePipeline() {
-    this._submitting = true;
-    try {
-      if (await this._params!.deletePipeline()) {
-        this.closeDialog();
-      }
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {

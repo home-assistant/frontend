@@ -129,32 +129,31 @@ class DialogBox extends LitElement {
   }
 
   private _dismiss(): void {
-    this._cancel();
     this._closeState = "canceled";
     this._closeDialog();
+    this._cancel();
   }
 
   private _confirm(): void {
+    this._closeState = "confirmed";
+    this._closeDialog();
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
-    this._closeState = "confirmed";
-    this._closeDialog();
   }
 
   private _closeDialog() {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._dialog?.close();
   }
 
   private _dialogClosed() {
     if (!this._closeState) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this._cancel();
     }
-    if (!this._params) {
-      return;
-    }
+    this._closeState = undefined;
     this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {
@@ -178,11 +177,6 @@ class DialogBox extends LitElement {
       }
       .destructive {
         --mdc-theme-primary: var(--error-color);
-      }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
       }
       ha-textfield {
         width: 100%;

@@ -302,6 +302,7 @@ export class HuiCardLayoutEditor extends LitElement {
       ha-grid-size-picker {
         display: block;
         margin: 16px auto;
+        direction: ltr;
       }
       ha-yaml-editor {
         display: block;

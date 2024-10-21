@@ -16,6 +16,7 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -452,6 +453,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   title?: string;
   theme?: string;
   entity?: string;
+  hide_completed?: boolean;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
@@ -503,17 +505,12 @@ export interface TileCardConfig extends LovelaceCardConfig {
   features?: LovelaceCardFeatureConfig[];
 }
 
-export interface HeadingCardEntityConfig {
-  entity: string;
-  content?: string | string[];
-  icon?: string;
-  tap_action?: ActionConfig;
-}
-
 export interface HeadingCardConfig extends LovelaceCardConfig {
   heading_style?: "title" | "subtitle";
   heading?: string;
   icon?: string;
   tap_action?: ActionConfig;
-  entities?: (string | HeadingCardEntityConfig)[];
+  badges?: LovelaceHeadingBadgeConfig[];
+  /** @deprecated Use `badges` instead */
+  entities?: LovelaceHeadingBadgeConfig[];
 }

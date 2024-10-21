@@ -29,7 +29,7 @@ const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
     alias: optional(string()),
-    platform: literal("state"),
+    trigger: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
     from: optional(nullable(string())),
@@ -49,7 +49,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): StateTrigger {
-    return { platform: "state", entity_id: [] };
+    return { trigger: "state", entity_id: [] };
   }
 
   private _schema = memoizeOne(

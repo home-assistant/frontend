@@ -19,10 +19,6 @@ import {
   LovelaceRawConfig,
   saveConfig,
 } from "../../data/lovelace/config/types";
-import {
-  isStrategyView,
-  LovelaceViewConfig,
-} from "../../data/lovelace/config/view";
 import { fetchResources } from "../../data/lovelace/resource";
 import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
@@ -30,6 +26,7 @@ import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { loadLovelaceResources } from "./common/load-resources";
+import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
@@ -321,26 +318,8 @@ export class LovelacePanel extends LitElement {
   }
 
   private _checkLovelaceConfig(config: LovelaceRawConfig) {
-    // Somehow there can be badges with value null, we remove those
-    if (isStrategyDashboard(config)) {
-      return config;
-    }
-    let checkedConfig = !Object.isFrozen(config) ? config : undefined;
-    config.views.forEach((view, index) => {
-      if (isStrategyView(view)) {
-        return;
-      }
-      if (view.badges && !view.badges.every(Boolean)) {
-        checkedConfig = checkedConfig || {
-          ...config,
-          views: [...config.views],
-        };
-        const updatedView = { ...view } as LovelaceViewConfig;
-        updatedView.badges = view.badges.filter(Boolean);
-        checkedConfig.views[index] = updatedView;
-      }
-    });
-    return checkedConfig ? deepFreeze(checkedConfig) : config;
+    const checkedConfig = checkLovelaceConfig(config);
+    return deepFreeze(checkedConfig);
   }
 
   private _setLovelaceConfig(
