@@ -1,3 +1,4 @@
+import type { TimeVerbosity } from "../../../common/datetime/relative_time";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
@@ -46,4 +47,5 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
    * @deprecated use `show_state`, `show_name`, `icon_type`
    */
   display_type?: DisplayType;
+  time_verbosity?: TimeVerbosity;
 }

@@ -1,3 +1,4 @@
+import { TimeVerbosity } from "../../../common/datetime/relative_time";
 import { HaDurationData } from "../../../components/ha-duration-input";
 import { ActionConfig } from "../../../data/lovelace/config/action";
 import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -503,6 +504,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  time_verbosity?: TimeVerbosity;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {
