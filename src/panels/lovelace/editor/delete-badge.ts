@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { Lovelace } from "../types";
 import { deleteBadge } from "./config-util";
 import { LovelaceCardPath } from "./lovelace-path";

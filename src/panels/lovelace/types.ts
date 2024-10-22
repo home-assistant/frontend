@@ -14,7 +14,7 @@ import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceCardFeatureConfig } from "./card-features/types";
 import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
-import { ShowToastParams } from "../../managers/notification-manager";
+import type { ShowToastParams } from "../../managers/notification-manager";
 
 declare global {
   // eslint-disable-next-line

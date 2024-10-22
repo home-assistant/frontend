@@ -23,7 +23,7 @@ import { fetchResources } from "../../data/lovelace/resource";
 import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
-import { ShowToastParams } from "../../managers/notification-manager";
+import type { ShowToastParams } from "../../managers/notification-manager";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { checkLovelaceConfig } from "./common/check-lovelace-config";
