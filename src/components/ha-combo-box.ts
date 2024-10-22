@@ -9,7 +9,14 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
@@ -96,6 +103,8 @@ export class HaComboBox extends LitElement {
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
   @property({ attribute: false }) public renderer?: ComboBoxLitRenderer<any>;
+
+  @property({ type: Boolean }) public noButton = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -185,7 +194,7 @@ export class HaComboBox extends LitElement {
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-textfield>
-        ${this.value
+        ${this.value && !this.noButton
           ? html`<ha-svg-icon
               role="button"
               tabindex="-1"
@@ -195,15 +204,17 @@ export class HaComboBox extends LitElement {
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
-        <ha-svg-icon
-          role="button"
-          tabindex="-1"
-          aria-label=${ifDefined(this.label)}
-          aria-expanded=${this.opened ? "true" : "false"}
-          class="toggle-button"
-          .path=${this.opened ? mdiMenuUp : mdiMenuDown}
-          @click=${this._toggleOpen}
-        ></ha-svg-icon>
+        ${this.noButton
+          ? nothing
+          : html`<ha-svg-icon
+              role="button"
+              tabindex="-1"
+              aria-label=${ifDefined(this.label)}
+              aria-expanded=${this.opened ? "true" : "false"}
+              class="toggle-button"
+              .path=${this.opened ? mdiMenuUp : mdiMenuDown}
+              @click=${this._toggleOpen}
+            ></ha-svg-icon>`}
       </vaadin-combo-box-light>
     `;
   }
