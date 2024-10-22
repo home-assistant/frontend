@@ -25,8 +25,14 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { type DeleteBadgeParams, performDeleteBadge } from "../editor/delete-badge";
-import { type DeleteCardParams, performDeleteCard } from "../editor/delete-card";
+import {
+  type DeleteBadgeParams,
+  performDeleteBadge,
+} from "../editor/delete-badge";
+import {
+  type DeleteCardParams,
+  performDeleteCard,
+} from "../editor/delete-card";
 import {
   LovelaceCardPath,
   parseLovelaceCardPath,
