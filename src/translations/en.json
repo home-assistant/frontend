@@ -5221,7 +5221,7 @@
           "supervisor": {
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
-            "scan_ap": "Scan for access points",
+            "scan_ap": "Search networks",
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
@@ -5241,7 +5241,6 @@
             "custom_dns": "Custom",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
-            "waiting_for_ssid": "Please select a Wi-Fi network first",
             "hostname": {
               "title": "Host name",
               "description": "The name your instance will have on your network",
