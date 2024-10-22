@@ -7341,7 +7341,16 @@
           "header": "Preparing Home Assistant",
           "subheader": "This may take 20 minutes or more",
           "show_details": "Show details",
-          "hide_details": "Hide details"
+          "hide_details": "Hide details",
+          "network_issue": {
+            "title": "Networking issue detected",
+            "error_get_network_info": "Cannot get network information",
+            "description": "Home Assistant OS detected a networking issue in your setup. As part of the initial setup, Home Assistant OS downloads the latest version of Home Assistant Core. This networking issue prevents this download. The network issue might be DNS related. The currently used DNS service is: {dns}.",
+            "resolve_different": "To resolve this, you can try a different DNS server. Select one of the options below. Alternatively, change your router configuration to use your own custom DNS server.",
+            "use_cloudflare": "Use Cloudflare DNS",
+            "use_google": "Use Google DNS",
+            "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!"
+          }
         },
         "welcome": {
           "header": "Welcome!",

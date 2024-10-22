@@ -1,0 +1,174 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../src/common/translations/localize";
+import "../../../src/components/ha-button";
+import "../../../src/components/ha-alert";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+
+const ALTERNATIVE_DNS_SERVERS: {
+  ipv4: string[];
+  ipv6: string[];
+  translationKey: LocalizeKeys;
+}[] = [
+  {
+    ipv4: ["1.1.1.1", "1.0.0.1"],
+    ipv6: ["2606:4700:4700::1111", "2606:4700:4700::1001"],
+    translationKey:
+      "ui.panel.page-onboarding.prepare.network_issue.use_cloudflare",
+  },
+  {
+    ipv4: ["8.8.8.8", "8.8.4.4"],
+    ipv6: ["2001:4860:4860::8888", "2001:4860:4860::8844"],
+    translationKey: "ui.panel.page-onboarding.prepare.network_issue.use_google",
+  },
+];
+
+@customElement("landing-page-network")
+class LandingPageNetwork extends LitElement {
+  @property({ attribute: false }) public localize!: LocalizeFunc;
+
+  @state() private _networkIssue = false;
+
+  @state() private _getNetworkInfoError = false;
+
+  @state() private _dnsPrimaryInterface?: string;
+
+  protected render() {
+    if (!this._networkIssue && !this._getNetworkInfoError) {
+      return nothing;
+    }
+
+    console.log(this._getNetworkInfoError);
+
+    if (this._getNetworkInfoError) {
+      return html`
+        <ha-alert alert-type="error">
+          <p>
+            ${this.localize(
+              "ui.panel.page-onboarding.prepare.network_issue.error_get_network_info"
+            )}
+          </p>
+        </ha-alert>
+      `;
+    }
+
+    return html`
+      <ha-alert
+        alert-type="warning"
+        .title=${this.localize(
+          "ui.panel.page-onboarding.prepare.network_issue.title"
+        )}
+      >
+        <p>
+          ${this.localize(
+            "ui.panel.page-onboarding.prepare.network_issue.description",
+            { dns: this._dnsPrimaryInterface || "?" }
+          )}
+        </p>
+        <p>
+          ${this.localize(
+            "ui.panel.page-onboarding.prepare.network_issue.resolve_different"
+          )}
+        </p>
+        ${!this._dnsPrimaryInterface
+          ? html`
+              <p>
+                <b
+                  >${this.localize(
+                    "ui.panel.page-onboarding.prepare.network_issue.no_primary_interface"
+                  )}
+                </b>
+              </p>
+            `
+          : nothing}
+        <div class="actions">
+          ${ALTERNATIVE_DNS_SERVERS.map(
+            ({ translationKey }, key) =>
+              html`<ha-button
+                .index=${key}
+                .disabled=${!this._dnsPrimaryInterface}
+                @click=${this._setDns}
+                >${this.localize(translationKey)}</ha-button
+              >`
+          )}
+        </div>
+      </ha-alert>
+    `;
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    // this._fetchSupervisorInfo();
+  }
+
+  private async _fetchSupervisorInfo() {
+    try {
+      const response = await fetch("/supervisor/network/info");
+      if (!response.ok) {
+        throw new Error("Failed to fetch network info");
+      }
+
+      const { data } = await response.json();
+
+      if (!data.data.host_internet) {
+        this._networkIssue = true;
+        const primaryInterface = data.interfaces.find(
+          (intf) => intf.primary && intf.enabled
+        );
+        if (primaryInterface) {
+          this._dnsPrimaryInterface = [
+            ...(primaryInterface.ipv4?.nameservers || []),
+            ...(primaryInterface.ipv6?.nameservers || []),
+          ].join(", ");
+        }
+      } else {
+        this._networkIssue = false;
+      }
+    } catch (err) {
+      console.error(err);
+      this._getNetworkInfoError = true;
+    }
+
+    fireEvent(this, "value-changed", {
+      value: this._networkIssue || this._getNetworkInfoError,
+    });
+  }
+
+  private async _setDns(ev) {
+    const index = ev.target?.index;
+    try {
+      const response = await fetch("/supervisor/network/dns", {
+        method: "POST",
+        body: JSON.stringify(ALTERNATIVE_DNS_SERVERS[index]),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to set DNS");
+      }
+      this._networkIssue = false;
+    } catch (err) {
+      console.error(err);
+      this._getNetworkInfoError = true;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [css``];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "landing-page-network": LandingPageNetwork;
+  }
+}

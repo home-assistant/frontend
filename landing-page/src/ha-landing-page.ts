@@ -1,18 +1,24 @@
-import { PropertyValues, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../src/components/ha-icon-button";
-import "../../src/managers/notification-manager";
+import "@material/mwc-linear-progress";
+import { PropertyValues, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../src/components/ha-alert";
 import { haStyle } from "../../src/resources/styles";
-import "./components/landing-page-prepare";
 import "../../src/onboarding/onboarding-welcome-links";
+import "./components/landing-page-network";
 import { litLocalizeLiteMixin } from "../../src/mixins/lit-localize-lite-mixin";
 import { HassElement } from "../../src/state/hass-element";
 import { extractSearchParam } from "../../src/common/url/search-params";
-import { storeState } from "../../src/util/ha-pref-storage";
+import { onBoardingStyles } from "../../src/onboarding/styles";
 
 @customElement("ha-landing-page")
 class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
   @property() public translationFragment = "page-onboarding";
+
+  @state() private _networkIssue = false;
+
+  @state() private _supervisorError = false;
+
+  @state() private _logDetails = false;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
@@ -21,10 +27,40 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
     return html`
       <ha-card>
         <div class="card-content">
-          <landing-page-prepare
+          <h1>${this.localize("ui.panel.page-onboarding.prepare.header")}</h1>
+          ${!this._networkIssue && !this._supervisorError
+            ? html`
+                <p>
+                  ${this.localize("ui.panel.page-onboarding.prepare.subheader")}
+                </p>
+                <mwc-linear-progress indeterminate></mwc-linear-progress>
+              `
+            : nothing}
+          <landing-page-network
+            @value-changed=${this._networkInfoChanged}
             .localize=${this.localize}
-            .language=${this.language}
-          ></landing-page-prepare>
+          ></landing-page-network>
+
+          ${this._supervisorError
+            ? html`
+                <ha-alert
+                  alert-type="error"
+                  title="Error installing Home Assistant"
+                >
+                  An error occured while installing Home Assistant, check the
+                  logs below for more information.
+                </ha-alert>
+              `
+            : nothing}
+          <div class="logs">
+            <ha-button @click=${this._toggleLogDetails}>
+              ${this.localize(
+                this._logDetails
+                  ? "ui.panel.page-onboarding.prepare.hide_details"
+                  : "ui.panel.page-onboarding.prepare.show_details"
+              )}
+            </ha-button>
+          </div>
         </div>
       </ha-card>
       <onboarding-welcome-links
@@ -56,33 +92,47 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
     import("../../src/components/ha-language-picker");
   }
 
+  private _toggleLogDetails() {
+    this._logDetails = !this._logDetails;
+  }
+
+  private _networkInfoChanged(ev: CustomEvent) {
+    this._networkIssue = ev.detail.value;
+  }
+
   private _languageChanged(ev: CustomEvent) {
     const language = ev.detail.value;
     this.language = language;
-    if (this.hass) {
-      this._updateHass({
-        locale: { ...this.hass!.locale, language },
-        language,
-        selectedLanguage: language,
-      });
-      storeState(this.hass!);
-    } else {
-      try {
-        localStorage.setItem("selectedLanguage", JSON.stringify(language));
-      } catch (err: any) {
-        // Ignore
-      }
+    try {
+      localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      window.location.reload();
+    } catch (err: any) {
+      // Ignore
     }
   }
 
   static styles = [
     haStyle,
+    onBoardingStyles,
     css`
       .footer {
         padding-top: 8px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+      }
+      ha-card .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      ha-alert p {
+        text-align: unset;
+      }
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 16px;
       }
       ha-language-picker {
         display: block;
