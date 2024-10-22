@@ -358,21 +358,24 @@ export const restartHassioAddon = async (
 
 export const uninstallHassioAddon = async (
   hass: HomeAssistant,
-  slug: string
-) => {
+  slug: string,
+  removeData: boolean
+): Promise<void> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/uninstall`,
       method: "post",
       timeout: null,
+      data: { remove_config: removeData },
     });
     return;
   }
 
   await hass.callApi<HassioResponse<void>>(
     "POST",
-    `hassio/addons/${slug}/uninstall`
+    `hassio/addons/${slug}/uninstall`,
+    { remove_config: removeData }
   );
 };
 
