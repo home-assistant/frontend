@@ -30,7 +30,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
 import {
   isStrategyView,
-  LovelaceViewConfig,
+  type LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import {
   showAlertDialog,
