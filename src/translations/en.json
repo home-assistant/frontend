@@ -362,6 +362,7 @@
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
+      "deleting_failed": "Deleting failed",
       "error_required": "Required",
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",

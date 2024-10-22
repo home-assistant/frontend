@@ -206,7 +206,7 @@ export class HuiBadgeEditMode extends LitElement {
 
   private _cutBadge(): void {
     this._copyBadge();
-    this._deleteBadge();
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: true });
   }
 
   private _copyBadge(): void {
@@ -232,7 +232,7 @@ export class HuiBadgeEditMode extends LitElement {
   }
 
   private _deleteBadge(): void {
-    fireEvent(this, "ll-delete-badge", { path: this.path! });
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: false });
   }
 
   static get styles(): CSSResultGroup {

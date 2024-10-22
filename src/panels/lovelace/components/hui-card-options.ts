@@ -274,7 +274,7 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard(true);
+        this._deleteCard({ silent: false });
         break;
     }
   }
@@ -297,7 +297,7 @@ export class HuiCardOptions extends LitElement {
 
   private _cutCard(): void {
     this._copyCard();
-    this._deleteCard(false);
+    this._deleteCard({ silent: true });
   }
 
   private _copyCard(): void {
@@ -395,8 +395,8 @@ export class HuiCardOptions extends LitElement {
     });
   }
 
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard({ silent }: { silent: boolean }): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 
