@@ -1,6 +1,6 @@
+import { parseISO } from "date-fns";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { parseISO } from "date-fns";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
