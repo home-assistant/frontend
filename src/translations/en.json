@@ -5241,6 +5241,7 @@
             "custom_dns": "Custom",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
             "failed_to_change": "Failed to change network settings",
+            "waiting_for_ssid": "Please select a Wi-Fi network first",
             "hostname": {
               "title": "Host name",
               "description": "The name your instance will have on your network",
