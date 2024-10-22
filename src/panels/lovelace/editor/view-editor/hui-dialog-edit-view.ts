@@ -1,5 +1,7 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
 import {
   CSSResultGroup,
@@ -32,19 +34,15 @@ import {
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../components/hui-entity-editor";
-import {
-  DEFAULT_VIEW_LAYOUT,
-  PANEL_VIEW_LAYOUT,
-  SECTION_VIEW_LAYOUT,
-} from "../../views/const";
+import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
+import { generateDefaultSection } from "../../views/default-section";
+import { getViewType } from "../../views/get-view-type";
 import { addView, deleteView, replaceView } from "../config-util";
 import { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
-import "./hui-view-editor";
 import "./hui-view-background-editor";
+import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -67,12 +65,7 @@ export class HuiDialogEditView extends LitElement {
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   get _type(): string {
-    if (!this._config) {
-      return DEFAULT_VIEW_LAYOUT;
-    }
-    return this._config.panel
-      ? PANEL_VIEW_LAYOUT
-      : this._config.type || DEFAULT_VIEW_LAYOUT;
+    return getViewType(this._config!);
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -88,7 +81,10 @@ export class HuiDialogEditView extends LitElement {
     this._params = params;
 
     if (this._params.viewIndex === undefined) {
-      this._config = {};
+      this._config = {
+        type: SECTIONS_VIEW_LAYOUT,
+        sections: [generateDefaultSection(this.hass!.localize)],
+      };
       this._dirty = false;
       return;
     }
@@ -171,10 +167,10 @@ export class HuiDialogEditView extends LitElement {
     }
 
     const isCompatibleViewType =
-      this._config?.type === SECTION_VIEW_LAYOUT
-        ? this._config?.type === SECTION_VIEW_LAYOUT &&
+      this._config?.type === SECTIONS_VIEW_LAYOUT
+        ? this._config?.type === SECTIONS_VIEW_LAYOUT &&
           !this._config?.cards?.length
-        : this._config?.type !== SECTION_VIEW_LAYOUT &&
+        : this._config?.type !== SECTIONS_VIEW_LAYOUT &&
           !this._config?.sections?.length;
 
     return html`
@@ -238,7 +234,7 @@ export class HuiDialogEditView extends LitElement {
           ${!isCompatibleViewType
             ? html`
                 <ha-alert class="incompatible" alert-type="warning">
-                  ${this._config?.type === SECTION_VIEW_LAYOUT
+                  ${this._config?.type === SECTIONS_VIEW_LAYOUT
                     ? this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_view.type_warning_sections"
                       )
@@ -378,20 +374,8 @@ export class HuiDialogEditView extends LitElement {
       ...this._config,
     };
 
-    if (viewConf.type === SECTION_VIEW_LAYOUT && !viewConf.sections?.length) {
-      viewConf.sections = [
-        {
-          type: "grid",
-          cards: [
-            {
-              type: "heading",
-              heading: this.hass!.localize(
-                "ui.panel.lovelace.editor.section.default_section_title"
-              ),
-            },
-          ],
-        },
-      ];
+    if (viewConf.type === SECTIONS_VIEW_LAYOUT && !viewConf.sections?.length) {
+      viewConf.sections = [generateDefaultSection(this.hass!.localize)];
     } else if (!viewConf.cards?.length) {
       viewConf.cards = [];
     }
