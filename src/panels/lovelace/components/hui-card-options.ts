@@ -58,6 +58,7 @@ import {
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import { Lovelace, LovelaceCard } from "../types";
 import { SECTIONS_VIEW_LAYOUT } from "../views/const";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -358,10 +359,11 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        let view = selectedDashConfig.views[viewIndex];
+        const fromView = selectedDashConfig.views[this.path![0]];
+        let toView = selectedDashConfig.views[viewIndex];
         let newConfig = selectedDashConfig;
 
-        if (isStrategyView(view)) {
+        if (isStrategyView(toView)) {
           showAlertDialog(this, {
             title: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error_title"
@@ -374,18 +376,46 @@ export class HuiCardOptions extends LitElement {
           return;
         }
 
-        const isSectionsView = view.type === SECTIONS_VIEW_LAYOUT;
+        const isSectionsView = toView.type === SECTIONS_VIEW_LAYOUT;
 
-        // If the view is a section view and has no sections, add a default section.
-        if (isSectionsView && !view.sections?.length) {
-          const newSection = { type: "grid", cards: [] };
-          newConfig = addSection(selectedDashConfig, viewIndex, newSection);
-          view = newConfig.views[viewIndex] as LovelaceViewConfig;
+        let toPath: LovelaceContainerPath = [viewIndex];
+
+        // If the view is a section view and has no i"mported cards" section, adds a default section.
+        if (isSectionsView) {
+          const importedCardHeading = fromView.title
+            ? this.hass!.localize(
+                "ui.panel.lovelace.editor.section.imported_card_section_title_view",
+                { view_title: fromView.title }
+              )
+            : this.hass!.localize(
+                "ui.panel.lovelace.editor.section.imported_card_section_title_default"
+              );
+
+          let sectionIndex =
+            toView.sections?.findIndex(
+              (s) =>
+                "cards" in s &&
+                s.cards?.some(
+                  (c) =>
+                    c.type === "heading" && c.heading === importedCardHeading
+                )
+            ) ?? -1;
+          if (sectionIndex === -1) {
+            const newSection: LovelaceSectionConfig = {
+              type: "grid",
+              cards: [
+                {
+                  type: "heading",
+                  heading: importedCardHeading,
+                },
+              ],
+            };
+            newConfig = addSection(selectedDashConfig, viewIndex, newSection);
+            toView = newConfig.views[viewIndex] as LovelaceViewConfig;
+            sectionIndex = toView.sections!.length - 1;
+          }
+          toPath = [viewIndex, sectionIndex];
         }
-
-        const toPath: LovelaceContainerPath = isSectionsView
-          ? [viewIndex, view.sections!.length - 1]
-          : [viewIndex];
 
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(

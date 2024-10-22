@@ -5710,7 +5710,9 @@
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section",
-            "default_section_title": "New section"
+            "default_section_title": "New section",
+            "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
+            "imported_card_section_title_default": "Imported cards from another view"
           },
           "delete_section": {
             "title": "Delete section",
