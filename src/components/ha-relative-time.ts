@@ -59,10 +59,10 @@ class HaRelativeTime extends ReactiveElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      let date: Date = this.datetime as Date;
-      if (typeof this.datetime === "string") {
-        date = parseISO(this.datetime);
-      }
+      const date =
+        typeof this.datetime === "string"
+          ? parseISO(this.datetime)
+          : this.datetime;
 
       const relTime = relativeTime(date, this.hass.locale);
       this.innerHTML = this.capitalize
