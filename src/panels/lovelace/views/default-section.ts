@@ -1,4 +1,4 @@
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 export const generateDefaultSection = (localize: LocalizeFunc) => ({
   type: "grid",
