@@ -7659,6 +7659,7 @@
     },
     "backup": {
       "search": "[%key:ui::panel::config::backup::picker::search%]",
+      "loading_backups": "Loading backups. This can take a few seconds.",
       "no_backups": "You don't have any backups yet.",
       "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
       "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
