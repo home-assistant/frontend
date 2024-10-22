@@ -199,14 +199,14 @@ export class HuiBadgeEditMode extends LitElement {
         this._cutBadge();
         break;
       case 4:
-        this._deleteBadge({ silent: false });
+        this._deleteBadge();
         break;
     }
   }
 
   private _cutBadge(): void {
     this._copyBadge();
-    this._deleteBadge({ silent: true });
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: true });
   }
 
   private _copyBadge(): void {
@@ -231,8 +231,8 @@ export class HuiBadgeEditMode extends LitElement {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
-  private _deleteBadge({ silent }: { silent: boolean }): void {
-    fireEvent(this, "ll-delete-badge", { path: this.path!, silent });
+  private _deleteBadge(): void {
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: false });
   }
 
   static get styles(): CSSResultGroup {

@@ -30,8 +30,10 @@ export async function performDeleteCard(
       action: { action, text: hass.localize("ui.common.undo") },
     });
   } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error(err);
     lovelace.showToast({
-      message: `Deleting failed: ${err.message}`,
+      message: hass.localize("ui.common.deleting_failed"),
     });
   }
 }
