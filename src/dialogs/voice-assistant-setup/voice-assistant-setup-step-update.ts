@@ -54,7 +54,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     const stateObj = this.hass.states[this.updateEntityId];
 
     const progressIsNumeric =
-      typeof stateObj?.attributes.in_progress === "number";
+      typeof stateObj?.attributes.update_percentage !== null;
 
     return html`<div class="content">
       <img src="/static/icons/casita/loading.png" />
@@ -69,7 +69,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       </p>
       <ha-circular-progress
         .value=${progressIsNumeric
-          ? stateObj.attributes.in_progress / 100
+          ? stateObj.attributes.update_percentage / 100
           : undefined}
         .indeterminate=${!progressIsNumeric}
       ></ha-circular-progress>
@@ -77,7 +77,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
         ${stateObj.state === "unavailable"
           ? "Restarting voice assistant"
           : progressIsNumeric
-            ? `Installing ${stateObj.attributes.in_progress}%`
+            ? `Installing ${stateObj.attributes.update_percentage}%`
             : ""}
       </p>
     </div>`;
