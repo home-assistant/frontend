@@ -199,7 +199,7 @@ export class HuiCardEditMode extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard(true);
+        this._deleteCard();
         break;
     }
   }
@@ -222,7 +222,7 @@ export class HuiCardEditMode extends LitElement {
 
   private _cutCard(): void {
     this._copyCard();
-    this._deleteCard(false);
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
   }
 
   private _copyCard(): void {
@@ -231,8 +231,8 @@ export class HuiCardEditMode extends LitElement {
     this._clipboard = deepClone(cardConfig);
   }
 
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: false });
   }
 
   static get styles(): CSSResultGroup {
