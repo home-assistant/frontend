@@ -859,7 +859,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
-          color: var(--sidebar-menu-button-text-color, --primary-text-color);
+          color: var(--sidebar-menu-button-text-color, var(--primary-text-color));
           border-bottom: 1px solid var(--divider-color);
           background-color: var(
             --sidebar-menu-button-background-color,

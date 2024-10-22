@@ -1192,7 +1192,7 @@ class HassioAddonInfo extends LitElement {
           padding-inline-start: 8px;
           padding-inline-end: initial;
           font-size: 24px;
-          color: var(--ha-card-header-color, --primary-text-color);
+          color: var(--ha-card-header-color, var(--primary-text-color));
         }
         .addon-version {
           float: var(--float-end);
