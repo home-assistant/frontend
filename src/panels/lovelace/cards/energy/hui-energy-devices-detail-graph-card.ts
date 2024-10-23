@@ -1,45 +1,41 @@
-import {
+import type {
   ChartData,
   ChartDataset,
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
 import { endOfToday, startOfToday } from "date-fns";
-import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
-import { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
+import type { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import {
+import "../../../../components/chart/ha-chart-base";
+import type {
   DeviceConsumptionEnergyPreference,
   EnergyData,
+} from "../../../../data/energy";
+import {
   getEnergyDataCollection,
   getSummedData,
   computeConsumptionData,
 } from "../../../../data/energy";
+import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
-  Statistics,
-  StatisticsMetaData,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import { FrontendLocaleData } from "../../../../data/translation";
+import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergyDevicesDetailGraphCardConfig } from "../types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import { fireEvent } from "../../../../common/dom/fire_event";

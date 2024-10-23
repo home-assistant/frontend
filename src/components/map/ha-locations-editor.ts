@@ -7,14 +7,8 @@ import type {
   Marker,
   MarkerOptions,
 } from "leaflet";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -23,8 +17,8 @@ import type { HomeAssistant, ThemeMode } from "../../types";
 import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap } from "./ha-map";
-import { HaIcon } from "../ha-icon";
-import { HaSvgIcon } from "../ha-svg-icon";
+import type { HaIcon } from "../ha-icon";
+import type { HaSvgIcon } from "../ha-svg-icon";
 
 declare global {
   // for fire event

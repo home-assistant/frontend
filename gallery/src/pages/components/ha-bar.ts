@@ -1,4 +1,5 @@
-import { html, css, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../src/components/ha-bar";

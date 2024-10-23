@@ -1,13 +1,14 @@
 import { mdiPlayBox, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { getSignedPath } from "../../data/auth";
+import type { MediaPickedEvent } from "../../data/media-player";
 import {
   MediaClassBrowserSettings,
-  MediaPickedEvent,
   MediaPlayerEntityFeature,
 } from "../../data/media-player";
 import type { MediaSelector, MediaSelectorValue } from "../../data/selector";

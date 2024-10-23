@@ -1,6 +1,7 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HomeAssistant } from "../../types";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import type { HomeAssistant } from "../../types";
+import type { HassioResponse } from "./common";
+import { hassioApiResultExtractor } from "./common";
 
 export interface HassioHardwareAudioDevice {
   device?: string | null;

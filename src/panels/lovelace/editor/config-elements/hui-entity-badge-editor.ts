@@ -14,7 +14,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -26,7 +26,7 @@ import {
   DISPLAY_TYPES,
   migrateLegacyEntityBadgeConfig,
 } from "../../badges/hui-entity-badge";
-import { EntityBadgeConfig } from "../../badges/types";
+import type { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";

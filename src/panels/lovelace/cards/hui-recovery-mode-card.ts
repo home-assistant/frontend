@@ -1,10 +1,11 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../config/logs/error-log-card";
-import { LovelaceCard } from "../types";
+import type { LovelaceCard } from "../types";
 
 @customElement("hui-recovery-mode-card")
 export class HuiRecoveryModeCard extends LitElement implements LovelaceCard {

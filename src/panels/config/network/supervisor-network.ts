@@ -1,7 +1,9 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiDeleteOutline, mdiPlus, mdiMenuDown } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../components/ha-alert";
@@ -19,15 +21,17 @@ import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import {
+import type {
   AccessPoints,
+  NetworkInterface,
+  WifiConfiguration,
+} from "../../../data/hassio/network";
+import {
   accesspointScan,
   fetchNetworkInfo,
   formatAddress,
-  NetworkInterface,
   parseAddress,
   updateNetworkInterface,
-  WifiConfiguration,
 } from "../../../data/hassio/network";
 import {
   showAlertDialog,

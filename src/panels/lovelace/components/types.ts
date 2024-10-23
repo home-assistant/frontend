@@ -1,6 +1,6 @@
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { Condition } from "../common/validate-condition";
-import { LovelaceElementConfig } from "../elements/types";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { Condition } from "../common/validate-condition";
+import type { LovelaceElementConfig } from "../elements/types";
 
 export interface ConditionalBaseConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig | LovelaceElementConfig;

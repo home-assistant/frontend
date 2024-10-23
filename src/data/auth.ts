@@ -1,6 +1,6 @@
-import { HaFormSchema } from "../components/ha-form/types";
-import { HomeAssistant } from "../types";
-import { RefreshTokenType } from "./refresh_token";
+import type { HaFormSchema } from "../components/ha-form/types";
+import type { HomeAssistant } from "../types";
+import type { RefreshTokenType } from "./refresh_token";
 
 export interface AuthUrlSearchParams {
   client_id?: string;

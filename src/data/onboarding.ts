@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { handleFetchPromise } from "../util/hass-call-api";
 
 export interface InstallationType {

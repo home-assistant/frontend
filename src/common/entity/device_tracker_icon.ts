@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 export const deviceTrackerIcon = (stateObj: HassEntity, state?: string) => {
   const compareState = state ?? stateObj.state;

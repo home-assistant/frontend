@@ -1,12 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { ConfigEntry, getConfigEntries } from "../data/config_entries";
+import type { ConfigEntry } from "../data/config_entries";
+import { getConfigEntries } from "../data/config_entries";
 import { domainToName } from "../data/integration";
-import { ValueChangedEvent, HomeAssistant } from "../types";
+import type { ValueChangedEvent, HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";

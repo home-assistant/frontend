@@ -1,13 +1,13 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
-import { ConfigEntry } from "./config_entries";
+import type { ConfigEntry } from "./config_entries";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
-import { RegistryEntry } from "./registry";
+import type { RegistryEntry } from "./registry";
 
 export {
   fetchDeviceRegistry,

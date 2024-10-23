@@ -1,14 +1,15 @@
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import {
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type {
   ComboBoxDataProviderCallback,
   ComboBoxDataProviderParams,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { LitElement, TemplateResult, css, html } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import "./ha-list-item";
 import "./ha-icon";

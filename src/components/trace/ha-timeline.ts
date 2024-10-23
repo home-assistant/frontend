@@ -1,5 +1,6 @@
 import { mdiCircleOutline } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { buttonLinkStyle } from "../../resources/styles";
 import "../ha-svg-icon";

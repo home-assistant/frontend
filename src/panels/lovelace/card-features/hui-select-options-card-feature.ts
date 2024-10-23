@@ -1,18 +1,19 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import { UNAVAILABLE } from "../../../data/entity";
-import { InputSelectEntity } from "../../../data/input_select";
-import { SelectEntity } from "../../../data/select";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { InputSelectEntity } from "../../../data/input_select";
+import type { SelectEntity } from "../../../data/select";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import { SelectOptionsCardFeatureConfig } from "./types";
+import type { SelectOptionsCardFeatureConfig } from "./types";
 
 export const supportsSelectOptionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

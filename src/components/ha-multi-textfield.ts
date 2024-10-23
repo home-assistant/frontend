@@ -1,5 +1,6 @@
 import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";

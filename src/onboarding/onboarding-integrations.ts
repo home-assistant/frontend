@@ -1,24 +1,19 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
-import { ConfigEntry, subscribeConfigEntries } from "../data/config_entries";
+import type { ConfigEntry } from "../data/config_entries";
+import { subscribeConfigEntries } from "../data/config_entries";
 import { subscribeConfigFlowInProgress } from "../data/config_flow";
 import { domainToName } from "../data/integration";
 import { scanUSBDevices } from "../data/usb";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 

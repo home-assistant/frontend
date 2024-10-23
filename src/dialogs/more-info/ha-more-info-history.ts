@@ -1,29 +1,29 @@
 import { startOfYesterday, subHours } from "date-fns";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
-import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
+import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
 import type { StatisticsChart } from "../../components/chart/statistics-chart";
+import type { HistoryResult } from "../../data/history";
 import {
-  HistoryResult,
   computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../data/history";
-import {
+import type {
   Statistics,
   StatisticsMetaData,
   StatisticsTypes,
-  fetchStatistics,
-  getStatisticMetadata,
 } from "../../data/recorder";
+import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 declare global {
   interface HASSDomEvents {

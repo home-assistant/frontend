@@ -1,15 +1,17 @@
 import "@material/mwc-button/mwc-button";
 import { mdiClose, mdiTuneVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
-import { VoiceSettingsDialogParams } from "./show-dialog-voice-settings";
+import type { VoiceSettingsDialogParams } from "./show-dialog-voice-settings";
 
 @customElement("dialog-voice-settings")
 class DialogVoiceSettings extends LitElement {

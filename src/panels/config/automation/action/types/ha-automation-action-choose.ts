@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import { consume } from "@lit-labs/context";
 import type { ActionDetail } from "@material/mwc-list";
 import {
@@ -11,14 +12,8 @@ import {
   mdiRenameBox,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { ensureArray } from "../../../../../common/array/ensure-array";
@@ -30,11 +25,14 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-sortable";
-import { Condition } from "../../../../../data/automation";
+import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-card";
+import "../../condition/ha-automation-condition";
+import type { Condition } from "../../../../../data/automation";
 import { describeCondition } from "../../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../../data/context";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import {
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type {
   Action,
   ChooseAction,
   ChooseActionChoice,
@@ -44,8 +42,8 @@ import {
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant, ItemPath } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
 
 const preventDefault = (ev) => ev.preventDefault();
 

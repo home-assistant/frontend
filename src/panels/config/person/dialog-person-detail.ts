@@ -1,5 +1,6 @@
 import { mdiPencil } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
@@ -12,26 +13,26 @@ import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { adminChangeUsername } from "../../../data/auth";
-import { PersonMutableParams } from "../../../data/person";
+import type { PersonMutableParams } from "../../../data/person";
+import type { User } from "../../../data/user";
 import {
   deleteUser,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
   updateUser,
-  User,
 } from "../../../data/user";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
 const includeDomains = ["device_tracker"];
 

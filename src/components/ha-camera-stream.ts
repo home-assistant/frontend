@@ -1,17 +1,11 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { CameraEntity } from "../data/camera";
 import {
-  CameraEntity,
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
@@ -19,7 +13,7 @@ import {
   STREAM_TYPE_HLS,
   STREAM_TYPE_WEB_RTC,
 } from "../data/camera";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
 

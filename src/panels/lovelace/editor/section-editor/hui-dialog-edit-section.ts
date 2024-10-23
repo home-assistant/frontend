@@ -1,14 +1,7 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -21,7 +14,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -34,7 +27,7 @@ import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 

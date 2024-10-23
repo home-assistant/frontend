@@ -1,13 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -16,18 +9,20 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
-import {
+import type {
   Attribute,
   Cluster,
-  fetchAttributesForCluster,
   ReadAttributeServiceData,
-  readAttributeValue,
   ZHADevice,
 } from "../../../../../data/zha";
+import {
+  fetchAttributesForCluster,
+  readAttributeValue,
+} from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { ItemSelectedEvent, SetAttributeServiceData } from "./types";
+import type { ItemSelectedEvent, SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {

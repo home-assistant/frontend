@@ -1,20 +1,18 @@
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
-import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
+import type {
+  HaFormDataContainer,
+  HaFormSchema,
+} from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
-import { ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
 import { debounce } from "../common/util/debounce";
 

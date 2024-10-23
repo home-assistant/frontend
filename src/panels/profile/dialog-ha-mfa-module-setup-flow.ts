@@ -1,17 +1,18 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import { autocompleteLoginFields } from "../../data/auth";
-import {
+import type {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 let instance = 0;
 

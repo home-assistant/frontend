@@ -1,6 +1,7 @@
 import { mdiClose } from "@mdi/js";
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -9,10 +10,10 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/search-input";
-import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
+import type { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
-import { HassioHardwareDialogParams } from "./show-dialog-hassio-hardware";
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioHardwareDialogParams } from "./show-dialog-hassio-hardware";
 
 const _filterDevices = memoizeOne(
   (

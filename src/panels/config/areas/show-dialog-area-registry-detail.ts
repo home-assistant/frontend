@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
+import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
 } from "../../../data/area_registry";

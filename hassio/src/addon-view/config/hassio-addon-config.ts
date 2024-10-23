@@ -1,16 +1,10 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -25,14 +19,16 @@ import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
-import {
+import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
+} from "../../../../src/data/hassio/addon";
+import {
   setHassioAddonOption,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";

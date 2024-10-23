@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { DemoConfig } from "../types";
+import type { DemoConfig } from "../types";
 
 export const demoLovelaceDescription: DemoConfig["description"] = (
   localize

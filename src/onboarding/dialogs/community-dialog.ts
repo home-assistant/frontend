@@ -3,7 +3,7 @@ import { mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-list-item";
 

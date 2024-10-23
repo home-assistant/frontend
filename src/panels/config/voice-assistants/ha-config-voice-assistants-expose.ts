@@ -6,19 +6,21 @@ import {
   mdiPlus,
   mdiPlusBoxMultiple,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
-import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import type { EntityFilter } from "../../../common/entity/entity_filter";
 import {
-  EntityFilter,
   generateFilter,
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
-import {
+import type {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
@@ -26,29 +28,23 @@ import {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
-import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
-import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { AlexaEntity } from "../../../data/alexa";
+import { fetchCloudAlexaEntities } from "../../../data/alexa";
+import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
-import {
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntries,
-} from "../../../data/entity_registry";
-import {
-  ExposeEntitySettings,
-  exposeEntities,
-  voiceAssistants,
-} from "../../../data/expose";
-import {
-  GoogleEntity,
-  fetchCloudGoogleEntities,
-} from "../../../data/google_assistant";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { getExtendedEntityRegistryEntries } from "../../../data/entity_registry";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import type { GoogleEntity } from "../../../data/google_assistant";
+import { fetchCloudGoogleEntities } from "../../../data/google_assistant";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant, Route } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";

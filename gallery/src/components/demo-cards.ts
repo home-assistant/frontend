@@ -3,7 +3,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 import "./demo-card";
 import type { DemoCardConfig } from "./demo-card";
 import "../ha-demo-options";

@@ -1,31 +1,25 @@
 import { mdiFolder, mdiPuzzle } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
-import { LocalizeFunc } from "../../../src/common/translations/localize";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-textfield";
 import "../../../src/components/ha-password-field";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
-import {
+import type {
   HassioBackupDetail,
   HassioFullBackupCreateParams,
   HassioPartialBackupCreateParams,
 } from "../../../src/data/hassio/backup";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { mdiHomeAssistant } from "../../../src/resources/home-assistant-logo-svg";
-import { HomeAssistant, TranslationDict } from "../../../src/types";
+import type { HomeAssistant, TranslationDict } from "../../../src/types";
 import "./supervisor-formfield-label";
 import type { HaTextField } from "../../../src/components/ha-textfield";
 

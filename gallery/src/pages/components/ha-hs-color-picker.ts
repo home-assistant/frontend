@@ -1,6 +1,7 @@
 import "../../../../src/components/ha-hs-color-picker";
 
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 
 import "../../../../src/components/ha-card";

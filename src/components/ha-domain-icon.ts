@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { domainIcon } from "../data/icons";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-icon";
 

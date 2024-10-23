@@ -1,10 +1,11 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
-import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-icon-button";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";

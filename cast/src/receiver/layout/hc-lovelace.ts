@@ -1,11 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
-import { Lovelace } from "../../../../src/panels/lovelace/types";
+import type { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
 
 (window as any).loadCardHelpers = () =>

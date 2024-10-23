@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export const documentationUrl = (hass: HomeAssistant, path: string) =>
   `https://${

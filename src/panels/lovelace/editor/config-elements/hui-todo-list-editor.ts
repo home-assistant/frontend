@@ -1,15 +1,16 @@
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-form/ha-form";
-import { HomeAssistant } from "../../../../types";
-import { TodoListCardConfig } from "../../cards/types";
-import { LovelaceCardEditor } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type { TodoListCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { SchemaUnion } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(

@@ -1,4 +1,4 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
@@ -7,9 +7,11 @@ import {
   mdiGrid,
   mdiListBoxOutline,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -26,7 +28,7 @@ import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "./ha-media-player-browse";
-import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
+import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("dialog-media-player-browse")

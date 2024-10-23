@@ -1,19 +1,14 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
@@ -23,10 +18,8 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import {
-  LovelaceViewConfig,
-  isStrategyView,
-} from "../../../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -38,11 +31,11 @@ import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
 import { getViewType } from "../../views/get-view-type";
 import { addView, deleteView, replaceView } from "../config-util";
-import { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
+import type { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
-import { EditViewDialogParams } from "./show-edit-view-dialog";
+import type { EditViewDialogParams } from "./show-edit-view-dialog";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 

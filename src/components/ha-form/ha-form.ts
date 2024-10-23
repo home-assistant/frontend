@@ -1,20 +1,13 @@
 /* eslint-disable lit/prefer-static-styles */
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  ReactiveElement,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),

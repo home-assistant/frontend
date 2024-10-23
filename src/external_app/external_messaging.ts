@@ -1,4 +1,4 @@
-import { AutomationConfig } from "../data/automation";
+import type { AutomationConfig } from "../data/automation";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 

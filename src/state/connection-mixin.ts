@@ -1,10 +1,8 @@
+import type { Auth, Connection, HassConfig } from "home-assistant-js-websocket";
 import {
-  Auth,
   callService,
-  Connection,
   ERR_CONNECTION_LOST,
   ERR_INVALID_AUTH,
-  HassConfig,
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
@@ -27,12 +25,12 @@ import {
 } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
+import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 

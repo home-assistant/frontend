@@ -1,7 +1,7 @@
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-code-editor";
 import "../ha-input-helper-text";

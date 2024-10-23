@@ -3,7 +3,7 @@ import { mdiFolderEdit } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { MediaPlayerItem } from "../../data/media-player";
+import type { MediaPlayerItem } from "../../data/media-player";
 import { isLocalMediaSourceContentId } from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
 import "../ha-svg-icon";

@@ -4,17 +4,15 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
-import { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import { HomeAssistant, ItemPath } from "../types";
-import {
-  DeviceRegistryEntry,
-  getDeviceIntegrationLookup,
-} from "./device_registry";
-import {
+import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import type { HomeAssistant, ItemPath } from "../types";
+import type { DeviceRegistryEntry } from "./device_registry";
+import { getDeviceIntegrationLookup } from "./device_registry";
+import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import { EntitySources } from "./entity_sources";
+import type { EntitySources } from "./entity_sources";
 
 export type Selector =
   | ActionSelector

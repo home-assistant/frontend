@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { Tag, UpdateTagParams } from "../../../data/tag";
+import type { Tag, UpdateTagParams } from "../../../data/tag";
 
 export interface TagDetailDialogParams {
   entry?: Tag;

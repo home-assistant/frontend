@@ -1,9 +1,10 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeGroupDomain, GroupEntity } from "../../data/group";
+import type { GroupEntity } from "../../data/group";
+import { computeGroupDomain } from "../../data/group";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**

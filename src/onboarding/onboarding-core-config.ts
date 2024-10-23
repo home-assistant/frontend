@@ -1,13 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
@@ -15,7 +8,8 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-circular-progress";
 import "../components/ha-country-picker";
-import { ConfigUpdateValues, saveCoreConfig } from "../data/core";
+import type { ConfigUpdateValues } from "../data/core";
+import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { HomeAssistant, ValueChangedEvent } from "../types";

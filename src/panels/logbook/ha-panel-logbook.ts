@@ -1,5 +1,6 @@
 import { mdiRefresh } from "@mdi/js";
-import { css, html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -16,7 +17,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
 
 @customElement("ha-panel-logbook")

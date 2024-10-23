@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { AssistPipelineSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { AssistPipelineSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-assist-pipeline-picker";
 
 @customElement("ha-selector-assist_pipeline")

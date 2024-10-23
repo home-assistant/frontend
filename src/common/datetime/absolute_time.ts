@@ -1,6 +1,6 @@
 import { isSameDay, isSameYear } from "date-fns";
-import { HassConfig } from "home-assistant-js-websocket";
-import { FrontendLocaleData } from "../../data/translation";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { FrontendLocaleData } from "../../data/translation";
 import {
   formatShortDateTime,
   formatShortDateTimeWithYear,

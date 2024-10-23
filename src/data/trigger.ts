@@ -22,7 +22,11 @@ import {
 } from "@mdi/js";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
-import { AutomationElementGroup, Trigger, TriggerList } from "./automation";
+import type {
+  AutomationElementGroup,
+  Trigger,
+  TriggerList,
+} from "./automation";
 
 export const TRIGGER_ICONS = {
   calendar: mdiCalendar,

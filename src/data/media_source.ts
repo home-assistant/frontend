@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
-import { MediaPlayerItem } from "./media-player";
+import type { HomeAssistant } from "../types";
+import type { MediaPlayerItem } from "./media-player";
 
 export interface ResolvedMediaSource {
   url: string;

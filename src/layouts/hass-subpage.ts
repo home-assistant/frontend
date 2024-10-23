@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyleScrollbar } from "../resources/styles";
 
 @customElement("hass-subpage")

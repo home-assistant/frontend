@@ -9,20 +9,24 @@ import {
   optional,
   string,
 } from "superstruct";
-import { HASSDomEvent, fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
-import { LovelacePictureElementEditor } from "../../../types";
-import {
+import type { LovelacePictureElementEditor } from "../../../types";
+import type {
   ConditionalElementConfig,
   LovelaceElementConfig,
 } from "../../../elements/types";
 import "../../conditions/ha-card-conditions-editor";
 import "../../hui-picture-elements-card-row-editor";
-import { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
-import { EditDetailElementEvent, SubElementEditorConfig } from "../../types";
+import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
+import type {
+  EditDetailElementEvent,
+  SubElementEditorConfig,
+} from "../../types";
 import "../../hui-sub-element-editor";
-import { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const conditionalElementConfigStruct = object({
   type: literal("conditional"),

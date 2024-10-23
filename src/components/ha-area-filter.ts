@@ -1,9 +1,10 @@
 import { mdiTextureBox } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { showAreaFilterDialog } from "../dialogs/area-filter/show-area-filter-dialog";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
 import "./ha-svg-icon";
 import "./ha-textfield";

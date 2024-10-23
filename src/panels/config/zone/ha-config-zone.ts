@@ -1,16 +1,9 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -29,10 +22,12 @@ import type {
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import {
+import type {
   HomeZoneMutableParams,
   Zone,
   ZoneMutableParams,
+} from "../../../data/zone";
+import {
   createZone,
   deleteZone,
   fetchZones,

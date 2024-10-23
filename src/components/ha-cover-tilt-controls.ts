@@ -1,16 +1,17 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { CoverEntity } from "../data/cover";
 import {
   canCloseTilt,
   canOpenTilt,
   canStopTilt,
-  CoverEntity,
   CoverEntityFeature,
 } from "../data/cover";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
 @customElement("ha-cover-tilt-controls")

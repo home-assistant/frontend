@@ -1,5 +1,6 @@
 import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
-import { css, html, LitElement, PropertyValues, svg } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";

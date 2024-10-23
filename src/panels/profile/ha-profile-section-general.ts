@@ -1,19 +1,18 @@
 import "@material/mwc-button";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
-import {
-  CoreFrontendUserData,
-  getOptimisticFrontendUserDataCollection,
-} from "../../data/frontend";
+import type { CoreFrontendUserData } from "../../data/frontend";
+import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
 import "./ha-force-narrow-row";

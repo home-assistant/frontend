@@ -8,15 +8,8 @@ import {
   mdiInformationOutline,
   mdiPlus,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -41,7 +34,7 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
-import { LovelaceCardConfig } from "../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import { TodoListEntityFeature, getTodoLists } from "../../data/todo";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -50,7 +43,7 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
 

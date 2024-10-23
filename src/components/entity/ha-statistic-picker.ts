@@ -1,26 +1,23 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import "@material/mwc-list/mwc-list-item";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import {
-  getStatisticIds,
-  getStatisticLabel,
-  StatisticsMetaData,
-} from "../../data/recorder";
-import { ValueChangedEvent, HomeAssistant } from "../../types";
+import type { StatisticsMetaData } from "../../data/recorder";
+import { getStatisticIds, getStatisticLabel } from "../../data/recorder";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-svg-icon";
 import "./state-badge";
-import {
-  fuzzyFilterSort,
-  ScorableTextItem,
-} from "../../common/string/filter/sequence-matching";
+import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 
 interface StatisticItem extends ScorableTextItem {
   id: string;

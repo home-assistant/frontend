@@ -5,12 +5,12 @@ import {
   differenceInHours,
   endOfDay,
 } from "date-fns";
-import {
+import type {
   Statistics,
   StatisticsMetaData,
   StatisticValue,
 } from "../../../src/data/recorder";
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 const generateMeanStatistics = (
   start: Date,

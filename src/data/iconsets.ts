@@ -1,7 +1,7 @@
 import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
-import { IconMeta } from "../types";
+import type { IconMeta } from "../types";
 
 export interface Icons {
   [key: string]: string;

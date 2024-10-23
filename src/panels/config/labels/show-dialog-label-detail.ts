@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
+import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
 } from "../../../data/label_registry";

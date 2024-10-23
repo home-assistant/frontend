@@ -1,10 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { Action, migrateAutomationAction } from "../../data/script";
-import { ActionSelector } from "../../data/selector";
+import type { Action } from "../../data/script";
+import { migrateAutomationAction } from "../../data/script";
+import type { ActionSelector } from "../../data/selector";
 import "../../panels/config/automation/action/ha-automation-action";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends LitElement {

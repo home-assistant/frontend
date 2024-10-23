@@ -21,7 +21,7 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
-import { UiAction } from "../../components/hui-action-editor";
+import type { UiAction } from "../../components/hui-action-editor";
 
 const TAP_ACTIONS: UiAction[] = ["navigate", "url", "perform-action", "none"];
 

@@ -1,7 +1,8 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiOpenInNew } from "@mdi/js";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -12,17 +13,20 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
 import "../../../components/ha-password-field";
 import "../../../components/ha-textfield";
-import {
+import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,
+} from "../../../data/application_credential";
+import {
   createApplicationCredential,
   fetchApplicationCredentialsConfig,
 } from "../../../data/application_credential";
-import { domainToName, IntegrationManifest } from "../../../data/integration";
+import type { IntegrationManifest } from "../../../data/integration";
+import { domainToName } from "../../../data/integration";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
 
 interface Domain {
   id: string;

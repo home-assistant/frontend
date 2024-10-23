@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
+import type { DeviceTrigger } from "../../data/device_automation";
 import {
-  DeviceTrigger,
   fetchDeviceTriggers,
   localizeDeviceAutomationTrigger,
 } from "../../data/device_automation";

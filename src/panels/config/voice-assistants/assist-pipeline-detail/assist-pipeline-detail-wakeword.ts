@@ -1,18 +1,13 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalizeKeys } from "../../../../common/translations/localize";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import { AssistPipeline } from "../../../../data/assist_pipeline";
-import { HomeAssistant } from "../../../../types";
-import { fetchWakeWordInfo, WakeWord } from "../../../../data/wake_word";
+import type { AssistPipeline } from "../../../../data/assist_pipeline";
+import type { HomeAssistant } from "../../../../types";
+import type { WakeWord } from "../../../../data/wake_word";
+import { fetchWakeWordInfo } from "../../../../data/wake_word";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { fireEvent } from "../../../../common/dom/fire_event";
 

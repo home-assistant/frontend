@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -11,8 +12,8 @@ import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import { isUnavailableState } from "../../../data/entity";
+import type { UpdateEntity } from "../../../data/update";
 import {
-  UpdateEntity,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,

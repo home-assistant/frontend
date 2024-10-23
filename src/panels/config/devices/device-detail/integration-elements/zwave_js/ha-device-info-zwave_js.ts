@@ -1,26 +1,18 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import {
-  ConfigEntry,
-  getConfigEntries,
-} from "../../../../../../data/config_entries";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { ConfigEntry } from "../../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { ZWaveJSNodeStatus } from "../../../../../../data/zwave_js";
 import {
   fetchZwaveNodeStatus,
   SecurityClass,
-  ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
+import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-info-zwave_js")
 export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {

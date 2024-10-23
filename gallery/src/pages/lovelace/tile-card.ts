@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";

@@ -1,5 +1,6 @@
 import { mdiAlertOutline } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -9,9 +10,10 @@ import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-button";
-import { HaTextField } from "../../components/ha-textfield";
-import { HomeAssistant } from "../../types";
-import { DialogBoxParams } from "./show-dialog-box";
+import "../../components/ha-textfield";
+import type { HaTextField } from "../../components/ha-textfield";
+import type { HomeAssistant } from "../../types";
+import type { DialogBoxParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {

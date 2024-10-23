@@ -1,10 +1,11 @@
-import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { afterNextRender } from "../common/util/render-status";
-import { FrontendLocaleData } from "../data/translation";
+import type { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 
 const getAngle = (value: number, min: number, max: number) => {

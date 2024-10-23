@@ -1,4 +1,4 @@
-import { ItemPath } from "../../types";
+import type { ItemPath } from "../../types";
 
 function findNestedItem(
   obj: any,

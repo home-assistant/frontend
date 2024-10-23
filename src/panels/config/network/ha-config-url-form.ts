@@ -1,12 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
@@ -16,7 +10,8 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
+import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 

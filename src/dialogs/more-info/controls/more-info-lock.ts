@@ -1,5 +1,6 @@
 import { mdiCheck } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -9,8 +10,8 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
+import type { LockEntity } from "../../../data/lock";
 import {
-  LockEntity,
   LockEntityFeature,
   callProtectedLockService,
   canOpen,

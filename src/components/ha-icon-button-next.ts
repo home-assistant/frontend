@@ -1,8 +1,9 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import { html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
 @customElement("ha-icon-button-next")

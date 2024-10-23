@@ -3,7 +3,7 @@ import {
   mdiGestureTapButton,
   mdiImageArea,
 } from "@mdi/js";
-import { HeaderFooter } from "./types";
+import type { HeaderFooter } from "./types";
 
 export const headerFooterElements: HeaderFooter[] = [
   { type: "graph", icon: mdiChartBellCurveCumulative },

@@ -17,16 +17,9 @@ import {
   mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -35,15 +28,16 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
-import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import {
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -64,30 +58,30 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
+import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
-  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
+import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
-  DataTableFilters,
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import type { ScriptEntity } from "../../../data/script";
 import {
-  ScriptEntity,
   deleteScript,
   fetchScriptFileConfig,
   getScriptStateConfig,
@@ -103,7 +97,7 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";

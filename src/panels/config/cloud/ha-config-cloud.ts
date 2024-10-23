@@ -1,11 +1,9 @@
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
-import { CloudStatus } from "../../../data/cloud";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
+import type { CloudStatus } from "../../../data/cloud";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
+import type { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
 import "./account/cloud-account";
 import "./login/cloud-login";
 

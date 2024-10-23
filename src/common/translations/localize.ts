@@ -1,7 +1,7 @@
 import type { IntlMessageFormat } from "intl-messageformat";
 import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
-import { Resources, TranslationDict } from "../../types";
+import type { Resources, TranslationDict } from "../../types";
 import { fireEvent } from "../dom/fire_event";
 
 // Exclude some patterns from key type checking for now

@@ -18,12 +18,14 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { Condition, Trigger, flattenTriggers } from "../../data/automation";
-import {
+import type { Condition, Trigger } from "../../data/automation";
+import { flattenTriggers } from "../../data/automation";
+import type {
   Action,
   ChooseAction,
   IfAction,
@@ -34,15 +36,15 @@ import {
   ServiceAction,
   WaitAction,
   WaitForTriggerAction,
-  getActionType,
 } from "../../data/script";
-import {
+import { getActionType } from "../../data/script";
+import type {
   ChooseActionTraceStep,
   ConditionTraceStep,
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";

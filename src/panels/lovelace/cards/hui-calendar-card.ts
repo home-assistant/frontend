@@ -1,23 +1,14 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import {
-  Calendar,
-  CalendarEvent,
-  fetchCalendarEvents,
-} from "../../../data/calendar";
+import type { Calendar, CalendarEvent } from "../../../data/calendar";
+import { fetchCalendarEvents } from "../../../data/calendar";
 import type {
   CalendarViewChanged,
   FullCalendarView,

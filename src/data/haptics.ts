@@ -2,7 +2,8 @@
  * Broadcast haptic feedback requests
  */
 
-import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import { fireEvent } from "../common/dom/fire_event";
 
 // Allowed types are from iOS HIG.
 // https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/#haptics

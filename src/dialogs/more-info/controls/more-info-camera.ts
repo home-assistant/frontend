@@ -1,7 +1,8 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-camera-stream";
-import { CameraEntity } from "../../../data/camera";
+import type { CameraEntity } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
 
 class MoreInfoCamera extends LitElement {

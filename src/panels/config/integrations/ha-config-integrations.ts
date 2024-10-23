@@ -1,22 +1,18 @@
-import { PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
-  ConfigEntry,
-  subscribeConfigEntries,
-} from "../../../data/config_entries";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { subscribeConfigEntries } from "../../../data/config_entries";
 import {
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-loading-screen";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 

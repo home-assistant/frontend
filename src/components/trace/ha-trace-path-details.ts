@@ -1,28 +1,22 @@
 import { dump } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import "../ha-code-editor";
 import "../ha-icon-button";
 import "./hat-logbook-note";
-import { LogbookEntry } from "../../data/logbook";
-import {
+import type { LogbookEntry } from "../../data/logbook";
+import type {
   ActionTraceStep,
   ChooseActionTraceStep,
-  getDataFromPath,
   TraceExtended,
 } from "../../data/trace";
+import { getDataFromPath } from "../../data/trace";
 import "../../panels/logbook/ha-logbook-renderer";
 import { traceTabStyles } from "./trace-tab-styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
 
 const TRACE_PATH_TABS = [

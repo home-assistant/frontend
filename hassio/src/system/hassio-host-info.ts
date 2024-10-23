@@ -1,7 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -22,18 +23,16 @@ import {
   rebootHost,
   shutdownHost,
 } from "../../../src/data/hassio/host";
-import {
-  fetchNetworkInfo,
-  NetworkInfo,
-} from "../../../src/data/hassio/network";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { NetworkInfo } from "../../../src/data/hassio/network";
+import { fetchNetworkInfo } from "../../../src/data/hassio/network";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 import {
   getValueInPercentage,
   roundWithOneDecimal,

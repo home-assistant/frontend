@@ -6,16 +6,8 @@ import {
   Tap,
   TouchMouseInput,
 } from "@egjs/hammerjs";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-  svg,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing, svg } from "lit";
 import {
   customElement,
   property,

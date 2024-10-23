@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircleCheck,
@@ -17,14 +17,8 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
@@ -41,19 +35,18 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import { AutomationClipboard } from "../../../../data/automation";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
   fullEntitiesContext,
   labelsContext,
 } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { FloorRegistryEntry } from "../../../../data/floor_registry";
-import { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { Action, NonConditionAction } from "../../../../data/script";
 import {
-  Action,
-  NonConditionAction,
   getActionType,
   migrateAutomationAction,
 } from "../../../../data/script";

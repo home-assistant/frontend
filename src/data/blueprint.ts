@@ -1,7 +1,7 @@
-import { HomeAssistant } from "../types";
-import { ManualAutomationConfig } from "./automation";
-import { ManualScriptConfig } from "./script";
-import { Selector } from "./selector";
+import type { HomeAssistant } from "../types";
+import type { ManualAutomationConfig } from "./automation";
+import type { ManualScriptConfig } from "./script";
+import type { Selector } from "./selector";
 
 export type BlueprintDomain = "automation" | "script";
 

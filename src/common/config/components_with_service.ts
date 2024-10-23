@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 /** Return an array of domains with the service. */
 export const componentsWithService = (

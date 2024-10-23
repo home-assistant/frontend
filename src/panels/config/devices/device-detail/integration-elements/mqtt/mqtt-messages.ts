@@ -1,10 +1,11 @@
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
-import { MQTTMessage } from "../../../../../../data/mqtt";
-import { HomeAssistant } from "../../../../../../types";
+import type { MQTTMessage } from "../../../../../../data/mqtt";
+import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {

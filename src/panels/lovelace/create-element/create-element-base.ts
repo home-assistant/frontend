@@ -1,23 +1,23 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
+import type {
   LovelaceSectionElement,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   isCustomType,
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { ErrorCardConfig } from "../cards/types";
-import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
-import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
-import {
+import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import type { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type {
   LovelaceBadge,
   LovelaceBadgeConstructor,
   LovelaceCard,

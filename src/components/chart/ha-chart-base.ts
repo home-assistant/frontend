@@ -5,20 +5,14 @@ import type {
   ChartOptions,
   TooltipModel,
 } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  nothing,
-  LitElement,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;

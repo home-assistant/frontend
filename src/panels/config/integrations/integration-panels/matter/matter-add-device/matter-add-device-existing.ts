@@ -5,8 +5,8 @@ import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-md-list";
-import { HomeAssistant } from "../../../../../../types";
-import { MatterAddDeviceStep } from "../dialog-matter-add-device";
+import type { HomeAssistant } from "../../../../../../types";
+import type { MatterAddDeviceStep } from "../dialog-matter-add-device";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-existing")

@@ -1,6 +1,7 @@
 import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { css, CSSResultGroup } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-list-item")

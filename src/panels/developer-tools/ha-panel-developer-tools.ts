@@ -1,7 +1,8 @@
 import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
@@ -10,7 +11,7 @@ import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")

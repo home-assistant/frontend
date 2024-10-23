@@ -1,14 +1,15 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
-import { HumidifierEntity } from "../../../data/humidifier";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import type { HumidifierEntity } from "../../../data/humidifier";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { TargetHumidityCardFeatureConfig } from "./types";
+import type { TargetHumidityCardFeatureConfig } from "./types";
 
 export const supportsTargetHumidityCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

@@ -1,5 +1,5 @@
 import { TimeScale } from "chart.js";
-import { TimeLineData } from "./const";
+import type { TimeLineData } from "./const";
 
 export class TimeLineScale extends TimeScale {
   static id = "timeline";

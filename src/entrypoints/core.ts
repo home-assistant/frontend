@@ -1,6 +1,5 @@
+import type { Auth, Connection } from "home-assistant-js-websocket";
 import {
-  Auth,
-  Connection,
   createConnection,
   ERR_INVALID_AUTH,
   getAuth,
@@ -15,7 +14,7 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
-import { WindowWithPreloads } from "../data/preloads";
+import type { WindowWithPreloads } from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeAreaRegistry } from "../data/ws-area_registry";

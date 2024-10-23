@@ -2,9 +2,10 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { AssistantSetupStyles } from "./styles";
+import "../../components/ha-area-picker";
 
 @customElement("ha-voice-assistant-setup-step-area")
 export class HaVoiceAssistantSetupStepArea extends LitElement {

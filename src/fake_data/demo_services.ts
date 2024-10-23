@@ -1,4 +1,4 @@
-import { HassServices } from "home-assistant-js-websocket";
+import type { HassServices } from "home-assistant-js-websocket";
 
 export const demoServices: HassServices = {
   homeassistant: {

@@ -1,5 +1,6 @@
 import "@material/mwc-button";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -8,11 +9,11 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import { Tag, UpdateTagParams } from "../../../data/tag";
-import { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { Tag, UpdateTagParams } from "../../../data/tag";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { TagDetailDialogParams } from "./show-dialog-tag-detail";
+import type { HomeAssistant } from "../../../types";
+import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
 const TAG_BASE = "https://www.home-assistant.io/tag/";
 

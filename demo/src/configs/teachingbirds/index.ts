@@ -1,4 +1,4 @@
-import { DemoConfig } from "../types";
+import type { DemoConfig } from "../types";
 import { demoEntitiesTeachingbirds } from "./entities";
 import { demoLovelaceTeachingbirds } from "./lovelace";
 import { demoThemeTeachingbirds } from "./theme";

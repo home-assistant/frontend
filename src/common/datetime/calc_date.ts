@@ -1,6 +1,7 @@
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
-import { HassConfig } from "home-assistant-js-websocket";
-import { FrontendLocaleData, TimeZone } from "../../data/translation";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
 
 const calcZonedDate = (
   date: Date,

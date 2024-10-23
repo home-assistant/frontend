@@ -1,5 +1,5 @@
-import { EntityFilter } from "../common/entity/entity_filter";
-import { HomeAssistant } from "../types";
+import type { EntityFilter } from "../common/entity/entity_filter";
+import type { HomeAssistant } from "../types";
 
 type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
 

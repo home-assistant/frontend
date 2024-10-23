@@ -1,13 +1,7 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -16,14 +10,15 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, ERROR_STATES } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import {
+import type {
   IntegrationLogInfo,
   IntegrationManifest,
-  LogSeverity,
 } from "../../../data/integration";
+import { LogSeverity } from "../../../data/integration";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";

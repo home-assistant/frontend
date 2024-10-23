@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -15,10 +9,12 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
 import type { HaCameraStream } from "../../../components/ha-camera-stream";
 import "../../../components/ha-circular-progress";
-import { CameraEntity, fetchThumbnailUrlWithCache } from "../../../data/camera";
+import type { CameraEntity } from "../../../data/camera";
+import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
-import { computeImageUrl, ImageEntity } from "../../../data/image";
-import { HomeAssistant } from "../../../types";
+import type { ImageEntity } from "../../../data/image";
+import { computeImageUrl } from "../../../data/image";
+import type { HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

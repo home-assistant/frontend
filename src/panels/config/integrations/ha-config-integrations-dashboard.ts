@@ -1,16 +1,10 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -32,16 +26,17 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
 import "../../../components/search-input-outlined";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
-import {
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type {
   IntegrationLogInfo,
   IntegrationManifest,
+} from "../../../data/integration";
+import {
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
@@ -66,7 +61,7 @@ import { getStripDiacriticsFn } from "../../../util/fuse";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
-import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-disabled-config-entry-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";

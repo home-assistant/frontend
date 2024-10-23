@@ -1,15 +1,14 @@
 /* eslint-disable no-console */
-import { PropertyValueMap, ReactiveElement } from "lit";
-import { HASSDomEvent } from "../common/dom/fire_event";
+import type { PropertyValueMap, ReactiveElement } from "lit";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
-import {
-  closeDialog,
+import type {
   DialogClosedParams,
   DialogState,
-  showDialog,
 } from "../dialogs/make-dialog-manager";
-import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
-import { Constructor } from "../types";
+import { closeDialog, showDialog } from "../dialogs/make-dialog-manager";
+import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
+import type { Constructor } from "../types";
 
 const DEBUG = false;
 

@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -21,7 +22,8 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
-import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
+import type { ConfigUpdateValues } from "../../../data/core";
+import { saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";

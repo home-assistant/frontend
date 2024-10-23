@@ -1,27 +1,20 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
-import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
+import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
 import {
   computeDeviceName,
-  DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { HomeAssistant } from "../../types";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import { FlowConfig } from "./show-dialog-data-entry-flow";
+import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";

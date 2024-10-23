@@ -1,19 +1,13 @@
 /* eslint-disable no-console */
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import type { WebRtcAnswer } from "../data/camera";
 import {
   fetchWebRtcClientConfiguration,
   handleWebRtcOffer,
-  WebRtcAnswer,
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
