@@ -47,9 +47,9 @@ class MoreInfoUpdate extends LitElement {
     return html`
       ${this.stateObj.attributes.in_progress
         ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-          this.stateObj.attributes.update_percentage !== null
+          typeof this.stateObj.attributes.in_progress === "number"
           ? html`<mwc-linear-progress
-              .progress=${this.stateObj.attributes.update_percentage / 100}
+              .progress=${this.stateObj.attributes.in_progress / 100}
               buffer=""
             ></mwc-linear-progress>`
           : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`

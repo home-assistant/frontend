@@ -24,13 +24,12 @@ export enum UpdateEntityFeature {
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   auto_update: boolean | null;
   installed_version: string | null;
-  in_progress: boolean;
+  in_progress: boolean | number;
   latest_version: string | null;
   release_summary: string | null;
   release_url: string | null;
   skipped_version: string | null;
   title: string | null;
-  update_percentage: number | null;
 }
 
 export interface UpdateEntity extends HassEntityBase {
@@ -39,7 +38,7 @@ export interface UpdateEntity extends HassEntityBase {
 
 export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
-  entity.attributes.update_percentage !== null;
+  typeof entity.attributes.in_progress === "number";
 
 export const updateCanInstall = (
   entity: UpdateEntity,
@@ -50,7 +49,7 @@ export const updateCanInstall = (
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
-  !!entity.attributes.in_progress;
+  updateUsesProgress(entity) || !!entity.attributes.in_progress;
 
 export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<string | null>({
@@ -184,10 +183,10 @@ export const computeUpdateStateDisplay = (
     if (updateIsInstalling(stateObj)) {
       const supportsProgress =
         supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-        attributes.update_percentage !== null;
+        typeof attributes.in_progress === "number";
       if (supportsProgress) {
         return hass.localize("ui.card.update.installing_with_progress", {
-          progress: attributes.update_percentage,
+          progress: attributes.in_progress as number,
         });
       }
       return hass.localize("ui.card.update.installing");
