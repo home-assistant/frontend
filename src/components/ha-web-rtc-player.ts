@@ -192,12 +192,13 @@ class HaWebRtcPlayer extends LitElement {
 
     let candidates = "";
 
-    if (clientConfig.getCandidatesUpfront) {
+    if (this._clientConfig?.getCandidatesUpfront) {
       await new Promise<void>((resolve) => {
         this._peerConnection!.onicegatheringstatechange = (ev: Event) => {
           const iceGatheringState = (ev.target as RTCPeerConnection)
             .iceGatheringState;
           if (iceGatheringState === "complete") {
+            this._peerConnection!.onicegatheringstatechange = null;
             resolve();
           }
 
