@@ -1,4 +1,4 @@
-import { Panels } from "../types";
+import type { Panels } from "../types";
 
 export const demoPanels: Panels = {
   lovelace: {

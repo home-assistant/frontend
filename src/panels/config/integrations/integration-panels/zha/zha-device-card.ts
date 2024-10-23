@@ -1,5 +1,6 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -11,17 +12,17 @@ import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import {
-  EntityRegistryEntry,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import { ZHADevice } from "../../../../../data/zha";
+import type { ZHADevice } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
+import type { HomeAssistant } from "../../../../../types";
+import type { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
 import { getIeeeTail } from "./functions";
 
 @customElement("zha-device-card")

@@ -1,13 +1,14 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
-import { EntityConfig } from "../entity-rows/types";
-import { LovelaceHeaderFooter } from "../types";
-import { ButtonsHeaderFooterConfig } from "./types";
+import type { EntityConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooter } from "../types";
+import type { ButtonsHeaderFooterConfig } from "./types";
 
 @customElement("hui-buttons-header-footer")
 export class HuiButtonsHeaderFooter

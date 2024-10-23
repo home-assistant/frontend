@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -7,12 +8,12 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { IFRAME_SANDBOX } from "../../../util/iframe";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceLayoutOptions,
 } from "../types";
-import { IframeCardConfig } from "./types";
+import type { IframeCardConfig } from "./types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {

@@ -1,5 +1,5 @@
 import { formatDuration } from "../common/datetime/duration";
-import { FrontendLocaleData } from "./translation";
+import type { FrontendLocaleData } from "./translation";
 
 export const STATE_ATTRIBUTES = [
   "entity_id",

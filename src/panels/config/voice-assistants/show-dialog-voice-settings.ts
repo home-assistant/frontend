@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
-import { ExposeEntitySettings } from "../../../data/expose";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { ExposeEntitySettings } from "../../../data/expose";
 
 export interface VoiceSettingsDialogParams {
   entityId: string;

@@ -1,14 +1,17 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
+import type { HomeAssistant } from "../../../../../types";
+import type { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 
 @customElement("dialog-matter-ping-node")
 class DialogMatterPingNode extends LitElement {

@@ -1,12 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -14,16 +8,12 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import {
-  Cluster,
-  Command,
-  fetchCommandsForCluster,
-  ZHADevice,
-} from "../../../../../data/zha";
+import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
+import { fetchCommandsForCluster } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { IssueCommandServiceData } from "./types";
+import type { IssueCommandServiceData } from "./types";
 
 export class ZHAClusterCommands extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;

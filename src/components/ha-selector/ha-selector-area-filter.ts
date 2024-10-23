@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { AreaFilterSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-area-filter";
 
 @customElement("ha-selector-area_filter")

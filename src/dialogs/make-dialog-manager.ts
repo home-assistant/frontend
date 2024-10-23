@@ -1,6 +1,6 @@
-import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
-import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
+import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { nextRender } from "../common/util/render-status";

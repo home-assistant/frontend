@@ -6,13 +6,14 @@ import type {
 } from "@codemirror/autocomplete";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { HassEntities } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon";
 
 declare global {
@@ -59,6 +60,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _value = "";
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
   private _iconList?: Completion[];

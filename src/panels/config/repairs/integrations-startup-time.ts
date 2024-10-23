@@ -1,21 +1,17 @@
 import "@material/mwc-list/mwc-list";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
+import type {
+  IntegrationManifest,
+  IntegrationSetup,
+} from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifests,
   fetchIntegrationSetups,
-  IntegrationManifest,
-  IntegrationSetup,
 } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";

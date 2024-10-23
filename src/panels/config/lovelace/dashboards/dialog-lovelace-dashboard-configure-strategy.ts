@@ -1,14 +1,15 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
-import { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
+import type { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "../../../lovelace/editor/dashboard-strategy-editor/hui-dashboard-strategy-element-editor";
-import { LovelaceDashboardConfigureStrategyDialogParams } from "./show-dialog-lovelace-dashboard-configure-strategy";
+import type { LovelaceDashboardConfigureStrategyDialogParams } from "./show-dialog-lovelace-dashboard-configure-strategy";
 
 @customElement("dialog-lovelace-dashboard-configure-strategy")
 export class DialogLovelaceDashboardDetail extends LitElement {

@@ -6,7 +6,8 @@ import {
   mdiRefresh,
   mdiClose,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -16,18 +17,20 @@ import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-md-list";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-md-list-item";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-next";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../data/hassio/common";
+import type { HassioHostInfo } from "../../data/hassio/host";
 import {
-  HassioHostInfo,
   fetchHassioHostInfo,
   rebootHost,
   shutdownHost,
 } from "../../data/hassio/host";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import {
   showAlertDialog,

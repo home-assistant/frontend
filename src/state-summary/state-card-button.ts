@@ -1,12 +1,13 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, html, LitElement } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { UNAVAILABLE } from "../data/entity";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-button")
 class StateCardButton extends LitElement {

@@ -1,4 +1,5 @@
-import { Remote, wrap } from "comlink";
+import type { Remote } from "comlink";
+import { wrap } from "comlink";
 import type { Api } from "./markdown-worker";
 
 type RenderMarkdownType = Api["renderMarkdown"];

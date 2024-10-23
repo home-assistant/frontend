@@ -9,7 +9,8 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -21,13 +22,14 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import {
-  EntityRegistryDisplayEntry,
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import { VacuumEntity, VacuumEntityFeature } from "../../../data/vacuum";
-import { HomeAssistant } from "../../../types";
+import type { VacuumEntity } from "../../../data/vacuum";
+import { VacuumEntityFeature } from "../../../data/vacuum";
+import type { HomeAssistant } from "../../../types";
 
 interface VacuumCommand {
   translationKey: string;

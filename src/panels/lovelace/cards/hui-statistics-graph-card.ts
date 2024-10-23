@@ -1,29 +1,25 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
-import {
-  fetchStatistics,
-  getDisplayUnit,
-  getStatisticMetadata,
+import type {
   Statistics,
   StatisticsMetaData,
   StatisticType,
 } from "../../../data/recorder";
-import { HomeAssistant } from "../../../types";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+} from "../../../data/recorder";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceCard } from "../types";
-import { StatisticsGraphCardConfig } from "./types";
+import type { LovelaceCard } from "../types";
+import type { StatisticsGraphCardConfig } from "./types";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
 

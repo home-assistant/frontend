@@ -13,8 +13,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
-import { LovelacePictureElementEditor } from "../../../types";
-import { StateIconElementConfig } from "../../../elements/types";
+import type { LovelacePictureElementEditor } from "../../../types";
+import type { StateIconElementConfig } from "../../../elements/types";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const stateIconElementConfigStruct = object({

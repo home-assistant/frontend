@@ -1,9 +1,10 @@
 import { mdiRefresh } from "@mdi/js";
 import "@material/mwc-list/mwc-list";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
@@ -11,13 +12,13 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import { domainToName } from "../../../data/integration";
+import type { LoggedError } from "../../../data/system_log";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
   isCustomIntegrationError,
-  LoggedError,
 } from "../../../data/system_log";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 

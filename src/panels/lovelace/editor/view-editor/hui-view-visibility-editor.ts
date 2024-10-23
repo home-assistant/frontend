@@ -1,25 +1,21 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import { HaSwitch } from "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/user/ha-user-badge";
 import "../../../../components/ha-list-item";
-import {
+import "../../../../components/ha-switch";
+import type {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../../data/lovelace/config/view";
-import { User, fetchUsers } from "../../../../data/user";
-import { HomeAssistant } from "../../../../types";
+import type { User } from "../../../../data/user";
+import { fetchUsers } from "../../../../data/user";
+import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {

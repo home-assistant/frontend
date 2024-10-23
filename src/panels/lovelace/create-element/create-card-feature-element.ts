@@ -24,7 +24,7 @@ import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 
-import { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import {
   createLovelaceElement,
   getLovelaceElementClass,

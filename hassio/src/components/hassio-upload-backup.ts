@@ -1,13 +1,15 @@
 import { mdiFolderUpload } from "@mdi/js";
-import { html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-circular-progress";
 import "../../../src/components/ha-file-upload";
-import { HassioBackup, uploadBackup } from "../../../src/data/hassio/backup";
+import type { HassioBackup } from "../../../src/data/hassio/backup";
+import { uploadBackup } from "../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 
 declare global {
   interface HASSDomEvents {

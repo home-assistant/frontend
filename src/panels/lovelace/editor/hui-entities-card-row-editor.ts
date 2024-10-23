@@ -1,5 +1,6 @@
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -8,8 +9,8 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../types";
-import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
 declare global {
   interface HASSDomEvents {

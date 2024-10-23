@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -15,7 +9,7 @@ import {
 } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
-import {
+import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
@@ -26,7 +20,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
-import { ChartResizeOptions } from "./ha-chart-base";
+import type { ChartResizeOptions } from "./ha-chart-base";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 

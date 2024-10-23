@@ -1,5 +1,6 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -9,13 +10,10 @@ import {
   numberFormatToLocale,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
-import { LineChartEntity, LineChartState } from "../../data/history";
-import { HomeAssistant } from "../../types";
-import {
-  ChartResizeOptions,
-  HaChartBase,
-  MIN_TIME_BETWEEN_UPDATES,
-} from "./ha-chart-base";
+import type { LineChartEntity, LineChartState } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
+import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
 const safeParseFloat = (value) => {

@@ -1,10 +1,11 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
   SortingChangedEvent,
@@ -13,8 +14,8 @@ import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
+import type { ApplicationCredential } from "../../../data/application_credential";
 import {
-  ApplicationCredential,
   deleteApplicationCredential,
   fetchApplicationCredentials,
 } from "../../../data/application_credential";
@@ -25,7 +26,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
 import { storage } from "../../../common/decorators/storage";

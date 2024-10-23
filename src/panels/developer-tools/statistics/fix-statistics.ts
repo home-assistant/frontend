@@ -1,4 +1,4 @@
-import { StatisticsValidationResult } from "../../../data/recorder";
+import type { StatisticsValidationResult } from "../../../data/recorder";
 import { showFixStatisticsDialog } from "./show-dialog-statistics-fix";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 

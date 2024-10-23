@@ -1,11 +1,12 @@
-import { html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import {
+import type {
   PipelineRun,
   PipelineRunEvent,
-  processEvent,
 } from "../../../../data/assist_pipeline";
+import { processEvent } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import "./assist-render-pipeline-run";
 

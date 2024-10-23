@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { TTSVoiceSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { TTSVoiceSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-tts-voice-picker";
 
 @customElement("ha-selector-tts_voice")

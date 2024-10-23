@@ -1,5 +1,6 @@
-import { TodoItem, TodoItemStatus } from "../../../src/data/todo";
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import type { TodoItem } from "../../../src/data/todo";
+import { TodoItemStatus } from "../../../src/data/todo";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockTodo = (hass: MockHomeAssistant) => {
   hass.mockWS("todo/item/list", () => ({

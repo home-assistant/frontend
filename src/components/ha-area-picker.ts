@@ -1,29 +1,26 @@
 import { mdiTextureBox } from "@mdi/js";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import {
-  ScorableTextItem,
-  fuzzyFilterSort,
-} from "../common/string/filter/sequence-matching";
-import {
-  AreaRegistryEntry,
-  createAreaRegistryEntry,
-} from "../data/area_registry";
-import {
+import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
+import type { AreaRegistryEntry } from "../data/area_registry";
+import { createAreaRegistryEntry } from "../data/area_registry";
+import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-  getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
-import { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";

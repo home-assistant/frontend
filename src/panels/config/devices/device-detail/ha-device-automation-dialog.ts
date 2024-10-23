@@ -1,31 +1,36 @@
+import "@material/mwc-list/mwc-list";
 import {
   mdiAbTesting,
   mdiGestureTap,
   mdiPencilOutline,
   mdiRoomService,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import {
-  AutomationConfig,
-  showAutomationEditor,
-} from "../../../../data/automation";
-import {
+import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list-item";
+import type { AutomationConfig } from "../../../../data/automation";
+import { showAutomationEditor } from "../../../../data/automation";
+import type {
   DeviceAction,
   DeviceCondition,
   DeviceTrigger,
+} from "../../../../data/device_automation";
+import {
   fetchDeviceActions,
   fetchDeviceConditions,
   fetchDeviceTriggers,
   sortDeviceAutomations,
 } from "../../../../data/device_automation";
-import { ScriptConfig, showScriptEditor } from "../../../../data/script";
+import type { ScriptConfig } from "../../../../data/script";
+import { showScriptEditor } from "../../../../data/script";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
+import type { HomeAssistant } from "../../../../types";
+import type { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {

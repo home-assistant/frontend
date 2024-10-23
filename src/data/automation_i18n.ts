@@ -1,4 +1,4 @@
-import { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import {
@@ -10,15 +10,14 @@ import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { HomeAssistant } from "../types";
-import { Condition, ForDict, Trigger } from "./automation";
+import type { Condition, ForDict, Trigger } from "./automation";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
-  DeviceCondition,
-  DeviceTrigger,
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { EntityRegistryEntry } from "./entity_registry";
-import { FrontendLocaleData } from "./translation";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { FrontendLocaleData } from "./translation";
 import {
   formatListWithAnds,
   formatListWithOrs,

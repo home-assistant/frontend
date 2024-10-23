@@ -1,4 +1,4 @@
-import { CustomIcon } from "./custom_icons";
+import type { CustomIcon } from "./custom_icons";
 
 interface CustomIconsetsWindow {
   customIconsets?: { [key: string]: (name: string) => Promise<CustomIcon> };

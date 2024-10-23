@@ -10,7 +10,8 @@ import {
   isFirstDayOfMonth,
   isLastDayOfMonth,
 } from "date-fns";
-import { Collection, getCollection } from "home-assistant-js-websocket";
+import type { Collection } from "home-assistant-js-websocket";
+import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
@@ -19,15 +20,15 @@ import {
 } from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
-import { HomeAssistant } from "../types";
-import { ConfigEntry, getConfigEntries } from "./config_entries";
-import {
-  fetchStatistics,
-  getStatisticMetadata,
+import type { HomeAssistant } from "../types";
+import type { ConfigEntry } from "./config_entries";
+import { getConfigEntries } from "./config_entries";
+import type {
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "./recorder";
+import { fetchStatistics, getStatisticMetadata } from "./recorder";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 

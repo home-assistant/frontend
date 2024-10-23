@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon";
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 
 @customElement("hui-weblink-row")
 class HuiWeblinkRow extends LitElement implements LovelaceRow {

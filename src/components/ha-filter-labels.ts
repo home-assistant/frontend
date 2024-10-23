@@ -1,17 +1,17 @@
-import { SelectedDetail } from "@material/mwc-list";
+import "@material/mwc-list/mwc-list";
+import type { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
-import {
-  LabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../data/label_registry";
+import type { LabelRegistryEntry } from "../data/label_registry";
+import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -19,6 +19,8 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-label";
+import "./ha-icon-button";
+import "./ha-list-item";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {

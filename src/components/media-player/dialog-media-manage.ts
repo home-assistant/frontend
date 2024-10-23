@@ -2,15 +2,14 @@ import { animate } from "@lit-labs/motion";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDelete } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import {
-  MediaClassBrowserSettings,
-  MediaPlayerItem,
-} from "../../data/media-player";
+import type { MediaPlayerItem } from "../../data/media-player";
+import { MediaClassBrowserSettings } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   removeLocalMedia,

@@ -1,12 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -15,27 +9,27 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
+import type { StatisticsMetaData } from "../../../data/recorder";
 import {
-  StatisticsMetaData,
   fetchStatistic,
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../data/recorder";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
   LovelaceLayoutOptions,
 } from "../types";
-import { HuiErrorCard } from "./hui-error-card";
-import { EntityCardConfig, StatisticCardConfig } from "./types";
+import type { HuiErrorCard } from "./hui-error-card";
+import type { EntityCardConfig, StatisticCardConfig } from "./types";
 
 @customElement("hui-statistic-card")
 export class HuiStatisticCard extends LitElement implements LovelaceCard {

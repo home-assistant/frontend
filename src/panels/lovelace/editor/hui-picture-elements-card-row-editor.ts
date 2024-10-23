@@ -1,17 +1,18 @@
 import deepClone from "deep-clone-simple";
 import { mdiClose, mdiPencil, mdiContentDuplicate } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { getElementStubConfig } from "./get-element-stub-config";
-import {
+import type {
   ConditionalElementConfig,
   IconElementConfig,
   ImageElementConfig,

@@ -1,17 +1,16 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-ansi-to-html";
 import "../../../../src/components/ha-card";
-import {
-  fetchHassioAddonLogs,
-  HassioAddonDetails,
-} from "../../../../src/data/hassio/addon";
+import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { fetchHassioAddonLogs } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-logs")

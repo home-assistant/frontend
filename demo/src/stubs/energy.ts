@@ -1,11 +1,11 @@
 import { format, startOfToday, startOfTomorrow } from "date-fns";
-import {
+import type {
   EnergyInfo,
   EnergyPreferences,
   EnergySolarForecasts,
   FossilEnergyConsumption,
 } from "../../../src/data/energy";
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockEnergy = (hass: MockHomeAssistant) => {
   hass.mockWS(

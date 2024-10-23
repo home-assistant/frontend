@@ -1,14 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiRefresh, mdiDownload } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
@@ -26,7 +20,7 @@ import {
   fetchHassioLogs,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { debounce } from "../../../common/util/debounce";
 import { fileDownload } from "../../../util/file_download";
 

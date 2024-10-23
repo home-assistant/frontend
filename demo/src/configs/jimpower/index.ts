@@ -1,4 +1,4 @@
-import { DemoConfig } from "../types";
+import type { DemoConfig } from "../types";
 import { demoEntitiesJimpower } from "./entities";
 import { demoLovelaceJimpower } from "./lovelace";
 import { demoThemeJimpower } from "./theme";

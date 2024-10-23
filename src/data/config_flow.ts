@@ -1,9 +1,14 @@
-import { Connection, getCollection } from "home-assistant-js-websocket";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { Connection } from "home-assistant-js-websocket";
+import { getCollection } from "home-assistant-js-websocket";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
-import { HomeAssistant } from "../types";
-import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
-import { domainToName, IntegrationType } from "./integration";
+import type { HomeAssistant } from "../types";
+import type {
+  DataEntryFlowProgress,
+  DataEntryFlowStep,
+} from "./data_entry_flow";
+import type { IntegrationType } from "./integration";
+import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
   "bluetooth",

@@ -4,7 +4,7 @@ import { any, array, assert, literal, object, optional } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../../types";
-import {
+import type {
   AndCondition,
   Condition,
   StateCondition,

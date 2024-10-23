@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 /** Return if a component is loaded. */
 export const isComponentLoaded = (

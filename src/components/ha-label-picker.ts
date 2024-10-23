@@ -1,29 +1,28 @@
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import {
-  ScorableTextItem,
-  fuzzyFilterSort,
-} from "../common/string/filter/sequence-matching";
-import {
+import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
+import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-  getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
-import { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import type { LabelRegistryEntry } from "../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";

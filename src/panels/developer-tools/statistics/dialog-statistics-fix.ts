@@ -1,12 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-circular-progress";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
 import { clearStatistics, getStatisticLabel } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";

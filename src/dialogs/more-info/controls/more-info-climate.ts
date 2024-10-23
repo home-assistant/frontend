@@ -6,14 +6,8 @@ import {
   mdiTuneVariant,
   mdiWaterPercent,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -24,8 +18,8 @@ import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
+import type { ClimateEntity } from "../../../data/climate";
 import {
-  ClimateEntity,
   ClimateEntityFeature,
   climateHvacModeIcon,
   compareClimateHvacModes,
@@ -33,7 +27,7 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 

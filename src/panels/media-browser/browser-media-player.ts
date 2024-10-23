@@ -1,11 +1,13 @@
-import {
-  BROWSER_PLAYER,
+import type {
   MediaPlayerEntity,
-  MediaPlayerEntityFeature,
   MediaPlayerItem,
 } from "../../data/media-player";
-import { ResolvedMediaSource } from "../../data/media_source";
-import { HomeAssistant } from "../../types";
+import {
+  BROWSER_PLAYER,
+  MediaPlayerEntityFeature,
+} from "../../data/media-player";
+import type { ResolvedMediaSource } from "../../data/media_source";
+import type { HomeAssistant } from "../../types";
 
 export const ERR_UNSUPPORTED_MEDIA = "Unsupported Media";
 

@@ -1,11 +1,5 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -19,16 +13,16 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { createAuthForUser } from "../../../data/auth";
+import type { User } from "../../../data/user";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
-  User,
   createUser,
   deleteUser,
 } from "../../../data/user";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { AddUserDialogParams } from "./show-dialog-add-user";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { AddUserDialogParams } from "./show-dialog-add-user";
 import "../../../components/ha-password-field";
 
 @customElement("dialog-add-user")

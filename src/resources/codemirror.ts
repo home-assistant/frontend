@@ -8,7 +8,8 @@ import {
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { Compartment } from "@codemirror/state";
-import { EditorView, KeyBinding } from "@codemirror/view";
+import type { KeyBinding } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 
 export { autocompletion } from "@codemirror/autocomplete";

@@ -1,7 +1,7 @@
 import { stringCompare } from "../common/string/compare";
-import { HomeAssistant } from "../types";
-import { AreaRegistryEntry } from "./area_registry";
-import { RegistryEntry } from "./registry";
+import type { HomeAssistant } from "../types";
+import type { AreaRegistryEntry } from "./area_registry";
+import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
 

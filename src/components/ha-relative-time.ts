@@ -1,4 +1,5 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { parseISO } from "date-fns";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../common/datetime/relative_time";

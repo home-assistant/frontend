@@ -1,16 +1,14 @@
-import {
+import type {
   LovelaceConfig,
   LovelaceRawConfig,
-  isStrategyDashboard,
 } from "../../../data/lovelace/config/types";
-import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import {
-  LovelaceViewConfig,
-  isStrategyView,
-} from "../../../data/lovelace/config/view";
-import { AsyncReturnType, HomeAssistant } from "../../../types";
+import { isStrategyDashboard } from "../../../data/lovelace/config/types";
+import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../data/lovelace/config/view";
+import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
-import {
+import type {
   LovelaceDashboardStrategy,
   LovelaceSectionStrategy,
   LovelaceStrategy,

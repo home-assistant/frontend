@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
-import { IntegrationType } from "./integration";
+import type { HomeAssistant } from "../types";
+import type { IntegrationType } from "./integration";
 
 export type IotStandards = "zwave" | "zigbee" | "homekit" | "matter";
 

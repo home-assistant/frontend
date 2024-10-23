@@ -1,5 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 export const loadAppDialog = () => import("./app-dialog");
 

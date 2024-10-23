@@ -1,7 +1,9 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-camera-stream";
-import { computeImageUrl, ImageEntity } from "../../../data/image";
+import type { ImageEntity } from "../../../data/image";
+import { computeImageUrl } from "../../../data/image";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-image")

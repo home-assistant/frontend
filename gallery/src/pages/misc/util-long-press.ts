@@ -1,8 +1,9 @@
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import { ActionHandlerEvent } from "../../../../src/data/lovelace/action_handler";
+import type { ActionHandlerEvent } from "../../../../src/data/lovelace/action_handler";
 import { actionHandler } from "../../../../src/panels/lovelace/common/directives/action-handler-directive";
 
 @customElement("demo-misc-util-long-press")

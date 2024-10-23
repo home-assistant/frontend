@@ -10,7 +10,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 
 export enum UpdateEntityFeature {

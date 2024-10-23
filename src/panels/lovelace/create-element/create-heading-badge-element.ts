@@ -4,7 +4,7 @@ import {
   createLovelaceElement,
   getLovelaceElementClass,
 } from "./create-element-base";
-import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 const ALWAYS_LOADED_TYPES = new Set(["error", "entity"]);
 

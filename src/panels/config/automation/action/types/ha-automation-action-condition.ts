@@ -8,7 +8,7 @@ import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
 import { CONDITION_ICONS } from "../../../../../data/condition";
-import { Entries, HomeAssistant } from "../../../../../types";
+import type { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type { ActionElement } from "../ha-automation-action-row";
 

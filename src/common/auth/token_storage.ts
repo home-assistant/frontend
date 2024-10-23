@@ -1,4 +1,4 @@
-import { AuthData } from "home-assistant-js-websocket";
+import type { AuthData } from "home-assistant-js-websocket";
 import { extractSearchParam } from "../url/search-params";
 
 const storage = window.localStorage || {};

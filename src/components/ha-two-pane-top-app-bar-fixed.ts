@@ -3,7 +3,7 @@ import {
   BaseElement,
 } from "@material/mwc-base/base-element";
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
-import { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
+import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";

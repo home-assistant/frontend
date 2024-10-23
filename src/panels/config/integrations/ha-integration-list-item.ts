@@ -1,16 +1,17 @@
-import {
-  GraphicType,
-  ListItemBase,
-} from "@material/mwc-list/mwc-list-item-base";
+import type { GraphicType } from "@material/mwc-list/mwc-list-item-base";
+import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
-import { css, CSSResultGroup, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { domainToName } from "../../../data/integration";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { IntegrationListItem } from "./dialog-add-integration";
+import type { IntegrationListItem } from "./dialog-add-integration";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends ListItemBase {

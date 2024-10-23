@@ -1,7 +1,8 @@
-import { Connection, createCollection } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
+import type { Connection } from "home-assistant-js-websocket";
+import { createCollection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
 export interface CategoryRegistryEntry {

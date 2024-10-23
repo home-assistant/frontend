@@ -1,7 +1,8 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
@@ -9,7 +10,7 @@ import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -20,7 +21,7 @@ import { computeBadges } from "../../common/generate-lovelace-config";
 import "../card-editor/hui-entity-picker-table";
 import { findLovelaceContainer } from "../lovelace-path";
 import "./hui-badge-picker";
-import { CreateBadgeDialogParams } from "./show-create-badge-dialog";
+import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
 import { showEditBadgeDialog } from "./show-edit-badge-dialog";
 import { showSuggestBadgeDialog } from "./show-suggest-badge-dialog";
 

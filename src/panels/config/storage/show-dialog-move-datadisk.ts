@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { HassioHostInfo } from "../../../data/hassio/host";
+import type { HassioHostInfo } from "../../../data/hassio/host";
 
 export interface MoveDatadiskDialogParams {
   hostInfo: HassioHostInfo;

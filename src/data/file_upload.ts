@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export const uploadFile = async (hass: HomeAssistant, file: File) => {
   const fd = new FormData();

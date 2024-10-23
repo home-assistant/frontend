@@ -1,10 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EmptyStateCardConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard } from "../types";
+import type { EmptyStateCardConfig } from "./types";
 
 @customElement("hui-empty-state-card")
 export class HuiEmptyStateCard extends LitElement implements LovelaceCard {

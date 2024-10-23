@@ -1,11 +1,11 @@
 import { strStartsWith } from "../common/string/starts-with";
-import { Context, HomeAssistant } from "../types";
-import {
+import type { Context, HomeAssistant } from "../types";
+import type {
   BlueprintAutomationConfig,
   ManualAutomationConfig,
-  flattenTriggers,
 } from "./automation";
-import { BlueprintScriptConfig, ScriptConfig } from "./script";
+import { flattenTriggers } from "./automation";
+import type { BlueprintScriptConfig, ScriptConfig } from "./script";
 
 interface BaseTraceStep {
   path: string;

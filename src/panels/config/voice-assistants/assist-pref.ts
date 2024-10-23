@@ -8,7 +8,8 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatLanguageCode } from "../../../common/language/format_language";
@@ -20,9 +21,11 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import {
+import type {
   AssistDevice,
   AssistPipeline,
+} from "../../../data/assist_pipeline";
+import {
   createAssistPipeline,
   deleteAssistPipeline,
   listAssistDevices,
@@ -30,8 +33,8 @@ import {
   setAssistPipelinePreferred,
   updateAssistPipeline,
 } from "../../../data/assist_pipeline";
-import { CloudStatus } from "../../../data/cloud";
-import { ExposeEntitySettings } from "../../../data/expose";
+import type { CloudStatus } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
 import {
   showAlertDialog,
   showConfirmationDialog,

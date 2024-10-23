@@ -1,5 +1,5 @@
 import { convertEntities } from "../../../../src/fake_data/entity";
-import { DemoConfig } from "../types";
+import type { DemoConfig } from "../types";
 
 export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
   convertEntities({

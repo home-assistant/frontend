@@ -1,5 +1,5 @@
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { Condition } from "../common/validate-condition";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { Condition } from "../common/validate-condition";
 
 export type LovelaceHeadingBadgeConfig = {
   type?: string;

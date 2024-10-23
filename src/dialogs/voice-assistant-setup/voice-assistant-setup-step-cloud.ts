@@ -1,8 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
+import "../../components/ha-button";
 
 @customElement("ha-voice-assistant-setup-step-cloud")
 export class HaVoiceAssistantSetupStepCloud extends LitElement {

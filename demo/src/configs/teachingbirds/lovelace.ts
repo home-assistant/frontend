@@ -1,4 +1,4 @@
-import { DemoConfig } from "../types";
+import type { DemoConfig } from "../types";
 
 export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
   title: "Home",

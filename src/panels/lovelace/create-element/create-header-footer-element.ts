@@ -1,4 +1,4 @@
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import {
   createLovelaceElement,
   getLovelaceElementClass,

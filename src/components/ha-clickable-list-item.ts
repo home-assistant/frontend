@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { HaListItem } from "./ha-list-item";
 

@@ -1,14 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { noChange } from "lit";
-import {
-  AttributePart,
-  directive,
-  Directive,
-  DirectiveParameters,
-} from "lit/directive";
+import type { AttributePart, DirectiveParameters } from "lit/directive";
+import { directive, Directive } from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import {
+import type {
   ActionHandlerDetail,
   ActionHandlerOptions,
 } from "../../../../data/lovelace/action_handler";

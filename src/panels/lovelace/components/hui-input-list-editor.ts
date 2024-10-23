@@ -1,11 +1,12 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-textfield";
-import { HomeAssistant } from "../../../types";
-import { EditorTarget } from "../editor/types";
+import type { HomeAssistant } from "../../../types";
+import type { EditorTarget } from "../editor/types";
 
 @customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {

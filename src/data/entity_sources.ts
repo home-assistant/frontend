@@ -1,5 +1,5 @@
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 interface EntitySource {
   domain: string;

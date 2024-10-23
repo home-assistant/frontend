@@ -1,10 +1,11 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-button-menu";
 import "./ha-icon-button";
 import "./ha-list-item";

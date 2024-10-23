@@ -1,17 +1,11 @@
 import { mdiHelpCircle } from "@mdi/js";
-import {
+import type {
   HassService,
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
@@ -20,10 +14,9 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { nestedArrayMove } from "../common/util/array-move";
-import {
-  fetchIntegrationManifest,
-  IntegrationManifest,
-} from "../data/integration";
+import type { IntegrationManifest } from "../data/integration";
+import { fetchIntegrationManifest } from "../data/integration";
+import type { Selector, TargetSelector } from "../data/selector";
 import {
   areaMeetsTargetSelector,
   deviceMeetsTargetSelector,
@@ -32,10 +25,8 @@ import {
   expandDeviceTarget,
   expandFloorTarget,
   expandLabelTarget,
-  Selector,
-  TargetSelector,
 } from "../data/selector";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";

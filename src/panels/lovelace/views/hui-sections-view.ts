@@ -1,13 +1,7 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDelete, mdiDrag, mdiPencil, mdiViewGridPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -21,13 +15,13 @@ import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import { HuiBadge } from "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import "../components/hui-badge-edit-mode";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
-import { HuiSection } from "../sections/hui-section";
+import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 
 export const DEFAULT_MAX_COLUMNS = 4;

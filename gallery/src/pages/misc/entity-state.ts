@@ -1,4 +1,4 @@
-import {
+import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
@@ -12,7 +12,7 @@ import type { DataTableColumnContainer } from "../../../../src/components/data-t
 import "../../../../src/components/entity/state-badge";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 
 const SENSOR_DEVICE_CLASSES = [
   "apparent_power",

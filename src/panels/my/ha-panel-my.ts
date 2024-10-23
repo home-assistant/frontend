@@ -13,7 +13,7 @@ import {
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import "../../layouts/hass-error-screen";
-import { HomeAssistant, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({

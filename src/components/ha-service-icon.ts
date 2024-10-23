@@ -4,7 +4,7 @@ import { until } from "lit/directives/until";
 import { DEFAULT_SERVICE_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { serviceIcon } from "../data/icons";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 

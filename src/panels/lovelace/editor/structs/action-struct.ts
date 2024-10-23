@@ -10,7 +10,7 @@ import {
   type,
   union,
 } from "superstruct";
-import { BaseActionConfig } from "../../../../data/lovelace/config/action";
+import type { BaseActionConfig } from "../../../../data/lovelace/config/action";
 
 const actionConfigStructUser = object({
   user: string(),

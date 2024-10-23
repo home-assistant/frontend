@@ -1,8 +1,8 @@
 import { customElement } from "lit/decorators";
-import { EntityCardConfig } from "../cards/types";
+import type { EntityCardConfig } from "../cards/types";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createRowElement } from "../create-element/create-row-element";
-import {
+import type {
   ConditionalRowConfig,
   EntityConfig,
   LovelaceRow,
