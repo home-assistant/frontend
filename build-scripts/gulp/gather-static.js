@@ -27,6 +27,16 @@ function copyTranslations(staticDir) {
   );
 }
 
+function copyFragmentTranslations(staticDir, pageName) {
+  const staticPath = genStaticPath(staticDir);
+
+  // Translation output
+  fs.copySync(
+    polyPath(`build/translations/output/${pageName}`),
+    staticPath(`translations/${pageName}`)
+  );
+}
+
 function copyLocaleData(staticDir) {
   const staticPath = genStaticPath(staticDir);
 
@@ -209,9 +219,6 @@ gulp.task("copy-static-landing-page", async () => {
     paths.landingPage_output_root
   );
 
-  copyMapPanel(paths.landingPage_output_static);
   copyFonts(paths.landingPage_output_static);
-  copyTranslations(paths.landingPage_output_static);
-  copyLocaleData(paths.landingPage_output_static);
-  copyMdiIcons(paths.landingPage_output_static);
+  copyFragmentTranslations(paths.landingPage_output_static, "page-onboarding");
 });

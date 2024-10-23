@@ -1,5 +1,5 @@
 import "@material/mwc-linear-progress";
-import { PropertyValues, css, html, nothing } from "lit";
+import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../src/components/ha-alert";
 import { haStyle } from "../../src/resources/styles";
@@ -7,15 +7,22 @@ import "../../src/onboarding/onboarding-welcome-links";
 import "./components/landing-page-network";
 import "./components/landing-page-logs";
 import { litLocalizeLiteMixin } from "../../src/mixins/lit-localize-lite-mixin";
-import { HassElement } from "../../src/state/hass-element";
 import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
+import type { Constructor } from "../../src/types";
+import themesMixin from "../../src/state/themes-mixin";
 
 const SCHEDULE_CORE_CHECK_SECONDS = 5;
 
+const ext = <T extends Constructor>(baseClass: T, mixins): T =>
+  mixins.reduceRight((base, mixin) => mixin(base), baseClass);
+
 @customElement("ha-landing-page")
-class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
-  @property() public translationFragment = "page-onboarding";
+class HaLandingPage extends litLocalizeLiteMixin(
+  ext(LitElement, [themesMixin])
+) {
+  @property({ attribute: false }) public translationFragment =
+    "page-onboarding";
 
   @state() private _networkIssue = false;
 
