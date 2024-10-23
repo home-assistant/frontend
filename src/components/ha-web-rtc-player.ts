@@ -51,6 +51,8 @@ class HaWebRtcPlayer extends LitElement {
 
   @query("#remote-stream") private _videoEl!: HTMLVideoElement;
 
+  private _clientConfig?: WebRTCClientConfiguration;
+
   private _peerConnection?: RTCPeerConnection;
 
   private _remoteStream?: MediaStream;
@@ -111,23 +113,24 @@ class HaWebRtcPlayer extends LitElement {
 
     console.timeLog("WebRTC", "start clientConfig");
 
-    const clientConfig = await fetchWebRtcClientConfiguration(
+    this._clientConfig = await fetchWebRtcClientConfiguration(
       this.hass,
       this.entityid
     );
 
-    console.timeLog("WebRTC", "end clientConfig", clientConfig);
+    console.timeLog("WebRTC", "end clientConfig", this._clientConfig);
 
-    this._peerConnection = new RTCPeerConnection(clientConfig.configuration);
+    this._peerConnection = new RTCPeerConnection(
+      this._clientConfig.configuration
+    );
 
-    if (clientConfig.dataChannel) {
+    if (this._clientConfig.dataChannel) {
       // Some cameras (such as nest) require a data channel to establish a stream
       // however, not used by any integrations.
-      this._peerConnection.createDataChannel(clientConfig.dataChannel);
+      this._peerConnection.createDataChannel(this._clientConfig.dataChannel);
     }
 
-    this._peerConnection.onnegotiationneeded = () =>
-      this._startNegotiation(clientConfig);
+    this._peerConnection.onnegotiationneeded = this._startNegotiation;
 
     this._peerConnection.onicecandidate = this._handleIceCandidate;
     this._peerConnection.oniceconnectionstatechange =
@@ -156,9 +159,7 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.addTransceiver("video", { direction: "recvonly" });
   }
 
-  private _startNegotiation = async (
-    clientConfig: WebRTCClientConfiguration
-  ) => {
+  private _startNegotiation = async () => {
     if (!this._peerConnection) {
       return;
     }
@@ -249,7 +250,7 @@ class HaWebRtcPlayer extends LitElement {
     if (!this.entityid) {
       return;
     }
-    if (event.type === "session_id") {
+    if (event.type === "session") {
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(

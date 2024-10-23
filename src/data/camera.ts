@@ -46,7 +46,7 @@ export type WebRtcOfferEvent =
   | WebRtcError;
 
 export interface WebRtcId {
-  type: "session_id";
+  type: "session";
   session_id: string;
 }
 
