@@ -39,6 +39,9 @@ export const AssistantSetupStyles = [
     .footer.full-width ha-button {
       width: 100%;
     }
+    .footer.centered {
+      justify-content: center;
+    }
     .footer.side-by-side {
       justify-content: space-between;
     }

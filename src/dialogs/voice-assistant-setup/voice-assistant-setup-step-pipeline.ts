@@ -32,6 +32,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   @state() private _showSecond = false;
 
+  @state() private _showThird = false;
+
+  @state() private _showFourth = false;
+
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
@@ -44,63 +48,83 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     super.firstUpdated(changedProperties);
     setTimeout(() => {
       this._showFirst = true;
-    }, 1);
+    }, 200);
     setTimeout(() => {
       this._showSecond = true;
-    }, 1500);
+    }, 600);
+    setTimeout(() => {
+      this._showThird = true;
+    }, 3000);
+    setTimeout(() => {
+      this._showFourth = true;
+    }, 8000);
   }
 
   protected override render() {
-    return html`<div class="padding content">
-        <div class="messages-container">
+    return html`<div class="content">
+      <h1>What hardware do you want to use?</h1>
+      <p class="secondary">
+        How quickly your assistant responds depends on the power of the
+        hardware.
+      </p>
+      <div class="container">
+        <div class="messages-container cloud">
           <div class="message user ${this._showFirst ? "show" : ""}">
             ${!this._showFirst ? "…" : "Turn on the lights in the bedroom"}
           </div>
+          ${this._showFirst
+            ? html`<div class="timing user">0.2 seconds</div>`
+            : nothing}
           ${this._showFirst
             ? html` <div class="message hass ${this._showSecond ? "show" : ""}">
                 ${!this._showSecond ? "…" : "Turned on the lights"}
               </div>`
             : nothing}
+          ${this._showSecond
+            ? html`<div class="timing hass">0.4 seconds</div>`
+            : nothing}
         </div>
-        <h1>Select system</h1>
-        <p class="secondary">
-          How quickly your voice assistant responds depends on the power of your
-          system.
-        </p>
+        <h2>Home Assistant Cloud</h2>
+        <p>Ideal if you don't have a powerful system at home.</p>
+        <ha-button @click=${this._setupCloud}>Learn more</ha-button>
       </div>
-      <ha-md-list>
-        <ha-md-list-item interactive type="button" @click=${this._setupCloud}>
-          Home Assistant Cloud
-          <span slot="supporting-text"
-            >Ideal if you don't have a powerful system at home</span
-          >
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item interactive type="button" @click=${this._thisSystem}>
-          On this system
-          <span slot="supporting-text"
-            >Local setup with the Whisper and Piper add-ons</span
-          >
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item
-          interactive
-          type="link"
+      <div class="container">
+        <div class="messages-container rpi">
+          <div class="message user ${this._showThird ? "show" : ""}">
+            ${!this._showThird ? "…" : "Turn on the lights in the bedroom"}
+          </div>
+          ${this._showThird
+            ? html`<div class="timing user">3 seconds</div>`
+            : nothing}
+          ${this._showThird
+            ? html`<div class="message hass ${this._showFourth ? "show" : ""}">
+                ${!this._showFourth ? "…" : "Turned on the lights"}
+              </div>`
+            : nothing}
+          ${this._showFourth
+            ? html`<div class="timing hass">5 seconds</div>`
+            : nothing}
+        </div>
+        <h2>Do-it-yourself</h2>
+        <p>
+          Install add-ons or containers to run it on your own system. Powerful
+          hardware is needed for fast responses.
+        </p>
+        <a
           href=${documentationUrl(
             this.hass,
             "/voice_control/voice_remote_local_assistant/"
           )}
-          rel="noreferrer noopenner"
           target="_blank"
-          @click=${this._skip}
+          rel="noreferrer noopenner"
         >
-          Use external system
-          <span slot="supporting-text"
-            >Learn more about how to host it on another system</span
+          <ha-button @click=${this._skip}>
+            <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
+            Learn more</ha-button
           >
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-md-list-item>
-      </ha-md-list>`;
+        </a>
+      </div>
+    </div>`;
   }
 
   private async _checkCloud() {
@@ -217,10 +241,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     this._nextStep(STEP.CLOUD);
   }
 
-  private async _thisSystem() {
-    this._nextStep(STEP.ADDONS);
-  }
-
   private _skip() {
     this._nextStep(STEP.SUCCESS);
   }
@@ -232,21 +252,22 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      :host {
-        padding: 0;
+      .container {
+        border-radius: 16px;
+        border: 1px solid var(--divider-color);
+        overflow: hidden;
+        padding-bottom: 16px;
       }
-      .padding {
-        padding: 24px;
+      .container:last-child {
+        margin-top: 16px;
       }
-      ha-md-list {
-        width: 100%;
-        text-align: initial;
-      }
-
       .messages-container {
         padding: 24px;
         box-sizing: border-box;
-        height: 152px;
+        height: 195px;
+        background: var(--input-fill-color);
+        display: flex;
+        flex-direction: column;
       }
       .message {
         white-space: nowrap;
@@ -259,20 +280,28 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         box-sizing: border-box;
         overflow: hidden;
         text-overflow: ellipsis;
-        transition: width 1s;
         width: 30px;
+      }
+      .rpi .message {
+        transition: width 1s;
+      }
+      .cloud .message {
+        transition: width 0.5s;
       }
 
       .message.user {
         margin-left: 24px;
         margin-inline-start: 24px;
         margin-inline-end: initial;
-        float: var(--float-end);
+        align-self: self-end;
         text-align: right;
         border-bottom-right-radius: 0px;
         background-color: var(--primary-color);
         color: var(--text-primary-color);
         direction: var(--direction);
+      }
+      .timing.user {
+        align-self: self-end;
       }
 
       .message.user.show {
@@ -283,11 +312,14 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         margin-right: 24px;
         margin-inline-end: 24px;
         margin-inline-start: initial;
-        float: var(--float-start);
+        align-self: self-start;
         border-bottom-left-radius: 0px;
         background-color: var(--secondary-background-color);
         color: var(--primary-text-color);
         direction: var(--direction);
+      }
+      .timing.hass {
+        align-self: self-start;
       }
 
       .message.hass.show {
