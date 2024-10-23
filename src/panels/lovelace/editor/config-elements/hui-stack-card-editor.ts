@@ -6,8 +6,6 @@ import {
   mdiListBoxOutline,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tabs";
-import "@polymer/paper-tabs/paper-tab";
 import deepClone from "deep-clone-simple";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -41,6 +39,8 @@ import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-md-tabs";
+import "../../../../components/ha-md-primary-tab";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -119,24 +119,19 @@ export class HuiStackCardEditor
       ></ha-form>
       <div class="card-config">
         <div class="toolbar">
-          <paper-tabs
-            .selected=${selected}
-            scrollable
-            @iron-activate=${this._handleSelectedCard}
+          <ha-md-tabs
+            class="scrolling inline"
+            .activeTabIndex=${selected}
+            @change=${this._handleSelectedCard}
           >
             ${this._config.cards.map(
-              (_card, i) => html` <paper-tab> ${i + 1} </paper-tab> `
+              (_card, i) =>
+                html`<ha-md-secondary-tab>${i + 1}</ha-md-secondary-tab>`
             )}
-          </paper-tabs>
-          <paper-tabs
-            id="add-card"
-            .selected=${selected === numcards ? "0" : undefined}
-            @iron-activate=${this._handleSelectedCard}
-          >
-            <paper-tab>
+            <ha-md-secondary-tab id="add-card">
               <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-            </paper-tab>
-          </paper-tabs>
+            </ha-md-secondary-tab>
+          </ha-md-tabs>
         </div>
 
         <div id="editor">
@@ -225,7 +220,7 @@ export class HuiStackCardEditor
     }
     this._setMode(true);
     this._guiModeAvailable = true;
-    this._selectedCard = parseInt(ev.detail.selected, 10);
+    this._selectedCard = parseInt(ev.target.activeTabIndex, 10);
   }
 
   protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
@@ -324,17 +319,7 @@ export class HuiStackCardEditor
       css`
         .toolbar {
           display: flex;
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          --paper-tab-ink: var(--primary-color);
-        }
-        paper-tabs {
-          display: flex;
-          font-size: 14px;
-          flex-grow: 1;
-        }
-        #add-card {
-          max-width: 32px;
-          padding: 0;
+          width: 100%;
         }
 
         #card-options {
