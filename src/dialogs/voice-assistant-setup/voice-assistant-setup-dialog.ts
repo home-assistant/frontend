@@ -9,6 +9,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-dialog";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { UNAVAILABLE } from "../../data/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -21,7 +22,6 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
-import { UNAVAILABLE } from "../../data/entity";
 
 export const enum STEP {
   INIT,
