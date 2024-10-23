@@ -267,7 +267,7 @@ export class HassioNetwork extends LitElement {
             : this.hass.localize("ui.common.save")}
         </ha-button>
         <ha-button @click=${this._clear}>
-          ${this.hass.localize("ui.common.clear")}
+          ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
         </ha-button>
       </div>`;
   }
@@ -588,7 +588,9 @@ export class HassioNetwork extends LitElement {
   private async _clear() {
     await this._fetchNetworkInfo();
     this._interface!.ipv4!.method = "auto";
+    this._interface!.ipv4!.nameservers = [];
     this._interface!.ipv6!.method = "auto";
+    this._interface!.ipv6!.nameservers = [];
     // removing the connection will disable the interface
     // this is the only way to forget the wifi network right now
     this._interface!.wifi = null;
