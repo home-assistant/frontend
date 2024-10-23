@@ -10,6 +10,7 @@ import { STEP } from "./voice-assistant-setup-dialog";
 import { AssistantSetupStyles } from "./styles";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
+import { formatLanguageCode } from "../../common/language/format_language";
 
 @customElement("ha-voice-assistant-setup-step-change-wake-word")
 export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
@@ -22,11 +23,12 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
 
   protected override render() {
     return html`<div class="padding content">
-        <img src="/static/icons/casita/smiling.png" />
+        <img src="/static/images/voice-assistant/change-wake-word.gif" />
         <h1>Change wake word</h1>
         <p class="secondary">
-          Some wake words are better for [your language] and voice than others.
-          Please try them out.
+          Some wake words are better for
+          ${formatLanguageCode(this.hass.locale.language, this.hass.locale)} and
+          voice than others. Please try them out.
         </p>
       </div>
       <ha-md-list>

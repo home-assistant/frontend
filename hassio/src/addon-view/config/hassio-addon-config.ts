@@ -417,7 +417,7 @@ class HassioAddonConfig extends LitElement {
           justify-content: space-between;
         }
         .header h2 {
-          color: var(--ha-card-header-color, --primary-text-color);
+          color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, 24px);
           letter-spacing: -0.012em;
