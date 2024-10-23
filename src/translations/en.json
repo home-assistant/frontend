@@ -5614,7 +5614,7 @@
             },
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
-            "section_specifics": "Sections view specifics settings",
+            "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
