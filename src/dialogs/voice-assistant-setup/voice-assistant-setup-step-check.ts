@@ -41,7 +41,10 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               unable to reach the Home Assistant server.
             </p>
             <div class="footer">
-              <a href="#"><ha-button>Help me</ha-button></a>
+              <a
+                href="https://www.home-assistant.io/docs/configuration/remote/#adding-a-remote-url-to-home-assistant"
+                ><ha-button>Help me</ha-button></a
+              >
               <ha-button @click=${this._testConnection}>Retry</ha-button>
             </div>`
         : html`<img src="/static/images/voice-assistant/hi.gif" />
@@ -64,7 +67,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
     this._showLoader = false;
     const timeout = setTimeout(() => {
       this._showLoader = true;
-    }, 1000);
+    }, 3000);
     const result = await testAssistSatelliteConnection(
       this.hass,
       this.assistEntityId!
