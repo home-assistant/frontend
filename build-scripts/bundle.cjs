@@ -226,13 +226,12 @@ module.exports.config = {
     return {
       name: "frontend" + nameSuffix(latestBuild),
       entry: {
-        "service-worker":
-          !env.useRollup() && !latestBuild
-            ? {
-                import: "./src/entrypoints/service-worker.ts",
-                layer: "sw",
-              }
-            : "./src/entrypoints/service-worker.ts",
+        "service-worker": !latestBuild
+          ? {
+              import: "./src/entrypoints/service-worker.ts",
+              layer: "sw",
+            }
+          : "./src/entrypoints/service-worker.ts",
         app: "./src/entrypoints/app.ts",
         authorize: "./src/entrypoints/authorize.ts",
         onboarding: "./src/entrypoints/onboarding.ts",

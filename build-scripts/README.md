@@ -15,7 +15,7 @@ The Home Assistant build pipeline contains various steps to prepare a build.
 
 Currently in Home Assistant we use a bundler to convert TypeScript, CSS and JSON files to JavaScript files that the browser understands.
 
-We currently rely on Webpack but also have experimental Rollup support. Both of these programs bundle the converted files in both production and development.
+We currently rely on Webpack. Both of these programs bundle the converted files in both production and development.
 
 For development, bundling is optional. We just want to get the right files in the browser.
 
