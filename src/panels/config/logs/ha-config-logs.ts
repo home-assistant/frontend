@@ -167,6 +167,7 @@ export class HaConfigLogs extends LitElement {
 
   private _selectProvider(ev) {
     this._selectedLogProvider = (ev.currentTarget as any).provider;
+    this._filter = "";
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
 
