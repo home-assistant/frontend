@@ -5,10 +5,13 @@ import "../../src/components/ha-alert";
 import { haStyle } from "../../src/resources/styles";
 import "../../src/onboarding/onboarding-welcome-links";
 import "./components/landing-page-network";
+import "./components/landing-page-logs";
 import { litLocalizeLiteMixin } from "../../src/mixins/lit-localize-lite-mixin";
 import { HassElement } from "../../src/state/hass-element";
 import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
+
+const SCHEDULE_CORE_CHECK_SECONDS = 5;
 
 @customElement("ha-landing-page")
 class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
@@ -17,8 +20,6 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
   @state() private _networkIssue = false;
 
   @state() private _supervisorError = false;
-
-  @state() private _logDetails = false;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
@@ -52,15 +53,7 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
                 </ha-alert>
               `
             : nothing}
-          <div class="logs">
-            <ha-button @click=${this._toggleLogDetails}>
-              ${this.localize(
-                this._logDetails
-                  ? "ui.panel.page-onboarding.prepare.hide_details"
-                  : "ui.panel.page-onboarding.prepare.show_details"
-              )}
-            </ha-button>
-          </div>
+          <landing-page-logs .localize=${this.localize}></landing-page-logs>
         </div>
       </ha-card>
       <onboarding-welcome-links
@@ -90,10 +83,26 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
       import("../../src/resources/particles");
     }
     import("../../src/components/ha-language-picker");
+
+    this._scheduleCoreCheck();
   }
 
-  private _toggleLogDetails() {
-    this._logDetails = !this._logDetails;
+  private _scheduleCoreCheck() {
+    setTimeout(
+      () => this._checkCoreAvailability(),
+      SCHEDULE_CORE_CHECK_SECONDS * 1000
+    );
+  }
+
+  private async _checkCoreAvailability() {
+    try {
+      const response = await fetch("/manifest.json");
+      if (response.ok) {
+        location.reload();
+      }
+    } finally {
+      this._scheduleCoreCheck();
+    }
   }
 
   private _networkInfoChanged(ev: CustomEvent) {
@@ -105,7 +114,7 @@ class HaLandingPage extends litLocalizeLiteMixin(HassElement) {
     this.language = language;
     try {
       localStorage.setItem("selectedLanguage", JSON.stringify(language));
-      window.location.reload();
+      location.reload();
     } catch (err: any) {
       // Ignore
     }

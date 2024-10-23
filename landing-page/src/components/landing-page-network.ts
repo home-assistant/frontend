@@ -14,7 +14,10 @@ import type {
 } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-alert";
+import { getSupervisorNetworkInfo } from "../data/supervisor";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+
+const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 const ALTERNATIVE_DNS_SERVERS: {
   ipv4: string[];
@@ -48,8 +51,6 @@ class LandingPageNetwork extends LitElement {
     if (!this._networkIssue && !this._getNetworkInfoError) {
       return nothing;
     }
-
-    console.log(this._getNetworkInfoError);
 
     if (this._getNetworkInfoError) {
       return html`
@@ -109,19 +110,26 @@ class LandingPageNetwork extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
-    // this._fetchSupervisorInfo();
+    this._fetchSupervisorInfo();
+  }
+
+  private _scheduleFetchSupervisorInfo() {
+    setTimeout(
+      () => this._fetchSupervisorInfo(),
+      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
+    );
   }
 
   private async _fetchSupervisorInfo() {
     try {
-      const response = await fetch("/supervisor/network/info");
+      const response = await getSupervisorNetworkInfo();
       if (!response.ok) {
         throw new Error("Failed to fetch network info");
       }
 
       const { data } = await response.json();
 
-      if (!data.data.host_internet) {
+      if (!data.host_internet) {
         this._networkIssue = true;
         const primaryInterface = data.interfaces.find(
           (intf) => intf.primary && intf.enabled
@@ -136,6 +144,7 @@ class LandingPageNetwork extends LitElement {
         this._networkIssue = false;
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       this._getNetworkInfoError = true;
     }
@@ -143,6 +152,7 @@ class LandingPageNetwork extends LitElement {
     fireEvent(this, "value-changed", {
       value: this._networkIssue || this._getNetworkInfoError,
     });
+    this._scheduleFetchSupervisorInfo();
   }
 
   private async _setDns(ev) {
@@ -150,13 +160,26 @@ class LandingPageNetwork extends LitElement {
     try {
       const response = await fetch("/supervisor/network/dns", {
         method: "POST",
-        body: JSON.stringify(ALTERNATIVE_DNS_SERVERS[index]),
+        body: JSON.stringify({
+          ipv4: {
+            method: "auto",
+            nameservers: ALTERNATIVE_DNS_SERVERS[index].ipv4,
+          },
+          ipv6: {
+            method: "auto",
+            nameservers: ALTERNATIVE_DNS_SERVERS[index].ipv6,
+          },
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to set DNS");
       }
       this._networkIssue = false;
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       this._getNetworkInfoError = true;
     }
