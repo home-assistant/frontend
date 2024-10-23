@@ -16,7 +16,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     return html`<div class="content">
-        <img src="/static/icons/casita/loving.png" />
+        <img src="/static/images/voice-assistant/area.gif" />
         <h1>Select area</h1>
         <p class="secondary">
           When you voice assistant knows where it is, it can better control the

@@ -2,7 +2,13 @@ import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
-import { OFF, ON, UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { ON, UNAVAILABLE } from "../../data/entity";
+import {
+  updateCanInstall,
+  UpdateEntity,
+  updateIsInstalling,
+  updateUsesProgress,
+} from "../../data/update";
 import { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
@@ -51,17 +57,19 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this.updateEntityId];
+    const stateObj = this.hass.states[this.updateEntityId] as
+      | UpdateEntity
+      | undefined;
 
-    const progressIsNumeric =
-      typeof stateObj?.attributes.in_progress === "number";
+    const progressIsNumeric = stateObj && updateUsesProgress(stateObj);
 
     return html`<div class="content">
-      <img src="/static/icons/casita/loading.png" />
+      <img src="/static/images/voice-assistant/update.gif" />
       <h1>
-        ${stateObj.state === OFF || stateObj.state === UNKNOWN
-          ? "Checking for updates"
-          : "Updating your voice assistant"}
+        ${stateObj &&
+        (stateObj.state === "unavailable" || updateIsInstalling(stateObj))
+          ? "Updating your voice assistant"
+          : "Checking for updates"}
       </h1>
       <p class="secondary">
         We are making sure you have the latest and greatest version of your
@@ -69,12 +77,12 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       </p>
       <ha-circular-progress
         .value=${progressIsNumeric
-          ? stateObj.attributes.in_progress / 100
+          ? (stateObj.attributes.in_progress as number) / 100
           : undefined}
         .indeterminate=${!progressIsNumeric}
       ></ha-circular-progress>
       <p>
-        ${stateObj.state === "unavailable"
+        ${stateObj?.state === UNAVAILABLE
           ? "Restarting voice assistant"
           : progressIsNumeric
             ? `Installing ${stateObj.attributes.in_progress}%`
@@ -88,8 +96,14 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     if (!this.updateEntityId) {
       return;
     }
-    const updateEntity = this.hass.states[this.updateEntityId];
-    if (updateEntity && this.hass.states[updateEntity.entity_id].state === ON) {
+    const updateEntity = this.hass.states[this.updateEntityId] as
+      | UpdateEntity
+      | undefined;
+    if (
+      updateEntity &&
+      this.hass.states[updateEntity.entity_id].state === ON &&
+      updateCanInstall(updateEntity)
+    ) {
       this._updated = true;
       await this.hass.callService(
         "update",
