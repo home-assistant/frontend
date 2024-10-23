@@ -14,7 +14,6 @@ import { HaDelayAction } from "../../../../src/panels/config/automation/action/t
 import { HaDeviceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-device_id";
 import { HaEventAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-event";
 import { HaRepeatAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-repeat";
-import { HaSceneAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-activate_scene";
 import { HaServiceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-service";
 import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_for_trigger";
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
@@ -32,7 +31,6 @@ const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Service", actions: [HaServiceAction.defaultConfig] },
   { name: "Condition", actions: [HaConditionAction.defaultConfig] },
   { name: "Delay", actions: [HaDelayAction.defaultConfig] },
-  { name: "Scene", actions: [HaSceneAction.defaultConfig] },
   { name: "Play media", actions: [HaPlayMediaAction.defaultConfig] },
   { name: "Wait", actions: [HaWaitAction.defaultConfig] },
   { name: "WaitForTrigger", actions: [HaWaitForTriggerAction.defaultConfig] },
