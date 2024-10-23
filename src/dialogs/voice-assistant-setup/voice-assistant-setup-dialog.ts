@@ -14,7 +14,6 @@ import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
-import "./voice-assistant-setup-step-addons";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
 import "./voice-assistant-setup-step-check";
@@ -34,7 +33,6 @@ export const enum STEP {
   PIPELINE,
   SUCCESS,
   CLOUD,
-  ADDONS,
   CHANGE_WAKEWORD,
 }
 
@@ -210,22 +208,18 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                           ? html`<ha-voice-assistant-setup-step-cloud
                               .hass=${this.hass}
                             ></ha-voice-assistant-setup-step-cloud>`
-                          : this._step === STEP.ADDONS
-                            ? html`<ha-voice-assistant-setup-step-addons
+                          : this._step === STEP.SUCCESS
+                            ? html`<ha-voice-assistant-setup-step-success
                                 .hass=${this.hass}
-                              ></ha-voice-assistant-setup-step-addons>`
-                            : this._step === STEP.SUCCESS
-                              ? html`<ha-voice-assistant-setup-step-success
-                                  .hass=${this.hass}
-                                  .assistConfiguration=${this
-                                    ._assistConfiguration}
-                                  .assistEntityId=${this._findDomainEntityId(
-                                    this._params.deviceId,
-                                    this.hass.entities,
-                                    "assist_satellite"
-                                  )}
-                                ></ha-voice-assistant-setup-step-success>`
-                              : nothing}
+                                .assistConfiguration=${this
+                                  ._assistConfiguration}
+                                .assistEntityId=${this._findDomainEntityId(
+                                  this._params.deviceId,
+                                  this.hass.entities,
+                                  "assist_satellite"
+                                )}
+                              ></ha-voice-assistant-setup-step-success>`
+                            : nothing}
         </div>
       </ha-dialog>
     `;
