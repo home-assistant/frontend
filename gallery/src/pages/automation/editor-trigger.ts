@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-arrow */
 import { LitElement, TemplateResult, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
