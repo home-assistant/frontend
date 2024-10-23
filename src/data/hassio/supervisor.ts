@@ -177,16 +177,45 @@ export const fetchHassioInfo = async (
   );
 };
 
-export const fetchHassioLogs = async (hass: HomeAssistant, provider: string) =>
-  hass.callApi<string>(
+export const fetchHassioLogs = async (
+  hass: HomeAssistant,
+  provider: string,
+  range?: string
+) =>
+  hass.callApiRaw(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`,
+    undefined,
+    range
+      ? {
+          Range: range,
+        }
+      : undefined
+  );
+
+export const fetchHassioLogsFollow = async (
+  hass: HomeAssistant,
+  provider: string,
+  signal: AbortSignal,
+  lines = 100
+) =>
+  hass.callApiRaw(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/follow?lines=${lines}`,
+    undefined,
+    undefined,
+    signal
   );
 
 export const getHassioLogDownloadUrl = (provider: string) =>
   `/api/hassio/${
     provider.includes("_") ? `addons/${provider}` : provider
   }/logs`;
+
+export const getHassioLogDownloadLinesUrl = (provider: string, lines: number) =>
+  `/api/hassio/${
+    provider.includes("_") ? `addons/${provider}` : provider
+  }/logs?lines=${lines}`;
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,

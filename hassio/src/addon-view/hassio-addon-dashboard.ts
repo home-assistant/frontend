@@ -37,7 +37,6 @@ import "./config/hassio-addon-config";
 import "./config/hassio-addon-network";
 import "./hassio-addon-router";
 import "./info/hassio-addon-info";
-import "./log/hassio-addon-logs";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
@@ -161,16 +160,11 @@ class HassioAddonDashboard extends LitElement {
           margin-bottom: 24px;
           width: 600px;
         }
-        hassio-addon-logs {
-          max-width: calc(100% - 8px);
-          min-width: 600px;
-        }
         @media only screen and (max-width: 600px) {
           hassio-addon-info,
           hassio-addon-network,
           hassio-addon-audio,
-          hassio-addon-config,
-          hassio-addon-logs {
+          hassio-addon-config {
             max-width: 100%;
             min-width: 100%;
           }
