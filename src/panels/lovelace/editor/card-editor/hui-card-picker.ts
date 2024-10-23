@@ -509,7 +509,7 @@ export class HuiCardPicker extends LitElement {
         }
 
         .card-header {
-          color: var(--ha-card-header-color, --primary-text-color);
+          color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: 16px;
           font-weight: bold;
