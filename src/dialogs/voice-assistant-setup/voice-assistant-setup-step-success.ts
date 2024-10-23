@@ -67,11 +67,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       : undefined;
 
     return html`<div class="content">
-        <img src="/static/icons/casita/loving.png" />
-        <h1>Ready to assist!</h1>
+        <img src="/static/images/voice-assistant/heart.gif" />
+        <h1>Ready to Assist!</h1>
         <p class="secondary">
-          Your device is all ready to go! If you want to tweak some more
-          settings, you can change that below.
+          Make any final customizations here. You can always change these in the
+          Voice Assistants section of the settings page.
         </p>
         <div class="rows">
           ${this.assistConfiguration &&

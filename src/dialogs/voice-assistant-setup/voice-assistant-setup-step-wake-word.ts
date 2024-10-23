@@ -65,14 +65,14 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
     return html`<div class="content">
         ${!this._detected
           ? html`
-          <img src="/static/icons/casita/sleeping.png" />
+          <img src="/static/images/voice-assistant/sleep.gif" />
           <h1>
             Say “${this._activeWakeWord(this.assistConfiguration)}” to wake the
             device up
           </h1>
           <p class="secondary">Setup will continue once the device is awake.</p>
         </div>`
-          : html`<img src="/static/icons/casita/normal.png" />
+          : html`<img src="/static/images/voice-assistant/ok-nabu.gif" />
               <h1>
                 Say “${this._activeWakeWord(this.assistConfiguration)}” again
               </h1>
@@ -80,7 +80,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
                 To make sure the wake word works for you.
               </p>`}
       </div>
-      <div class="footer full-width">
+      <div class="footer centered">
         <ha-button @click=${this._changeWakeWord}>Change wake word</ha-button>
       </div>`;
   }
