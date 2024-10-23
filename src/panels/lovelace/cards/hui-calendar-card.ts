@@ -231,7 +231,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        color: var(--ha-card-header-color, --primary-text-color);
+        color: var(--ha-card-header-color, var(--primary-text-color));
         font-size: var(--ha-card-header-font-size, 24px);
         line-height: 1.2;
         padding-top: 16px;
