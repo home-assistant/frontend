@@ -21,8 +21,6 @@ class HaLandingPage extends LandingPageBaseElement {
 
   @state() private _supervisorError = false;
 
-  @state() private _logDetails = false;
-
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
 
@@ -116,10 +114,6 @@ class HaLandingPage extends LandingPageBaseElement {
 
   private _networkInfoChanged(ev: CustomEvent) {
     this._networkIssue = ev.detail.value;
-  }
-
-  private _toggleLogDetails() {
-    this._logDetails = !this._logDetails;
   }
 
   private _languageChanged(ev: CustomEvent) {

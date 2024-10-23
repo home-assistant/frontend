@@ -7350,6 +7350,11 @@
             "use_cloudflare": "Use Cloudflare DNS",
             "use_google": "Use Google DNS",
             "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!"
+          },
+          "logs": {
+            "scroll_down_button": "New logs - Click to scroll",
+            "fetch_error": "Failed to fetch logs",
+            "retry": "Retry"
           }
         },
         "welcome": {
