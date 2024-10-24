@@ -1,4 +1,4 @@
-import "@material/mwc-button";
+import "@material/web/button/elevated-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
@@ -23,11 +23,11 @@ class StepFlowExternal extends LitElement {
         ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
         <div class="open-button">
           <a href=${this.step.url} target="_blank" rel="noreferrer">
-            <mwc-button raised>
+            <md-elevated-button>
               ${localize(
                 "ui.panel.config.integrations.config_flow.external_step.open_site"
               )}
-            </mwc-button>
+            </md-elevated-button>
           </a>
         </div>
       </div>
