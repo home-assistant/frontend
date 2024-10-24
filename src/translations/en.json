@@ -5610,7 +5610,7 @@
             "types": {
               "masonry": "Masonry",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)",
+              "panel": "Panel (single card)",
               "sections": "Sections"
             },
             "subview": "Subview",
@@ -6108,7 +6108,7 @@
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates.",
+              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even actions! On an image based on coordinates.",
               "card_options": "Card Options",
               "elements": "Elements",
               "new_element": "Add new element",
@@ -6133,7 +6133,7 @@
             },
             "picture-glance": {
               "name": "Picture glance",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "description": "The Picture glance card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "state_entity": "State entity"
             },
             "plant-status": {
