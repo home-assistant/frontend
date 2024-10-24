@@ -7355,7 +7355,9 @@
             "scroll_down_button": "New logs - Click to scroll",
             "fetch_error": "Failed to fetch logs",
             "retry": "Retry"
-          }
+          },
+          "error_title": "Error installing Home Assistant",
+          "error_description": "An error occurred while installing Home Assistant. Please check the logs for more information."
         },
         "welcome": {
           "header": "Welcome!",
