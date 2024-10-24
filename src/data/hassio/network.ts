@@ -17,7 +17,7 @@ export interface NetworkInterface {
   ipv4?: Partial<IpConfiguration>;
   ipv6?: Partial<IpConfiguration>;
   type: "ethernet" | "wireless" | "vlan";
-  wifi?: Partial<WifiConfiguration>;
+  wifi?: Partial<WifiConfiguration> | null;
 }
 
 interface DockerNetwork {
@@ -27,7 +27,7 @@ interface DockerNetwork {
   interface: string;
 }
 
-interface AccessPoint {
+export interface AccessPoint {
   mode: "infrastructure" | "mesh" | "adhoc" | "ap";
   ssid: string;
   mac: string;
