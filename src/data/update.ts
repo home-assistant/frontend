@@ -8,6 +8,7 @@ import { BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { formatNumber } from "../common/number/format_number";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
@@ -23,6 +24,7 @@ export enum UpdateEntityFeature {
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   auto_update: boolean | null;
+  display_precision: number;
   installed_version: string | null;
   in_progress: boolean;
   latest_version: string | null;
@@ -187,7 +189,10 @@ export const computeUpdateStateDisplay = (
         attributes.update_percentage !== null;
       if (supportsProgress) {
         return hass.localize("ui.card.update.installing_with_progress", {
-          progress: attributes.update_percentage,
+          progress: formatNumber(attributes.update_percentage!, hass.locale, {
+            maximumFractionDigits: attributes.display_precision,
+            minimumFractionDigits: attributes.display_precision,
+          }),
         });
       }
       return hass.localize("ui.card.update.installing");
