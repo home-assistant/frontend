@@ -61,6 +61,28 @@ export class HaDeviceTrigger extends LitElement {
     }
   );
 
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("trigger")) {
+      return true;
+    }
+    if (
+      this.trigger.device_id &&
+      !(this.trigger.device_id in this.hass.devices)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(
+          this.hass.localize(
+            "ui.panel.config.automation.editor.edit_unknown_device"
+          )
+        )
+      );
+      return false;
+    }
+    return true;
+  }
+
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;
 
