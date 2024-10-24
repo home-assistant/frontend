@@ -48,6 +48,7 @@ import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-bac
 import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/layouts/hass-loading-screen";
 
 type BackupItem = HassioBackup & {
   secondary: string;
@@ -69,6 +70,8 @@ export class HassioBackups extends LitElement {
 
   @state() private _backups?: HassioBackup[] = [];
 
+  @state() private _isLoading = false;
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -77,13 +80,8 @@ export class HassioBackups extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass && this._firstUpdatedCalled) {
-      this.refreshData();
+      this.fetchBackups();
     }
-  }
-
-  public async refreshData() {
-    await reloadHassioBackups(this.hass);
-    await this.fetchBackups();
   }
 
   private _computeBackupContent = (backup: HassioBackup): string => {
@@ -115,7 +113,7 @@ export class HassioBackups extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass && this.isConnected) {
-      this.refreshData();
+      this.fetchBackups();
     }
     this._firstUpdatedCalled = true;
   }
@@ -175,6 +173,13 @@ export class HassioBackups extends LitElement {
     if (!this.supervisor) {
       return nothing;
     }
+
+    if (this._isLoading) {
+      return html`<hass-loading-screen
+        .message=${this.supervisor.localize("backup.loading_backups")}
+      ></hass-loading-screen>`;
+    }
+
     return html`
       <hass-tabs-subpage-data-table
         .tabs=${atLeastVersion(this.hass.config.version, 2022, 5)
@@ -281,7 +286,7 @@ export class HassioBackups extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this.refreshData();
+        this.fetchBackups();
         break;
       case 1:
         showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
@@ -306,13 +311,15 @@ export class HassioBackups extends LitElement {
           supervisor: this.supervisor,
           onDelete: () => this.fetchBackups(),
         }),
-      reloadBackup: () => this.refreshData(),
+      reloadBackup: () => this.fetchBackups(),
     });
   }
 
   private async fetchBackups() {
+    this._isLoading = true;
     await reloadHassioBackups(this.hass);
     this._backups = await fetchHassioBackups(this.hass);
+    this._isLoading = false;
   }
 
   private async _deleteSelected() {
@@ -339,8 +346,7 @@ export class HassioBackups extends LitElement {
       });
       return;
     }
-    await reloadHassioBackups(this.hass);
-    this._backups = await fetchHassioBackups(this.hass);
+    await this.fetchBackups();
     this._dataTable.clearSelection();
   }
 
