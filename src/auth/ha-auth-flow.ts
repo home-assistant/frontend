@@ -16,6 +16,7 @@ import {
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
+import { generateAuthenticationCredentialsJSON } from "../data/webauthn";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -215,7 +216,7 @@ export class HaAuthFlow extends LitElement {
             `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
           )}
         `;
-      case "form":
+      case "form": {
         return html`
           <h1>
             ${!["select_mfa_module", "mfa"].includes(step.step_id)
@@ -261,6 +262,7 @@ export class HaAuthFlow extends LitElement {
               `
             : ""}
         `;
+      }
       default:
         return nothing;
     }
@@ -372,6 +374,12 @@ export class HaAuthFlow extends LitElement {
 
       const newStep = await response.json();
 
+      if (newStep.step_id === "challenge" && newStep.type === "form") {
+        const publicKeyOptions =
+          newStep.description_placeholders!.webauthn_options;
+        this._getWebauthnCredentials(publicKeyOptions);
+      }
+
       if (response.status === 403) {
         this._state = "error";
         this._errorMessage = newStep.message;
@@ -394,6 +402,32 @@ export class HaAuthFlow extends LitElement {
       console.error("Error submitting step", err);
       this._state = "error";
       this._errorMessage = this._unknownError();
+    } finally {
+      this._submitting = false;
+    }
+  }
+
+  private async _getWebauthnCredentials(publicKeyCredentialRequestOptions) {
+    try {
+      const authenticationCredentialJSON =
+        await generateAuthenticationCredentialsJSON(
+          publicKeyCredentialRequestOptions
+        );
+      this._stepData = {
+        authentication_credential: authenticationCredentialJSON,
+        client_id: this.clientId,
+      };
+      this._handleSubmit(new Event("submit"));
+    } catch (err: any) {
+      if (err instanceof DOMException) {
+        this._errorMessage = "WebAuthn operation was aborted.";
+      } else {
+        this._errorMessage =
+          "An unexpected error occurred during WebAuthn authentication.";
+      }
+      // eslint-disable-next-line no-console
+      console.error("Error getting WebAuthn credentials", err);
+      this._state = "error";
     } finally {
       this._submitting = false;
     }
