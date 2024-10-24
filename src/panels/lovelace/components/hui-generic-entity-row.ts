@@ -168,7 +168,7 @@ export class HuiGenericEntityRow extends LitElement {
             class="text-content value ${classMap({
               pointer,
             })}"
-            @action=${this._handleAction}
+            @action=${this._handleValueAction}
             .actionHandler=${actionHandler({
               hasHold: hasAction(this.config!.hold_action),
               hasDoubleClick: hasAction(this.config!.double_tap_action),
@@ -191,6 +191,18 @@ export class HuiGenericEntityRow extends LitElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
+  }
+
+  // To stop unwanted event propagation, only handle the action
+  // if it originated from the value div or its direct state child
+  private _handleValueAction(ev: ActionHandlerEvent) {
+    ev.stopPropagation();
+    if (
+      ev.target === ev.currentTarget ||
+      ev.target === this.shadowRoot?.querySelector(".state")
+    ) {
+      this._handleAction(ev);
+    }
   }
 
   static get styles(): CSSResultGroup {
