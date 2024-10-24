@@ -33,7 +33,7 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _mardownLoading = true;
+  @state() private _markdownLoading = true;
 
   protected render() {
     if (
@@ -109,17 +109,16 @@ class MoreInfoUpdate extends LitElement {
           ? this._releaseNotes === undefined
             ? html`
                 <hr />
-                <div class="flex center loader">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
-                </div>
+                ${this._markdownLoading ? this._renderLoader() : nothing}
               `
             : html`
                 <hr />
                 <ha-markdown
                   @content-resize=${this._markdownLoaded}
                   .content=${this._releaseNotes}
-                  class=${this._mardownLoading ? "loading" : ""}
+                  class=${this._markdownLoading ? "hidden" : ""}
                 ></ha-markdown>
+                ${this._markdownLoading ? this._renderLoader() : nothing}
               `
           : this.stateObj.attributes.release_summary
             ? html`
@@ -127,8 +126,9 @@ class MoreInfoUpdate extends LitElement {
                 <ha-markdown
                   @content-resize=${this._markdownLoaded}
                   .content=${this.stateObj.attributes.release_summary}
-                  class=${this._mardownLoading ? "loading" : ""}
+                  class=${this._markdownLoading ? "hidden" : ""}
                 ></ha-markdown>
+                ${this._markdownLoading ? this._renderLoader() : nothing}
               `
             : nothing}
       </div>
@@ -190,6 +190,14 @@ class MoreInfoUpdate extends LitElement {
     `;
   }
 
+  private _renderLoader() {
+    return html`
+      <div class="flex center loader">
+        <ha-circular-progress indeterminate></ha-circular-progress>
+      </div>
+    `;
+  }
+
   protected firstUpdated(): void {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
       this._fetchReleaseNotes();
@@ -197,8 +205,8 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private async _markdownLoaded() {
-    if (this._mardownLoading) {
-      this._mardownLoading = false;
+    if (this._markdownLoading) {
+      this._markdownLoading = false;
     }
   }
 
@@ -305,7 +313,6 @@ class MoreInfoUpdate extends LitElement {
         flex-direction: column;
         align-items: center;
         overflow: hidden;
-
         z-index: 10;
       }
 
@@ -346,8 +353,8 @@ class MoreInfoUpdate extends LitElement {
         padding-bottom: 16px;
         box-sizing: border-box;
       }
-      ha-markdown.loading {
-        min-height: 80px;
+      ha-markdown.hidden {
+        display: none;
       }
       .loader {
         height: 80px;
