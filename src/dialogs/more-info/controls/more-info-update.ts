@@ -180,7 +180,7 @@ class MoreInfoUpdate extends LitElement {
                   updateIsInstalling(this.stateObj)}
                 >
                   ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.install"
+                    "ui.dialogs.more_info_control.update.update"
                   )}
                 </ha-button>
               `
