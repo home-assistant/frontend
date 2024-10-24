@@ -1,5 +1,10 @@
 import "@material/mwc-button";
-import { mdiCalendarClock } from "@mdi/js";
+import {
+  mdiAccountMultiple,
+  mdiCalendarClock,
+  mdiMapMarker,
+  mdiNoteEdit,
+} from "@mdi/js";
 import { toDate } from "date-fns-tz";
 import { addDays, isSameDay } from "date-fns";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
@@ -81,14 +86,43 @@ class DialogCalendarEventDetail extends LitElement {
               ${this._data!.rrule
                 ? this._renderRRuleAsText(this._data.rrule)
                 : ""}
-              ${this._data.description
-                ? html`<br />
-                    <div class="description">${this._data.description}</div>
-                    <br />`
-                : nothing}
             </div>
           </div>
-
+          ${this._data.description
+            ? html` <div class="field">
+                <ha-svg-icon .path=${mdiNoteEdit}></ha-svg-icon>
+                <div class="value">
+                  <div class="description">${this._data.description}</div>
+                </div>
+              </div>`
+            : nothing}
+          ${this._data.location
+            ? html` <div class="field">
+                <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
+                <div class="value">
+                  <div class="location">${this._data.location}</div>
+                </div>
+              </div>`
+            : nothing}
+          ${this._data.attendees?.map((attendee, index) =>
+            index === 0
+              ? html`
+                  <div class="field">
+                    <ha-svg-icon .path=${mdiAccountMultiple}></ha-svg-icon>
+                    <div class="value">
+                      <div class="attendees">${attendee.common_name}</div>
+                    </div>
+                  </div>
+                `
+              : html`
+                  <div class="field">
+                    <ha-svg-icon></ha-svg-icon>
+                    <div class="value">
+                      <div class="attendees">${attendee.common_name}</div>
+                    </div>
+                  </div>
+                `
+          )}
           <div class="attribute">
             <state-info
               .hass=${this.hass}
@@ -236,7 +270,7 @@ class DialogCalendarEventDetail extends LitElement {
       haStyleDialog,
       css`
         state-info {
-          line-height: 40px;
+          margin-top: 40px;
         }
         ha-svg-icon {
           width: 40px;

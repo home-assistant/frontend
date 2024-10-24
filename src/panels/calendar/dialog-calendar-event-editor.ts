@@ -11,6 +11,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { stringCompare } from "../../common/string/compare";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -25,22 +26,31 @@ import "../../components/ha-switch";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "../../components/ha-checkbox";
+import "../../components/user/ha-person-badge";
 import {
   CalendarEntityFeature,
+  CalendarEventData,
   CalendarEventMutableParams,
   RecurrenceRange,
   createCalendarEvent,
   deleteCalendarEvent,
   updateCalendarEvent,
 } from "../../data/calendar";
+import { fetchPersons, Person } from "../../data/person";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
+import "../../layouts/hass-loading-screen";
 
 const CALENDAR_DOMAINS = ["calendar"];
+
+interface CalendarAttendee extends Person {
+  isgoing: boolean;
+}
 
 @customElement("dialog-calendar-event-editor")
 class DialogCalendarEventEditor extends LitElement {
@@ -58,6 +68,8 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _description? = "";
 
+  @state() private _location? = "";
+
   @state() private _rrule?: string;
 
   @state() private _allDay = false;
@@ -68,13 +80,51 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _storageItems?: Person[];
+
+  @state() private _attendeeItems?: Person[];
+
+  @state() private _calattendees?: CalendarAttendee[];
+
   // Dates are displayed in the timezone according to the user's profile
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
   private _timeZone?: string;
 
+  private async _getPersons(data?: CalendarEventData) {
+    const personData = await fetchPersons(this.hass!);
+
+    this._storageItems = personData.storage.sort((ent1, ent2) =>
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
+    );
+    this._storageItems?.map((entry) => this._attendeeItems?.push(entry));
+    this._attendeeItems?.forEach((entry) => {
+      const attendee: CalendarAttendee = {
+        id: entry.id,
+        name: entry.name,
+        device_trackers: entry.device_trackers,
+        user_id: entry.user_id,
+        picture: entry.picture,
+        isgoing: true,
+      };
+      if (typeof data?.attendees !== "undefined") {
+        if (
+          data?.attendees.some((item) => item.common_name === attendee.name)
+        ) {
+          attendee.isgoing = true;
+        } else {
+          attendee.isgoing = false;
+        }
+      }
+      this._calattendees?.push(attendee);
+    });
+  }
+
   public showDialog(params: CalendarEventEditDialogParams): void {
+    this._attendeeItems = [];
+    this._calattendees = [];
+    this._getPersons(params.entry);
     this._error = undefined;
     this._info = undefined;
     this._params = params;
@@ -94,6 +144,7 @@ class DialogCalendarEventEditor extends LitElement {
       this._allDay = isDate(entry.dtstart);
       this._summary = entry.summary;
       this._description = entry.description;
+      this._location = entry.location;
       this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart + "T00:00:00");
@@ -125,11 +176,18 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtend = undefined;
     this._summary = "";
     this._description = "";
+    this._location = "";
+    this._attendeeItems = [];
+    this._calattendees = [];
     this._rrule = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
+    if (!this.hass || this._storageItems === undefined) {
+      return html` <hass-loading-screen></hass-loading-screen> `;
+    }
+
     if (!this._params) {
       return nothing;
     }
@@ -186,6 +244,34 @@ class DialogCalendarEventEditor extends LitElement {
             @change=${this._handleDescriptionChanged}
             autogrow
           ></ha-textarea>
+          <ha-textarea
+            class="location"
+            name="location"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.location"
+            )}
+            .value=${this._location}
+            @change=${this._handleLocationChanged}
+            autogrow
+          ></ha-textarea>
+          <ha-tip
+            >${this.hass.localize("ui.components.calendar.event.attendees")}
+          </ha-tip>
+          <mwc-list>
+            ${this._calattendees?.map(
+              (attendee) => html`
+                <div class="attendees">
+                  <ha-checkbox
+                    tabindex="0"
+                    .entry=${attendee}
+                    .checked=${attendee.isgoing}
+                    @change=${this._handleAttendeesChanged}
+                  ></ha-checkbox>
+                  <span> ${attendee.name}</span>
+                </div>
+              `
+            )}
+          </mwc-list>
           <ha-entity-picker
             name="calendar"
             .hass=${this.hass}
@@ -335,6 +421,26 @@ class DialogCalendarEventEditor extends LitElement {
     this._description = ev.target.value;
   }
 
+  private _handleLocationChanged(ev) {
+    this._location = ev.target.value;
+  }
+
+  private _handleAttendeesChanged(ev) {
+    if (ev.target.checked) {
+      this._calattendees?.forEach((item) => {
+        if (item === ev.target.entry) {
+          item.isgoing = true;
+        }
+      });
+    } else {
+      this._calattendees?.forEach((item) => {
+        if (item === ev.target.entry) {
+          item.isgoing = false;
+        }
+      });
+    }
+  }
+
   private _handleRRuleChanged(ev) {
     this._rrule = ev.detail.value;
   }
@@ -395,6 +501,7 @@ class DialogCalendarEventEditor extends LitElement {
     const data: CalendarEventMutableParams = {
       summary: this._summary,
       description: this._description,
+      location: this._location,
       rrule: this._rrule || undefined,
       dtstart: "",
       dtend: "",
@@ -413,6 +520,34 @@ class DialogCalendarEventEditor extends LitElement {
         this.hass.config.time_zone
       )}T${this._formatTime(this._dtend!, this.hass.config.time_zone)}`;
     }
+    if (this._calattendees === undefined || this._calattendees?.length === 0) {
+      data.attendees = undefined;
+    } else {
+      this._calattendees.forEach((attendee) => {
+        if (attendee.isgoing) {
+          if (typeof data.attendees === "undefined") {
+            data.attendees = [
+              {
+                uri: "",
+                common_name: attendee.name,
+              },
+            ];
+          } else {
+            data.attendees?.push({ uri: "", common_name: attendee.name });
+          }
+        }
+      });
+      if (typeof data.attendees === "undefined") {
+        // We need a way to empty the attendees
+        data.attendees = [
+          {
+            uri: "",
+            common_name: "empty",
+          },
+        ];
+      }
+    }
+
     return data;
   }
 
@@ -650,6 +785,11 @@ class DialogCalendarEventEditor extends LitElement {
         .value {
           display: inline-block;
           vertical-align: top;
+        }
+        .attendees {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
         }
       `,
     ];
