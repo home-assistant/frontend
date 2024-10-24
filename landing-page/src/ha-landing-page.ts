@@ -11,6 +11,8 @@ import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import type { Constructor } from "../../src/types";
 import themesMixin from "../../src/state/themes-mixin";
+import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
+import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 
 const SCHEDULE_CORE_CHECK_SECONDS = 5;
 
@@ -19,7 +21,7 @@ const ext = <T extends Constructor>(baseClass: T, mixins): T =>
 
 @customElement("ha-landing-page")
 class HaLandingPage extends litLocalizeLiteMixin(
-  ext(LitElement, [themesMixin])
+  ext(ProvideHassLitMixin(LitElement), [themesMixin])
 ) {
   @property({ attribute: false }) public translationFragment =
     "page-onboarding";
@@ -53,14 +55,20 @@ class HaLandingPage extends litLocalizeLiteMixin(
             ? html`
                 <ha-alert
                   alert-type="error"
-                  title="Error installing Home Assistant"
+                  .title=${this.localize(
+                    "ui.panel.page-onboarding.prepare.error_title"
+                  )}
                 >
-                  An error occured while installing Home Assistant, check the
-                  logs below for more information.
+                  ${this.localize(
+                    "ui.panel.page-onboarding.prepare.error_description"
+                  )}
                 </ha-alert>
               `
             : nothing}
-          <landing-page-logs .localize=${this.localize}></landing-page-logs>
+          <landing-page-logs
+            .localize=${this.localize}
+            @landing-page-error=${this._showError}
+          ></landing-page-logs>
         </div>
       </ha-card>
       <onboarding-welcome-links
@@ -86,6 +94,9 @@ class HaLandingPage extends litLocalizeLiteMixin(
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
+    makeDialogManager(this, this.shadowRoot!);
+
     if (window.innerWidth > 450) {
       import("../../src/resources/particles");
     }
@@ -110,6 +121,10 @@ class HaLandingPage extends litLocalizeLiteMixin(
     } finally {
       this._scheduleCoreCheck();
     }
+  }
+
+  private _showError() {
+    this._supervisorError = true;
   }
 
   private _networkInfoChanged(ev: CustomEvent) {
@@ -144,11 +159,6 @@ class HaLandingPage extends litLocalizeLiteMixin(
       }
       ha-alert p {
         text-align: unset;
-      }
-      .actions {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 16px;
       }
       ha-language-picker {
         display: block;

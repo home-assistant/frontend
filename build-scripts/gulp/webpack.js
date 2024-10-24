@@ -42,6 +42,7 @@ const runDevServer = async ({
   contentBase,
   port,
   listenHost = undefined,
+  proxy = undefined,
 }) => {
   if (listenHost === undefined) {
     // For dev container, we need to listen on all hosts
@@ -57,6 +58,7 @@ const runDevServer = async ({
         directory: contentBase,
         watch: true,
       },
+      proxy,
     },
     compiler
   );
@@ -209,6 +211,16 @@ gulp.task("webpack-dev-server-landing-page", () =>
     contentBase: paths.landingPage_output_root,
     port: 8110,
     listenHost: "0.0.0.0",
+    proxy: [
+      {
+        context: ["/observer"],
+        target: "http://localhost:3000",
+      },
+      {
+        context: ["/supervisor"],
+        target: "http://localhost:3000",
+      },
+    ],
   })
 );
 

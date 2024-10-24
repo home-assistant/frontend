@@ -129,6 +129,8 @@ class LandingPageNetwork extends LitElement {
 
       const { data } = await response.json();
 
+      this._getNetworkInfoError = false;
+
       if (!data.host_internet) {
         this._networkIssue = true;
         const primaryInterface = data.interfaces.find(
@@ -186,7 +188,14 @@ class LandingPageNetwork extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [css``];
+    return [
+      css`
+        .actions {
+          display: flex;
+          justify-content: flex-end;
+        }
+      `,
+    ];
   }
 }
 

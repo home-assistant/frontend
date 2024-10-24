@@ -7355,7 +7355,9 @@
             "scroll_down_button": "New logs - Click to scroll",
             "fetch_error": "Failed to fetch logs",
             "retry": "Retry"
-          }
+          },
+          "error_title": "Error installing Home Assistant",
+          "error_description": "An error occurred while installing Home Assistant. Please check the logs for more information."
         },
         "welcome": {
           "header": "Welcome!",
@@ -7368,6 +7370,7 @@
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
           "x": "[%key:ui::panel::config::tips::join_x%]",
+          "mastodon": "Mastodon",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },

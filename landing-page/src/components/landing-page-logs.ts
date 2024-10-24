@@ -11,7 +11,15 @@ import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-alert";
 import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
-import { getObserverLogsFollow } from "../data/supervisor";
+import { getObserverLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+
+const ERROR_CHECK = /^[\d -:]+(ERROR|CRITICAL)(.*)/gm;
+declare global {
+  interface HASSDomEvents {
+    "landing-page-error": undefined;
+  }
+}
 
 @customElement("landing-page-logs")
 class LandingPageLogs extends LitElement {
@@ -37,6 +45,8 @@ class LandingPageLogs extends LitElement {
 
   @state() private _newLogsIndicator?: boolean;
 
+  @state() private _observerLogs = "";
+
   protected render() {
     return html`
       <ha-button @click=${this._toggleLogDetails}>
@@ -46,28 +56,26 @@ class LandingPageLogs extends LitElement {
             : "ui.panel.page-onboarding.prepare.show_details"
         )}
       </ha-button>
+      ${this._error
+        ? html`
+            <ha-alert
+              alert-type="error"
+              .title=${this.localize(
+                "ui.panel.page-onboarding.prepare.logs.fetch_error"
+              )}
+            >
+              <ha-button @click=${this._startLogStream}>
+                ${this.localize("ui.panel.page-onboarding.prepare.logs.retry")}
+              </ha-button>
+            </ha-alert>
+          `
+        : nothing}
       <div
         class=${classMap({
           logs: true,
           hidden: !this._show,
         })}
       >
-        ${this._error
-          ? html`
-              <ha-alert
-                alert-type="error"
-                .title=${this.localize(
-                  "ui.panel.page-onboarding.prepare.logs.fetch_error"
-                )}
-              >
-                <ha-button @click=${this._startLogStream}>
-                  ${this.localize(
-                    "ui.panel.page-onboarding.prepare.logs.retry"
-                  )}
-                </ha-button>
-              </ha-alert>
-            `
-          : nothing}
         <ha-ansi-to-html></ha-ansi-to-html>
         <div id="scroll-bottom-marker"></div>
       </div>
@@ -124,13 +132,46 @@ class LandingPageLogs extends LitElement {
     }
   }
 
+  private _writeChunk(chunk: string, tempLogLine = ""): string {
+    const showError = ERROR_CHECK.test(chunk);
+
+    const scrolledToBottom = this._scrolledToBottomController.value;
+    const lines = `${tempLogLine}${chunk}`
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+
+    // handle edge case where the last line is not complete
+    if (chunk.endsWith("\n")) {
+      tempLogLine = "";
+    } else {
+      tempLogLine = lines.splice(-1, 1)[0];
+    }
+
+    if (lines.length) {
+      this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
+    }
+
+    if (showError) {
+      fireEvent(this, "landing-page-error");
+      this._show = true;
+    }
+
+    if (showError || (scrolledToBottom && this._logElement)) {
+      this._scrollToBottom();
+    } else {
+      this._newLogsIndicator = true;
+    }
+
+    return tempLogLine;
+  }
+
   private async _startLogStream() {
     this._error = false;
     this._newLogsIndicator = false;
     this._ansiToHtmlElement?.clear();
 
     try {
-      const response = await getObserverLogsFollow();
+      const response = await getSupervisorLogsFollow();
 
       if (!response.ok || !response.body) {
         throw new Error("No stream body found");
@@ -149,30 +190,39 @@ class LandingPageLogs extends LitElement {
 
         if (value) {
           const chunk = decoder.decode(value, { stream: !done });
-          const scrolledToBottom = this._scrolledToBottomController.value;
-          const lines = `${tempLogLine}${chunk}`
-            .split("\n")
-            .filter((line) => line.trim() !== "");
-
-          // handle edge case where the last line is not complete
-          if (chunk.endsWith("\n")) {
-            tempLogLine = "";
-          } else {
-            tempLogLine = lines.splice(-1, 1)[0];
-          }
-
-          if (lines.length) {
-            this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
-          }
-
-          if (scrolledToBottom && this._logElement) {
-            this._scrollToBottom();
-          } else {
-            this._newLogsIndicator = true;
-          }
+          tempLogLine = this._writeChunk(chunk, tempLogLine);
         }
       }
     } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+
+      // fallback to observerlogs if there is a problem with supervisor
+      this._loadObserverLogs();
+    }
+  }
+
+  private _scheduleObserverLogs() {
+    setTimeout(() => this._loadObserverLogs(), 5000);
+  }
+
+  private async _loadObserverLogs() {
+    try {
+      const response = await getObserverLogs();
+
+      if (!response.ok) {
+        throw new Error("Error fetching observer logs");
+      }
+
+      const logs = await response.text();
+
+      if (this._observerLogs !== logs) {
+        this._observerLogs = logs;
+        this._writeChunk(logs);
+      }
+
+      this._scheduleObserverLogs();
+    } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
       this._error = true;
@@ -186,6 +236,10 @@ class LandingPageLogs extends LitElement {
         flex-direction: column;
         align-items: center;
         position: relative;
+      }
+
+      ha-alert {
+        width: 100%;
       }
 
       .logs {
