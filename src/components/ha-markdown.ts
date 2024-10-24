@@ -86,6 +86,11 @@ export class HaMarkdown extends LitElement {
         font-size: 1.5em;
         font-weight: bold;
       }
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
+      }
     `;
   }
 }

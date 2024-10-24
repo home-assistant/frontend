@@ -42,14 +42,17 @@ export class HaSettingsRow extends LitElement {
         padding-bottom: 8px;
         padding-left: 0;
         padding-inline-start: 0;
-        padding-right: 16x;
+        padding-right: 16px;
         padding-inline-end: 16px;
         overflow: hidden;
-        display: var(--layout-vertical_-_display);
-        flex-direction: var(--layout-vertical_-_flex-direction);
-        justify-content: var(--layout-center-justified_-_justify-content);
-        flex: var(--layout-flex_-_flex);
-        flex-basis: var(--layout-flex_-_flex-basis);
+        display: var(--layout-vertical_-_display, flex);
+        flex-direction: var(--layout-vertical_-_flex-direction, column);
+        justify-content: var(
+          --layout-center-justified_-_justify-content,
+          center
+        );
+        flex: var(--layout-flex_-_flex, 1);
+        flex-basis: var(--layout-flex_-_flex-basis, 0.000000001px);
       }
       .body[three-line] {
         min-height: var(--paper-item-body-three-line-min-height, 88px);
