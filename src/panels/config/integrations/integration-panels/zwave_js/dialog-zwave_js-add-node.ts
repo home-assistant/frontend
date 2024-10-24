@@ -846,7 +846,11 @@ class DialogZWaveJSAddNode extends LitElement {
       undefined,
       undefined,
       dsk
-    );
+    ).catch((err) => {
+      this._error = err.message;
+      this._status = "failed";
+      return () => {};
+    });
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
       this._status = "timed_out";
