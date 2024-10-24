@@ -9,6 +9,7 @@ import {
   SecurityClass,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../data/zwave_js";
+import { LocalizeFunc } from "../../../../../common/translations/localize";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../../types";
@@ -33,7 +34,7 @@ class ZWaveJSProvisioned extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
-        .columns=${this._columns(this.narrow)}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._provisioningEntries}
       >
       </hass-tabs-subpage-data-table>
@@ -41,11 +42,12 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer<ZwaveJSProvisioningEntry> => ({
+    (
+      localize: LocalizeFunc
+    ): DataTableColumnContainer<ZwaveJSProvisioningEntry> => ({
       included: {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.provisioned.included"
-        ),
+        showNarrow: true,
+        title: localize("ui.panel.config.zwave_js.provisioned.included"),
         type: "icon",
         template: (entry) =>
           entry.nodeId
@@ -67,16 +69,16 @@ class ZWaveJSProvisioned extends LitElement {
               `,
       },
       dsk: {
-        title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),
+        main: true,
+        title: localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
         filterable: true,
         flex: 2,
       },
       security_classes: {
-        title: this.hass.localize(
+        title: localize(
           "ui.panel.config.zwave_js.provisioned.security_classes"
         ),
-        hidden: narrow,
         filterable: true,
         sortable: true,
         template: (entry) => {
@@ -91,9 +93,8 @@ class ZWaveJSProvisioned extends LitElement {
         },
       },
       unprovision: {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.provisioned.unprovison"
-        ),
+        showNarrow: true,
+        title: localize("ui.panel.config.zwave_js.provisioned.unprovison"),
         type: "icon-button",
         template: (entry) => html`
           <ha-icon-button
