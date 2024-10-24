@@ -3155,8 +3155,8 @@
                   "label": "And",
                   "description": {
                     "picker": "Test if multiple conditions are true.",
-                    "no_conditions": "Test if multiple conditions match",
-                    "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "no_conditions": "If multiple conditions match",
+                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
                 },
                 "device": {
@@ -3170,9 +3170,9 @@
                   "label": "Not",
                   "description": {
                     "picker": "Test if a condition is not true.",
-                    "no_conditions": "Test if no condition matches",
-                    "one_condition": "Test if 1 condition does not match",
-                    "full": "Test if none of {count} conditions match"
+                    "no_conditions": "If no condition matches",
+                    "one_condition": "If 1 condition does not match",
+                    "full": "If none of {count} conditions match"
                   }
                 },
                 "numeric_state": {
@@ -3195,8 +3195,8 @@
                   "label": "Or",
                   "description": {
                     "picker": "Test if any condition is true.",
-                    "no_conditions": "Test if any condition matches",
-                    "full": "Test if any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
+                    "no_conditions": "If any condition matches",
+                    "full": "If any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
                 },
                 "state": {
@@ -3205,7 +3205,7 @@
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
                     "no_entity": "Confirm state",
-                    "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -3218,7 +3218,7 @@
                   "sunset": "Sunset",
                   "description": {
                     "picker": "If the sun is above or below the horizon.",
-                    "full": "Confirm sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -3226,7 +3226,7 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
                     "picker": "If a template evaluates to true.",
-                    "full": "Test if template renders a value equal to true"
+                    "full": "If template renders a value equal to true"
                   }
                 },
                 "time": {
@@ -3249,7 +3249,7 @@
                   },
                   "description": {
                     "picker": "If the current time is before or after a specified time.",
-                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
