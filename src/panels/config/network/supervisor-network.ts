@@ -613,10 +613,6 @@ export class HassioNetwork extends LitElement {
     }
     this._curTabIndex = ev.detail.index;
     this._interface = { ...this._interfaces[ev.detail.index] };
-    // mock
-    if (this._interface?.wifi) {
-      // this._interface!.wifi!.ssid = undefined;
-    }
   }
 
   private _handleRadioValueChanged(ev: Event): void {
