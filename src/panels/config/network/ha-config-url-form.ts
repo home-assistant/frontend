@@ -307,11 +307,9 @@ class ConfigUrlForm extends LitElement {
     if (isComponentLoaded(this.hass, "cloud")) {
       fetchCloudStatus(this.hass).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
-        if (cloudStatus.logged_in) {
-          this._showCustomExternalUrl = !!this.hass.config.external_url;
-        } else {
-          this._showCustomExternalUrl = true;
-        }
+        this._showCustomExternalUrl = !(
+          cloudStatus.logged_in && !this.hass.config.external_url
+        );
       });
     } else {
       this._cloudStatus = null;
