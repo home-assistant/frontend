@@ -111,17 +111,13 @@ export class HaSettingsRow extends LitElement {
         display: flex;
         align-items: center;
       }
-      :host([slim]) {
+      :host([slim]),
+      :host([slim]) .content,
+      :host([slim]) ::slotted(ha-switch) {
         padding: 0;
       }
       :host([slim]) .body {
         min-height: 0;
-      }
-      :host([slim]) .content {
-        padding: 0;
-      }
-      :host([slim]) ::slotted(ha-switch) {
-        padding: 0;
       }
     `;
   }
