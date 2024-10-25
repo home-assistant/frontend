@@ -1425,7 +1425,7 @@
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
-        "view_entity": "More info about entity"
+        "view_entity": "Details view about entity"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -5378,7 +5378,7 @@
           "show_more_info": "Show more information",
           "actions": {
             "action_confirmation": "Are you sure you want to run action ''{action}''?",
-            "no_entity_more_info": "No entity provided for more info dialog",
+            "no_entity_more_info": "No entity provided for details view",
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
@@ -5413,7 +5413,7 @@
             "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
             "perform_action": "Perform action {name}",
-            "more_info": "Show more info: {name}"
+            "more_info": "Show details view: {name}"
           },
           "iframe": {
             "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
@@ -5767,7 +5767,7 @@
             "actions": {
               "default_action": "Default",
               "perform-action": "Perform action",
-              "more-info": "More info",
+              "more-info": "Details view",
               "toggle": "Toggle",
               "navigate": "Navigate",
               "assist": "Assist",
@@ -5898,7 +5898,7 @@
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
-              "default_action_help": "The default depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
+              "default_action_help": "The default depends on the entity's capabilities; it will either be toggled or the details view will be shown."
             },
             "entity-filter": {
               "name": "Entity filter",
@@ -6159,7 +6159,7 @@
             },
             "tile": {
               "name": "Tile",
-              "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
+              "description": "he tile card gives you a quick overview of your entity. The card allows you to toggle the entity, show the details view, or perform custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
