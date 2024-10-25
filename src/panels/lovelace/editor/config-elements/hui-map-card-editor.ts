@@ -15,15 +15,17 @@ import {
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { hasLocation } from "../../../../common/entity/has_location";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../../components/ha-form/types";
+import type { SelectSelector } from "../../../../data/selector";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-selector/ha-selector-select";
 import { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import { MapCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
-import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
@@ -66,6 +68,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @state() private _config?: MapCardConfig;
 
   @state() private _configEntities?: EntityConfig[];
+
+  @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -166,16 +170,39 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         )}
       </h3>
 
-      <hui-input-list-editor
-        .inputLabel=${this.hass.localize(
-          "ui.panel.lovelace.editor.card.map.source"
-        )}
+      <ha-selector-select
+        .label=${this.hass.localize("ui.panel.lovelace.editor.card.map.source")}
+        .required=${false}
         .hass=${this.hass}
         .value=${this._geo_location_sources}
         @value-changed=${this._geoSourcesChanged}
-      ></hui-input-list-editor>
+        .selector=${this._selectSchema(
+          this._possibleGeoSources,
+          this.hass.localize
+        )}
+      ></ha-selector-select>
     `;
   }
+
+  private _selectSchema = memoizeOne(
+    (options, localize: LocalizeFunc): SelectSelector => ({
+      select: {
+        sort: true,
+        multiple: true,
+        custom_value: true,
+        options: options.length
+          ? options
+          : [
+              {
+                value: "",
+                label: localize(
+                  "ui.panel.lovelace.editor.card.map.no_geo_location_sources"
+                ),
+              },
+            ],
+      },
+    })
+  );
 
   private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
     if (ev.detail && ev.detail.entities) {
@@ -211,6 +238,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  protected willUpdate() {
+    if (this.hass && !this._possibleGeoSources) {
+      const sources: Record<string, string> = {};
+      Object.entries(this.hass.states).forEach(([entity_id, stateObj]) => {
+        const domain = computeDomain(entity_id);
+        if (domain === "geo_location" && stateObj.attributes.source) {
+          sources[stateObj.attributes.source] = stateObj.attributes.attribution;
+        }
+      });
+
+      this._possibleGeoSources = Object.entries(sources).map(
+        ([source, attribution]) => ({
+          value: source,
+          label: attribution || source,
+        })
+      );
+    }
   }
 
   private _computeLabelCallback = (
