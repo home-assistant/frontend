@@ -159,7 +159,7 @@ class ConfigUrlForm extends LitElement {
                       .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
                     ></ha-icon-button>
                   `
-                : ""}
+                : nothing}
             </div>
             <ha-button .url=${externalUrl} @click=${this._copyURL}>
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
