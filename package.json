@@ -139,7 +139,7 @@
     "unfetch": "5.0.0",
     "vis-data": "7.1.9",
     "vis-network": "9.1.9",
-    "vue": "2.7.16",
+    "vue": "3.0.0",
     "vue2-daterange-picker": "0.6.8",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.1.0",
