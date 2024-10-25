@@ -62,6 +62,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { getPanelTitle } from "../../data/panel";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -80,8 +81,8 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
+import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
-import { getPanelTitle } from "../../data/panel";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -291,6 +292,8 @@ class HUIRoot extends LitElement {
       ? getPanelTitle(this.hass, this.panel)
       : undefined;
 
+    const background = curViewConfig?.background || this.config.background;
+
     return html`
       <div
         class=${classMap({
@@ -469,7 +472,14 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </div>
-        <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
+        <hui-view-container
+          .hass=${this.hass}
+          .background=${background}
+          .theme=${curViewConfig?.theme}
+          id="view"
+          @ll-rebuild=${this._debouncedConfigChanged}
+        >
+        </hui-view-container>
       </div>
     `;
   }
@@ -937,21 +947,6 @@ class HUIRoot extends LitElement {
     view.hass = this.hass;
     view.narrow = this.narrow;
 
-    const configBackground = viewConfig.background || this.config.background;
-
-    const backgroundStyle =
-      typeof configBackground === "string"
-        ? configBackground
-        : configBackground?.image
-          ? `center / cover no-repeat url('${configBackground.image}')`
-          : undefined;
-
-    if (backgroundStyle) {
-      root.style.setProperty("--lovelace-background", backgroundStyle);
-    } else {
-      root.style.removeProperty("--lovelace-background");
-    }
-
     root.appendChild(view);
   }
 
@@ -1063,7 +1058,7 @@ class HUIRoot extends LitElement {
         mwc-button.warning:not([disabled]) {
           color: var(--error-color);
         }
-        #view {
+        hui-view-container {
           position: relative;
           display: flex;
           padding-top: calc(var(--header-height) + env(safe-area-inset-top));
@@ -1074,19 +1069,15 @@ class HUIRoot extends LitElement {
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
-        #view > * {
+        hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
         }
         /**
          * In edit mode we have the tab bar on a new line *
          */
-        .edit-mode #view {
+        .edit-mode hui-view-container {
           padding-top: calc(
             var(--header-height) + 48px + env(safe-area-inset-top)
           );
