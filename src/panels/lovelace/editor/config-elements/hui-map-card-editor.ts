@@ -136,7 +136,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   get _geo_location_sources(): string[] {
-    return this._config!.geo_location_sources || [];
+    return (this._config!.geo_location_sources as string[]) || [];
   }
 
   protected render() {
