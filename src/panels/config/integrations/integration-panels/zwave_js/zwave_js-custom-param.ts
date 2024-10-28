@@ -1,10 +1,10 @@
-import { LitElement, html, css, CSSResultGroup, nothing } from "lit";
+import { type LitElement, html, css, type CSSResultGroup, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "@material/mwc-button/mwc-button";
 import { mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
-import { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-button";
+import type { HomeAssistant } from "../../../../../types";
 import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
@@ -70,16 +70,16 @@ class ZWaveJSCustomParam extends LitElement {
         </ha-select>
       </div>
       <div class="custom-config-buttons">
-        <mwc-button @click=${this._getCustomConfigValue}>
+        <ha-button @click=${this._getCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.get_value"
           )}
-        </mwc-button>
-        <mwc-button @click=${this._setCustomConfigValue}>
+        </ha-button>
+        <ha-button @click=${this._setCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.set_value"
           )}
-        </mwc-button>
+        </ha-button>
       </div>
       <div class="error">
         ${this._error
