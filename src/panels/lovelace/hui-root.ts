@@ -1094,6 +1094,7 @@ class HUIRoot extends LitElement {
         }
         ha-md-tabs {
           text-transform: uppercase;
+          --md-secondary-tab-label-text-size: 14px;
           --md-sys-color-primary: var(--app-header-text-color, white);
           --md-sys-color-secondary: var(--app-header-text-color, white);
           --md-sys-color-surface: var(--app-header-background-color);
