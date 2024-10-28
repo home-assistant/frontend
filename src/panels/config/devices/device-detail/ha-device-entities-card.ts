@@ -92,15 +92,19 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     return html`
       <ha-card outlined .header=${this.header}>
-        <div id="entities">
-          <mwc-list>
-            ${shownEntities.map((entry) =>
-              this.hass.states[entry.entity_id]
-                ? this._renderEntity(entry)
-                : this._renderEntry(entry)
-            )}
-          </mwc-list>
-        </div>
+        ${shownEntities.length
+          ? html`
+              <div id="entities">
+                <mwc-list>
+                  ${shownEntities.map((entry) =>
+                    this.hass.states[entry.entity_id]
+                      ? this._renderEntity(entry)
+                      : this._renderEntry(entry)
+                  )}
+                </mwc-list>
+              </div>
+            `
+          : ""}
         ${hiddenEntities.length
           ? !this.showHidden
             ? html`
@@ -301,6 +305,10 @@ export class HaDeviceEntitiesCard extends LitElement {
       button.show-more:focus {
         outline: none;
         text-decoration: underline;
+      }
+      mwc-list:has(.disabled-entry) {
+        --mdc-list-vertical-padding: 0;
+        margin-top: -8px;
       }
     `;
   }
