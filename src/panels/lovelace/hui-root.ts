@@ -416,7 +416,7 @@ class HUIRoot extends LitElement {
                                   ?disabled=${this._curView === 0}
                                 ></ha-icon-button-arrow-prev>
                               `
-                            : ""}
+                            : nothing}
                           ${view.icon
                             ? html`
                                 <ha-icon
