@@ -83,10 +83,11 @@ class MoreInfoValve extends LitElement {
       supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) ||
       supportsFeature(this.stateObj, ValveEntityFeature.STOP);
 
-    const supportsOpenCloseWithoutStop =
+    const supportsOpenCloseOnly =
       supportsFeature(this.stateObj, ValveEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) &&
-      !supportsFeature(this.stateObj, ValveEntityFeature.STOP);
+      !supportsFeature(this.stateObj, ValveEntityFeature.STOP) &&
+      !supportsPosition;
 
     return html`
       <ha-more-info-state-header
@@ -113,7 +114,7 @@ class MoreInfoValve extends LitElement {
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseWithoutStop
+                  ${supportsOpenCloseOnly
                     ? html`
                         <ha-state-control-valve-toggle
                           .stateObj=${this.stateObj}
