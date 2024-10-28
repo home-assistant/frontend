@@ -93,12 +93,15 @@ class MoreInfoCover extends LitElement {
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) ||
       supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT);
 
-    const supportsOpenCloseWithoutStop =
+    const supportsOpenCloseOnly =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
       !supportsFeature(this.stateObj, CoverEntityFeature.STOP) &&
       !supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT);
+      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) &&
+      !supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION);
 
     return html`
       <ha-more-info-state-header
@@ -133,7 +136,7 @@ class MoreInfoCover extends LitElement {
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseWithoutStop
+                  ${supportsOpenCloseOnly
                     ? html`
                         <ha-state-control-cover-toggle
                           .stateObj=${this.stateObj}
