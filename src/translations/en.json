@@ -5692,7 +5692,7 @@
           "move_card": {
             "header": "Choose a view to move the card to",
             "strategy_error_title": "Impossible to move the card",
-            "strategy_error_text_strategy": "Moving a card to a strategy view is not supported."
+            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported."
           },
           "change_position": {
             "title": "Change card position",
