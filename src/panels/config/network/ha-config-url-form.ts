@@ -23,6 +23,7 @@ import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
 import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
+import type { HaSwitch } from "../../../components/ha-switch";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -34,9 +35,9 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _urls?: NetworkUrls;
 
-  @state() private _external_url?: string;
+  @state() private _external_url: string = "";
 
-  @state() private _internal_url?: string;
+  @state() private _internal_url: string = "";
 
   @state() private _cloudStatus?: CloudStatus | null;
 
@@ -60,8 +61,13 @@ class ConfigUrlForm extends LitElement {
       return nothing;
     }
 
-    const internalUrl = this._internalUrlValue;
-    const externalUrl = this._externalUrlValue;
+    const internalUrl = this._showCustomInternalUrl
+      ? this._internal_url
+      : this._urls?.internal || "";
+    const externalUrl = this._showCustomExternalUrl
+      ? this._external_url
+      : (this._cloudChecked ? this._urls?.cloud : this._urls?.external) || "";
+
     let hasCloud: boolean;
     let remoteEnabled: boolean;
     let httpUseHttps: boolean;
@@ -304,40 +310,22 @@ class ConfigUrlForm extends LitElement {
       fetchCloudStatus(this.hass).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
         this._showCustomExternalUrl = !(
-          cloudStatus.logged_in && !this.hass.config.external_url
+          this._cloudStatus.logged_in && !this.hass.config.external_url
         );
       });
     } else {
       this._cloudStatus = null;
     }
     this._fetchUrls();
-    this._showCustomInternalUrl = !!this.hass.config.internal_url;
   }
 
-  private get _internalUrlValue() {
-    if (this._internal_url && this._showCustomInternalUrl) {
-      return this._internal_url;
-    }
-    return this._urls?.internal ?? "";
+  private _toggleCloud(ev: Event) {
+    this._cloudChecked = (ev.currentTarget as HaSwitch).checked;
+    this._showCustomExternalUrl = !this._cloudChecked;
   }
 
-  private get _externalUrlValue() {
-    if (this._external_url && this._showCustomExternalUrl) {
-      return this._external_url;
-    }
-    if (this._cloudChecked) {
-      return this._urls?.cloud ?? "";
-    }
-    return this._urls?.external ?? "";
-  }
-
-  private _toggleCloud(ev) {
-    this._cloudChecked = ev.currentTarget.checked;
-    this._showCustomExternalUrl = !ev.currentTarget.checked;
-  }
-
-  private _toggleInternalAutomatic(ev) {
-    this._showCustomInternalUrl = !ev.currentTarget.checked;
+  private _toggleInternalAutomatic(ev: Event) {
+    this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
   }
 
   private _toggleUnmaskedInternalUrl() {
@@ -365,7 +353,7 @@ class ConfigUrlForm extends LitElement {
 
   private _handleChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HaTextField;
-    this[`_${target.name}`] = target.value || null;
+    this[`_${target.name}`] = target.value || "";
   }
 
   private async _save() {
@@ -374,10 +362,10 @@ class ConfigUrlForm extends LitElement {
     try {
       await saveCoreConfig(this.hass, {
         external_url: this._showCustomExternalUrl
-          ? this._externalUrlValue || null
+          ? this._external_url || null
           : null,
         internal_url: this._showCustomInternalUrl
-          ? this._internalUrlValue || null
+          ? this._internal_url || null
           : null,
       });
       await this._fetchUrls();
@@ -390,7 +378,15 @@ class ConfigUrlForm extends LitElement {
 
   private async _fetchUrls() {
     this._urls = await getNetworkUrls(this.hass);
-    this._cloudChecked = this._urls?.cloud === this._urls?.external;
+    this._cloudChecked =
+      this._urls?.cloud === this._urls?.external &&
+      !this.hass.config.external_url;
+    this._showCustomInternalUrl = !!this.hass.config.internal_url;
+    this._showCustomExternalUrl = !(
+      this._cloudStatus?.logged_in && !this.hass.config.external_url
+    );
+    this._internal_url = this._urls?.internal ?? "";
+    this._external_url = this._urls?.external ?? "";
   }
 
   static get styles(): CSSResultGroup {
