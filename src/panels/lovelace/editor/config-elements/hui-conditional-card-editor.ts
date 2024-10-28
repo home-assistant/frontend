@@ -156,8 +156,8 @@ export class HuiConditionalCardEditor
     `;
   }
 
-  private _selectTab(ev: Event): void {
-    this._cardTab = (ev.target as any).activeTabIndex === 1;
+  private _selectTab(ev: any): void {
+    this._cardTab = ev.target.activeTabIndex === 1;
   }
 
   private _toggleMode(): void {
