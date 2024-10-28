@@ -97,11 +97,9 @@ class MoreInfoCover extends LitElement {
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
       !supportsFeature(this.stateObj, CoverEntityFeature.STOP) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION);
+      !supportsTilt &&
+      !supportsPosition &&
+      !supportsTiltPosition;
 
     return html`
       <ha-more-info-state-header

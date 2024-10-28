@@ -87,7 +87,7 @@ class MoreInfoValve extends LitElement {
       supportsFeature(this.stateObj, ValveEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) &&
       !supportsFeature(this.stateObj, ValveEntityFeature.STOP) &&
-      !supportsFeature(this.stateObj, ValveEntityFeature.SET_POSITION);
+      !supportsPosition;
 
     return html`
       <ha-more-info-state-header
