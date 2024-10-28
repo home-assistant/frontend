@@ -68,7 +68,9 @@ export class HaMdTabs extends MdTabs {
         --md-primary-tab-container-height: 56px;
         --md-secondary-tab-container-height: 56px;
       }
-
+      ::-webkit-scrollbar {
+        display: none;
+      }
       :host {
         scroll-behavior: unset;
       }
