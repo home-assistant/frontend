@@ -292,6 +292,9 @@ export class HaConfigPerson extends LitElement {
         align-items: center;
         justify-content: space-around;
       }
+      mwc-list:has(+ .empty) {
+        display: none;
+      }
     `;
   }
 }
