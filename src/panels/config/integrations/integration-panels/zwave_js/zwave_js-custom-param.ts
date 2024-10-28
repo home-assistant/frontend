@@ -1,4 +1,4 @@
-import { type LitElement, html, css, type CSSResultGroup, nothing } from "lit";
+import { LitElement, html, css, type CSSResultGroup, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-textfield";
