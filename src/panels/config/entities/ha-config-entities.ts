@@ -1317,9 +1317,9 @@ ${rejected
       HELPERS_CRUD[d].fetch(this.hass)
     );
     const helpersResult = await Promise.all(domainProms);
-    let uiHelpers: Helper[] = [];
+    let fetchedHelpers: Helper[] = [];
     helpersResult.forEach((r) => {
-      uiHelpers = uiHelpers.concat(r);
+      fetchedHelpers = fetchedHelpers.concat(r);
     });
     if (manifestsProm) {
       this._manifests = await manifestsProm;
@@ -1335,7 +1335,7 @@ ${rejected
         this._manifests!,
         this._entities,
         this._entries!,
-        uiHelpers
+        fetchedHelpers
       )
     );
     showConfirmationDialog(this, {
@@ -1364,7 +1364,8 @@ ${rejected
             entity_id,
             this._manifests!,
             this._entities,
-            this._entries!
+            this._entries!,
+            fetchedHelpers
           )
         );
         this._clearSelection();

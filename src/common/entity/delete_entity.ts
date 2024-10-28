@@ -16,7 +16,7 @@ export const isDeletableEntity = (
   manifests: IntegrationManifest[],
   entityRegistry: EntityRegistryEntry[],
   configEntries: ConfigEntry[],
-  uiHelpers: Helper[]
+  fetchedHelpers: Helper[]
 ): boolean => {
   const restored = !!hass.states[entity_id]?.attributes.restored;
   if (restored) {
@@ -29,7 +29,7 @@ export const isDeletableEntity = (
     return !!(
       isComponentLoaded(hass, domain) &&
       entityRegEntry &&
-      uiHelpers.some((e) => e.id === entityRegEntry.unique_id)
+      fetchedHelpers.some((e) => e.id === entityRegEntry.unique_id)
     );
   }
 
@@ -49,14 +49,18 @@ export const deleteEntity = (
   entity_id: string,
   manifests: IntegrationManifest[],
   entityRegistry: EntityRegistryEntry[],
-  configEntries: ConfigEntry[]
+  configEntries: ConfigEntry[],
+  fetchedHelpers: Helper[]
 ) => {
   // This function assumes the entity_id already was validated by isDeletableEntity and does not repeat all those checks.
   const domain = computeDomain(entity_id);
   const entityRegEntry = entityRegistry.find((e) => e.entity_id === entity_id);
   if (isHelperDomain(domain)) {
     if (isComponentLoaded(hass, domain)) {
-      if (entityRegEntry) {
+      if (
+        entityRegEntry &&
+        fetchedHelpers.some((e) => e.id === entityRegEntry.unique_id)
+      ) {
         HELPERS_CRUD[domain].delete(hass, entityRegEntry.unique_id);
         return;
       }
