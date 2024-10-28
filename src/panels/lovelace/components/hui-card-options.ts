@@ -50,7 +50,7 @@ import {
 } from "../editor/config-util";
 import {
   LovelaceCardPath,
-  LovelaceContainerPath,
+  type LovelaceContainerPath,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
@@ -380,7 +380,7 @@ export class HuiCardOptions extends LitElement {
 
         let toPath: LovelaceContainerPath = [viewIndex];
 
-        // If the view is a section view and has no i"mported cards" section, adds a default section.
+        // If the view is a section view and has no "imported cards" section, adds a default section.
         if (isSectionsView) {
           const importedCardHeading = fromView.title
             ? this.hass!.localize(
@@ -391,15 +391,16 @@ export class HuiCardOptions extends LitElement {
                 "ui.panel.lovelace.editor.section.imported_card_section_title_default"
               );
 
-          let sectionIndex =
-            toView.sections?.findIndex(
-              (s) =>
-                "cards" in s &&
-                s.cards?.some(
-                  (c) =>
-                    c.type === "heading" && c.heading === importedCardHeading
-                )
-            ) ?? -1;
+          let sectionIndex = toView.sections
+            ? toView.sections.findIndex(
+                (s) =>
+                  "cards" in s &&
+                  s.cards?.some(
+                    (c) =>
+                      c.type === "heading" && c.heading === importedCardHeading
+                  )
+              )
+            : -1;
           if (sectionIndex === -1) {
             const newSection: LovelaceSectionConfig = {
               type: "grid",
