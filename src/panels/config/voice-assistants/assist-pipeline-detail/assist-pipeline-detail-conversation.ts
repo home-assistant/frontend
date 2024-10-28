@@ -17,8 +17,12 @@ export class AssistPipelineDetailConversation extends LitElement {
   @state() private _supportedLanguages?: "*" | string[];
 
   private _schema = memoizeOne(
-    (language?: string, supportedLanguages?: "*" | string[]) =>
-      [
+    (
+      engine?: string,
+      language?: string,
+      supportedLanguages?: "*" | string[]
+    ) => {
+      const fields: any = [
         {
           name: "",
           type: "grid",
@@ -32,18 +36,33 @@ export class AssistPipelineDetailConversation extends LitElement {
                 },
               },
             },
-            supportedLanguages !== "*" && supportedLanguages?.length
-              ? {
-                  name: "conversation_language",
-                  required: true,
-                  selector: {
-                    language: { languages: supportedLanguages, no_sort: true },
-                  },
-                }
-              : { name: "", type: "constant" },
-          ] as const,
+          ],
         },
-      ] as const
+      ];
+
+      if (supportedLanguages !== "*" && supportedLanguages?.length) {
+        fields[0].schema.push({
+          name: "conversation_language",
+          required: true,
+          selector: {
+            language: { languages: supportedLanguages, no_sort: true },
+          },
+        });
+      }
+
+      if (engine !== "conversation.home_assistant") {
+        fields.push({
+          name: "conversation_process_local",
+          required: true,
+          default: true,
+          selector: {
+            boolean: {},
+          },
+        });
+      }
+
+      return fields;
+    }
   );
 
   private _computeLabel = (schema): string =>
@@ -69,7 +88,11 @@ export class AssistPipelineDetailConversation extends LitElement {
           </p>
         </div>
         <ha-form
-          .schema=${this._schema(this.data?.language, this._supportedLanguages)}
+          .schema=${this._schema(
+            this.data?.conversation_engine,
+            this.data?.language,
+            this._supportedLanguages
+          )}
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}

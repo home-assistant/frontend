@@ -9,6 +9,7 @@ export interface AssistPipeline {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
+  conversation_process_local: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -28,6 +29,7 @@ export interface AssistPipelineMutableParams {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
+  conversation_process_local: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;

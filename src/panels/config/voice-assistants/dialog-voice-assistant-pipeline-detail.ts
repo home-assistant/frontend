@@ -170,7 +170,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
-            keys="conversation_engine,conversation_language"
+            keys="conversation_engine,conversation_language,conversation_process_local"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
           ${!this._cloudActive &&
@@ -259,6 +259,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         language: data.language!,
         conversation_engine: data.conversation_engine!,
         conversation_language: data.conversation_language ?? null,
+        conversation_process_local: data.conversation_process_local ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,
         tts_engine: data.tts_engine ?? null,
