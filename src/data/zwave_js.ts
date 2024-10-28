@@ -264,6 +264,15 @@ export interface ZWaveJSSetConfigParamData {
   value: string | number;
 }
 
+export interface ZWaveJSSetRawConfigParamData {
+  type: string;
+  device_id: string;
+  property: number;
+  value: number;
+  value_size: number;
+  value_format: number;
+}
+
 export interface ZWaveJSSetConfigParamResult {
   value_id?: string;
   status?: string;
@@ -637,6 +646,36 @@ export const setZwaveNodeConfigParameter = (
   };
   return hass.callWS(data);
 };
+
+export const setZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number,
+  value: number,
+  value_size: number,
+  value_format: number
+): Promise<ZWaveJSSetConfigParamResult> => {
+  const data: ZWaveJSSetRawConfigParamData = {
+    type: "zwave_js/set_raw_config_parameter",
+    device_id,
+    property,
+    value,
+    value_size,
+    value_format,
+  };
+  return hass.callWS(data);
+};
+
+export const getZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number
+): Promise<number> =>
+  hass.callWS({
+    type: "zwave_js/get_raw_config_parameter",
+    device_id,
+    property,
+  });
 
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,
