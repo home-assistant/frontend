@@ -54,7 +54,7 @@ class HcLovelace extends LitElement {
       <hui-view-container
         .hass=${this.hass}
         .background=${background}
-        .theme=${this.lovelaceConfig}
+        .theme=${viewConfig.theme}
       >
         <hui-view
           .hass=${this.hass}
@@ -115,15 +115,14 @@ class HcLovelace extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       hui-view-container {
+        display: flex;
         position: relative;
         min-height: 100vh;
-        height: 0;
-        display: flex;
-        flex-direction: column;
         box-sizing: border-box;
       }
       hui-view {
-        flex: 1;
+        flex: 1 1 100%;
+        max-width: 100%;
       }
     `;
   }
