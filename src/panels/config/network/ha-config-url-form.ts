@@ -56,11 +56,7 @@ class ConfigUrlForm extends LitElement {
     );
     const disabled = this._working || !canEdit;
 
-    if (
-      !this.hass.userData?.showAdvanced ||
-      this._cloudStatus === undefined ||
-      this._urls === undefined
-    ) {
+    if (this._cloudStatus === undefined || this._urls === undefined) {
       return nothing;
     }
 
