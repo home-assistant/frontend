@@ -5696,8 +5696,8 @@
           },
           "move_card": {
             "header": "Choose a view to move the card to",
-            "error_title": "Impossible to move the card",
-            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
+            "strategy_error_title": "Impossible to move the card",
+            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported."
           },
           "change_position": {
             "title": "Change card position",
@@ -5715,7 +5715,9 @@
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section",
-            "default_section_title": "New section"
+            "default_section_title": "New section",
+            "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
+            "imported_card_section_title_default": "Imported cards from another view"
           },
           "delete_section": {
             "title": "Delete section",
