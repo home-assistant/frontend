@@ -23,6 +23,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
+import { obfuscateUrl } from "../../../../util/url";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -142,7 +143,7 @@ export class CloudRemotePref extends LitElement {
               <ha-textfield
                 .value=${this._unmaskedUrl
                   ? `https://${remote_domain}`
-                  : "https://•••••••••••••••••.ui.nabu.casa"}
+                  : obfuscateUrl(`https://${remote_domain}`)}
                 readonly
                 .suffix=${
                   // reserve some space for the icon.

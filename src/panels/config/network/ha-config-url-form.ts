@@ -24,6 +24,7 @@ import type { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
 import type { HaSwitch } from "../../../components/ha-switch";
+import { obfuscateUrl } from "../../../util/url";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -141,7 +142,7 @@ class ConfigUrlForm extends LitElement {
                 .value=${this._unmaskedExternalUrl ||
                 (this._showCustomExternalUrl && canEdit)
                   ? externalUrl
-                  : this._obfuscateUrl(externalUrl)}
+                  : obfuscateUrl(externalUrl)}
                 @change=${this._handleChange}
                 .disabled=${disabled || !this._showCustomExternalUrl}
                 .suffix=${
@@ -240,7 +241,7 @@ class ConfigUrlForm extends LitElement {
                 .value=${this._unmaskedInternalUrl ||
                 (this._showCustomInternalUrl && canEdit)
                   ? internalUrl
-                  : this._obfuscateUrl(internalUrl)}
+                  : obfuscateUrl(internalUrl)}
                 @change=${this._handleChange}
                 .disabled=${disabled || !this._showCustomInternalUrl}
                 .suffix=${
@@ -334,13 +335,6 @@ class ConfigUrlForm extends LitElement {
 
   private _toggleUnmaskedExternalUrl() {
     this._unmaskedExternalUrl = !this._unmaskedExternalUrl;
-  }
-
-  private _obfuscateUrl(url: string) {
-    // hide any words that look like they might be a hostname or IP address
-    return url.replace(/(?<=:\/\/)[\w-]+|(?<=\.)[\w-]+/g, (match) =>
-      "•".repeat(match.length)
-    );
   }
 
   private async _copyURL(ev) {
