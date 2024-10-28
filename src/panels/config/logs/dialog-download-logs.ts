@@ -65,7 +65,11 @@ class DownloadLogsDialog extends LitElement {
           <span slot="title" id="dialog-light-color-favorite-title">
             ${this.hass.localize("ui.panel.config.logs.download_full_log")}
           </span>
-          <span slot="subtitle"> ${this._dialogParams.header} </span>
+          <span slot="subtitle">
+            ${this._dialogParams.header}${this._dialogParams.boot === 0
+              ? ""
+              : ` ⸱ ${this._dialogParams.boot === -1 ? this.hass.localize("ui.panel.config.logs.previous") : this.hass.localize("ui.panel.config.logs.startups_ago", { boot: this._dialogParams.boot * -1 })}`}
+          </span>
         </ha-dialog-header>
         <div slot="content" class="content">
           <div>
@@ -104,9 +108,14 @@ class DownloadLogsDialog extends LitElement {
 
   private async _dowloadLogs() {
     const provider = this._dialogParams!.provider;
+    const boot = this._dialogParams!.boot;
 
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = getHassioLogDownloadLinesUrl(provider, this._lineCount);
+    const downloadUrl = getHassioLogDownloadLinesUrl(
+      provider,
+      this._lineCount,
+      boot
+    );
     const logFileName =
       provider !== "core"
         ? `${provider}_${timeString}.log`

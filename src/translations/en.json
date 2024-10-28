@@ -2490,6 +2490,9 @@
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "current": "Current",
+          "previous": "Previous",
+          "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
             "source": "Source",
