@@ -303,6 +303,9 @@ export class HaDeviceEntitiesCard extends LitElement {
         outline: none;
         text-decoration: underline;
       }
+      ha-list-item {
+        height: 40px;
+      }
     `;
   }
 }
