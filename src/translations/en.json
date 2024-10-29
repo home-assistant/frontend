@@ -6169,7 +6169,7 @@
             },
             "tile": {
               "name": "Tile",
-              "description": "he tile card gives you a quick overview of your entity. The card allows you to toggle the entity, show the details view, or perform custom actions.",
+              "description": "The tile card gives you a quick overview of your entity. The card allows you to toggle the entity, show the details view, or perform custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
