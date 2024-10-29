@@ -254,7 +254,7 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker select.hourselect,
           .daterangepicker select.minuteselect,
           .daterangepicker select.secondselect {
-            background: transparent;
+            background: var(--card-background-color);
             border: 1px solid var(--divider-color);
             color: var(--primary-color);
           }

@@ -100,8 +100,8 @@ export class EntitySettingsHelperTab extends LitElement {
           .entry=${this.entry}
           .disabled=${this._submitting}
           @change=${this._entityRegistryChanged}
-          hideName
-          hideIcon
+          hide-name
+          hide-icon
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">

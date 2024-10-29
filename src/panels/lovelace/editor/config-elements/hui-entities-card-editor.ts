@@ -81,13 +81,7 @@ const callServiceEntitiesRowConfigStruct = object({
 const conditionalEntitiesRowConfigStruct = object({
   type: literal("conditional"),
   row: any(),
-  conditions: array(
-    object({
-      entity: string(),
-      state: optional(string()),
-      state_not: optional(string()),
-    })
-  ),
+  conditions: array(any()),
 });
 
 const dividerEntitiesRowConfigStruct = object({

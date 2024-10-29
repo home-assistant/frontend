@@ -298,6 +298,11 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+interface GeoLocationSourceConfig {
+  source: string;
+  focus?: boolean;
+}
+
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
   title?: string;
@@ -307,7 +312,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
-  geo_location_sources?: string[];
+  geo_location_sources?: Array<GeoLocationSourceConfig | string>;
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
 }

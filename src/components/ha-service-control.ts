@@ -61,6 +61,11 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
+interface Field extends Omit<HassService["fields"][string], "selector"> {
+  key: string;
+  selector?: Selector;
+}
+
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: Array<
     Omit<HassService["fields"][string], "selector"> & {
@@ -70,6 +75,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
       collapsed?: boolean;
     }
   >;
+  flatFields: Array<Field>;
   hasSelector: string[];
 }
 
@@ -177,7 +183,7 @@ export class HaServiceControl extends LitElement {
         if (!this._value.data) {
           this._value.data = {};
         }
-        serviceData.fields.forEach((field) => {
+        serviceData.flatFields.forEach((field) => {
           if (
             field.selector &&
             field.required &&
@@ -241,22 +247,28 @@ export class HaServiceControl extends LitElement {
         selector: value.selector as Selector | undefined,
       }));
 
+      const flatFields: Field[] = [];
       const hasSelector: string[] = [];
       fields.forEach((field) => {
         if ((field as any).fields) {
           Object.entries((field as any).fields).forEach(([key, subField]) => {
+            flatFields.push({ ...(subField as Field), key });
             if ((subField as any).selector) {
               hasSelector.push(key);
             }
           });
-        } else if (field.selector) {
-          hasSelector.push(field.key);
+        } else {
+          flatFields.push(field);
+          if (field.selector) {
+            hasSelector.push(field.key);
+          }
         }
       });
 
       return {
         ...serviceDomains[domain][serviceName],
         fields,
+        flatFields,
         hasSelector,
       };
     }
@@ -397,7 +409,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.fields.some((field) => showOptionalToggle(field))
+        serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
     const targetEntities = this._getTargetedEntities(
@@ -667,7 +679,7 @@ export class HaServiceControl extends LitElement {
       const field = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.fields.find((_field) => _field.key === key);
+      )?.flatFields.find((_field) => _field.key === key);
 
       let defaultValue = field?.default;
 

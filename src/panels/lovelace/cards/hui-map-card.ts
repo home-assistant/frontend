@@ -50,6 +50,11 @@ interface MapEntityConfig extends EntityConfig {
   focus?: boolean;
 }
 
+interface GeoEntity {
+  entity_id: string;
+  focus: boolean;
+}
+
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -332,23 +337,32 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getSourceEntities(states?: HassEntities): string[] {
+  private _getSourceEntities(states?: HassEntities): GeoEntity[] {
     if (!states || !this._config?.geo_location_sources) {
       return [];
     }
 
-    const geoEntities: string[] = [];
+    const sourceObjs = this._config.geo_location_sources.map((source) =>
+      typeof source === "string" ? { source } : source
+    );
+
+    const geoEntities: GeoEntity[] = [];
     // Calculate visible geo location sources
-    const includesAll = this._config.geo_location_sources.includes("all");
+    const allSource = sourceObjs.find((s) => s.source === "all");
     for (const stateObj of Object.values(states)) {
+      const sourceObj = sourceObjs.find(
+        (s) => s.source === stateObj.attributes.source
+      );
       if (
         computeDomain(stateObj.entity_id) === "geo_location" &&
-        (includesAll ||
-          this._config.geo_location_sources.includes(
-            stateObj.attributes.source
-          ))
+        (allSource || sourceObj)
       ) {
-        geoEntities.push(stateObj.entity_id);
+        geoEntities.push({
+          entity_id: stateObj.entity_id,
+          focus: sourceObj
+            ? (sourceObj.focus ?? true)
+            : (allSource?.focus ?? true),
+        });
       }
     }
     return geoEntities;
@@ -364,8 +378,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         name: entityConf.name,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
-        entity_id: entity,
-        color: this._getColor(entity),
+        entity_id: entity.entity_id,
+        focus: entity.focus,
+        color: this._getColor(entity.entity_id),
       })),
     ];
   }

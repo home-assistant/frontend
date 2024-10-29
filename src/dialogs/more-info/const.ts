@@ -31,6 +31,9 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "valve",
   "water_heater",
 ];
+/** Domains with full height more info dialog */
+export const DOMAINS_FULL_HEIGHT_MORE_INFO = ["update"];
+
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
   "alarm_control_panel",

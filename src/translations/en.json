@@ -1191,6 +1191,7 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
+          "update": "Update",
           "create_backup": "Create backup before updating",
           "auto_update_enabled_title": "Can not skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
@@ -1929,7 +1930,10 @@
           "multiselect": {
             "failed": "Failed to update {number} items."
           },
-          "learn_more": "Learn more"
+          "learn_more": "Learn more",
+          "show_url": "Show full URL",
+          "hide_url": "Hide URL",
+          "copy_link": "Copy link"
         },
         "updates": {
           "caption": "Updates",
@@ -2397,7 +2401,9 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_automatic_description": "Use the configured network settings",
+          "internal_url_placeholder": "http://<some IP address>:8123"
         },
         "hardware": {
           "caption": "Hardware",
@@ -2490,6 +2496,9 @@
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "current": "Current",
+          "previous": "Previous",
+          "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
             "source": "Source",
@@ -2861,6 +2870,7 @@
             "copy_to_clipboard": "Copy to clipboard",
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
+            "edit_unknown_device": "Editor not available for unknown device",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3910,9 +3920,6 @@
               "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
               "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
-              "show_url": "Show full URL",
-              "hide_url": "Hide URL",
-              "copy_link": "Copy link",
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
@@ -5696,8 +5703,8 @@
           },
           "move_card": {
             "header": "Choose a view to move the card to",
-            "error_title": "Impossible to move the card",
-            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
+            "strategy_error_title": "Impossible to move the card",
+            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported."
           },
           "change_position": {
             "title": "Change card position",
@@ -5715,7 +5722,9 @@
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section",
-            "default_section_title": "New section"
+            "default_section_title": "New section",
+            "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
+            "imported_card_section_title_default": "Imported cards from another view"
           },
           "delete_section": {
             "title": "Delete section",
@@ -6081,6 +6090,7 @@
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
+              "no_geo_location_sources": "No geolocation sources available",
               "dark_mode": "Dark mode?",
               "appearance": "Appearance",
               "theme_mode": "Theme Mode",
@@ -7664,6 +7674,7 @@
     },
     "backup": {
       "search": "[%key:ui::panel::config::backup::picker::search%]",
+      "loading_backups": "Loading backups. This can take a few seconds.",
       "no_backups": "You don't have any backups yet.",
       "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
       "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
