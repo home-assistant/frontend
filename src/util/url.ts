@@ -1,5 +1,5 @@
 export function obfuscateUrl(url: string) {
-  if (url.includes(".ui.nabu.casa")) {
+  if (url.endsWith(".ui.nabu.casa")) {
     return "https://•••••••••••••••••.ui.nabu.casa";
   }
   // hide any words that look like they might be a hostname or IP address

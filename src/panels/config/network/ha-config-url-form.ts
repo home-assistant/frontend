@@ -237,7 +237,9 @@ class ConfigUrlForm extends LitElement {
               <ha-textfield
                 name="internal_url"
                 type="url"
-                placeholder="http://<some IP address>:8123"
+                placeholder=${this.hass.localize(
+                  "ui.panel.config.url.internal_url_placeholder"
+                )}
                 .value=${this._unmaskedInternalUrl ||
                 (this._showCustomInternalUrl && canEdit)
                   ? internalUrl

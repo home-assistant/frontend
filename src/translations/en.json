@@ -2401,7 +2401,8 @@
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
-          "internal_url_automatic_description": "Use the configured network settings"
+          "internal_url_automatic_description": "Use the configured network settings",
+          "internal_url_placeholder": "http://<some IP address>:8123"
         },
         "hardware": {
           "caption": "Hardware",
