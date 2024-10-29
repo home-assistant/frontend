@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -60,6 +60,28 @@ export class HaDeviceTrigger extends LitElement {
       return extraFieldsData;
     }
   );
+
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("trigger")) {
+      return true;
+    }
+    if (
+      this.trigger.device_id &&
+      !(this.trigger.device_id in this.hass.devices)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(
+          this.hass.localize(
+            "ui.panel.config.automation.editor.edit_unknown_device"
+          )
+        )
+      );
+      return false;
+    }
+    return true;
+  }
 
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;

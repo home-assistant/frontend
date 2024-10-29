@@ -16,6 +16,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
+import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -73,9 +74,19 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _callService(ev: Event): void {
+  private async _callService(ev: Event): Promise<void> {
     ev.stopPropagation();
-    activateScene(this.hass, this._config!.entity);
+    if (
+      !this._config?.confirmation ||
+      (await confirmAction(
+        this,
+        this.hass,
+        this._config.confirmation,
+        this._config.action_name || this.hass.localize("ui.card.scene.activate")
+      ))
+    ) {
+      activateScene(this.hass, this._config!.entity);
+    }
   }
 }
 

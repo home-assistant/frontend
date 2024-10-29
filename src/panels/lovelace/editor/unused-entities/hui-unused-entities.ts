@@ -167,7 +167,6 @@ export class HuiUnusedEntities extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        background: var(--lovelace-background);
         overflow: hidden;
       }
       .container {

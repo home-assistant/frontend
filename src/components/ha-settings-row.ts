@@ -5,6 +5,8 @@ import { customElement, property } from "lit/decorators";
 export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ type: Boolean, reflect: true }) public slim = false; // remove padding and min-height
+
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
 
@@ -42,14 +44,17 @@ export class HaSettingsRow extends LitElement {
         padding-bottom: 8px;
         padding-left: 0;
         padding-inline-start: 0;
-        padding-right: 16x;
+        padding-right: 16px;
         padding-inline-end: 16px;
         overflow: hidden;
-        display: var(--layout-vertical_-_display);
-        flex-direction: var(--layout-vertical_-_flex-direction);
-        justify-content: var(--layout-center-justified_-_justify-content);
-        flex: var(--layout-flex_-_flex);
-        flex-basis: var(--layout-flex_-_flex-basis);
+        display: var(--layout-vertical_-_display, flex);
+        flex-direction: var(--layout-vertical_-_flex-direction, column);
+        justify-content: var(
+          --layout-center-justified_-_justify-content,
+          center
+        );
+        flex: var(--layout-flex_-_flex, 1);
+        flex-basis: var(--layout-flex_-_flex-basis, 0.000000001px);
       }
       .body[three-line] {
         min-height: var(--paper-item-body-three-line-min-height, 88px);
@@ -108,6 +113,14 @@ export class HaSettingsRow extends LitElement {
       :host([narrow]) .prefix-wrap {
         display: flex;
         align-items: center;
+      }
+      :host([slim]),
+      :host([slim]) .content,
+      :host([slim]) ::slotted(ha-switch) {
+        padding: 0;
+      }
+      :host([slim]) .body {
+        min-height: 0;
       }
     `;
   }
