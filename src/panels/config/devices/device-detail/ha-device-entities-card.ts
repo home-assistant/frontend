@@ -251,9 +251,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         display: block;
       }
       ha-icon {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
+        margin-left: -8px;
       }
       .entity-id {
         color: var(--secondary-text-color);
@@ -282,6 +280,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       .name {
         font-size: 14px;
+      }
+      .name:dir(rtl) {
+        margin-inline-start: 8px;
       }
       .empty {
         text-align: center;
