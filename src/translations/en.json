@@ -2864,6 +2864,7 @@
             "copy_to_clipboard": "Copy to clipboard",
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
+            "edit_unknown_device": "Editor not available for unknown device",
             "triggers": {
               "name": "Triggers",
               "header": "When",
