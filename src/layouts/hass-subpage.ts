@@ -127,6 +127,12 @@ class HassSubpage extends LitElement {
           line-height: 20px;
           min-width: 0;
           flex-grow: 1;
+          overflow-wrap: break-word;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .content {
