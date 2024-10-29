@@ -1930,7 +1930,10 @@
           "multiselect": {
             "failed": "Failed to update {number} items."
           },
-          "learn_more": "Learn more"
+          "learn_more": "Learn more",
+          "show_url": "Show full URL",
+          "hide_url": "Hide URL",
+          "copy_link": "Copy link"
         },
         "updates": {
           "caption": "Updates",
@@ -2398,7 +2401,9 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_automatic_description": "Use the configured network settings",
+          "internal_url_placeholder": "http://<some IP address>:8123"
         },
         "hardware": {
           "caption": "Hardware",
@@ -3915,9 +3920,6 @@
               "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
               "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
-              "show_url": "Show full URL",
-              "hide_url": "Hide URL",
-              "copy_link": "Copy link",
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
