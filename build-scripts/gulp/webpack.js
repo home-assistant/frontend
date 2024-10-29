@@ -206,7 +206,9 @@ gulp.task("webpack-prod-gallery", () =>
 gulp.task("webpack-dev-server-landing-page", () =>
   runDevServer({
     compiler: webpack(
-      createLandingPageConfig({ isProdBuild: false, latestBuild: true })
+      process.env.ES5
+        ? bothBuilds(createLandingPageConfig, { isProdBuild: false })
+        : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
     ),
     contentBase: paths.landingPage_output_root,
     port: 8110,
@@ -226,9 +228,10 @@ gulp.task("webpack-dev-server-landing-page", () =>
 
 gulp.task("webpack-prod-landing-page", () =>
   prodBuild(
-    createLandingPageConfig({
+    bothBuilds(createLandingPageConfig, {
       isProdBuild: true,
-      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
