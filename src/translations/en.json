@@ -6086,6 +6086,7 @@
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
+              "no_geo_location_sources": "No geolocation sources available",
               "dark_mode": "Dark mode?",
               "appearance": "Appearance",
               "theme_mode": "Theme Mode",
