@@ -5724,7 +5724,9 @@
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
-            "imported_card_section_title_default": "Imported cards from another view"
+            "imported_card_section_title_default": "Imported cards from another view",
+            "imported_cards_title": "Imported cards",
+            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Drag them into sections to use them your view."
           },
           "delete_section": {
             "title": "Delete section",
