@@ -104,7 +104,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                 </mwc-list>
               </div>
             `
-          : ""}
+          : nothing}
         ${hiddenEntities.length
           ? !this.showHidden
             ? html`
