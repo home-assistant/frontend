@@ -379,11 +379,17 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _loadedData() {
-    // @ts-ignore
-    fireEvent(this, "load");
-
     console.timeLog("WebRTC", "loadedData");
     console.timeEnd("WebRTC");
+
+    const video = this._videoEl;
+    const stream = video.srcObject as MediaStream;
+
+    fireEvent(this, "load");
+    fireEvent(this, "streams", {
+      hasAudio: Boolean(stream?.getAudioTracks().length),
+      hasVideo: Boolean(stream?.getVideoTracks().length),
+    });
   }
 
   static get styles(): CSSResultGroup {
