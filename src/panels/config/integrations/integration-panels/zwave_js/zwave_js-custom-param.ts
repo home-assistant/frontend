@@ -4,6 +4,7 @@ import { mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-circular-progress";
 import type { HomeAssistant } from "../../../../../types";
 import {
   getZwaveNodeRawConfigParameter,
@@ -23,6 +24,8 @@ class ZWaveJSCustomParam extends LitElement {
   @state() private _value?: number;
 
   @state() private _valueFormat = 0;
+
+  @state() private _isLoading = false;
 
   @state() private _error = "";
 
@@ -63,13 +66,32 @@ class ZWaveJSCustomParam extends LitElement {
           .value=${String(this._valueFormat)}
           @selected=${this._customValueFormatChanged}
         >
-          <ha-list-item value="0">Signed</ha-list-item>
-          <ha-list-item value="1">Unsigned</ha-list-item>
-          <ha-list-item value="2">Enumerated</ha-list-item>
-          <ha-list-item value="3">Bitfield</ha-list-item>
+          <ha-list-item value="0"
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.signed"
+            )}</ha-list-item
+          >
+          <ha-list-item value="1"
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.unsigned"
+            )}</ha-list-item
+          >
+          <ha-list-item value="2"
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.enumerated"
+            )}</ha-list-item
+          >
+          <ha-list-item value="3"
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.bitfield"
+            )}</ha-list-item
+          >
         </ha-select>
       </div>
       <div class="custom-config-buttons">
+        ${this._isLoading
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+          : nothing}
         <ha-button @click=${this._getCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.get_value"
@@ -124,6 +146,7 @@ class ZWaveJSCustomParam extends LitElement {
       return;
     }
     this._error = "";
+    this._isLoading = true;
     try {
       const value = await getZwaveNodeRawConfigParameter(
         this.hass,
@@ -133,6 +156,8 @@ class ZWaveJSCustomParam extends LitElement {
       this._value = value;
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
+    } finally {
+      this._isLoading = false;
     }
   }
 
@@ -160,6 +185,7 @@ class ZWaveJSCustomParam extends LitElement {
       return;
     }
     this._error = "";
+    this._isLoading = true;
     try {
       await setZwaveNodeRawConfigParameter(
         this.hass,
@@ -171,6 +197,8 @@ class ZWaveJSCustomParam extends LitElement {
       );
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
+    } finally {
+      this._isLoading = false;
     }
   }
 
@@ -180,7 +208,7 @@ class ZWaveJSCustomParam extends LitElement {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
       }
 
       ha-textfield,
@@ -199,6 +227,12 @@ class ZWaveJSCustomParam extends LitElement {
         ha-select {
           flex-basis: 0;
         }
+      }
+
+      .custom-config-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
       }
 
       .error {

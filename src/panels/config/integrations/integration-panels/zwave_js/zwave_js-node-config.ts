@@ -185,6 +185,11 @@ class ZWaveJSNodeConfig extends LitElement {
               "ui.panel.config.zwave_js.node_config.custom_config"
             )}
           </h3>
+          <span class="secondary">
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.custom_config_description"
+            )}
+          </span>
           <ha-card class="custom-config">
             <zwave_js-custom-param
               .hass=${this.hass}

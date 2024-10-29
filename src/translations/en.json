@@ -4947,8 +4947,13 @@
             "format": "Format",
             "default": "Default",
             "custom_config": "Custom configuration",
+            "custom_config_description": "You can use this section to get/set custom configuration parameters for your device. This is useful when working with devices that are not fully supported.",
             "get_value": "Get value",
-            "set_value": "Set value"
+            "set_value": "Set value",
+            "signed": "Signed",
+            "unsigned": "Unsigned",
+            "enumerated": "Enumerated",
+            "bitfield": "Bitfield"
           },
           "network_status": {
             "connected": "Connected",
