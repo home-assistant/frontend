@@ -44,6 +44,14 @@ export const mapEntitiesConfigStruct = union([
   string(),
 ]);
 
+const geoSourcesConfigStruct = union([
+  object({
+    source: string(),
+    focus: optional(boolean()),
+  }),
+  string(),
+]);
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -53,7 +61,7 @@ const cardConfigStruct = assign(
     dark_mode: optional(boolean()),
     entities: array(mapEntitiesConfigStruct),
     hours_to_show: optional(number()),
-    geo_location_sources: optional(array(string())),
+    geo_location_sources: optional(array(geoSourcesConfigStruct)),
     auto_fit: optional(boolean()),
     theme_mode: optional(string()),
   })
@@ -139,8 +147,12 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       : [];
   }
 
+  private _geoSourcesStrings = memoizeOne((sources): string[] | undefined =>
+    sources?.map((s) => (typeof s === "string" ? s : s.source))
+  );
+
   get _geo_location_sources(): string[] {
-    return this._config!.geo_location_sources || [];
+    return this._geoSourcesStrings(this._config!.geo_location_sources) || [];
   }
 
   protected render() {
@@ -228,9 +240,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       this._config = { ...this._config };
       delete this._config.geo_location_sources;
     } else {
+      const newSources = value.map(
+        (newSource) =>
+          this._config!.geo_location_sources?.find(
+            (oldSource) =>
+              typeof oldSource === "object" && oldSource.source === newSource
+          ) || newSource
+      );
       this._config = {
         ...this._config,
-        geo_location_sources: value,
+        geo_location_sources: newSources,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
