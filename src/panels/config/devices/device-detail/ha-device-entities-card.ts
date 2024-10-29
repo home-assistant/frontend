@@ -310,6 +310,9 @@ export class HaDeviceEntitiesCard extends LitElement {
         --mdc-list-vertical-padding: 0;
         margin-top: -8px;
       }
+      #entities + mwc-list:has(.disabled-entry) {
+        margin-top: 8px;
+      }
     `;
   }
 }
