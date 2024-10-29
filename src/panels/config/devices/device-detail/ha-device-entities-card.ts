@@ -6,6 +6,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
@@ -125,7 +126,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                   )}
                 </button>
               `
-          : ""}
+          : nothing}
         <div class="card-actions">
           <mwc-button @click=${this._addToLovelaceView}>
             ${this.hass.localize(
