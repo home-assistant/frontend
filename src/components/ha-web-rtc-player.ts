@@ -103,6 +103,13 @@ class HaWebRtcPlayer extends LitElement {
   private async _startWebRtc(): Promise<void> {
     this._cleanUp();
 
+    // Browser support required for WebRTC
+    if (typeof RTCPeerConnection === "undefined") {
+      this._error = "WebRTC is not supported in this browser";
+      fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
+      return;
+    }
+
     if (!this.hass || !this.entityid) {
       return;
     }
@@ -379,11 +386,17 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _loadedData() {
-    // @ts-ignore
-    fireEvent(this, "load");
-
     console.timeLog("WebRTC", "loadedData");
     console.timeEnd("WebRTC");
+
+    const video = this._videoEl;
+    const stream = video.srcObject as MediaStream;
+
+    fireEvent(this, "load");
+    fireEvent(this, "streams", {
+      hasAudio: Boolean(stream?.getAudioTracks().length),
+      hasVideo: Boolean(stream?.getVideoTracks().length),
+    });
   }
 
   static get styles(): CSSResultGroup {
