@@ -56,7 +56,7 @@ class HaEntityMarker extends LitElement {
       .marker.picture {
         overflow: hidden;
       }
-      .marker:not(.picture) {
+      .marker {
         text-align: center;
       }
       .entity-picture {
