@@ -529,7 +529,7 @@ class HaPanelDevAction extends LitElement {
             ) {
               return false;
             }
-            return hasTemplate(val);
+            return false;
           })))
     ) {
       this._yamlMode = true;

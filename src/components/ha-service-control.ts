@@ -34,6 +34,7 @@ import {
   expandLabelTarget,
   Selector,
   TargetSelector,
+  TemplateSelector,
 } from "../data/selector";
 import { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -45,6 +46,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 import "./ha-service-section-icon";
+import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -78,6 +80,8 @@ interface ExtHassService extends Omit<HassService, "fields"> {
   flatFields: Array<Field>;
   hasSelector: string[];
 }
+
+const TEMPLATE_SELECTOR: TemplateSelector = { template: {} };
 
 @customElement("ha-service-control")
 export class HaServiceControl extends LitElement {
@@ -478,7 +482,8 @@ export class HaServiceControl extends LitElement {
             >${this.hass.localize(
               "ui.components.service-control.target_secondary"
             )}</span
-          ><ha-selector
+          >
+          <ha-selector
             .hass=${this.hass}
             .selector=${this._targetSelector(
               serviceData.target as TargetSelector
@@ -639,23 +644,34 @@ export class HaServiceControl extends LitElement {
               `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
             ) || dataField?.description}</span
           >
-          <ha-selector
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(dataField.key) &&
-              (!this._value?.data ||
-                this._value.data[dataField.key] === undefined))}
-            .hass=${this.hass}
-            .selector=${enhancedSelector}
-            .key=${dataField.key}
-            @value-changed=${this._serviceDataChanged}
-            .value=${this._value?.data
-              ? this._value.data[dataField.key]
-              : undefined}
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            @item-moved=${this._itemMoved}
-          ></ha-selector>
+          ${hasTemplate(this._value?.data?.[dataField.key])
+            ? html`
+                <ha-selector
+                  .selector=${TEMPLATE_SELECTOR}
+                  .key=${dataField.key}
+                  .hass=${this.hass}
+                  .value=${this._value?.data?.[dataField.key]}
+                  .disabled=${this.disabled}
+                  @value-changed=${this._serviceDataChanged}
+                ></ha-selector>
+              `
+            : html`
+                <ha-selector
+                  .disabled=${this.disabled ||
+                  (showOptional &&
+                    !this._checkedKeys.has(dataField.key) &&
+                    (!this._value?.data ||
+                      this._value.data[dataField.key] === undefined))}
+                  .hass=${this.hass}
+                  .selector=${enhancedSelector}
+                  .key=${dataField.key}
+                  @value-changed=${this._serviceDataChanged}
+                  .value=${this._value?.data?.[dataField.key]}
+                  .placeholder=${dataField.default}
+                  .localizeValue=${this._localizeValueCallback}
+                  @item-moved=${this._itemMoved}
+                ></ha-selector>
+              `}
         </ha-settings-row>`
       : "";
   };

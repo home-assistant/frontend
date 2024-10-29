@@ -3,6 +3,7 @@ import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
 import { ActionConfig } from "../../../data/lovelace/config/action";
+import { callExecuteScript } from "../../../data/service";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { HomeAssistant } from "../../../types";
@@ -159,14 +160,11 @@ export const handleAction = async (
         forwardHaptic("failure");
         return;
       }
-      const [domain, service] = (actionConfig.perform_action ||
-        actionConfig.service)!.split(".", 2);
-      hass.callService(
-        domain,
-        service,
-        actionConfig.data ?? actionConfig.service_data,
-        actionConfig.target
-      );
+      callExecuteScript(hass, {
+        action: actionConfig.perform_action || actionConfig.service,
+        target: actionConfig.target,
+        data: actionConfig.data ?? actionConfig.service_data,
+      });
       forwardHaptic("light");
       break;
     }
