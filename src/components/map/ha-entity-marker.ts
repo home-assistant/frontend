@@ -43,6 +43,7 @@ class HaEntityMarker extends LitElement {
       .marker {
         display: flex;
         justify-content: center;
+        text-align: center;
         align-items: center;
         box-sizing: border-box;
         width: 48px;
@@ -55,9 +56,6 @@ class HaEntityMarker extends LitElement {
       }
       .marker.picture {
         overflow: hidden;
-      }
-      .marker {
-        text-align: center;
       }
       .entity-picture {
         background-size: cover;
