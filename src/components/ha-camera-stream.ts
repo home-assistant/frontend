@@ -42,19 +42,15 @@ export class HaCameraStream extends LitElement {
   // Video background image before its loaded
   @state() private _posterUrl?: string;
 
-  // We keep track if we should force MJPEG if there was a failure
-  // to get the HLS stream url. This is reset if we change entities.
-  @state() private _forceMJPEG?: string;
-
   @state() private _connected = false;
 
   @state() private _capabilities?: CameraCapabilities;
 
   @state() private _streamType?: StreamType;
 
-  private _hlsStreams?: { hasAudio: boolean; hasVideo: boolean };
+  @state() private _hlsStreams?: { hasAudio: boolean; hasVideo: boolean };
 
-  private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
+  @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
   public willUpdate(changedProps: PropertyValues): void {
     if (
@@ -133,6 +129,9 @@ export class HaCameraStream extends LitElement {
     this._capabilities = undefined;
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
+    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
+      return;
+    }
     this._capabilities = await fetchCameraCapabilities(
       this.hass!,
       this.stateObj!.entity_id
@@ -143,8 +142,8 @@ export class HaCameraStream extends LitElement {
   }
 
   private get _shouldRenderMJPEG() {
-    if (this._forceMJPEG === this.stateObj!.entity_id) {
-      // Fallback when unable to stream
+    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
+      // Steaming is not supported by the camera so fallback to MJPEG stream
       return true;
     }
     if (
@@ -157,10 +156,6 @@ export class HaCameraStream extends LitElement {
         this._webRtcStreams?.hasVideo === false)
     ) {
       // No video in HLS stream and no video in WebRTC stream
-      return true;
-    }
-    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
-      // Steaming is not supported by the camera so fallback to MJPEG stream
       return true;
     }
     return false;
