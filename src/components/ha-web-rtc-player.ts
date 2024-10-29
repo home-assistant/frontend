@@ -103,6 +103,13 @@ class HaWebRtcPlayer extends LitElement {
   private async _startWebRtc(): Promise<void> {
     this._cleanUp();
 
+    // Browser support required for WebRTC
+    if (typeof RTCPeerConnection === "undefined") {
+      this._error = "WebRTC is not supported in this browser";
+      fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
+      return;
+    }
+
     if (!this.hass || !this.entityid) {
       return;
     }

@@ -13,6 +13,7 @@ import { nextRender } from "../common/util/render-status";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import { fetchStreamUrl } from "../data/camera";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 type HlsLite = Omit<
   HlsType,
@@ -109,6 +110,12 @@ class HaHLSPlayer extends LitElement {
   private async _getStreamUrl(): Promise<void> {
     this._cleanUp();
     this._resetError();
+
+    if (!isComponentLoaded(this.hass!, "stream")) {
+      this._setFatalError("Streaming component is not loaded.");
+      return;
+    }
+
     if (!this.entityid) {
       return;
     }

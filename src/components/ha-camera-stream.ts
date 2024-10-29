@@ -7,7 +7,6 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
@@ -131,6 +130,9 @@ export class HaCameraStream extends LitElement {
   }
 
   private async _getCapabilities() {
+    this._capabilities = undefined;
+    this._hlsStreams = undefined;
+    this._webRtcStreams = undefined;
     this._capabilities = await fetchCameraCapabilities(
       this.hass!,
       this.stateObj!.entity_id
@@ -142,26 +144,24 @@ export class HaCameraStream extends LitElement {
 
   private get _shouldRenderMJPEG() {
     if (this._forceMJPEG === this.stateObj!.entity_id) {
-      // Fallback when unable to fetch stream url
+      // Fallback when unable to stream
+      return true;
+    }
+    if (
+      this._capabilities &&
+      (!this._capabilities.frontend_stream_types.includes(STREAM_TYPE_HLS) ||
+        this._hlsStreams?.hasVideo === false) &&
+      (!this._capabilities.frontend_stream_types.includes(
+        STREAM_TYPE_WEB_RTC
+      ) ||
+        this._webRtcStreams?.hasVideo === false)
+    ) {
+      // No video in HLS stream and no video in WebRTC stream
       return true;
     }
     if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
       // Steaming is not supported by the camera so fallback to MJPEG stream
       return true;
-    }
-    if (
-      this._capabilities?.frontend_stream_types.length === 1 &&
-      this._capabilities?.frontend_stream_types.includes(STREAM_TYPE_WEB_RTC)
-    ) {
-      // Browser support required for WebRTC
-      return typeof RTCPeerConnection === "undefined";
-    }
-    if (
-      this._capabilities?.frontend_stream_types.length === 1 &&
-      this._capabilities?.frontend_stream_types.includes(STREAM_TYPE_HLS)
-    ) {
-      // Server side stream component required for HLS
-      return !isComponentLoaded(this.hass!, "stream");
     }
     return false;
   }
@@ -202,8 +202,6 @@ export class HaCameraStream extends LitElement {
       this._streamType = STREAM_TYPE_HLS;
     } else if (this._webRtcStreams.hasVideo) {
       this._streamType = STREAM_TYPE_WEB_RTC;
-    } else {
-      this._forceMJPEG = this.stateObj!.entity_id;
     }
   }
 
