@@ -21,22 +21,17 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
-import {
-  isStrategyView,
-  type LovelaceViewConfig,
-} from "../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../data/lovelace/config/view";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
   addCard,
-  addSection,
   deleteCard,
   moveCardToContainer,
   moveCardToIndex,
@@ -50,8 +45,6 @@ import {
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
-import { SECTIONS_VIEW_LAYOUT } from "../views/const";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -352,9 +345,13 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        const fromView = selectedDashConfig.views[this.path![0]];
-        let toView = selectedDashConfig.views[viewIndex];
-        let newConfig = selectedDashConfig;
+        if (!this.lovelace) return;
+        const toView = selectedDashConfig.views[viewIndex];
+        const newConfig = selectedDashConfig;
+
+        const undoAction = async () => {
+          this.lovelace!.saveConfig(selectedDashConfig);
+        };
 
         if (isStrategyView(toView)) {
           showAlertDialog(this, {
@@ -369,53 +366,22 @@ export class HuiCardOptions extends LitElement {
           return;
         }
 
-        const isSectionsView = toView.type === SECTIONS_VIEW_LAYOUT;
-
-        let toPath: LovelaceContainerPath = [viewIndex];
-
-        // If the view is a section view and has no "imported cards" section, adds a default section.
-        if (isSectionsView) {
-          const importedCardHeading = fromView.title
-            ? this.hass!.localize(
-                "ui.panel.lovelace.editor.section.imported_card_section_title_view",
-                { view_title: fromView.title }
-              )
-            : this.hass!.localize(
-                "ui.panel.lovelace.editor.section.imported_card_section_title_default"
-              );
-
-          let sectionIndex = toView.sections
-            ? toView.sections.findIndex(
-                (s) =>
-                  "cards" in s &&
-                  s.cards?.some(
-                    (c) =>
-                      c.type === "heading" && c.heading === importedCardHeading
-                  )
-              )
-            : -1;
-          if (sectionIndex === -1) {
-            const newSection: LovelaceSectionConfig = {
-              type: "grid",
-              cards: [
-                {
-                  type: "heading",
-                  heading: importedCardHeading,
-                },
-              ],
-            };
-            newConfig = addSection(selectedDashConfig, viewIndex, newSection);
-            toView = newConfig.views[viewIndex] as LovelaceViewConfig;
-            sectionIndex = toView.sections!.length - 1;
-          }
-          toPath = [viewIndex, sectionIndex];
-        }
+        const toPath: LovelaceContainerPath = [viewIndex];
 
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(
             moveCardToContainer(newConfig, this.path!, toPath)
           );
-          showSaveSuccessToast(this, this.hass!);
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.success"
+            ),
+            duration: 4000,
+            action: {
+              action: undoAction,
+              text: this.hass!.localize("ui.common.undo"),
+            },
+          });
           return;
         }
         try {
@@ -429,10 +395,22 @@ export class HuiCardOptions extends LitElement {
           this.lovelace!.saveConfig(
             deleteCard(this.lovelace!.config, this.path!)
           );
-          showSaveSuccessToast(this, this.hass!);
+
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.success"
+            ),
+            duration: 4000,
+            action: {
+              action: undoAction,
+              text: this.hass!.localize("ui.common.undo"),
+            },
+          });
         } catch (err: any) {
-          showAlertDialog(this, {
-            text: `Moving failed: ${err.message}`,
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.error"
+            ),
           });
         }
       },

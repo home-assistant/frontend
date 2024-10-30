@@ -25,7 +25,17 @@ const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delayOnTouchOnly: true,
   direction: "vertical",
   invertedSwapThreshold: 0.7,
+  group: "card",
 } as HaSortableOptions;
+
+const IMPORT_MODE_CARD_SORTABLE_OPTIONS: HaSortableOptions = {
+  ...CARD_SORTABLE_OPTIONS,
+  sort: false,
+  group: {
+    name: "card",
+    put: false,
+  },
+};
 
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -39,6 +49,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
+
+  @property({ attribute: false }) public importOnly = false;
 
   @state() _config?: LovelaceSectionConfig;
 
@@ -67,21 +79,29 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
 
+    const sortableOptions = this.importOnly
+      ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
+      : CARD_SORTABLE_OPTIONS;
+
     return html`
       <ha-sortable
         .disabled=${!editMode}
         @drag-start=${this._dragStart}
         @drag-end=${this._dragEnd}
-        group="card"
         draggable-selector=".card"
         .rollback=${false}
-        .options=${CARD_SORTABLE_OPTIONS}
+        .options=${sortableOptions}
         @item-moved=${this._cardMoved}
         @item-added=${this._cardAdded}
         @item-removed=${this._cardRemoved}
         invert-swap
       >
-        <div class="container ${classMap({ "edit-mode": editMode })}">
+        <div
+          class="container ${classMap({
+            "edit-mode": editMode,
+            "import-only": this.importOnly,
+          })}"
+        >
           ${repeat(
             cardsConfig,
             (cardConfig) => this._getKey(cardConfig),
@@ -117,6 +137,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                           .lovelace=${this.lovelace!}
                           .path=${cardPath}
                           .hiddenOverlay=${this._dragging}
+                          .noEdit=${this.importOnly}
+                          .noDuplicate=${this.importOnly}
                         >
                           ${card}
                         </hui-card-edit-mode>
@@ -126,7 +148,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               `;
             }
           )}
-          ${editMode
+          ${editMode && !this.importOnly
             ? html`
                 <button
                   class="add"
@@ -216,9 +238,12 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .container.edit-mode {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
-          border-start-end-radius: 0px;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
+        }
+
+        .container.edit-mode:not(.import-only) {
+          border-start-end-radius: 0px;
         }
 
         .card {
